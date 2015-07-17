@@ -1,0 +1,22 @@
+{
+    "tests": [
+        {
+            "path" : "1_Generic_Seattle_MultiNode"
+        },
+        {
+            "path" : "2_Polio_Bihar_2x2_MixingPool"
+        },
+        {
+            "path" : "26_Vector_Garki"
+        },
+        {
+            "path" : "25_Vector_Madagascar"
+        },
+        {
+            "path" : "24_Malaria_Garki"
+        },
+        {
+            "path" : "43_Vector_Garki_MultiCore_VectorMigration"
+        }
+    ]
+}

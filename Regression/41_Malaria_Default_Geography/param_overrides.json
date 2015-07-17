@@ -1,0 +1,48 @@
+{
+     "Default_Config_Path": "defaults\\malaria_default_config.json", 
+     "parameters": {
+          "CLIMATE": {
+               "AIR_TEMPERATURE": {
+                    "Base_Air_Temperature": 25.0
+               }, 
+               "Climate_Model": "CLIMATE_CONSTANT"
+          }, 
+          "DEMOGRAPHICS": {
+               "Enable_Demographics_Initial": 0,
+               "x_Temporary_Larval_Habitat": 0.1
+          }, 
+          "MIGRATION": {
+               "AIR" : {
+                    "Enable_Air_Migration": 0,
+                    "Air_Migration_Filename": ""
+               },
+               "Enable_Migration_Heterogeneity": 0, 
+               "LOCAL": {
+                    "Enable_Local_Migration": 0,
+                    "Local_Migration_Filename": ""
+               }, 
+               "Migration_Model": "FIXED_RATE_MIGRATION", 
+               "Migration_Pattern": "WAYPOINTS_HOME", 
+               "REGIONAL": {
+                    "Enable_Regional_Migration": 0,
+                    "Regional_Migration_Filename": ""
+               }, 
+               "Roundtrip_Waypoints": 5, 
+               "SEA": {
+                    "Enable_Sea_Migration": 0,
+                    "Sea_Migration_Filename": ""
+               }
+          }, 
+          "PRIMARY": {
+               "Config_Name": "41_Malaria_Default_Geography", 
+               "Geography": "auto-generated", 
+               "Node_Grid_Size": 0.009, 
+               "Run_Number": 33, 
+               "Simulation_Duration": 730
+          }, 
+          "SAMPLING": {
+               "Individual_Sampling_Type": "ADAPTED_SAMPLING_BY_POPULATION_SIZE", 
+               "Max_Node_Population_Samples": 100
+          }
+     }
+}

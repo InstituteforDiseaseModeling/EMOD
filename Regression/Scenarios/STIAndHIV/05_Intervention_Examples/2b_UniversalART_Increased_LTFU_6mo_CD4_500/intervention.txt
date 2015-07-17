@@ -1,0 +1,10 @@
+Specification:
+--------------
+Assume that the rate of loss to follow-up is 50% higher (1.5x) in the first 6 months of treatment for those initiating with CD4>500 compared to CD4 350-500, but that retention after 6 months for those initiating at CD4>500 are equal to those initiating at CD4 350-500.
+
+
+Implementation Notes:
+---------------------
+This example is built on top of the modifications made for Universal ART (example 1a).  As in the baseline scenario, OnART0 triggers a delay to actually receiving ART.  In this scenario, rather than triggering ARTBasic, following the delay and individual is given an HIVPiecewiseByYearAndSex diagnostic to determine if it is after 2020.  Before 2020, ARTBasic and an exponential delay to ART dropout (mean=20 years) are simultaneously triggered by the event OnART1.  After 2020, ARTBasic and a new exponential delay (with mean=13.33 years and an expiration of 6 months) are simultaneously triggered by the event OnART8.  Note that the same instance of ARTBasic is triggered both by OnART1 and OnART8.
+
+While waiting in the new delay, if the amount of time that has passed is greater than or equal to the expiration period (6 months), then the new delay is expired.  On expiration, "OnART9" is broadcast, which triggers the old delay with mean=20 years, and the individual follows the old "delay to dropout" pathway.  If the new delay completes without expiration (the delay period drawn is shorter than the expiration period), then the ART dropout pathway is triggered.

@@ -1,0 +1,35 @@
+{
+     "Default_Config_Path": "defaults/generic_default_config.json", 
+     "parameters": {
+          "CLIMATE": {
+              "Climate_Model": "CLIMATE_CONSTANT",
+              "Climate_Update_Resolution": "CLIMATE_UPDATE_DAY",
+              "Enable_Climate_Stochasticity": 1,
+              "AIR" : {
+                  "Air_Temperature_Variance": 2, 
+                  "Base_Air_Temperature": 30 
+              },
+              "HUMIDITY" : {
+                  "Base_Relative_Humidity": 0.5, 
+                  "Relative_Humidity_Variance": 0.05
+              },
+              "LAND" : {
+                  "Base_Land_Temperature": 30, 
+                  "Land_Temperature_Variance": 2
+              },
+              "RAINFALL" : {
+                  "Base_Rainfall": 100, 
+                  "Enable_Rainfall_Stochasticity": 1
+              }
+          }, 
+          "DEMOGRAPHICS": {
+               "Demographics_Filename": "Namawala_single_node_demographics.compiled.json"
+          }, 
+          "PRIMARY": {
+               "Config_Name": "90_Generic_Namawala_Climate_Constant",
+               "Geography": "Namawala", 
+               "Run_Number": 1, 
+               "Simulation_Duration": 180
+          }
+     }
+}

@@ -1,0 +1,32 @@
+
+{ 
+    "Use_Defaults": 1,
+        "Campaign_Name": "RSA Baseline 03/30/2015",
+        "Events": [
+        { 
+            "class": "CampaignEventByYear",
+            "Event_Name": "Initialize HIV infection in entire population",
+            "Start_Year": 2000,
+            "Nodeset_Config": 
+            { 
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            { 
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Travel_Linked": 0,
+                "Intervention_Config": 
+                { 
+                    "class": "OutbreakIndividual",
+                    "Event_Name": "Outbreak (not used)",
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "Incubation_Period_Override": 1,
+                    "Antigen": 0,
+                    "Genome": 0
+                }
+            }
+        }
+    ]
+}

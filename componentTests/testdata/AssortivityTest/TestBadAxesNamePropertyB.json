@@ -1,0 +1,14 @@
+{
+    "Group" : "INDIVIDUAL_PROPERTY",
+    "Start_Year" : 1990, 
+    "Property_Name" : "Race",
+    "Axes" : [ "HUMAN", "VULCAN", "KLINGON", "XXX", "ROMULAN" ],
+    "Weighting_Matrix_RowMale_ColumnFemale" :
+    [
+        [ 0.5, 0.3, 0.1, 0.4, 0.2 ],
+        [ 0.4, 0.5, 0.1, 0.2, 0.3 ],
+        [ 0.1, 0.2, 0.5, 0.4, 0.3 ],
+        [ 0.4, 0.1, 0.3, 0.5, 0.2 ],
+        [ 0.1, 0.4, 0.3, 0.2, 0.5 ]
+    ]
+}

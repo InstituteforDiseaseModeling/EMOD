@@ -1,0 +1,2 @@
+1.0.0 (01/31/2009)
+* Initial release! Remaining work: better documentation, better test/sample app, yada yada

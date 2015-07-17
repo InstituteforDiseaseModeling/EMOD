@@ -1,0 +1,8 @@
+Specification:
+--------------
+Starting on Jan 1, 2020, 10% of HIV-uninfected men become circumcised upon reaching their 18th birthday.
+
+
+Implementation Notes:
+---------------------
+Males born after Jan 1, 2002, are given a BirthTriggeredIV Demographic_Coverage=0.1.  The BirthTriggeredIV consists of a 18-year delay to a SimpleDiagnostic.  As in 1a and 1b, the SimpleDiagnostic uses Base_Specificity=0 and Base_Sensitivity=0 to select only HIV negative individuals for male circumcision.

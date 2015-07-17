@@ -1,0 +1,71 @@
+{
+    "Campaign_Name": "Illustration of BirthTriggeredIV: Outbreak at day 100, vaccination at day 1000",
+    "Events": [
+        {
+            "Event_Name": "BCG vaccine",
+            "Start_Day": 1000,
+            "class": "CampaignEvent",
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "BirthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "IVCalendar",
+                        "Actual_IndividualIntervention_Configs": [{
+                            "class": "BCGVaccine",
+                            "Cost_To_Consumer": 10,
+                            "Durability_Time_Profile": "BOXDECAYDURABILITY",
+                            "Primary_Decay_Time_Constant": 3650,
+                            "Secondary_Decay_Time_Constant": 3650,
+                            "Reduced_Acquire": 1,
+                            "Reduced_Transmit": 1,
+                            "Reduced_Mortality": 1,
+                            "Vaccine_Take": 1,
+                            "Vaccine_Take_Age_Decay_Rate": 0,
+                            "Vaccine_Type": "Generic"
+                        }],
+                        "Calendar": [{
+                            "Age": 1,
+                            "Probability": 1
+                        }],
+                        "Dropout": 0
+                    },
+                    "Demographic_Coverage": 1,
+                    "Max_Timesteps": -1
+                },
+                "Number_Distributions": -1,
+                "Number_Repetitions": 1,
+                "Target_Demographic": "Everyone",
+                "Timesteps_Between_Repetitions": 1
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }
+        },
+        {
+            "Event_Name": "Outbreak",
+            "Start_Day": 100,
+            "class": "CampaignEvent",
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Include_Arrivals": 0,
+                "Include_Departures": 0,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0,
+                    "Genome": 0
+                },
+                "Number_Distributions": 100,
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Demographic": "Everyone"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

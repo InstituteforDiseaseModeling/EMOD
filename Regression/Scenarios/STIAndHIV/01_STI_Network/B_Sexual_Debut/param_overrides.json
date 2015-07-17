@@ -1,0 +1,19 @@
+{
+    "Default_Config_Path": "defaults/sti_scenario_default_config.json",
+    "parameters": {
+        "Config_Name": "01B_Sexual_Debut",
+        "Demographics_Filenames": ["newborn_cohort_demographics.json","pfa_simple.json"],
+        "Simulation_Duration": 10950,
+        "Base_Population_Scale_Factor": 0.1,
+        "Enable_Vital_Dynamics": 0,
+        "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF",
+
+        "Report_Relationship_Start": 1,
+
+        "Sexual_Debut_Age_Female_Weibull_Heterogeneity": 0.05,
+        "Sexual_Debut_Age_Female_Weibull_Scale": 15.4061176831848,
+        "Sexual_Debut_Age_Male_Weibull_Heterogeneity": 0.05,
+        "Sexual_Debut_Age_Male_Weibull_Scale": 15.4061176831848,
+        "Sexual_Debut_Age_Min": 13
+    }
+}

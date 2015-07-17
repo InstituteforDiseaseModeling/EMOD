@@ -1,0 +1,36 @@
+{
+    "Metadata": {
+        "DateCreated": "Sun Sep 25 23:19:55 2011", 
+        "Tool": "convertdemog.py", 
+        "Author": "jsteinkraus", 
+        "IdReference": "SampleContent", 
+        "NodeCount": 1,
+		"Resolution": 150
+    }, 
+    "Defaults": {
+        "IndividualAttributes": {
+            "MortalityDistribution": {
+                "NumDistributionAxes": 2,
+                "AxisNames": [ "gender", "age" ],
+                "AxisUnits": [ "male=0,female=1", "years" ],
+                "AxisScaleFactors": [ 1, 365 ],
+                "NumPopulationGroups": [ 2, 1 ],
+                "PopulationGroups": [
+                    [ 0, 1 ],
+                    [ 0 ]
+                ],
+                "ResultUnits": "deaths per day",
+                "ResultScaleFactor": 1,
+                "ResultValues": [
+                    [ 0.0001 ],
+                    [ 0.0001 ]
+                ]
+            }
+        }
+    },
+    "Nodes": [
+        {
+            "NodeID": 1
+        }
+    ]
+}

@@ -1,0 +1,199 @@
+{
+    "Campaign_Name": "1f_IncreasedTesting_and_MaleCircumcision_Starting_2020", 
+    "Default_Campaign_Path": "defaults/hiv_default_campaign.json",
+    "Use_Defaults": 1,
+    "Events":
+    [
+        {
+            "BEGIN": "MALES TEST AT 10%/YEAR STARTING IN 2020",
+            "class": "CampaignEventByYear",
+            "Event_Name": "Total population draws from an exponential distribution for male circumcision on Jan 1, 2020",
+            "Start_Year": 2020,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config":
+                {
+                    "class": "BroadcastEvent",
+                    "NOTE": "No Abort_States so we can churn from deep in the cascade",
+                    "Broadcast_Event": "HCTTestingLoop2"
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "Male circumcision after birth starting Jan 1, 2020",
+            "Start_Year": 2020,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Intervention_Config":
+                {
+                    "Demographic_Coverage": 1,
+                    "class": "BirthTriggeredIV",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "BroadcastEvent",
+                        "Broadcast_Event": "HCTTestingLoop2"
+                    }
+                }
+            },
+            "END": "MALES TEST AT 10%/YEAR STARTING IN 2020"
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "HCTTestingLoop: state 2 (male and after 2020?)",
+            "Start_Year": 2020,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Male",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Property_Restrictions_Within_Node":
+                    [
+                        { "Accessibility": "Yes" }
+                    ],
+                    "Trigger_Condition": "TriggerList",
+                    "Trigger_Condition_List": ["HCTTestingLoop2", "HCTUptakePostDebut9", "HCTUptakePostDebut3"],
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "BroadcastEvent",
+                        "Broadcast_Event": "HCTTestingLoop3"
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "HCTTestingLoop: state 3 (delay to next HCT)",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "TriggerList",
+                    "Trigger_Condition_List": ["HCTTestingLoop3", "HCTTestingLoop6"],
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVMuxer",
+                        "Muxer_Name": "HCTTestingLoopAfter2020",
+                        "Max_Entries": 1,
+                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging" ],
+                        "Cascade_State": "HCTTestingLoop",
+                        "Delay_Distribution": "EXPONENTIAL_DURATION",
+                        "Delay_Period": 3650,
+                        "Broadcast_Event": "HCTTestingLoop4"
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "HCTTestingLoop: state 4 (rapid HIV test)",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "HCTTestingLoop4",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVRapidHIVDiagnostic",
+                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging" ],
+                        "Cascade_State": "HCTTestingLoop",
+                        "Event_Or_Config": "Event",
+                        "Positive_Diagnosis_Event": "HCTTestingLoop5",
+                        "Negative_Diagnosis_Event": "HCTTestingLoop6"
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "HCTTestingLoop: state 5 (random choice to stage)",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "HCTTestingLoop5",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVRandomChoice",
+                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging" ],
+                        "Cascade_State": "HCTTestingLoop",
+                        "Choices":
+                        {
+                            "ARTStaging2": 0.25,
+                            "HCTTestingLoop3": 0.75
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "HCTTestingLoop: state 6 (random choice to circumcision)",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "HCTTestingLoop6",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVRandomChoice",
+                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging" ],
+                        "Cascade_State": "HCTTestingLoop",
+                        "Choices":
+                        {
+                            "HIVNeedsMaleCircumcision": 0.8,
+                            "NoTrigger": 0.2
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,69 @@
+{
+    "Use_Defaults": 1,
+    "Campaign_Name": "Generic HIV Outbreak", 
+    "Events": 
+    [
+        {
+            "class": "CampaignEvent",
+            "Event_Name": "Test for HIV",
+            "Start_Day": 0,
+
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "class": "HIVRapidHIVDiagnostic",
+                    "Days_To_Diagnosis"        : 1,
+                    "Probability_Received_Result" : 0.9,
+
+                    "Abort_States": [
+                        "OnART",
+                        "LinkingToART",
+                        "OnPreART",
+                        "LinkingToPreART",
+                        "ARTStaging"
+                        ],
+                    "Cascade_State": "HCTTestingLoop",
+
+                    "Positive_Diagnosis_Event": "HCTTestingLoop2",
+                    "Negative_Diagnosis_Event": "HCTTestingLoop3"
+                }, 
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Number_Repetitions" : 35,
+                "Timesteps_Between_Repetitions" : 200,
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Travel_Linked": 0 
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Event_Name": "Outbreak",
+            "Start_Day": 300,
+
+            ".class": "CampaignEventByYear",
+            ".Start_Year": 1980,
+
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Event_Name": "Outbreak (not used)", 
+                    "Antigen": 0, 
+                    "Genome": 0, 
+                    "Outbreak_Source": "PrevalenceIncrease", 
+                    "Incubation_Period_Override": 1,
+                    "class": "OutbreakIndividual"
+                }, 
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 0.25,
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Travel_Linked": 0 
+            }
+        }
+    ]
+}

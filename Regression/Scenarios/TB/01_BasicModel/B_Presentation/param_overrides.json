@@ -1,0 +1,14 @@
+{
+    "Default_Config_Path":"defaults\\tb_scenario_default_config.json",
+    "parameters":{
+        "Config_Name":"01_BasicModel_B_Presentation",
+        "Demographics_Filename":"TB_01_BasicModel_demographics.json",
+        "TB_Extrapulmonary_Fraction_Adult":0.33,
+        "TB_Extrapulmonary_Fraction_Child":0.33,
+        "TB_Smear_Negative_Infectivity_Multiplier":0.7,
+        "TB_Smear_Positive_Fraction_Adult":0.34,
+        "TB_Smear_Positive_Fraction_Child":0.34,
+		"Simulation_Duration": 1000
+
+    }
+}

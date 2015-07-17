@@ -1,0 +1,8 @@
+Specification:
+--------------
+Starting on Jan 1, 2020, the ART dropout rate declines to 5% per year, and all those lost to follow-up will re-initiate at an exponentially-distributed rate of once per TBD years. (To do: change these numbers to be similar to what was used for HIV-4, but at a lower rate of ART dropout.)
+
+
+Implementation Notes:
+---------------------
+ART dropout rate was already 5%/year, so no change there.  A new HIVPiecewiseByYearAndSexDiagnostic is triggered along with ARTDropout by "OnART3".  The diagnostic broadcasts "NoTrigger" if it is before 2020, and pushes the individual into a new muxer delay if it is after 2020.  The muxer sets the cascade state to "", and draws a delay time from an exponential distribution with mean=5 years.  The muxer is aborted only by "LostForever", and at the end of the delay the individual is put on ART again by broadcasting "OnART0".

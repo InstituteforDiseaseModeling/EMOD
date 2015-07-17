@@ -1,0 +1,54 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "class": "OutbreakIndividual",
+                    "outbreak_source": "PrevalenceIncrease"
+                },
+                "Number_Distributions": -1,
+                "Property_Restrictions": [
+                    "Accessibility:Hard"
+                ],
+                "Target_Age_Max": 6.0,
+                "Target_Age_Min": 0.5,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 2,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.95,
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 10.0,
+                    "Durability_Time_Profile": "BOXDURABILITY",
+                    "Primary_Decay_Time_Constant": 36500,
+                    "Reduced_Acquire": 1,
+                    "Reduced_Transmit": 1,
+                    "Vaccine_Take": 0.95,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "class": "SimpleVaccine"
+                },
+                "Property_Restrictions": [
+                    "Accessibility:Easy"
+                ],
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

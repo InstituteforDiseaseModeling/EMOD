@@ -1,0 +1,245 @@
+{
+    "Campaign_Name": "HIV Outbreak via Prevalence Increase", 
+    "Default_Campaign_Path": "HIV/HIV-5/0_CascadeOfCare_Baseline/campaign.json",
+    "Use_Defaults": 1,
+    "Events":
+    [	
+		{
+            "class": "CampaignEventByYear",
+            "Event_Name": "",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "OnART1",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "CD4Diagnostic",
+                        "CD4_Thresholds": [
+                            {
+                                "Low": 0,
+                                "High": 200,
+                                "Event": "OnART4"
+                            },
+                            {
+                                "Low": 200,
+                                "High": 100000000,
+                                "Event": "OnART7"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+		
+		
+		{
+            "class": "CampaignEventByYear",
+            "Event_Name": "ART init at CD4<200 females: 10%/yr dropout for first 6 mo ",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Female",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "OnART4",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVMuxer",
+                        "Muxer_Name": "ARTDropoutDelay",
+                        "Max_Entries": 1,
+                        "Abort_States": [ "LostForever" ],
+                        "Cascade_State": "OnART",
+                        "Delay_Distribution": "EXPONENTIAL_DURATION",
+                        "Delay_Period": 3650,
+                        "Broadcast_Event": "OnART3",
+						"Expiration_Period": 183,
+                        "Broadcast_On_Expiration_Event": "OnART5"               
+					}
+                }               
+            }
+		
+		},
+
+		{
+            "class": "CampaignEventByYear",
+            "Event_Name": "ART init at CD4<200 Females: 5%/yr dropout after 6 mo ",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "OnART5",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVMuxer",
+                        "Muxer_Name": "ARTDropoutDelay",
+                        "Max_Entries": 1,
+                        "Abort_States": [ "LostForever" ],
+                        "Cascade_State": "OnART",
+                        "Delay_Distribution": "EXPONENTIAL_DURATION",
+                        "Delay_Period": 7300,
+                        "Broadcast_Event": "OnART3"                 
+					}
+                }               
+            }
+		
+		},
+
+		{
+            "class": "CampaignEventByYear",
+            "Event_Name": "ART init at CD4<200 males: 20%/yr dropout for first 6 mo ",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Male",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "OnART4",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVMuxer",
+                        "Muxer_Name": "ARTDropoutDelay",
+                        "Max_Entries": 1,
+                        "Abort_States": [ "LostForever" ],
+                        "Cascade_State": "OnART",
+                        "Delay_Distribution": "EXPONENTIAL_DURATION",
+                        "Delay_Period": 1216.67,
+                        "Broadcast_Event": "OnART3",
+						"Expiration_Period": 183,
+                        "Broadcast_On_Expiration_Event": "OnART6"                  
+					}
+                }               
+            }
+		
+		},	
+
+		{
+            "class": "CampaignEventByYear",
+            "Event_Name": "ART init at CD4<200 males: 10%/yr dropout after 6 mo ",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "OnART6",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVMuxer",
+                        "Muxer_Name": "ARTDropoutDelay",
+                        "Max_Entries": 1,
+                        "Abort_States": [ "LostForever" ],
+                        "Cascade_State": "OnART",
+                        "Delay_Distribution": "EXPONENTIAL_DURATION",
+                        "Delay_Period": 3650,
+                        "Broadcast_Event": "OnART3"                 
+					}
+                }               
+            }
+		
+		},		
+		
+		{
+            "class": "CampaignEventByYear",
+            "Event_Name": "ART init at CD4>200: 30%/yr dropout for first 6 mo",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "OnART7",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVMuxer",
+                        "Muxer_Name": "ARTDropoutDelay",
+                        "Max_Entries": 1,
+                        "Abort_States": [ "LostForever" ],
+                        "Cascade_State": "OnART",
+                        "Delay_Distribution": "EXPONENTIAL_DURATION",
+                        "Delay_Period": 1216.67,
+                        "Broadcast_Event": "OnART3",
+						"Expiration_Period": 183,
+                        "Broadcast_On_Expiration_Event": "OnART8"
+                    }
+                }
+            }
+        },
+		
+		{
+            "class": "CampaignEventByYear",
+            "Event_Name": "ART init at CD4>200: 15%/yr dropout after 6 mo",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "OnART8",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVMuxer",
+                        "Muxer_Name": "ARTDropoutDelay",
+                        "Max_Entries": 1,
+                        "Abort_States": [ "LostForever" ],
+                        "Cascade_State": "OnART",
+                        "Delay_Distribution": "EXPONENTIAL_DURATION",
+                        "Delay_Period": 2433.33,
+                        "Broadcast_Event": "OnART3"
+                    }
+                }
+            }
+        }
+		
+    ]
+}

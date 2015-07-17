@@ -1,0 +1,43 @@
+Epidemiological Modeling Copyright 2012 – 2015 Intellectual Ventures Management, LLC.
+
+This product includes software developed at the following open source initiatives:
+
+CAJUN C++ API for JSON
+
+URL:     http://sourceforge.net/projects/cajun-jsonapi/
+source:  http://sourceforge.net/projects/cajun-jsonapi/
+license: Please see the LICENSE.TXT file in the cajun directory.
+
+
+rapidjson: A fast JSON parser/generator for C++ with box SAX/DOM style API
+
+URL:     http://code.google.com/p/rapidjson/
+source:  http://code.google.com/p/rapidjson/downloads/list
+license: Please see the LICENSE.TXT file in the rapidjson directory.
+
+
+snappy: A fast compressor/decompressor
+
+URL:     https://code.google.com/p/snappy/
+source:  https://drive.google.com/file/d/0B0xs9kK-b5nMOWIxWGJhMXd6aGs/edit?usp=sharing
+license: Please see the COPYING file in the snappy directory.
+
+stringencoders: A collection of high performance c-string transformations
+
+URL:     http://code.google.com/p/stringencoders/
+source:  http://code.google.com/p/stringencoders/downloads/list
+license: Please see the LICENSE.TXT file in the rapidjson\modp directory.
+
+
+tarball support
+
+URL:     http://plindenbaum.blogspot.com/2010/08/creating-tar-file-in-c.html
+source:  https://github.com/lindenb/cclindenb/tree/master/src/core/lindenb/io
+license: Please see the LICENSE.TXT file in the reporters\libtajikreporter directory.
+
+
+UnitTest++
+
+URL:     http://sourceforge.net/projects/unittest-cpp/
+source:  http://sourceforge.net/projects/unittest-cpp/
+license: Please see the COPYING file in the unittest\UnitTest++ directory.

@@ -1,0 +1,10 @@
+Specification:
+--------------
+Starting on Jan 1, 2020, and annually thereafter on the first of the year, 50% of the population receives home/community-based testing and staging, of whom 80% eventually present for pre-ART or ART (depending on outcome of staging) at existing clinics and 20% resume previous care-seeking behavior. For those who eventually present, their baseline care-seeking behavior may cause them to present earlier (e.g., antenatal testing, becoming symptomatic, or even choosing to undergo voluntary re-testing at the clinic). For presentation driven by home/community-based testing, the delay time is Weibull-distributed with a mean of 6 months and a shape parameter of 1.5. (Or choose another built-in distribution just to illustrate how we can use a variety of distributions.
+
+
+Implementation Notes:
+---------------------
+Same as scenario 5b, but instead of linking directly to ART or PreART, individuals incur an exponential delay (mean=6 months) before linking.
+
+WARNING: StandardInterventionDistributionEventCoordinator should be extended to allow time between repetitions to be specified in Time, not time steps.

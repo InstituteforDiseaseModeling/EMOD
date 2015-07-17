@@ -1,0 +1,220 @@
+{
+    "Campaign_Name": "2a_UniversalART", 
+    "Default_Campaign_Path": "defaults/hiv_default_campaign.json",
+    "Use_Defaults": 1,
+    "Events":
+    [
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "ARTStaging: state 4 (check eligibility for ART, CD4 agnostic)",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "ARTStaging4",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVARTStagingCD4AgnosticDiagnostic",
+                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART" ],
+                        "Cascade_State": "ARTStaging",
+
+                        "NOTE1": "Threshold for adult vs child guidelines",
+                        "Adult_Treatment_Age": 5,
+
+						"Adult_By_WHO_Stage": {
+							"Times": [2004, 2011.8, 2020],
+							"Values": [4, 3, 0]
+                        },
+                        "Adult_By_TB": {
+							"Times": [2013.2],
+							"Values": [1]
+                        },
+                        "Adult_By_Pregnant": {
+							"Times": [2013.2],
+							"Values": [1]
+                        },
+                        "Adult_By_Breastfeeding": {
+							"Times": [2013.2],
+							"Values": [1]
+                        },
+
+                        "Child_Treat_Under_Age_In_Years_Threshold": {
+							"Times": [2010.34, 2013.2],
+							"Values": [1, 5]
+                        },
+
+                        "Child_By_WHO_Stage": {
+							"Times": [2010, 2011.8, 2020],
+							"Values": [3, 2, 0]
+                        },
+                        "Child_By_TB": {
+							"Times": [2004],
+							"Values": [0]
+                        },
+
+                        "Event_Or_Config": "Event",
+                        "Positive_Diagnosis_Event": "LinkingToART0",
+                        "Negative_Diagnosis_Event": "ARTStaging5"
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "ARTStaging: state 6 (check eligibility for ART by CD4)",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "ARTStaging6",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVARTStagingByCD4Diagnostic",
+                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART" ],
+                        "Cascade_State": "ARTStaging",
+                        "Threshold": {
+							"Times": [2004, 2011.8, 2015, 2020],
+							"Values": [200, 350, 500, 1000000]
+                        },
+                        "If_Active_TB": {
+							"Times": [2010.34],
+							"Values": [350]
+                        },
+                        "If_Pregnant": {
+							"Times": [2010.34, 2015],
+							"Values": [350, 1000]
+                        },
+                        "If_Breastfeeding": {
+							"Times": [2004],
+							"Values": [0]
+                        },
+                        "Event_Or_Config": "Event",
+                        "Positive_Diagnosis_Event": "LinkingToART0",
+                        "Negative_Diagnosis_Event": "LinkingToPreART0"
+                    }
+                }
+            },
+            "END": "ART STAGING"
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "OnPreART: state 2 (check eligibility for ART, CD4 agnostic)",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "OnPreART2",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVARTStagingCD4AgnosticDiagnostic",
+                        "Abort_States": [ "LostForever", "OnART", "LinkingToART" ],
+                        "Cascade_State": "OnPreART",
+
+                        "NOTE1": "Threshold for adult vs child guidelines",
+                        "Adult_Treatment_Age": 5,
+
+                        "Adult_By_WHO_Stage": {
+							"Times": [2004, 2011.8, 2020],
+							"Values": [4, 3, 0]
+                        },
+                        "Adult_By_TB": {
+							"Times": [2013.2],
+							"Values": [1]
+                        },
+                        "Adult_By_Pregnant": {
+							"Times": [2013.2],
+							"Values": [1]
+                        },
+                        "Adult_By_Breastfeeding": {
+							"Times": [2013.2],
+							"Values": [1]
+                        },
+
+                        "Child_Treat_Under_Age_In_Years_Threshold": {
+							"Times": [2010.34, 2013.2],
+							"Values": [1, 5]
+                        },
+
+                        "Child_By_WHO_Stage": {
+							"Times": [2010, 2011.8, 2020],
+							"Values": [3, 2, 0]
+                        },
+                        "Child_By_TB": {
+							"Times": [2004],
+							"Values": [0]
+                        },
+
+                        "Event_Or_Config": "Event",
+                        "Positive_Diagnosis_Event": "OnART0",
+                        "Negative_Diagnosis_Event": "OnPreART3"
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "OnPreART: state 4 (check eligibility for ART by CD4)",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "OnPreART4",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVARTStagingByCD4Diagnostic",
+                        "Abort_States": [ "LostForever", "OnART", "LinkingToART" ],
+                        "Cascade_State": "OnPreART",
+                        "Threshold": {
+							"Times": [2004, 2011.8, 2015, 2020],
+							"Values": [200, 350, 500, 1000000]
+                        },
+                        "If_Active_TB": {
+							"Times": [2010.34],
+							"Values": [350]
+                        },
+                        "If_Pregnant": {
+							"Times": [2010.34, 2015],
+							"Values": [350, 1000]
+                        },
+                        "If_Breastfeeding": {
+							"Times": [2004],
+							"Values": [0]
+                        },
+                        "Event_Or_Config": "Event",
+                        "Positive_Diagnosis_Event": "OnART0",
+                        "Negative_Diagnosis_Event": "OnPreART0"
+                    }
+                }
+            },
+            "END": "PRE-ART"
+        }
+    ]
+}

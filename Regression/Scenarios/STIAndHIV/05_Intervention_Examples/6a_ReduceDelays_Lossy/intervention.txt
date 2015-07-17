@@ -1,0 +1,8 @@
+Specification:
+--------------
+Starting on Jan 1, 2020, all those testing positive are initiated in ART or pre-ART in the same model timestep, with no delays, but still experience the same overall probabilities of loss to follow-up between testing and pre-ART/ART as before the elimination of delays.
+
+
+Implementation Notes:
+---------------------
+This intervention is implemented with a single HIVPiecewiseByYearAndSex diagnostic, which is used to query "after 2020?".  The diagnostic precedes the muxer and delay to ARTBasic.  Before 2020, the muxer/delay is run before beginning ARTBasic.  After 2020, ARTBasic is run directly without delay or muxing.

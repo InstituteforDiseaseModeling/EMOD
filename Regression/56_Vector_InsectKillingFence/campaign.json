@@ -1,0 +1,23 @@
+{
+     "Use_Defaults": 1,
+     
+     "Events": [
+          {
+               "Event_Coordinator_Config": {
+                    "Intervention_Config": {
+                         "Cost_To_Consumer": 3.75, 
+                         "Durability_Time_Profile": "DECAYDURABILITY", 
+                         "Killing": 0.28, 
+                         "Primary_Decay_Time_Constant": 2190, 
+                         "class": "InsectKillingFence"
+                    }, 
+                    "class": "StandardInterventionDistributionEventCoordinator"
+               }, 
+               "Nodeset_Config": {
+                    "class": "NodeSetAll"
+               }, 
+               "Start_Day": 140, 
+               "class": "CampaignEvent"
+          }
+     ]
+}

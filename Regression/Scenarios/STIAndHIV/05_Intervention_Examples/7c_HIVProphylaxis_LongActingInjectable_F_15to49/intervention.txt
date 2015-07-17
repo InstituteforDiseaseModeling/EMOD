@@ -1,0 +1,8 @@
+Specification:
+--------------
+After January 1, 2020, all males who test negative during voluntary HIV counseling and have a 50% probability of uptake of voluntary male medical circumcision.
+
+
+Implementation Notes:
+---------------------
+Capture HIV- negative individuals on both rapid diagnostic tests and feed into a HIV piecewise to determine if it is after 2020.  If before 2020, return to business as usual.  After 2020, if male (Female_Multiplier=0), apply male circumcision to 50% of the Accessible population.  Negatives from the HCT loop are returned to the HCT delay loop.

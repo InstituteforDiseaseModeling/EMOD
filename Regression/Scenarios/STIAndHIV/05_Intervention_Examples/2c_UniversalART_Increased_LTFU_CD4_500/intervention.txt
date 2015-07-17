@@ -1,0 +1,19 @@
+Specification:
+--------------
+Assume after the guideline change, all patients can be initiated on ART on the day of presentation, skipping all loss to follow-up due to CD4 testing, adherence counseling, or linking from the testing clinic to the ART clinic. However, for those initiating with CD4>500, the rate of loss to follow-up is 50% (1.5x) higher for the full time on treatment, compared to CD4 350-500.
+
+
+Implementation Notes:
+---------------------
+This scenario is built on the campaign file from example 2b.  In contrast to scenario 2b, loss from ART is higher for those who enroll with CD4>500 for the entire treatment time.  This permanent increase is specified by simply removing the "Expiration_Period" from delay to dropout introduced in scenario 2b.
+
+The delay to beginning ART treatment is eliminated after 2020 by positioning the old delay to begin ART (originally triggered by OnART0, now triggered by OnART2) immediately downstream of the "After 2020?" diagnostic introduced in scenario 2b.
+
+Starting in 2020, all loss to follow-up is eliminated between ART staging and ART enrollment.  This is achieved with a small modification of the baseline campaign.  In the baseline campaign, there are four sources of this loss: 
+1) an HIVRandomChoice at the beginning of ARTStaging
+2) an HIVRandomChoice during ARTStaging when waiting for CD4 results
+3) an HIVSigmoidByYearAndSexDiagnostic on linking to pre-ART
+4) an HIVRandomChoice at the beginning of pre-ART.
+To stop all losses, we capture loss from these four sources, and redirect those individuals to a new HIVPiecewiseByYearAndSexDiagnostic.  This diagnostic tests if the simulation year is after 2020.  If it is after 2020, "OnART2" is broadcast, which begins ART without delay.
+
+Note from AB: there was a small mistake in the intervention.pdf diagram -- it had LTFU ending in 6 months, which is not true for this scenario. I fixed it in the PDF using Inkscape, but I did not fix it in the Visio file since I don't have Visio.

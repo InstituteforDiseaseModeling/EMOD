@@ -1,0 +1,191 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{FAB434AD-C0FC-490D-8F18-E05C99B2FD52}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>campaign</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(ProjectDir)..\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(ProjectDir)..\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>ENABLE_TB;IDM_EXPORT;WIN32;_SCL_SECURE_NO_WARNINGS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\boost\boost_1_51_0;..\Dependencies\ComputeClusterPack\Include;..\cajun\Include;..\Eradication\;..\utils\;..\rapidjson\include;..\rapidjson\modp</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalOptions>/D_NEW_CAMPAIGNS_ONLY %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>ENABLE_TB;IDM_EXPORT;WIN32;_SCL_SECURE_NO_WARNINGS;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\boost\boost_1_51_0;..\Dependencies\ComputeClusterPack\Include;..\cajun\Include;..\Eradication\;..\utils\;..\rapidjson\include;..\rapidjson\modp</AdditionalIncludeDirectories>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="EventCoordinator.cpp">
+      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</PreprocessToFile>
+    </ClCompile>
+    <ClCompile Include="InterventionFactory.cpp" />
+    <ClCompile Include="Interventions.cpp" />
+    <ClCompile Include="InterventionValidator.cpp" />
+    <ClCompile Include="NodeSetAll.cpp" />
+    <ClCompile Include="NodeSetFactory.cpp" />
+    <ClCompile Include="NodeSetNodeList.cpp" />
+    <ClCompile Include="NodeSetPolygon.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\cajun\include\CajunIncludes.h" />
+    <ClInclude Include="..\cajun\include\cast.h" />
+    <ClInclude Include="..\cajun\include\elements.h" />
+    <ClInclude Include="..\cajun\include\exception.h" />
+    <ClInclude Include="..\cajun\include\quick.h" />
+    <ClInclude Include="..\cajun\include\reader.h" />
+    <ClInclude Include="..\cajun\include\visitor.h" />
+    <ClInclude Include="..\cajun\include\writer.h" />
+    <ClInclude Include="..\Eradication\Climate.h" />
+    <ClInclude Include="..\Eradication\ClimateByData.h" />
+    <ClInclude Include="..\Eradication\ClimateConstant.h" />
+    <ClInclude Include="..\Eradication\ClimateKoppen.h" />
+    <ClInclude Include="..\Eradication\Contexts.h" />
+    <ClInclude Include="..\Eradication\DllDefs.h" />
+    <ClInclude Include="..\Eradication\DllLoader.h" />
+    <ClInclude Include="..\Eradication\IContagionPopulation.h" />
+    <ClInclude Include="..\Eradication\IInfectable.h" />
+    <ClInclude Include="..\Eradication\IMigrate.h" />
+    <ClInclude Include="..\Eradication\Individual.h" />
+    <ClInclude Include="..\Eradication\IndividualEventContext.h" />
+    <ClInclude Include="..\Eradication\Infection.h" />
+    <ClInclude Include="..\Eradication\InterventionsContainer.h" />
+    <ClInclude Include="..\Eradication\IntranodeTransmissionTypes.h" />
+    <ClInclude Include="..\Eradication\ISimulation.h" />
+    <ClInclude Include="..\Eradication\ITransmissionGroups.h" />
+    <ClInclude Include="..\Eradication\MalariaDrugTypeParameters.h" />
+    <ClInclude Include="..\Eradication\Migration.h" />
+    <ClInclude Include="..\Eradication\Node.h" />
+    <ClInclude Include="..\Eradication\NodeDemographics.h" />
+    <ClInclude Include="..\Eradication\NodeEventContext.h" />
+    <ClInclude Include="..\Eradication\NodeRankMap.h" />
+    <ClInclude Include="..\Eradication\Properties.h" />
+    <ClInclude Include="..\Eradication\Simulation.h" />
+    <ClInclude Include="..\Eradication\SimulationConfig.h" />
+    <ClInclude Include="..\Eradication\SimulationEnums.h" />
+    <ClInclude Include="..\Eradication\SimulationEventContext.h" />
+    <ClInclude Include="..\Eradication\stdafx.h" />
+    <ClInclude Include="..\Eradication\StrainIdentity.h" />
+    <ClInclude Include="..\Eradication\Susceptibility.h" />
+    <ClInclude Include="..\Eradication\TransmissionGroupMembership.h" />
+    <ClInclude Include="..\Eradication\VectorContexts.h" />
+    <ClInclude Include="..\Eradication\VectorEnums.h" />
+    <ClInclude Include="..\Eradication\VectorSpeciesParameters.h" />
+    <ClInclude Include="..\rapidjson\include\rapidjson\document.h" />
+    <ClInclude Include="..\rapidjson\include\rapidjson\filestream.h" />
+    <ClInclude Include="..\rapidjson\include\rapidjson\internal\pow10.h" />
+    <ClInclude Include="..\rapidjson\include\rapidjson\internal\stack.h" />
+    <ClInclude Include="..\rapidjson\include\rapidjson\internal\strfunc.h" />
+    <ClInclude Include="..\rapidjson\include\rapidjson\prettywriter.h" />
+    <ClInclude Include="..\rapidjson\include\rapidjson\rapidjson.h" />
+    <ClInclude Include="..\rapidjson\include\rapidjson\reader.h" />
+    <ClInclude Include="..\rapidjson\include\rapidjson\stringbuffer.h" />
+    <ClInclude Include="..\rapidjson\include\rapidjson\writer.h" />
+    <ClInclude Include="..\rapidjson\modp\modp_numtoa.h" />
+    <ClInclude Include="..\utils\BoostLibWrapper.h" />
+    <ClInclude Include="..\utils\Configuration.h" />
+    <ClInclude Include="..\utils\ConfigurationImpl.h" />
+    <ClInclude Include="..\utils\Configure.h" />
+    <ClInclude Include="..\utils\EnumSupport.h" />
+    <ClInclude Include="..\utils\Environment.h" />
+    <ClInclude Include="..\utils\Exceptions.h" />
+    <ClInclude Include="..\utils\FactorySupport.h" />
+    <ClInclude Include="..\utils\ISupports.h" />
+    <ClInclude Include="..\utils\JsonObject.h" />
+    <ClInclude Include="..\utils\Log.h" />
+    <ClInclude Include="..\utils\Profile.h" />
+    <ClInclude Include="..\utils\RapidJsonImpl.h" />
+    <ClInclude Include="..\utils\Serializer.h" />
+    <ClInclude Include="..\utils\SimpleTypemapRegistration.h" />
+    <ClInclude Include="..\utils\stdafx.h" />
+    <ClInclude Include="..\utils\Sugar.h" />
+    <ClInclude Include="..\utils\suids.hpp" />
+    <ClInclude Include="..\utils\ValidationLog.h" />
+    <ClInclude Include="EventCoordinator.h" />
+    <ClInclude Include="InterventionEnums.h" />
+    <ClInclude Include="InterventionFactory.h" />
+    <ClInclude Include="Interventions.h" />
+    <ClInclude Include="InterventionValidator.h" />
+    <ClInclude Include="NodeSet.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\cajun\include\cast.inl" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,23 @@
+{
+    "Use_Defaults": 1,
+    "Campaign_Name": "HIV 3A: Base Infectivity and Coital Rate", 
+    "Events": [
+        {
+            "Description": "HIV Outbreak",
+            "class": "CampaignEventByYear",
+            "Start_Year": 2021,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1.0,
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Female",
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 1,
+                    "Outbreak_Source": "PrevalenceIncrease"
+                }
+            }
+        }
+    ]
+}

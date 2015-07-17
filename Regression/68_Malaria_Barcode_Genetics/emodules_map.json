@@ -1,0 +1,12 @@
+{
+    "diseases": [], 
+    "interventions": [],
+    "reporter_plugins": [
+        "..\\..\\x64\\Release\\reporter_plugins\\libreporteventcounter.dll",
+        "..\\..\\x64\\Release\\reporter_plugins\\libmalariaimmunity_report_plugin.dll",
+        "..\\..\\x64\\Release\\reporter_plugins\\libmalariasummary_report_plugin.dll",
+        "..\\..\\x64\\Release\\reporter_plugins\\libmalariasurveyJSON_analyzer_plugin.dll",
+        "..\\..\\x64\\Release\\reporter_plugins\\libmalariapatientJSON_report_plugin.dll",
+        "..\\..\\x64\\Release\\reporter_plugins\\libvectorhabitat_report_plugin.dll"
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "Default_Config_Path": "defaults/sti_scenario_default_config.json",
+    "parameters": {
+        "Config_Name": "01A_Welcome_to_STI_SIM",
+        "Simulation_Duration": 100,
+
+        "Enable_Vital_Dynamics": 0,
+
+        "Enable_Demographics_Reporting": 1,
+        "Report_Relationship_Start": 1,
+        "Report_Relationship_End": 1,
+        "Report_Transmission": 1,
+        "Report_Coital_Acts": 1
+    }
+}

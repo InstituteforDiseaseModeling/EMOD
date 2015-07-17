@@ -1,0 +1,24 @@
+{
+    "Metadata": {
+        "DateCreated": "Sun Sep 25 23:19:55 2011", 
+        "Tool": "convertdemog.py", 
+        "Author": "clorton", 
+        "IdReference": "Gridded world grump2.5arcmin", 
+        "NodeCount": 1
+    },
+    "Defaults": {
+        "NodeAttributes": {
+            "BirthRate": 0.777
+        },
+        "IndividualAttributes": {
+            "AgeDistributionFlag": 3, 
+            "AgeDistribution1": 0.8, 
+            "AgeDistribution2": 0.1
+        }
+    },
+    "Nodes": [
+        {
+            "NodeID" : 340461477
+        }
+    ]
+}

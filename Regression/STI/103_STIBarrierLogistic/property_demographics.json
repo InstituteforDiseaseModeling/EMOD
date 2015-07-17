@@ -1,0 +1,30 @@
+{
+    "Metadata": {
+        "Author": "cwiswell", 
+        "DateCreated": "Mon Apr 13 14:39:00 2015", 
+        "IdReference": "SampleContent", 
+        "NodeCount": 1, 
+        "Tool": "demographics_to_overlay.py"
+    }, 
+    "Defaults": {
+        "IndividualProperties": [
+            {
+                "Initial_Distribution": [
+                    0.04, 0.48, 0.48
+                ], 
+                "Property": "Place", 
+                "TransmissionMatrix": {}, 
+                "Transitions": [], 
+                "Values": [ "Travel", "Urban", "Rural"]
+            }
+        ],
+        "NodeAttributes": {
+            "InitialPopulation": 1000
+        }
+    }, 
+    "Nodes": [
+        {
+            "NodeID": 1
+        }
+    ]
+}

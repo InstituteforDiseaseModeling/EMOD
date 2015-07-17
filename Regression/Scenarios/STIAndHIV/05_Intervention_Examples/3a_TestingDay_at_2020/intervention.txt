@@ -1,0 +1,8 @@
+Specification:
+--------------
+Testing day. On Jan 1, 2020, a random 20% of the population receives an HIV test, resulting in a 10% probability of presenting to a clinic for staging. Other testing behavior continues as before, including voluntary testing and counseling.
+
+
+Implementation Notes:
+---------------------
+On Jan 1, 2020, 20% of all reachable individuals are given an HIVRapidHIVDiagnostic.  Those who are positive are given an HIVRandomChoice diagnostic, where 10% broadcast ARTStaging2.  The other 90% broadcast NoTrigger.

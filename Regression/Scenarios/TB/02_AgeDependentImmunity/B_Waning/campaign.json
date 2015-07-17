@@ -1,0 +1,32 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.01, 
+                "Include_Arrivals": 0, 
+                "Include_Departures": 0, 
+                "Intervention_Config": {
+                    "Antigen": 0, 
+                    "Genome": 0, 
+                    "Outbreak_Source": "PrevalenceIncrease", 
+                    "class": "OutbreakIndividual"
+                }, 
+                "Number_Distributions": 50, 
+                "Number_Repetitions": 2, 
+                "Property_Restrictions": [], 
+                "Target_Age_Max": 15, 
+                "Target_Age_Min": 1, 
+                "Target_Demographic": "ExplicitAgeRanges", 
+                "Timesteps_Between_Repetitions": 1095, 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Event_Name": "Outbreak", 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 1, 
+            "class": "CampaignEvent"
+        }
+    ], 
+    "Use_Defaults": 1
+}

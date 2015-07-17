@@ -1,0 +1,23 @@
+{
+    "tests": [
+        { "path": "Scenarios/TB/01_BasicModel/A_SEIR" },
+        { "path": "Scenarios/TB/01_BasicModel/B_Presentation" },
+        { "path": "Scenarios/TB/01_BasicModel/C_Presymptomatic" },
+        { "path": "Scenarios/TB/01_BasicModel/D_Progression" },
+        { "path": "Scenarios/TB/02_AgeDependentImmunity/A_Lifelong" },
+        { "path": "Scenarios/TB/02_AgeDependentImmunity/B_Waning" },
+        { "path": "Scenarios/TB/02_AgeDependentImmunity/C_Vaccines" },
+        { "path": "Scenarios/TB/03_HealthSystems/A_MultipleSystems" },
+        { "path": "Scenarios/TB/03_HealthSystems/B_NoneToPublic" },
+        { "path": "Scenarios/TB/03_HealthSystems/C_PrivateToPublic" },
+        { "path": "Scenarios/TB/03_HealthSystems/D_SystemImprovement" },
+        { "path": "Scenarios/TB/04_CascadeOfCare/A_PassiveCaseFinding" },
+        { "path": "Scenarios/TB/04_CascadeOfCare/B_ACF" },
+        { "path": "Scenarios/TB/05_MDR/A_Acquired" },
+        { "path": "Scenarios/TB/05_MDR/B_Transmitted" },
+        { "path": "Scenarios/TB/05_MDR/C_IneffectiveTreatment" },
+        { "path": "Scenarios/TB/05_MDR/D_SecondLineDrugs" },
+        { "path": "Scenarios/TB/06_PopulationBurnIn/A_SteadyState" },
+        { "path": "Scenarios/TB/06_PopulationBurnIn/B_PrivateToPublic" }
+    ]
+}

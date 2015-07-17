@@ -1,0 +1,139 @@
+{
+    "Use_Defaults": 1,
+    "Campaign_Name": "DrawBlood validation", 
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Event_Name": "starting on day 8, give everyone a repeated 2-day delayed intervention", 
+            "Start_Day": 8,
+
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            }, 
+
+            "Event_Coordinator_Config": 
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config":
+                {
+                    "class": "HIVDelayedIntervention",
+
+                    "Abort_States"  : [ "CascadeState_1", "CascadeState_2", "CascadeState_3" ],
+                    "Cascade_State" : "CascadeState_4",
+                    "Single_Use"    : 1,
+
+                    "Delay_Distribution": "FIXED_DURATION",
+                    "Delay_Period": 2,
+
+                    "Broadcast_Event": "HIVNeedsHIVTest"
+                }
+            }
+        },
+
+        {
+            "class": "CampaignEvent",
+            "Event_Name": "DrawBlood event", 
+            "Start_Day": 1,
+
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            }, 
+
+            "Event_Coordinator_Config": 
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Event_Name": "DrawBlood constant test, broadcasts HIVPositiveHIVTest",
+                "Demographic_Coverage": 1,
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "HIVNeedsHIVTest",
+
+                    "Demographic_Coverage": 1,
+                    "Duration": 14600,
+
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVDrawBlood",
+                        "Positive_Diagnosis_Event" : "HIVDiagnosedEligibleForART",
+                        "Base_Specificity"         : 0,
+                        "Base_Sensitivity"         : 0,
+                        "Cost_To_Consumer"         : 0,
+                        "Days_To_Diagnosis"        : 5,
+                        "Abort_States"             : [ "CascadeState_1", "CascadeState_2", "CascadeState_3" ],
+                        "Cascade_State"            : "CascadeState_4"
+                    }
+                }
+            }
+        },
+
+
+        {
+            "class": "CampaignEvent",
+            "Event_Name": "OnART1-triggered piecewise event", 
+            "Start_Day": 1,
+
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            }, 
+
+            "Event_Coordinator_Config": 
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Event_Name": "DrawBlood constant test, broadcasts HIVPositiveHIVTest",
+                "Demographic_Coverage": 1,
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "HIVDiagnosedEligibleForART",
+
+                    "Demographic_Coverage": 1,
+                    "Duration": 14600,
+
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class"                    : "HIVARTStagingByCD4Diagnostic",
+                        "Positive_Diagnosis_Event" : "HIVPositiveHIVTest",
+                        "Base_Specificity"         : 0,
+                        "Base_Sensitivity"         : 0,
+                        "Cost_To_Consumer"         : 10,
+                        "Days_To_Diagnosis"        : 5,
+                        "Abort_States"             : [ "CascadeState_1", "CascadeState_2", "CascadeState_3" ],
+                        "Cascade_State"            : "CascadeState_4",
+                        "Individual_Property_Active_TB_Key" : "HasActiveTB",
+                        "Individual_Property_Active_TB_Value" : "YES",
+                        "Threshold" :        {
+                            "Times": [
+                                1990, 1995, 2000, 2005
+                            ],
+                            "Values": [
+                                500, 400, 350, 300
+                            ]
+                        },
+                        "If_Active_TB" :     {
+                            "Times": [
+                                1990, 1995, 2000, 2005
+                            ],
+                            "Values": [
+                                800, 600, 550, 500
+                            ]
+                        },
+                        "If_Pregnant" :
+                        {
+                            "Times": [
+                                1990, 1995, 2000, 2005
+                            ],
+                            "Values": [
+                                600, 500, 450, 400
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

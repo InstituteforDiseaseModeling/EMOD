@@ -1,0 +1,1 @@
+// This is a dummy stdafx.h to get cajun source compiling on both linux and windows.

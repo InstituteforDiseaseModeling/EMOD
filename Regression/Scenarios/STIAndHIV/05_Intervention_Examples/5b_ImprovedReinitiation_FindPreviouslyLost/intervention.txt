@@ -1,0 +1,7 @@
+Specification:
+--------------
+Starting on Jan 1, 2020, all those who have previously been lost to follow-up from ART re-initiate ART at an exponentially-distributed rate of once per TBD years.
+
+Implementation Notes:
+---------------------
+A new HIVPiecewiseByYearAndSexDiagnostic is triggered along with the old delay to ART dropout by "OnART3".  The diagnostic tests if the year is after 2020.  On a positive diagnostic (after 2020), individuals are pushed into an exponential delay to re-initiation (similar to scenario 7a).  On a negative diagnostic (before 2020), individuals are pushed into a 1-year delay.  After the 1-year delay, individuals are shunted back to the "After 2020?" diagnostic.

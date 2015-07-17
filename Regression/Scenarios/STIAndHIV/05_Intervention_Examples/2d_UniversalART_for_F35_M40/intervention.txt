@@ -1,0 +1,8 @@
+Specification:
+--------------
+Starting on Jan 1, 2020, males under age 40 and females age 35 are eligible to initiate ART. Done with HIVARTStagingCD4AgnosticDiagnostic, but requires setting "Adult_Treatment_Age" to 35 and 40 years for females and males respectively.
+
+
+Implementation Notes:
+---------------------
+The after a blood draw, an HIVPiecewiseByYearAndSexDiagnostic queries if the simulation time is after 2020.  If it is before 2020, the ART staging continues with an HIVCD4AgnosticDiagnostic.  If it is after 2020, the event "ARTStaging8" is broadcast.  Using the "ExplicitGender" target demographic, males and females are given two different age diagnostics that are each triggered by the "ARTStaging8" broadcast.  Males are given an AgeDiagnostic that tests for age under 40 years, and females are given an AgeDiagnostic that tests for age under 35.  Males under 40 and females under 35 are then sent to ART linking (broadcast "LinkingToART0"), and all other individuals (males over 40 and females over 35) continue ART staging with an HIVCD4AgnosticDiagnostic (as before 2020).

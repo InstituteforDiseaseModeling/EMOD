@@ -1,0 +1,32 @@
+{
+     "CLIMATE": {
+          "FILENAMES": {
+               "Air_Temperature_Filename": "Namawala_single_node_air_temperature_daily.bin", 
+               "Koppen_Filename": "Mad_2_5arcminute_koppen.dat", 
+               "Land_Temperature_Filename": "Namawala_single_node_land_temperature_daily.bin", 
+               "Rainfall_Filename": "Namawala_single_node_rainfall_daily.bin", 
+               "Relative_Humidity_Filename": "Namawala_single_node_relative_humidity_daily.bin"
+          }
+     }, 
+     "DEMOGRAPHICS": {
+          "Demographics_Filename": "Namawala_single_node_demographics.compiled.json;Namawala_single_node_demographics_complex_mortality.compiled.json;Namawala_single_node_demographics.immunity.compiled.json",
+          "Enable_Birth": 1,
+          "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER", 
+          "Enable_Immunity_Initialization_Distribution": 1
+     },
+     "Default_Config_Path": "defaults\\malaria_default_config.json", 
+     "MALARIA": {
+          "Antibody_Memory_Level": 0.3, 
+          "Antigen_Switch_Rate": 5e-09, 
+          "Base_Gametocyte_Production_Rate": 0.1, 
+          "Falciparum_MSP_Variants": 100, 
+          "Falciparum_Nonspecific_Types": 20, 
+          "Falciparum_PfEMP1_Variants": 1000
+     }, 
+     "PRIMARY": {
+          "Config_Name": "111_Namawala_Immune_Initialization", 
+          "Geography": "Namawala", 
+          "Run_Number": 111, 
+          "Simulation_Duration": 1460
+     }
+}

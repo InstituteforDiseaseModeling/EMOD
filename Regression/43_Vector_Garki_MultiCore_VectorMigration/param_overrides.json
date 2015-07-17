@@ -1,0 +1,78 @@
+{
+     "Default_Config_Path": "defaults/vector_default_config.json", 
+     "parameters": {
+          "CLIMATE": {
+               "AIR": {
+                    "Air_Temperature_Filename": "Garki_30arcsec_air_temperature_daily.bin"
+               }, 
+               "HUMIDITY": {
+                    "Relative_Humidity_Filename": "Garki_30arcsec_relative_humidity_daily.bin"
+               }, 
+               "LAND_TEMP": {
+                    "Land_Temperature_Filename": "Garki_30arcsec_land_temperature_daily.bin"
+               }, 
+               "RAINFALL": {
+                    "Rainfall_Filename": "Garki_30arcsec_rainfall_daily.bin"
+               }
+          }, 
+          "DEMOGRAPHICS": {
+               "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE", 
+               "Demographics_Filename": "Garki_30arcsec_demographics.compiled.json", 
+               "MORTALITY": {
+                    "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF"
+               }, 
+               "Population_Scale_Type": "USE_INPUT_FILE", 
+               "SAMPLING": {
+                    "Individual_Sampling_Type": "ADAPTED_SAMPLING_BY_POPULATION_SIZE"
+               }
+          }, 
+          "DISEASE": {
+               "INCUBATION": {
+                    "Base_Incubation_Period": 20
+               }
+          }, 
+          "HPC": {
+               "LB": {
+                    "Load_Balance_Filename": "Garki_30arcsec_load_balancing_8procs.bin"
+               }, 
+               "Num_Cores": 8
+          }, 
+          "MIGRATION": {
+               "Migration_Model": "FIXED_RATE_MIGRATION", 
+               "Migration_Pattern": "WAYPOINTS_HOME", 
+               "Enable_Migration_Heterogeneity" : 0,
+               "Roundtrip_Waypoints": 10,
+               "AIR" : {
+                    "Enable_Air_Migration" : 0,
+                    "Air_Migration_Filename" :""
+               },
+               "LOCAL": {
+                    "Enable_Local_Migration": 1, 
+                    "Local_Migration_Filename": "Garki_30arcsec_local_migration.bin"
+               }, 
+               "REGIONAL": {
+                    "Enable_Regional_Migration": 0, 
+                    "Regional_Migration_Filename": ""
+               }, 
+               "SEA" : {
+                    "Enable_Sea_Migration" : 0,
+                    "Sea_Migration_Filename" :""
+               }
+          }, 
+          "PRIMARY": {
+               "Config_Name": "43_Vector_Garki_MultiCore_VectorMigration", 
+               "Geography": "Garki", 
+               "Node_Grid_Size": 0.009, 
+               "Run_Number": 43, 
+               "Simulation_Duration": 1460, 
+               "Start_Time": 180
+          }, 
+          "VECTOR": {
+               "Enable_Vector_Migration": 1, 
+               "Enable_Vector_Migration_Local": 1, 
+               "Mosquito_Weight": 10, 
+               "Vector_Sampling_Type": "SAMPLE_IND_VECTORS"
+          }, 
+          "logLevel_VectorPopulation": "WARNING"
+     }
+}

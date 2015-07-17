@@ -1,0 +1,50 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.7,
+                "Intervention_Config": {
+                    "Bednet_Type": "ITN",
+                    "Blocking_Rate": 0.9,
+                    "Cost_To_Consumer": 3.75,
+                    "Durability_Time_Profile": "DECAYDURABILITY",
+                    "Killing_Rate": 0.6,
+                    "Primary_Decay_Time_Constant": 1460,
+                    "Secondary_Decay_Time_Constant": 730,
+                    "class": "SimpleBednet"
+                },
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1460,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.8,
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 10.0,
+                    "Durability_Time_Profile": "BOXDURABILITY",
+                    "Primary_Decay_Time_Constant": 730,
+                    "Reduced_Acquire": 0.9,
+                    "Reduced_Transmit": 0,
+                    "Secondary_Decay_Time_Constant": 3650,
+                    "Vaccine_Take": 1,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "class": "SimpleVaccine"
+                },
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1460,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

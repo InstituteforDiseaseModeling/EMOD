@@ -1,0 +1,45 @@
+{
+    "Campaign_Name": "4b_ImprovedRetention_To_BloodDraw", 
+    "Default_Campaign_Path": "defaults/hiv_default_campaign.json",
+    "Use_Defaults": 1,
+    "Events":
+    [
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "ARTStaging: state 5 (random choice: Return for CD4 or LTFU)",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "ARTStaging5",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic",
+                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART" ],
+                        "Cascade_State": "ARTStaging",
+                        "Days_To_Diagnosis": 0,
+                        "Default_Value": 0,
+
+                        "Time_Value_Map":
+                        {
+                            "Times": [  1990,    2020 ],
+                            "Values": [ 0.85,    0.9 ]
+                        },
+                        "Interpolation_Order": 0,
+
+                        "Event_Or_Config": "Event",
+                        "Positive_Diagnosis_Event": "ARTStaging6",
+                        "Negative_Diagnosis_Event": "HCTUptakePostDebut9"
+                    }
+                }
+            }
+        }
+    ]
+}

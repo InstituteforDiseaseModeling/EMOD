@@ -1,0 +1,8 @@
+Specification:
+--------------
+Baseline cascade of care, incorporating HCT, symptomatic testing, and testing on ANC, ART staging, pre-ART, ART, and ART dropout, allowing for re-enrollment as well as permanent loss to care.
+
+
+Implementation Notes:
+---------------------
+The cascade specified by this campaign serves as the baseline for all other interventions in this directory.

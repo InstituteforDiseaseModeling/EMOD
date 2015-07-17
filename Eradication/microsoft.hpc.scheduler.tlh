@@ -1,0 +1,3838 @@
+﻿// Created by Microsoft (R) C/C++ Compiler Version 10.00.40219.01 (9a61d873).
+//
+// c:\src\eradication\trunk\eradication\x64\release\microsoft.hpc.scheduler.tlh
+//
+// C++ source equivalent of Win32 type library Microsoft.Hpc.Scheduler.tlb
+// compiler-generated file created 03/21/13 at 15:28:16 - DO NOT EDIT!
+
+//
+// Cross-referenced type libraries:
+//
+//  #import "C:\Windows\Microsoft.NET\Framework\v2.0.50727\mscorlib.tlb"
+//  #import "C:\Program Files\Microsoft HPC Pack 2008 R2\Bin\Microsoft.Hpc.Scheduler.Properties.tlb"
+//
+
+#pragma once
+#pragma pack(push, 8)
+
+#include <comdef.h>
+
+//
+// Forward references and typedefs
+//
+
+struct __declspec(uuid("c45d10a1-54e8-420b-a052-719d47ec7c16"))
+/* LIBID */ __Microsoft_Hpc_Scheduler;
+enum ConnectionEventCode;
+struct __declspec(uuid("36417eda-62a1-4f0c-bd09-b7c1a7fc8f51"))
+/* dual interface */ IConnectionEventArg;
+struct /* coclass */ ConnectionEventArg;
+struct __declspec(uuid("1e892b76-ac3f-4732-9735-7d7b246d9e31"))
+/* dual interface */ ISchedulerCollection;
+struct __declspec(uuid("ef89423b-f79b-466f-8127-bdab910ae6c1"))
+/* dual interface */ IFilterCollection;
+struct /* coclass */ FilterCollection;
+struct __declspec(uuid("bf495dab-3237-4f58-babe-ed51217bd665"))
+/* dual interface */ IIntCollection;
+struct /* coclass */ IntCollection;
+struct __declspec(uuid("9348e87e-5917-48ce-9889-d666ea4e9937"))
+/* dual interface */ ISchedulerJobV2;
+struct __declspec(uuid("0aea8629-72fb-4afa-ae88-419273d3db50"))
+/* dual interface */ ISchedulerJobV3;
+struct __declspec(uuid("d7449a23-d29d-4414-b72d-c582dbabda14"))
+/* dual interface */ ISchedulerJobV3SP1;
+struct __declspec(uuid("065be3ad-7981-49c2-b7e4-b34e3e01f384"))
+/* dual interface */ ISchedulerJobV3SP2;
+struct __declspec(uuid("7b713f15-8de0-45cc-8d8c-f090b887616b"))
+/* dual interface */ ISchedulerJob;
+struct __declspec(uuid("07c12c04-fb39-437f-b242-691b802e30a3"))
+/* dual interface */ ISchedulerNodeV2;
+struct __declspec(uuid("f3b0f4d7-fae3-429d-b75f-10278a3bec07"))
+/* dual interface */ ISchedulerNodeV3;
+struct __declspec(uuid("18e9ee1d-d223-46e1-8c58-e00f7d1d2ed4"))
+/* dual interface */ ISchedulerNodeV3SP1;
+struct __declspec(uuid("df63e52f-3d77-467c-848f-c96cd95cd0d9"))
+/* dual interface */ ISchedulerNode;
+struct __declspec(uuid("78d5f3f4-3562-4975-aaf0-8ec1cb1541f6"))
+/* dual interface */ ISchedulerPool;
+struct __declspec(uuid("8a16a4a9-95a9-40cb-9027-c84bb27646dc"))
+/* dual interface */ ISchedulerTaskV2;
+struct __declspec(uuid("ef2125b9-9c03-4948-b4c1-859c9c94cdd4"))
+/* dual interface */ ISchedulerTaskV3;
+struct __declspec(uuid("9b7df4b9-18ed-42b0-8364-b1f7a034d492"))
+/* dual interface */ ISchedulerTask;
+struct __declspec(uuid("d0ed926a-6e0c-11dc-a924-abc756d89593"))
+/* dual interface */ ISchedulerV2;
+struct /* coclass */ JobTemplateInfo;
+struct __declspec(uuid("386c7c44-aa54-4683-b9c0-3653163be130"))
+/* dual interface */ ISchedulerV3;
+struct __declspec(uuid("1b4e1239-5bf8-4447-98b7-826943d15fa5"))
+/* dual interface */ ISchedulerV3SP2;
+struct __declspec(uuid("6c92f1b5-8cf0-444b-94c7-f1ef8d89f023"))
+/* dual interface */ ISchedulerV3SP3;
+struct __declspec(uuid("2b2e7861-777d-4c00-9cae-38f83e1c7b53"))
+/* dual interface */ IScheduler;
+struct __declspec(uuid("fb04ab87-fc05-4374-8dae-59d84633379b"))
+/* dual interface */ INameValue;
+struct /* coclass */ NameValue;
+struct __declspec(uuid("bb14b74b-0bb7-4a01-8e05-a988d636b5ea"))
+/* dual interface */ INameValueCollection;
+struct /* coclass */ NameValueCollection;
+enum PropId;
+struct __declspec(uuid("fb6d2a92-3c48-4237-b300-fc3e31c2facc"))
+/* dual interface */ IPropertyIdCollection;
+struct /* coclass */ PropertyIdCollection;
+struct /* coclass */ Scheduler;
+enum SchedulerCoreState;
+struct __declspec(uuid("d13525e7-e7e9-4fcb-b97c-2ffaa3f09ccf"))
+/* dual interface */ ISchedulerCore;
+struct /* coclass */ SchedulerCore;
+struct __declspec(uuid("1fd3409e-4b7c-4eeb-9bd9-867238eb191f"))
+/* dual interface */ ISchedulerCounters;
+struct /* coclass */ SchedulerCounters;
+struct /* coclass */ SchedulerJob;
+struct __declspec(uuid("6d3f0397-e8ac-4369-a048-e70286e575b8"))
+/* dual interface */ ISchedulerJobCounters;
+struct /* coclass */ SchedulerJobCounters;
+struct __declspec(uuid("337c8713-e312-4c69-b023-dec2dd6b381f"))
+/* dual interface */ IJobStateEventArg;
+struct /* coclass */ JobStateEventArg;
+struct __declspec(uuid("70d8316e-6dab-4e99-af3b-b39fb9afdc3e"))
+/* dual interface */ ITaskStateEventArg;
+struct /* coclass */ TaskStateEventArg;
+struct __declspec(uuid("47956563-23c2-4270-80c8-91a3b369acb7"))
+/* dispinterface */ ISchedulerJobEvents;
+struct /* coclass */ SchedulerNode;
+struct __declspec(uuid("4f4af2fe-4ee2-4a7f-b546-398f6baf40ca"))
+/* dual interface */ ISchedulerNodeCounters;
+struct /* coclass */ SchedulerNodeCounters;
+struct __declspec(uuid("36f87816-1fd7-48d0-b7e7-3fc5920e3ce1"))
+/* dual interface */ INodeStateEventArg;
+struct /* coclass */ NodeStateEventArg;
+struct __declspec(uuid("8644eb2d-b177-43f7-8bb5-53c7d3ecb605"))
+/* dispinterface */ ISchedulerNodeEvents;
+struct __declspec(uuid("8a2c30c9-a2b4-4a27-81ca-25089dafd5ad"))
+/* dual interface */ INodeReachableEventArg;
+struct /* coclass */ NodeReachableEventArg;
+struct __declspec(uuid("dfae8bed-89b4-4536-8a2a-208c84cdf87a"))
+/* dispinterface */ ISchedulerNodeReachableEvents;
+struct /* coclass */ SchedulerPool;
+struct /* coclass */ SchedulerTask;
+struct __declspec(uuid("985d81b2-64fd-4e98-8270-0cb99155199f"))
+/* dual interface */ ISchedulerTaskCounters;
+struct /* coclass */ SchedulerTaskCounters;
+struct __declspec(uuid("b8579c31-91f3-441c-8bb9-ac5e4e5d1200"))
+/* dual interface */ IServerVersion;
+struct /* coclass */ ServerVersion;
+struct __declspec(uuid("3f5253c6-64a1-4148-aa2c-13aa66040a80"))
+/* dual interface */ ISortCollection;
+struct /* coclass */ SortCollection;
+struct __declspec(uuid("0449fa77-10bd-4113-9e3e-2dc712eba36c"))
+/* dual interface */ IStringCollection;
+struct /* coclass */ StringCollection;
+struct __declspec(uuid("03811174-809c-4143-b44c-bbaa1ad8de67"))
+/* dual interface */ ICommandInfo;
+struct /* coclass */ CommandInfo;
+struct __declspec(uuid("f8d669bc-0579-41b9-ac26-384c3c8e06f8"))
+/* dual interface */ IRemoteCommand;
+struct /* coclass */ RemoteCommand;
+struct __declspec(uuid("2db7b40d-ae72-4b01-8846-82fb252b9e82"))
+/* dual interface */ ICommandTaskStateEventArg;
+struct /* coclass */ CommandTaskStateEventArg;
+enum CommandOutputType;
+struct __declspec(uuid("32dca0f1-8ab7-4496-93be-391defced2fd"))
+/* dual interface */ ICommandOutputEventArg;
+struct /* coclass */ CommandOutputEventArg;
+struct __declspec(uuid("5a570dc3-8ec6-42a3-8dbb-4da8d98f39d0"))
+/* dual interface */ ICommandRawOutputEventArg;
+struct /* coclass */ CommandRawOutputEventArg;
+struct __declspec(uuid("9ce35cdf-a433-4e02-b226-5d2c2143adbd"))
+/* dispinterface */ IRemoteCommandEvents;
+struct __declspec(uuid("66c6b7cd-a299-3911-b5ad-549c923210f4"))
+/* dual interface */ _ConnectionEventArg;
+struct __declspec(uuid("31903496-53e6-384c-a25e-2e631850b46b"))
+/* dual interface */ _JobTemplateInfo;
+
+//
+// Smart pointer typedef declarations
+//
+
+_COM_SMARTPTR_TYPEDEF(IConnectionEventArg, __uuidof(IConnectionEventArg));
+_COM_SMARTPTR_TYPEDEF(ISchedulerCollection, __uuidof(ISchedulerCollection));
+_COM_SMARTPTR_TYPEDEF(IIntCollection, __uuidof(IIntCollection));
+_COM_SMARTPTR_TYPEDEF(ISchedulerPool, __uuidof(ISchedulerPool));
+_COM_SMARTPTR_TYPEDEF(INameValue, __uuidof(INameValue));
+_COM_SMARTPTR_TYPEDEF(INameValueCollection, __uuidof(INameValueCollection));
+_COM_SMARTPTR_TYPEDEF(IFilterCollection, __uuidof(IFilterCollection));
+_COM_SMARTPTR_TYPEDEF(IPropertyIdCollection, __uuidof(IPropertyIdCollection));
+_COM_SMARTPTR_TYPEDEF(ISchedulerCore, __uuidof(ISchedulerCore));
+_COM_SMARTPTR_TYPEDEF(ISchedulerCounters, __uuidof(ISchedulerCounters));
+_COM_SMARTPTR_TYPEDEF(ISchedulerJobCounters, __uuidof(ISchedulerJobCounters));
+_COM_SMARTPTR_TYPEDEF(IJobStateEventArg, __uuidof(IJobStateEventArg));
+_COM_SMARTPTR_TYPEDEF(ITaskStateEventArg, __uuidof(ITaskStateEventArg));
+_COM_SMARTPTR_TYPEDEF(ISchedulerJobEvents, __uuidof(ISchedulerJobEvents));
+_COM_SMARTPTR_TYPEDEF(ISchedulerNodeCounters, __uuidof(ISchedulerNodeCounters));
+_COM_SMARTPTR_TYPEDEF(INodeStateEventArg, __uuidof(INodeStateEventArg));
+_COM_SMARTPTR_TYPEDEF(ISchedulerNodeEvents, __uuidof(ISchedulerNodeEvents));
+_COM_SMARTPTR_TYPEDEF(INodeReachableEventArg, __uuidof(INodeReachableEventArg));
+_COM_SMARTPTR_TYPEDEF(ISchedulerNodeReachableEvents, __uuidof(ISchedulerNodeReachableEvents));
+_COM_SMARTPTR_TYPEDEF(ISchedulerTaskCounters, __uuidof(ISchedulerTaskCounters));
+_COM_SMARTPTR_TYPEDEF(IServerVersion, __uuidof(IServerVersion));
+_COM_SMARTPTR_TYPEDEF(ISortCollection, __uuidof(ISortCollection));
+_COM_SMARTPTR_TYPEDEF(IStringCollection, __uuidof(IStringCollection));
+_COM_SMARTPTR_TYPEDEF(ISchedulerNodeV2, __uuidof(ISchedulerNodeV2));
+_COM_SMARTPTR_TYPEDEF(ISchedulerNodeV3, __uuidof(ISchedulerNodeV3));
+_COM_SMARTPTR_TYPEDEF(ISchedulerNodeV3SP1, __uuidof(ISchedulerNodeV3SP1));
+_COM_SMARTPTR_TYPEDEF(ISchedulerNode, __uuidof(ISchedulerNode));
+_COM_SMARTPTR_TYPEDEF(ISchedulerTaskV2, __uuidof(ISchedulerTaskV2));
+_COM_SMARTPTR_TYPEDEF(ISchedulerTaskV3, __uuidof(ISchedulerTaskV3));
+_COM_SMARTPTR_TYPEDEF(ISchedulerTask, __uuidof(ISchedulerTask));
+_COM_SMARTPTR_TYPEDEF(ISchedulerJobV2, __uuidof(ISchedulerJobV2));
+_COM_SMARTPTR_TYPEDEF(ISchedulerJobV3, __uuidof(ISchedulerJobV3));
+_COM_SMARTPTR_TYPEDEF(ISchedulerJobV3SP1, __uuidof(ISchedulerJobV3SP1));
+_COM_SMARTPTR_TYPEDEF(ISchedulerJobV3SP2, __uuidof(ISchedulerJobV3SP2));
+_COM_SMARTPTR_TYPEDEF(ISchedulerJob, __uuidof(ISchedulerJob));
+_COM_SMARTPTR_TYPEDEF(ICommandInfo, __uuidof(ICommandInfo));
+_COM_SMARTPTR_TYPEDEF(IRemoteCommand, __uuidof(IRemoteCommand));
+_COM_SMARTPTR_TYPEDEF(ISchedulerV2, __uuidof(ISchedulerV2));
+_COM_SMARTPTR_TYPEDEF(ICommandTaskStateEventArg, __uuidof(ICommandTaskStateEventArg));
+_COM_SMARTPTR_TYPEDEF(ICommandOutputEventArg, __uuidof(ICommandOutputEventArg));
+_COM_SMARTPTR_TYPEDEF(ICommandRawOutputEventArg, __uuidof(ICommandRawOutputEventArg));
+_COM_SMARTPTR_TYPEDEF(IRemoteCommandEvents, __uuidof(IRemoteCommandEvents));
+_COM_SMARTPTR_TYPEDEF(_ConnectionEventArg, __uuidof(_ConnectionEventArg));
+_COM_SMARTPTR_TYPEDEF(_JobTemplateInfo, __uuidof(_JobTemplateInfo));
+_COM_SMARTPTR_TYPEDEF(ISchedulerV3, __uuidof(ISchedulerV3));
+_COM_SMARTPTR_TYPEDEF(ISchedulerV3SP2, __uuidof(ISchedulerV3SP2));
+_COM_SMARTPTR_TYPEDEF(ISchedulerV3SP3, __uuidof(ISchedulerV3SP3));
+_COM_SMARTPTR_TYPEDEF(IScheduler, __uuidof(IScheduler));
+
+//
+// Type library items
+//
+
+enum __declspec(uuid("a46f67a3-9c6e-434b-a02a-31765be668b1"))
+ConnectionEventCode
+{
+    ConnectionEventCode_None = 0,
+    ConnectionEventCode_Connect = 1,
+    ConnectionEventCode_StoreDisconnect = 2,
+    ConnectionEventCode_StoreReconnect = 3,
+    ConnectionEventCode_Exception = 4,
+    ConnectionEventCode_EventDisconnect = 5,
+    ConnectionEventCode_EventReconnect = 6
+};
+
+struct __declspec(uuid("36417eda-62a1-4f0c-bd09-b7c1a7fc8f51"))
+IConnectionEventArg : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_Code (
+        /*[out,retval]*/ enum ConnectionEventCode * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Exception (
+        /*[out,retval]*/ struct _Exception * * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("36966996-ccf3-460c-8adf-8958964ec5fc"))
+ConnectionEventArg;
+    // [ default ] interface _ConnectionEventArg
+    // interface _Object
+    // interface IConnectionEventArg
+
+struct __declspec(uuid("1e892b76-ac3f-4732-9735-7d7b246d9e31"))
+ISchedulerCollection : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_Count (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetEnumerator (
+        /*[out,retval]*/ struct IEnumVARIANT * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Item (
+        /*[in]*/ long index,
+        /*[out,retval]*/ VARIANT * pRetVal ) = 0;
+      virtual HRESULT __stdcall Add (
+        /*[in]*/ VARIANT Item ) = 0;
+      virtual HRESULT __stdcall Remove (
+        /*[in]*/ VARIANT Item,
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall Contains (
+        /*[in]*/ VARIANT Item,
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall Clear ( ) = 0;
+};
+
+struct __declspec(uuid("392f3fe6-cc93-4f88-a692-735875ccba97"))
+FilterCollection;
+    // interface _Object
+    // interface IEnumerable
+    // interface ISchedulerCollection
+    // interface ICollection
+    // [ default ] interface IFilterCollection
+
+struct __declspec(uuid("bf495dab-3237-4f58-babe-ed51217bd665"))
+IIntCollection : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_Count (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetEnumerator (
+        /*[out,retval]*/ struct IEnumVARIANT * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Item (
+        /*[in]*/ long index,
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall Clear ( ) = 0;
+      virtual HRESULT __stdcall Add (
+        /*[in]*/ long Item ) = 0;
+      virtual HRESULT __stdcall Remove (
+        /*[in]*/ long Item,
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall Contains (
+        /*[in]*/ long Item,
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("46fe2eba-f456-4284-a3bd-d3fdf6521012"))
+IntCollection;
+    // interface _Object
+    // interface IEnumerable
+    // interface ISchedulerCollection
+    // interface ICollection
+    // [ default ] interface IIntCollection
+
+struct __declspec(uuid("78d5f3f4-3562-4975-aaf0-8ec1cb1541f6"))
+ISchedulerPool : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall Refresh ( ) = 0;
+      virtual HRESULT __stdcall Commit ( ) = 0;
+      virtual HRESULT __stdcall get_Name (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Id (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Weight (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Weight (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Guarantee (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CurrentAllocation (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("61caf097-8566-49d2-ac56-4b4fdad531b3"))
+JobTemplateInfo;
+    // [ default ] interface _JobTemplateInfo
+    // interface _Object
+
+struct __declspec(uuid("fb04ab87-fc05-4374-8dae-59d84633379b"))
+INameValue : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_Name (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Value (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("6dc2d910-42db-4c6a-b4ec-49a66761f739"))
+NameValue;
+    // interface _Object
+    // [ default ] interface INameValue
+
+struct __declspec(uuid("bb14b74b-0bb7-4a01-8e05-a988d636b5ea"))
+INameValueCollection : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall AddNameValue (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall get_Count (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetEnumerator (
+        /*[out,retval]*/ struct IEnumVARIANT * * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("456de413-6e74-49bf-8334-dafb7d81d473"))
+NameValueCollection;
+    // interface _Object
+    // [ default ] interface INameValueCollection
+    // interface ISchedulerCollection
+    // interface ICollection
+    // interface IEnumerable
+
+enum __declspec(uuid("99994f5f-6106-4142-8c31-afcbc8c0a326"))
+PropId
+{
+    PropId_Job_Name = 2,
+    PropId_Job_Owner = 1003,
+    PropId_Job_UserName = 1004,
+    PropId_Job_Priority = 1017,
+    PropId_Job_Project = 1006,
+    PropId_Job_RuntimeSeconds = 51,
+    PropId_Job_SubmitTime = 10,
+    PropId_Job_CreateTime = 11,
+    PropId_Job_EndTime = 14,
+    PropId_Job_StartTime = 12,
+    PropId_Job_ChangeTime = 16,
+    PropId_Job_State = 1001,
+    PropId_Job_PreviousState = 1002,
+    PropId_Job_MinCores = 40,
+    PropId_Job_MaxCores = 41,
+    PropId_Job_MinNodes = 44,
+    PropId_Job_MaxNodes = 45,
+    PropId_Job_MinSockets = 42,
+    PropId_Job_MaxSockets = 43,
+    PropId_Job_UnitType = 39,
+    PropId_Job_IsExclusive = 53,
+    PropId_Job_RunUntilCanceled = 52,
+    PropId_Job_AutoCalculateMax = 1083,
+    PropId_Job_AutoCalculateMin = 1084,
+    PropId_Job_CanGrow = 1059,
+    PropId_Job_CanShrink = 1060,
+    PropId_Job_RequeueCount = 1075,
+    PropId_Job_JobType = 1007,
+    PropId_Task_Name = 2,
+    PropId_Task_State = 2001,
+    PropId_Task_PreviousState = 2002,
+    PropId_Task_MinCores = 40,
+    PropId_Task_MaxCores = 41,
+    PropId_Task_MinNodes = 44,
+    PropId_Task_MaxNodes = 45,
+    PropId_Task_MinSockets = 42,
+    PropId_Task_MaxSockets = 43,
+    PropId_Task_RuntimeSeconds = 51,
+    PropId_Task_SubmitTime = 10,
+    PropId_Task_CreateTime = 11,
+    PropId_Task_StartTime = 12,
+    PropId_Task_EndTime = 14,
+    PropId_Task_ChangeTime = 16,
+    PropId_Task_ParentJobId = 2003,
+    PropId_Task_IsExclusive = 53,
+    PropId_Task_IsRerunnable = 2015,
+    PropId_Task_ExitCode = 2033,
+    PropId_Task_RequeueCount = 2044,
+    PropId_Task_IsParametric = 2050,
+    PropId_Task_Type = 2080,
+    PropId_Node_Name = 2,
+    PropId_Node_JobType = 400,
+    PropId_Node_State = 8001,
+    PropId_Node_Reachable = 8004,
+    PropId_Node_NumCores = 8005,
+    PropId_Node_NumSockets = 8006,
+    PropId_Node_OfflineTime = 8008,
+    PropId_Node_OnlineTime = 8009,
+    PropId_Node_Guid = 8015,
+    PropId_Node_MemorySize = 8016,
+    PropId_Node_CpuSpeed = 8017
+};
+
+struct __declspec(uuid("ef89423b-f79b-466f-8127-bdab910ae6c1"))
+IFilterCollection : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall Add (
+        /*[in]*/ enum FilterOperator operation,
+        /*[in]*/ enum PropId propertyId,
+        /*[in]*/ VARIANT Value ) = 0;
+    virtual HRESULT _VtblGapPlaceholder1( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder2( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall get_Count (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetEnumerator (
+        /*[out,retval]*/ struct IEnumVARIANT * * pRetVal ) = 0;
+      virtual HRESULT __stdcall Clear ( ) = 0;
+      virtual HRESULT __stdcall get_Item (
+        /*[in]*/ long index,
+        /*[out,retval]*/ struct IFilterProperty * * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("fb6d2a92-3c48-4237-b300-fc3e31c2facc"))
+IPropertyIdCollection : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+    virtual HRESULT _VtblGapPlaceholder1( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder2( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall get_Count (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetEnumerator (
+        /*[out,retval]*/ struct IEnumVARIANT * * pRetVal ) = 0;
+      virtual HRESULT __stdcall Clear ( ) = 0;
+};
+
+struct __declspec(uuid("0224915a-84af-4863-9316-30377139f236"))
+PropertyIdCollection;
+    // interface _Object
+    // interface IEnumerable
+    // interface ISchedulerCollection
+    // interface ICollection
+    // [ default ] interface IPropertyIdCollection
+
+struct __declspec(uuid("3c376723-5ff9-4c55-89bb-e9e7a31577e1"))
+Scheduler;
+    // interface _Object
+    // [ default ] interface IScheduler
+    // interface IDisposable
+    // interface ISchedulerV3
+    // interface ISchedulerV2
+    // interface ISchedulerV3SP2
+    // interface ISchedulerV3SP3
+
+enum __declspec(uuid("cebf8417-6664-4c4a-a1ee-101f924cfe21"))
+SchedulerCoreState
+{
+    SchedulerCoreState_Offline = 0,
+    SchedulerCoreState_Idle = 1,
+    SchedulerCoreState_Busy = 2,
+    SchedulerCoreState_Draining = 3,
+    SchedulerCoreState_Reserved = 4
+};
+
+struct __declspec(uuid("d13525e7-e7e9-4fcb-b97c-2ffaa3f09ccf"))
+ISchedulerCore : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_JobId (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TaskId (
+        /*[out,retval]*/ struct ITaskId * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_State (
+        /*[out,retval]*/ enum SchedulerCoreState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Id (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("558f7caa-c675-4824-a66a-bc286adbb22d"))
+SchedulerCore;
+    // interface _Object
+    // [ default ] interface ISchedulerCore
+
+struct __declspec(uuid("1fd3409e-4b7c-4eeb-9bd9-867238eb191f"))
+ISchedulerCounters : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_TotalNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ReadyNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_OfflineNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_DrainingNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_UnreachableNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TotalSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TotalCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IdleCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_BusyCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_OfflineCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TotalJobs (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ConfiguringJobs (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_SubmittedJobs (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ValidatingJobs (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_QueuedJobs (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RunningJobs (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_FinishingJobs (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_FinishedJobs (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_FailedJobs (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CancelingJobs (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanceledJobs (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TotalTasks (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ConfiguringTasks (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_SubmittedTasks (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_QueuedTasks (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RunningTasks (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_FailedTasks (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CancelingTasks (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanceledTasks (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_FinishedTasks (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("256241b2-42e8-41fc-aefb-365cac3ef7a8"))
+SchedulerCounters;
+    // interface _Object
+    // [ default ] interface ISchedulerCounters
+
+struct __declspec(uuid("b2934cf1-fbd1-42a0-8767-8ac5dde1618d"))
+SchedulerJob;
+    // interface _Object
+    // [ default ] interface ISchedulerJob
+    // interface ISchedulerJobV3
+    // interface ISchedulerJobV2
+    // interface ISchedulerJobV3SP1
+    // interface ISchedulerJobV3SP2
+    // [ default, source ] dispinterface ISchedulerJobEvents
+
+struct __declspec(uuid("6d3f0397-e8ac-4369-a048-e70286e575b8"))
+ISchedulerJobCounters : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_TaskCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ConfiguringTaskCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ValidatingTaskCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_SubmittedTaskCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_QueuedTaskCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_DispatchingTaskCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RunningTaskCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_FailedTaskCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_FinishingTaskCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CancelingTaskCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanceledTaskCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_FinishedTaskCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TotalCpuTime (
+        /*[out,retval]*/ __int64 * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TotalUserTime (
+        /*[out,retval]*/ __int64 * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TotalKernelTime (
+        /*[out,retval]*/ __int64 * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TotalMemory (
+        /*[out,retval]*/ __int64 * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("7b2f3e5d-ca77-4ad5-9a5c-7292e684a790"))
+SchedulerJobCounters;
+    // interface _Object
+    // [ default ] interface ISchedulerJobCounters
+
+struct __declspec(uuid("337c8713-e312-4c69-b023-dec2dd6b381f"))
+IJobStateEventArg : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_JobId (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NewState (
+        /*[out,retval]*/ enum JobState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_PreviousState (
+        /*[out,retval]*/ enum JobState * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("c6f1db8b-1504-4ceb-a178-00e7bc9f0285"))
+JobStateEventArg;
+    // interface _Object
+    // [ default ] interface IJobStateEventArg
+
+struct __declspec(uuid("70d8316e-6dab-4e99-af3b-b39fb9afdc3e"))
+ITaskStateEventArg : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_JobId (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TaskId (
+        /*[out,retval]*/ struct ITaskId * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NewState (
+        /*[out,retval]*/ enum TaskState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_PreviousState (
+        /*[out,retval]*/ enum TaskState * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("6494eef8-f105-4ad6-90c5-9783b63a1f2c"))
+TaskStateEventArg;
+    // interface _Object
+    // [ default ] interface ITaskStateEventArg
+
+struct __declspec(uuid("47956563-23c2-4270-80c8-91a3b369acb7"))
+ISchedulerJobEvents : IDispatch
+{};
+
+struct __declspec(uuid("f9d5914b-ac7a-4a77-8512-2073bb993b36"))
+SchedulerNode;
+    // interface _Object
+    // [ default ] interface ISchedulerNode
+    // interface ISchedulerNodeV3SP1
+    // interface ISchedulerNodeV3
+    // interface ISchedulerNodeV2
+    // [ default, source ] dispinterface ISchedulerNodeEvents
+    // [ source ] dispinterface ISchedulerNodeReachableEvents
+
+struct __declspec(uuid("4f4af2fe-4ee2-4a7f-b546-398f6baf40ca"))
+ISchedulerNodeCounters : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_NumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_OfflineCoreCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IdleCoreCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_BusyCoreCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("b9ccbc76-7756-42a9-90a1-dd6f750b9d60"))
+SchedulerNodeCounters;
+    // interface _Object
+    // [ default ] interface ISchedulerNodeCounters
+
+struct __declspec(uuid("36f87816-1fd7-48d0-b7e7-3fc5920e3ce1"))
+INodeStateEventArg : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_NodeId (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NewState (
+        /*[out,retval]*/ enum NodeState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_PreviousState (
+        /*[out,retval]*/ enum NodeState * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("373e9f7b-e11f-40bb-bffa-728c8d32971a"))
+NodeStateEventArg;
+    // interface _Object
+    // [ default ] interface INodeStateEventArg
+
+struct __declspec(uuid("8644eb2d-b177-43f7-8bb5-53c7d3ecb605"))
+ISchedulerNodeEvents : IDispatch
+{};
+
+struct __declspec(uuid("8a2c30c9-a2b4-4a27-81ca-25089dafd5ad"))
+INodeReachableEventArg : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_NodeId (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Reachable (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("bb7b872a-f358-4b52-996d-d40021968908"))
+NodeReachableEventArg;
+    // interface _Object
+    // [ default ] interface INodeReachableEventArg
+
+struct __declspec(uuid("dfae8bed-89b4-4536-8a2a-208c84cdf87a"))
+ISchedulerNodeReachableEvents : IDispatch
+{};
+
+struct __declspec(uuid("351f693a-5c82-45f3-928f-70e31518accd"))
+SchedulerPool;
+    // interface _Object
+    // [ default ] interface ISchedulerPool
+
+struct __declspec(uuid("3f3e4c6a-4400-4e60-a974-0f4d6f34ce53"))
+SchedulerTask;
+    // interface _Object
+    // [ default ] interface ISchedulerTask
+    // interface ISchedulerTaskV2
+    // interface ISchedulerTaskV3
+
+struct __declspec(uuid("985d81b2-64fd-4e98-8270-0cb99155199f"))
+ISchedulerTaskCounters : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_TotalCpuTime (
+        /*[out,retval]*/ __int64 * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TotalUserTime (
+        /*[out,retval]*/ __int64 * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TotalKernelTime (
+        /*[out,retval]*/ __int64 * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TotalMemory (
+        /*[out,retval]*/ __int64 * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("a38ee29e-09d0-4b5a-9f4b-1ce778960946"))
+SchedulerTaskCounters;
+    // interface _Object
+    // [ default ] interface ISchedulerTaskCounters
+
+struct __declspec(uuid("b8579c31-91f3-441c-8bb9-ac5e4e5d1200"))
+IServerVersion : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_Build (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Major (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MajorRevision (
+        /*[out,retval]*/ short * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Minor (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinorRevision (
+        /*[out,retval]*/ short * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Revision (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("352f26d5-f0ad-491e-8585-55b59d03cdac"))
+ServerVersion;
+    // interface _Object
+    // [ default ] interface IServerVersion
+
+struct __declspec(uuid("3f5253c6-64a1-4148-aa2c-13aa66040a80"))
+ISortCollection : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+    virtual HRESULT _VtblGapPlaceholder1( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall Add (
+        /*[in]*/ enum SortOrder order,
+        /*[in]*/ enum PropId PropId ) = 0;
+    virtual HRESULT _VtblGapPlaceholder2( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall get_Count (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetEnumerator (
+        /*[out,retval]*/ struct IEnumVARIANT * * pRetVal ) = 0;
+      virtual HRESULT __stdcall Clear ( ) = 0;
+      virtual HRESULT __stdcall get_Item (
+        /*[in]*/ long index,
+        /*[out,retval]*/ struct ISortProperty * * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("39e4e48e-7f51-433d-ac20-8ac7c8eaa228"))
+SortCollection;
+    // interface _Object
+    // interface IEnumerable
+    // interface ISchedulerCollection
+    // interface ICollection
+    // [ default ] interface ISortCollection
+
+struct __declspec(uuid("0449fa77-10bd-4113-9e3e-2dc712eba36c"))
+IStringCollection : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_Count (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetEnumerator (
+        /*[out,retval]*/ struct IEnumVARIANT * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Item (
+        /*[in]*/ long index,
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall Clear ( ) = 0;
+      virtual HRESULT __stdcall Add (
+        /*[in]*/ BSTR Item ) = 0;
+      virtual HRESULT __stdcall Remove (
+        /*[in]*/ BSTR Item,
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall Contains (
+        /*[in]*/ BSTR Item,
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("07c12c04-fb39-437f-b242-691b802e30a3"))
+ISchedulerNodeV2 : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall Refresh ( ) = 0;
+      virtual HRESULT __stdcall GetCores (
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetCounters (
+        /*[out,retval]*/ struct ISchedulerNodeCounters * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Id (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Name (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_JobType (
+        /*[out,retval]*/ enum JobType * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_State (
+        /*[out,retval]*/ enum NodeState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Reachable (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_OfflineTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_OnlineTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MoveToOffline (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Guid (
+        /*[out,retval]*/ GUID * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MemorySize (
+        /*[out,retval]*/ __int64 * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CpuSpeed (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NodeGroups (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("f3b0f4d7-fae3-429d-b75f-10278a3bec07"))
+ISchedulerNodeV3 : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall Refresh ( ) = 0;
+      virtual HRESULT __stdcall GetCores (
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetCounters (
+        /*[out,retval]*/ struct ISchedulerNodeCounters * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Id (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Name (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_JobType (
+        /*[out,retval]*/ enum JobType * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_State (
+        /*[out,retval]*/ enum NodeState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Reachable (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_OfflineTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_OnlineTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MoveToOffline (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Guid (
+        /*[out,retval]*/ GUID * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MemorySize (
+        /*[out,retval]*/ __int64 * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CpuSpeed (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NodeGroups (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("18e9ee1d-d223-46e1-8c58-e00f7d1d2ed4"))
+ISchedulerNodeV3SP1 : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall Refresh ( ) = 0;
+      virtual HRESULT __stdcall GetCores (
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetCounters (
+        /*[out,retval]*/ struct ISchedulerNodeCounters * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Id (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Name (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_JobType (
+        /*[out,retval]*/ enum JobType * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_State (
+        /*[out,retval]*/ enum NodeState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Reachable (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_OfflineTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_OnlineTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MoveToOffline (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Guid (
+        /*[out,retval]*/ GUID * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MemorySize (
+        /*[out,retval]*/ __int64 * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CpuSpeed (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NodeGroups (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder1( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder2( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall get_Availability (
+        /*[out,retval]*/ enum NodeAvailability * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Location (
+        /*[out,retval]*/ enum NodeLocation * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AzureServiceName (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("df63e52f-3d77-467c-848f-c96cd95cd0d9"))
+ISchedulerNode : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall Refresh ( ) = 0;
+      virtual HRESULT __stdcall GetCores (
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetCounters (
+        /*[out,retval]*/ struct ISchedulerNodeCounters * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Id (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Name (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_JobType (
+        /*[out,retval]*/ enum JobType * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_State (
+        /*[out,retval]*/ enum NodeState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Reachable (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_OfflineTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_OnlineTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MoveToOffline (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Guid (
+        /*[out,retval]*/ GUID * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MemorySize (
+        /*[out,retval]*/ __int64 * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CpuSpeed (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NodeGroups (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder1( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder2( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall get_Availability (
+        /*[out,retval]*/ enum NodeAvailability * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Location (
+        /*[out,retval]*/ enum NodeLocation * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AzureServiceName (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder3( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder4( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall get_DnsSuffix (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("8a16a4a9-95a9-40cb-9027-c84bb27646dc"))
+ISchedulerTaskV2 : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall Refresh ( ) = 0;
+      virtual HRESULT __stdcall Commit ( ) = 0;
+      virtual HRESULT __stdcall SetHpcEnvironmentVariable (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall GetCounters (
+        /*[out,retval]*/ struct ISchedulerTaskCounters * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EnvironmentVariables (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AllocatedNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetCustomProperty (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall GetCustomProperties (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Name (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Name (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_State (
+        /*[out,retval]*/ enum TaskState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_PreviousState (
+        /*[out,retval]*/ enum TaskState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfCores (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfCores (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfNodes (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfNodes (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfSockets (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfSockets (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Runtime (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Runtime (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_SubmitTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CreateTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EndTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ChangeTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StartTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ParentJobId (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TaskId (
+        /*[out,retval]*/ struct ITaskId * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CommandLine (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_CommandLine (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_WorkDirectory (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_WorkDirectory (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RequiredNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_RequiredNodes (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_DependsOn (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_DependsOn (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IsExclusive (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_IsExclusive (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IsRerunnable (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_IsRerunnable (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StdOutFilePath (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_StdOutFilePath (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StdInFilePath (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_StdInFilePath (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StdErrFilePath (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_StdErrFilePath (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ExitCode (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RequeueCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IsParametric (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_IsParametric (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StartValue (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_StartValue (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EndValue (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_EndValue (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IncrementValue (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_IncrementValue (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ErrorMessage (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Output (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_HasRuntime (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EncryptedUserBlob (
+        /*[out,retval]*/ SAFEARRAY * * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_EncryptedUserBlob (
+        /*[in]*/ SAFEARRAY * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_UserBlob (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_UserBlob (
+        /*[in]*/ BSTR pRetVal ) = 0;
+};
+
+struct __declspec(uuid("ef2125b9-9c03-4948-b4c1-859c9c94cdd4"))
+ISchedulerTaskV3 : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall Refresh ( ) = 0;
+      virtual HRESULT __stdcall Commit ( ) = 0;
+      virtual HRESULT __stdcall SetHpcEnvironmentVariable (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall GetCounters (
+        /*[out,retval]*/ struct ISchedulerTaskCounters * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EnvironmentVariables (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AllocatedNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetCustomProperty (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall GetCustomProperties (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Name (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Name (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_State (
+        /*[out,retval]*/ enum TaskState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_PreviousState (
+        /*[out,retval]*/ enum TaskState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfCores (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfCores (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfNodes (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfNodes (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfSockets (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfSockets (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Runtime (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Runtime (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_SubmitTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CreateTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EndTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ChangeTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StartTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ParentJobId (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TaskId (
+        /*[out,retval]*/ struct ITaskId * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CommandLine (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_CommandLine (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_WorkDirectory (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_WorkDirectory (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RequiredNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_RequiredNodes (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_DependsOn (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_DependsOn (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IsExclusive (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_IsExclusive (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IsRerunnable (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_IsRerunnable (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StdOutFilePath (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_StdOutFilePath (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StdInFilePath (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_StdInFilePath (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StdErrFilePath (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_StdErrFilePath (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ExitCode (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RequeueCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IsParametric (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_IsParametric (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StartValue (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_StartValue (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EndValue (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_EndValue (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IncrementValue (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_IncrementValue (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ErrorMessage (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Output (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_HasRuntime (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EncryptedUserBlob (
+        /*[out,retval]*/ SAFEARRAY * * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_EncryptedUserBlob (
+        /*[in]*/ SAFEARRAY * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_UserBlob (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_UserBlob (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall ServiceConclude (
+        /*[in]*/ VARIANT_BOOL cancelSubTasks ) = 0;
+      virtual HRESULT __stdcall get_Type (
+        /*[out,retval]*/ enum TaskType * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Type (
+        /*[in]*/ enum TaskType pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AllocatedCoreIds (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IsServiceConcluded (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("9b7df4b9-18ed-42b0-8364-b1f7a034d492"))
+ISchedulerTask : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall Refresh ( ) = 0;
+      virtual HRESULT __stdcall Commit ( ) = 0;
+      virtual HRESULT __stdcall SetHpcEnvironmentVariable (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall GetCounters (
+        /*[out,retval]*/ struct ISchedulerTaskCounters * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EnvironmentVariables (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AllocatedNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetCustomProperty (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall GetCustomProperties (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Name (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Name (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_State (
+        /*[out,retval]*/ enum TaskState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_PreviousState (
+        /*[out,retval]*/ enum TaskState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfCores (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfCores (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfNodes (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfNodes (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfSockets (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfSockets (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Runtime (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Runtime (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_SubmitTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CreateTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EndTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ChangeTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StartTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ParentJobId (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TaskId (
+        /*[out,retval]*/ struct ITaskId * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CommandLine (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_CommandLine (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_WorkDirectory (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_WorkDirectory (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RequiredNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_RequiredNodes (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_DependsOn (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_DependsOn (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IsExclusive (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_IsExclusive (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IsRerunnable (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_IsRerunnable (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StdOutFilePath (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_StdOutFilePath (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StdInFilePath (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_StdInFilePath (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StdErrFilePath (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_StdErrFilePath (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ExitCode (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RequeueCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IsParametric (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_IsParametric (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StartValue (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_StartValue (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EndValue (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_EndValue (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IncrementValue (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_IncrementValue (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ErrorMessage (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Output (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_HasRuntime (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EncryptedUserBlob (
+        /*[out,retval]*/ SAFEARRAY * * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_EncryptedUserBlob (
+        /*[in]*/ SAFEARRAY * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_UserBlob (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_UserBlob (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall ServiceConclude (
+        /*[in]*/ VARIANT_BOOL cancelSubTasks ) = 0;
+      virtual HRESULT __stdcall get_Type (
+        /*[out,retval]*/ enum TaskType * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Type (
+        /*[in]*/ enum TaskType pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AllocatedCoreIds (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IsServiceConcluded (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_FailJobOnFailure (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_FailJobOnFailure (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_FailJobOnFailureCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_FailJobOnFailureCount (
+        /*[in]*/ long pRetVal ) = 0;
+};
+
+struct __declspec(uuid("9348e87e-5917-48ce-9889-d666ea4e9937"))
+ISchedulerJobV2 : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall CreateTask (
+        /*[out,retval]*/ struct ISchedulerTask * * pRetVal ) = 0;
+      virtual HRESULT __stdcall AddTask (
+        /*[in]*/ struct ISchedulerTask * task ) = 0;
+      virtual HRESULT __stdcall Refresh ( ) = 0;
+      virtual HRESULT __stdcall Commit ( ) = 0;
+      virtual HRESULT __stdcall OpenTask (
+        /*[in]*/ struct ITaskId * TaskId,
+        /*[out,retval]*/ struct ISchedulerTask * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CancelTask (
+        /*[in]*/ struct ITaskId * TaskId ) = 0;
+      virtual HRESULT __stdcall RequeueTask (
+        /*[in]*/ struct ITaskId * TaskId ) = 0;
+      virtual HRESULT __stdcall SubmitTaskById (
+        /*[in]*/ struct ITaskId * TaskId ) = 0;
+      virtual HRESULT __stdcall SubmitTask (
+        /*[in]*/ struct ISchedulerTask * task ) = 0;
+      virtual HRESULT __stdcall GetTaskList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[in]*/ VARIANT_BOOL expandParametric,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetTaskIdList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[in]*/ VARIANT_BOOL expandParametric,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder1( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder2( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall SetJobTemplate (
+        /*[in]*/ BSTR templateName ) = 0;
+      virtual HRESULT __stdcall get_JobTemplate (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AllocatedNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EndpointAddresses (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_OrderBy (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_OrderBy (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall RestoreFromXml (
+        /*[in]*/ BSTR url ) = 0;
+    virtual HRESULT _VtblGapPlaceholder3( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall SetCustomProperty (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall GetCustomProperties (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetCounters (
+        /*[out,retval]*/ struct ISchedulerJobCounters * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder4( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder5( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder6( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder7( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall get_Id (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Name (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Name (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Owner (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_UserName (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_UserName (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Priority (
+        /*[out,retval]*/ enum JobPriority * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Priority (
+        /*[in]*/ enum JobPriority pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Project (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Project (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Runtime (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Runtime (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_SubmitTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CreateTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EndTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StartTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ChangeTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_State (
+        /*[out,retval]*/ enum JobState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_PreviousState (
+        /*[out,retval]*/ enum JobState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfCores (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfCores (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfNodes (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfNodes (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfSockets (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfSockets (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_UnitType (
+        /*[out,retval]*/ enum JobUnitType * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_UnitType (
+        /*[in]*/ enum JobUnitType pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RequestedNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_RequestedNodes (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IsExclusive (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_IsExclusive (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RunUntilCanceled (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_RunUntilCanceled (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NodeGroups (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_NodeGroups (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_FailOnTaskFailure (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_FailOnTaskFailure (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AutoCalculateMax (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_AutoCalculateMax (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AutoCalculateMin (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_AutoCalculateMin (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanGrow (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanShrink (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanPreempt (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_CanPreempt (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ErrorMessage (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_HasRuntime (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RequeueCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinMemory (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinMemory (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaxMemory (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaxMemory (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinCoresPerNode (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinCoresPerNode (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaxCoresPerNode (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaxCoresPerNode (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_SoftwareLicense (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_SoftwareLicense (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ClientSource (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_ClientSource (
+        /*[in]*/ BSTR pRetVal ) = 0;
+};
+
+struct __declspec(uuid("0aea8629-72fb-4afa-ae88-419273d3db50"))
+ISchedulerJobV3 : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall CreateTask (
+        /*[out,retval]*/ struct ISchedulerTask * * pRetVal ) = 0;
+      virtual HRESULT __stdcall AddTask (
+        /*[in]*/ struct ISchedulerTask * task ) = 0;
+      virtual HRESULT __stdcall Refresh ( ) = 0;
+      virtual HRESULT __stdcall Commit ( ) = 0;
+      virtual HRESULT __stdcall OpenTask (
+        /*[in]*/ struct ITaskId * TaskId,
+        /*[out,retval]*/ struct ISchedulerTask * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CancelTask (
+        /*[in]*/ struct ITaskId * TaskId ) = 0;
+      virtual HRESULT __stdcall RequeueTask (
+        /*[in]*/ struct ITaskId * TaskId ) = 0;
+      virtual HRESULT __stdcall SubmitTaskById (
+        /*[in]*/ struct ITaskId * TaskId ) = 0;
+      virtual HRESULT __stdcall SubmitTask (
+        /*[in]*/ struct ISchedulerTask * task ) = 0;
+      virtual HRESULT __stdcall GetTaskList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[in]*/ VARIANT_BOOL expandParametric,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetTaskIdList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[in]*/ VARIANT_BOOL expandParametric,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder1( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder2( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall SetJobTemplate (
+        /*[in]*/ BSTR templateName ) = 0;
+      virtual HRESULT __stdcall get_JobTemplate (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AllocatedNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EndpointAddresses (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_OrderBy (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_OrderBy (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall RestoreFromXml (
+        /*[in]*/ BSTR url ) = 0;
+    virtual HRESULT _VtblGapPlaceholder3( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall SetCustomProperty (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall GetCustomProperties (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetCounters (
+        /*[out,retval]*/ struct ISchedulerJobCounters * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder4( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder5( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder6( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder7( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall get_Id (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Name (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Name (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Owner (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_UserName (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_UserName (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Priority (
+        /*[out,retval]*/ enum JobPriority * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Priority (
+        /*[in]*/ enum JobPriority pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Project (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Project (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Runtime (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Runtime (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_SubmitTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CreateTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EndTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StartTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ChangeTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_State (
+        /*[out,retval]*/ enum JobState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_PreviousState (
+        /*[out,retval]*/ enum JobState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfCores (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfCores (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfNodes (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfNodes (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfSockets (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfSockets (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_UnitType (
+        /*[out,retval]*/ enum JobUnitType * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_UnitType (
+        /*[in]*/ enum JobUnitType pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RequestedNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_RequestedNodes (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IsExclusive (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_IsExclusive (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RunUntilCanceled (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_RunUntilCanceled (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NodeGroups (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_NodeGroups (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_FailOnTaskFailure (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_FailOnTaskFailure (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AutoCalculateMax (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_AutoCalculateMax (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AutoCalculateMin (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_AutoCalculateMin (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanGrow (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanShrink (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanPreempt (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_CanPreempt (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ErrorMessage (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_HasRuntime (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RequeueCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinMemory (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinMemory (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaxMemory (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaxMemory (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinCoresPerNode (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinCoresPerNode (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaxCoresPerNode (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaxCoresPerNode (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_SoftwareLicense (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_SoftwareLicense (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ClientSource (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_ClientSource (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall Finish ( ) = 0;
+      virtual HRESULT __stdcall SetHpcEnvironmentVariable (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall get_EnvironmentVariables (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder8( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder9( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder10( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder11( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall CancelTask_2 (
+        /*[in]*/ struct ITaskId * TaskId,
+        /*[in]*/ BSTR Message ) = 0;
+      virtual HRESULT __stdcall CancelTask_3 (
+        /*[in]*/ struct ITaskId * TaskId,
+        /*[in]*/ BSTR Message,
+        /*[in]*/ VARIANT_BOOL isForce ) = 0;
+      virtual HRESULT __stdcall AddExcludedNodes (
+        /*[in]*/ struct IStringCollection * NodeNames ) = 0;
+      virtual HRESULT __stdcall RemoveExcludedNodes (
+        /*[in]*/ struct IStringCollection * NodeNames ) = 0;
+      virtual HRESULT __stdcall ClearExcludedNodes ( ) = 0;
+      virtual HRESULT __stdcall get_Progress (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Progress (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ProgressMessage (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_ProgressMessage (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TargetResourceCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_TargetResourceCount (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ExpandedPriority (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_ExpandedPriority (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ServiceName (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_ServiceName (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_HoldUntil (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NotifyOnStart (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_NotifyOnStart (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NotifyOnCompletion (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_NotifyOnCompletion (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ExcludedNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("d7449a23-d29d-4414-b72d-c582dbabda14"))
+ISchedulerJobV3SP1 : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall CreateTask (
+        /*[out,retval]*/ struct ISchedulerTask * * pRetVal ) = 0;
+      virtual HRESULT __stdcall AddTask (
+        /*[in]*/ struct ISchedulerTask * task ) = 0;
+      virtual HRESULT __stdcall Refresh ( ) = 0;
+      virtual HRESULT __stdcall Commit ( ) = 0;
+      virtual HRESULT __stdcall OpenTask (
+        /*[in]*/ struct ITaskId * TaskId,
+        /*[out,retval]*/ struct ISchedulerTask * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CancelTask (
+        /*[in]*/ struct ITaskId * TaskId ) = 0;
+      virtual HRESULT __stdcall RequeueTask (
+        /*[in]*/ struct ITaskId * TaskId ) = 0;
+      virtual HRESULT __stdcall SubmitTaskById (
+        /*[in]*/ struct ITaskId * TaskId ) = 0;
+      virtual HRESULT __stdcall SubmitTask (
+        /*[in]*/ struct ISchedulerTask * task ) = 0;
+      virtual HRESULT __stdcall GetTaskList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[in]*/ VARIANT_BOOL expandParametric,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetTaskIdList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[in]*/ VARIANT_BOOL expandParametric,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder1( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder2( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall SetJobTemplate (
+        /*[in]*/ BSTR templateName ) = 0;
+      virtual HRESULT __stdcall get_JobTemplate (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AllocatedNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EndpointAddresses (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_OrderBy (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_OrderBy (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall RestoreFromXml (
+        /*[in]*/ BSTR url ) = 0;
+    virtual HRESULT _VtblGapPlaceholder3( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall SetCustomProperty (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall GetCustomProperties (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetCounters (
+        /*[out,retval]*/ struct ISchedulerJobCounters * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder4( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder5( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder6( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder7( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall get_Id (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Name (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Name (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Owner (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_UserName (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_UserName (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Priority (
+        /*[out,retval]*/ enum JobPriority * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Priority (
+        /*[in]*/ enum JobPriority pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Project (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Project (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Runtime (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Runtime (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_SubmitTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CreateTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EndTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StartTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ChangeTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_State (
+        /*[out,retval]*/ enum JobState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_PreviousState (
+        /*[out,retval]*/ enum JobState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfCores (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfCores (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfNodes (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfNodes (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfSockets (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfSockets (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_UnitType (
+        /*[out,retval]*/ enum JobUnitType * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_UnitType (
+        /*[in]*/ enum JobUnitType pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RequestedNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_RequestedNodes (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IsExclusive (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_IsExclusive (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RunUntilCanceled (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_RunUntilCanceled (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NodeGroups (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_NodeGroups (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_FailOnTaskFailure (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_FailOnTaskFailure (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AutoCalculateMax (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_AutoCalculateMax (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AutoCalculateMin (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_AutoCalculateMin (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanGrow (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanShrink (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanPreempt (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_CanPreempt (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ErrorMessage (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_HasRuntime (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RequeueCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinMemory (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinMemory (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaxMemory (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaxMemory (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinCoresPerNode (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinCoresPerNode (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaxCoresPerNode (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaxCoresPerNode (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_SoftwareLicense (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_SoftwareLicense (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ClientSource (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_ClientSource (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall Finish ( ) = 0;
+      virtual HRESULT __stdcall SetHpcEnvironmentVariable (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall get_EnvironmentVariables (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder8( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder9( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall SetHoldUntil (
+        /*[in]*/ DATE HoldUntil ) = 0;
+      virtual HRESULT __stdcall ClearHold ( ) = 0;
+      virtual HRESULT __stdcall CancelTask_2 (
+        /*[in]*/ struct ITaskId * TaskId,
+        /*[in]*/ BSTR Message ) = 0;
+      virtual HRESULT __stdcall CancelTask_3 (
+        /*[in]*/ struct ITaskId * TaskId,
+        /*[in]*/ BSTR Message,
+        /*[in]*/ VARIANT_BOOL isForce ) = 0;
+      virtual HRESULT __stdcall AddExcludedNodes (
+        /*[in]*/ struct IStringCollection * NodeNames ) = 0;
+      virtual HRESULT __stdcall RemoveExcludedNodes (
+        /*[in]*/ struct IStringCollection * NodeNames ) = 0;
+      virtual HRESULT __stdcall ClearExcludedNodes ( ) = 0;
+      virtual HRESULT __stdcall get_Progress (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Progress (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ProgressMessage (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_ProgressMessage (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TargetResourceCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_TargetResourceCount (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ExpandedPriority (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_ExpandedPriority (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ServiceName (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_ServiceName (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_HoldUntil (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NotifyOnStart (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_NotifyOnStart (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NotifyOnCompletion (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_NotifyOnCompletion (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ExcludedNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder10( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder11( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall get_EmailAddress (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_EmailAddress (
+        /*[in]*/ BSTR pRetVal ) = 0;
+};
+
+struct __declspec(uuid("065be3ad-7981-49c2-b7e4-b34e3e01f384"))
+ISchedulerJobV3SP2 : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall CreateTask (
+        /*[out,retval]*/ struct ISchedulerTask * * pRetVal ) = 0;
+      virtual HRESULT __stdcall AddTask (
+        /*[in]*/ struct ISchedulerTask * task ) = 0;
+      virtual HRESULT __stdcall Refresh ( ) = 0;
+      virtual HRESULT __stdcall Commit ( ) = 0;
+      virtual HRESULT __stdcall OpenTask (
+        /*[in]*/ struct ITaskId * TaskId,
+        /*[out,retval]*/ struct ISchedulerTask * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CancelTask (
+        /*[in]*/ struct ITaskId * TaskId ) = 0;
+      virtual HRESULT __stdcall RequeueTask (
+        /*[in]*/ struct ITaskId * TaskId ) = 0;
+      virtual HRESULT __stdcall SubmitTaskById (
+        /*[in]*/ struct ITaskId * TaskId ) = 0;
+      virtual HRESULT __stdcall SubmitTask (
+        /*[in]*/ struct ISchedulerTask * task ) = 0;
+      virtual HRESULT __stdcall GetTaskList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[in]*/ VARIANT_BOOL expandParametric,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetTaskIdList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[in]*/ VARIANT_BOOL expandParametric,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder1( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder2( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall SetJobTemplate (
+        /*[in]*/ BSTR templateName ) = 0;
+      virtual HRESULT __stdcall get_JobTemplate (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AllocatedNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EndpointAddresses (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_OrderBy (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_OrderBy (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall RestoreFromXml (
+        /*[in]*/ BSTR url ) = 0;
+    virtual HRESULT _VtblGapPlaceholder3( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall SetCustomProperty (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall GetCustomProperties (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetCounters (
+        /*[out,retval]*/ struct ISchedulerJobCounters * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder4( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder5( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder6( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder7( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall get_Id (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Name (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Name (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Owner (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_UserName (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_UserName (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Priority (
+        /*[out,retval]*/ enum JobPriority * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Priority (
+        /*[in]*/ enum JobPriority pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Project (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Project (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Runtime (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Runtime (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_SubmitTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CreateTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EndTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StartTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ChangeTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_State (
+        /*[out,retval]*/ enum JobState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_PreviousState (
+        /*[out,retval]*/ enum JobState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfCores (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfCores (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfNodes (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfNodes (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfSockets (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfSockets (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_UnitType (
+        /*[out,retval]*/ enum JobUnitType * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_UnitType (
+        /*[in]*/ enum JobUnitType pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RequestedNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_RequestedNodes (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IsExclusive (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_IsExclusive (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RunUntilCanceled (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_RunUntilCanceled (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NodeGroups (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_NodeGroups (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_FailOnTaskFailure (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_FailOnTaskFailure (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AutoCalculateMax (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_AutoCalculateMax (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AutoCalculateMin (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_AutoCalculateMin (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanGrow (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanShrink (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanPreempt (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_CanPreempt (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ErrorMessage (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_HasRuntime (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RequeueCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinMemory (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinMemory (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaxMemory (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaxMemory (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinCoresPerNode (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinCoresPerNode (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaxCoresPerNode (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaxCoresPerNode (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_SoftwareLicense (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_SoftwareLicense (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ClientSource (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_ClientSource (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall Finish ( ) = 0;
+      virtual HRESULT __stdcall SetHpcEnvironmentVariable (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall get_EnvironmentVariables (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder8( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder9( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall SetHoldUntil (
+        /*[in]*/ DATE HoldUntil ) = 0;
+      virtual HRESULT __stdcall ClearHold ( ) = 0;
+      virtual HRESULT __stdcall CancelTask_2 (
+        /*[in]*/ struct ITaskId * TaskId,
+        /*[in]*/ BSTR Message ) = 0;
+      virtual HRESULT __stdcall CancelTask_3 (
+        /*[in]*/ struct ITaskId * TaskId,
+        /*[in]*/ BSTR Message,
+        /*[in]*/ VARIANT_BOOL isForce ) = 0;
+      virtual HRESULT __stdcall AddExcludedNodes (
+        /*[in]*/ struct IStringCollection * NodeNames ) = 0;
+      virtual HRESULT __stdcall RemoveExcludedNodes (
+        /*[in]*/ struct IStringCollection * NodeNames ) = 0;
+      virtual HRESULT __stdcall ClearExcludedNodes ( ) = 0;
+      virtual HRESULT __stdcall get_Progress (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Progress (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ProgressMessage (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_ProgressMessage (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TargetResourceCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_TargetResourceCount (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ExpandedPriority (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_ExpandedPriority (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ServiceName (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_ServiceName (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_HoldUntil (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NotifyOnStart (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_NotifyOnStart (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NotifyOnCompletion (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_NotifyOnCompletion (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ExcludedNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder10( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder11( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall get_EmailAddress (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_EmailAddress (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Pool (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("7b713f15-8de0-45cc-8d8c-f090b887616b"))
+ISchedulerJob : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall CreateTask (
+        /*[out,retval]*/ struct ISchedulerTask * * pRetVal ) = 0;
+      virtual HRESULT __stdcall AddTask (
+        /*[in]*/ struct ISchedulerTask * task ) = 0;
+      virtual HRESULT __stdcall Refresh ( ) = 0;
+      virtual HRESULT __stdcall Commit ( ) = 0;
+      virtual HRESULT __stdcall OpenTask (
+        /*[in]*/ struct ITaskId * TaskId,
+        /*[out,retval]*/ struct ISchedulerTask * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CancelTask (
+        /*[in]*/ struct ITaskId * TaskId ) = 0;
+      virtual HRESULT __stdcall RequeueTask (
+        /*[in]*/ struct ITaskId * TaskId ) = 0;
+      virtual HRESULT __stdcall SubmitTaskById (
+        /*[in]*/ struct ITaskId * TaskId ) = 0;
+      virtual HRESULT __stdcall SubmitTask (
+        /*[in]*/ struct ISchedulerTask * task ) = 0;
+      virtual HRESULT __stdcall GetTaskList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[in]*/ VARIANT_BOOL expandParametric,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetTaskIdList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[in]*/ VARIANT_BOOL expandParametric,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder1( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder2( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall SetJobTemplate (
+        /*[in]*/ BSTR templateName ) = 0;
+      virtual HRESULT __stdcall get_JobTemplate (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AllocatedNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EndpointAddresses (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_OrderBy (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_OrderBy (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall RestoreFromXml (
+        /*[in]*/ BSTR url ) = 0;
+    virtual HRESULT _VtblGapPlaceholder3( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall SetCustomProperty (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall GetCustomProperties (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetCounters (
+        /*[out,retval]*/ struct ISchedulerJobCounters * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder4( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder5( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder6( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder7( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall get_Id (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Name (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Name (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Owner (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_UserName (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_UserName (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Priority (
+        /*[out,retval]*/ enum JobPriority * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Priority (
+        /*[in]*/ enum JobPriority pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Project (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Project (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Runtime (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Runtime (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_SubmitTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CreateTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EndTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StartTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ChangeTime (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_State (
+        /*[out,retval]*/ enum JobState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_PreviousState (
+        /*[out,retval]*/ enum JobState * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfCores (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfCores (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfCores (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfNodes (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfNodes (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfNodes (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinimumNumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinimumNumberOfSockets (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaximumNumberOfSockets (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaximumNumberOfSockets (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_UnitType (
+        /*[out,retval]*/ enum JobUnitType * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_UnitType (
+        /*[in]*/ enum JobUnitType pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RequestedNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_RequestedNodes (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IsExclusive (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_IsExclusive (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RunUntilCanceled (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_RunUntilCanceled (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NodeGroups (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_NodeGroups (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_FailOnTaskFailure (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_FailOnTaskFailure (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AutoCalculateMax (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_AutoCalculateMax (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_AutoCalculateMin (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_AutoCalculateMin (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanGrow (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanShrink (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CanPreempt (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_CanPreempt (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ErrorMessage (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_HasRuntime (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_RequeueCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinMemory (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinMemory (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaxMemory (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaxMemory (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MinCoresPerNode (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MinCoresPerNode (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_MaxCoresPerNode (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_MaxCoresPerNode (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_SoftwareLicense (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall putref_SoftwareLicense (
+        /*[in]*/ struct IStringCollection * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ClientSource (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_ClientSource (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall Finish ( ) = 0;
+      virtual HRESULT __stdcall SetHpcEnvironmentVariable (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall get_EnvironmentVariables (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder8( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder9( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall SetHoldUntil (
+        /*[in]*/ DATE HoldUntil ) = 0;
+      virtual HRESULT __stdcall ClearHold ( ) = 0;
+      virtual HRESULT __stdcall CancelTask_2 (
+        /*[in]*/ struct ITaskId * TaskId,
+        /*[in]*/ BSTR Message ) = 0;
+      virtual HRESULT __stdcall CancelTask_3 (
+        /*[in]*/ struct ITaskId * TaskId,
+        /*[in]*/ BSTR Message,
+        /*[in]*/ VARIANT_BOOL isForce ) = 0;
+      virtual HRESULT __stdcall AddExcludedNodes (
+        /*[in]*/ struct IStringCollection * NodeNames ) = 0;
+      virtual HRESULT __stdcall RemoveExcludedNodes (
+        /*[in]*/ struct IStringCollection * NodeNames ) = 0;
+      virtual HRESULT __stdcall ClearExcludedNodes ( ) = 0;
+      virtual HRESULT __stdcall get_Progress (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_Progress (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ProgressMessage (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_ProgressMessage (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_TargetResourceCount (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_TargetResourceCount (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ExpandedPriority (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_ExpandedPriority (
+        /*[in]*/ long pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ServiceName (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_ServiceName (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_HoldUntil (
+        /*[out,retval]*/ DATE * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NotifyOnStart (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_NotifyOnStart (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NotifyOnCompletion (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_NotifyOnCompletion (
+        /*[in]*/ VARIANT_BOOL pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ExcludedNodes (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder10( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder11( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall get_EmailAddress (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall put_EmailAddress (
+        /*[in]*/ BSTR pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Pool (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("59fea435-088a-4459-be0e-9d081a673317"))
+StringCollection;
+    // interface _Object
+    // interface IEnumerable
+    // interface ISchedulerCollection
+    // interface ICollection
+    // [ default ] interface IStringCollection
+
+struct __declspec(uuid("03811174-809c-4143-b44c-bbaa1ad8de67"))
+ICommandInfo : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_WorkingDirectory (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_EnvironmentVariables (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_StdIn (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("6b8fb453-9e59-4349-8116-f5d1a6c34550"))
+CommandInfo;
+    // interface _Object
+    // [ default ] interface ICommandInfo
+
+struct __declspec(uuid("f8d669bc-0579-41b9-ac26-384c3c8e06f8"))
+IRemoteCommand : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_Id (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ProxyTaskId (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_CommandLine (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_NodeNames (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder1( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder2( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall Start ( ) = 0;
+      virtual HRESULT __stdcall StartWithCredentials (
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR password ) = 0;
+      virtual HRESULT __stdcall Cancel ( ) = 0;
+};
+
+struct __declspec(uuid("d0ed926a-6e0c-11dc-a924-abc756d89593"))
+ISchedulerV2 : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall Connect (
+        /*[in]*/ BSTR cluster ) = 0;
+      virtual HRESULT __stdcall GetUserPrivilege (
+        /*[out,retval]*/ enum UserPrivilege * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetInterfaceMode (
+        /*[in]*/ VARIANT_BOOL isConsole,
+        /*[in]*/ long hwnd ) = 0;
+      virtual HRESULT __stdcall GetServerVersion (
+        /*[out,retval]*/ struct IServerVersion * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateJob (
+        /*[out,retval]*/ struct ISchedulerJob * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenJob (
+        /*[in]*/ long Id,
+        /*[out,retval]*/ struct ISchedulerJob * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CloneJob (
+        /*[in]*/ long JobId,
+        /*[out,retval]*/ struct ISchedulerJob * * pRetVal ) = 0;
+      virtual HRESULT __stdcall AddHpcJob (
+        /*[in]*/ struct ISchedulerJob * job ) = 0;
+      virtual HRESULT __stdcall SubmitJob (
+        /*[in]*/ struct ISchedulerJob * job,
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR password ) = 0;
+      virtual HRESULT __stdcall SubmitJobById (
+        /*[in]*/ long JobId,
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR password ) = 0;
+      virtual HRESULT __stdcall CancelJob (
+        /*[in]*/ long JobId,
+        /*[in]*/ BSTR Message ) = 0;
+      virtual HRESULT __stdcall ConfigureJob (
+        /*[in]*/ long JobId ) = 0;
+      virtual HRESULT __stdcall GetJobList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetJobIdList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct IIntCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodeList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodeIdList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct IIntCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenNode (
+        /*[in]*/ long NodeId,
+        /*[out,retval]*/ struct ISchedulerNode * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenNodeByName (
+        /*[in]*/ BSTR NodeName,
+        /*[out,retval]*/ struct ISchedulerNode * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateTaskId (
+        /*[in]*/ long jobTaskId,
+        /*[out,retval]*/ struct ITaskId * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateParametricTaskId (
+        /*[in]*/ long jobTaskId,
+        /*[in]*/ long instanceId,
+        /*[out,retval]*/ struct ITaskId * * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetHpcEnvironmentVariable (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall get_EnvironmentVariables (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetClusterParameter (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall get_ClusterParameters (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetJobTemplateList (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodeGroupList (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodesInNodeGroup (
+        /*[in]*/ BSTR nodeGroup,
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateNameValueCollection (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateFilterCollection (
+        /*[out,retval]*/ struct IFilterCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateSortCollection (
+        /*[out,retval]*/ struct ISortCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateStringCollection (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateIntCollection (
+        /*[out,retval]*/ struct IIntCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateCommandInfo (
+        /*[in]*/ struct INameValueCollection * envs,
+        /*[in]*/ BSTR workDir,
+        /*[in]*/ BSTR StdIn,
+        /*[out,retval]*/ struct ICommandInfo * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateCommand (
+        /*[in]*/ BSTR CommandLine,
+        /*[in]*/ struct ICommandInfo * info,
+        /*[in]*/ struct IStringCollection * nodes,
+        /*[out,retval]*/ struct IRemoteCommand * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetCounters (
+        /*[out,retval]*/ struct ISchedulerCounters * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder1( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder2( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder3( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder4( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder5( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall DeleteCachedCredentials (
+        /*[in]*/ BSTR UserName ) = 0;
+      virtual HRESULT __stdcall SetCachedCredentials (
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR password ) = 0;
+      virtual HRESULT __stdcall Close ( ) = 0;
+};
+
+struct __declspec(uuid("c8c9c032-3c94-40e0-92f3-598920f00b57"))
+RemoteCommand;
+    // interface _Object
+    // [ default ] interface IRemoteCommand
+    // interface IDisposable
+    // [ default, source ] dispinterface IRemoteCommandEvents
+
+struct __declspec(uuid("2db7b40d-ae72-4b01-8846-82fb252b9e82"))
+ICommandTaskStateEventArg : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_NodeName (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ExitCode (
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_ErrorMessage (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_IsProxy (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("86816512-60c4-42f9-add8-76abf894ed57"))
+CommandTaskStateEventArg;
+    // interface _Object
+    // interface ITaskStateEventArg
+    // [ default ] interface ICommandTaskStateEventArg
+
+enum __declspec(uuid("0be038ea-69a8-3c61-9b1f-23a3cffb2325"))
+CommandOutputType
+{
+    CommandOutputType_Output = 0,
+    CommandOutputType_Error = 1,
+    CommandOutputType_Eof = 2
+};
+
+struct __declspec(uuid("32dca0f1-8ab7-4496-93be-391defced2fd"))
+ICommandOutputEventArg : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_NodeName (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Message (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Type (
+        /*[out,retval]*/ enum CommandOutputType * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("c20f07e6-fff9-42bb-bee6-47a025c74822"))
+CommandOutputEventArg;
+    // interface _Object
+    // [ default ] interface ICommandOutputEventArg
+
+struct __declspec(uuid("5a570dc3-8ec6-42a3-8dbb-4da8d98f39d0"))
+ICommandRawOutputEventArg : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_NodeName (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Output (
+        /*[out,retval]*/ SAFEARRAY * * pRetVal ) = 0;
+      virtual HRESULT __stdcall get_Type (
+        /*[out,retval]*/ enum CommandOutputType * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("531988b0-70ba-4ed4-b40a-2a35516d19ea"))
+CommandRawOutputEventArg;
+    // interface _Object
+    // [ default ] interface ICommandRawOutputEventArg
+
+struct __declspec(uuid("9ce35cdf-a433-4e02-b226-5d2c2143adbd"))
+IRemoteCommandEvents : IDispatch
+{};
+
+struct __declspec(uuid("66c6b7cd-a299-3911-b5ad-549c923210f4"))
+_ConnectionEventArg : IDispatch
+{};
+
+struct __declspec(uuid("31903496-53e6-384c-a25e-2e631850b46b"))
+_JobTemplateInfo : IDispatch
+{};
+
+struct __declspec(uuid("386c7c44-aa54-4683-b9c0-3653163be130"))
+ISchedulerV3 : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall Connect (
+        /*[in]*/ BSTR cluster ) = 0;
+      virtual HRESULT __stdcall GetUserPrivilege (
+        /*[out,retval]*/ enum UserPrivilege * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetInterfaceMode (
+        /*[in]*/ VARIANT_BOOL isConsole,
+        /*[in]*/ long hwnd ) = 0;
+      virtual HRESULT __stdcall GetServerVersion (
+        /*[out,retval]*/ struct IServerVersion * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateJob (
+        /*[out,retval]*/ struct ISchedulerJob * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenJob (
+        /*[in]*/ long Id,
+        /*[out,retval]*/ struct ISchedulerJob * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CloneJob (
+        /*[in]*/ long JobId,
+        /*[out,retval]*/ struct ISchedulerJob * * pRetVal ) = 0;
+      virtual HRESULT __stdcall AddHpcJob (
+        /*[in]*/ struct ISchedulerJob * job ) = 0;
+      virtual HRESULT __stdcall SubmitJob (
+        /*[in]*/ struct ISchedulerJob * job,
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR password ) = 0;
+      virtual HRESULT __stdcall SubmitJobById (
+        /*[in]*/ long JobId,
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR password ) = 0;
+      virtual HRESULT __stdcall CancelJob (
+        /*[in]*/ long JobId,
+        /*[in]*/ BSTR Message ) = 0;
+      virtual HRESULT __stdcall ConfigureJob (
+        /*[in]*/ long JobId ) = 0;
+      virtual HRESULT __stdcall GetJobList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetJobIdList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct IIntCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodeList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodeIdList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct IIntCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenNode (
+        /*[in]*/ long NodeId,
+        /*[out,retval]*/ struct ISchedulerNode * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenNodeByName (
+        /*[in]*/ BSTR NodeName,
+        /*[out,retval]*/ struct ISchedulerNode * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateTaskId (
+        /*[in]*/ long jobTaskId,
+        /*[out,retval]*/ struct ITaskId * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateParametricTaskId (
+        /*[in]*/ long jobTaskId,
+        /*[in]*/ long instanceId,
+        /*[out,retval]*/ struct ITaskId * * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetHpcEnvironmentVariable (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall get_EnvironmentVariables (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetClusterParameter (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall get_ClusterParameters (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetJobTemplateList (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodeGroupList (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodesInNodeGroup (
+        /*[in]*/ BSTR nodeGroup,
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateNameValueCollection (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateFilterCollection (
+        /*[out,retval]*/ struct IFilterCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateSortCollection (
+        /*[out,retval]*/ struct ISortCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateStringCollection (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateIntCollection (
+        /*[out,retval]*/ struct IIntCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateCommandInfo (
+        /*[in]*/ struct INameValueCollection * envs,
+        /*[in]*/ BSTR workDir,
+        /*[in]*/ BSTR StdIn,
+        /*[out,retval]*/ struct ICommandInfo * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateCommand (
+        /*[in]*/ BSTR CommandLine,
+        /*[in]*/ struct ICommandInfo * info,
+        /*[in]*/ struct IStringCollection * nodes,
+        /*[out,retval]*/ struct IRemoteCommand * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetCounters (
+        /*[out,retval]*/ struct ISchedulerCounters * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder1( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder2( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder3( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder4( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder5( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall DeleteCachedCredentials (
+        /*[in]*/ BSTR UserName ) = 0;
+      virtual HRESULT __stdcall SetCachedCredentials (
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR password ) = 0;
+      virtual HRESULT __stdcall Close ( ) = 0;
+    virtual HRESULT _VtblGapPlaceholder6( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall GetJobTemplateInfo (
+        /*[in]*/ BSTR jobTemplateName,
+        /*[out,retval]*/ struct _JobTemplateInfo * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CancelJob_2 (
+        /*[in]*/ long JobId,
+        /*[in]*/ BSTR Message,
+        /*[in]*/ VARIANT_BOOL isForced ) = 0;
+};
+
+struct __declspec(uuid("1b4e1239-5bf8-4447-98b7-826943d15fa5"))
+ISchedulerV3SP2 : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall Connect (
+        /*[in]*/ BSTR cluster ) = 0;
+      virtual HRESULT __stdcall GetUserPrivilege (
+        /*[out,retval]*/ enum UserPrivilege * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetInterfaceMode (
+        /*[in]*/ VARIANT_BOOL isConsole,
+        /*[in]*/ long hwnd ) = 0;
+      virtual HRESULT __stdcall GetServerVersion (
+        /*[out,retval]*/ struct IServerVersion * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateJob (
+        /*[out,retval]*/ struct ISchedulerJob * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenJob (
+        /*[in]*/ long Id,
+        /*[out,retval]*/ struct ISchedulerJob * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CloneJob (
+        /*[in]*/ long JobId,
+        /*[out,retval]*/ struct ISchedulerJob * * pRetVal ) = 0;
+      virtual HRESULT __stdcall AddHpcJob (
+        /*[in]*/ struct ISchedulerJob * job ) = 0;
+      virtual HRESULT __stdcall SubmitJob (
+        /*[in]*/ struct ISchedulerJob * job,
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR password ) = 0;
+      virtual HRESULT __stdcall SubmitJobById (
+        /*[in]*/ long JobId,
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR password ) = 0;
+      virtual HRESULT __stdcall CancelJob (
+        /*[in]*/ long JobId,
+        /*[in]*/ BSTR Message ) = 0;
+      virtual HRESULT __stdcall ConfigureJob (
+        /*[in]*/ long JobId ) = 0;
+      virtual HRESULT __stdcall GetJobList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetJobIdList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct IIntCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodeList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodeIdList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct IIntCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenNode (
+        /*[in]*/ long NodeId,
+        /*[out,retval]*/ struct ISchedulerNode * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenNodeByName (
+        /*[in]*/ BSTR NodeName,
+        /*[out,retval]*/ struct ISchedulerNode * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateTaskId (
+        /*[in]*/ long jobTaskId,
+        /*[out,retval]*/ struct ITaskId * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateParametricTaskId (
+        /*[in]*/ long jobTaskId,
+        /*[in]*/ long instanceId,
+        /*[out,retval]*/ struct ITaskId * * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetHpcEnvironmentVariable (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall get_EnvironmentVariables (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetClusterParameter (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall get_ClusterParameters (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetJobTemplateList (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodeGroupList (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodesInNodeGroup (
+        /*[in]*/ BSTR nodeGroup,
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateNameValueCollection (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateFilterCollection (
+        /*[out,retval]*/ struct IFilterCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateSortCollection (
+        /*[out,retval]*/ struct ISortCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateStringCollection (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateIntCollection (
+        /*[out,retval]*/ struct IIntCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateCommandInfo (
+        /*[in]*/ struct INameValueCollection * envs,
+        /*[in]*/ BSTR workDir,
+        /*[in]*/ BSTR StdIn,
+        /*[out,retval]*/ struct ICommandInfo * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateCommand (
+        /*[in]*/ BSTR CommandLine,
+        /*[in]*/ struct ICommandInfo * info,
+        /*[in]*/ struct IStringCollection * nodes,
+        /*[out,retval]*/ struct IRemoteCommand * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetCounters (
+        /*[out,retval]*/ struct ISchedulerCounters * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder1( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder2( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder3( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder4( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder5( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall DeleteCachedCredentials (
+        /*[in]*/ BSTR UserName ) = 0;
+      virtual HRESULT __stdcall SetCachedCredentials (
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR password ) = 0;
+      virtual HRESULT __stdcall Close ( ) = 0;
+    virtual HRESULT _VtblGapPlaceholder6( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall GetJobTemplateInfo (
+        /*[in]*/ BSTR jobTemplateName,
+        /*[out,retval]*/ struct _JobTemplateInfo * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CancelJob_2 (
+        /*[in]*/ long JobId,
+        /*[in]*/ BSTR Message,
+        /*[in]*/ VARIANT_BOOL isForced ) = 0;
+    virtual HRESULT _VtblGapPlaceholder7( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder8( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall CreatePool (
+        /*[in]*/ BSTR poolName,
+        /*[out,retval]*/ struct ISchedulerPool * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreatePool_2 (
+        /*[in]*/ BSTR poolName,
+        /*[in]*/ long poolWeight,
+        /*[out,retval]*/ struct ISchedulerPool * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenPool (
+        /*[in]*/ BSTR poolName,
+        /*[out,retval]*/ struct ISchedulerPool * * pRetVal ) = 0;
+      virtual HRESULT __stdcall DeletePool (
+        /*[in]*/ BSTR poolName ) = 0;
+      virtual HRESULT __stdcall DeletePool_2 (
+        /*[in]*/ BSTR poolName,
+        /*[in]*/ VARIANT_BOOL force ) = 0;
+    virtual HRESULT _VtblGapPlaceholder9( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall GetPoolList (
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetCertificateCredentials (
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR thumbprint ) = 0;
+      virtual HRESULT __stdcall SetCertificateCredentialsPfx (
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR pfxPassword,
+        /*[in]*/ SAFEARRAY * certBytes ) = 0;
+      virtual HRESULT __stdcall GetCertificateFromStore (
+        /*[in]*/ BSTR thumbprint,
+        /*[out]*/ IUnknown * * pfxPassword,
+        /*[out,retval]*/ SAFEARRAY * * pRetVal ) = 0;
+      virtual HRESULT __stdcall EnrollCertificate (
+        /*[in]*/ BSTR templateName,
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateCommand_2 (
+        /*[in]*/ BSTR CommandLine,
+        /*[in]*/ struct ICommandInfo * info,
+        /*[in]*/ struct IStringCollection * nodes,
+        /*[in]*/ VARIANT_BOOL redirectOutput,
+        /*[out,retval]*/ struct IRemoteCommand * * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("6c92f1b5-8cf0-444b-94c7-f1ef8d89f023"))
+ISchedulerV3SP3 : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall Connect (
+        /*[in]*/ BSTR cluster ) = 0;
+      virtual HRESULT __stdcall GetUserPrivilege (
+        /*[out,retval]*/ enum UserPrivilege * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetInterfaceMode (
+        /*[in]*/ VARIANT_BOOL isConsole,
+        /*[in]*/ long hwnd ) = 0;
+      virtual HRESULT __stdcall GetServerVersion (
+        /*[out,retval]*/ struct IServerVersion * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateJob (
+        /*[out,retval]*/ struct ISchedulerJob * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenJob (
+        /*[in]*/ long Id,
+        /*[out,retval]*/ struct ISchedulerJob * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CloneJob (
+        /*[in]*/ long JobId,
+        /*[out,retval]*/ struct ISchedulerJob * * pRetVal ) = 0;
+      virtual HRESULT __stdcall AddHpcJob (
+        /*[in]*/ struct ISchedulerJob * job ) = 0;
+      virtual HRESULT __stdcall SubmitJob (
+        /*[in]*/ struct ISchedulerJob * job,
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR password ) = 0;
+      virtual HRESULT __stdcall SubmitJobById (
+        /*[in]*/ long JobId,
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR password ) = 0;
+      virtual HRESULT __stdcall CancelJob (
+        /*[in]*/ long JobId,
+        /*[in]*/ BSTR Message ) = 0;
+      virtual HRESULT __stdcall ConfigureJob (
+        /*[in]*/ long JobId ) = 0;
+      virtual HRESULT __stdcall GetJobList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetJobIdList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct IIntCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodeList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodeIdList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct IIntCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenNode (
+        /*[in]*/ long NodeId,
+        /*[out,retval]*/ struct ISchedulerNode * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenNodeByName (
+        /*[in]*/ BSTR NodeName,
+        /*[out,retval]*/ struct ISchedulerNode * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateTaskId (
+        /*[in]*/ long jobTaskId,
+        /*[out,retval]*/ struct ITaskId * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateParametricTaskId (
+        /*[in]*/ long jobTaskId,
+        /*[in]*/ long instanceId,
+        /*[out,retval]*/ struct ITaskId * * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetHpcEnvironmentVariable (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall get_EnvironmentVariables (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetClusterParameter (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall get_ClusterParameters (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetJobTemplateList (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodeGroupList (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodesInNodeGroup (
+        /*[in]*/ BSTR nodeGroup,
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateNameValueCollection (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateFilterCollection (
+        /*[out,retval]*/ struct IFilterCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateSortCollection (
+        /*[out,retval]*/ struct ISortCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateStringCollection (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateIntCollection (
+        /*[out,retval]*/ struct IIntCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateCommandInfo (
+        /*[in]*/ struct INameValueCollection * envs,
+        /*[in]*/ BSTR workDir,
+        /*[in]*/ BSTR StdIn,
+        /*[out,retval]*/ struct ICommandInfo * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateCommand (
+        /*[in]*/ BSTR CommandLine,
+        /*[in]*/ struct ICommandInfo * info,
+        /*[in]*/ struct IStringCollection * nodes,
+        /*[out,retval]*/ struct IRemoteCommand * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetCounters (
+        /*[out,retval]*/ struct ISchedulerCounters * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder1( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder2( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder3( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder4( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder5( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall DeleteCachedCredentials (
+        /*[in]*/ BSTR UserName ) = 0;
+      virtual HRESULT __stdcall SetCachedCredentials (
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR password ) = 0;
+      virtual HRESULT __stdcall Close ( ) = 0;
+    virtual HRESULT _VtblGapPlaceholder6( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall GetJobTemplateInfo (
+        /*[in]*/ BSTR jobTemplateName,
+        /*[out,retval]*/ struct _JobTemplateInfo * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CancelJob_2 (
+        /*[in]*/ long JobId,
+        /*[in]*/ BSTR Message,
+        /*[in]*/ VARIANT_BOOL isForced ) = 0;
+    virtual HRESULT _VtblGapPlaceholder7( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder8( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall CreatePool (
+        /*[in]*/ BSTR poolName,
+        /*[out,retval]*/ struct ISchedulerPool * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreatePool_2 (
+        /*[in]*/ BSTR poolName,
+        /*[in]*/ long poolWeight,
+        /*[out,retval]*/ struct ISchedulerPool * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenPool (
+        /*[in]*/ BSTR poolName,
+        /*[out,retval]*/ struct ISchedulerPool * * pRetVal ) = 0;
+      virtual HRESULT __stdcall DeletePool (
+        /*[in]*/ BSTR poolName ) = 0;
+      virtual HRESULT __stdcall DeletePool_2 (
+        /*[in]*/ BSTR poolName,
+        /*[in]*/ VARIANT_BOOL force ) = 0;
+    virtual HRESULT _VtblGapPlaceholder9( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall GetPoolList (
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetCertificateCredentials (
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR thumbprint ) = 0;
+      virtual HRESULT __stdcall SetCertificateCredentialsPfx (
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR pfxPassword,
+        /*[in]*/ SAFEARRAY * certBytes ) = 0;
+      virtual HRESULT __stdcall GetCertificateFromStore (
+        /*[in]*/ BSTR thumbprint,
+        /*[out]*/ IUnknown * * pfxPassword,
+        /*[out,retval]*/ SAFEARRAY * * pRetVal ) = 0;
+      virtual HRESULT __stdcall EnrollCertificate (
+        /*[in]*/ BSTR templateName,
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateCommand_2 (
+        /*[in]*/ BSTR CommandLine,
+        /*[in]*/ struct ICommandInfo * info,
+        /*[in]*/ struct IStringCollection * nodes,
+        /*[in]*/ VARIANT_BOOL redirectOutput,
+        /*[out,retval]*/ struct IRemoteCommand * * pRetVal ) = 0;
+};
+
+struct __declspec(uuid("2b2e7861-777d-4c00-9cae-38f83e1c7b53"))
+IScheduler : IDispatch
+{
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall Connect (
+        /*[in]*/ BSTR cluster ) = 0;
+      virtual HRESULT __stdcall GetUserPrivilege (
+        /*[out,retval]*/ enum UserPrivilege * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetInterfaceMode (
+        /*[in]*/ VARIANT_BOOL isConsole,
+        /*[in]*/ long hwnd ) = 0;
+      virtual HRESULT __stdcall GetServerVersion (
+        /*[out,retval]*/ struct IServerVersion * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateJob (
+        /*[out,retval]*/ struct ISchedulerJob * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenJob (
+        /*[in]*/ long Id,
+        /*[out,retval]*/ struct ISchedulerJob * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CloneJob (
+        /*[in]*/ long JobId,
+        /*[out,retval]*/ struct ISchedulerJob * * pRetVal ) = 0;
+      virtual HRESULT __stdcall AddHpcJob (
+        /*[in]*/ struct ISchedulerJob * job ) = 0;
+      virtual HRESULT __stdcall SubmitJob (
+        /*[in]*/ struct ISchedulerJob * job,
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR password ) = 0;
+      virtual HRESULT __stdcall SubmitJobById (
+        /*[in]*/ long JobId,
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR password ) = 0;
+      virtual HRESULT __stdcall CancelJob (
+        /*[in]*/ long JobId,
+        /*[in]*/ BSTR Message ) = 0;
+      virtual HRESULT __stdcall ConfigureJob (
+        /*[in]*/ long JobId ) = 0;
+      virtual HRESULT __stdcall GetJobList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetJobIdList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct IIntCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodeList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodeIdList (
+        /*[in]*/ struct IFilterCollection * filter,
+        /*[in]*/ struct ISortCollection * sort,
+        /*[out,retval]*/ struct IIntCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenNode (
+        /*[in]*/ long NodeId,
+        /*[out,retval]*/ struct ISchedulerNode * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenNodeByName (
+        /*[in]*/ BSTR NodeName,
+        /*[out,retval]*/ struct ISchedulerNode * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateTaskId (
+        /*[in]*/ long jobTaskId,
+        /*[out,retval]*/ struct ITaskId * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateParametricTaskId (
+        /*[in]*/ long jobTaskId,
+        /*[in]*/ long instanceId,
+        /*[out,retval]*/ struct ITaskId * * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetHpcEnvironmentVariable (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall get_EnvironmentVariables (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetClusterParameter (
+        /*[in]*/ BSTR Name,
+        /*[in]*/ BSTR Value ) = 0;
+      virtual HRESULT __stdcall get_ClusterParameters (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetJobTemplateList (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodeGroupList (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetNodesInNodeGroup (
+        /*[in]*/ BSTR nodeGroup,
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateNameValueCollection (
+        /*[out,retval]*/ struct INameValueCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateFilterCollection (
+        /*[out,retval]*/ struct IFilterCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateSortCollection (
+        /*[out,retval]*/ struct ISortCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateStringCollection (
+        /*[out,retval]*/ struct IStringCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateIntCollection (
+        /*[out,retval]*/ struct IIntCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateCommandInfo (
+        /*[in]*/ struct INameValueCollection * envs,
+        /*[in]*/ BSTR workDir,
+        /*[in]*/ BSTR StdIn,
+        /*[out,retval]*/ struct ICommandInfo * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateCommand (
+        /*[in]*/ BSTR CommandLine,
+        /*[in]*/ struct ICommandInfo * info,
+        /*[in]*/ struct IStringCollection * nodes,
+        /*[out,retval]*/ struct IRemoteCommand * * pRetVal ) = 0;
+      virtual HRESULT __stdcall GetCounters (
+        /*[out,retval]*/ struct ISchedulerCounters * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder1( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder2( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder3( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder4( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder5( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall DeleteCachedCredentials (
+        /*[in]*/ BSTR UserName ) = 0;
+      virtual HRESULT __stdcall SetCachedCredentials (
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR password ) = 0;
+      virtual HRESULT __stdcall Close ( ) = 0;
+    virtual HRESULT _VtblGapPlaceholder6( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall GetJobTemplateInfo (
+        /*[in]*/ BSTR jobTemplateName,
+        /*[out,retval]*/ struct _JobTemplateInfo * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CancelJob_2 (
+        /*[in]*/ long JobId,
+        /*[in]*/ BSTR Message,
+        /*[in]*/ VARIANT_BOOL isForced ) = 0;
+    virtual HRESULT _VtblGapPlaceholder7( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder8( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall CreatePool (
+        /*[in]*/ BSTR poolName,
+        /*[out,retval]*/ struct ISchedulerPool * * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreatePool_2 (
+        /*[in]*/ BSTR poolName,
+        /*[in]*/ long poolWeight,
+        /*[out,retval]*/ struct ISchedulerPool * * pRetVal ) = 0;
+      virtual HRESULT __stdcall OpenPool (
+        /*[in]*/ BSTR poolName,
+        /*[out,retval]*/ struct ISchedulerPool * * pRetVal ) = 0;
+      virtual HRESULT __stdcall DeletePool (
+        /*[in]*/ BSTR poolName ) = 0;
+      virtual HRESULT __stdcall DeletePool_2 (
+        /*[in]*/ BSTR poolName,
+        /*[in]*/ VARIANT_BOOL force ) = 0;
+    virtual HRESULT _VtblGapPlaceholder9( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall GetPoolList (
+        /*[out,retval]*/ struct ISchedulerCollection * * pRetVal ) = 0;
+      virtual HRESULT __stdcall SetCertificateCredentials (
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR thumbprint ) = 0;
+      virtual HRESULT __stdcall SetCertificateCredentialsPfx (
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR pfxPassword,
+        /*[in]*/ SAFEARRAY * certBytes ) = 0;
+      virtual HRESULT __stdcall GetCertificateFromStore (
+        /*[in]*/ BSTR thumbprint,
+        /*[out]*/ IUnknown * * pfxPassword,
+        /*[out,retval]*/ SAFEARRAY * * pRetVal ) = 0;
+      virtual HRESULT __stdcall EnrollCertificate (
+        /*[in]*/ BSTR templateName,
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+      virtual HRESULT __stdcall CreateCommand_2 (
+        /*[in]*/ BSTR CommandLine,
+        /*[in]*/ struct ICommandInfo * info,
+        /*[in]*/ struct IStringCollection * nodes,
+        /*[in]*/ VARIANT_BOOL redirectOutput,
+        /*[out,retval]*/ struct IRemoteCommand * * pRetVal ) = 0;
+    virtual HRESULT _VtblGapPlaceholder10( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder11( ) { return E_NOTIMPL; }
+    virtual HRESULT _VtblGapPlaceholder12( ) { return E_NOTIMPL; }
+      virtual HRESULT __stdcall GetActiveHeadNode (
+        /*[out,retval]*/ BSTR * pRetVal ) = 0;
+};
+
+//
+// Named GUID constants initializations
+//
+
+extern "C" const GUID __declspec(selectany) LIBID_Microsoft_Hpc_Scheduler =
+    {0xc45d10a1,0x54e8,0x420b,{0xa0,0x52,0x71,0x9d,0x47,0xec,0x7c,0x16}};
+extern "C" const GUID __declspec(selectany) IID_IConnectionEventArg =
+    {0x36417eda,0x62a1,0x4f0c,{0xbd,0x09,0xb7,0xc1,0xa7,0xfc,0x8f,0x51}};
+extern "C" const GUID __declspec(selectany) CLSID_ConnectionEventArg =
+    {0x36966996,0xccf3,0x460c,{0x8a,0xdf,0x89,0x58,0x96,0x4e,0xc5,0xfc}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerCollection =
+    {0x1e892b76,0xac3f,0x4732,{0x97,0x35,0x7d,0x7b,0x24,0x6d,0x9e,0x31}};
+extern "C" const GUID __declspec(selectany) CLSID_FilterCollection =
+    {0x392f3fe6,0xcc93,0x4f88,{0xa6,0x92,0x73,0x58,0x75,0xcc,0xba,0x97}};
+extern "C" const GUID __declspec(selectany) IID_IIntCollection =
+    {0xbf495dab,0x3237,0x4f58,{0xba,0xbe,0xed,0x51,0x21,0x7b,0xd6,0x65}};
+extern "C" const GUID __declspec(selectany) CLSID_IntCollection =
+    {0x46fe2eba,0xf456,0x4284,{0xa3,0xbd,0xd3,0xfd,0xf6,0x52,0x10,0x12}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerPool =
+    {0x78d5f3f4,0x3562,0x4975,{0xaa,0xf0,0x8e,0xc1,0xcb,0x15,0x41,0xf6}};
+extern "C" const GUID __declspec(selectany) CLSID_JobTemplateInfo =
+    {0x61caf097,0x8566,0x49d2,{0xac,0x56,0x4b,0x4f,0xda,0xd5,0x31,0xb3}};
+extern "C" const GUID __declspec(selectany) IID_INameValue =
+    {0xfb04ab87,0xfc05,0x4374,{0x8d,0xae,0x59,0xd8,0x46,0x33,0x37,0x9b}};
+extern "C" const GUID __declspec(selectany) CLSID_NameValue =
+    {0x6dc2d910,0x42db,0x4c6a,{0xb4,0xec,0x49,0xa6,0x67,0x61,0xf7,0x39}};
+extern "C" const GUID __declspec(selectany) IID_INameValueCollection =
+    {0xbb14b74b,0x0bb7,0x4a01,{0x8e,0x05,0xa9,0x88,0xd6,0x36,0xb5,0xea}};
+extern "C" const GUID __declspec(selectany) CLSID_NameValueCollection =
+    {0x456de413,0x6e74,0x49bf,{0x83,0x34,0xda,0xfb,0x7d,0x81,0xd4,0x73}};
+extern "C" const GUID __declspec(selectany) IID_IFilterCollection =
+    {0xef89423b,0xf79b,0x466f,{0x81,0x27,0xbd,0xab,0x91,0x0a,0xe6,0xc1}};
+extern "C" const GUID __declspec(selectany) IID_IPropertyIdCollection =
+    {0xfb6d2a92,0x3c48,0x4237,{0xb3,0x00,0xfc,0x3e,0x31,0xc2,0xfa,0xcc}};
+extern "C" const GUID __declspec(selectany) CLSID_PropertyIdCollection =
+    {0x0224915a,0x84af,0x4863,{0x93,0x16,0x30,0x37,0x71,0x39,0xf2,0x36}};
+extern "C" const GUID __declspec(selectany) CLSID_Scheduler =
+    {0x3c376723,0x5ff9,0x4c55,{0x89,0xbb,0xe9,0xe7,0xa3,0x15,0x77,0xe1}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerCore =
+    {0xd13525e7,0xe7e9,0x4fcb,{0xb9,0x7c,0x2f,0xfa,0xa3,0xf0,0x9c,0xcf}};
+extern "C" const GUID __declspec(selectany) CLSID_SchedulerCore =
+    {0x558f7caa,0xc675,0x4824,{0xa6,0x6a,0xbc,0x28,0x6a,0xdb,0xb2,0x2d}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerCounters =
+    {0x1fd3409e,0x4b7c,0x4eeb,{0x9b,0xd9,0x86,0x72,0x38,0xeb,0x19,0x1f}};
+extern "C" const GUID __declspec(selectany) CLSID_SchedulerCounters =
+    {0x256241b2,0x42e8,0x41fc,{0xae,0xfb,0x36,0x5c,0xac,0x3e,0xf7,0xa8}};
+extern "C" const GUID __declspec(selectany) CLSID_SchedulerJob =
+    {0xb2934cf1,0xfbd1,0x42a0,{0x87,0x67,0x8a,0xc5,0xdd,0xe1,0x61,0x8d}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerJobCounters =
+    {0x6d3f0397,0xe8ac,0x4369,{0xa0,0x48,0xe7,0x02,0x86,0xe5,0x75,0xb8}};
+extern "C" const GUID __declspec(selectany) CLSID_SchedulerJobCounters =
+    {0x7b2f3e5d,0xca77,0x4ad5,{0x9a,0x5c,0x72,0x92,0xe6,0x84,0xa7,0x90}};
+extern "C" const GUID __declspec(selectany) IID_IJobStateEventArg =
+    {0x337c8713,0xe312,0x4c69,{0xb0,0x23,0xde,0xc2,0xdd,0x6b,0x38,0x1f}};
+extern "C" const GUID __declspec(selectany) CLSID_JobStateEventArg =
+    {0xc6f1db8b,0x1504,0x4ceb,{0xa1,0x78,0x00,0xe7,0xbc,0x9f,0x02,0x85}};
+extern "C" const GUID __declspec(selectany) IID_ITaskStateEventArg =
+    {0x70d8316e,0x6dab,0x4e99,{0xaf,0x3b,0xb3,0x9f,0xb9,0xaf,0xdc,0x3e}};
+extern "C" const GUID __declspec(selectany) CLSID_TaskStateEventArg =
+    {0x6494eef8,0xf105,0x4ad6,{0x90,0xc5,0x97,0x83,0xb6,0x3a,0x1f,0x2c}};
+extern "C" const GUID __declspec(selectany) DIID_ISchedulerJobEvents =
+    {0x47956563,0x23c2,0x4270,{0x80,0xc8,0x91,0xa3,0xb3,0x69,0xac,0xb7}};
+extern "C" const GUID __declspec(selectany) CLSID_SchedulerNode =
+    {0xf9d5914b,0xac7a,0x4a77,{0x85,0x12,0x20,0x73,0xbb,0x99,0x3b,0x36}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerNodeCounters =
+    {0x4f4af2fe,0x4ee2,0x4a7f,{0xb5,0x46,0x39,0x8f,0x6b,0xaf,0x40,0xca}};
+extern "C" const GUID __declspec(selectany) CLSID_SchedulerNodeCounters =
+    {0xb9ccbc76,0x7756,0x42a9,{0x90,0xa1,0xdd,0x6f,0x75,0x0b,0x9d,0x60}};
+extern "C" const GUID __declspec(selectany) IID_INodeStateEventArg =
+    {0x36f87816,0x1fd7,0x48d0,{0xb7,0xe7,0x3f,0xc5,0x92,0x0e,0x3c,0xe1}};
+extern "C" const GUID __declspec(selectany) CLSID_NodeStateEventArg =
+    {0x373e9f7b,0xe11f,0x40bb,{0xbf,0xfa,0x72,0x8c,0x8d,0x32,0x97,0x1a}};
+extern "C" const GUID __declspec(selectany) DIID_ISchedulerNodeEvents =
+    {0x8644eb2d,0xb177,0x43f7,{0x8b,0xb5,0x53,0xc7,0xd3,0xec,0xb6,0x05}};
+extern "C" const GUID __declspec(selectany) IID_INodeReachableEventArg =
+    {0x8a2c30c9,0xa2b4,0x4a27,{0x81,0xca,0x25,0x08,0x9d,0xaf,0xd5,0xad}};
+extern "C" const GUID __declspec(selectany) CLSID_NodeReachableEventArg =
+    {0xbb7b872a,0xf358,0x4b52,{0x99,0x6d,0xd4,0x00,0x21,0x96,0x89,0x08}};
+extern "C" const GUID __declspec(selectany) DIID_ISchedulerNodeReachableEvents =
+    {0xdfae8bed,0x89b4,0x4536,{0x8a,0x2a,0x20,0x8c,0x84,0xcd,0xf8,0x7a}};
+extern "C" const GUID __declspec(selectany) CLSID_SchedulerPool =
+    {0x351f693a,0x5c82,0x45f3,{0x92,0x8f,0x70,0xe3,0x15,0x18,0xac,0xcd}};
+extern "C" const GUID __declspec(selectany) CLSID_SchedulerTask =
+    {0x3f3e4c6a,0x4400,0x4e60,{0xa9,0x74,0x0f,0x4d,0x6f,0x34,0xce,0x53}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerTaskCounters =
+    {0x985d81b2,0x64fd,0x4e98,{0x82,0x70,0x0c,0xb9,0x91,0x55,0x19,0x9f}};
+extern "C" const GUID __declspec(selectany) CLSID_SchedulerTaskCounters =
+    {0xa38ee29e,0x09d0,0x4b5a,{0x9f,0x4b,0x1c,0xe7,0x78,0x96,0x09,0x46}};
+extern "C" const GUID __declspec(selectany) IID_IServerVersion =
+    {0xb8579c31,0x91f3,0x441c,{0x8b,0xb9,0xac,0x5e,0x4e,0x5d,0x12,0x00}};
+extern "C" const GUID __declspec(selectany) CLSID_ServerVersion =
+    {0x352f26d5,0xf0ad,0x491e,{0x85,0x85,0x55,0xb5,0x9d,0x03,0xcd,0xac}};
+extern "C" const GUID __declspec(selectany) IID_ISortCollection =
+    {0x3f5253c6,0x64a1,0x4148,{0xaa,0x2c,0x13,0xaa,0x66,0x04,0x0a,0x80}};
+extern "C" const GUID __declspec(selectany) CLSID_SortCollection =
+    {0x39e4e48e,0x7f51,0x433d,{0xac,0x20,0x8a,0xc7,0xc8,0xea,0xa2,0x28}};
+extern "C" const GUID __declspec(selectany) IID_IStringCollection =
+    {0x0449fa77,0x10bd,0x4113,{0x9e,0x3e,0x2d,0xc7,0x12,0xeb,0xa3,0x6c}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerNodeV2 =
+    {0x07c12c04,0xfb39,0x437f,{0xb2,0x42,0x69,0x1b,0x80,0x2e,0x30,0xa3}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerNodeV3 =
+    {0xf3b0f4d7,0xfae3,0x429d,{0xb7,0x5f,0x10,0x27,0x8a,0x3b,0xec,0x07}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerNodeV3SP1 =
+    {0x18e9ee1d,0xd223,0x46e1,{0x8c,0x58,0xe0,0x0f,0x7d,0x1d,0x2e,0xd4}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerNode =
+    {0xdf63e52f,0x3d77,0x467c,{0x84,0x8f,0xc9,0x6c,0xd9,0x5c,0xd0,0xd9}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerTaskV2 =
+    {0x8a16a4a9,0x95a9,0x40cb,{0x90,0x27,0xc8,0x4b,0xb2,0x76,0x46,0xdc}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerTaskV3 =
+    {0xef2125b9,0x9c03,0x4948,{0xb4,0xc1,0x85,0x9c,0x9c,0x94,0xcd,0xd4}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerTask =
+    {0x9b7df4b9,0x18ed,0x42b0,{0x83,0x64,0xb1,0xf7,0xa0,0x34,0xd4,0x92}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerJobV2 =
+    {0x9348e87e,0x5917,0x48ce,{0x98,0x89,0xd6,0x66,0xea,0x4e,0x99,0x37}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerJobV3 =
+    {0x0aea8629,0x72fb,0x4afa,{0xae,0x88,0x41,0x92,0x73,0xd3,0xdb,0x50}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerJobV3SP1 =
+    {0xd7449a23,0xd29d,0x4414,{0xb7,0x2d,0xc5,0x82,0xdb,0xab,0xda,0x14}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerJobV3SP2 =
+    {0x065be3ad,0x7981,0x49c2,{0xb7,0xe4,0xb3,0x4e,0x3e,0x01,0xf3,0x84}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerJob =
+    {0x7b713f15,0x8de0,0x45cc,{0x8d,0x8c,0xf0,0x90,0xb8,0x87,0x61,0x6b}};
+extern "C" const GUID __declspec(selectany) CLSID_StringCollection =
+    {0x59fea435,0x088a,0x4459,{0xbe,0x0e,0x9d,0x08,0x1a,0x67,0x33,0x17}};
+extern "C" const GUID __declspec(selectany) IID_ICommandInfo =
+    {0x03811174,0x809c,0x4143,{0xb4,0x4c,0xbb,0xaa,0x1a,0xd8,0xde,0x67}};
+extern "C" const GUID __declspec(selectany) CLSID_CommandInfo =
+    {0x6b8fb453,0x9e59,0x4349,{0x81,0x16,0xf5,0xd1,0xa6,0xc3,0x45,0x50}};
+extern "C" const GUID __declspec(selectany) IID_IRemoteCommand =
+    {0xf8d669bc,0x0579,0x41b9,{0xac,0x26,0x38,0x4c,0x3c,0x8e,0x06,0xf8}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerV2 =
+    {0xd0ed926a,0x6e0c,0x11dc,{0xa9,0x24,0xab,0xc7,0x56,0xd8,0x95,0x93}};
+extern "C" const GUID __declspec(selectany) CLSID_RemoteCommand =
+    {0xc8c9c032,0x3c94,0x40e0,{0x92,0xf3,0x59,0x89,0x20,0xf0,0x0b,0x57}};
+extern "C" const GUID __declspec(selectany) IID_ICommandTaskStateEventArg =
+    {0x2db7b40d,0xae72,0x4b01,{0x88,0x46,0x82,0xfb,0x25,0x2b,0x9e,0x82}};
+extern "C" const GUID __declspec(selectany) CLSID_CommandTaskStateEventArg =
+    {0x86816512,0x60c4,0x42f9,{0xad,0xd8,0x76,0xab,0xf8,0x94,0xed,0x57}};
+extern "C" const GUID __declspec(selectany) IID_ICommandOutputEventArg =
+    {0x32dca0f1,0x8ab7,0x4496,{0x93,0xbe,0x39,0x1d,0xef,0xce,0xd2,0xfd}};
+extern "C" const GUID __declspec(selectany) CLSID_CommandOutputEventArg =
+    {0xc20f07e6,0xfff9,0x42bb,{0xbe,0xe6,0x47,0xa0,0x25,0xc7,0x48,0x22}};
+extern "C" const GUID __declspec(selectany) IID_ICommandRawOutputEventArg =
+    {0x5a570dc3,0x8ec6,0x42a3,{0x8d,0xbb,0x4d,0xa8,0xd9,0x8f,0x39,0xd0}};
+extern "C" const GUID __declspec(selectany) CLSID_CommandRawOutputEventArg =
+    {0x531988b0,0x70ba,0x4ed4,{0xb4,0x0a,0x2a,0x35,0x51,0x6d,0x19,0xea}};
+extern "C" const GUID __declspec(selectany) DIID_IRemoteCommandEvents =
+    {0x9ce35cdf,0xa433,0x4e02,{0xb2,0x26,0x5d,0x2c,0x21,0x43,0xad,0xbd}};
+extern "C" const GUID __declspec(selectany) IID__ConnectionEventArg =
+    {0x66c6b7cd,0xa299,0x3911,{0xb5,0xad,0x54,0x9c,0x92,0x32,0x10,0xf4}};
+extern "C" const GUID __declspec(selectany) IID__JobTemplateInfo =
+    {0x31903496,0x53e6,0x384c,{0xa2,0x5e,0x2e,0x63,0x18,0x50,0xb4,0x6b}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerV3 =
+    {0x386c7c44,0xaa54,0x4683,{0xb9,0xc0,0x36,0x53,0x16,0x3b,0xe1,0x30}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerV3SP2 =
+    {0x1b4e1239,0x5bf8,0x4447,{0x98,0xb7,0x82,0x69,0x43,0xd1,0x5f,0xa5}};
+extern "C" const GUID __declspec(selectany) IID_ISchedulerV3SP3 =
+    {0x6c92f1b5,0x8cf0,0x444b,{0x94,0xc7,0xf1,0xef,0x8d,0x89,0xf0,0x23}};
+extern "C" const GUID __declspec(selectany) IID_IScheduler =
+    {0x2b2e7861,0x777d,0x4c00,{0x9c,0xae,0x38,0xf8,0x3e,0x1c,0x7b,0x53}};
+
+#pragma pack(pop)

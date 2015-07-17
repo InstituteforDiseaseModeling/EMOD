@@ -1,0 +1,42 @@
+{
+    "Default_Config_Path": "defaults\\generic_scenario_default_config.json", 
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Birth_Rate_Dependence": "POPULATION_DEP_RATE", 
+            "Demographics_Filename": "generic_scenarios_demographics.json", 
+            "MORTALITY": {
+                "Mortality_Time_Course": "MORTALITY_AFTER_INFECTIOUS", 
+                "Mortality_Blocking_Immunity_Duration_Before_Decay": 90
+            }, 
+            "IMMUNITY": {
+                "Transmission_Blocking_Immunity_Decay_Rate": 0.01, 
+                "Acquisition_Blocking_Immunity_Duration_Before_Decay": 90, 
+                "Transmission_Blocking_Immunity_Duration_Before_Decay": 90, 
+                "Acquisition_Blocking_Immunity_Decay_Rate": 0.01, 
+                "Enable_Immune_Decay": 0
+            }, 
+            "SAMPLING": {
+                "Sample_Rate_Birth": 1
+            }, 
+            "Enable_Demographics_Birth": 1
+        }, 
+        "DISEASE": {
+            "INFECTIOUSNESS": {
+                "Base_Infectivity": 2.5
+            }, 
+            "INCUBATION": {
+                "Incubation_Period_Distribution": "EXPONENTIAL_DURATION"
+            }
+        }, 
+        "PRIMARY": {
+            "Run_Number": 1, 
+            "Simulation_Duration": 3650, 
+            "Config_Name": "04_SEIR_VitalDynamics", 
+            "Geography": "SamplesInput"
+        }, 
+        "FUDGE_FACTORS": {
+            "x_Other_Mortality": 10, 
+            "x_Birth": 10
+        }
+    }
+}

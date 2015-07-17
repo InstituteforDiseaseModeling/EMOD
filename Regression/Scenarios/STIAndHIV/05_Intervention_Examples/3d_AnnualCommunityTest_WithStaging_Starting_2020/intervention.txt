@@ -1,0 +1,11 @@
+Specification:
+--------------
+Starting on Jan 1, 2020, and annually thereafter on the first of the year, 50% of the population receives home/community-based testing and staging, of whom 80% immediately present for pre-ART or ART (depending on outcome of staging) at existing clinics and 20% resume previous care-seeking behavior.
+
+
+Implementation Notes:
+---------------------
+On Jan 1, 2020, and repeating every 12 time steps (with dt=30), 50% of all reachable individuals are have blood drawn, and are staged for ART via a CD4 agnostic diagnostic; ineligible individuals are then staged for ART by CD4.Individuals found eligible for ART are pushed through an HIVRandomChoice where 80% broadcast "OnART0", and 20% have their cascade state set to "", and broadcast "NoTrigger".  Similarly, individuals found ineligible for ART are pushed through an HIVRandomChoice, where 80% broadcast OnPreART0, and 10% reset their cascade state and broadcast "NoTrigger".
+
+
+WARNING: StandardInterventionDistributionEventCoordinator should be extended to allow time between repetitions to be specified in Time, not time steps.

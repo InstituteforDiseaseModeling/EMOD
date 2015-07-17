@@ -1,0 +1,12 @@
+Specification:
+--------------
+Starting on Jan 1, 2020, all those testing positive are initiated in ART or pre-ART in the same model timestep, with no delays, and also with no loss to follow-up between testing and pre-ART/ART.
+
+
+Implementation Notes:
+---------------------
+In ARTStaging, the fixed-delay muxer is changed into time-varying muxer with a delay period of 0 after 2020.  Similarly the HIVRandomChoice in ARTStaging is replaced by a HIVPiecewiseByYearAndSexDiagnostic with a probability of success of 0.85 before 2020, and 1.0 after 2020.
+
+In LinkingToART and LinkingToPreART, an additional HIVPiecewiseByYearAndSex diagnostic is added to capture all link-losses after 2020, and divert them into OnART0 or OnPreART0 respectively.
+
+In OnART, another HIVPiecewiseByYearAndSexDiagnostic causes a delay only before 2020 (as in scenario 11a).

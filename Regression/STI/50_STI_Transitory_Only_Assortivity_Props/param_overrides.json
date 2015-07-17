@@ -1,0 +1,39 @@
+{
+    "Default_Config_Path": "./defaults/sti_default_config.json", 
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Enable_Vital_Dynamics": 0,
+            "Demographics_Filename": "../../HIV/input/SA_UN_demographics.compiled.json;PFA_overlay_Assort_Props.json", 
+            "MORTALITY": {
+                "Base_Mortality": 0.01, 
+                "Immunity_Mortality_Factor": 0.5
+            }
+        }, 
+        "DISEASE": {
+            "INFECTIOUSNESS": {
+                "Base_Infectivity": 10.0, 
+                "Infectious_Period_Mean": 365
+            }, 
+            "INCUBATION": {
+                "Base_Incubation_Period": 1
+            },
+            "Enable_Disease_Mortality": 0
+        }, 
+        "PRIMARY": {
+            "Disable_IP_Whitelist" : 1,
+            "Run_Number": 1, 
+            "Simulation_Duration": 1500, 
+            "Config_Name": "50_STI_Transitory_Only_Assortivity_Props"
+        }, 
+        "STI": {
+            "Report_Relationship_Start" : 1,
+            "PFA_Update_Period_Transitory": 30.0, 
+            "Marriage_Formation_Rate_Heterosexual": 0.0,
+            "Informal_Formation_Rate_Heterosexual": 0.0,
+            "Condom_Usage_Probability_in_Transitory_Relationships_Early": 0.0,
+            "Condom_Usage_Probability_in_Transitory_Relationships_Late": 0.0,
+            "Condom_Usage_Probability_in_Transitory_Relationships_Midyear": 2000,
+            "Condom_Usage_Probability_in_Transitory_Relationships_Rate": 0
+        }
+    }
+}

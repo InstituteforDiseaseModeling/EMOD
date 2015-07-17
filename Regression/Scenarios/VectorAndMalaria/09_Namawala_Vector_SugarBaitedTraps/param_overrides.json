@@ -1,0 +1,47 @@
+{
+    "Default_Config_Path": "defaults/vector_scenario_default_config.json",
+    "parameters": {
+        "CAMPAIGNS": {
+            "Enable_Interventions": 1
+        },
+        "CLIMATE": {
+            "Air_Temperature_Filename": "Namawala_single_node_air_temperature_daily.bin",
+            "Land_Temperature_Filename": "Namawala_single_node_land_temperature_daily.bin",
+            "Rainfall_Filename": "Namawala_single_node_rainfall_daily.bin",
+            "Relative_Humidity_Filename": "Namawala_single_node_relative_humidity_daily.bin"
+        },
+        "DEMOGRAPHICS": {
+            "Demographics_Filename": "Namawala_single_node_demographics.json"
+        },
+        "PRIMARY": {
+            "Config_Name": "PrimaryScenarios_9_Namawala_Vector_SugarBaitedTraps",
+            "Geography": "Namawala",
+            "Run_Number": 1,
+            "Simulation_Duration": 2190,
+            "Simulation_Type": "VECTOR_SIM",
+            "Start_Time": 0
+        },
+        "VECTOR": {
+            "SPECIES": {
+                "Vector_Species_Names": [
+                    "arabiensis",
+                    "funestus",
+                    "gambiae"
+                ],
+                "Vector_Species_Params": {
+                    "arabiensis": {
+                        "Immature_Duration": 2
+                    },
+                    "funestus": {
+                        "Immature_Duration": 2
+                    },
+                    "gambiae": {
+                        "Immature_Duration": 2
+                    }
+                }
+            },
+            "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
+            "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_EVERY_DAY"
+        }
+    }
+}

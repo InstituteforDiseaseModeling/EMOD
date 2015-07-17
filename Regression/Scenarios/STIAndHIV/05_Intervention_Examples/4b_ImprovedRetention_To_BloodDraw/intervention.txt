@@ -1,0 +1,8 @@
+Specification:
+--------------
+Starting on Jan 1, 2020, 90% of individuals who have drawn blood for CD4 count have guaranteed to receive the CD4 result and become staged for ART, but may still fail to be linked to pre-ART or ART according to the current state of "leaks" the cascade of care.
+
+
+Implementation Notes:
+---------------------
+Same as scenario 6a, but without modifications to the initial HIVRandomChoice in ARTStaging, LinkingToART, or LinkingToPreART.

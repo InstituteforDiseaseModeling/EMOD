@@ -1,0 +1,8 @@
+Specification:
+--------------
+Scenario: Starting on Jan 1, 2020, the proportion of individuals who are successfully staged after a CD4 diagnostic is performed rises linearly in time at a rate of 1% per year, before finally reaching 100%. Failure to be linked to pre-ART or ART may still occur due to other leaks in the care cascade.
+
+
+Implementation Notes:
+---------------------
+Same as scenario 6b, but with linearly increasing rate for HIVPiecewiseByYearAndSex diagnostic in ARTStaging.

@@ -1,0 +1,12 @@
+Specification:
+--------------
+Assume that linkage and retention rates for those initiating at CD4>500 are equal to those initiating at CD4 350-500
+
+
+Implementation Notes:
+---------------------
+Parameter changes only.
+
+There are two places where ARTStagingCD4AgnosticDiagnostic's occur: ARTStaging (state 4), and OnPreART (state 2).  In both of these places, the WHO threshold for adults and children are changed to allow universal eligibility after 2020.
+
+Just to be safe, the corresponding ARTStagingCD4Diagnostic's in ARTStaging (state 6) and OnPreART (state 4) are also set to allow universal eligibility (CD4<1000) after 2020.

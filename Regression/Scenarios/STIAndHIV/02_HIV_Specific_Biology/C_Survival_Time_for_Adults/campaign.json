@@ -1,0 +1,119 @@
+
+{ 
+    "Use_Defaults": 1,
+        "Campaign_Name": "RSA Baseline 03/30/2015",
+        "Events": [
+        { 
+            "class": "CampaignEventByYear",
+            "Event_Name": "Initialize HIV infection in 1/4th of 20-year-olds",
+            "Start_Year": 2020,
+            "Nodeset_Config": 
+            { 
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            { 
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitAgeRangesAndGender",
+                "Target_Age_Min": 19,
+                "Target_Age_Max": 21,
+                "Target_Gender": "All",
+                "Demographic_Coverage": 0.25,
+                "Travel_Linked": 0,
+                "Intervention_Config": 
+                { 
+                    "class": "OutbreakIndividual",
+                    "Event_Name": "Outbreak (not used)",
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "Incubation_Period_Override": 1,
+                    "Antigen": 0,
+                    "Genome": 0
+                }
+            }
+        },
+        { 
+            "class": "CampaignEventByYear",
+            "Event_Name": "Initialize HIV infection in 1/3rd of 30-year-olds",
+            "Start_Year": 2030,
+            "Nodeset_Config": 
+            { 
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            { 
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitAgeRangesAndGender",
+                "Target_Age_Min": 29,
+                "Target_Age_Max": 31,
+                "Target_Gender": "All",
+                "Demographic_Coverage": 0.33333333,
+                "Travel_Linked": 0,
+                "Intervention_Config": 
+                { 
+                    "class": "OutbreakIndividual",
+                    "Event_Name": "Outbreak (not used)",
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "Incubation_Period_Override": 1,
+                    "Antigen": 0,
+                    "Genome": 0
+                }
+            }
+        },
+        { 
+            "class": "CampaignEventByYear",
+            "Event_Name": "Initialize HIV infection in 1/2 of 40-year-olds",
+            "Start_Year": 2040,
+            "Nodeset_Config": 
+            { 
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            { 
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitAgeRangesAndGender",
+                "Target_Age_Min": 39,
+                "Target_Age_Max": 41,
+                "Target_Gender": "All",
+                "Demographic_Coverage": 0.5,
+                "Travel_Linked": 0,
+                "Intervention_Config": 
+                { 
+                    "class": "OutbreakIndividual",
+                    "Event_Name": "Outbreak (not used)",
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "Incubation_Period_Override": 1,
+                    "Antigen": 0,
+                    "Genome": 0
+                }
+            }
+        },
+        { 
+            "class": "CampaignEventByYear",
+            "Event_Name": "Initialize HIV infection in all remaining uninfected 50-year-olds",
+            "Start_Year": 2050,
+            "Nodeset_Config": 
+            { 
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            { 
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitAgeRangesAndGender",
+                "Target_Age_Min": 49,
+                "Target_Age_Max": 51,
+                "Target_Gender": "All",
+                "Demographic_Coverage": 1,
+                "Travel_Linked": 0,
+                "Intervention_Config": 
+                { 
+                    "class": "OutbreakIndividual",
+                    "Event_Name": "Outbreak (not used)",
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "Incubation_Period_Override": 1,
+                    "Antigen": 0,
+                    "Genome": 0
+                }
+            }
+        }
+    ]
+}

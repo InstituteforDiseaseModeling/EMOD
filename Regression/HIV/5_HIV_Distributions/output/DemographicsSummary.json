@@ -1,0 +1,295 @@
+{
+    "Header": {
+        "DateTime": "Thu Jun 04 08:12:39 2015",
+        "DTK_Version": "5218 v2.0ReleaseBugFixes2 2015/06/04 06:18:17",
+        "Report_Type": "InsetChart",
+        "Report_Version": "3.2",
+        "Start_Time": 0,
+        "Simulation_Timestep": 1,
+        "Timesteps": 5,
+        "Channels": 28,
+        "Base_Year": 1960.5
+    },
+    "Channels": {
+        "Average Age": {
+            "Units": "",
+            "Data": [
+                8923.66796875,
+                8924.64453125,
+                8924.52734375,
+                8925.533203125,
+                8925.056640625
+            ]
+        },
+        "Gender Ratio (fraction male)": {
+            "Units": "",
+            "Data": [
+                0.4971832633018,
+                0.4971832633018,
+                0.497211843729,
+                0.497211843729,
+                0.4971540272236
+            ]
+        },
+        "New Births": {
+            "Units": "",
+            "Data": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "New Natural Deaths": {
+            "Units": "",
+            "Data": [
+                0,
+                1,
+                0,
+                2,
+                3
+            ]
+        },
+        "Population Age 10-14": {
+            "Units": "",
+            "Data": [
+                1885,
+                1882,
+                1883,
+                1881,
+                1879
+            ]
+        },
+        "Population Age 15-19": {
+            "Units": "",
+            "Data": [
+                1711,
+                1714,
+                1715,
+                1717,
+                1718
+            ]
+        },
+        "Population Age 20-24": {
+            "Units": "",
+            "Data": [
+                1387,
+                1386,
+                1385,
+                1384,
+                1385
+            ]
+        },
+        "Population Age 25-29": {
+            "Units": "",
+            "Data": [
+                1283,
+                1284,
+                1284,
+                1285,
+                1285
+            ]
+        },
+        "Population Age 30-34": {
+            "Units": "",
+            "Data": [
+                1103,
+                1102,
+                1103,
+                1103,
+                1103
+            ]
+        },
+        "Population Age 35-39": {
+            "Units": "",
+            "Data": [
+                1001,
+                1001,
+                1000,
+                998,
+                998
+            ]
+        },
+        "Population Age 40-44": {
+            "Units": "",
+            "Data": [
+                942,
+                943,
+                944,
+                946,
+                945
+            ]
+        },
+        "Population Age 45-49": {
+            "Units": "",
+            "Data": [
+                735,
+                735,
+                735,
+                735,
+                735
+            ]
+        },
+        "Population Age 5-9": {
+            "Units": "",
+            "Data": [
+                2311,
+                2312,
+                2312,
+                2313,
+                2315
+            ]
+        },
+        "Population Age 50-54": {
+            "Units": "",
+            "Data": [
+                610,
+                610,
+                610,
+                610,
+                610
+            ]
+        },
+        "Population Age 55-59": {
+            "Units": "",
+            "Data": [
+                484,
+                482,
+                482,
+                482,
+                482
+            ]
+        },
+        "Population Age 60-64": {
+            "Units": "",
+            "Data": [
+                368,
+                370,
+                370,
+                369,
+                369
+            ]
+        },
+        "Population Age 65-69": {
+            "Units": "",
+            "Data": [
+                281,
+                281,
+                281,
+                281,
+                281
+            ]
+        },
+        "Population Age 70-74": {
+            "Units": "",
+            "Data": [
+                211,
+                211,
+                211,
+                212,
+                211
+            ]
+        },
+        "Population Age 75-79": {
+            "Units": "",
+            "Data": [
+                109,
+                109,
+                107,
+                107,
+                107
+            ]
+        },
+        "Population Age 80-84": {
+            "Units": "",
+            "Data": [
+                34,
+                34,
+                35,
+                35,
+                35
+            ]
+        },
+        "Population Age 85-89": {
+            "Units": "",
+            "Data": [
+                45,
+                45,
+                44,
+                44,
+                44
+            ]
+        },
+        "Population Age 90-94": {
+            "Units": "",
+            "Data": [
+                0,
+                0,
+                1,
+                1,
+                1
+            ]
+        },
+        "Population Age 95-99": {
+            "Units": "",
+            "Data": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "Population Age <5": {
+            "Units": "",
+            "Data": [
+                2896,
+                2895,
+                2893,
+                2892,
+                2890
+            ]
+        },
+        "Population Age >100": {
+            "Units": "",
+            "Data": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "Possible Mothers": {
+            "Units": "",
+            "Data": [
+                3865,
+                3865,
+                3865,
+                3867,
+                3868
+            ]
+        },
+        "Pseudo-Population": {
+            "Units": "",
+            "Data": [
+                17396,
+                17396,
+                17395,
+                17395,
+                17393
+            ]
+        },
+        "Statistical Population": {
+            "Units": "",
+            "Data": [
+                17396,
+                17396,
+                17395,
+                17395,
+                17393
+            ]
+        }
+    }
+}

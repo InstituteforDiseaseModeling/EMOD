@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LocalDebuggerCommandArguments>-C config.json -I . -O testing --dll-path $(SolutionDir)$(Platform)\$(Configuration)</LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>..\Regression\00_Default</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <MpiDebuggerMpiExecCommand>c:\Program Files\Microsoft HPC Pack 2008 R2\Bin\mpiexec.exe</MpiDebuggerMpiExecCommand>
+    <MpiDebuggerWorkingDirectory>$(SolutionDir)\Regression\1_Generic_Seattle_Multinode</MpiDebuggerWorkingDirectory>
+    <MpiDebuggerApplicationCommand>$(TargetPath)</MpiDebuggerApplicationCommand>
+    <MpiDebuggerApplicationArguments>--config config_flat.json --input-path d:\Eradication\Data_Files\Seattle\ --output-path debug_output\</MpiDebuggerApplicationArguments>
+    <MpiDebuggerSchedulerNode>localhost/2</MpiDebuggerSchedulerNode>
+    <MpiDebuggerDeploymentDirectory>$(ProjectDir)\Test\VS2010BrokenDeploymentDirectory</MpiDebuggerDeploymentDirectory>
+    <LocalDebuggerCommand>$(TargetPath)</LocalDebuggerCommand>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LocalDebuggerCommandArguments>-C config.json -I . -O testing --dll-path $(SolutionDir)$(Platform)\$(Configuration)</LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>..\Regression\00_Default</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <MpiDebuggerMpiExecCommand>c:\Program Files\Microsoft HPC Pack 2008 R2\Bin\mpiexec.exe</MpiDebuggerMpiExecCommand>
+    <MpiDebuggerWorkingDirectory>$(SolutionDir)\Regression\1_Generic_Seattle_Multinode</MpiDebuggerWorkingDirectory>
+    <MpiDebuggerApplicationCommand>$(TargetPath)</MpiDebuggerApplicationCommand>
+    <MpiDebuggerApplicationArguments>--config config_flat.json --input-path d:\Eradication\Data_Files\Seattle\ --output-path debug_output\</MpiDebuggerApplicationArguments>
+    <MpiDebuggerSchedulerNode>localhost/2</MpiDebuggerSchedulerNode>
+    <MpiDebuggerDeploymentDirectory>$(ProjectDir)\Test\VS2010BrokenDeploymentDirectory</MpiDebuggerDeploymentDirectory>
+    <LocalDebuggerCommand>$(TargetPath)</LocalDebuggerCommand>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,8 @@
+Specification:
+--------------
+20% of HIV-uninfected men get circumcised on Jan 1, 2020.
+
+
+Implementation Notes:
+---------------------
+On Jan 1, 2020, a SimpleDiagnostic is used to select HIV negative males for male circumcision.  This SimpleDiagnostic is distributed with Demographic_Coverage=0.2 and Target_Gender="Male" to target 20% of males.  As in 1a, the SimpleDiagnostic uses Base_Specificity=0 and Base_Sensitivity=0 so that only HIV negative individuals are selected.

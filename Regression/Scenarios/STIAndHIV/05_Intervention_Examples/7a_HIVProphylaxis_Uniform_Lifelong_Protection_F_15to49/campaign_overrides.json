@@ -1,0 +1,202 @@
+{
+    "Default_Campaign_Path": "defaults/hiv_default_campaign.json",
+    "Use_Defaults": 1,
+    "Events":
+    [
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "HIV Prophylaxis",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitAgeRangesAndGender",
+                "Target_Age_Min": 15,
+                "Target_Age_Max": 49,
+                "Target_Gender": "Female",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "TriggerList",
+                    "Trigger_Condition_List": ["HCTTestingLoop8", "ARTStaging9"],
+                    "Actual_IndividualIntervention_Config":
+                    {
+                      "class":"SimpleVaccine",
+                      "Durability_Time_Profile":"BOXDURABILITY",
+                      "Primary_Decay_Time_Constant":30000,
+                      "Vaccine_Type":"AcquisitionBlocking",
+                      "Reduced_Acquire":0.6
+                    }
+                }
+            }
+        },
+        {
+            "BEGIN": "HCT TESTING LOOP",
+            "class": "CampaignEventByYear",
+            "Event_Name": "HCTTestingLoop: state 0 (delay to next HCT)",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "TriggerList",
+                    "Trigger_Condition_List": ["HCTTestingLoop0", "HCTTestingLoop8"],
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVMuxer",
+                        "Muxer_Name": "HCTTestingLoop",
+                        "Max_Entries": 1,
+                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging" ],
+                        "Cascade_State": "HCTTestingLoop",
+                        "Delay_Distribution": "EXPONENTIAL_DURATION",
+                        "Delay_Period": 365,
+                        "Broadcast_Event": "HCTTestingLoop1"
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "HCTTestingLoop: state 1 (HIV rapid diagnostic)",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "HCTTestingLoop1",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVRapidHIVDiagnostic",
+                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging" ],
+                        "Cascade_State": "HCTTestingLoop",
+                        "Event_Or_Config": "Event",
+                        "Positive_Diagnosis_Event": "ARTStaging1",
+                        "Negative_Diagnosis_Event": "HCTTestingLoop7"
+                    }
+                }
+            },
+            "END": "HCT TESTING LOOP"
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "Consider HIV prophylaxis intervention after negative HIV test (HCTTestingLoop7)",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Property_Restrictions_Within_Node": 
+                [
+                    { "Accessibility": "Yes" }
+                ],
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "HCTTestingLoop7",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic",
+                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging" ],
+                        "Cascade_State": "HCTTestingLoop",
+                        "Days_To_Diagnosis": 0,
+                        "Time_Value_Map" :
+                        {
+                            "Times": [  1960,    2020 ],
+                            "Values": [ 0,       0.5 ]
+                        },
+                        "Interpolation_Order": 0,
+                        "Female_Multiplier": 1,
+                        "Event_Or_Config": "Event",
+                        "Positive_Diagnosis_Event": "HCTTestingLoop8",
+                        "Negative_Diagnosis_Event": "HCTTestingLoop0"
+                    }
+                }
+            }
+        },
+        {
+            "BEGIN": "ART STAGING",
+            "class": "CampaignEventByYear",
+            "Event_Name": "ART Staging: state 0 (HIV rapid diagnostic)",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "ARTStaging0",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVRapidHIVDiagnostic",
+                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART" ],
+                        "Cascade_State": "ARTStagingDiagnosticTest",
+                        "Event_Or_Config": "Event",
+                        "Positive_Diagnosis_Event": "ARTStaging1",
+                        "Negative_Diagnosis_Event": "ARTStaging8"
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "Consider HIV prophylaxis intervention after negative HIV test (ARTStaging8)",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Property_Restrictions_Within_Node": 
+                [
+                    { "Accessibility": "Yes" }
+                ],
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "ARTStaging8",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic",
+                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART" ],
+                        "Cascade_State": "ARTStagingDiagnosticTest",
+                        "Days_To_Diagnosis": 0,
+                        "Time_Value_Map" :
+                        {
+                            "Times": [  1960,    2020 ],
+                            "Values": [ 0,       0.5 ]
+                        },
+                        "Interpolation_Order": 0,
+                        "Female_Multiplier": 1,
+                        "Event_Or_Config": "Event",
+                        "Positive_Diagnosis_Event": "ARTStaging9"
+                    }
+                }
+            }
+        }
+    ]
+}

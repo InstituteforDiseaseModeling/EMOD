@@ -1,0 +1,49 @@
+
+{ 
+	"Default_Config_Path": "defaults\\hiv_default_config.json", 
+    "parameters": 
+    { 
+        "alpha_____________SIMULATION___________": "",
+        "Run_Number": 254,
+        "Simulation_Duration": 900,
+        "Simulation_Timestep": 30,
+
+        "alpha_____________DEMOGRAPHICS___________": "",
+        "Base_Population_Scale_Factor": 0.002,
+        "Enable_Disease_Mortality": 0,
+        "Enable_Nondisease_Mortality": 0,
+        "x_Other_Mortality": 0,
+
+        "alpha_____________INTRAHOST___________": "",
+        "Base_Infectivity": 0.00135663958503783,
+        "Male_To_Female_Relative_Infectivity_Ages": [ 15, 25 ],
+        "Male_To_Female_Relative_Infectivity_Multipliers": [ 5, 1.5 ],
+
+        "alpha_____________TRANSMISSION___________": "",
+        "Condom_Usage_Probability_in_Transitory_Relationships_Early": 0.0125,
+        "Condom_Usage_Probability_in_Transitory_Relationships_Late": 0.40,
+        "Condom_Usage_Probability_in_Transitory_Relationships_Rate": 1.5,
+        "Condom_Usage_Probability_in_Informal_Relationships_Early": 0.0125,
+        "Condom_Usage_Probability_in_Informal_Relationships_Late": 0.20,
+        "Condom_Usage_Probability_in_Informal_Relationships_Rate": 1.5,
+        "Condom_Usage_Probability_in_Marital_Relationships_Early": 0.000625,
+        "Condom_Usage_Probability_in_Marital_Relationships_Late": 0.10,
+        "Condom_Usage_Probability_in_Marital_Relationships_Midyear": 2003,
+        "Condom_Usage_Probability_in_Marital_Relationships_Rate": 1.5,
+        "Maternal_Transmission_ART_Multiplier": 0.03,
+
+        "alpha_____________NETWORK___________": "",
+        "Transitory_Formation_Rate_Heterosexual": 0.0,
+        "Informal_Formation_Rate_Heterosexual": 0.0,
+        "Marriage_Formation_Rate_Heterosexual": 0.0,
+
+        "alpha_____________REPORTING___________": "",
+        "Enable_Demographics_Reporting": 1,
+      	"Report_HIV_Event_Channels_List": [ "Births", "TwelveWeeksPregnant", "FourteenWeeksPregnant", "SixWeeksOld", "EighteenMonthsOld" ], 
+
+        "alpha_____________REPLICATION_AND_DRUGS___________": "",
+
+        "alpha_____________RARELY_CHANGED___________": "",
+        "Config_Name": "34_HIV_EighteenMonths"
+    }
+}

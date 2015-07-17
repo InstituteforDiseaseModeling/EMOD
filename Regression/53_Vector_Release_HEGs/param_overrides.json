@@ -1,0 +1,39 @@
+{
+     "Default_Config_Path": "defaults\\vector_default_config.json", 
+     "parameters": {
+          "CLIMATE": {
+               "AIR": {
+                    "Air_Temperature_Filename": "Namawala_single_node_air_temperature_daily.bin"
+               }, 
+               "HUMIDITY": {
+                    "Relative_Humidity_Filename": "Namawala_single_node_relative_humidity_daily.bin"
+               }, 
+               "LAND_TEMP": {
+                    "Land_Temperature_Filename": "Namawala_single_node_land_temperature_daily.bin"
+               }, 
+               "RAINFALL": {
+                    "Rainfall_Filename": "Namawala_single_node_rainfall_daily.bin"
+               }
+          }, 
+          "VECTOR": {
+               "HEG_Homing_Rate": 0.4,
+               "HEG_Fecundity_Limiting": 0.9,
+               "HEG_Model": "EGG_HOMING"
+          },
+          "DEMOGRAPHICS": {
+               "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE", 
+               "Demographics_Filename": "Namawala_single_node_demographics.compiled.json"
+          }, 
+          "PRIMARY": {
+               "Config_Name": "53_Vector_Release_HEGs", 
+               "Geography": "Namawala", 
+               "Run_Number": 53, 
+               "Simulation_Duration": 730
+          }, 
+          "Vector_Species_Params": {
+               "arabiensis": {
+                    "Indoor_Feeding_Fraction": 1
+               }
+          }
+     }
+}

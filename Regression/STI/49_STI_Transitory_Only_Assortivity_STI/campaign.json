@@ -1,0 +1,30 @@
+{
+     "Use_Defaults": 1,
+     "Campaign_Name": "Generic Seattle Regression Campaign", 
+     "Events": [
+          {
+               "Event_Coordinator_Config": {
+                    "Intervention_Config": {
+                         "Antigen": 0, 
+                         "Event_Name": "Outbreak (not used)", 
+                         "Genome": 0, 
+                         "Outbreak_Source": "PrevalenceIncrease", 
+                         "class": "OutbreakIndividual"
+                    }, 
+                    "Target_Demographic": "ExplicitAgeRanges", 
+                    "Target_Age_Min": 0,
+                    "Target_Age_Max": 90,
+                    "Demographic_Coverage": 0.250,
+                    "class": "StandardInterventionDistributionEventCoordinator",
+                    "Travel_Linked": 0 
+               }, 
+               "Nodeset_Config": {
+                    "Polygon_Format": "SHAPE", 
+                    "Vertices": "-122.320726936496,47.6597902588541 -122.320406460197,47.6520988276782 -122.308388598985,47.6471314450438 -122.301658596706,47.6541819236217 -122.315118601264,47.6644371651896 -122.320726936496,47.6597902588541", 
+                    "class": "NodeSetAll"
+               }, 
+               "Start_Day": 1, 
+               "class": "CampaignEvent"
+          }
+     ]
+}

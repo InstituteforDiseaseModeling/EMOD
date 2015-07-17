@@ -1,0 +1,178 @@
+/***************************************************************************************************
+
+Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+
+EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+
+***************************************************************************************************/
+
+#include "stdafx.h"
+
+#include <iomanip>
+#include "Debug.h"
+#include "ReportHIVInfection.h"
+#include "NodeHIV.h"
+#include "SusceptibilityHIV.h"
+#include "InfectionHIV.h"
+#include "HIVInterventionsContainer.h"
+#include "ISimulation.h"
+
+static const char* _module = "ReportHIVInfection";
+
+namespace Kernel 
+{
+    GET_SCHEMA_STATIC_WRAPPER_IMPL(ReportHIVInfection,ReportHIVInfection)
+
+    static const string _report_name = "ReportHIVInfection.csv";
+
+    ReportHIVInfection::ReportHIVInfection( const ISimulation * parent )
+        : BaseTextReport( "ReportHIVInfection.csv" )
+        , _parent( parent )
+        , startYear(0.0)
+        , stopYear(FLT_MAX)
+    {
+    }
+
+    bool ReportHIVInfection::Configure( const Configuration* inputJson )
+    {
+        initConfigTypeMap( "Report_HIV_Infection_Start_Year", &startYear, Report_HIV_Infection_Start_Year_DESC_TEXT, 0.0f, FLT_MAX, 0.0f    );
+        initConfigTypeMap( "Report_HIV_Infection_Stop_Year",  &stopYear,  Report_HIV_Infection_Stop_Year_DESC_TEXT,  0.0f, FLT_MAX, FLT_MAX );
+
+        bool ret = JsonConfigurable::Configure( inputJson );
+
+        if( ret )
+        {
+            if( startYear >= stopYear )
+            {
+                 throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Report_HIV_Infection_Start_Year", startYear, "Report_HIV_Infection_Stop_Year", stopYear );
+            }
+        }
+
+        return ret ;
+    }
+
+    bool ReportHIVInfection::IsCollectingIndividualData( float currentTime, float dt ) const
+    {
+        // not enforcing simulation to be not null in constructor so one can create schema with it null
+        release_assert( _parent );
+
+        float current_year = _parent->GetSimulationTime().Year() ;
+        bool collect_data = (startYear <= current_year) && (current_year < stopYear)  ;
+        return collect_data ;
+    }
+
+    std::string ReportHIVInfection::GetHeader() const
+    {
+        std::stringstream header ;
+        header << "Year,"
+               << "Id,"
+               << "MCWeight,"
+               << "Age,"
+               << "Gender,"
+               << "getProbMaternalTransmission,"
+               << "TimeSinceHIV,"
+               << "CD4count,"
+               << "PrognosisCompletedFraction,"
+               << "Prognosis,"
+               << "Stage,"
+               << "ViralLoad,"
+               << "WHOStage,"
+
+               << "Infectiousness,"
+               << "ModAcquire,"
+               << "ModTransmit,"
+               << "ModMortality,"
+
+               << "ArtStatus,"
+               << "InfectivitySuppression,"
+               << "DurationOnART,"
+               << "ProbMaternalTransmissionModifier,"
+               << "OnArtQuery,"
+            
+               << "CoInfectiveFactor,"
+               << "DebutAge,"
+               << "IsCircumcised,"
+            
+               << "InterventionReducedAcquire,"
+               << "InterventionReducedTransmit,"
+               << "InterventionReducedMortality" ;
+
+        return header.str();
+    }
+
+
+    void
+    ReportHIVInfection::LogIndividualData(
+        IndividualHuman* individual
+    )
+    {
+        IIndividualHumanHIV* hiv_individual = NULL;
+        if( individual->QueryInterface( GET_IID( IIndividualHumanHIV ), (void**)&hiv_individual ) != s_OK )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndividualHIV", "IndividualHuman" );
+        }
+
+        bool isInfected = hiv_individual->HasHIV();
+
+        if( !isInfected )
+            return;
+
+        IIndividualHumanSTI* sti_individual = NULL;
+        if( individual->QueryInterface( GET_IID( IIndividualHumanSTI ), (void**)&sti_individual ) != s_OK )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndividualSTI", "IndividualHuman" );
+        }
+
+        IDrugVaccineInterventionEffects *idvie = NULL;
+        if( s_OK != individual->GetInterventionsContext()->QueryInterface( GET_IID(IDrugVaccineInterventionEffects), (void**)&idvie ) ) {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, 
+                                           "individual->GetInterventionsContext()", 
+                                           "IDrugVaccineInterventionEffects",
+                                           "IIndividualHumanInterventionsContext" );
+        }
+
+        if( individual->QueryInterface( GET_IID( IIndividualHumanSTI ), (void**)&sti_individual ) != s_OK )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndividualSTI", "IndividualHuman" );
+        }
+
+        GetOutputStream() 
+            << std::setprecision(10)
+            << _parent->GetSimulationTime().Year()
+            << "," << individual->GetSuid().data
+            << "," << individual->GetMonteCarloWeight()
+            << "," << individual->GetAge() / DAYSPERYEAR
+            << "," << individual->GetGender() 
+            << "," << individual->getProbMaternalTransmission()
+            << "," << _parent->GetSimulationTime().time - hiv_individual->GetHIVInfection()->GetTimeInfected() 
+            << "," << hiv_individual->GetHIVSusceptibility()->GetCD4count() 
+            << "," << hiv_individual->GetHIVSusceptibility()->GetPrognosisCompletedFraction() 
+            << "," << hiv_individual->GetHIVInfection()->GetPrognosis() 
+            << "," << hiv_individual->GetHIVInfection()->GetStage() 
+            << "," << hiv_individual->GetHIVInfection()->GetViralLoad() 
+            << "," << hiv_individual->GetHIVInfection()->GetWHOStage()
+
+            << "," << individual->GetInfectiousness()
+            << "," << individual->GetSusceptibilityContext()->getModAcquire()
+            << "," << individual->GetSusceptibilityContext()->GetModTransmit()
+            << "," << individual->GetSusceptibilityContext()->getModMortality()
+
+            << "," << hiv_individual->GetHIVInterventionsContainer()->GetArtStatus()
+            << "," << hiv_individual->GetHIVInterventionsContainer()->GetInfectivitySuppression()
+            << "," << hiv_individual->GetHIVInterventionsContainer()->GetDurationSinceLastStartingART()
+            << "," << hiv_individual->GetHIVInterventionsContainer()->GetProbMaternalTransmissionModifier()
+            << "," << hiv_individual->GetHIVInterventionsContainer()->OnArtQuery()
+            
+            << "," << sti_individual->GetCoInfectiveFactor()
+            << "," << sti_individual->GetDebutAge()
+            << "," << sti_individual->IsCircumcised()
+            
+            << "," << idvie->GetInterventionReducedAcquire()
+            << "," << idvie->GetInterventionReducedTransmit()
+            << "," << idvie->GetInterventionReducedMortality()
+
+            << endl;
+    }
+}
+

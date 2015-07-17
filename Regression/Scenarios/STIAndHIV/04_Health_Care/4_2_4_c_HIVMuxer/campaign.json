@@ -1,0 +1,82 @@
+{
+    "Use_Defaults": 1,
+    "Campaign_Name": "4C: HIVMuxer", 
+    "Events": [
+        {
+            "Description": "Drive initial population into a loop",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "Loop_Entry_InitialPopulation"
+                }
+            }
+        },
+        {
+            "Description": "Drive births into the same loop",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "BirthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "BroadcastEvent",
+                        "Broadcast_Event": "Loop_Entry_Birth"
+                    }
+                }
+            }
+        },
+        {
+            "Description": "Attempt to drive entire population into loop again, HIVMuxer should disallow entry",
+            "class": "CampaignEvent",
+            "Start_Day": 1095,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "Loop_Entry_InitialPopulation"
+                }
+            }
+        },
+
+        {
+            "Description": "Wait one year, only one entry allowed at a time per individual",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "TriggerList",
+                    "Trigger_Condition_List": [
+                        "Loop_Entry_InitialPopulation",
+                        "Loop_Entry_Birth",
+                        "Done_Waiting"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVMuxer",
+
+                        "Abort_States": [ "Abort_Infinite_Loop" ],
+                        "Cascade_State": "Infinite_Loop",
+
+                        "Delay_Distribution": "FIXED_DURATION",
+                        "Delay_Period": 365,
+
+                        "Muxer_Name": "Delay_Loop_Muxer",
+                        "Max_Entries": 1,
+
+                        "Broadcast_Event": "Done_Waiting"
+                    }
+                }
+            }
+        }
+
+    ]
+}

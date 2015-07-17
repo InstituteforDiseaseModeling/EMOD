@@ -1,0 +1,39 @@
+{
+     "Default_Config_Path": "defaults/generic_default_config.json", 
+     "parameters": {
+          "CLIMATE": {
+               "Climate_Model": "CLIMATE_BY_DATA", 
+               "Climate_Update_Resolution": "CLIMATE_UPDATE_DAY", 
+               "Enable_Climate_Stochasticity": 1, 
+               "AIR": {
+                    "Air_Temperature_Filename": "Namawala_single_node_air_temperature_daily.bin",
+                    "Air_Temperature_Offset": 0,
+                    "Air_Temperature_Variance": 2 
+               }, 
+               "HUMIDITY": {
+                    "Relative_Humidity_Filename": "Namawala_single_node_relative_humidity_daily.bin",
+                    "Relative_Humidity_Scale_Factor": 1, 
+                    "Relative_Humidity_Variance": 0.05
+               }, 
+               "LAND_TEMP": {
+                    "Land_Temperature_Filename": "Namawala_single_node_land_temperature_daily.bin",
+                    "Land_Temperature_Offset": 0,
+                    "Land_Temperature_Variance": 2 
+               }, 
+               "RAINFALL": {
+                    "Enable_Rainfall_Stochasticity": 1, 
+                    "Rainfall_Filename": "Namawala_single_node_rainfall_daily.bin",
+                    "Rainfall_Scale_Factor": 1 
+               }
+          }, 
+          "DEMOGRAPHICS": {
+               "Demographics_Filename": "Namawala_single_node_demographics.compiled.json"
+          }, 
+          "PRIMARY": {
+               "Config_Name": "91_Generic_Namawala_Climate_Data", 
+               "Geography": "Namawala", 
+               "Run_Number": 1, 
+               "Simulation_Duration": 180
+          }
+     }
+}

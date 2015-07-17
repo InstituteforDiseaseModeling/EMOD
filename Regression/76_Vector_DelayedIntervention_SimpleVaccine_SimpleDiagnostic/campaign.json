@@ -1,0 +1,58 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1.0,
+                    "Delay_Distribution": "UNIFORM_DURATION",
+                    "Delay_Period": 4.0,
+                    "Delay_Period_Max": 60,
+                    "Delay_Period_Min": 30,
+                    "Demographic_Coverage": 0.7,
+                    "Duration": -1,
+                    "Property_Restrictions": [
+                        "Risk:Healthy"
+                    ],
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "Cost_To_Consumer": 15,
+                            "Durability_Time_Profile": "DECAYDURABILITY",
+                            "Primary_Decay_Time_Constant": 1579.7510697734149,
+                            "Reduced_Acquire": 0.556,
+                            "Vaccine_Take": 1.0,
+                            "Vaccine_Type": "AcquisitionBlocking",
+                            "class": "SimpleVaccine"
+                        },
+                        {
+                            "Base_Sensitivity": 0.8,
+                            "Base_Specificity": 0.9,
+                            "Cost_To_Consumer": 0.25,
+                            "Days_To_Diagnosis": 3.5,
+                            "Positive_Diagnosis_Config": {
+                                "Cost_To_Consumer": 5.25,
+                                "Drug_CMax": 0.1,
+                                "Drug_PKPD_C50": 0.3,
+                                "Drug_Vd": 0.2,
+                                "Durability_Profile": "CONCENTRATION_VERSUS_TIME",
+                                "Primary_Decay_Time_Constant": 100,
+                                "Remaining_Doses": 3,
+                                "Secondary_Decay_Time_Constant": 200,
+                                "class": "GenericDrug"
+                            },
+                            "Treatment_Fraction": 0.7,
+                            "class": "SimpleDiagnostic"
+                        }
+                    ]
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 120,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

@@ -1,0 +1,56 @@
+{
+    "Use_Defaults": 1,
+    "Campaign_Name": "HIV Scenario 3E: Effect of STI Co-Infections", 
+    "Events": [
+        {
+            "Description": "HIV Outbreak",
+            "class": "CampaignEventByYear",
+            "Start_Year": 2021,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 0.5,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 1,
+                    "Outbreak_Source": "PrevalenceIncrease"
+                }
+            }
+        },
+
+        {
+            "class": "CampaignEvent",
+            "Event_Name": "Set STI Co-Infections on day 1", 
+            "Start_Day": 1,
+            "Nodeset_Config": { "class": "NodeSetAll" }, 
+            "Event_Coordinator_Config": 
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+
+                "Intervention_Config":
+                {
+                    "class": "ModifyStiCoInfectionStatus",
+                    "New_STI_CoInfection_Status": 1
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "Cure all STI Co-Infections in 2025", 
+            "Start_Year": 2025,
+            "Nodeset_Config": { "class": "NodeSetAll" }, 
+            "Event_Coordinator_Config": 
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+
+                "Intervention_Config":
+                {
+                    "class": "ModifyStiCoInfectionStatus",
+                    "New_STI_CoInfection_Status": 0
+                }
+            }
+        }
+    ]
+}

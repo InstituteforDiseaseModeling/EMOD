@@ -1,0 +1,23 @@
+{
+    "Default_Config_Path": "defaults/sti_scenario_default_config.json", 
+    "parameters": {
+        "____________DEMOGRAPHICS___________": {
+            "Base_Population_Scale_Factor": 0.01
+        }, 
+        "____________SIMULATION___________": {
+            "Simulation_Timestep": 7, 
+            "Simulation_Duration": 14600
+        }, 
+        "____________REPORTING___________": {
+            "Report_Relationship_Start": 1, 
+            "Report_Relationship_End": 1
+        }, 
+        "____________NETWORK___________": {
+            "Informal_Formation_Rate_Heterosexual": 0.001369863, 
+            "Marriage_Formation_Rate_Heterosexual": 0.0001826484
+        }, 
+        "____________RARELY_CHANGED___________": {
+            "Config_Name": "01E_Concurrency_Independent_Small_Network_without_Concurrency"
+        }
+    }
+}

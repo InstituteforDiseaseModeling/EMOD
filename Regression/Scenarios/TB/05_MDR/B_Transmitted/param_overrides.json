@@ -1,0 +1,12 @@
+{
+    "Default_Config_Path":"defaults\\tb_scenario_default_config.json",
+    "parameters":{
+        "Base_Infectivity":0.05,
+        "Config_Name":"05_MDR_B_Transmitted",
+        "Demographics_Filename":"TB_05_MDR_demographics.json",
+        "Simulation_Duration":300,
+		"Simulation_Timestep": 5, 
+        "TB_Active_Cure_Rate":1e-09,
+        "TB_Fast_Progressor_Rate":1
+    }
+}

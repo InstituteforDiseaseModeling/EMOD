@@ -1,0 +1,72 @@
+{
+    "Use_Defaults": 1,
+    "Campaign_Name": "A_CascadeState_and_AbortState", 
+    "Events": [
+        {
+            "Description": "Drive initial population into a loop",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "Loop_Entry_InitialPopulation"
+                }
+            }
+        },
+
+        {
+            "Description": "Wait one year",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "TriggerList",
+                    "Trigger_Condition_List": [
+                        "Loop_Entry_InitialPopulation",
+                        "Done_Waiting"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVDelayedIntervention",
+
+                        "Abort_States": [ "Abort_Infinite_Loop" ],
+                        "Cascade_State": "Infinite_Loop",
+
+                        "Delay_Distribution": "FIXED_DURATION",
+                        "Delay_Period": 365,
+
+                        "Broadcast_Event": "Done_Waiting"
+                    }
+                }
+            }
+        },
+
+        {
+            "Description": "Abort the infinite loop, starting 3 years into the simulation",
+            "class": "CampaignEvent",
+            "Start_Day": 1095,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "TriggerString",
+                    "Trigger_Condition_String": "Done_Waiting",
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVSetCascadeState",
+                        "Abort_States": [ ],
+                        "Cascade_State": "Abort_Infinite_Loop",
+
+                        "NOTE": "The following is just so that we can see the following event in the ReportEventRecorder.csv output file",
+                        "Positive_Diagnosis_Event": "Infinite_Loop_Should_Be_Aborted_Now"
+                    }
+                }
+            }
+        }
+
+    ]
+}

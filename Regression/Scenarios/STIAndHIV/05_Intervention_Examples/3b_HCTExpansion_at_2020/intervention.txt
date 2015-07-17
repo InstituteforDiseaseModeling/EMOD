@@ -1,0 +1,13 @@
+Specification:
+--------------
+Increase the coverage and rate of voluntary testing in those reachable by health care. Starting on Jan 1, 2020, 100% of those reachable by healthcare begin testing annually, beginning on a random day of the year and repeating with a fixed 1-year delay. For these individuals, the annual testing replaces any prior use of voluntary testing and counseling, although other forms of testing (symptomatic, antenatal, couples, etc.) can continue. The probability of presenting for staging and other aspects of the care continuum are the same as for voluntary testing and counseling.
+
+
+Implementation Notes:
+---------------------
+On Jan 1, 2020, all reachable individuals are given a delay from a 1-year uniform distribution.  Reachable individuals born on or after Jan 1, 2020, receive a parallel delay from a 1-year uniform distribution.  Following the delay, the individual is given a HIVRapidHIVDiagnostic in the HCT testing loop.  An a negative diagnostic, the individual is given an HIVPiecewiseByYearAndSex diagnostic that queries if it is after 2020.  If it is before 2020, the typical 1-year-mean exponential delay is distributed, otherwise a fixed 1-year delay is distributed.  Following the delay, the HIVRapidDiagnostic is given again.
+
+CAUTION: Individuals born on the Jan. 1, 2020 time step will test twice in the first year (once from the BirthTriggeredIV, and once from the Jan 1 entry point).  The HCT delay muxer should normalize these individuals on their first pass through the testing loop.
+
+WARNING: ARTStaging state 8 should be a gender stratifier.
+WARNING: ARTStaging state 9 and state 10 should be age stratifiers.

@@ -1,0 +1,121 @@
+{
+    "Use_Defaults": 1,
+    "Campaign_Notes": "zero base prevalence",
+    "Events": [
+        {
+            "Event_Name": "Trying to giving MDR with genome 1",
+            "Start_Day": 1,
+            "class": "CampaignEvent",
+            "Nodeset_Config": { "class": "NodeSetAll"},
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Coverage": 1.0,
+                    "Number_Repetitions": 1, 
+                    "Target_Demographic": "Everyone", 
+					"Property_Restrictions": [ "Place:MDRPeople" ],
+                    "Demographic_Coverage": 1, 
+                    "Travel_Linked": 0, 
+                "Intervention_Config": {
+				    "Antigen": 0,
+					"Genome": 1,
+                    "class": "OutbreakIndividual"
+                }
+            }
+        },
+        {
+            "Event_Name": "specificity 1.0 sensitivity 1.0 correctly diagnoses everybody",
+            "Start_Day": 5,
+            "class": "CampaignEvent",
+            "Nodeset_Config": { "class": "NodeSetAll"},
+            "Event_Coordinator_Config": {
+                    "class": "StandardInterventionDistributionEventCoordinator",
+                    "Number_Repetitions": 20,
+                    "Timesteps_Between_Repetitions": 5,
+                    "Target_Demographic": "Everyone", 
+					"Property_Restrictions": [  ],
+                    "Demographic_Coverage": 1, 
+                    "Include_Arrivals": 0, 
+                    "Include_Departures": 0, 
+                "Coverage": 1.0,
+                "Intervention_Config": {
+                    "Base_Sensitivity": 1.0,
+                    "Base_Specificity": 1.0,
+                    "Cost_To_Consumer": 0.0,
+                    "Days_To_Diagnosis": 1.0,
+                    "Event_Or_Config": "Event",
+					"Negative_Diagnosis_Event": "TBTestNegative",
+                    "Positive_Diagnosis_Event": "TBTestPositive",
+                    "Treatment_Fraction": 1.0,
+                    "class": "MDRDiagnostic"
+                }
+            }
+        },
+        {
+            "Event_Name": "PropertyValueChanger for verifying positive diagnosis",
+            "Start_Day": 1,
+            "class": "CampaignEvent",
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1.0,
+                "Travel_Linked": 0,
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIVScaleUpSwitch",
+                    "Trigger_Condition": "TBTestPositive",
+					"Demographic_Coverage": 1.0,
+					"Demographic_Coverage_Time_Profile": "Linear",
+					"Duration": -1,
+					"Initial_Demographic_Coverage": 0.0,
+					"Not_Covered_IndividualIntervention_Configs": [],
+					"Primary_Time_Constant": 50,
+					"Property_Restrictions_Within_Node": [],
+					"Target_Age_Max": 125,
+					"Target_Age_Min": 0,
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "PropertyValueChanger",
+						"Daily_Probability": 1.0,
+						"Maximum_Duration": -1,
+						"Revert": 2,
+						"Target_Property_Key": "Place",
+						"Target_Property_Value": "TestedPositive"
+                        }
+                }
+            }
+        },
+        {
+            "Event_Name": "PropertyValueChanger for verifying negative diagnoses",
+            "Start_Day": 1,
+            "class": "CampaignEvent",
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1.0,
+                "Travel_Linked": 0,
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIVScaleUpSwitch",
+                    "Trigger_Condition": "TBTestNegative",
+					"Demographic_Coverage": 1.0,
+					"Demographic_Coverage_Time_Profile": "Linear",
+					"Duration": -1,
+					"Initial_Demographic_Coverage": 0.0,
+					"Not_Covered_IndividualIntervention_Configs": [],
+					"Primary_Time_Constant": 100,
+					"Property_Restrictions_Within_Node": [],
+					"Target_Age_Max": 125,
+					"Target_Age_Min": 0,
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "PropertyValueChanger",
+						"Daily_Probability": 1.0,
+						"Maximum_Duration": -1,
+						"Revert": 2,
+						"Target_Property_Key": "Place",
+						"Target_Property_Value": "TestedNegative"
+                        }
+                }
+            }
+        }
+    ]
+
+}

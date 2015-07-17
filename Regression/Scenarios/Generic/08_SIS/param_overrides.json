@@ -1,0 +1,56 @@
+{
+    "Default_Config_Path": "defaults/generic_scenario_default_config.json",
+    "parameters": {
+        "CAMPAIGNS": {
+            "Campaign_Filename": "campaign.json",
+            "Enable_Interventions": 1
+        },
+        "DEMOGRAPHICS": {
+            "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE",
+            "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
+            "Demographics_Filename": "generic_scenarios_demographics.json",
+            "Enable_Aging": 1,
+            "Enable_Birth": 0,
+            "Enable_Demographics_Birth": 0,
+            "Enable_Demographics_Gender": 0,
+            "Enable_Demographics_Initial": 1,
+            "Enable_Demographics_Other": 0,
+            "Enable_Vital_Dynamics": 0,
+            "IMMUNITY": {
+                "Enable_Immunity": 0
+            },
+            "MORTALITY": {
+                "Base_Mortality": 0,
+                "Enable_Disease_Mortality": 0,
+                "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF"
+            }
+        },
+        "DISEASE": {
+            "INCUBATION": {
+                "Base_Incubation_Period": 0,
+                "Incubation_Period_Distribution": "FIXED_DURATION"
+            },
+            "INFECTIOUSNESS": {
+                "Base_Infectious_Period": 25,
+                "Base_Infectivity": 0.048,
+                "Infectious_Period_Distribution": "EXPONENTIAL_DURATION",
+                "Infectivity_Scale_Type": "CONSTANT_INFECTIVITY",
+                "Population_Density_Infectivity_Correction": "CONSTANT_INFECTIVITY"
+            },
+            "Infection_Updates_Per_Timestep": 1,
+            "Max_Individual_Infections": 1
+        },
+        "OUTPUT": {
+            "Enable_Property_Output": 0
+        },
+        "PRIMARY": {
+            "Config_Name": "08_SIS",
+            "Simulation_Type": "GENERIC_SIM",
+            "Geography": "SamplesInput",
+            "Run_Number": 0,
+            "Simulation_Duration": 3650,
+            "Simulation_Timestep": 1,
+            "Start_Time": 0
+        }
+    }
+}

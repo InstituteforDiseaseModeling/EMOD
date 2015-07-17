@@ -1,0 +1,51 @@
+{
+    "Default_Config_Path": "defaults/hiv_scenario_default_config.json", 
+    "parameters": {
+        "____________DEMOGRAPHICS___________": {
+            "Birth_Rate_Dependence": "POPULATION_DEP_RATE", 
+            "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER", 
+            "Base_Population_Scale_Factor": 1, 
+            "Demographics_Filenames": [
+                "uniform_demographics.json", 
+                "pfa_simple.json"
+            ], 
+            "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE"
+        }, 
+        "____________TRANSMISSION___________": {
+            "Condom_Transmission_Blocking_Probability": 0
+        }, 
+        "____________INTRAHOST___________": {
+            "Base_Infectivity": 0.002, 
+            "AIDS_Stage_Infectivity_Multiplier": 1, 
+            "Male_To_Female_Relative_Infectivity_Multipliers": [
+                1
+            ], 
+            "Male_To_Female_Relative_Infectivity_Ages": [
+                0
+            ], 
+            "Acute_Stage_Infectivity_Multiplier": 1
+        }, 
+        "____________SIMULATION___________": {
+            "Simulation_Timestep": 30.41667, 
+            "Simulation_Duration": 3650, 
+            "Base_Year": 2020
+        }, 
+        "____________REPORTING___________": {
+            "Report_HIV_ByAgeAndGender_Stop_Year": 2050, 
+            "Report_HIV_Period": 30, 
+            "Report_HIV_ByAgeAndGender": 1, 
+            "Report_HIV_ByAgeAndGender_Start_Year": 2020
+        }, 
+        "____________NETWORK___________": {
+            "Sexual_Debut_Age_Female_Weibull_Scale": 0.0, 
+            "Informal_Formation_Rate_Heterosexual": 0, 
+            "Transitory_Formation_Rate_Heterosexual": 1, 
+            "Marriage_Formation_Rate_Heterosexual": 0, 
+            "Sexual_Debut_Age_Male_Weibull_Scale": 0.0, 
+            "Sexual_Debut_Age_Min": 0
+        }, 
+        "____________RARELY_CHANGED___________": {
+            "Config_Name": "03B_Effect_of_VMMC"
+        }
+    }
+}

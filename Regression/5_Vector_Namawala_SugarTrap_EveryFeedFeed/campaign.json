@@ -1,0 +1,25 @@
+{
+     "Use_Defaults": 1,
+     "Events": [
+          {
+               "Event_Coordinator_Config": {
+                    "Demographic_Coverage": 0.5, 
+                    "Intervention_Config": {
+                         "Cost_To_Consumer": 3.75, 
+                         "Durability_Time_Profile": "DECAYDURABILITY", 
+                         "Killing": 0.1, 
+                         "Primary_Decay_Time_Constant": 2190, 
+                         "Secondary_Decay_Time_Constant": 3650, 
+                         "class": "SugarTrap"
+                    }, 
+                    "Target_Demographic": "Everyone", 
+                    "class": "StandardInterventionDistributionEventCoordinator"
+               }, 
+               "Nodeset_Config": {
+                    "class": "NodeSetAll"
+               }, 
+               "Start_Day": 140, 
+               "class": "CampaignEvent"
+          }
+     ]
+}

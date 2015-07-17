@@ -1,0 +1,48 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.8,
+                "Intervention_Config": {
+                    "Blocking_Rate": 0.0,
+                    "Cost_To_Consumer": 8.0,
+                    "Durability_Time_Profile": "BOXDURABILITY",
+                    "Killing_Rate": 0.7,
+                    "Primary_Decay_Time_Constant": 365,
+                    "Secondary_Decay_Time_Constant": 3650,
+                    "class": "IRSHousingModification"
+                },
+                "Number_Repetitions": 4,
+                "Target_Demographic": "Everyone",
+                "Timesteps_Between_Repetitions": 365,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 2190,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.8,
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 3.75,
+                    "Dosing_Type": "FullTreatmentParasiteDetect",
+                    "Drug_Type": "Chloroquine",
+                    "class": "AntimalarialDrug"
+                },
+                "Number_Repetitions": 9,
+                "Target_Demographic": "Everyone",
+                "Timesteps_Between_Repetitions": 60,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 2190.0,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

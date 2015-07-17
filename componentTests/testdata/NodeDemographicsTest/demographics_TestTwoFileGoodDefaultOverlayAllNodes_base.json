@@ -1,0 +1,37 @@
+{
+    "Metadata": {
+        "DateCreated": "Sun Sep 25 23:19:55 2011", 
+        "Tool": "convertdemog.py", 
+        "Author": "jsteinkraus", 
+        "IdReference": "Gridded world grump2.5arcmin", 
+        "NodeCount": 2
+    }, 
+    "Nodes": [
+        {
+            "NodeID": 340461476, 
+            "NodeAttributes": {
+                "Latitude": -8.5, 
+                "Longitude": 36.5, 
+                "Altitude": 0, 
+                "Airport": 0, 
+                "Region": 1, 
+                "Seaport": 0, 
+                "InitialPopulation": 1000,
+                "BirthRate": 0.001
+            }
+        },
+        {
+            "NodeID": 340461477, 
+            "NodeAttributes": {
+                "Latitude": -9.5, 
+                "Longitude": 36.5, 
+                "Altitude": 0, 
+                "Airport": 0, 
+                "Region": 1, 
+                "Seaport": 0, 
+                "InitialPopulation": 999,
+                "BirthRate": 0.001
+            }
+        }
+    ]
+}

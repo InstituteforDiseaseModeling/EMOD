@@ -1,0 +1,55 @@
+{
+    "Default_Config_Path": "defaults/vector_scenario_default_config.json",
+    "parameters": {
+        "CAMPAIGNS": {
+            "Enable_Interventions": 0
+        },
+        "CLIMATE": {
+            "AIR": {
+                "Air_Temperature_Filename": "Garki_single_temperature.bin"
+            },
+            "Climate_Model": "CLIMATE_BY_DATA",
+            "HUMIDITY": {
+                "Relative_Humidity_Filename": "Garki_single_humidity.bin"
+            },
+            "LAND_TEMP": {
+                "Land_Temperature_Filename": "Garki_single_temperature.bin"
+            },
+            "RAINFALL": {
+                "Rainfall_Filename": "Garki_single_rainfall1.bin"
+            }
+        },
+        "DEMOGRAPHICS": {
+            "Demographics_Filename": "Garki_single_demographics.json"
+        },
+        "PRIMARY": {
+            "Config_Name": "PrimaryScenarios_3C_Garki_single_node_Vector",
+            "Geography": "Garki_Single",
+            "Run_Number": 1,
+            "Simulation_Duration": 3650,
+            "Simulation_Type": "VECTOR_SIM",
+            "Start_Time": 0
+        },
+        "VECTOR": {
+            "SPECIES": {
+                "Vector_Species_Names": [
+                    "arabiensis",
+                    "funestus",
+                    "gambiae"
+                ],
+                "Vector_Species_Params": {
+                    "arabiensis": {
+                        "Immature_Duration": 2, 
+                        "Indoor_Feeding_Fraction": 1
+                    },
+                    "funestus": {
+                        "Immature_Duration": 2
+                    },
+                    "gambiae": {
+                        "Immature_Duration": 2
+                    }
+                }
+            }
+        }
+    }
+}

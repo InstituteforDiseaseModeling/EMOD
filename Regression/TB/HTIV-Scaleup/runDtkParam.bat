@@ -1,0 +1,1 @@
+Eradication.exe -C %1 -I . -O output_scaleup_property > console_output_%1.txt

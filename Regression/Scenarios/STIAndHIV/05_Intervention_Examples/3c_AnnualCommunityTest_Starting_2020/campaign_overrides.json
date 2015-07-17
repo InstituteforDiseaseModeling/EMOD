@@ -1,0 +1,65 @@
+{
+    "Campaign_Name": "3c_AnnualCommunityTest_Starting_2020", 
+    "Default_Campaign_Path": "defaults/hiv_default_campaign.json", 
+    "Use_Defaults": 1,
+    "Events":
+    [
+        {
+            "BEGIN": "TESTING FOR 50% OF POPULATION ON JAN 1, 2020, 2021, 2022, ...",
+            "class": "CampaignEventByYear",
+            "Event_Name": "Select 50% of uninfected population for testing on Jan 1, 2020",
+            "Start_Year": 2020,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 0.5,
+                "Number_Repetitions": 100,
+                "NOTE": "Timesteps_Between_Repetitions is in units of DT, which here is one month.",
+                "Timesteps_Between_Repetitions": 12,
+                "Intervention_Config":
+                {
+                    "class": "HIVRapidHIVDiagnostic",
+                    "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging" ],
+                    "Cascade_State": "HomeTesting",
+                    "Event_Or_Config": "Event",
+                    "Positive_Diagnosis_Event": "ARTStaging7",
+                    "Negative_Diagnosis_Event": "NoTrigger"
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "ARTStaging: state 7 (random choice: linking from positive diagnostic test on HomeTesting)",
+            "Start_Year": 1990,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "ARTStaging7",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVRandomChoice",
+                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART" ],
+                        "Cascade_State": "",
+                        "Choices":
+                        {
+                            "NoTrigger": 0.2,
+                            "ARTStaging2": 0.8
+                        }
+                    }
+                }
+            },
+            "END": "TESTING FOR 50% OF POPULATION ON JAN 1, 2020"
+        }
+    ]
+}

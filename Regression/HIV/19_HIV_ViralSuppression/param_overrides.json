@@ -1,0 +1,26 @@
+{
+    "Default_Config_Path": "defaults/hiv_default_config.json", 
+    "Listed_Events": [ "OnART1" ],
+    "parameters": {
+
+        "____________SIMULATION___________": "",
+            "Simulation_Duration": 2000, 
+
+        "____________INTRAHOST___________": "",
+
+        "____________NETWORK___________": "",
+
+        "____________TRANSMISSION___________": "",
+
+        "ART_Viral_Suppression_Multiplier": 0.3, 
+
+        "____________DEMOGRAPHICS___________": "",
+            "Base_Population_Scale_Factor": 0.0001,
+
+        "____________REPORTING___________": "",
+
+        "____________RARELY_CHANGED___________": "",
+            "Config_Name": "19_HIV_ViralSuppression"
+
+    }
+}

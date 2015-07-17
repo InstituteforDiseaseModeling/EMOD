@@ -1,0 +1,93 @@
+{
+    "Campaign_Name": "Campaign - Outbreak, drug-seeking on TBActivation", 
+    "Events": [
+        {
+               "Event_Coordinator_Config": {
+                    "Demographic_Coverage": 1, 
+                    "Include_Arrivals": 0, 
+                    "Include_Departures": 0, 
+                    "Intervention_Config": {
+                         "Antigen": 0, 
+                         "Genome": 0, 
+                         "Outbreak_Source": "PrevalenceIncrease", 
+                         "class": "OutbreakIndividual"
+                    }, 
+                    "Number_Distributions": 100, 
+                    "Number_Repetitions": 1, 
+                    "Target_Demographic": "Everyone", 
+					"Property_Restrictions": [  ],
+                    "class": "StandardInterventionDistributionEventCoordinator"
+               }, 
+               "Event_Name": "Outbreak", 
+               "Nodeset_Config": {
+                    "class": "NodeSetAll"
+               }, 
+               "Start_Day": 10, 
+               "class": "CampaignEvent"
+        },
+		{
+        "Event_Coordinator_Config": {
+            "Demographic_Coverage": 1, 
+            "Include_Arrivals": 0, 
+            "Include_Departures": 0, 
+            "Intervention_Config": {
+				"Cost_To_Consumer": 0,
+				"Drug_Type": "FirstLineCombo",
+				"Durability_Profile": "FIXED_DURATION_CONSTANT_EFFECT",
+				"Primary_Decay_Time_Constant": 50,
+				"Remaining_Doses": 1,
+				"TB_Drug_Clearance_Rate": 0.000000001,
+				"TB_Drug_Inactivation_Rate":0,
+				"TB_Drug_Resistance_Rate": 0.000000001,
+				"TB_Drug_Relapse_Rate": 0.1,
+                "class": "AntiTBDrug"
+                }, 
+            "Number_Distributions": -1, 
+            "Number_Repetitions": 1, 
+            "Target_Demographic": "Everyone", 
+			"Property_Restrictions": [  ],
+            "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+               "Event_Name": "Treatment for all", 
+               "Nodeset_Config": {
+                    "class": "NodeSetAll"
+               }, 
+               "Start_Day": 75, 
+               "class": "CampaignEvent"
+        },
+		          {
+               "Event_Coordinator_Config": {
+                    "Demographic_Coverage": 1, 
+                    "Intervention_Config": {
+                         "Actual_IndividualIntervention_Config": {
+							"Cost_To_Consumer": 1,
+							"Drug_Type": "FirstLineCombo",
+							"Durability_Profile": "FIXED_DURATION_CONSTANT_EFFECT",
+							"Primary_Decay_Time_Constant": 50,
+							"Remaining_Doses": 1,
+							"TB_Drug_Clearance_Rate": 0.000000001,
+							"TB_Drug_Inactivation_Rate":0.00000001,
+							"TB_Drug_Resistance_Rate": 0.000000001,
+							"TB_Drug_Relapse_Rate": 0.0000001,
+							"Reduced_Transmit": 1,
+							"class": "AntiTBDrug"
+                         }, 
+                         "Trigger_Condition": "TBPendingRelapse", 
+                         "class": "NodeLevelHealthTriggeredIV"
+                    }, 
+                    "Number_Distributions": -1, 
+                    "Number_Repetitions": 1, 
+                    "Target_Demographic": "Everyone", 
+                    "class": "StandardInterventionDistributionEventCoordinator"
+               }, 
+               "Event_Name": "Drugs after TB activation", 
+               "Nodeset_Config": {
+                    "class": "NodeSetAll"
+               }, 
+               "Start_Day": 1, 
+               "class": "CampaignEvent"
+          }
+       
+    ], 
+    "Use_Defaults": 1
+}

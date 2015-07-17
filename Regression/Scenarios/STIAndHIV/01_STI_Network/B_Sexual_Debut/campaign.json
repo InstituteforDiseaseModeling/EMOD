@@ -1,0 +1,25 @@
+{
+    "Campaign_Name": "Initial Seeding",
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "Start_Day": 1,
+            "class": "CampaignEvent",
+            "Event_Name": "Outbreak",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.0005,
+                "Intervention_Config": {
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0,
+                    "Genome": 0
+                }
+            }
+        }
+    ]
+}

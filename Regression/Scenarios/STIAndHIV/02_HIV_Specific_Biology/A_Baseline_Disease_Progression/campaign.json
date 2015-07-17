@@ -1,0 +1,57 @@
+
+{ 
+    "Use_Defaults": 1,
+        "Campaign_Name": "Cohort of newborns all born in 2020",
+        "Events": [
+        { 
+            "class": "CampaignEventByYear",
+            "Event_Name": "Initialize HIV infection in 1/2 of individuals at age 20",
+            "Start_Year": 2020,
+            "Nodeset_Config": 
+            { 
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            { 
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.5,
+                "Travel_Linked": 0,
+                "Intervention_Config": 
+                { 
+                    "class": "OutbreakIndividual",
+                    "Event_Name": "Outbreak (not used)",
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "Incubation_Period_Override": 1,
+                    "Antigen": 0,
+                    "Genome": 0
+                }
+            }
+         },
+         { 
+            "class": "CampaignEventByYear",
+            "Event_Name": "Initialize HIV infection in all remaining individuals at age 30",
+            "Start_Year": 2030,
+            "Nodeset_Config": 
+            { 
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            { 
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Travel_Linked": 0,
+                "Intervention_Config": 
+                { 
+                    "class": "OutbreakIndividual",
+                    "Event_Name": "Outbreak (not used)",
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "Incubation_Period_Override": 1,
+                    "Antigen": 0,
+                    "Genome": 0
+                }
+            }
+        }
+    ]
+}

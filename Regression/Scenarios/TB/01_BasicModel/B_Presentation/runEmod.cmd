@@ -1,0 +1,1 @@
+..\..\..\..\eradication.exe --config config.json --input-path ..\..\..\..\Scenarios\InputFiles --output-path output --dll-path ..\..\..\..

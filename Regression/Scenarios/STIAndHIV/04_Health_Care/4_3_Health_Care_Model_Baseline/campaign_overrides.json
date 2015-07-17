@@ -1,0 +1,8 @@
+{
+    "Campaign_Name": "4E_Health_Care_Model_Baseline", 
+    "Default_Campaign_Path": "defaults/hiv_default_campaign.json", 
+    "Use_Defaults": 1,
+    "Events":
+    [
+    ]
+}

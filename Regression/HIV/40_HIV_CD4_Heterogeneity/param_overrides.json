@@ -1,0 +1,42 @@
+{
+	"Default_Config_Path": "defaults/hiv_default_config.json", 
+	"parameters": {
+
+		"____________SIMULATION___________": "",
+		"Simulation_Duration": 10000, 
+		"Simulation_Timestep": 7, 
+		"Run_Number": 40,
+		
+		"____________INTRAHOST___________": "",
+        "CD4_At_Death_LogLogistic_Heterogeneity": 0.70,
+        "CD4_At_Death_LogLogistic_Scale": 2.96,
+        "CD4_Post_Infection_Weibull_Scale": 560.43,
+        "CD4_Post_Infection_Weibull_Heterogeneity": 0.2756,
+
+		"____________NETWORK___________": "",
+		
+		"____________TRANSMISSION___________": "",
+
+		"____________DEMOGRAPHICS___________": "",
+		"Base_Population_Scale_Factor": 5e-6,
+        "Enable_Birth": 0,
+        "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF",
+
+		"____________REPORTING___________": "",
+		"Enable_Timestep_Channel_In_Report": 0,
+		"Report_HIV_ByAgeAndGender": 1,
+		"Report_HIV_ByAgeAndGender_Start_Year" : 1962,
+		"Report_HIV_ByAgeAndGender_Stop_Year" : 1978,
+		"Report_HIV_Infection": 1,
+		"Report_HIV_Infection_Start_Year" : 1962,
+		"Report_HIV_Infection_Stop_Year": 1978,
+		"Report_HIV_Mortality": 1,
+		
+		"____________REPLICATION_AND_DRUGS___________": "",
+
+		"____________RARELY_CHANGED___________": "",
+		"Config_Name": "40_HIV_CD4_Heterogeneity",
+		"logLevel_SimulationConfig": "DEBUG"
+
+	}
+}

@@ -1,0 +1,71 @@
+{
+    "Use_Defaults": 1,
+    "Campaign_Name": "G_Vertical_Transmission", 
+    "Events": [
+        {
+            "Description": "HIV Outbreak on Day 1",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 1,
+                    "Outbreak_Source": "PrevalenceIncrease"
+                }
+            }
+        },
+
+        {
+            "Description": "PMTCT with 60% efficacy in reducing vertical transmission, starting after 2 years of simulation",
+            "class": "CampaignEventByYear",
+            "Start_Year": 2022,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "FourteenWeeksPregnant",
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "PMTCT",
+                        "Efficacy": 0.6
+                    }
+                }
+            }
+        },
+
+        {
+            "Description": "ART for all",
+            "class": "CampaignEventByYear",
+            "Start_Year": 2024,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "ARTBasic"
+                }
+            }
+        },
+        {
+            "Description": "ART at birth",
+            "class": "CampaignEventByYear",
+            "Start_Year": 2024,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "BirthTriggeredIV",
+                    "Actual_IndividualIntervention_Config" :
+                    {
+                        "class": "ARTBasic"
+                    }
+                }
+            }
+        }
+
+    ]
+}

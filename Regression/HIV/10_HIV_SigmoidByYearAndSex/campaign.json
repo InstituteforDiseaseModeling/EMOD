@@ -1,0 +1,49 @@
+{
+    "Use_Defaults": 1,
+    "Campaign_Name": "SigmoidByYearAndSex validation", 
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Event_Name": "Debut-triggered sigmoid event", 
+            "Start_Day": 1,
+
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            }, 
+
+            "Event_Coordinator_Config": 
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    ".Trigger_Condition": "STIDebut",
+                    "Trigger_Condition": "EveryUpdate",
+
+                    "Demographic_Coverage": 1,
+                    "Duration": 14600,
+
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVSigmoidByYearAndSexDiagnostic",
+
+                        "Days_To_Diagnosis": 0,
+
+                        "Abort_States": [],
+                        "Cascade_State": "",
+
+                        "Ramp_Min": -0.0052,
+                        "Ramp_Max": 0.25,
+                        "Ramp_MidYear": 2000,
+                        "Ramp_Rate": 1,
+                        "Female_Multiplier": 1.3,
+
+                        "Positive_Diagnosis_Event": "OnART0"
+                    }
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,45 @@
+{
+    "Use_Defaults": 1,
+    "Campaign_Name": "HIV 3C: ART", 
+    "Events": [
+        {
+            "Description": "HIV Outbreak",
+            "class": "CampaignEventByYear",
+            "Start_Year": 2021,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1.0,
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Female",
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 1,
+                    "Outbreak_Source": "PrevalenceIncrease"
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "ART for all females in 2025", 
+            "Start_Year": 2025,
+
+            "Nodeset_Config": { "class": "NodeSetAll" }, 
+
+            "Event_Coordinator_Config": 
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Female",
+
+                "Intervention_Config":
+                {
+                    "class": "ARTBasic",
+                    "Viral_Suppression": 1
+                }
+            }
+        }
+
+    ]
+}

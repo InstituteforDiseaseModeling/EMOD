@@ -1,0 +1,10 @@
+Specification:
+--------------
+Starting on Jan 1, 2020, 90% of individuals who have presented after testing HIV+ are staged and, depending on eligibility, are initiated into pre-ART or ART. I.e., no more individuals are lost to follow-up between presenting to clinic for blood draw/exam/staging and initiation of pre-ART/ART.
+
+
+Implementation Notes:
+---------------------
+Small modifications to ARTStaging, LinkingToPreART, and LinkingToART.  In ARTStaging, the initial HIVRandomChoice (state 1) is replaced by an HIVPiecewiseByYearAndSexDiagnostic.  The diagnostic is used to determine if it is before or after 2020.  Before 2020 the probability of linking it 0.85, and after 2020, the probability of linking it 0.9.  Similarly, the HIVRandomChoice (state 5) that computes the probability of loss while waiting for CD4 results is replaced with a HIVPiecewiseByYearAndSexDiagnostic.  In this case, the probability of retention is 0.85 before 2020, and 1.0 after 2020.
+
+A similar modification is made in LinkingToPreART and LinkingToART.  In LinkingToPreART, the original linking probability is determined by a HIVSigmoidByYearAndSexDiagnostic (state 0).  The modification is to make a failed draw at state 0 broadcast "LinkingToART1".  Another HIVPiecewiseByYearAndSexDignostic is triggered by "LinkingToART1".  Here the diagnostic returns a negative result before 2020, and a positive result after 2020.  A negative result broadcasts "HCTUptakePostDebut9", whereas a positive result broadcasts "OnPreART0".  An analogous mechanism is implemented in LinkingToART, insuring no losses after 2000.

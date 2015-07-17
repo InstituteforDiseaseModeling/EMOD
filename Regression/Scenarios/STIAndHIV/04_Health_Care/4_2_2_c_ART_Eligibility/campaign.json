@@ -1,0 +1,194 @@
+{
+    "Use_Defaults": 1,
+    "Campaign_Name": "", 
+    "Events": [
+
+        {
+            "class": "CampaignEvent",
+            "Event_Name": "Epidemic seeding",
+            "Start_Day": 1,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config":
+                {
+                    "class": "OutbreakIndividual",
+                    "Outbreak_Source": "PrevalenceIncrease"
+                }
+            }
+        },
+
+
+        {
+            "Description": "",
+            "class": "CampaignEvent",
+            "Start_Day": 2,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "ARTStaging0"
+                }
+            }
+        },
+
+        {
+            "class": "CampaignEvent",
+            "Event_Name": "ARTStaging: state 0 (draw blood)",
+            "Start_Day": 1,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "ARTStaging0",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVDrawBlood",
+                        "Abort_States": [ ],
+                        "Cascade_State": "ARTStaging",
+                        "Test_For_CD4_Count": 1,
+                        "Test_For_Viral_Load": 0,
+                        "Event_Or_Config": "Event",
+                        "Positive_Diagnosis_Event": "ARTStaging1"
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Event_Name": "ARTStaging: state 1 (check eligibility for ART, CD4 agnostic)",
+            "Start_Day": 1,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "ARTStaging1",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVARTStagingCD4AgnosticDiagnostic",
+                        "Abort_States": [ ],
+                        "Cascade_State": "ARTStaging",
+                        "NOTE1": "Threshold for adult vs child guidelines",
+                        "Adult_Treatment_Age": 5,
+
+                        "Adult_By_WHO_Stage": {
+                            "Times": [2004, 2011.8],
+                            "Values": [4, 3]
+                        },
+                        "Adult_By_TB": {
+                            "Times": [2013.2],
+                            "Values": [1]
+                        },
+                        "Adult_By_Pregnant": {
+                            "Times": [2013.2],
+                            "Values": [1]
+                        },
+
+                        "Child_Treat_Under_Age_In_Years_Threshold": {
+                            "Times": [2010.34, 2013.2],
+                            "Values": [1, 5]
+                        },
+
+                        "Child_By_WHO_Stage": {
+                            "Times": [2010, 2011.8],
+                            "Values": [3, 2]
+                        },
+                        "Child_By_TB": {
+                            "Times": [2004],
+                            "Values": [0]
+                        },
+
+                        "Event_Or_Config": "Event",
+                        "Positive_Diagnosis_Event": "ART_Eligible_by_CD4AgnosticDiagnostic",
+                        "Negative_Diagnosis_Event": "ARTStaging2"
+                    }
+                }
+            }
+        },
+
+        {
+            "Description": "Wait one year, only one entry allowed at a time per individual",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "ARTStaging2",
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVDelayedIntervention",
+
+                        "Abort_States": [ ],
+                        "Cascade_State": "ARTStaging",
+
+                        "Delay_Distribution": "FIXED_DURATION",
+                        "Delay_Period": 7,
+
+                        "Broadcast_Event": "ARTStaging3"
+                    }
+                }
+            }
+        },
+
+        {
+            "class": "CampaignEvent",
+            "Event_Name": "ARTStaging: state 3 (check eligibility for ART by CD4)",
+            "Start_Day": 1,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "ARTStaging3",
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "HIVARTStagingByCD4Diagnostic",
+                        "Abort_States": [ ],
+                        "Cascade_State": "ARTStaging",
+
+                        "Threshold": {
+                            "Times": [2004, 2011.8, 2015],
+                            "Values": [200, 350, 500]
+                        },
+                        "If_Active_TB": {
+                            "Times": [2010.34],
+                            "Values": [350]
+                        },
+                        "If_Pregnant": {
+                            "Times": [2010.34, 2015],
+                            "Values": [350, 1000]
+                        },
+                        "Event_Or_Config": "Event",
+                        "Positive_Diagnosis_Event": "ART_Eligible_by_CD4DependentDiagnostic",
+                        "Negative_Diagnosis_Event": "Not_ART_Eligible"
+                    }
+                }
+            }
+        }
+    ]
+}

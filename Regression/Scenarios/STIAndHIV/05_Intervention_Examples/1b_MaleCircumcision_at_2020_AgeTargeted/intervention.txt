@@ -1,0 +1,14 @@
+Specification:
+--------------
+50% of HIV-uninfected men between the ages of 18 and 25 become circumcised on Jan 1, 2020.
+
+
+Implementation Notes:
+---------------------
+On Jan 1, 2020, a SimpleDiagnostic is used to select HIV negative men for male circumcision.  This SimpleDiagnostic is distributed with the following StandardInterventionDistributionEventCoordinator parameters:
+    "Target_Demographic": "ExplicitAgeRangesAndGender"
+    "Target_Age_Min": 18
+    "Target_Age_Max": 25
+    "Target_Gender": "Male"
+    "Demographic_Coverage": 0.5.
+The result is that 50% of males aged 18-25 years are given the SimpleDiagnostic.  As in 1a and 1b, the SimpleDiagnostic uses Base_Specificity=0 and Base_Sensitivity=0 to select only HIV negative individuals for male circumcision.

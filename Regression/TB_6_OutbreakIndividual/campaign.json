@@ -1,0 +1,32 @@
+{
+    "Campaign_Name": "Illustration of OutbreakIndividual where only 30-40 year olds are infected",
+    "Events": [
+        {
+            "Event_Name": "Outbreak",
+            "Start_Day": 100,
+            "class": "CampaignEvent",
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1,
+                "Include_Arrivals": 0,
+                "Include_Departures": 0,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "Outbreak_Source": "PrevalenceIncrease"
+                },
+                "Number_Distributions": 100,
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Age_Min": 30,
+                "Target_Age_Max": 40,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

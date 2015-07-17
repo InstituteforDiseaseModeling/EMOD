@@ -1,0 +1,9 @@
+{
+    "Default_Config_Path": "defaults/hiv_scenario5_default_config.json",
+    "parameters":
+    {
+        "RARELY_CHANGED": {
+            "Config_Name": "05_3A_TestingDay_at_2020"
+        }
+    }
+}

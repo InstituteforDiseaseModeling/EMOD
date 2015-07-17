@@ -1,0 +1,42 @@
+{
+    "Default_Config_Path": "./defaults/sti_default_config.json", 
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Enable_Vital_Dynamics": 0,
+            "MORTALITY": {
+                "Base_Mortality": 0.01, 
+                "Immunity_Mortality_Factor": 0.5
+            }
+        }, 
+        "DISEASE": {
+            "INFECTIOUSNESS": {
+                "Base_Infectivity": 10.0, 
+                "Infectious_Period_Mean": 120
+            }, 
+            "INCUBATION": {
+                "Base_Incubation_Period": 1
+            },
+            "Enable_Disease_Mortality": 0
+        }, 
+        "PRIMARY": {
+            "Simulation_Duration": 1500, 
+            "Config_Name": "44_STI_PFA_Report"
+        }, 
+        "STI": {
+            "logLevel_SocietyImpl": "INFO",
+            ".Python_Script_Path": "/home/jbloedow/python", 
+            "Condom_Usage_Probability_in_Informal_Relationships_Early": 0.0,
+            "Condom_Usage_Probability_in_Informal_Relationships_Late": 0.0,
+            "Condom_Usage_Probability_in_Informal_Relationships_Midyear": 2000,
+            "Condom_Usage_Probability_in_Informal_Relationships_Rate": 0,
+            "Condom_Usage_Probability_in_Marital_Relationships_Early": 0.0,
+            "Condom_Usage_Probability_in_Marital_Relationships_Late": 0.0,
+            "Condom_Usage_Probability_in_Marital_Relationships_Midyear": 2001,
+            "Condom_Usage_Probability_in_Marital_Relationships_Rate": 0,
+            "Condom_Usage_Probability_in_Transitory_Relationships_Early": 0.0,
+            "Condom_Usage_Probability_in_Transitory_Relationships_Late": 0.0,
+            "Condom_Usage_Probability_in_Transitory_Relationships_Midyear": 2000,
+            "Condom_Usage_Probability_in_Transitory_Relationships_Rate": 0
+        }
+    }
+}

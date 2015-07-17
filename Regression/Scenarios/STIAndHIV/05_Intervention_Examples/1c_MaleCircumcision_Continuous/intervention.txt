@@ -1,0 +1,10 @@
+Specification:
+--------------
+HIV-uninfected men get circumcised at a continuous rate of 5%/year (on a continual basis over time) beginning on Jan 1, 2020.
+
+
+Implementation Notes:
+---------------------
+On Jan 1, 2020, all males are given an exponentially distributed delay with mean of 20 years (rate of 5%/year).  At the end of this delay, a SimpleDiagnostic is used to select HIV negative individuals for circumcision.  Notably, this SimpleDiagnostic uses Base_Specificity=0 and Base_Sensitivity=0 so that only HIV negative individuals are selected.  A completely parallel birth triggered IV is also handed out for all males born on or after Jan 1, 2020.
+
+CAUTION: Males born ON the time step that contains Jan 1, 2020 will actually have twice the annual rate (10%/year) for circumcision from the two parallel exponentially distributed delays.

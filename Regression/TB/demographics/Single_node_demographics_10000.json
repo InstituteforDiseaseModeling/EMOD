@@ -1,0 +1,70 @@
+{
+    "Metadata": {
+        "DateCreated": "Sun Sep 25 23:19:55 2011", 
+        "Tool": "convertdemog.py", 
+        "Author": "jsteinkraus", 
+        "IdReference": "Gridded world grump2.5arcmin", 
+        "NodeCount": 1
+    }, 
+    "Nodes": [
+        {
+            "NodeID": 340461476, 
+            "NodeAttributes": {
+                "Latitude": -8.5, 
+                "Longitude": 36.5, 
+                "Altitude": 0, 
+                "Airport": 0, 
+                "Region": 1, 
+                "Seaport": 0, 
+                "InitialPopulation": 10000, 
+                "BirthRate": 0,
+				"AbovePoverty": 0,
+				"Urban": 0
+            }, 
+			"IndividualProperties": [{
+                    "Property": "QualityOfCare",
+                    "Values": [
+						"None",
+                        "Private",
+                        "Public"
+                    ],
+                    "Initial_Distribution": [ 0.33, 0.33, 0.34 ],
+                    "Transitions": []
+                }],
+            "IndividualAttributes": {
+                "AgeDistributionFlag": 0, 
+                "AgeDistribution1": 7300, 
+                "AgeDistribution2": 0, 
+                "PrevalenceDistributionFlag": 1, 
+                "PrevalenceDistribution1": 0, 
+                "PrevalenceDistribution2": 0, 
+                "ImmunityDistributionFlag": 0, 
+                "ImmunityDistribution1": 1, 
+                "ImmunityDistribution2": 0, 
+                "RiskDistributionFlag": 0, 
+                "RiskDistribution1": 1, 
+                "RiskDistribution2": 0, 
+                "MigrationHeterogeneityDistributionFlag": 0, 
+                "MigrationHeterogeneityDistribution1": 1, 
+                "MigrationHeterogeneityDistribution2": 0,
+                "MortalityDistribution": {
+                    "NumDistributionAxes": 2,
+                    "AxisNames": [ "gender", "age" ],
+                    "AxisUnits": [ "male=0,female=1", "days" ],
+                    "AxisScaleFactors": [ 1, 365 ],
+                    "NumPopulationGroups": [ 2, 1 ],
+                    "PopulationGroups": [
+                        [ 0, 1 ],
+                        [ 0 ]
+                    ],
+                    "ResultUnits": "annual deaths per 1000 individuals",
+                    "ResultScaleFactor": 0,
+                    "ResultValues": [
+                        [ 0 ],
+                        [ 0 ]
+                    ]
+                }
+            }
+        }
+    ]
+}

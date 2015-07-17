@@ -1,0 +1,136 @@
+{
+    "parameters": {
+        "CAMPAIGNS": {
+            "Campaign_Filename": "campaign.json",
+            "Enable_Interventions": 1,
+            "Listed_Events": [],
+            "PKPD_Model": "FIXED_DURATION_CONSTANT_EFFECT"
+        },
+        "CLIMATE": {
+            "Climate_Model": "CLIMATE_OFF"
+        },
+        "DEMOGRAPHICS": {
+            "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE",
+            "Base_Population_Scale_Factor": 1,
+            "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE",
+            "Demographics_Filename": "",
+            "Enable_Aging": 1,
+            "Enable_Birth": 1,
+            "Enable_Demographics_Birth": 0,
+            "Enable_Demographics_Gender": 1,
+            "Enable_Demographics_Initial": 1,
+            "Enable_Demographics_Other": 0,
+            "Enable_Demographics_Reporting": 1,
+            "Enable_Immunity_Initialization_Distribution": 0,
+            "Enable_Vital_Dynamics": 1,
+            "IMMUNITY": {
+                "Acquisition_Blocking_Immunity_Decay_Rate": 0.1,
+                "Acquisition_Blocking_Immunity_Duration_Before_Decay": 60,
+                "Enable_Immune_Decay": 1,
+                "Enable_Immunity": 1,
+                "Immunity_Acquisition_Factor": 0,
+                "Immunity_Transmission_Factor": 0,
+                "Transmission_Blocking_Immunity_Decay_Rate": 0.1,
+                "Transmission_Blocking_Immunity_Duration_Before_Decay": 60
+            },
+            "MORTALITY": {
+                "Base_Mortality": 0,
+                "Death_Rate_Dependence" : "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER",
+                "Enable_Disease_Mortality": 0,
+                "Immunity_Mortality_Factor": 0,
+                "Mortality_Blocking_Immunity_Decay_Rate": 0.001,
+                "Mortality_Blocking_Immunity_Duration_Before_Decay": 60,
+                "Mortality_Time_Course": "DAILY_MORTALITY"
+            },
+            "Population_Density_C50": 30,
+            "Population_Scale_Type": "FIXED_SCALING",
+            "SAMPLING": {
+                "Base_Individual_Sample_Rate": 1,
+                "Individual_Sampling_Type": "TRACK_ALL",
+                "Max_Node_Population_Samples": 40,
+                "Sample_Rate_0_18mo": 1,
+                "Sample_Rate_10_14": 1,
+                "Sample_Rate_15_19": 1,
+                "Sample_Rate_18mo_4yr": 1,
+                "Sample_Rate_20_Plus": 1,
+                "Sample_Rate_5_9": 1,
+                "Sample_Rate_Birth": 2
+            }
+        },
+        "DISEASE": {
+            "Animal_Reservoir_Type": "NO_ZOONOSIS",
+            "Enable_Superinfection": 0,
+            "INCUBATION": {
+                "Base_Incubation_Period": 3,
+                "Incubation_Period_Distribution": "FIXED_DURATION"
+            },
+            "INFECTIOUSNESS": {
+                "Base_Infectious_Period": 7,
+                "Base_Infectivity": 0.3,
+                "Infectious_Period_Distribution": "EXPONENTIAL_DURATION",
+                "Infectivity_Scale_Type": "CONSTANT_INFECTIVITY",
+                "Population_Density_Infectivity_Correction": "CONSTANT_INFECTIVITY"
+            },
+            "Infection_Updates_Per_Timestep": 1,
+            "Max_Individual_Infections": 1,
+            "TRANSMISSION": {
+                "Enable_Maternal_Transmission": 0,
+                "Maternal_Transmission_Probability": 0
+            }
+        },
+        "FUDGE_FACTORS": {
+            "x_Air_Migration": 1,
+            "x_Birth": 1,
+            "x_Local_Migration": 1,
+            "x_Other_Mortality": 1,
+            "x_Population_Immunity": 1,
+            "x_Regional_Migration": 1,
+            "x_Sea_Migration": 1,
+            "x_Temporary_Larval_Habitat": 1
+        },
+        "HPC": {
+            "Job_Node_Groups": "Chassis08",
+            "Job_Priority": "BELOWNORMAL",
+            "LB": {
+                "Load_Balance_Filename": "",
+                "Load_Balance_Scheme": "STATIC"
+            },
+            "Local_Simulation": 0,
+            "Num_Cores": 1
+        },
+        "INTRANODE_TRANSMISSION": {
+            "Enable_Default_Shedding_Function": 1,
+            "Enable_Heterogeneous_Intranode_Transmission": 0
+        },
+        "MIGRATION": {
+            "Migration_Model": "NO_MIGRATION"
+        },
+        "OUTPUT": {
+            "Report_Event_Recorder" : 0,
+            "Enable_Default_Reporting" : 1,
+            "Enable_Property_Output": 0,
+            "Enable_Spatial_Output": 0
+        },
+        "POLIO": {},
+        "PRIMARY": {
+            "Config_Name": "DEFAULT_CONFIG_NAME_SHOULD_BE_SET",
+            "Simulation_Type": "GENERIC_SIM",
+            "Geography": "DEFAULT_GEOGRAPHY_SHOULD_BE_SET",
+            "Node_Grid_Size": 0.042,
+            "Run_Number": 0,
+            "Simulation_Duration": 365,
+            "Simulation_Timestep": 1,
+            "Start_Time": 0
+        },
+        "SERIALIZATION": {
+            "Burnin_Cache_Mode": "none",
+            "Burnin_Cache_Period": 0,
+            "Burnin_Name": "",
+            "Serialization_Test_Cycles": 0
+        },
+        "STRAIN_TRACKING": {
+            "Number_Basestrains": 1,
+            "Number_Substrains": 1
+        }
+    }
+}

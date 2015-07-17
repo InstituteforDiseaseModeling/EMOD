@@ -1,0 +1,43 @@
+{
+     "Use_Defaults": 1,
+     "Campaign_Name": "Campaign - Outbreak, drug-seeking on TBActivation", 
+     "Events": [
+          {
+               "Event_Coordinator_Config": {
+                    "Coverage": 1,  
+                    "Demographic_Coverage": 0.2, 
+                    "Include_Arrivals": 0, 
+                    "Include_Departures": 0, 
+                    "Intervention_Config": {
+                         "Base_Sensitivity": 0.9, 
+                         "Base_Specificity": 0.95, 
+                         "Cost_To_Consumer": 15, 
+                         "Days_To_Diagnosis": 15, 
+                         "Positive_Diagnosis_Config": {
+                              "Cost_To_Consumer": 90, 
+                              "Drug_Type": "FirstLineCombo", 
+                              "Durability_Profile": "FIXED_DURATION_CONSTANT_EFFECT", 
+                              "Primary_Decay_Time_Constant": 180, 
+                              "Remaining_Doses": 1, 
+                              "TB_Drug_Clearance_Rate": 0.0055, 
+                              "TB_Drug_Inactivation_Rate": 0, 
+                              "class": "AntiTBDrug"
+                         }, 
+                         "Treatment_Fraction": 1, 
+                         "class": "SmearDiagnostic"
+                    }, 
+                    "Number_Distributions": -1, 
+                    "Number_Repetitions": -1, 
+                    "Target_Demographic": "Everyone", 
+                    "Timesteps_Between_Repetitions": 73, 
+                    "class": "StandardInterventionDistributionEventCoordinator"
+               }, 
+               "Event_Name": "Periodic mass test-and-treat with TB drugs on positive diagnosis", 
+               "Nodeset_Config": {
+                    "class": "NodeSetAll"
+               }, 
+               "Start_Day": 60225, 
+               "class": "CampaignEvent"
+          }
+     ]
+}

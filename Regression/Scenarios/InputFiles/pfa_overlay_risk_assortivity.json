@@ -1,0 +1,60 @@
+{
+    "Metadata": {
+        "Author": "dbridenbecker", 
+        "NodeCount": 1, 
+        "Tool": "notepad", 
+        "IdReference": "0", 
+        "DateCreated": "2015-3-21"
+    },
+    "Defaults": {
+        "Society" : {
+            "Pair_Formation_Parameters_TRANSITORY" :
+            {
+                "Assortivity" :
+                {
+                    "Group" : "INDIVIDUAL_PROPERTY",
+                    "Property_Name" : "Risk",
+                    "Axes" : [ "LOW", "HIGH" ],
+                    "Weighting_Matrix_RowMale_ColumnFemale" :
+                    [
+                        [ 0.2, 0.8 ],
+                        [ 0.8, 0.2]
+                    ]
+                }
+            },
+            "Pair_Formation_Parameters_INFORMAL" :
+            {
+                "Assortivity" :
+                {
+                    "Group" : "INDIVIDUAL_PROPERTY",
+                    "Property_Name" : "Risk",
+                    "Axes" : [ "LOW", "HIGH" ],
+                    "Weighting_Matrix_RowMale_ColumnFemale" :
+                    [
+                        [ 0.5, 0.5 ],
+                        [ 0.5, 0.5 ]
+                    ]
+                }
+            },
+            "Pair_Formation_Parameters_MARITAL" :
+            {
+                "Assortivity" :
+                {
+                    "Group" : "INDIVIDUAL_PROPERTY",
+                    "Property_Name" : "Risk",
+                    "Axes" : [ "LOW", "HIGH" ],
+                    "Weighting_Matrix_RowMale_ColumnFemale" :
+                    [
+                        [ 0.8, 0.2 ],
+                        [ 0.2, 0.8 ]
+                    ]
+                }
+            }
+        }
+    }, 
+    "Nodes": [
+        {
+            "NodeID": 1
+        }
+    ]
+}

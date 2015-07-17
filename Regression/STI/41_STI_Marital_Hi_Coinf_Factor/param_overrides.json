@@ -1,0 +1,52 @@
+{
+    "Default_Config_Path": "./defaults/sti_default_config.json", 
+    "parameters": {
+        ".Base_Population_Scale_Factor": 0.0002, 
+        ".Marriage_Formation_Rate_Heterosexual": 0.01,
+        "DEMOGRAPHICS": {
+            "Enable_Vital_Dynamics": 0,
+            "MORTALITY": {
+                "Base_Mortality": 0.01, 
+                "Immunity_Mortality_Factor": 0.5
+            }
+        }, 
+        "DISEASE": {
+            "INFECTIOUSNESS": {
+                "Base_Infectivity": 0.1, 
+                "Infectious_Period_Mean": 120
+            }, 
+            "INCUBATION": {
+                "Base_Incubation_Period": 1
+            },
+            "Enable_Disease_Mortality": 0
+        }, 
+        "PRIMARY": {
+            "Simulation_Duration": 1500, 
+            "Config_Name": "41_STI_Marital_Hi_Coinf_Factor"
+        }, 
+        "STI": {
+            "STI_Coinfection_Probability": 1.0,
+            "Coital_Act_Rate_Transitory": 2.0, 
+
+            "Relationships_Transitory_Weibull_Scale" : 0.009567748,
+
+            "Marriage_Formation_Rate_Heterosexual": 0.0,
+            "Transitory_Formation_Rate_Heterosexual": 0.014424307, 
+            "Informal_Formation_Rate_Heterosexual": 0.0,
+            "Condom_Usage_Probability_in_Marital_Relationships_Early": 0.0,
+            "Condom_Usage_Probability_in_Marital_Relationships_Late": 0.0,
+            "Condom_Usage_Probability_in_Marital_Relationships_Midyear": 2000,
+            "Condom_Usage_Probability_in_Marital_Relationships_Rate": 0
+        },
+        "STI_Network_Params_By_Property" :
+        {
+            "NONE" :
+            {
+                "Prob_Extra_Marital_Relationship_Female": 1, 
+                "Prob_Extra_Marital_Relationship_Male": 1, 
+                "Max_Simultaneous_Marital_Relationships_Females": 3, 
+                "Max_Simultaneous_Marital_Relationships_Males": 3
+            }
+        }
+    }
+}

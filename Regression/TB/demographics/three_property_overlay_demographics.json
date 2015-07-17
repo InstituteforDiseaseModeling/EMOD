@@ -1,0 +1,52 @@
+{
+    "Metadata": {
+        "DateCreated": "Sun Sep 25 23:19:55 2011", 
+        "Tool": "convertdemog.py", 
+        "Author": "jsteinkraus", 
+        "IdReference": "Gridded world grump2.5arcmin", 
+        "NodeCount": 1
+    }, 
+    "Defaults": {
+        "IndividualProperties": [
+            {
+                "Initial_Distribution": [
+                    0.50,
+                    0.33,
+                    0.17
+                ], 
+                "Property": "Place", 
+                "TransmissionMatrix": {
+                    "Matrix": [
+                        [
+                            0, 
+                            1, 
+                            0
+                        ], 
+                        [
+                            0, 
+                            0, 
+                            1
+                        ], 
+                        [
+                            0, 
+                            0, 
+                            0
+                        ]
+                    ], 
+                    "Route": "Contact"
+                }, 
+                "Transitions": [], 
+                "Values": [
+                    "Rock",
+                    "Scissors",
+                    "Paper"
+                ]
+            }
+        ]
+    },
+    "Nodes": [
+        {
+            "NodeID": 340461476
+        }
+    ]
+}

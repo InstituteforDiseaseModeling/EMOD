@@ -1,0 +1,39 @@
+{
+    "Campaign_Name": "1d_MaleCircumcision_at_2020_AgeTargeted", 
+    "Default_Campaign_Path": "defaults/hiv_default_campaign.json",
+    "Use_Defaults": 1,
+    "Events":
+    [
+        {
+            "BEGIN": "MALE CIRCUMCISION FOR 50% OF UNINFECTED AGED 18-25 ON JAN 1, 2020",
+            "class": "CampaignEventByYear",
+            "Event_Name": "Select 20% of uninfected population for male circumcision on Jan 1, 2020",
+            "Start_Year": 2020,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config":
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitAgeRangesAndGender",
+                "Target_Age_Min": 18,
+                "Target_Age_Max": 25,
+                "Target_Gender": "Male",
+                "Demographic_Coverage": 0.5,
+                "Travel_Linked": 0,
+                "Intervention_Config":
+                {
+                    "class": "HIVSimpleDiagnostic",
+					"Cascade_State": "",
+                    "Base_Specificity": 1,
+                    "Base_Sensitivity": 1,
+                    "Event_Or_Config": "Event",
+                    "Positive_Diagnosis_Event": "NoTrigger",
+					"Negative_Diagnosis_Event": "HIVNeedsMaleCircumcision"
+                }
+            },
+            "END": "MALE CIRCUMCISION FOR 50% OF UNINFECTED AGED 18-25 ON JAN 1, 2020"
+        }
+    ]
+}

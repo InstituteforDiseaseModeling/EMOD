@@ -1,0 +1,11 @@
+Specification:
+--------------
+Starting on Jan 1, 2020, and annually thereafter on the first of the year, 50% of the population receives home/community-based testing, of whom 80% immediately present for staging at existing clinics and 20% resume previous care-seeking behavior.
+
+
+Implementation Notes:
+---------------------
+On Jan 1, 2020, and repeating every 12 time steps (with dt=30), 50% of all reachable individuals are given an HIVRapidHIVDiagnostic.  Those who are positive are given an HIVRandomChoice diagnostic, where 80% broadcast ARTStaging2.  The other 10% broadcast NoTrigger.
+
+
+WARNING: StandardInterventionDistributionEventCoordinator should be extended to allow time between repetitions to be specified in Time, not time steps.

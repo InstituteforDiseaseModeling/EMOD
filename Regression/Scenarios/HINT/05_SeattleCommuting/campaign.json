@@ -1,0 +1,35 @@
+{
+    "Events": [
+        {
+            "Campaign_Name": "Generic Seattle Regression Campaign",
+            "Event_Coordinator_Config": {
+                "Coverage": 1,
+                "Demographic_Coverage": 0.01,
+                "Include_Arrivals": 0,
+                "Include_Departures": 0,
+                "Intervention_Config": {
+                    "Antigen": 0,
+                    "Event_Name": "Outbreak (not used)",
+                    "Genome": 0,
+                    "class": "OutbreakIndividual",
+                    "outbreak_source": "ImportCases"
+                },
+                "Number_Distributions": 1,
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [
+                    "Geographic:007"
+                ],
+                "Target_Age_Max": 100,
+                "Target_Age_Min": 0,
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 20,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

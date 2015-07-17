@@ -1,0 +1,41 @@
+Intellectual Ventures(R)/EMOD Disease Transmission Kernel 1.9.4414.0 v1.8Release 2014/10/31 13:59:28
+Using config file: SLDDiagnostic\config_one_day_latent_SLD.json
+Using input path: .
+Using output path: SLDDiagnostic\output-sld
+using dll path: 
+Initializing environment...
+Initial working directory: c:\svn\TB-Release\Regression\TB
+Log-levels:
+	Default -> INFO
+	JsonConfigurable -> WARNING
+00:00:00 [0] [I] [Eradication] Loaded Configuration...
+00:00:00 [0] [I] [Eradication] 165 parameters found.
+00:00:00 [0] [I] [Eradication] Initializing Controller...
+00:00:00 [0] [I] [Controller] DefaultController::execute_internal()...
+00:00:00 [0] [I] [Simulation] Calling Configure on fakeHuman
+00:00:00 [0] [I] [Simulation] Using PSEUDO_DES random number generator.
+00:00:00 [0] [I] [DllLoader] ReadEmodulesJson: no file, returning.
+00:00:00 [0] [I] [DllLoader] dllPath not passed in, getting from EnvPtr
+00:00:00 [0] [I] [DllLoader] Trying to copy from string to wstring.
+00:00:00 [0] [I] [DllLoader] DLL ws root path: 
+00:00:00 [0] [W] [Simulation] Failed to load reporter emodules for SimType: TB_SIM from path: reporter_plugins
+00:00:00 [0] [I] [SimulationTB] Calling Configure on fakeHuman
+00:00:00 [0] [I] [SusceptibilityTB] Fraction adult smear-negative individuals is 0.500000
+00:00:00 [0] [I] [SusceptibilityTB] Fraction child smear-negative individuals is 0.500000
+00:00:00 [0] [I] [Controller] DefaultController::execute_internal() populate simulation...
+00:00:00 [0] [I] [Simulation] Campaign file name identified as: c:/svn/TB-Release/Regression/TB/SLDDiagnostic/sld_diagnostic_CoC_workaround.json
+00:00:00 [0] [I] [Simulation] Looking for campaign file c:/svn/TB-Release/Regression/TB/SLDDiagnostic/sld_diagnostic_CoC_workaround.json
+00:00:00 [0] [I] [Simulation] Found campaign file successfully.
+00:00:00 [0] [I] [DllLoader] ReadEmodulesJson: no file, returning.
+00:00:00 [0] [I] [DllLoader] dllPath not passed in, getting from EnvPtr
+00:00:00 [0] [I] [DllLoader] Trying to copy from string to wstring.
+00:00:00 [0] [I] [DllLoader] DLL ws root path: 
+00:00:00 [0] [W] [Simulation] Failed to load intervention emodules for SimType: TB_SIM from path: interventions
+00:00:00 [0] [E] [Eradication] MissingParameterFromConfigurationException: Exception in SimulationEventContext.cpp at 246 in Kernel::SimulationEventContextHost::LoadCampaignFromFile. Parameter 'Negative_Diagnosis_Config' not found in input file 'c:/svn/TB-Release/Regression/TB/SLDDiagnostic/sld_diagnostic_CoC_workaround.json'.
+
+
+job aborted:
+[ranks] message
+
+[0] application aborted
+aborting MPI_COMM_WORLD, error -1, comm rank 0

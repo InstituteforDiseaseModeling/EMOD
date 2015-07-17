@@ -1,0 +1,9 @@
+{
+    "Default_Config_Path": "defaults/hiv_scenario5_default_config.json",
+    "parameters":
+    {
+        "RARELY_CHANGED": {
+            "Config_Name": "05_7B_HIVProphylaxis_Heterogeneous_Adherence_or_Efficacy_F_15to49"
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "Group" : "STI_INFECTION_STATUS",
+    "Start_Year" : 1990, 
+    "Axes" : [ "FALSE", "XXX" ],
+    "Weighting_Matrix_RowMale_ColumnFemale" :
+    [
+        [ 0.75, 0.25 ],
+        [ 0.40, 0.60 ]
+    ]
+}

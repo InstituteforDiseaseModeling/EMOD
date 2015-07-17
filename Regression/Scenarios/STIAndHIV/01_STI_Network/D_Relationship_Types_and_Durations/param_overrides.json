@@ -1,0 +1,16 @@
+{
+    "Default_Config_Path": "defaults/sti_scenario_default_config.json", 
+    "parameters": {
+        "Config_Name": "01D_Relationship_Types_and_Durations",
+        "Simulation_Duration": 14600,
+        "Demographics_Filenames": ["uniform_demographics.json","pfa_simple.json"],
+        "Base_Population_Scale_Factor": 0.2,
+
+        "Report_Relationship_End": 1,
+        "Enable_Vital_Dynamics": 0,
+
+        "Transitory_Formation_Rate_Heterosexual": 0.001,
+        "Informal_Formation_Rate_Heterosexual": 0.001,
+        "Marriage_Formation_Rate_Heterosexual": 0.002
+    }
+}
