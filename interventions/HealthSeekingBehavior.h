@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -16,13 +16,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "BoostLibWrapper.h"
 
 #include "Interventions.h"
-#include "SimpleTypemapRegistration.h"
 #include "Contexts.h"
 #include "Configuration.h"
 #include "InterventionFactory.h"
 #include "InterventionEnums.h"
 #include "Configure.h"
 #include "NodeEventContext.h"    // for INodeEventContext (ICampaignCostObserver)
+#include "EventTrigger.h"
 
 namespace Kernel
 {
@@ -30,8 +30,8 @@ namespace Kernel
     class IDMAPI SimpleHealthSeekingBehavior : public BaseIntervention //, public JsonConfigurable
     {
         DECLARE_FACTORY_REGISTERED(InterventionFactory, SimpleHealthSeekingBehavior, IDistributableIntervention)
-    
-    public: 
+
+    public:
         SimpleHealthSeekingBehavior();
         virtual ~SimpleHealthSeekingBehavior() {  }
 
@@ -56,15 +56,10 @@ namespace Kernel
         IIndividualHumanContext *parent;
         float probability_of_seeking;
         IndividualInterventionConfig actual_intervention_config;
-        std::string actual_intervention_event;
+        EventTrigger actual_intervention_event;
         bool single_use;
+
+        DECLARE_SERIALIZABLE(SimpleHealthSeekingBehavior);
 #pragma warning( pop )
-
-    private:
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        template<class Archive>
-        friend void serialize(Archive &ar, SimpleHealthSeekingBehavior &obj, const unsigned int v);
-#endif
     };
 }

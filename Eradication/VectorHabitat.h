@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -14,6 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <vector>
 
 #include "VectorEnums.h"
+#include "IArchive.h"
 
 namespace Kernel
 {
@@ -42,6 +43,8 @@ namespace Kernel
 
         virtual float GetLocalLarvalGrowthModifier() const = 0;
         virtual float GetLocalLarvalMortality(float species_aquatic_mortality, float progress) const = 0;
+
+        virtual ~IVectorHabitat() {}
     };
 
     class VectorHabitat : public IVectorHabitat
@@ -51,25 +54,29 @@ namespace Kernel
         virtual ~VectorHabitat();
         void Update(float dt, INodeContext* node);
 
-        virtual VectorHabitatType::Enum  GetVectorHabitatType()                   const;
-        virtual float                    GetMaximumLarvalCapacity()               const;
-        virtual float                    GetCurrentLarvalCapacity()               const;
-        virtual int32_t                  GetTotalLarvaCount(TimeStepIndex index)  const;
+        virtual VectorHabitatType::Enum  GetVectorHabitatType()                   const override;
+        virtual float                    GetMaximumLarvalCapacity()               const override;
+        virtual float                    GetCurrentLarvalCapacity()               const override;
+        virtual int32_t                  GetTotalLarvaCount(TimeStepIndex index)  const override;
 
         void                             AddLarva(int32_t larva, float progress);
         void                             AddEggs(int32_t eggs);
         void                             IncrementMaxLarvalCapacity(float);
 
-        virtual float                    GetOvipositionTrapKilling()     const;
-        virtual float                    GetArtificialLarvalMortality()  const;
-        virtual float                    GetLarvicideHabitatScaling()    const;
-        virtual float                    GetRainfallMortality()          const;
-        virtual float                    GetEggCrowdingCorrection()      const;
+        virtual float                    GetOvipositionTrapKilling()     const override;
+        virtual float                    GetArtificialLarvalMortality()  const override;
+        virtual float                    GetLarvicideHabitatScaling()    const override;
+        virtual float                    GetRainfallMortality()          const override;
+        virtual float                    GetEggCrowdingCorrection()      const override;
 
-        virtual float GetLocalLarvalGrowthModifier() const;
-        virtual float GetLocalLarvalMortality(float species_aquatic_mortality, float progress) const;
+        virtual float GetLocalLarvalGrowthModifier() const override;
+        virtual float GetLocalLarvalMortality(float species_aquatic_mortality, float progress) const override;
+
+        static void serialize(IArchive&, VectorHabitat*);
+        static void serialize(IArchive&, list<VectorHabitat*>&);
 
     protected:
+        explicit VectorHabitat();
         VectorHabitat( VectorHabitatType::Enum type, float max_capacity );
 
         void CalculateEggCrowdingCorrection();
@@ -94,4 +101,6 @@ namespace Kernel
     };
 
     typedef std::list<VectorHabitat *> VectorHabitatList_t;
+
+    void serialize(IArchive&, map<VectorHabitatType::Enum, float>&);
 }

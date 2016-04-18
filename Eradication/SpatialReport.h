@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -43,7 +43,7 @@ inline std::set< std::string > getKeys(
     )
 {
     std::set< std::string > returnSet;
-    
+
     for( auto entry: myMap )
     {
         returnSet.insert( entry.first );
@@ -64,7 +64,7 @@ public:
 
     virtual void BeginTimestep();
     virtual bool IsCollectingIndividualData( float currentTime, float dt ) const { return true ; } ;
-    virtual void LogIndividualData( Kernel::IndividualHuman * individual );
+    virtual void LogIndividualData( Kernel::IIndividualHuman* individual );
     virtual void LogNodeData( Kernel::INodeContext * pNC );
     virtual void EndTimestep( float currentTime, float dt );
 
@@ -134,13 +134,6 @@ protected:
 
     typedef std::map<std::string, std::ofstream *> channel_file_map_t;
     channel_file_map_t channel_file_map;
-    JsonConfigurable::tFixedStringSet spatial_output_channels;
-
-private:
-#if USE_BOOST_SERIALIZATION
-    friend class ::boost::serialization::access;
-    template<class Archive>
-    friend void serialize(Archive &ar, SpatialReport& report, const unsigned int v);
-#endif
+    jsonConfigurable::tFixedStringSet spatial_output_channels;
 };
 }

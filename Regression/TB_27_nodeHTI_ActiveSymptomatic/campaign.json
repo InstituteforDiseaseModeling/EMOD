@@ -12,7 +12,6 @@
                          "Outbreak_Source": "PrevalenceIncrease", 
                          "class": "OutbreakIndividual"
                     }, 
-                    "Number_Distributions": 100, 
                     "Number_Repetitions": 1, 
                     "Target_Demographic": "Everyone", 
 					"Property_Restrictions": [  ],
@@ -45,7 +44,6 @@
                          "Trigger_Condition": "TBActivation", 
                          "class": "NodeLevelHealthTriggeredIV"
                     }, 
-                    "Number_Distributions": -1, 
                     "Number_Repetitions": 1, 
                     "Target_Demographic": "Everyone", 
                     "class": "StandardInterventionDistributionEventCoordinator"

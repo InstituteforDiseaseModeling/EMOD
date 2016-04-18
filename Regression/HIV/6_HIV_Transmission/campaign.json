@@ -48,7 +48,7 @@
                 "Intervention_Config":
                 {
                     "class": "MaleCircumcision",
-                    "Probability": 0.75
+                    "Circumcision_Reduced_Acquire": 0.6
                 }
             }
         },
@@ -69,9 +69,12 @@
                 {
                     "class": "NodeLevelHealthTriggeredIV",
                     "Trigger_Condition": "HIVNeedsMaleCircumcision",
+                    "Target_Demographic": "ExplicitGender",
+                    "Target_Gender": "Male",
                     "Actual_IndividualIntervention_Config":
                     {
-                        "class": "MaleCircumcision"
+                        "class": "MaleCircumcision",
+                        "Circumcision_Reduced_Acquire": 0.6
                     }
                 }
             }
@@ -90,13 +93,13 @@
             "Event_Coordinator_Config": 
             {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "Everyone", 
-                "Property_Restrictions": [],
 
                 "Intervention_Config":
                 {
-                    "Demographic_Coverage": 1,
                     "class": "BirthTriggeredIV",
+                    "Demographic_Coverage": 1,
+                    "Target_Demographic": "ExplicitGender",
+                    "Target_Gender": "Male",
 
                     "Actual_IndividualIntervention_Config": 
                     {

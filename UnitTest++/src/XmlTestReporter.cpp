@@ -70,7 +70,7 @@ namespace UnitTest {
     {
         os << "<?xml version=\"1.0\"";
 
-        if (encoding != NULL)
+        if (encoding != nullptr)
             os << " encoding=\"" << encoding << "\"";
 
         os << "?>";

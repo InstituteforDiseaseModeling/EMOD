@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -14,7 +14,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <vector>
 
 #include "Interventions.h"
-#include "SimpleTypemapRegistration.h"
 #include "Configuration.h"
 #include "InterventionFactory.h"
 #include "InterventionEnums.h"
@@ -37,15 +36,7 @@ namespace Kernel
             VectorAllele::Enum HEG;
     };
 
-    struct IMosquitoRelease : public ISupports
-    {
-        virtual std::string GetSpecies() const = 0;
-        virtual VectorMatingStructure GetVectorGenetics() const = 0;
-        virtual int GetNumber() const = 0;
-        virtual ~IMosquitoRelease() { }; // needed for cleanup via interface pointer
-    };
-
-    class MosquitoRelease : public IMosquitoRelease, public BaseNodeIntervention
+    class MosquitoRelease : public BaseNodeIntervention
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_CONFIGURED(MosquitoRelease)
@@ -61,13 +52,13 @@ namespace Kernel
         virtual void SetContextTo(INodeEventContext *context) { } // not needed for this intervention
         virtual void Update(float dt);
 
-        // IMosquitoRelease
-        virtual std::string GetSpecies() const;
-        virtual VectorMatingStructure GetVectorGenetics() const;
-        virtual int GetNumber() const;
+    protected:
+        virtual std::string getSpecies() const;
+        virtual VectorMatingStructure getVectorGenetics() const;
+        virtual int getNumber() const;
 
     protected:
-        JsonConfigurable::ConstrainedString releasedSpecies;
+        jsonConfigurable::ConstrainedString releasedSpecies;
         VectorMatingStructure vector_genetics;
         ResistanceHegGenetics self;
         ResistanceHegGenetics mate;
@@ -75,12 +66,5 @@ namespace Kernel
 
         void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
         void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-    private:
-#if USE_BOOST_SERIALIZATION
-        friend class ::boost::serialization::access;
-
-        template<class Archive>
-        void serialize_inner(Archive &ar, const unsigned int v);
-#endif
     };
 }

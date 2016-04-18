@@ -1,16 +1,13 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #pragma once
-#include <string>
-#include <list>
-#include <map>
 
 #include "BoostLibWrapper.h"
 
@@ -27,7 +24,7 @@ namespace Kernel
         friend class Individual;
 
     public:
-        virtual bool Configure( const Configuration* config );
+        virtual bool Configure( const Configuration* config ) override;
 
     protected:
         static bool  immune_decay;
@@ -43,7 +40,7 @@ namespace Kernel
         static float basemortoffset;
 
         GET_SCHEMA_STATIC_WRAPPER(SusceptibilityConfig)
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
+        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
     };
 
@@ -60,16 +57,15 @@ namespace Kernel
 
         virtual void Update(float dt=0.0);
         virtual void UpdateInfectionCleared();
-        
-        // functions to mediate interaction with Infection and Individual objects
-        float getAge() const;
 
         // ISusceptibilityContext interfaces
-        virtual float getModAcquire() const;
-        virtual float GetModTransmit() const;
-        virtual float getModMortality() const;
+        virtual float getAge() const override;
+        virtual float getModAcquire() const override;
+        virtual float GetModTransmit() const override;
+        virtual float getModMortality() const override;
+        virtual float getSusceptibilityCorrection() const;
         virtual bool  IsImmune() const;
-        virtual void  InitNewInfection();
+        virtual void  InitNewInfection() override;
 
     protected:
         // current status
@@ -86,24 +82,12 @@ namespace Kernel
 
         Susceptibility();
         Susceptibility(IIndividualHumanContext *context);
-        void Initialize(float _age, float immmod, float riskmod);
+        /* clorton virtual */ void Initialize(float _age, float immmod, float riskmod) /* clorton override */;
 
         IIndividualHumanContext *parent;
 
-        const SimulationConfig* params();
+        /* clorton virtual */ const SimulationConfig* params() /* clorton override */;
 
-    private:
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, Susceptibility& sus, const unsigned int file_version );
-#endif
-
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-    public:
-     // IJsonSerializable Interfaces
-     virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-     virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
+        DECLARE_SERIALIZABLE(Susceptibility);
     };
 }

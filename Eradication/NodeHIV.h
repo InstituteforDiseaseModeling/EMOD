@@ -1,17 +1,14 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #pragma once
 #include "NodeSTI.h"
-#include "IndividualHIV.h" // for serialization only
-#include "TransmissionGroupsFactory.h"
-#include "Relationship.h"
 #include "INodeHIV.h"
 
 namespace Kernel
@@ -32,12 +29,12 @@ namespace Kernel
         // void Initialize();
 
         // Factory methods
-        virtual IndividualHuman *createHuman(suids::suid suid, float monte_carlo_weight, float initial_age, int gender, float above_poverty);
+        virtual IIndividualHuman* createHuman( suids::suid suid, float monte_carlo_weight, float initial_age, int gender, float above_poverty) override;
 
         //virtual void SetupIntranodeTransmission();
         //virtual void Update( float dt );
-        //virtual void processEmigratingIndividual( IndividualHuman *individual );
-        //virtual IndividualHuman* NodeHIV::processImmigratingIndividual( IndividualHuman* movedind );
+        //virtual void processEmigratingIndividual( IIndividualHuman *individual );
+        //virtual IIndividualHuman* NodeHIV::processImmigratingIndividual( IIndividualHuman* movedind );
 
         // INodeHIV
         // virtual const vector<RelationshipStartInfo>& GetNewRelationships() const;
@@ -46,12 +43,6 @@ namespace Kernel
         // NodeSTI
         // std::multimap< unsigned long, int > migratedIndividualToRelationshipIdMap;
 
-    private:
-
-#if USE_BOOST_SERIALIZATION
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, NodeHIV& node, const unsigned int file_version);
-#endif
+        DECLARE_SERIALIZABLE(NodeHIV);
     };
 }

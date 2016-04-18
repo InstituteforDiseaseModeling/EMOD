@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -31,27 +31,10 @@ namespace Kernel
         probability_of_seeking = new_probability_of_seeking;
     }
 
-    
-    
-}
+    REGISTER_SERIALIZABLE(HealthSeekingBehaviorUpdateable);
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::HealthSeekingBehaviorUpdateable)
-
-namespace Kernel {
-    // Would like to put all serialization stuff here but having these in headers
-    // is posing a problem due to multiple subclasses. :(
-    //REGISTER_SERIALIZATION_VOID_CAST(SimpleHealthSeekingBehaviour, IDistributableIntervention);
-
-    template<class Archive>
-    void serialize(Archive &ar, HealthSeekingBehaviorUpdateable& obj, const unsigned int v)
+    void HealthSeekingBehaviorUpdateable::serialize(IArchive& ar, HealthSeekingBehaviorUpdateable* obj)
     {
-        static const char * _module = "HealthSeekingBehaviorUpdateable";
-        LOG_DEBUG("(De)serializing HealthSeekingBehaviorUpdateable\n");
-
-        boost::serialization::void_cast_register<HealthSeekingBehaviorUpdateable, IDistributableIntervention>();
-
-        ar & boost::serialization::base_object<Kernel::SimpleHealthSeekingBehavior>(obj);
-    }
+        SimpleHealthSeekingBehavior::serialize(ar, obj);
+    }   
 }
-#endif

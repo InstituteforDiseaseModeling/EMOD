@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -27,36 +27,15 @@ namespace Kernel
 
     IMPLEMENT_FACTORY_REGISTERED(DelayedIntervention)
 
-    bool DelayedIntervention::PreConfigure( const Configuration * inputJson )
+    void DelayedIntervention::PreConfigure( const Configuration * inputJson )
     {
         initConfigTypeMap("Coverage", &coverage, DI_Coverage_DESC_TEXT, 0.0f, 1.0f, 1.0f);
-        return initConfig( "Delay_Distribution", delay_distribution, inputJson, MetadataDescriptor::Enum("Delay_Distribution", DI_Delay_Distribution_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction)));
     }
 
     void DelayedIntervention::DistributionConfigure( const Configuration * inputJson )
     {
         // DJK: Should pass inputJson to factor that creates instance of IDelayDistribution <ERAD-1852>
-        if( delay_distribution == DistributionFunction::FIXED_DURATION || JsonConfigurable::_dryrun )
-        {
-            initConfigTypeMap( "Delay_Period", &delay_period, DI_Delay_Period_DESC_TEXT, 0.0f, FLT_MAX, 6.0f ); // should default change depending on disease?
-        }
-
-        if( delay_distribution == DistributionFunction::UNIFORM_DURATION || JsonConfigurable::_dryrun )
-        {
-            initConfigTypeMap( "Delay_Period_Min", &delay_period_min, DI_Delay_Period_Min_DESC_TEXT, 0.0f, FLT_MAX, 6.0f, "Delay_Distribution", "UNIFORM_DISTRIBUTION" );
-            initConfigTypeMap( "Delay_Period_Max", &delay_period_max, DI_Delay_Period_Max_DESC_TEXT, 0.0f, FLT_MAX, 6.0f, "Delay_Distribution", "UNIFORM_DISTRIBUTION" );
-        }
-
-        if( delay_distribution == DistributionFunction::EXPONENTIAL_DURATION || JsonConfigurable::_dryrun )
-        {
-            initConfigTypeMap( "Delay_Period", &delay_period, DI_Delay_Period_DESC_TEXT, 0.0f, FLT_MAX, 6.0f );
-        }
-
-        if( delay_distribution == DistributionFunction::GAUSSIAN_DURATION || JsonConfigurable::_dryrun )
-        {
-            initConfigTypeMap( "Delay_Period_Mean", &delay_period_mean, DI_Delay_Period_Mean_DESC_TEXT, 0.0f, FLT_MAX, 6.0f, "Delay_Distribution", "GAUSSIAN_DURATION" );
-            initConfigTypeMap( "Delay_Period_Std_Dev", &delay_period_std_dev, DI_Delay_Period_Std_Dev_DESC_TEXT, 0.0f, FLT_MAX, 1.0f, "Delay_Distribution", "GAUSSIAN_DURATION" );
-        }
+        delay_distribution.Configure( this, inputJson );
     }
 
     void DelayedIntervention::InterventionConfigure( const Configuration * inputJson )
@@ -71,19 +50,7 @@ namespace Kernel
 
     void DelayedIntervention::DelayValidate()
     {
-        if( !JsonConfigurable::_dryrun )
-        {
-            if( (delay_distribution == DistributionFunction::UNIFORM_DURATION) &&
-                (delay_period_min >= delay_period_max) )
-            {
-                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Delay_Distribution", "UNIFORM_DURATION", "Delay_Period_Min >= Delay_Period_Max", "(min > max)" );
-            }
-            else if( (delay_distribution == DistributionFunction::EXPONENTIAL_DURATION) &&
-                        (delay_period == 0.0) )
-            {
-                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Delay_Distribution", "EXPONENTIAL_DURATION", "Delay_Period", "0" );
-            }
-        }
+        delay_distribution.CheckConfiguration();
     }
 
     bool DelayedIntervention::Configure( const Configuration * inputJson )
@@ -111,7 +78,7 @@ namespace Kernel
             return false;
 
         // If individual isn't covered, immediately set DelayedIntervention to expired without distributing "actual" IVs
-        if( coverage < 1.0f && parent->GetRng()->e() > coverage )
+        if( !SMART_DRAW( coverage ) )
         {
             LOG_DEBUG_F("Random draw outside of %0.2f covered fraction in DelayedIntervention.\n", coverage);
             expired = true;
@@ -120,35 +87,15 @@ namespace Kernel
 
         CalculateDelay();
 
-        LOG_DEBUG_F("Drew %0.2f remaining delay days in %s.\n", remaining_delay_days, DistributionFunction::pairs::lookup_key(delay_distribution));
+        LOG_DEBUG_F("Drew %0.2f remaining delay days in %s.\n", remaining_delay_days, DistributionFunction::pairs::lookup_key(delay_distribution.GetType()));
         return true;
     }
 
     void
     DelayedIntervention::CalculateDelay()
     {
-        switch (delay_distribution)
-        {
-        case DistributionFunction::FIXED_DURATION:
-            remaining_delay_days = delay_period;
-            break;
-
-        case DistributionFunction::UNIFORM_DURATION:
-            remaining_delay_days = Probability::getInstance()->fromDistribution( delay_distribution, delay_period_min, delay_period_max );
-            break;
-
-        case DistributionFunction::EXPONENTIAL_DURATION:
-            remaining_delay_days = Probability::getInstance()->fromDistribution( delay_distribution, 1.0/delay_period );
-            break;
-
-        case DistributionFunction::GAUSSIAN_DURATION:
-            remaining_delay_days = Probability::getInstance()->fromDistribution( delay_distribution, delay_period_mean, delay_period_std_dev );
-            break;
-
-        default:
-            throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Only fixed/uniform/gaussian/exponential supported currently." );
-        }
-        LOG_DEBUG_F("Drew %0.2f remaining delay days in %s.\n", remaining_delay_days, DistributionFunction::pairs::lookup_key(delay_distribution));
+        remaining_delay_days = delay_distribution.CalculateDuration();
+        LOG_DEBUG_F("Drew %0.2f remaining delay days in %s.\n", remaining_delay_days, DistributionFunction::pairs::lookup_key(delay_distribution.GetType()));
     }
 
     DelayedIntervention::DelayedIntervention()
@@ -157,31 +104,26 @@ namespace Kernel
     , remaining_delay_days(0.0)
     , coverage(1.0)
     , delay_distribution(DistributionFunction::EXPONENTIAL_DURATION)
-    , delay_period(1.0)
-    , delay_period_min(0.0)
-    , delay_period_max(0.0)
-    , delay_period_mean(0.0)
-    , delay_period_std_dev(0.0)
     , actual_intervention_config()
     {
+        delay_distribution.SetTypeNameDesc( "Delay_Distribution", DI_Delay_Distribution_DESC_TEXT );
+        delay_distribution.AddSupportedType( DistributionFunction::FIXED_DURATION,       "Delay_Period",      DI_Delay_Period_DESC_TEXT,      "", "" );
+        delay_distribution.AddSupportedType( DistributionFunction::UNIFORM_DURATION,     "Delay_Period_Min",  DI_Delay_Period_Min_DESC_TEXT,  "Delay_Period_Max",     DI_Delay_Period_Max_DESC_TEXT );
+        delay_distribution.AddSupportedType( DistributionFunction::GAUSSIAN_DURATION,    "Delay_Period_Mean", DI_Delay_Period_Mean_DESC_TEXT, "Delay_Period_Std_Dev", DI_Delay_Period_Std_Dev_DESC_TEXT );
+        delay_distribution.AddSupportedType( DistributionFunction::EXPONENTIAL_DURATION, "Delay_Period",      DI_Delay_Period_DESC_TEXT,      "", "" );
     }
 
     DelayedIntervention::DelayedIntervention( const DelayedIntervention& master )
-        :BaseIntervention( master )
+        : BaseIntervention( master )
+        , remaining_delay_days( master.remaining_delay_days )
+        , coverage( master.coverage )
+        , delay_distribution( master.delay_distribution )
+        , actual_intervention_config( master.actual_intervention_config )
     {
-    	remaining_delay_days = master.remaining_delay_days;
-    	coverage = master.coverage;
-    	delay_distribution = master.delay_distribution;
-    	delay_period = master.delay_period;
-    	delay_period_min = master.delay_period_min;
-    	delay_period_max = master.delay_period_max;
-    	delay_period_mean = master.delay_period_mean;
-    	delay_period_std_dev = master.delay_period_std_dev;
-    	actual_intervention_config = master.actual_intervention_config;
     }
 
-    void DelayedIntervention::SetContextTo(IIndividualHumanContext *context) 
-    { 
+    void DelayedIntervention::SetContextTo(IIndividualHumanContext *context)
+    {
         parent = context; // for rng
     }
 
@@ -196,13 +138,10 @@ namespace Kernel
 
         try
         {
-            // TODO: factorize this bit out so it isn't repeating base class behavior here
-            bool wasDistributed = false;
-
             // Important: Use the instance method to obtain the intervention factory obj instead of static method to cross the DLL boundary
-            IGlobalContext *pGC = NULL;
-            const IInterventionFactory* ifobj = NULL;
-            if (s_OK == parent->QueryInterface(GET_IID(IGlobalContext), (void**)&pGC))
+            IGlobalContext *pGC = nullptr;
+            const IInterventionFactory* ifobj = nullptr;
+            if (s_OK == parent->QueryInterface(GET_IID(IGlobalContext), reinterpret_cast<void**>(&pGC)))
             {
                 ifobj = pGC->GetInterventionFactory();
             }
@@ -212,7 +151,7 @@ namespace Kernel
             }
 
             // don't give expired intervention.  should be cleaned up elsewhere anyways, though.
-            if(expired) 
+            if(expired)
                 return;
 
             const json::Array & interventions_array = json::QuickInterpreter( actual_intervention_config._json ).As<json::Array>();
@@ -223,13 +162,14 @@ namespace Kernel
                 Configuration * tmpConfig = Configuration::CopyFromElement(actualIntervention);
                 release_assert( tmpConfig );
                 LOG_DEBUG_F("DelayedIntervention distributed intervention #%d\n", idx);
-                IDistributableIntervention *di = const_cast<IInterventionFactory*>(ifobj)->CreateIntervention(tmpConfig); 
+                IDistributableIntervention *di = const_cast<IInterventionFactory*>(ifobj)->CreateIntervention(tmpConfig);
                 delete tmpConfig;
+                tmpConfig = nullptr;
                 expired = true;
 
                 // Now make sure cost gets reported back to node
                 ICampaignCostObserver* pICCO;
-                if (s_OK == parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(ICampaignCostObserver), (void**)&pICCO) )
+                if (s_OK == parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(ICampaignCostObserver), reinterpret_cast<void**>(&pICCO)) )
                 {
                     di->Distribute( parent->GetInterventionsContext(), pICCO );
                 }
@@ -246,27 +186,22 @@ namespace Kernel
         }
 
     }
-    
+
     DelayedIntervention::~DelayedIntervention()
     { LOG_DEBUG("Destructing DelayedIntervention\n");
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::DelayedIntervention)
+    REGISTER_SERIALIZABLE(DelayedIntervention);
 
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, DelayedIntervention& obj, const unsigned int v)
+    void DelayedIntervention::serialize(IArchive& ar, DelayedIntervention* obj)
     {
-        boost::serialization::void_cast_register<DelayedIntervention, IDistributableIntervention>();
-        ar & obj.remaining_delay_days;
+        BaseIntervention::serialize( ar, obj );
 
-        // ERAD-1235: Note that an unregistered class exception is thrown when serializing the 
-        //            base class, SimpleHealthSeekingBehavior, if we don't call the following two
-        //            lines but instead do serialization::base_object<Kernel::SimpleHealthSeekingBehavior>(obj)
-        ar & obj.actual_intervention_config;
-        ar & boost::serialization::base_object<Kernel::BaseIntervention>(obj);
+        DelayedIntervention& intervention = *obj;
+
+        ar.labelElement("remaining_delay_days"      ) & intervention.remaining_delay_days;
+        ar.labelElement("coverage"                  ) & intervention.coverage;
+        ar.labelElement("delay_distribution"        ) & intervention.delay_distribution;
+        ar.labelElement("actual_intervention_config") & intervention.actual_intervention_config;
     }
 }
-#endif

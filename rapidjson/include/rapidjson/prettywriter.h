@@ -23,7 +23,7 @@ public:
         \param levelDepth Initial capacity of 
     */
     PrettyWriter(Stream& stream, Allocator* allocator = 0, size_t levelDepth = Base::kDefaultLevelDepth) : 
-        Base(stream, allocator, levelDepth), indentChar_(' '), indentCharCount_(4) {}
+        Base(stream, true, allocator, levelDepth), indentChar_(' '), indentCharCount_(4) {}
 
     //! Set custom indentation.
     /*! \param indentChar        Character for indentation. Must be whitespace character (' ', '\t', '\n', '\r').

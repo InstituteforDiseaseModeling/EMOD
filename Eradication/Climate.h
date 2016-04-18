@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,10 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 #include <fstream>
-#include <iostream>
 #include <math.h>
-#include <vector>
-#include <string>
 
 #include "BoostLibWrapper.h"
 
@@ -99,32 +96,11 @@ namespace Kernel
     protected:
         friend class ClimateFactory;
 
-        Climate(ClimateUpdateResolution::Enum update_resolution = ClimateUpdateResolution::CLIMATE_UPDATE_DAY, INodeContext * _parent = NULL);
+        Climate(ClimateUpdateResolution::Enum update_resolution = ClimateUpdateResolution::CLIMATE_UPDATE_DAY, INodeContext * _parent = nullptr);
 
         virtual void AddStochasticity(float airtemp_variance, float landtemp_variance, bool rainfall_variance, float humidity_variance);
 
         virtual bool IsPlausible() = 0;
-
-#if USE_JSON_SERIALIZATION
-    public:
-
-        // IJsonSerializable Interfaces
-        virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-        virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
-
-    private:
-        ///////////////////////////////////////////////////////////////////////////
-        // Serialization
-
-#if USE_BOOST_SERIALIZATION
-        friend class ::boost::serialization::access;
-
-        template<class Archive>
-        friend void serialize(Archive & ar, Climate& climate, const unsigned int file_version);       
-        FORCE_POLYMORPHIC()
-#endif 
-        ///////////////////////////////////////////////////////////////////////////
     };
 
 

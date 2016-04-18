@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -47,24 +47,21 @@ namespace Kernel
         LOG_DEBUG("MDR testing \n");
 
         // Apply diagnostic test with given specificity/sensitivity
-        float rand     = parent->GetRng()->e();
         bool  infected = parent->GetEventContext()->IsInfected();
 
-        IIndividualHumanTB2* tb_ind = NULL;
+        IIndividualHumanTB2* tb_ind = nullptr;
         if(parent->QueryInterface( GET_IID( IIndividualHumanTB2 ), (void**)&tb_ind ) != s_OK)
         {
             LOG_WARN("ResistanceDiagnostics works with TB sims ONLY");
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanTB2", "IIndividualHuman" );
         }
 
-        bool hasMDR = tb_ind->IsMDR();
-
         // always return negative if the person is not infected
-
         if (infected)
         {
             // True positive (sensitivity), or False positive (1-specificity)
-            bool positiveTest = ( hasMDR && (rand < base_sensitivity) ) || ( !hasMDR && (rand > base_specificity) );
+            bool hasMDR = tb_ind->IsMDR();
+            bool positiveTest = applySensitivityAndSpecificity( hasMDR );
             LOG_DEBUG_F("MDR test result is %d \n", positiveTest);
             return positiveTest;
         }
@@ -82,21 +79,14 @@ namespace Kernel
         return treatment_fraction_neg;
     }
 
-}
+/* clorton
+    REGISTER_SERIALIZABLE(MDRDiagnostic);
 
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::MDRDiagnostic)
-
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, MDRDiagnostic& obj, const unsigned int v)
+    void MDRDiagnostic::serialize(IArchive& ar, MDRDiagnostic* obj)
     {
-
-        boost::serialization::void_cast_register<MDRDiagnostic, IDistributableIntervention>();
-        ar & obj.treatment_fraction_neg;
-
-        ar & boost::serialization::base_object<Kernel::DiagnosticTreatNeg>(obj);
+        DiagnosticTreatNeg::serialize(ar, obj);
+        MDRDiagnostic& diagnostic = *obj;
+        ar.labelElement("treatment_fraction_neg") & diagnostic.treatment_fraction_neg;
     }
+*/
 }
-#endif

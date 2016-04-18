@@ -1,0 +1,12 @@
+{
+    "paths":
+        [
+            "config_commissioning.json",
+            "config_demographics.json",
+            "config_epi.json",
+            "config_migration.json",
+            "config_reporting.json",
+            "config_main.json",
+            "config_sampling.json"
+        ]
+}

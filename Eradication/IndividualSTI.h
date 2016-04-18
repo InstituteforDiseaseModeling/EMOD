@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -15,7 +15,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Individual.h"
 #include "IIndividualHumanSTI.h"
 #include "STINetworkParameters.h"
-#include "HIVEnums.h"
 
 namespace Kernel
 {
@@ -44,30 +43,16 @@ namespace Kernel
 
         static float sti_coinfection_mult;
 
-        static float circumcision_reduced_acquire;
-        
         static float min_days_between_adding_relationships;
     public:
         static float condom_transmission_blocking_probability;
-        static float condom_usage_probability_in_marital_relationships_midyear;
-        static float condom_usage_probability_in_marital_relationships_rate;
-        static float condom_usage_probability_in_marital_relationships_early;
-        static float condom_usage_probability_in_marital_relationships_late;
-        static float condom_usage_probability_in_informal_relationships_midyear;
-        static float condom_usage_probability_in_informal_relationships_rate;
-        static float condom_usage_probability_in_informal_relationships_early;
-        static float condom_usage_probability_in_informal_relationships_late;
-        static float condom_usage_probability_in_transitory_relationships_midyear;
-        static float condom_usage_probability_in_transitory_relationships_rate;
-        static float condom_usage_probability_in_transitory_relationships_early;
-        static float condom_usage_probability_in_transitory_relationships_late;
 
         static std::vector<float> maleToFemaleRelativeInfectivityAges;
         static std::vector<float> maleToFemaleRelativeInfectivityMultipliers;
 
         friend class IndividualHumanSTI;
         friend class Relationship;
-        virtual bool Configure( const Configuration* config );
+        virtual bool Configure( const Configuration* config ) override;
     };
 
     class IndividualHumanSTI :  public IndividualHuman, 
@@ -85,65 +70,64 @@ namespace Kernel
                                                   float initial_age = 0.0f, 
                                                   int gender = 0, 
                                                   float initial_poverty = 0.5f );
-        virtual void InitializeHuman();
-        virtual bool Configure( const Configuration* config );
-        virtual void Update(float currenttime, float dt);
+        virtual void InitializeHuman() override;
+        virtual bool Configure( const Configuration* config ) override;
+        virtual void Update(float currenttime, float dt) override;
 
-        virtual void UpdateSTINetworkParams(const char *prop = NULL, const char* new_value = NULL);
+        virtual void UpdateSTINetworkParams(const char *prop = nullptr, const char* new_value = nullptr) override;
 
-        virtual suids::suid GetSuid() const { return IndividualHuman::GetSuid(); }
-        virtual bool IsInfected() const { return IndividualHuman::IsInfected(); }
+        virtual suids::suid GetSuid() const override { return IndividualHuman::GetSuid(); }
+        virtual bool IsInfected() const override { return IndividualHuman::IsInfected(); }
+        virtual suids::suid GetNodeSuid() const override;
 
-        virtual void Die( HumanStateChange );
+        virtual void Die( HumanStateChange ) override;
 
         // Infections and Susceptibility
-        virtual void CreateSusceptibility( float imm_mod=1.0f, float risk_mod=1.0f );
-        virtual void ExposeToInfectivity(float dt, const TransmissionGroupMembership_t* transmissionGroupMembership);
-        virtual void Expose(const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route);
+        virtual void CreateSusceptibility( float imm_mod=1.0f, float risk_mod=1.0f ) override;
+        virtual void ExposeToInfectivity(float dt, const TransmissionGroupMembership_t* transmissionGroupMembership) override;
+        virtual void Expose(const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route) override;
 
-        virtual void UpdateInfectiousness(float dt);
-        virtual void UpdateInfectiousnessSTI(std::vector<act_prob_t> &act_prob_vec, unsigned int rel_id);
+        virtual void UpdateInfectiousness(float dt) override;
+        virtual void UpdateInfectiousnessSTI(std::vector<act_prob_t> &act_prob_vec, unsigned int rel_id) override;
         
-        virtual void AcquireNewInfection(StrainIdentity *infstrain = NULL, int incubation_period_override = -1);
+        virtual void AcquireNewInfection(StrainIdentity *infstrain = nullptr, int incubation_period_override = -1) override;
 
-        virtual bool AvailableForRelationship(RelationshipType::Enum) const;
+        virtual bool AvailableForRelationship(RelationshipType::Enum) const override;
 
-        virtual void UpdateEligibility();
-        virtual void ConsiderRelationships(float dt);
-        virtual void AddRelationship( IRelationship * pNewRelationship );
-        virtual void RemoveRelationship( IRelationship * pNewRelationship );
-        virtual void VacateRelationship( IRelationship* relationship );
-        virtual void RejoinRelationship( IRelationship* relationship );
-        virtual RelationshipSet_t& GetRelationships();
-        virtual RelationshipSet_t& GetRelationshipsAtDeath();
+        virtual void UpdateEligibility() override;
+        virtual void ConsiderRelationships(float dt) override;
+        virtual void AddRelationship( IRelationship * pNewRelationship ) override;
+        virtual void RemoveRelationship( IRelationship * pNewRelationship ) override;
+        virtual RelationshipSet_t& GetRelationships() override;
+        virtual RelationshipSet_t& GetRelationshipsAtDeath() override;
 
-        virtual bool IsBehavioralSuperSpreader() const;
-        virtual unsigned int GetExtrarelationalFlags() const;
-        virtual float GetCoInfectiveFactor() const;
-        virtual void  SetStiCoInfectionState();
-        virtual void  ClearStiCoInfectionState();
-        virtual bool  HasSTICoInfection() const;
-        virtual bool IsCircumcised() const;
+        virtual bool IsBehavioralSuperSpreader() const override;
+        virtual unsigned int GetExtrarelationalFlags() const override;
+        virtual float GetCoInfectiveFactor() const override;
+        virtual void  SetStiCoInfectionState() override;
+        virtual void  ClearStiCoInfectionState() override;
+        virtual bool  HasSTICoInfection() const override;
+        virtual bool IsCircumcised() const override;
         virtual void onEmigrating();
+        virtual void onImmigrating();
 
         void disengageFromSociety();
-        virtual ProbabilityNumber getProbabilityUsingCondomThisAct( RelationshipType::Enum ) const;
+        virtual ProbabilityNumber getProbabilityUsingCondomThisAct( const IRelationshipParameters* pRelParams ) const;
 
-        virtual void onImmigratingToNode();
-        virtual void SetContextTo(INodeContext* context);
+        virtual void SetContextTo(INodeContext* context) override;
 
-        virtual unsigned int GetOpenRelationshipSlot() const;
-        virtual NaturalNumber GetLast6MonthRels() const;
-        virtual NaturalNumber GetLifetimeRelationshipCount() const;
-        virtual NaturalNumber GetNumRelationshipsAtDeath() const;
-        virtual float GetDebutAge() const;
-        virtual void CheckForMigration(float currenttime, float dt);
+        virtual unsigned int GetOpenRelationshipSlot() const override;
+        virtual NaturalNumber GetLast6MonthRels() const override;
+        virtual NaturalNumber GetLifetimeRelationshipCount() const override;
+        virtual NaturalNumber GetNumRelationshipsAtDeath() const override;
+        virtual float GetDebutAge() const override;
+        virtual void CheckForMigration(float currenttime, float dt) override;
 
-        virtual std::string toString() const;
+        virtual std::string toString() const override;
 
         unsigned char GetProbExtraRelationalBitMask( Gender::Enum gender);
         float GetMaxNumRels(Gender::Enum gender, RelationshipType::Enum rel_type);
-        virtual void NotifyPotentialExposure();
+        virtual void NotifyPotentialExposure() override;
 
 
     protected:
@@ -153,9 +137,9 @@ namespace Kernel
                             int gender = 0,
                             float initial_poverty = 0.5f);
 
-        virtual Infection* createInfection(suids::suid _suid);
-        virtual void setupInterventionsContainer();
-        virtual void ReportInfectionState();
+        virtual IInfection* createInfection(suids::suid _suid) override;
+        virtual void setupInterventionsContainer() override;
+        virtual void ReportInfectionState() override;
 
         // Local version of individual-property-dependent parameters from STINetworkParameters
         STINetworkParameters net_params;
@@ -164,8 +148,8 @@ namespace Kernel
         unsigned int max_relationships[RelationshipType::Enum::COUNT];
         unsigned int queued_relationships[RelationshipType::Enum::COUNT];
         unsigned int active_relationships[RelationshipType::Enum::COUNT];
-        unsigned int remote_relationships[RelationshipType::Enum::COUNT];
 
+        bool migrating_because_of_partner;
         unsigned char promiscuity_flags;
         float sexual_debut_age;
         float co_infective_factor;
@@ -189,10 +173,6 @@ namespace Kernel
         int informal_eligibility;
         int marital_elibigility;
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, IndividualHumanSTI& human, const unsigned int  file_version );
-#endif
+        DECLARE_SERIALIZABLE(IndividualHumanSTI);
     };
 }

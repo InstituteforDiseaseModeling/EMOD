@@ -1,0 +1,30 @@
+{
+    "Custom_Reports" : 
+    {
+        "Use_Explicit_Dlls" : 1,
+        "ReportMalariaFiltered" :
+        {
+            "Enabled" : 1,
+            "Reports" :
+            [
+                {
+                    "Start_Day": 0,
+                    "End_Day": 365,
+                    "Report_File_Name" : "0_to_365.json",
+                    "Node_IDs_Of_Interest" : []
+                },
+                {
+                    "Start_Day" : 366,
+                    "End_Day": 730,
+                    "Report_File_Name" : "366_to_730.json",
+                    "Node_IDs_Of_Interest" : []
+                }
+            ]
+        },
+        "ReportNodeDemographics" :
+        {
+            "Enabled" : 1,
+            "Reports" : [ {} ]
+        }
+    }
+}

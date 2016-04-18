@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -27,7 +27,12 @@ namespace Kernel
     )
     {
         ConfigurePositiveEventOrConfig( inputJson );
-        return JsonConfigurable::Configure(inputJson); 
+        bool ret = JsonConfigurable::Configure(inputJson); 
+        if( ret )
+        {
+            CheckPostiveEventConfig();
+        }
+        return ret;
     }
 
     StiCoInfectionDiagnostic::StiCoInfectionDiagnostic() : SimpleDiagnostic()
@@ -49,10 +54,7 @@ namespace Kernel
     {
         LOG_DEBUG("Positive test Result function\n");
 
-        // Apply diagnostic test with given specificity/sensitivity
-        float rand = parent->GetRng()->e();
-
-        IIndividualHumanSTI* sti_ind = NULL;
+        IIndividualHumanSTI* sti_ind = nullptr;
         if(parent->QueryInterface( GET_IID( IIndividualHumanSTI ), (void**)&sti_ind ) != s_OK)
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanSTI", "IIndividualHuman" );
@@ -62,10 +64,16 @@ namespace Kernel
         // always return negative if the person is not infected, intended to be used with GroupEventCoordinator
         // TODO: allow to distribute Smear diagnostic to non-infected individuals?
 
-        bool positiveTest = false;
-        // True positive (sensitivity), or False positive (1-specificity)
-        positiveTest = ( activeinf && (rand < base_sensitivity) ) || ( !activeinf && (rand > base_specificity) );
+        bool positiveTest = applySensitivityAndSpecificity( activeinf );
         return positiveTest;
 
+    }
+
+    REGISTER_SERIALIZABLE(StiCoInfectionDiagnostic);
+
+    void StiCoInfectionDiagnostic::serialize(IArchive& ar, StiCoInfectionDiagnostic* obj)
+    {
+        BaseIntervention::serialize( ar, obj );
+        StiCoInfectionDiagnostic& diag = *obj;
     }
 }

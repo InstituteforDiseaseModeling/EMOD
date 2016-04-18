@@ -27,7 +27,7 @@
                }
           }, 
           "DEMOGRAPHICS": {
-               "Demographics_Filename": "Namawala_single_node_demographics.compiled.json"
+               "Demographics_Filenames": ["Namawala_single_node_demographics.compiled.json"]
           }, 
           "PRIMARY": {
                "Config_Name": "91_Generic_Namawala_Climate_Data", 

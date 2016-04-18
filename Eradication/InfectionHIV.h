@@ -1,16 +1,15 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #pragma once
 #include "InfectionSTI.h"
 #include "IInfectionHIV.h"
-#include "InterventionEnums.h"
 #include "SusceptibilityHIV.h"
 #include "FerrandAgeDependentDistribution.h"
 #include "HIVEnums.h"
@@ -33,7 +32,7 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
 
     public:
-        virtual bool Configure( const Configuration* config );
+        virtual bool Configure( const Configuration* config ) override;
 
     protected:
 
@@ -60,31 +59,32 @@ namespace Kernel
         virtual ~InfectionHIV(void);
         static InfectionHIV *CreateInfection(IIndividualHumanContext *context, suids::suid _suid);
 
-        virtual void SetParameters(StrainIdentity* infstrain=NULL, int incubation_period_override = -1);
-        virtual void Update(float dt, Susceptibility* immunity = NULL);
+        virtual void SetParameters(StrainIdentity* infstrain=nullptr, int incubation_period_override = -1) override;
+        virtual void Update(float dt, ISusceptibilityContext* immunity = nullptr) override;
+        virtual void SetContextTo(IIndividualHumanContext* context) override;
 
-        virtual NaturalNumber GetViralLoad() const;
-        virtual float GetPrognosis() const;
-        virtual float GetTimeInfected() const;
-        virtual float GetDaysTillDeath() const;
-        virtual float GetInfectiousness() const;
-        virtual void SetupSuppressedDiseaseTimers();
-        virtual void ApplySuppressionDropout();
-        virtual void ApplySuppressionFailure();
+        virtual NaturalNumber GetViralLoad() const override;
+        virtual float GetPrognosis() const override;
+        virtual float GetTimeInfected() const override;
+        virtual float GetDaysTillDeath() const override;
+        virtual float GetInfectiousness() const override;
+        virtual void SetupSuppressedDiseaseTimers() override;
+        virtual void ApplySuppressionDropout() override;
+        virtual void ApplySuppressionFailure() override;
         
         // kto moved to public for access through interventions
-        float GetWHOStage() const;
+        float GetWHOStage() const override;
 
     protected:
         InfectionHIV();
         InfectionHIV(IIndividualHumanContext *context);
 
-        virtual void  Initialize(suids::suid _suid);
+        /* clorton */ virtual void Initialize(suids::suid _suid);
 
         void SetupNonSuppressedDiseaseTimers();
-        virtual bool  ApplyDrugEffects(float dt, Susceptibility* immunity = NULL);
+        /* clorton virtual */ bool  ApplyDrugEffects(float dt, ISusceptibilityContext* immunity = nullptr);
         void SetStageFromDuration();
-        virtual const HIVInfectionStage::Enum& GetStage() const;
+        virtual const HIVInfectionStage::Enum& GetStage() const override;
         static float GetWeightInKgFromWHOStage(float whoStage);
         float ComputeDurationFromEnrollmentToArtAidsDeath() const;
 
@@ -109,26 +109,6 @@ namespace Kernel
 
         IIndividualHumanHIV * hiv_parent;
 
-    private:
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        // Serialization
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, InfectionHIV& inf, const unsigned int file_version );
-#endif
+        DECLARE_SERIALIZABLE(InfectionHIV);
     };
 }
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-namespace Kernel
-{
-    template<class Archive>
-    void serialize(Archive & ar, InfectionHIV& inf, const unsigned int file_version )
-    {
-        //serialize the params here 
-        //ar & inf.m_is_active;
-        ar & boost::serialization::base_object<Kernel::Infection>(inf);
-    }
-}
-#endif

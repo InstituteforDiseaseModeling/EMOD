@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,7 +11,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "../interventions/IDrug.h"
 #include "Log.h"
-#include "Individual.h"
+#include "IIndividualHuman.h"
+#include "Interventions.h"
 #include "ReportUtilities.h"
 
 // Module name for logging
@@ -19,15 +20,15 @@ static const char * _module = "ReportUtilities";
 
 using namespace Kernel;
 
-std::list<IDrug*> ReportUtilities::GetDrugList( const IndividualHuman * individual, const std::string& rDrugClassName )
+std::list<IDrug*> ReportUtilities::GetDrugList( const IIndividualHuman* individual, const std::string& rDrugClassName )
 {
-    IIndividualHumanInterventionsContext * intervs = individual->GetInterventionsContext();
+    IIndividualHumanInterventionsContext* intervs = individual->GetInterventionsContext();
     std::list<IDistributableIntervention*> idi_list = intervs->GetInterventionsByType( rDrugClassName );
 
     std::list<IDrug*> drugs_of_type;
     for (auto idi : idi_list)
     {
-        IDrug * pDrug = NULL;
+        IDrug* pDrug = nullptr;
         if( s_OK == idi->QueryInterface(GET_IID(IDrug), (void**) &pDrug) )
         {
             drugs_of_type.push_back( pDrug );

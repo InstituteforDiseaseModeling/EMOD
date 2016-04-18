@@ -35,7 +35,19 @@
                                    "Secondary_Decay_Time_Constant": 0, 
                                    "TB_Drug_Clearance_Rate": 0.02, 
                                    "TB_Drug_Inactivation_Rate": 0.3, 
-                                   "class": "AntiTBDrug"
+                                   "class": "AntiTBDrug",
+                                   
+                                   "Demographic_Coverage": 1.0,
+                                   "Duration": -1,
+                                   "Target_Age_Max": 36500,
+                                   "Target_Age_Min": 0,
+                                   "Single_Use": 1,
+                                   "Dose_Interval": 1.0,
+                                   "Fraction_Defaulters": 0.0,
+                                   "Reduced_Transmit": 1.0,
+                                   "TB_Drug_Mortality_Rate": 0.0,
+                                   "TB_Drug_Relapse_Rate": 0.0,
+                                   "TB_Drug_Resistance_Rate": 0.0
                               }, 
                               "Event_Or_Config": "Config",
                               "Tendency": 0.0015, 
@@ -44,7 +56,6 @@
                          "Trigger_Condition": "TBActivation", 
                          "class": "NodeLevelHealthTriggeredIV"
                     }, 
-                    "Number_Distributions": -1, 
                     "Number_Repetitions": 1, 
                     "Target_Demographic": "Everyone", 
                     "class": "StandardInterventionDistributionEventCoordinator"

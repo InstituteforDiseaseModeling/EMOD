@@ -1,30 +1,32 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #pragma once
 
-#include <string>
-#include <list>
-#include <vector>
-
 #include "Interventions.h"
-#include "SimpleTypemapRegistration.h"
 #include "Contexts.h"
 #include "Configuration.h"
 #include "InterventionFactory.h"
 #include "InterventionEnums.h"
 #include "Configure.h"
+#include "IWaningEffect.h"
 
 namespace Kernel
 {
-    struct IVaccineConsumer; 
-    struct ICampaignCostObserver; 
+    ENUM_DEFINE(SimpleVaccineType,
+        ENUM_VALUE_SPEC(Generic              , 1)
+        ENUM_VALUE_SPEC(TransmissionBlocking , 2)
+        ENUM_VALUE_SPEC(AcquisitionBlocking  , 3)
+        ENUM_VALUE_SPEC(MortalityBlocking    , 4))
+
+    struct IVaccineConsumer;
+    struct ICampaignCostObserver;
 
     struct IVaccine : public ISupports
     {
@@ -32,67 +34,42 @@ namespace Kernel
         virtual ~IVaccine() { } // needed for cleanup via interface pointer
     };
 
-    class ISimpleVaccine : public ISupports
-    {
-    public:
-        virtual int   GetVaccineType()            const = 0;
-    };
-
-    class SimpleVaccine : public IVaccine, public ISimpleVaccine, public BaseIntervention
+    class SimpleVaccine : public BaseIntervention, public IVaccine
     {
         DECLARE_FACTORY_REGISTERED(InterventionFactory, SimpleVaccine, IDistributableIntervention)
 
     public:
         SimpleVaccine();
-        virtual ~SimpleVaccine() { }
-        virtual int AddRef() { return BaseIntervention::AddRef(); }
-        virtual int Release() { return BaseIntervention::Release(); }
-        bool Configure( const Configuration* pConfig );
+        SimpleVaccine( const SimpleVaccine& );
+        virtual ~SimpleVaccine();
+        virtual int AddRef() override { return BaseIntervention::AddRef(); }
+        virtual int Release() override { return BaseIntervention::Release(); }
+        virtual bool Configure( const Configuration* pConfig ) override;
 
         // IDistributableIntervention
-        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pCCO );
-        virtual void SetContextTo(IIndividualHumanContext *context);
-        virtual void Update(float dt);
+        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pCCO ) override;
+        virtual void SetContextTo(IIndividualHumanContext *context) override;
+        virtual void Update(float dt) override;
 
         // ISupports
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
 
         // IVaccine
-        virtual int   GetVaccineType()            const;
-        virtual void  ApplyVaccineTake(); 
+        virtual void  ApplyVaccineTake() override;
 
     protected:
         // context for this intervention--does not need to be reset upon migration, it is just for GiveVaccine()
         IIndividualHumanContext *parent;
 
-    protected:
         int   vaccine_type;
         float vaccine_take;
         float current_reducedacquire;
         float current_reducedtransmit;
         float current_reducedmortality;
-        InterventionDurabilityProfile::Enum durability_time_profile;
-        float primary_decay_time_constant;
-        float secondary_decay_time_constant;
+        WaningConfig   waning_config;
+        IWaningEffect* waning_effect;
         IVaccineConsumer * ivc; // interventions container
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-    private:
-        template<class Archive>
-        friend void serialize(Archive &ar, SimpleVaccine& vacc, const unsigned int v);
-#endif
-
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-    public:
-     // IJsonSerializable Interfaces
-     virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-     virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
+        DECLARE_SERIALIZABLE(SimpleVaccine);
     };
 }
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-#ifdef WIN32
-BOOST_CLASS_EXPORT_KEY(Kernel::SimpleVaccine)
-#endif
-#endif

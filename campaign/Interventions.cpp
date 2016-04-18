@@ -1,16 +1,15 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include <stdafx.h>
 #include "Interventions.h"
 #include "InterventionFactory.h"
-#include "IndividualEventContext.h"
 #include "NodeEventContext.h"
 #include "Contexts.h"
 #include "Exceptions.h"
@@ -60,16 +59,19 @@ namespace Kernel
     BaseIntervention::BaseIntervention()
         : cost_per_unit(0.0f)
         , expired(false)
+        , dont_allow_duplicates(false)
     {
         //total_intervention_counter++;
         initSimTypes( 1, "*" );
+        initConfigTypeMap( "Dont_Allow_Duplicates", &dont_allow_duplicates, Dont_Allow_Duplicates_DESC_TEXT, false );
         //LOG_DEBUG_F("New intervention, total_intervention_counter = %d\n", total_intervention_counter);
     }
 
     BaseIntervention::BaseIntervention( const BaseIntervention& master )
     {
-        cost_per_unit = master.cost_per_unit;
-        expired = master.expired;
+        cost_per_unit         = master.cost_per_unit;
+        expired               = master.expired;
+        dont_allow_duplicates = master.dont_allow_duplicates ;
     }
 
     BaseIntervention::~BaseIntervention()
@@ -98,6 +100,11 @@ namespace Kernel
         ICampaignCostObserver * const pICCO
     )
     {
+        if( dont_allow_duplicates && context->ContainsExisting( typeid(*this).name() ) )
+        {
+            return false ;
+        }
+
         bool wasDistributed=false;
         IInterventionConsumer * ic;
         if (s_OK == (context->QueryInterface(GET_IID(IInterventionConsumer), (void**)&ic) ) )
@@ -171,58 +178,11 @@ namespace Kernel
         return wasDistributed;
     }
 
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-
-    // IJsonSerializable Interfaces
-    void BaseIntervention::JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const
+    void BaseIntervention::serialize(IArchive& ar, BaseIntervention* obj)
     {
-        // begin json object
-        root->BeginObject();
-
-        root->Insert("cost_per_unit",cost_per_unit);
-        root->Insert("expired", expired);
-
-        root->EndObject();
-    }
-
-    void BaseIntervention::JDeserialize( IJsonObjectAdapter* root, JSerializer* helper )
-    {
-
-        LOG_INFO( "In JDeserialize\n");
-        rapidjson::Document * doc = (rapidjson::Document*) root;   
-        cost_per_unit = (*doc)["cost_per_unit"].GetDouble();
-        expired = (*doc)["expired"].GetBool();
-
-    }
-
-    // IJsonSerializable Interfaces
-    void BaseNodeIntervention::JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const
-    {
-        root->BeginObject();
-
-        root->Insert("cost_per_unit",cost_per_unit);
-        root->Insert("expired", expired);
-
-        root->EndObject();
-    }
-
-    void BaseNodeIntervention::JDeserialize( IJsonObjectAdapter* root, JSerializer* helper )
-    {
-    }
-#endif
-
-}
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::BaseIntervention)
-
-namespace Kernel {
-
-    template<class Archive>
-    void serialize(Archive &ar, BaseIntervention &bi, const unsigned int v)
-    {
-        ar & bi.cost_per_unit;
-        ar & bi.expired;
+        BaseIntervention& intervention = *obj;
+        ar.labelElement("cost_per_unit"        ) & intervention.cost_per_unit;
+        ar.labelElement("expired"              ) & intervention.expired;
+        ar.labelElement("dont_allow_duplicates") & intervention.dont_allow_duplicates;
     }
 }
-#endif

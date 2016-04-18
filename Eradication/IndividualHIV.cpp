@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,8 +11,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include <typeinfo>
 #include "IndividualHIV.h"
-#include "Debug.h"
-#include "MathFunctions.h"
 #include "InfectionHIV.h"
 #include "NodeEventContext.h"
 #include "SusceptibilityHIV.h"
@@ -72,7 +70,7 @@ namespace Kernel
         LOG_DEBUG_F( "%lu (HIV) destructor.\n", this->GetSuid().data );
     }
 
-    Infection* IndividualHumanHIV::createInfection( suids::suid _suid )
+    IInfection* IndividualHumanHIV::createInfection( suids::suid _suid )
     {
         return InfectionHIV::CreateInfection(this, _suid);
     }
@@ -102,7 +100,7 @@ namespace Kernel
         bool ret = false;
         for (auto infection : infections)
         {
-            IInfectionHIV* pinfHIV = NULL;
+            IInfectionHIV* pinfHIV = nullptr;
             if (s_OK == infection->QueryInterface(GET_IID( IInfectionHIV ), (void**)&pinfHIV) )
             {
                 ret = true;
@@ -116,10 +114,10 @@ namespace Kernel
     IndividualHumanHIV::GetHIVInfection()
     const
     {
-        IInfectionHIV* pinfHIV = NULL;
+        IInfectionHIV* pinfHIV = nullptr;
         if( infections.size() == 0 )
         {
-            return NULL;
+            return nullptr;
         }
         else if (s_OK == (*infections.begin())->QueryInterface(GET_IID( IInfectionHIV ), (void**)&pinfHIV) )
         {
@@ -143,7 +141,7 @@ namespace Kernel
     IndividualHumanHIV::GetHIVInterventionsContainer()
     const
     {
-        IHIVInterventionsContainer *ic = NULL;
+        IHIVInterventionsContainer *ic = nullptr;
         if (s_OK == interventions->QueryInterface(GET_IID( IHIVInterventionsContainer ), (void**)&ic) )
         {
             return ic;
@@ -224,17 +222,17 @@ namespace Kernel
     const
     {
         ProbabilityNumber retValue = IndividualHuman::getProbMaternalTransmission();
-        auto mod = (float) GetHIVInterventionsContainer()->GetProbMaternalTransmissionModifier();
+        auto mod = float(GetHIVInterventionsContainer()->GetProbMaternalTransmissionModifier());
         if( GetHIVInterventionsContainer()->OnArtQuery() && GetHIVInterventionsContainer()->GetArtStatus() != ARTStatus::ON_BUT_ADHERENCE_POOR )
         {
             retValue *= GET_CONFIGURABLE(SimulationConfig)->maternal_transmission_ART_multiplier;
-            LOG_DEBUG_F( "Mother giving birth on ART: prob tx = %f\n", (float) retValue );
+            LOG_DEBUG_F( "Mother giving birth on ART: prob tx = %f\n", float(retValue) );
         }
         else if( mod > 0 )
         {
             // 100% "modifier" = 0% prob of transmission.
             retValue *= (1.0f - mod );
-            LOG_DEBUG_F( "Mother giving birth on PMTCT: prob tx = %f\n", (float) retValue );
+            LOG_DEBUG_F( "Mother giving birth on PMTCT: prob tx = %f\n", float(retValue) );
         }
         return retValue;
     }
@@ -267,29 +265,23 @@ namespace Kernel
         return me.str();
 #endif
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
+    REGISTER_SERIALIZABLE(IndividualHumanHIV);
 
-BOOST_CLASS_EXPORT(Kernel::IndividualHumanHIV)
-namespace Kernel
-{
-    template<class Archive>
-    void serialize(Archive & ar, IndividualHumanHIV& human, const unsigned int  file_version )
+    void IndividualHumanHIV::serialize(IArchive& ar, IndividualHumanHIV* obj)
     {
-#if 0
-        // Register derived types
-        ar.template register_type<InfectionHIV>();
-        ar.template register_type<SusceptibilityHIV>();
+        IndividualHumanSTI::serialize( ar, obj );
+        IndividualHumanHIV& ind_hiv = *obj;
+        ar.labelElement("has_active_TB"                     ) & ind_hiv.has_active_TB;
+        ar.labelElement("pos_num_partners_while_CD4500plus" ) & ind_hiv.pos_num_partners_while_CD4500plus;
+        ar.labelElement("neg_num_partners_while_CD4500plus" ) & ind_hiv.neg_num_partners_while_CD4500plus;
 
-        // Serialize fields - N/A
-
-        // Serialize base class
-        ar & boost::serialization::base_object<Kernel::IndividualHumanSTI>(human);
-#endif
+        if( ar.IsReader() )
+        {
+            if ( ind_hiv.susceptibility->QueryInterface(GET_IID(ISusceptibilityHIV), (void**)&ind_hiv.hiv_susceptibility) != s_OK)
+            {
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "susc", "IHIVSusceptibilityHIV", "Susceptibility" );
+            }
+        }
     }
 }
-template void Kernel::serialize(boost::mpi::packed_iarchive &ar, IndividualHumanHIV& node, unsigned int);
-template void Kernel::serialize(boost::mpi::packed_oarchive &ar, IndividualHumanHIV& node, unsigned int);
-
-#endif

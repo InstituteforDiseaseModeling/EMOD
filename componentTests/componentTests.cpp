@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -23,5 +23,24 @@ int main(int argc, char* argv[])
     // ----------------------------------------------------------------------------------
     IdmInitialize();
 
-    return UnitTest::RunAllTests();
+    if( argc == 2 )
+    {
+        // argv[1] is the name of a suite that you would like to run like AssortivityTest.
+        // It runs all of the tests in that suite.
+        return UnitTest::RunSuite( argv[1] );
+    }
+    else
+    {
+        // Run all of the test suites
+        return UnitTest::RunAllTests();
+    }
+}
+
+void PrintDebug( const std::string& rMessage )
+{
+#ifdef WIN32
+    std::wostringstream msg ;
+    msg << rMessage.c_str() ;
+    OutputDebugStringW( msg.str().c_str() );
+#endif
 }

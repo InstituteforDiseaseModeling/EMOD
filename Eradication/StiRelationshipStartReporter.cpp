@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -14,8 +14,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Log.h"
 #include "Exceptions.h"
 #include "INodeSTI.h"
-#include "SimulationSTI.h"
 #include "Properties.h"
+#include "NodeEventContext.h"
+#include "IIndividualHumanSTI.h"
 
 static const char* _module = "RelationshipStartReporter";
 
@@ -57,11 +58,10 @@ namespace Kernel
     void StiRelationshipStartReporter::onNewRelationship(IRelationship* relationship)
     {
         LOG_DEBUG_F("%s: rel id = %d, male id = %d, female id = %d\n", __FUNCTION__,
-                    relationship->GetId(),
+                    relationship->GetSuid().data,
                     relationship->MalePartner()->GetSuid().data,
                     relationship->FemalePartner()->GetSuid().data );
         // TODO - set the relationship suid in the relationship code (or relationship manager)
-        relationship->SetSuid(static_cast<SimulationSTI*>(simulation)->GetNextRelationshipSuid());
         auto male_partner = relationship->MalePartner();
         auto female_partner    = relationship->FemalePartner();
 
@@ -76,7 +76,6 @@ namespace Kernel
             info.start_time         = relationship->GetStartTime();
             info.scheduled_end_time = relationship->GetScheduledEndTime();
             info.relationship_type  = (unsigned int)relationship->GetType();
-            info.original_node_id   = relationship->GetOriginalNodeId().data;
 
             IIndividualHumanEventContext* individual = nullptr;
 
@@ -84,6 +83,14 @@ namespace Kernel
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "male_partner", "IIndividualHumanContext", "IIndividualHumanSTI*" );
             }
+
+            // --------------------------------------------------------
+            // --- Assuming that the individuals in a relationship
+            // --- must be in the same node.
+            //release_assert( false );
+            // --------------------------------------------------------
+            info.original_node_id = relationship->GetOriginalNodeId();
+            info.current_node_id  = individual->GetNodeEventContext()->GetNodeContext()->GetExternalID();
 
             info.participant_a.id                                = male_partner->GetSuid().data;
             info.participant_a.is_infected                       = male_partner->IsInfected();
@@ -202,7 +209,7 @@ namespace Kernel
         }
         else
         {
-            LOG_WARN_F( "%s: one or more partners of new relationship %d has already migrated\n", __FUNCTION__, relationship->GetId() );
+            LOG_WARN_F( "%s: one or more partners of new relationship %d has already migrated\n", __FUNCTION__, relationship->GetSuid().data );
         }
     }
 
@@ -215,6 +222,7 @@ namespace Kernel
             << "Rel_scheduled_end_time,"
             << "Rel_type (0 = transitory 1 = informal 2 = marital),"
             << "Original_node_ID,"
+            << "Current_node_ID,"
             << "A_ID,"
             << "A_is_infected,"
             << "A_gender,"
@@ -265,6 +273,7 @@ namespace Kernel
                               << entry.scheduled_end_time << ','
                               << entry.relationship_type << ','
                               << entry.original_node_id << ','
+                              << entry.current_node_id << ','
                               << entry.participant_a.id << ','
                               << entry.participant_a.is_infected << ','
                               << entry.participant_a.gender << ','

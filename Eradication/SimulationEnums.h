@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -56,28 +56,14 @@ namespace Kernel
         ENUM_VALUE_SPEC(POLIO_EVOCLOCK_REVERSION                            , 4)
         ENUM_VALUE_SPEC(POLIO_EVOCLOCK_POISSONSITES                         , 5))
 
-    // ENUM defs for INCUBATION_DISTRIBUTION, INFECTIOUS_DISTRIBUTION
-    ENUM_DEFINE(DistributionFunction, 
-        ENUM_VALUE_SPEC(NOT_INITIALIZED                                     , -1)
-        ENUM_VALUE_SPEC(FIXED_DURATION                                      , 0)
-        ENUM_VALUE_SPEC(UNIFORM_DURATION                                    , 1)
-        ENUM_VALUE_SPEC(GAUSSIAN_DURATION                                   , 2)
-        ENUM_VALUE_SPEC(EXPONENTIAL_DURATION                                , 3)
-        ENUM_VALUE_SPEC(POISSON_DURATION                                    , 4)
-        ENUM_VALUE_SPEC(LOG_NORMAL_DURATION                                 , 5)
-        ENUM_VALUE_SPEC(BIMODAL_DURATION                                    , 6)
-        ENUM_VALUE_SPEC(PIECEWISE_CONSTANT                                  , 7)
-        ENUM_VALUE_SPEC(PIECEWISE_LINEAR                                    , 8)
-        ENUM_VALUE_SPEC(WEIBULL_DURATION                                    , 9)
-        )
-
     // ENUM defs for IND_SAMPLING_TYPE
     ENUM_DEFINE(IndSamplingType, 
         ENUM_VALUE_SPEC(TRACK_ALL                                           , 0)
         ENUM_VALUE_SPEC(FIXED_SAMPLING                                      , 1)
         ENUM_VALUE_SPEC(ADAPTED_SAMPLING_BY_POPULATION_SIZE                 , 2)
         ENUM_VALUE_SPEC(ADAPTED_SAMPLING_BY_AGE_GROUP                       , 3)
-        ENUM_VALUE_SPEC(ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE          , 4))
+        ENUM_VALUE_SPEC(ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE          , 4)
+        ENUM_VALUE_SPEC(ADAPTED_SAMPLING_BY_IMMUNE_STATE                    , 5))
 
     // ENUM defs for LOAD_BALANCING_SCHEME
     ENUM_DEFINE(LoadBalancingScheme, 
@@ -100,6 +86,15 @@ namespace Kernel
         ENUM_VALUE_SPEC(FIXED_RATE_MIGRATION                                , 1)
         ENUM_VALUE_SPEC(VARIABLE_RATE_MIGRATION                             , 2)
         ENUM_VALUE_SPEC(LEVY_FLIGHTS                                        , 3))
+
+    ENUM_DEFINE(MigrationType,
+        ENUM_VALUE_SPEC(NO_MIGRATION                                        , 0)
+        ENUM_VALUE_SPEC(LOCAL_MIGRATION                                     , 1)
+        ENUM_VALUE_SPEC(AIR_MIGRATION                                       , 2)
+        ENUM_VALUE_SPEC(REGIONAL_MIGRATION                                  , 3)
+        ENUM_VALUE_SPEC(SEA_MIGRATION                                       , 4)
+        ENUM_VALUE_SPEC(FAMILY_MIGRATION                                    , 5)
+        ENUM_VALUE_SPEC(INTERVENTION_MIGRATION                              , 6))
 
     // ENUM defs for MORTALITY_TIME_COURSE
     ENUM_DEFINE(MortalityTimeCourse, 
@@ -130,21 +125,28 @@ namespace Kernel
     ENUM_DEFINE(InfectivityScaling, 
         ENUM_VALUE_SPEC(CONSTANT_INFECTIVITY                                , 0)
         ENUM_VALUE_SPEC(FUNCTION_OF_TIME_AND_LATITUDE                       , 1)
-        ENUM_VALUE_SPEC(FUNCTION_OF_CLIMATE                                 , 2))
+        ENUM_VALUE_SPEC(FUNCTION_OF_CLIMATE                                 , 2)
+        ENUM_VALUE_SPEC(SINUSOIDAL_FUNCTION_OF_TIME                         , 3)
+        ENUM_VALUE_SPEC(ANNUAL_BOXCAR_FUNCTION                              , 4))
 
     ENUM_DEFINE(SusceptibilityScaling,
         ENUM_VALUE_SPEC(CONSTANT_SUSCEPTIBILITY                             , 0)
-        ENUM_VALUE_SPEC(LOG_LINEAR_FUNCTION_OF_TIME                         , 1))
+        ENUM_VALUE_SPEC(LOG_LINEAR_FUNCTION_OF_TIME                         , 1)
+        ENUM_VALUE_SPEC(LINEAR_FUNCTION_OF_AGE                              , 2))
 
     // ENUM defs for Sim_Type
     ENUM_DEFINE(SimType, 
         ENUM_VALUE_SPEC(GENERIC_SIM                                         , 0)
         ENUM_VALUE_SPEC(VECTOR_SIM                                          , 1)
         ENUM_VALUE_SPEC(MALARIA_SIM                                         , 2)
+        ENUM_VALUE_SPEC(ENVIRONMENTAL_SIM                                   , 3)
+        ENUM_VALUE_SPEC(POLIO_SIM                                           , 4)
         ENUM_VALUE_SPEC(AIRBORNE_SIM                                        , 5)
         ENUM_VALUE_SPEC(TB_SIM                                              , 6)
+        ENUM_VALUE_SPEC(TBHIV_SIM                                           , 7)
         ENUM_VALUE_SPEC(STI_SIM                                             , 8)
-        ENUM_VALUE_SPEC(HIV_SIM                                             , 9))
+        ENUM_VALUE_SPEC(HIV_SIM                                             , 9)
+        ENUM_VALUE_SPEC(PY_SIM                                          , 10))
 
     // ENUM defs for VDPV_virulence_model_type
     ENUM_DEFINE(VDPVVirulenceModelType, 
@@ -161,6 +163,11 @@ namespace Kernel
         ENUM_VALUE_SPEC(INDIVIDUAL_PREGNANCIES                              , 3)
         ENUM_VALUE_SPEC(INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE             , 4) 
         ENUM_VALUE_SPEC(INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR              , 5))
+
+    ENUM_DEFINE(VitalBirthTimeDependence,
+        ENUM_VALUE_SPEC(NONE                                                , 0)
+        ENUM_VALUE_SPEC(SINUSOIDAL_FUNCTION_OF_TIME                         , 1)
+        ENUM_VALUE_SPEC(ANNUAL_BOXCAR_FUNCTION                              , 2))
 
     // ENUM defs for VITAL_DEATH_DEPENDENCE
     ENUM_DEFINE(VitalDeathDependence,                                               // TODO: FIXED_DEATH_RATE (Makeham), Gompertz–Makeham, Lifetable, Heligman-Pollard, Siler (5-Component Competing Hazard), 

@@ -1,9 +1,9 @@
 {
-    "Default_Config_Path":"defaults\\tb_default_config.json",
+    "Default_Config_Path":"defaults/tb_default_config.json",
     "parameters":{
         "DEMOGRAPHICS":{
             "Birth_Rate_Dependence":"FIXED_BIRTH_RATE",
-            "Demographics_Filename":"Single_node_demographics_100.compiled.json",
+            "Demographics_Filenames":["Single_node_demographics_100.compiled.json"],
             "IMMUNITY":{
                 "Acquisition_Blocking_Immunity_Decay_Rate":0,
                 "Acquisition_Blocking_Immunity_Duration_Before_Decay":0,
@@ -48,6 +48,7 @@
             "ENUMS":{
                 "Simulation_Type":"TB_SIM"
             },
+            "Custom_Reports_Filename" : "custom_reports.json",
             "Geography":"TB_single_node",
             "Node_Grid_Size":0.009,
             "Run_Number":10400,

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -81,51 +81,5 @@ namespace Kernel
         IEventCoordinator *event_coordinator; // TODO: eventually try to instantiate and then serialize just this, once a solution for global type registration is worked out
         NodeSetConfig nodeset_config;
         EventConfig event_coordinator_config;
-
-#if USE_JSON_SERIALIZATION
-    public:
-
-        // IJsonSerializable Interfaces
-        virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-        virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
-
-    private:
-
-#if USE_BOOST_SERIALIZATION
-        ///////////////////////////////////////////////////////////////////////////
-        // Serialization
-        friend class ::boost::serialization::access;
-
-        template<class Archive>
-        friend void serialize(Archive &ar, CampaignEvent& event, const unsigned int v);
-#endif
-    };
-
-    class CampaignEventByYear : public CampaignEvent
-    {
-        DECLARE_FACTORY_REGISTERED(CampaignEventFactory, CampaignEventByYear, IConfigurable)
-
-    public:
-        friend class CampaignEventFactory;
-        DECLARE_CONFIGURED(CampaignEventByYear)
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
-        DECLARE_QUERY_INTERFACE()
-
-        CampaignEventByYear();
-        virtual ~CampaignEventByYear();
-
-    protected:
-
-    private:
-
-#if USE_BOOST_SERIALIZATION
-        ///////////////////////////////////////////////////////////////////////////
-        // Serialization
-        friend class ::boost::serialization::access;
-
-        template<class Archive>
-        friend void serialize(Archive &ar, CampaignEvent& event, const unsigned int v);
-#endif
     };
 }

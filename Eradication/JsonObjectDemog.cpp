@@ -1,17 +1,14 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 #include <stdafx.h>
 #include <cstdio>
 #include <string>
-#include <vector>
-#include <iostream>
-#include <time.h>
 #include <assert.h>
 
 #include <sstream>
@@ -23,13 +20,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "JsonObjectDemog.h"
 
 #include "rapidjson/prettywriter.h" // for stringify JSON
-#include "rapidjson/filestream.h"   // wrapper of C stream for prettywriter as output
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 
-
 #pragma warning(disable : 4996) //ignore depracation warning about strcpy
-
 
 static const char* _module = "JsonObjectDemog";
 
@@ -127,12 +121,29 @@ namespace Kernel {
         return !(*this == rThat);
     }
 
+    void JsonObjectDemog::WriteToFile( const char* filename )
+    {
+        JsonWriterDemog writer( true ) ;
+        writer << *this ;
+
+        std::string text = writer.PrettyText();
+
+        std::ofstream json_file;
+        json_file.open( filename );
+        if( json_file.fail() )
+        {
+            throw FileIOException( __FILE__, __LINE__, __FUNCTION__, filename );
+        }
+        json_file << text ;
+        json_file.close();
+    }
+
     // ------------------------------------------------------
     // --- Methods for creating an object from a string and
     // --- for creating the string from the object
     // ------------------------------------------------------
 
-    void JsonObjectDemog::Parse(const char* jsBuffer)
+    void JsonObjectDemog::Parse( const char* jsBuffer, const char* filename )
     {
         rapidjson::Document* p_doc = new rapidjson::Document();
         shared_ptr<rapidjson::Document> shared_doc( p_doc ) ;
@@ -152,6 +163,10 @@ namespace Kernel {
             json_file.close();
 
             ostringstream s;
+            if( filename != nullptr )
+            {
+                s << filename << ": ";
+            }
             s << "Failed to parse incoming text. " << p_doc->GetParseError() << " at character=" << p_doc->GetErrorOffset() << " / line number=" << p_doc->GetLineNumber() << endl;
             throw SerializationException( __FILE__, __LINE__, __FUNCTION__, s.str().c_str() );
         }
@@ -162,7 +177,7 @@ namespace Kernel {
         std::string* p_buffer = FileSystem::ReadFile( filename );
         try
         {
-            Parse( p_buffer->c_str() );
+            Parse( p_buffer->c_str(), filename );
         }
         catch( DetailedException& )
         {
@@ -287,6 +302,12 @@ namespace Kernel {
             s << "The '" << m_Key << "' element is not an object.  One cannot get key-based value from something that is not an object." ;
             throw SerializationException( __FILE__, __LINE__, __FUNCTION__, s.str().c_str() );
         }
+        else if( !r_value.HasMember( key ) )
+        {
+            ostringstream s;
+            s << "The '" << m_Key << "' element does not contain an element with name '" << key << "'." ;
+            throw SerializationException( __FILE__, __LINE__, __FUNCTION__, s.str().c_str() );
+        }
 
         JsonObjectDemog obj( key, &r_value[ key ], m_pDocument );
         return obj;
@@ -315,7 +336,7 @@ namespace Kernel {
         }
     }
 
-    JsonObjectDemog JsonObjectDemog::GetObject(const char* key) const
+    JsonObjectDemog JsonObjectDemog::GetJsonObject(const char* key) const
     {
         assert(m_pValue);
         rapidjson::Value& r_value = *((rapidjson::Value*)m_pValue);
@@ -329,7 +350,7 @@ namespace Kernel {
         return obj;
     }
 
-    JsonObjectDemog JsonObjectDemog::GetArray(const char* key) const
+    JsonObjectDemog JsonObjectDemog::GetJsonArray(const char* key) const
     {
         assert(m_pValue);
         rapidjson::Value& r_value = *((rapidjson::Value*)m_pValue);
@@ -670,6 +691,25 @@ namespace Kernel {
         r_value.AddMember( pKey, r_doc.GetAllocator(), new_val, r_doc.GetAllocator() );
     }
 
+    void JsonObjectDemog::Add( const std::string& rKey, int val )
+    {
+        Add( rKey.c_str(), val );
+    }
+
+    void JsonObjectDemog::Add( const char* pKey, int val )
+    {
+        assert(m_pDocument.get());
+        rapidjson::Document& r_doc = *((rapidjson::Document*)m_pDocument.get());
+
+        assert(m_pValue);
+        rapidjson::Value& r_value = *((rapidjson::Value*)m_pValue);
+        assert( r_value.IsObject() );
+
+        rapidjson::Value new_val( val );
+
+        r_value.AddMember( pKey, r_doc.GetAllocator(), new_val, r_doc.GetAllocator() );
+    }
+
     void JsonObjectDemog::Remove( const JsonObjectDemog::Iterator& rIterator )
     {
         assert(m_pValue);
@@ -873,7 +913,7 @@ namespace Kernel {
 
     char* JsonWriterDemog::PrettyText() const
     {
-        char* prettyString = NULL;
+        char* prettyString = nullptr;
         rapidjson::Document doc;
         rapidjson::StringBuffer& r_buffer = *((rapidjson::StringBuffer*)m_pBuffer);
 

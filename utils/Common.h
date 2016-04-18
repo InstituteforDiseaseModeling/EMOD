@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -14,6 +14,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #define DAYSPERWEEK         (7)
 #define HOURSPERDAY         (24)
 #define MONTHSPERYEAR       (12)
+#define MIN_YEAR            (1900)
+#define MAX_YEAR            (2200)
+
+
 
 #define ARCMINUTES_PER_DEGREE   (60)
 #define KM_PER_ARCMINUTE        (1.86)
@@ -23,6 +27,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #define NO_LESS_THAN( x, y ) { if ( x < y ) { x = y; } }
 #define NO_MORE_THAN( x, y ) { if ( x > y ) { x = y; } }
+#define BOUND_RANGE( x, y, z ) { NO_LESS_THAN(x, y); NO_MORE_THAN(x, z); }
 
 struct AffectedPopulation {
     enum _enum {
@@ -73,6 +78,7 @@ enum struct HumanStateChange : unsigned int {
     DiedFromNaturalCauses = 1,
     KilledByInfection     = 2,
     KilledByCoinfection   = 3,
+    KilledByMCSampling    = 4,
     Migrating             = 10
 };
 
@@ -89,11 +95,6 @@ struct NewInfectionState {
         NewlyCleared   = 9
     };
 };
-
-#define MAX_LOCAL_MIGRATION_DESTINATIONS    (8)
-#define MAX_AIR_MIGRATION_DESTINATIONS      (60)
-#define MAX_REGIONAL_MIGRATION_DESTINATIONS (30)
-#define MAX_SEA_MIGRATION_DESTINATIONS      (5)
 
 #define MAXIMUM_TRAVEL_WAYPOINTS    (10)
 
@@ -223,19 +224,6 @@ public:
         LOG(data);
         return temp;
     }
-
-#if USE_BOOST_SERIALIZATION
-        ///////////////////////////////////////////////////////////////////////////
-        // Serialization
-        friend class ::boost::serialization::access;
-
-        template<class Archive>
-        void serialize(Archive &ar, const unsigned int v)
-        {
-            ar & data;
-        };
-        ///////////////////////////////////////////////////////////////////////////
-#endif
 };
 
 #ifdef VALIDATION

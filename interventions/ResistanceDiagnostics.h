@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -34,12 +34,6 @@ namespace Kernel
 
         float treatment_fraction_neg;
 
-    private:
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        // Serialization
-        friend class ::boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive &ar, MDRDiagnostic &obj, const unsigned int v);
-#endif
+// clorton        DECLARE_SERIALIZABLE(MDRDiagnostic);
     };
 }

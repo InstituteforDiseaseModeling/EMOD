@@ -115,7 +115,7 @@ public:
 
     //! Constructor for constant string (i.e. do not make a copy of string)
     GenericValue(const Ch* s, SizeType length) {
-        RAPIDJSON_ASSERT(s != NULL);
+        RAPIDJSON_ASSERT(s != nullptr);
         flags_ = kConstStringFlag;
         data_.s.str = s;
         data_.s.length = length;
@@ -420,7 +420,7 @@ int z = a[0u].GetInt();                // This works too.
     int GetInt() const            { RAPIDJSON_ASSERT(flags_ & kIntFlag);   return data_.n.i;   }
     unsigned GetUint() const    { RAPIDJSON_ASSERT(flags_ & kUintFlag);  return data_.n.u;   }
     int64_t GetInt64() const    { RAPIDJSON_ASSERT(flags_ & kInt64Flag); return data_.n.i64; }
-    int64_t GetUint64() const    { RAPIDJSON_ASSERT(flags_ & kUint64Flag); return data_.n.u64; }
+    uint64_t GetUint64() const    { RAPIDJSON_ASSERT(flags_ & kUint64Flag); return data_.n.u64; }
 
     double GetDouble() const {
         RAPIDJSON_ASSERT(IsNumber());
@@ -646,7 +646,7 @@ private:
 
     //! Initialize this value as constant string, without calling destructor.
     void SetStringRaw(const Ch* s, SizeType length) {
-        RAPIDJSON_ASSERT(s != NULL);
+        RAPIDJSON_ASSERT(s != nullptr);
         flags_ = kConstStringFlag;
         data_.s.str = s;
         data_.s.length = length;
@@ -654,7 +654,7 @@ private:
 
     //! Initialize this value as copy string with initial data, without calling destructor.
     void SetStringRaw(const Ch* s, SizeType length, Allocator& allocator) {
-        RAPIDJSON_ASSERT(s != NULL);
+        RAPIDJSON_ASSERT(s != nullptr);
         flags_ = kCopyStringFlag;
         data_.s.str = (char *)allocator.Malloc(length + 1);
         data_.s.length = length;

@@ -1,50 +1,36 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 #include "NodeSet.h"
 
-#include "CajunIncludes.h"
 #include "ConfigurationImpl.h"
 #include "Exceptions.h"
 #include "InterventionEnums.h"
 #include "Log.h"
 #include "NodeEventContext.h"
 
-#if USE_BOOST_SERIALIZATION
-#include <boost/serialization/export.hpp>
-
-BOOST_CLASS_EXPORT(Kernel::NodeSetPolygon) 
-#endif
-
 static const char * _module = "NodeSetPolygon";
 
 namespace Kernel
 {
     using namespace std;
-    // NodeSet
-    //INodeSetFactory * NodeSetFactory::_instance = NULL;
-
-    // NodeSetPolygon
-    IMPLEMENT_FACTORY_REGISTERED(NodeSetPolygon)
 
     IMPL_QUERY_INTERFACE2(NodeSetPolygon, INodeSet, IConfigurable)
-
-    //NodeSetPolygon::NodeSetPolygon() { }
 
     json::QuickBuilder
     NodeSetPolygon::GetSchema()
     {
         return json::QuickBuilder( jsonSchemaBase );
     }
-   
-       bool
+
+    bool
     NodeSetPolygon::Configure(
         const Configuration * inputJson
     )
@@ -67,7 +53,6 @@ namespace Kernel
         // separate into individual lat-long coordinates, 
         // allocate polygon point array
 
-        //points_array    = NULL;
         std::string delimiters = " ,";
 
         // create a vector of strings to hold each successive lat-long coordinate as a string
@@ -129,7 +114,6 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "Contains node ID = %d ?\n", nec->GetId().data );
-        //if( poly.Size() == 0 && num_points == 0 )
         if( vertices_raw.length() > 0 ) // clear this after parse.
         {
             // haven't parsed raw list yet.
@@ -141,52 +125,31 @@ namespace Kernel
             // don't need else here because enum parser already catches such errors
         }
 
-        if( polygon_format == PolygonFormatType::SHAPE && nec->IsInPolygon( points_array, (int) num_points ) )
+        if( polygon_format == PolygonFormatType::SHAPE && nec->IsInPolygon( points_array, int(num_points) ) )
         {
             LOG_INFO_F( "Node ID = %d is contained within intervention polygon\n", nec->GetId().data );
             return true;
         }
-        else
-        {
-            LOG_DEBUG("Polygon apparently does not contain this node.\n");
-        }
+
+        LOG_DEBUG("Polygon apparently does not contain this node.\n");
+
         /*else if( polygon_format == PolygonFormatType::GEOJSON && nec->IsInPolygon( poly ) )
         {
             return true;
         }*/
         return false;
     }
-
-#if USE_JSON_SERIALIZATION
-
-    // IJsonSerializable Interfaces
-    void NodeSetPolygon::JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const
-    {
-        root->BeginObject();
-        root->Insert("vertices_raw", vertices_raw.c_str());
-        root->Insert("num_points", num_points);
-        root->Insert("polygon_format", polygon_format);
-        root->EndObject();
-    }
-
-    void NodeSetPolygon::JDeserialize( IJsonObjectAdapter* root, JSerializer* helper )
-    {
-    }
-#endif
 }
 
-
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(Kernel::NodeSetPolygon)
+#if 0
 namespace Kernel {
-        template<class Archive>
-        void serialize(Archive &ar, NodeSetPolygon& nodeset, const unsigned int v)
-        {
-            boost::serialization::void_cast_register<NodeSetPolygon, INodeSet>();
-            ar & vertices_raw;
-            //ar & points_array;
-            ar & num_points;
-            ar & polygon_format;
-        }
+    template<class Archive>
+    void serialize(Archive &ar, NodeSetPolygon& nodeset, const unsigned int v)
+    {
+        ar & vertices_raw;
+        //ar & points_array;
+        ar & num_points;
+        ar & polygon_format;
+    }
 }
 #endif

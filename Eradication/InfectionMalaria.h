@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,13 +13,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InfectionVector.h"
 
 #include "BoostLibWrapper.h"
-#include "Common.h"
 #include "MalariaContexts.h"
 #include "MalariaEnums.h"
 #include "IMalariaAntibody.h"
 #include "SusceptibilityMalaria.h"
-
-#include "Common.h"
 
 namespace Kernel
 {
@@ -41,7 +38,7 @@ namespace Kernel
 
     public:
         InfectionMalariaConfig() {};
-        bool Configure( const Configuration* config );
+        virtual bool Configure( const Configuration* config ) override;
 
     protected:
         static ParasiteSwitchType::Enum parasite_switch_type;
@@ -60,7 +57,7 @@ namespace Kernel
         static int    n_asexual_cycles_wo_gametocytes;
     };
 
-    class InfectionMalaria : public IInfectionMalaria, public InfectionVector, protected InfectionMalariaConfig
+    class InfectionMalaria : public InfectionVector, public IInfectionMalaria, protected InfectionMalariaConfig
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
@@ -70,10 +67,10 @@ namespace Kernel
         virtual ~InfectionMalaria();
 
         // TODO - becomes part of initialize?
-        virtual void SetParameters(Kernel::StrainIdentity* _infstrain=NULL, int incubation_period_override = -1 );
-        virtual void InitInfectionImmunology(Susceptibility* _immunity);
+        virtual void SetParameters(Kernel::StrainIdentity* _infstrain=nullptr, int incubation_period_override = -1 ) override;
+        virtual void InitInfectionImmunology(ISusceptibilityContext* _immunity) override;
 
-        virtual void Update(float, Kernel::Susceptibility * = NULL);
+        virtual void Update(float, ISusceptibilityContext* = nullptr) override;
 
         // TODO: intrahost_report needs to be reimplemented as a custom reporter
 
@@ -81,16 +78,16 @@ namespace Kernel
         int getDrugResistanceFlag(void);
 
         // Sums up the current parasite counts for the infection and determines if the infection is cleared or if death occurs this time step
-        void malariaCheckInfectionStatus(float = 0.0f, IMalariaSusceptibility * = NULL);
+        void malariaCheckInfectionStatus(float = 0.0f, IMalariaSusceptibility * = nullptr);
 
         // Calculates the IRBC killing from drugs and immune action
-        void malariaImmunityIRBCKill(float = 0, IMalariaSusceptibility * = NULL);
+        void malariaImmunityIRBCKill(float = 0, IMalariaSusceptibility * = nullptr);
 
         // Calculates stimulation of immune system by malaria infection
-        void malariaImmuneStimulation(float = 0, IMalariaSusceptibility * = NULL);
+        void malariaImmuneStimulation(float = 0, IMalariaSusceptibility * = nullptr);
 
         // Calculates immature gametocyte killing from drugs and immune action
-        void malariaImmunityGametocyteKill(float = 0, IMalariaSusceptibility * = NULL);
+        void malariaImmunityGametocyteKill(float = 0, IMalariaSusceptibility * = nullptr);
 
         // Calculates the antigenic switching when an asexual cycle completes and creates next generation of IRBC's
         void malariaIRBCAntigenSwitch(double = 1.0);
@@ -99,19 +96,21 @@ namespace Kernel
         void malariaCycleGametocytes(double = 1.0);
 
         // Process all infected hepatocytes
-        void malariaProcessHepatocytes(float = 0, IMalariaSusceptibility * = NULL);
+        void malariaProcessHepatocytes(float = 0, IMalariaSusceptibility * = nullptr);
 
-        virtual int64_t get_MaleGametocytes(int stage);
-        virtual void    reset_MaleGametocytes(int stage);
+        virtual int64_t get_MaleGametocytes(int stage) override;
+        virtual void    reset_MaleGametocytes(int stage) override;
 
-        virtual int64_t get_FemaleGametocytes(int stage);
-        virtual void    reset_FemaleGametocytes(int stage);
+        virtual int64_t get_FemaleGametocytes(int stage) override;
+        virtual void    reset_FemaleGametocytes(int stage) override;
 
-        virtual void SetContextTo(IIndividualHumanContext* context);
+        virtual void SetContextTo(IIndividualHumanContext* context) override;
 
     protected:
-        const SimulationConfig *params();
+        /* clorton virtual */ const SimulationConfig *params() /*clorton override */;
         void processEndOfAsexualCycle( IMalariaSusceptibility* immunity );
+
+        DECLARE_SERIALIZABLE(InfectionMalaria);
 
     private:
         // duration, incubation period, and infectious period are reused with different meanings from Infection, and Infection_Vector
@@ -151,18 +150,5 @@ namespace Kernel
 
         // drug resistance flag
         int drugResistanceFlag;
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, InfectionMalaria& inf, const unsigned int file_version );
-#endif
-
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-    public:
-     // IJsonSerializable Interfaces
-     virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-     virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
     };
 }

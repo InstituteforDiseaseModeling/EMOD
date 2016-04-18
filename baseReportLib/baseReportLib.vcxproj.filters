@@ -159,9 +159,6 @@
     <ClInclude Include="..\utils\RapidJsonImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\utils\SimpleTypemapRegistration.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Eradication\SimulationEnums.h">
       <Filter>Header Files</Filter>
     </ClInclude>

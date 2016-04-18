@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -37,12 +37,12 @@ namespace Kernel
             [this, n_sporozoites, coverage, risk](IIndividualHumanEventContext *ihec)
         {
             float relative_risk=1.0f;
-            if(risk != NULL)
+            if(risk != nullptr)
             {
                 relative_risk = risk(ihec->GetAge());
             }
 
-            IDrugVaccineInterventionEffects* idvie = NULL;
+            IDrugVaccineInterventionEffects* idvie = nullptr;
             if ( s_OK != ihec->GetInterventionsContext()->QueryInterface(GET_IID(IDrugVaccineInterventionEffects), (void**)&idvie) )
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "ihec->GetInterventionsContext()", "IDrugVaccineInterventionEffects", "IIndividualHumanInterventionsContext");
@@ -54,7 +54,7 @@ namespace Kernel
             // InterventionsContainer::GetInterventionReducedAcquire can be modified by a SimpleVaccine intervention used in MALARIA_SIM
             relative_risk *= idvie->GetInterventionReducedAcquire();
 
-            IMalariaHumanInfectable* imhi = NULL;
+            IMalariaHumanInfectable* imhi = nullptr;
             if ( s_OK !=  ihec->QueryInterface(GET_IID(IMalariaHumanInfectable), (void**)&imhi) )
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "ihec", "IMalariaHumanInfectable", "IIndividualHumanEventContext" );
@@ -62,7 +62,7 @@ namespace Kernel
 
             if ( randgen->e() < coverage*relative_risk && imhi->ChallengeWithSporozoites(n_sporozoites) )
             {
-                IInfectionAcquirable* iia = NULL;
+                IInfectionAcquirable* iia = nullptr;
                 if ( s_OK !=  ihec->QueryInterface(GET_IID(IInfectionAcquirable), (void**)&iia) )
                 {
                     throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "ihec", "IInfectionAcquirable", "IIndividualHumanEventContext" );
@@ -80,12 +80,12 @@ namespace Kernel
             [this, n_bites, coverage, risk](IIndividualHumanEventContext *ihec)
         {
             float relative_risk=1.0f;
-            if(risk != NULL)
+            if(risk != nullptr)
             {
                 relative_risk = risk(ihec->GetAge());
             }
 
-            IDrugVaccineInterventionEffects* idvie = NULL;
+            IDrugVaccineInterventionEffects* idvie = nullptr;
             if ( s_OK != ihec->GetInterventionsContext()->QueryInterface(GET_IID(IDrugVaccineInterventionEffects), (void**)&idvie) )
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "ihec->GetInterventionsContext()", "IDrugVaccineInterventionEffects", "IIndividualHumanInterventionsContext");
@@ -97,7 +97,7 @@ namespace Kernel
             // InterventionsContainer::GetInterventionReducedAcquire can be modified by a SimpleVaccine intervention used in MALARIA_SIM
             relative_risk *= idvie->GetInterventionReducedAcquire();
 
-            IMalariaHumanInfectable* imhi = NULL;
+            IMalariaHumanInfectable* imhi = nullptr;
             if ( s_OK !=  ihec->QueryInterface(GET_IID(IMalariaHumanInfectable), (void**)&imhi) )
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "ihec", "IMalariaHumanInfectable", "IIndividualHumanEventContext" );
@@ -105,7 +105,7 @@ namespace Kernel
 
             if ( randgen->e() < coverage*relative_risk && imhi->ChallengeWithBites(n_bites) )
             {
-                IInfectionAcquirable* iia = NULL;
+                IInfectionAcquirable* iia = nullptr;
                 if ( s_OK !=  ihec->QueryInterface(GET_IID(IInfectionAcquirable), (void**)&iia) )
                 {
                     throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "ihec", "IInfectionAcquirable", "IIndividualHumanEventContext" );

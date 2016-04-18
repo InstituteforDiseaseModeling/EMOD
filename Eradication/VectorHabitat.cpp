@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -15,9 +15,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "Interventions.h"
 #include "Log.h"
-#include "NodeVector.h"
 #include "SimulationConfig.h" // TODO: long-term, it seems that lloffset should belong to Node and the larval decay rates and rainfall mortality thresholds to this class.
 #include "Vector.h"
+#include "INodeContext.h"
+#include "NodeEventContext.h"   // for INodeEventContext
 
 static const char * _module = "VectorHabitat";
 
@@ -28,6 +29,20 @@ namespace Kernel
         , m_max_larval_capacity(max_capacity)
         , m_current_larval_capacity(0.0f)
         , m_total_larva_count(2) // current timestep and previous.
+        , m_new_egg_count(0)
+        , m_oviposition_trap_killing(0.0f)
+        , m_artificial_larval_mortality(0.0f)
+        , m_larvicide_habitat_scaling(1.0f)
+        , m_rainfall_mortality(0.0f)
+        , m_egg_crowding_correction(0.0f)
+    {
+    }
+
+    VectorHabitat::VectorHabitat()
+        : m_habitat_type(VectorHabitatType::Enum(0))
+        , m_max_larval_capacity(0)
+        , m_current_larval_capacity(0.0f)
+        , m_total_larva_count(0)
         , m_new_egg_count(0)
         , m_oviposition_trap_killing(0.0f)
         , m_artificial_larval_mortality(0.0f)
@@ -70,32 +85,49 @@ namespace Kernel
         float larvalhabitat = GetCurrentLarvalCapacity();
         float total_larva_count = m_total_larva_count[CURRENT_TIME_STEP]; 
 
-        if (larvalhabitat > total_larva_count && m_new_egg_count > 0  && params()->egg_saturation) 
+        switch ( params()->egg_saturation )
         {
+            case EggSaturation::NO_SATURATION:
+                m_egg_crowding_correction = 1.0;
+                break;
+
             // Eggs divided up by habitat, neweggs holds number of female eggs.  Correcting for overcrowding, applies to all eggs evenly
             // Will hatch equal number of male larva, but these don't take up larval habitat in the calculations, to keep compatible with older results
-            if (m_new_egg_count > larvalhabitat - total_larva_count)
-            { 
-                m_egg_crowding_correction = float(larvalhabitat - total_larva_count) / float(m_new_egg_count);
-            }
-            else
-            {
-                m_egg_crowding_correction = 1.0;
-            }
-        }
-        else if (params()->egg_saturation == EggSaturation::NO_SATURATION)
-        {
-            m_egg_crowding_correction = 1.0;
-        }
-        else if (params()->egg_saturation == EggSaturation::SIGMOIDAL_SATURATION)
-        {
-            if(larvalhabitat > 0){m_egg_crowding_correction = exp(-total_larva_count/larvalhabitat);}
-            else{ m_egg_crowding_correction = 0.0;}
-        }
-        else
-        {
-            // Habitat is full.  No new eggs.
-            m_egg_crowding_correction = 0;
+
+            case EggSaturation::SATURATION_AT_OVIPOSITION:
+                if (larvalhabitat > total_larva_count)
+                {
+                    if (m_new_egg_count > (larvalhabitat - total_larva_count))
+                    { 
+                        m_egg_crowding_correction = float(larvalhabitat - total_larva_count) / float(m_new_egg_count);
+                    }
+                    else
+                    {
+                        m_egg_crowding_correction = 1.0;
+                    }
+                }
+                else
+                {
+                    // Habitat is full.  No new eggs.
+                    m_egg_crowding_correction = 0;
+                }
+                break;
+
+            case EggSaturation::SIGMOIDAL_SATURATION:
+                if (larvalhabitat > 0)
+                {
+                    m_egg_crowding_correction = exp(-total_larva_count/larvalhabitat);
+                }
+                else
+                {
+                    m_egg_crowding_correction = 0.0;
+                }
+                break;
+
+            default:
+                throw BadEnumInSwitchStatementException(__FILE__, __LINE__, __FUNCTION__,
+                                                        "params()->egg_saturation", params()->egg_saturation,
+                                                        EggSaturation::pairs::lookup_key(params()->egg_saturation));
         }
 
         // After egg-crowding calculation has been calculated, reset new egg counter
@@ -118,7 +150,7 @@ namespace Kernel
 
             case VectorHabitatType::TEMPORARY_RAINFALL:
                 LOG_DEBUG_F("Habitat type = TEMPORARY_RAINFALL, Max larval capacity = %f\n", m_max_larval_capacity);
-                m_current_larval_capacity += (float)( localWeather->accumulated_rainfall() * m_max_larval_capacity * params()->lloffset * params()->lloffset - m_current_larval_capacity * exp(LARVAL_HABITAT_FACTOR1 / (localWeather->airtemperature() + CELSIUS_TO_KELVIN)) * LARVAL_HABITAT_FACTOR2 * params()->tempHabitatDecayScalar * sqrt(LARVAL_HABITAT_FACTOR3 / (localWeather->airtemperature() + CELSIUS_TO_KELVIN)) * (1.0f - localWeather->humidity()) * dt );
+                m_current_larval_capacity += float(localWeather->accumulated_rainfall() * m_max_larval_capacity * params()->lloffset * params()->lloffset - m_current_larval_capacity * exp(LARVAL_HABITAT_FACTOR1 / (localWeather->airtemperature() + CELSIUS_TO_KELVIN)) * LARVAL_HABITAT_FACTOR2 * params()->tempHabitatDecayScalar * sqrt(LARVAL_HABITAT_FACTOR3 / (localWeather->airtemperature() + CELSIUS_TO_KELVIN)) * (1.0f - localWeather->humidity()) * dt);
                 break;
 
             case VectorHabitatType::WATER_VEGETATION:
@@ -133,7 +165,7 @@ namespace Kernel
 
             case VectorHabitatType::BRACKISH_SWAMP: 
                 LOG_DEBUG_F("Habitat type = BRACKISH_SWAMP, Max larval capacity = %f\n", m_max_larval_capacity);
-                m_current_larval_capacity += localWeather->accumulated_rainfall() * (float)MM_PER_METER / params()->mmRainfallToFillSwamp * m_max_larval_capacity * params()->lloffset * params()->lloffset - params()->semipermanentHabitatDecayRate * dt * m_current_larval_capacity;
+                m_current_larval_capacity += localWeather->accumulated_rainfall() * float(MM_PER_METER) / params()->mmRainfallToFillSwamp * m_max_larval_capacity * params()->lloffset * params()->lloffset - params()->semipermanentHabitatDecayRate * dt * m_current_larval_capacity;
                 if(m_current_larval_capacity > m_max_larval_capacity * params()->lloffset * params()->lloffset)
                 {
                     m_current_larval_capacity = m_max_larval_capacity * params()->lloffset * params()->lloffset;
@@ -148,7 +180,7 @@ namespace Kernel
     void VectorHabitat::UpdateLarvalProbabilities(float dt, INodeContext* node)
     {
         // TODO: if this querying gets tedious, we can pass it in as an argument from NodeVector?
-        INodeVectorInterventionEffects* invie = NULL;
+        INodeVectorInterventionEffects* invie = nullptr;
         if (s_OK != node->GetEventContext()->QueryInterface(GET_IID(INodeVectorInterventionEffects), (void**)&invie))
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "GetEventContext()", "INodeVectorInterventionEffects", "INodeEventContext" );
@@ -185,13 +217,15 @@ namespace Kernel
         }
         else if(params()->vector_larval_rainfall_mortality == VectorRainfallMortality::SIGMOID_HABITAT_SHIFTING)
         {
-            if( rainfall * MM_PER_METER < params()->larval_rainfall_mortality_threshold * dt * ( (m_max_larval_capacity - m_current_larval_capacity) / m_max_larval_capacity ) )
+            float full_habitat = m_max_larval_capacity * params()->lloffset * params()->lloffset;
+            float fraction_empty = (full_habitat - m_current_larval_capacity) / full_habitat;
+            if( rainfall * MM_PER_METER < params()->larval_rainfall_mortality_threshold * dt * fraction_empty )
             {
                 m_rainfall_mortality = 0;
             }
             else
             {
-                m_rainfall_mortality = ( rainfall * MM_PER_METER - params()->larval_rainfall_mortality_threshold * dt * ( (m_max_larval_capacity - m_current_larval_capacity) / m_max_larval_capacity ) ) / (params()->larval_rainfall_mortality_threshold * dt);
+                m_rainfall_mortality = (rainfall * MM_PER_METER - params()->larval_rainfall_mortality_threshold * dt * fraction_empty) / (params()->larval_rainfall_mortality_threshold * dt);
             }
         }
         else
@@ -320,11 +354,8 @@ namespace Kernel
 
             // Larval competition with Notre Dame larval dynamics
             case LarvalDensityDependence::GRADUAL_INSTAR_SPECIFIC:
-                locallarvalmortality *= exp(previous_larva_count / ( (progress * params()->larvalDensityMortalityScalar + params()->larvalDensityMortalityOffset) * larvalhabitat) );
-                break;
-
             case LarvalDensityDependence::LARVAL_AGE_DENSITY_DEPENDENT_MORTALITY_ONLY:
-                locallarvalmortality *= exp(previous_larva_count / ( progress * params()->larvalDensityMortalityScalar * larvalhabitat) );
+                locallarvalmortality *= exp(previous_larva_count / ( (progress * params()->larvalDensityMortalityScalar + params()->larvalDensityMortalityOffset) * larvalhabitat) );
                 break;
 
             case LarvalDensityDependence::NO_DENSITY_DEPENDENCE:
@@ -352,5 +383,77 @@ namespace Kernel
     const SimulationConfig* VectorHabitat::params() const
     {
         return GET_CONFIGURABLE(SimulationConfig);
+    }
+
+    void VectorHabitat::serialize(IArchive& ar, VectorHabitat* habitat)
+    {
+        ar.startObject();
+            ar.labelElement("m_habitat_type") & (uint32_t&)habitat->m_habitat_type;
+            ar.labelElement("m_max_larval_capacity") & habitat->m_max_larval_capacity;
+            ar.labelElement("m_current_larval_capacity") & habitat->m_current_larval_capacity;
+            ar.labelElement("m_total_larva_count") & habitat->m_total_larva_count;
+            ar.labelElement("m_new_egg_count") & habitat->m_new_egg_count;
+            ar.labelElement("m_oviposition_trap_killing") & habitat->m_oviposition_trap_killing;
+            ar.labelElement("m_artificial_larval_mortality") & habitat->m_artificial_larval_mortality;
+            ar.labelElement("m_larvicide_habitat_scaling") & habitat->m_larvicide_habitat_scaling;
+            ar.labelElement("m_rainfall_mortality") & habitat->m_rainfall_mortality;
+            ar.labelElement("m_egg_crowding_correction") & habitat->m_egg_crowding_correction;
+        ar.endObject();
+    }
+
+    void serialize(IArchive& ar, map<VectorHabitatType::Enum, float>& mapping)
+    {
+        size_t count=  ar.IsWriter() ? mapping.size() : -1;
+
+        ar.startArray(count);
+        if (ar.IsWriter())
+        {
+            for (auto entry : mapping)
+            {
+                ar.startObject();
+                    ar.labelElement("key") & (uint32_t&)entry.first;
+                    ar.labelElement("value") & entry.second;
+                ar.endObject();
+            }
+        }
+        else
+        {
+            for (size_t i = 0; i < count; ++i)
+            {
+                VectorHabitatType::Enum type;
+                float value;
+                ar.startObject();
+                    ar.labelElement("key") & (uint32_t&)type;
+                    ar.labelElement("value") & value;
+                ar.endObject();
+                mapping[type] = value;
+            }
+        }
+        ar.endArray();
+    }
+
+    void VectorHabitat::serialize(IArchive& ar, list<VectorHabitat*>& habitats)
+    {
+        size_t count = ar.IsWriter() ? habitats.size() : -1;
+
+        ar.startArray(count);
+        if (ar.IsWriter())
+        {
+            for (auto habitat : habitats)
+            {
+                serialize(ar, habitat);
+            }
+        }
+        else
+        {
+            habitats.clear();
+            for (size_t i = 0; i < count; ++i)
+            {
+                auto habitat = new VectorHabitat();
+                serialize(ar, habitat);
+                habitats.push_back(habitat);
+            }
+        }
+        ar.endArray();
     }
 }

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,12 +11,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "TBDrugTypeParameters.h"
 
 #include "Exceptions.h"
-#include <algorithm> // for transform
-#include <cctype> // for tolower
+#include "Log.h"
 
 static const char * _module = "TBDTP";
-
-std::map< std::string, const Kernel::TBDrugTypeParameters* > Kernel::TBDrugTypeParameters::_tbdtMap;
 
 namespace Kernel
 {
@@ -50,9 +47,11 @@ namespace Kernel
         TBDrugTypeParameters* params = _new_ TBDrugTypeParameters(tb_drug_name);
         if( !JsonConfigurable::_dryrun )
         {
-            params->Configure( Configuration::CopyFromElement( (*EnvPtr->Config)["TB_Drug_Params"][tb_drug_name.c_str()] ) );
+            auto tmp_config = Configuration::CopyFromElement( (*EnvPtr->Config)["TB_Drug_Params"][tb_drug_name.c_str()] );
+            params->Configure( tmp_config );
+            delete tmp_config;
+            tmp_config = nullptr;
         }
-        _tbdtMap[ tb_drug_name ] = params;
         LOG_DEBUG( "END CreateTBDrugTypeParameters\n" );
         return params;
 

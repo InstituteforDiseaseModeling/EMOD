@@ -3,7 +3,7 @@
     "parameters": {
         "DEMOGRAPHICS": {
             "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
-            "Demographics_Filename": "hint_ageandaccess_demographics.json;hint_ageandaccess_overlay.json",
+            "Demographics_Filenames": [ "hint_ageandaccess_demographics.json", "hint_ageandaccess_overlay.json" ],
             "Enable_Vital_Dynamics": 0,
             "IMMUNITY": {
                 "Acquisition_Blocking_Immunity_Decay_Rate": 0.01,
@@ -36,7 +36,8 @@
             "Enable_Heterogeneous_Intranode_Transmission": 1
         },
         "OUTPUT": {
-            "Enable_Property_Output": 1
+            "Enable_Property_Output": 1,
+            "Enable_Demographics_Reporting": 0
         },
         "PRIMARY": {
             "Config_Name": "HINT_AgeAndAccess_BaselineOutbreak",

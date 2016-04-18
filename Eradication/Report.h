@@ -1,24 +1,18 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #pragma once
 
-#include <list>
 #include <map>
-#include <vector>
-#include <string>
-#include <fstream>
 #include <time.h>
 
-#include "Log.h"
 #include "BaseChannelReport.h"
-#include "BoostLibWrapper.h"
 
 /*
 Flexible aggregator for simulation-wide numeric values. Intended to serve as the mechanism for reporting inset charts.
@@ -39,20 +33,20 @@ public:
     static IReport* CreateReport();
     virtual ~Report() { }
 
-    virtual void BeginTimestep();
-    virtual bool IsCollectingIndividualData( float currentTime, float dt ) const { return true ; } ;
-    virtual void LogIndividualData( Kernel::IndividualHuman * individual );
-    virtual void LogNodeData( Kernel::INodeContext * pNC );
-    virtual void EndTimestep( float currentTime, float dt );
+    virtual void BeginTimestep() override;
+    virtual bool IsCollectingIndividualData( float currentTime, float dt ) const override { return true ; };
+    virtual void LogIndividualData( Kernel::IIndividualHuman* individual ) override;
+    virtual void LogNodeData( Kernel::INodeContext * pNC ) override;
+    virtual void EndTimestep( float currentTime, float dt ) override;
 
 protected:
     Report();
 
-    virtual void populateSummaryDataUnitsMap( std::map<std::string, std::string> &units_map );
-    virtual void postProcessAccumulatedData();
+    virtual void populateSummaryDataUnitsMap( std::map<std::string, std::string> &units_map ) override;
+    virtual void postProcessAccumulatedData() override;
 
     virtual void AddSEIRWUnits( std::map<std::string, std::string> &units_map );
-    virtual void UpdateSEIRW( const Kernel::IndividualHuman * individual, float monte_carlo_weight );
+    virtual void UpdateSEIRW( const Kernel::IIndividualHuman* individual, float monte_carlo_weight );
     virtual void AccumulateSEIRW();
     virtual void NormalizeSEIRWChannels();
 
@@ -65,6 +59,7 @@ protected:
     float countOfExposed;
     float countOfInfectious;
     float countOfRecovered;
+    float countOfImmunized;
     float countOfWaning;
     clock_t last_time;
 
@@ -77,16 +72,11 @@ protected:
     static const std::string Report::_infectious_pop_label;
     static const std::string Report::_recovered_pop_label;
     static const std::string Report::_waning_pop_label;
+    static const std::string Report::_immunized_pop_label;
     static const std::string Report::_new_reported_infections_label;
     static const std::string Report::_cum_reported_infections_label;
     static const std::string Report::_hum_infectious_res_label;
     static const std::string Report::_log_prev_label;
-    static const std::string Report::_prob_new_infection_label;
-
-private:
-#if USE_BOOST_SERIALIZATION
-    friend class ::boost::serialization::access;
-    template<class Archive>
-    friend void serialize(Archive &ar, Report& report, const unsigned int v);
-#endif
+    static const std::string Report::_infection_rate_label;
+    static const std::string Report::_aoi_label;
 };

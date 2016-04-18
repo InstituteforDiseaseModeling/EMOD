@@ -3,7 +3,7 @@
     "parameters": {
         "DEMOGRAPHICS": {
             "Enable_Vital_Dynamics": 0,
-            ".Demographics_Filename": "../../HIV/input/SA_UN_demographics.compiled.json",
+            "Demographics_Filenames": [ "../../HIV/input/SA_UN_demographics.json", "../../HIV/input/PFA_overlay.json", "../../HIV/input/PFA_overlay_marital_only.json" ],
             "MORTALITY": {
                 "Base_Mortality": 0.01, 
                 "Immunity_Mortality_Factor": 0.5
@@ -22,14 +22,6 @@
         "PRIMARY": {
             "Simulation_Duration": 1500, 
             "Config_Name": "13_STI_Marital_Only_No_Disease"
-        }, 
-        "STI": {
-            "Informal_Formation_Rate_Heterosexual": 0.0,
-            "Transitory_Formation_Rate_Heterosexual": 0.0,
-            "Condom_Usage_Probability_in_Marital_Relationships_Early": 0.0,
-            "Condom_Usage_Probability_in_Marital_Relationships_Late": 0.0,
-            "Condom_Usage_Probability_in_Marital_Relationships_Midyear": 2001,
-            "Condom_Usage_Probability_in_Marital_Relationships_Rate": 0
         }
     }
 }

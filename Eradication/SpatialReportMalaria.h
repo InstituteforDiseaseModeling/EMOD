@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -28,6 +28,8 @@ public:
     static IReport* CreateReport();
     virtual ~SpatialReportMalaria() { }
 
+    virtual void Initialize( unsigned int nrmSize );
+
     virtual void LogNodeData( Kernel::INodeContext * pNC );
 
 protected:
@@ -43,12 +45,5 @@ protected:
     ChannelInfo fever_prevalence_info;
     ChannelInfo new_clinical_cases_info;
     ChannelInfo new_severe_cases_info;
-
-private:
-#if USE_BOOST_SERIALIZATION
-    friend class ::boost::serialization::access;
-    template<class Archive>
-    friend void serialize(Archive &ar, SpatialReportMalaria& report, const unsigned int v);
-#endif
 };
 }

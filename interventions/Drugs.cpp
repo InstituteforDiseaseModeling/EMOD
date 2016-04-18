@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,6 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Drugs.h"
 #include "RANDOM.h"
 #include "MathFunctions.h"
+#include "Sigmoid.h"
 #include "SimulationConfig.h"        // Just for PKPDModel parameter (!)
 
 static const char * _module = "GenericDrug";
@@ -88,8 +89,8 @@ namespace Kernel
         }
     }
 
-    GenericDrug::GenericDrug() 
-        : parent(NULL)
+    GenericDrug::GenericDrug()
+        : parent(nullptr)
         , drug_type(0)
         , dosing_type(DrugUsageType::SingleDose)
         , durability_time_profile(PKPDModel::FIXED_DURATION_CONSTANT_EFFECT)
@@ -130,7 +131,7 @@ namespace Kernel
     GenericDrug::SetContextTo(IIndividualHumanContext *context)
     {
         parent = context;
-    } 
+    }
 
     void
     GenericDrug::ConfigureDrugTreatment( IIndividualHumanInterventionsContext * ivc )
@@ -163,7 +164,7 @@ namespace Kernel
         return current_concentration;
     }
 
-    float 
+    float
     GenericDrug::GetDrugCurrentEfficacy() const
     {
         return current_efficacy;
@@ -229,7 +230,7 @@ namespace Kernel
             if ( dosing_timer <= 0 )
             {
                 // DJK: Remove or fix fraction_defaulters.  It only makes sense with remaining_doses=1 <ERAD-1854>
-                if ( fraction_defaulters > 0 && randgen->e() < fraction_defaulters )
+                if( SMART_DRAW( fraction_defaulters ) )
                 {
                     // Assume uniformly distributed dropout times, cf. Fig 3 from Kruk 2008 Trop Med Int Health 13:703
                     fast_component = Probability::getInstance()->fromDistribution( DistributionFunction::UNIFORM_DURATION, 1, fast_decay_time_constant );
@@ -276,7 +277,7 @@ namespace Kernel
                 if ( fast_decay_time_constant == slow_decay_time_constant )
                 {
                     // DJK: Should be easier to configure first order pkpd (see <ERAD-1853>)
-                    slow_component_fraction = 0;   
+                    slow_component_fraction = 0;
                 }
                 else
                 {
@@ -284,7 +285,7 @@ namespace Kernel
                                        (slow_decay_time_constant - fast_decay_time_constant);
                     LOG_DEBUG_F("fast_component_fraction = %0.2f for Tfast=%0.2f, Tslow=%0.2f, Vd=%0.2f\n", 1-slow_component_fraction, fast_decay_time_constant, slow_decay_time_constant, Vd);
                 }
-                
+
                 // DJK: Why not Cmax - Cmin? <ERAD-1855>
                 fast_component += Cmax*(1-slow_component_fraction);         // Central 1=primary=fast, 2=secondary=slow
                 slow_component += Cmax*slow_component_fraction;
@@ -300,7 +301,7 @@ namespace Kernel
         if ( fast_component > 0 || slow_component > 0 )
         {
             if ( fast_decay_time_constant > 0 && fast_component > 0)
-            { 
+            {
                 fast_component *= exp(-dt/fast_decay_time_constant);
             }
             if ( slow_decay_time_constant > 0 && slow_component > 0)
@@ -337,41 +338,31 @@ namespace Kernel
     {
         expired = true;
     }
-}
 
-namespace Kernel {
-    REGISTER_SERIALIZATION_VOID_CAST(GenericDrug, IDistributableIntervention)
-}
+    REGISTER_SERIALIZABLE(GenericDrug);
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::GenericDrug)
-namespace Kernel {
-    template <typename Archive>
-    void serialize(Archive &ar, GenericDrug& drug, const unsigned int v)
+    void GenericDrug::serialize(IArchive& ar, GenericDrug* obj)
     {
-        ar & drug.drug_type;
-        ar & drug.dosing_type;
-        ar & drug.durability_time_profile;
-        ar & drug.fast_decay_time_constant;
-        ar & drug.slow_decay_time_constant;
-        ar & drug.dosing_timer;        //time to next dose for ongoing treatment
-        ar & drug.remaining_doses;     //number of doses left in treatment
-        ar & drug.time_between_doses;
-        ar & drug.fast_component;
-        ar & drug.slow_component;
-        ar & drug.current_efficacy;
-        ar & drug.current_concentration;
-        ar & drug.current_reducedacquire;
-        ar & drug.current_reducedtransmit;
-        ar & drug.pk_rate_mod;
-        ar & drug.Cmax;
-        ar & drug.Vd;
-        ar & drug.drug_c50;
-        ar & drug.fraction_defaulters;
-
-        ar & boost::serialization::base_object<BaseIntervention>(drug);
+        BaseIntervention::serialize( ar, obj );
+        GenericDrug& drug = *obj;
+        ar.labelElement("drug_type") & drug.drug_type;
+        ar.labelElement("dosing_type") & (uint32_t&)drug.dosing_type;
+        ar.labelElement("durability_time_profile") & (uint32_t&)drug.durability_time_profile;
+        ar.labelElement("fast_decay_time_constant") & drug.fast_decay_time_constant;
+        ar.labelElement("slow_decay_time_constant") & drug.slow_decay_time_constant;
+        ar.labelElement("dosing_timer") & drug.dosing_timer;
+        ar.labelElement("remaining_doses") & drug.remaining_doses;
+        ar.labelElement("time_between_doses") & drug.time_between_doses;
+        ar.labelElement("fast_component") & drug.fast_component;
+        ar.labelElement("slow_component") & drug.slow_component;
+        ar.labelElement("current_efficacy") & drug.current_efficacy;
+        ar.labelElement("current_concentration") & drug.current_concentration;
+        ar.labelElement("current_reducedacquire") & drug.current_reducedacquire;
+        ar.labelElement("current_reducedtransmit") & drug.current_reducedtransmit;
+        ar.labelElement("pk_rate_mod") & drug.pk_rate_mod;
+        ar.labelElement("Cmax") & drug.Cmax;
+        ar.labelElement("Vd") & drug.Vd;
+        ar.labelElement("drug_c50") & drug.drug_c50;
+        ar.labelElement("fraction_defaulters") & drug.fraction_defaulters;
     }
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, Kernel::GenericDrug&, unsigned int);
-    template void serialize( boost::mpi::packed_skeleton_oarchive&, Kernel::GenericDrug&, unsigned int);
 }
-#endif

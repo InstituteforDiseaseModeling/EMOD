@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -70,17 +70,5 @@ namespace Kernel
 
     private:
         void RoomUpDown(const float Ta, const float Tr, float &RoomUp, float &RoomDown);
-
-#if USE_BOOST_SERIALIZATION
-        ///////////////////////////////////////////////////////////////////////////
-        // Serialization
-        friend class ::boost::serialization::access;
-
-        template<class Archive>
-        friend void serialize(Archive & ar, ClimateKoppen & climate, const unsigned int file_version);
-        FORCE_POLYMORPHIC()
-        ///////////////////////////////////////////////////////////////////////////
-#endif
     };
 }
-

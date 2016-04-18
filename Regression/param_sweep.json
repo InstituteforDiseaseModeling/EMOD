@@ -1,8 +1,8 @@
 {
     "sweep" : 
     {
-        "path" : "STI/51_STI_Transitory_Only_Assortivity_Prop_Locations",
+        "path": "43_Vector_Garki_MultiCore_VectorMigration",
         "param_name" : "Run_Number",
-        "param_values" : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10  ]
+        "param_values" : [ 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144 ]
     }
 }

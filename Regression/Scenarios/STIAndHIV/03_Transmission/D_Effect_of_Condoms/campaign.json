@@ -34,6 +34,7 @@
                 "Intervention_Config":
                 {
                     "class": "STIBarrier",
+                    "Cost_To_Consumer": 0.0,
                     "Early": 0.5,
                     "Late": 1,
                     "MidYear": 2030,

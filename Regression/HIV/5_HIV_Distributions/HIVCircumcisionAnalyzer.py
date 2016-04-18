@@ -19,24 +19,35 @@ class HIVCircumcisionAnalyzer():
         self.fun = {}   # truth function
         self.results = {} # Place to store the boolean validity and other statistics of sub-tests
 
-    def ztest(self, x, n, p, alpha):
-
-        if n*p < 10 or n*(1-p) < 10:
-            print "WARNING: not enough samples to use a Z-Test, marking as Fail!"
-            return {'Valid': False, 'Test_Statistic': None, 'P_Value': None}
-
-        p_hat = x / float(n)
-        std = math.sqrt( p*(1-p)/float(n) )
-        z_score = (p_hat - p) / std
-        p_val = 2 * sps.norm.cdf(-abs(z_score))
+    def binom_test(self, x, n, p, alpha):
+        p_val = sps.binom_test(x, n, p)
 
         if self.verbose:
             print p_val
 
         if p_val < alpha:
-            return {'Valid': False, 'Test_Statistic': z_score, 'P_Value': p_val}
+            return {'Valid': False, 'Test_Statistic': x/n, 'P_Value': p_val}
 
-        return {'Valid': True, 'Test_Statistic': z_score, 'P_Value': p_val}
+        return {'Valid': True, 'Test_Statistic': x/n, 'P_Value': p_val}
+
+#   def ztest(self, x, n, p, alpha):
+
+#       if n*p < 10 or n*(1-p) < 10:
+#           print "WARNING: not enough samples to use a Z-Test, marking as Fail!"
+#           return {'Valid': False, 'Test_Statistic': None, 'P_Value': None}
+
+#       p_hat = x / float(n)
+#       std = math.sqrt( p*(1-p)/float(n) )
+#       z_score = (p_hat - p) / std
+#       p_val = 2 * sps.norm.cdf(-abs(z_score))
+
+#       if self.verbose:
+#           print p_val
+
+#       if p_val < alpha:
+#           return {'Valid': False, 'Test_Statistic': z_score, 'P_Value': p_val}
+
+#       return {'Valid': True, 'Test_Statistic': z_score, 'P_Value': p_val}
 
     def map(self, output_data):
         emit_data = {}
@@ -86,7 +97,11 @@ class HIVCircumcisionAnalyzer():
             num_circ = len( circ )
             num_males = len( is_circ )
 
-            self.results[target_mc_frac] = self.ztest( num_circ, num_males, target_mc_frac, self.alpha )
+            # Underlying distribution is binomial.  Why using z-test?
+# For large samples, can use Pearson's chi-squared test (and the G-test) / Wikipedia
+
+            #self.results[target_mc_frac] = self.ztest( num_circ, num_males, target_mc_frac, self.alpha )
+            self.results[target_mc_frac] = self.binom_test( num_circ, num_males, target_mc_frac, self.alpha )
 
     def finalize(self):
         tmp = [ self.results[x] for x in self.results]

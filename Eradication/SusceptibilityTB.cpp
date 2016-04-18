@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,21 +11,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #ifdef ENABLE_TB
 
-//for age dependent mod_mortality, defined as piecewise function of base mod_mortalty up to the MOD_MORTALITY_MIN_AGE
-// then for older adults defined as a sigmoid using threshold and invwidth
-#define MOD_MORTALITY_MIN_AGE (50)
-#define MOD_MORTALITY_THRESHOLD (55)
-#define MOD_MORTALITY_INVWIDTH (15)
-
-//Define child age
-#define CHILD_AGE_YEARS (15.0f)
-
 #include "SusceptibilityTB.h"
 #include "Common.h"
 #include "RANDOM.h"
-#include "MathFunctions.h" //for Sigmoid in modmortality
 #ifdef ENABLE_TBHIV
 #include "IndividualCoinfection.h"
+#else
+#include "Individual.h"
 #endif
 
 static const char* _module = "SusceptibilityTB";
@@ -121,7 +113,8 @@ namespace Kernel
     {
         float fast_fraction = 0;
 
-        if(age < CHILD_AGE_YEARS * DAYSPERYEAR)
+        float age_years = age / DAYSPERYEAR ;
+        if( !IndividualHumanConfig::IsAdultAge( age_years ) )
             fast_fraction = TB_fast_progressor_fraction_child;
         else
             fast_fraction = TB_fast_progressor_fraction_adult;
@@ -133,7 +126,8 @@ namespace Kernel
     {
         float smear_positive_fraction = 0;
 
-        if(age < CHILD_AGE_YEARS * DAYSPERYEAR)
+        float age_years = age / DAYSPERYEAR ;
+        if( !IndividualHumanConfig::IsAdultAge( age_years ) )
             smear_positive_fraction = TB_smear_positive_fraction_child;
         else
             smear_positive_fraction = TB_smear_positive_fraction_adult;
@@ -145,7 +139,8 @@ namespace Kernel
     {
         float extrapulmonary_fraction = 0;
 
-        if(age < CHILD_AGE_YEARS* DAYSPERYEAR)
+        float age_years = age / DAYSPERYEAR ;
+        if( !IndividualHumanConfig::IsAdultAge( age_years ) )
             extrapulmonary_fraction = TB_extrapulmonary_fraction_child;
         else
             extrapulmonary_fraction = TB_extrapulmonary_fraction_adult;
@@ -210,33 +205,19 @@ namespace Kernel
     }
          
     SusceptibilityTB::SusceptibilityTB(IIndividualHumanContext *context) : SusceptibilityAirborne(context) { }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-    BOOST_CLASS_EXPORT(Kernel::SusceptibilityTB)
-namespace Kernel
-{
-    template<class Archive>
-    void serialize(Archive & ar, SusceptibilityTB &sus, const unsigned int  file_version )
+    REGISTER_SERIALIZABLE(SusceptibilityTB);
+
+    void SusceptibilityTB::serialize(IArchive& ar, SusceptibilityTB* obj)
     {
-        // Serialize fields
-        ar & sus.m_is_immune_competent;
-        ar & sus.m_is_immune;
-        ar & sus.m_current_infections;  
-        ar & sus.m_cough_infectiousness;  
-        // Serialize base class
-        ar & boost::serialization::base_object<Kernel::SusceptibilityAirborne>(sus);
+        SusceptibilityAirborne::serialize(ar, obj);
+        SusceptibilityTB& susceptibility = *obj;
+        ar.labelElement("Flag_use_CD4_for_act") & susceptibility.Flag_use_CD4_for_act;  // Boost serialization didn't include this member.
+        ar.labelElement("m_is_immune_competent") & susceptibility.m_is_immune_competent;
+        ar.labelElement("m_is_immune") & susceptibility.m_is_immune;
+        ar.labelElement("m_current_infections") & susceptibility.m_current_infections;
+        ar.labelElement("m_cough_infectiousness") & susceptibility.m_cough_infectiousness;
     }
-    template void serialize( boost::archive::binary_oarchive&, Kernel::SusceptibilityTB&, unsigned int);
-    template void serialize( boost::mpi::packed_skeleton_oarchive&, Kernel::SusceptibilityTB&, unsigned int);
-    template void serialize( boost::mpi::detail::content_oarchive&, Kernel::SusceptibilityTB&, unsigned int);
-    template void serialize( boost::mpi::packed_oarchive&, Kernel::SusceptibilityTB&, unsigned int);
-    template void serialize( boost::mpi::detail::mpi_datatype_oarchive&, Kernel::SusceptibilityTB&, unsigned int);
-    template void serialize( boost::mpi::packed_iarchive&, Kernel::SusceptibilityTB&, unsigned int);
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, Kernel::SusceptibilityTB&, unsigned int);
-    template void serialize( boost::archive::binary_iarchive&, Kernel::SusceptibilityTB&, unsigned int);
-
 }
-#endif
 
 #endif // ENABLE_TB

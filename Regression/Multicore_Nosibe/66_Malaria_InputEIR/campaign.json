@@ -1,0 +1,23 @@
+{
+     "Use_Defaults": 1,
+     "Campaign_Name": "Constant EIR challenge", 
+     "Events": [
+          {
+               "Event_Name": "Input EIR intervention", 
+               "Start_Day": 0, 
+               "class": "CampaignEvent", 
+               "Event_Coordinator_Config": { 
+                    "Number_Repetitions": 1, 
+                    "class": "StandardInterventionDistributionEventCoordinator", 
+                    "Intervention_Config": {
+                         "Age_Dependence": "SURFACE_AREA_DEPENDENT",
+                         "Monthly_EIR": [0.39, 0.19, 0.77, 0, 0, 0, 6.4, 2.2, 4.7, 3.9, 0.87, 0.58],
+                         "class": "InputEIR"
+                    }
+               }, 
+               "Nodeset_Config": {
+                    "class": "NodeSetAll"
+               }
+         }
+    ]
+}

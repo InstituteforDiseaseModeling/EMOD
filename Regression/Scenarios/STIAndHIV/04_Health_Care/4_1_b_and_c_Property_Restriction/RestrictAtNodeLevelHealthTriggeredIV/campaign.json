@@ -38,7 +38,8 @@
                     ],
 
                     "Actual_IndividualIntervention_Config": {
-                        "class": "MaleCircumcision"
+                        "class": "MaleCircumcision",
+                        "Circumcision_Reduced_Acquire": 0.6
                     }
                 }
             }

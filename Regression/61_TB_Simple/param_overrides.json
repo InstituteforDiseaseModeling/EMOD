@@ -1,9 +1,9 @@
 {
-    "Default_Config_Path":"defaults\\tb_default_config.json",
+    "Default_Config_Path":"defaults/tb_default_config.json",
     "parameters":{
         "DEMOGRAPHICS":{
             "Birth_Rate_Dependence":"INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE",
-            "Demographics_Filename":"Bihar_single_node_demographics.compiled.json",
+            "Demographics_Filenames":["Bihar_single_node_demographics.compiled.json"],
             "Enable_Birth":0,
             "Enable_Demographics_Gender":0,
             "IMMUNITY":{
@@ -35,7 +35,6 @@
                 "Base_Infectivity":0.00025
             }
         },
-        "Demographics_Filename_35":"Bihar_single_node_demographics.compiled.json;Bihar_single_node_demographics_complex_mortality.compiled.json",
         "Enable_Timestep_Channel_In_Report":0,
         "MIGRATION":{
             "Roundtrip_Waypoints":1

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -26,14 +26,15 @@ static const std::string _report_name = "VectorSpeciesReport.json";   // Report 
 #ifndef _WIN32
 #define _countof(a) (sizeof(a)/sizeof(*(a)))
 #endif
+namespace Kernel {
 
 Kernel::IReport*
-VectorSpeciesReport::CreateReport( const JsonConfigurable::tDynamicStringSet& rVectorSpeciesNames )
+VectorSpeciesReport::CreateReport( const Kernel::jsonConfigurable::tDynamicStringSet& rVectorSpeciesNames )
 {
     return new VectorSpeciesReport( rVectorSpeciesNames );
 }
 
-VectorSpeciesReport::VectorSpeciesReport( const JsonConfigurable::tDynamicStringSet& rVectorSpeciesNames )
+VectorSpeciesReport::VectorSpeciesReport( const Kernel::jsonConfigurable::tDynamicStringSet& rVectorSpeciesNames )
     : BinnedReport()
     , adult_vectors(nullptr)
     , infectious_vectors(nullptr)
@@ -64,7 +65,8 @@ VectorSpeciesReport::VectorSpeciesReport( const JsonConfigurable::tDynamicString
 
     // push back species binning
     values_per_axis.push_back( std::vector<float>( rVectorSpeciesNames.size(), 0 ) ); // not going to use this...
-    friendly_names_per_axis.push_back( std::vector<std::string>( rVectorSpeciesNames.begin(), rVectorSpeciesNames.end() ) );
+    // friendly_names_per_axis.push_back( std::vector<std::string>( rVectorSpeciesNames.begin(), rVectorSpeciesNames.end() ) );
+    _age_bin_friendly_names = std::vector<std::string>( rVectorSpeciesNames.begin(), rVectorSpeciesNames.end() );
 }
 
 VectorSpeciesReport::~VectorSpeciesReport()
@@ -123,7 +125,7 @@ void VectorSpeciesReport::postProcessAccumulatedData()
     normalizeChannel("Daily HBR",             (float)_nrmSize);
 }
 
-void VectorSpeciesReport::LogIndividualData( Kernel::IndividualHuman * individual )
+void VectorSpeciesReport::LogIndividualData( Kernel::IIndividualHuman* individual )
 {
     LOG_DEBUG( "VectorSpeciesReport::LogIndividualData\n" );
 }
@@ -133,7 +135,7 @@ void VectorSpeciesReport::LogNodeData( Kernel::INodeContext * pNC )
     LOG_DEBUG( "VectorSpeciesReport::LogNodeData.\n" );
 
     int   bin_index = 0;
-    Kernel::INodeVector * pNV = NULL;
+    Kernel::INodeVector * pNV = nullptr;
     if( pNC->QueryInterface( GET_IID( Kernel::INodeVector ), (void**) &pNV ) != Kernel::s_OK )
     {
         throw Kernel::QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNC", "INodeVector", "INodeContext" );
@@ -151,4 +153,6 @@ void VectorSpeciesReport::LogNodeData( Kernel::INodeContext * pNC )
         daily_hbr[bin_index]          +=          vectorpopulation->GetHBRByPool(Kernel::VectorPoolIdEnum::BOTH_VECTOR_POOLS);
         bin_index++;
     }
+}
+
 }

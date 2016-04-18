@@ -20,10 +20,10 @@
             }
         },
         "DEMOGRAPHICS": {
-            "Demographics_Filename": "Muheza_single_node_demographics.json"
+            "Demographics_Filenames": ["Muheza_single_node_demographics.json"]
         },
         "PRIMARY": {
-            "Config_Name": "PrimaryScenarios_3B_Muheza_Vector",
+            "Config_Name": "VectorAndMalaria_3B_Muheza_Vector",
             "Geography": "Muheza",
             "Run_Number": 1,
             "Simulation_Duration": 3650,

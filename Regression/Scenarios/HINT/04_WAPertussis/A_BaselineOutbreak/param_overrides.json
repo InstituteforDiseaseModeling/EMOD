@@ -2,7 +2,7 @@
     "Default_Config_Path": "defaults/generic_scenario_default_config.json",
     "parameters": {
         "DEMOGRAPHICS": {
-            "Demographics_Filename": "hint_wapertussis_demographics.json;hint_wapertussis_demographics_overlay.json",
+            "Demographics_Filenames": [ "hint_wapertussis_demographics.json", "hint_wapertussis_demographics_overlay.json" ],
             "IMMUNITY": {
                 "Acquisition_Blocking_Immunity_Decay_Rate": 0.00017,
                 "Acquisition_Blocking_Immunity_Duration_Before_Decay": 1460,
@@ -39,6 +39,10 @@
                 "Enable_Air_Migration": 0
             },
             "Enable_Migration_Heterogeneity": 1,
+            "Enable_Family_Migration": 0, 
+            "Family_Migration_Filename": "", 
+            "Family_Migration_Roundtrip_Duration": 0.0,
+            "x_Family_Migration": 1,
             "LOCAL": {
                 "Enable_Local_Migration": 0,
                 "Local_Migration_Filename": "",

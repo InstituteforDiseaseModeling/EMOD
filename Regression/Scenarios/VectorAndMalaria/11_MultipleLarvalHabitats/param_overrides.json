@@ -11,10 +11,10 @@
             "Relative_Humidity_Filename": "Namawala_single_node_relative_humidity_daily.bin"
         },
         "DEMOGRAPHICS": {
-            "Demographics_Filename": "Namawala_single_node_demographics.json"
+            "Demographics_Filenames": ["Namawala_single_node_demographics.json"]
         },
         "PRIMARY": {
-            "Config_Name": "PrimaryScenarios_11_MultipleLarvalHabitats",
+            "Config_Name": "VectorAndMalaria_11_MultipleLarvalHabitats",
             "Geography": "Namawala",
             "Run_Number": 1,
             "Simulation_Duration": 730,
@@ -28,15 +28,11 @@
                 ],
                 "Vector_Species_Params": {
                     "arabiensis": {
-                        "Habitat_Type": [
-                            "TEMPORARY_RAINFALL", 
-                            "WATER_VEGETATION"
-                        ], 
-                        "Immature_Duration": 2,
-                        "Required_Habitat_Factor": [
-                            11250000000, 
-                            6000000000
-                        ]
+                        "Larval_Habitat_Types": {
+                            "TEMPORARY_RAINFALL": 11250000000, 
+                            "WATER_VEGETATION": 6000000000
+                        }, 
+                        "Immature_Duration": 2
                     },
                     "funestus": {
                         "Immature_Duration": 2

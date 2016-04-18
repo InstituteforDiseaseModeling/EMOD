@@ -1,16 +1,16 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 #include "ReportVector.h" // for base class
 #include "Log.h" // for base class
-#include "NodeVector.h"
+#include "VectorContexts.h"
 #include "VectorPopulation.h"
 
 static const char * _module = "VectorReporter";
@@ -66,7 +66,7 @@ ReportVector::LogNodeData(
     float daily_eir          = 0;
     float daily_hbr          = 0;
 
-    INodeVector* pNV = NULL;
+    INodeVector* pNV = nullptr;
     if( pNC->QueryInterface( GET_IID( INodeVector ), (void**) & pNV ) != s_OK )
     {
         throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNC", "INodeVector", "INodeContext" );
@@ -88,15 +88,5 @@ ReportVector::LogNodeData(
     Accumulate(_daily_eir_label,             daily_eir);
     Accumulate(_daily_bites_per_human_label, daily_hbr);
 }
-
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(ReportVector)
-template<class Archive>
-void serialize(Archive &ar, ReportVector& report, const unsigned int v)
-{
-    boost::serialization::void_cast_register<ReportVector,IReport>();
-    ar &boost::serialization::base_object<Report>(report);
-}
-#endif
 
 }

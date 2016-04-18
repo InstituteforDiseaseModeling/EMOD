@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 #include "stdafx.h"
@@ -41,23 +41,27 @@ SUITE(StiIsPostDebutTest)
             , m_pSimulationConfig( new SimulationConfig() )
             //, m_Diag()
         {
+            JsonConfigurable::ClearMissingParameters();
+            Environment::Finalize();
+            Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
+            Environment::setSimulationConfig( m_pSimulationConfig );
+
             m_InterventionsContext.setCascadeState( "not_set" );
             m_InterventionsContext.SetContextTo( &m_Human );
 
-            Environment::setSimulationConfig( m_pSimulationConfig );
             m_pSimulationConfig->listed_events.insert( "Births"   );
             m_pSimulationConfig->listed_events.insert( "NonDiseaseDeaths" );
 
-			m_pDiag = new STIIsPostDebut();
-			m_pDiag->SetContextTo( &m_Human );
+            m_pDiag = new STIIsPostDebut();
+            m_pDiag->SetContextTo( &m_Human );
         }
 
         ~DiagnosticFixture()
         {
             m_pSimulationConfig->listed_events.clear();
             delete m_pSimulationConfig;
-            Environment::setSimulationConfig( nullptr );
-			delete m_pDiag;
+            Environment::Finalize();
+            delete m_pDiag;
         }
     };
 

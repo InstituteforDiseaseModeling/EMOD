@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -35,11 +35,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "TBDrugTypeParameters.h"
 #endif
 
-#ifndef DISABLE_HIV
-#include "IRelationship.h"
-#endif
-
-// This macro, GET_CONFIGURABLE(Category), is the convenient and fast way to access the SimulationConfig parameters 
+// This macro, GET_CONFIGURABLE(Category), is the convenient and fast way to access the SimulationConfig parameters
 // within monolithic executable Eradication.exe.
 // To access the same SimulationConfig instance from EModule (Dlls/so), use the IGlobalContext method
 // GetSimulationConfigObj() via emodule's context QI's return for IGlobalContext interface
@@ -49,14 +45,14 @@ using namespace std;
 
 namespace Kernel
 {
-    class MalariaDrugTypeParameters; 
+    class MalariaDrugTypeParameters;
     class SimulationConfig;
 
     class ISimulationConfigFactory
     {
     public:
         virtual void Register(string classname, instantiator_function_t _if) = 0;
-    };            
+    };
 
     class IDMAPI SimulationConfigFactory : public ISimulationConfigFactory
     {
@@ -75,9 +71,9 @@ namespace Kernel
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// SimulationConfig Class Layout Special Notes 
-// Note 1: 
-// All non-primitive objects on the stack (like STL or user-defined type) have to be at the very last 
+// SimulationConfig Class Layout Special Notes
+// Note 1:
+// All non-primitive objects on the stack (like STL or user-defined type) have to be at the very last
 // for the primitive objects in the SimulationConfig object crossing the DLL/EModule boundary
 // without affecting the memory image and therefore its member values
 // Note 2:
@@ -92,16 +88,17 @@ namespace Kernel
 
     public:
         DECLARE_CONFIGURED(SimulationConfig)
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
+        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
 
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
-        JsonConfigurable::tDynamicStringSet listed_events;
+        jsonConfigurable::tDynamicStringSet listed_events;
 #pragma warning( pop )
         // Enum type name                                    Enum variable name                                name in config.json
         //
         DistributionType::Enum                               age_initialization_distribution_type;             // Age_Initialization_Distribution_Type
+        DistributionType::Enum                               immunity_initialization_distribution_type;        // Immunity_Initialization_Distribution_Type
         EggHatchDelayDist::Enum                              egg_hatch_delay_dist;                             // eggHatchDelayDist
         EggSaturation::Enum                                  egg_saturation;                                   // eggSaturation
         EvolutionPolioClockType::Enum                        evolution_polio_clock_type;                       // evolution_polio_clock_type
@@ -122,12 +119,10 @@ namespace Kernel
         VectorSugarFeeding::Enum                             vector_sugar_feeding;                             // vectorSugarFeeding
         VectorRainfallMortality::Enum                        vector_larval_rainfall_mortality;                 // vectorLarvalRainfallMortality
         HEGModel::Enum                                       heg_model;                                        //HEGModel
-        VitalBirthDependence::Enum                           vital_birth_dependence;                           // Vital_Birth_Dependence
         VitalDeathDependence::Enum                           vital_death_dependence;                           // Vital_Death_Dependence
 
         float susceptibility_scaling_rate;     // Susceptibility_Scaling_Rate, only for Susceptibility_Scale_Type = *_FUNCTION_OF_TIME
-
-        bool demographic_tracking;              // from Simulation base class
+        float susceptibility_scaling_intercept;
 
         bool  vector_aging;                     // From SimulationVector
 
@@ -139,7 +134,6 @@ namespace Kernel
         float HEGfecundityLimiting;
         float human_feeding_mortality;
 
-        bool enable_immunity_initialization_distribution;   // toggles/flags
 
         // suscept malaria (TODO: these can probably move to SusceptibilityMalariaConfig as well, as long as the parasiteSmearSensitivity usage in IndividualHumanMalaria can be addressed)
         float parasiteSmearSensitivity;
@@ -164,6 +158,8 @@ namespace Kernel
         float larvalDensityMortalityOffset;
 
         bool demographics_initial;
+        int default_torus_size;
+        int default_node_population;
 
         float lloffset; // half the size of a grid edge in degrees, set by SetFlags()
 
@@ -173,7 +169,7 @@ namespace Kernel
         // parameters for individual
         bool vital_dynamics;
         bool vital_disease_mortality;
-        
+
         int infection_updates_per_tstep;
         bool interventions;
 
@@ -280,29 +276,22 @@ namespace Kernel
         int vaccine_genome_OPV3;
 #endif
 #ifdef ENABLE_TB
-        JsonConfigurable::tDynamicStringSet tb_drug_names_for_this_sim;
+        jsonConfigurable::tDynamicStringSet tb_drug_names_for_this_sim;
         std::map< std::string, TBDrugTypeParameters * > TBDrugMap;
 #endif
+#ifndef DISABLE_STI
         // STI: these will all move to IndividualHumanSTIConfig soon.
         float shortTermRelationshipLength;
         float concurrentRelationshipLength;
         float prob_super_spreader;
         bool  enable_coital_dilution;
 
-
-        std::map< RelationshipType::Enum, float > coital_act_rate;
-
         float coital_dilution_2_partners;
         float coital_dilution_3_partners;
         float coital_dilution_4_plus_partners;
 
-        float maritalRel_inv_kappa;
-        float maritalRel_lambda;
-        float informalRel_inv_kappa;
-        float informalRel_lambda;
-        float transitoryRel_inv_kappa;
-        float transitoryRel_lambda;
 
+#ifndef DISABLE_HIV
         bool  Enable_cd4_dep_prog;
         int num_cd4_time_steps;
         float cd4_time_step;
@@ -311,10 +300,12 @@ namespace Kernel
 
         float days_between_symptomatic_and_death_lambda;
         float days_between_symptomatic_and_death_inv_kappa;
+#endif // DISABLE_HIV
+#endif // DISABLE_STI
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Important Note: 
-        // All static STL objects have to be at the very last 
+        // Important Note:
+        // All static STL objects have to be at the very last
         // for the SimulationConfig object crossing the DLL/EModule boundary
         // without affecting the memory layout and therefore its member values
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -330,7 +321,7 @@ namespace Kernel
 
 #endif
 
-        JsonConfigurable::tDynamicStringSet vector_species_names;
+        jsonConfigurable::tDynamicStringSet vector_species_names;
 
         std::string ConfigName;
         std::string airmig_filename;
@@ -362,20 +353,13 @@ namespace Kernel
 
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
-    protected:
         std::map< std::string, VectorSpeciesParameters * > vspMap;
         std::map< std::string, MalariaDrugTypeParameters * > MalariaDrugMap;
+    protected:
 #pragma warning( pop )
 
     private: // for serialization to work
 
         const Configuration* m_jsonConfig;
-
-#if USE_BOOST_SERIALIZATION
-        friend class boost::serialization::access;    
-        template<class Archive>
-        friend void serialize(Archive & ar, SimulationConfig& configs, const unsigned int /* file_version */);
-        FORCE_POLYMORPHIC()
-#endif
     };
 }

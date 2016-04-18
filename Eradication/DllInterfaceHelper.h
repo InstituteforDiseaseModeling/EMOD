@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -14,6 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Environment.h"
 #include "RANDOM.h"
 #include "IReport.h"
+#include "NoCrtWarnings.h"
 
 #define DLL_LOG_F(lvl, x, ...)   do { if((EnvPtr !=nullptr) && EnvPtr->Log->CheckLogLevel(Logger::lvl, "DllInterfaceHelper"))  EnvPtr->Log->LogF(Logger::lvl, "DllInterfaceHelper", x, ##__VA_ARGS__); } while(0)
 
@@ -26,8 +27,8 @@ namespace Kernel
         DllInterfaceHelper( const char* rTypeName, 
                             const char** simTypes,
                             report_instantiator_function_t rif = nullptr )
-            //: RNG( nullptr )
-            : m_TypeName( rTypeName )
+            : m_RNG( nullptr )
+            , m_TypeName( rTypeName )
             , m_SupportedSimTypes( simTypes )
             , m_ReportInstantiatorFunc( rif )
         {
@@ -40,14 +41,10 @@ namespace Kernel
             ProgDllVersion pv;
             DLL_LOG_F(INFO,"GetVersion called with ver=%s for %s\n", pv.getVersion(), m_TypeName);
             if (sVer)
-			{
-#ifdef WIN32
+            {
                 int length = strlen(pv.getVersion()) + 1 ;
-				strcpy_s(sVer, length, pv.getVersion());
-#else
-				strcpy(sVer, pv.getVersion());
-#endif
-			}
+                strcpy_s(sVer, length, pv.getVersion());
+            }
             return sVer;
         };
 
@@ -59,11 +56,7 @@ namespace Kernel
                 // allocation will be freed by the caller
                 int length = strlen(m_SupportedSimTypes[i]) + 1 ;
                 simTypes[i] = new char[length];
-#ifdef WIN32
                 strcpy_s(simTypes[i], length, m_SupportedSimTypes[i]);
-#else
-                strcpy(simTypes[i], _sim_types[i]);
-#endif
                 i++;
             }
             simTypes[i] = NULL;
@@ -77,11 +70,12 @@ namespace Kernel
 
         void GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         {
-            DLL_LOG_F( INFO, "GetReportInstantiator called for %s", m_TypeName );
+            DLL_LOG_F( INFO, "GetReportInstantiator called for %s\n", m_TypeName );
             *pif = m_ReportInstantiatorFunc ;
         };
 
-        RANDOMBASE * RNG;
+        RANDOMBASE* GetRandomNumberGenerator() { return m_RNG; };
+
     private:
         void CreateRandomNumberGenerator( const Environment* pEnv )
         {
@@ -89,9 +83,10 @@ namespace Kernel
             uint16_t randomseed[2];
             randomseed[0] = (uint16_t) run_number;
             randomseed[1] = (uint16_t) pEnv->MPI.Rank;
-            RNG = new PSEUDO_DES(*((uint32_t*) randomseed));
+            m_RNG = new PSEUDO_DES(*((uint32_t*) randomseed));
         }
 
+        RANDOMBASE * m_RNG;
         const char* m_TypeName ;
         const char** m_SupportedSimTypes ;
         report_instantiator_function_t m_ReportInstantiatorFunc ;

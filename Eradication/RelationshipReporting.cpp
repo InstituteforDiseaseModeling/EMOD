@@ -1,20 +1,20 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 
 #include "RelationshipReporting.h"
-#include "Individual.h"
+#include "IIndividualHuman.h"
 #include "IIndividualHumanSTI.h"
 #include "IIndividualHumanHIV.h"
 #include "InfectionHIV.h"
-#include "HIVInterventionsContainer.h"
+#include "IHIVInterventionsContainer.h"
 
 static const char* _module = "RelationshipReporting";
 
@@ -42,6 +42,7 @@ namespace Kernel
     {
         std::ostringstream header;
         header << "Time,"
+               << "Node_ID,"
                << "Rel_ID,"
                << "A_ID,"
                << "B_ID,"
@@ -90,6 +91,12 @@ namespace Kernel
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "sti_B", "IndividualHumanSTI", "IIndividualHuman" );
         }
 
+        // --------------------------------------------------------
+        // --- Assuming that the individuals in a relationship
+        // --- must be in the same node.
+        // --------------------------------------------------------
+        ExternalNodeId_t node_id = ih_A->GetParent()->GetExternalID();
+
         bool infected_A = sti_A->IsInfected();
         int hiv_infection_stage_A = -1;
         bool On_ART_A = false;
@@ -118,11 +125,12 @@ namespace Kernel
         const char* gender_B = Gender::pairs::lookup_key( ih_B->GetGender() );
 
         line << time << ','                             // Time
-             << pRel->GetId() << ','                    // Rel_ID 
-             << pRel->GetMalePartnerId().data << ','        // A_ID
-             << pRel->GetFemalePartnerId().data << ','           // B_ID
-             << gender_A << ','                // A_Gender 
-             << gender_B << ','                // B_Gender
+             << node_id << ','                          // Node_ID
+             << pRel->GetSuid().data << ','             // Rel_ID 
+             << pRel->GetMalePartnerId().data << ','    // A_ID
+             << pRel->GetFemalePartnerId().data << ','  // B_ID
+             << gender_A << ','                         // A_Gender 
+             << gender_B << ','                         // B_Gender
              << ih_A->GetAge()/DAYSPERYEAR << ','       // A_Age
              << ih_B->GetAge()/DAYSPERYEAR << ','       // B_Age
              << infected_A << ','                       // A_Is_Infected

@@ -9,12 +9,12 @@
           }
      }, 
      "DEMOGRAPHICS": {
-          "Demographics_Filename": "Namawala_single_node_demographics.compiled.json;Namawala_single_node_demographics_complex_mortality.compiled.json;Namawala_single_node_demographics.immunity.compiled.json",
+          "Demographics_Filenames": [ "Namawala_single_node_demographics.json", "Namawala_single_node_demographics_complex_mortality.json", "Namawala_single_node_demographics.immunity.json" ],
           "Enable_Birth": 1,
           "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER", 
-          "Enable_Immunity_Initialization_Distribution": 1
+          "Immunity_Initialization_Distribution_Type": "DISTRIBUTION_COMPLEX" 
      },
-     "Default_Config_Path": "defaults\\malaria_default_config.json", 
+     "Default_Config_Path": "defaults/malaria_default_config.json", 
      "MALARIA": {
           "Antibody_Memory_Level": 0.3, 
           "Antigen_Switch_Rate": 5e-09, 

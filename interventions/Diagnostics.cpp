@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,7 +13,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionEnums.h"
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
-#include "SimulationConfig.h"  // for event strings 
 
 static const char * _module = "SimpleDiagnostic";
 
@@ -28,7 +27,7 @@ namespace Kernel
 
     IMPLEMENT_FACTORY_REGISTERED(SimpleDiagnostic)
 
-    EventOrConfig::Enum 
+    EventOrConfig::Enum
     SimpleDiagnostic::getEventOrConfig(
         const Configuration * inputJson
     )
@@ -48,9 +47,7 @@ namespace Kernel
 
         if( use_event_or_config == EventOrConfig::Event || JsonConfigurable::_dryrun )
         {
-            positive_diagnosis_event.constraints = "<configuration>:Listed_Events.*";
-            positive_diagnosis_event.constraint_param = &GET_CONFIGURABLE(SimulationConfig)->listed_events;
-            initConfigTypeMap("Positive_Diagnosis_Event", &positive_diagnosis_event, SD_Positive_Diagnosis_Config_Event_DESC_TEXT, NO_TRIGGER_STR );
+            initConfigTypeMap("Positive_Diagnosis_Event", &positive_diagnosis_event, SD_Positive_Diagnosis_Config_Event_DESC_TEXT );
         }
 
         if( use_event_or_config == EventOrConfig::Config || JsonConfigurable::_dryrun )
@@ -69,27 +66,47 @@ namespace Kernel
         initConfigTypeMap("Treatment_Fraction", &treatment_fraction, SD_Treatment_Fraction_DESC_TEXT, 0, 1);
 
         bool ret = JsonConfigurable::Configure( inputJson );
+        LOG_DEBUG_F( "Base_Sensitivity = %f, Base_Specificity = %f\n", (float) base_sensitivity, (float) base_specificity );
         EventOrConfig::Enum use_event_or_config = getEventOrConfig( inputJson );
-        if( ret && (use_event_or_config == EventOrConfig::Config || JsonConfigurable::_dryrun) )
+        if( ret )
         {
-            InterventionValidator::ValidateIntervention( positive_diagnosis_config._json );
+            if( use_event_or_config == EventOrConfig::Config || JsonConfigurable::_dryrun )
+            {
+                InterventionValidator::ValidateIntervention( positive_diagnosis_config._json );
+            }
+
+            CheckPostiveEventConfig();
         }
-		return ret;
+        return ret;
     }
 
+    void SimpleDiagnostic::CheckPostiveEventConfig()
+    {
+        if( !JsonConfigurable::_dryrun && 
+            positive_diagnosis_event.IsUninitialized() &&
+            (positive_diagnosis_config._json.Type() == ElementType::NULL_ELEMENT) )
+        {
+            const char* msg = "You must define either Positive_Diagnosis_Event or Positive_Diagnosis_Config";
+            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg );
+        }
+    }
+
+
     SimpleDiagnostic::SimpleDiagnostic()
-    : parent(NULL)
+    : parent(nullptr)
     , diagnostic_type(0)
     , base_specificity(0)
     , base_sensitivity(0)
     , treatment_fraction(1.0f)
     , days_to_diagnosis(0)
-    , positive_diagnosis_event("UNINITIALIZED")
+    , positive_diagnosis_config()
+    , positive_diagnosis_event()
     {
-        initConfigTypeMap("Base_Specificity",  &base_specificity,  SD_Base_Specificity_DESC_TEXT,  0, 1);
-        initConfigTypeMap("Base_Sensitivity",  &base_sensitivity,  SD_Base_Sensitivity_DESC_TEXT,  0, 1);
-        initConfigTypeMap("Days_To_Diagnosis", &days_to_diagnosis, SD_Days_To_Diagnosis_DESC_TEXT, 0 ); 
-        initConfigTypeMap("Cost_To_Consumer",  &cost_per_unit,     SD_Cost_To_Consumer_DESC_TEXT,  0 );
+        initConfigTypeMap("Base_Specificity",   &base_specificity, SD_Base_Specificity_DESC_TEXT,     1.0f );
+        initConfigTypeMap("Base_Sensitivity",   &base_sensitivity, SD_Base_Sensitivity_DESC_TEXT,     1.0f );
+        initConfigTypeMap("Treatment_Fraction", &treatment_fraction, SD_Treatment_Fraction_DESC_TEXT, 1.0f );
+        initConfigTypeMap("Days_To_Diagnosis",  &days_to_diagnosis, SD_Days_To_Diagnosis_DESC_TEXT,   0 );
+        initConfigTypeMap("Cost_To_Consumer",   &cost_per_unit, SD_Cost_To_Consumer_DESC_TEXT,        0);
     }
 
     SimpleDiagnostic::SimpleDiagnostic( const SimpleDiagnostic& master )
@@ -115,17 +132,19 @@ namespace Kernel
         // Positive test result and distribute immediately if days_to_diagnosis <=0
         if ( positiveTestResult() )
         {
-            auto draw = parent->GetRng()->e();
-            LOG_DEBUG_F( "Individual %d tested positive: treatment fraction = %f, random draw = %f.\n", parent->GetSuid().data, treatment_fraction, draw );
+            LOG_DEBUG_F( "Individual %d tested positive: treatment fraction = %f.\n", parent->GetSuid().data, (float) treatment_fraction );
 
-            if ( draw > treatment_fraction ) 
-            { 
+            if( SMART_DRAW(treatment_fraction) )
+            {
+                if ( days_to_diagnosis <= 0 )
+                {
+                    positiveTestDistribute(); // since there is no waiting time, distribute intervention right now
+                }
+            }
+            else
+            {
                 onPatientDefault();
                 expired = true;         // this person doesn't get the intervention despite the positive test
-            }
-            else if ( days_to_diagnosis <= 0 ) 
-            { 
-                positiveTestDistribute(); // since there is no waiting time, distribute intervention right now
             }
             //else (regular case) we have to wait for days_to_diagnosis to count down, person does get drugs
         }
@@ -157,16 +176,27 @@ namespace Kernel
         }
     }
 
+    bool
+    SimpleDiagnostic::applySensitivityAndSpecificity(
+        bool infected
+    )
+    const
+    {
+        bool positiveTestReported = ( ( infected  && ( SMART_DRAW( base_sensitivity ) ) ) ||
+                                      ( !infected && ( SMART_DRAW( 1-base_specificity ) ) )
+                                    ) ;
+        LOG_DEBUG_F( "%s is returning %d\n", __FUNCTION__, positiveTestReported );
+        return positiveTestReported;
+    }
+
     bool SimpleDiagnostic::positiveTestResult()
     {
         // Apply diagnostic test with given specificity/sensitivity
-        float rand     = parent->GetRng()->e();
         bool  infected = parent->GetEventContext()->IsInfected();
-        
+
         // True positive (sensitivity), or False positive (1-specificity)
-        bool positiveTest = ( infected && (rand < base_sensitivity) ) || ( !infected && (rand > base_specificity) );
-        
-        return positiveTest;
+
+        return applySensitivityAndSpecificity( infected );
     }
 
     void
@@ -181,10 +211,10 @@ namespace Kernel
         expired = true;
     }
 
-    void 
-    SimpleDiagnostic::broadcastEvent( const std::string& event )
+    void
+    SimpleDiagnostic::broadcastEvent( const EventTrigger& event )
     {
-        if( event != NO_TRIGGER_STR )
+        if( (event != NO_TRIGGER_STR) && !event.IsUninitialized() )
         {
             INodeTriggeredInterventionConsumer* broadcaster = nullptr;
             if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
@@ -200,18 +230,18 @@ namespace Kernel
     {
         LOG_DEBUG_F( "Individual %d tested 'positive' in SimpleDiagnostic, receiving actual intervention: event = %s.\n", parent->GetSuid().data, positive_diagnosis_event.c_str() );
 
-        // Next alternative is that we were configured to broadcast a raw event string. In which case the value will not 
+        // Next alternative is that we were configured to broadcast a raw event string. In which case the value will not
         // the "uninitialized" value.
-        if( positive_diagnosis_event != "UNINITIALIZED" )
+        if( !positive_diagnosis_event.IsUninitialized() )
         {
-            broadcastEvent(positive_diagnosis_event);
+            broadcastEvent( positive_diagnosis_event );
         }
         // third alternative is that we were configured to use an actual config, not broadcast an event.
-        else
+        else if( positive_diagnosis_config._json.Type() != ElementType::NULL_ELEMENT )
         {
             // Important: Use the instance method to obtain the intervention factory obj instead of static method to cross the DLL boundary
-            IGlobalContext *pGC = NULL;
-            const IInterventionFactory* ifobj = NULL;
+            IGlobalContext *pGC = nullptr;
+            const IInterventionFactory* ifobj = nullptr;
             if (s_OK == parent->QueryInterface(GET_IID(IGlobalContext), (void**)&pGC))
             {
                 ifobj = pGC->GetInterventionFactory();
@@ -237,32 +267,42 @@ namespace Kernel
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "ICampaignCostObserver", "INodeEventContext" );
             }
             delete config;
+            config = nullptr;
         }
+        // this is the right thing to do but we need to deal with HIVRandomChoice and HIVSetCascadeState
+        //else
+        //{
+        //    throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "neither event or config defined" );
+        //}
         expired = true;
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::SimpleDiagnostic)
+    REGISTER_SERIALIZABLE(SimpleDiagnostic);
 
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, SimpleDiagnostic& obj, const unsigned int v)
+    void SimpleDiagnostic::serialize(IArchive& ar, SimpleDiagnostic* obj)
     {
-        static const char * _module = "SimpleDiagnostic";
-        LOG_DEBUG("(De)serializing SimpleDiagnostic\n");
-
-        boost::serialization::void_cast_register<SimpleDiagnostic, IDistributableIntervention>();
-        ar & obj.positive_diagnosis_config;
-        ar & (std::string) obj.positive_diagnosis_event;
-        ar & obj.diagnostic_type;
-        ar & obj.base_specificity;
-        ar & obj.base_sensitivity;
-        ar & obj.treatment_fraction;
-        ar & obj.days_to_diagnosis;
-        ar & boost::serialization::base_object<Kernel::BaseIntervention>(obj);
-        //ar & boost::serialization::base_object<Kernel::SimpleHealthSeekingBehavior>(obj);
+        BaseIntervention::serialize( ar, obj );
+        SimpleDiagnostic& diagnostic = *obj;
+        ar.labelElement("diagnostic_type") & diagnostic.diagnostic_type;
+        ar.labelElement("base_specificity"); diagnostic.base_specificity.serialize(ar);
+        ar.labelElement("base_sensitivity"); diagnostic.base_sensitivity.serialize(ar);
+        ar.labelElement("treatment_fraction"); diagnostic.treatment_fraction.serialize(ar);
+        ar.labelElement("days_to_diagnosis") & diagnostic.days_to_diagnosis;
+        ar.labelElement("positive_diagnosis_config") & diagnostic.positive_diagnosis_config;
+// Remove after testing (implemented above)
+// clorton        if ( ar.IsWriter() )
+// clorton        {
+// clorton            std::ostringstream string_stream;
+// clorton            json::Writer::Write( diagnostic.positive_diagnosis_config._json, string_stream );
+// clorton            ar & string_stream.str();
+// clorton        }
+// clorton        else
+// clorton        {
+// clorton            std::string json;
+// clorton            ar & json;
+// clorton            std::istringstream string_stream( json );
+// clorton            json::Reader::Read( diagnostic.positive_diagnosis_config._json, string_stream );
+// clorton        }
+        ar.labelElement("positive_diagnosis_event") & diagnostic.positive_diagnosis_event;
     }
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, Kernel::SimpleDiagnostic&, unsigned int);
 }
-#endif

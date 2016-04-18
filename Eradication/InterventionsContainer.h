@@ -1,24 +1,18 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #pragma once
 
-#include <string>
 #include <list>
-#include <vector>
 
 #include "BoostLibWrapper.h"
-
 #include "Interventions.h"
-#include "InterventionFactory.h"
-#include "SimpleTypemapRegistration.h"
-
 #include "Contexts.h"
 
 namespace Kernel
@@ -61,29 +55,30 @@ namespace Kernel
         virtual ~InterventionsContainer();
 
         // IIndividualHumanInterventionsContext
-        virtual void SetContextTo(IIndividualHumanContext* context);
-        virtual IIndividualHumanContext* GetParent();
-        virtual std::list<IDistributableIntervention*> GetInterventionsByType(const std::string& type_name);
-        virtual void PurgeExisting( const std::string& iv_name );
+        virtual void SetContextTo(IIndividualHumanContext* context) override;
+        virtual IIndividualHumanContext* GetParent() override;
+        virtual std::list<IDistributableIntervention*> GetInterventionsByType(const std::string& type_name) override;
+        virtual void PurgeExisting( const std::string& iv_name ) override;
+        virtual bool ContainsExisting( const std::string &iv_name ) override;
 
         // IUnknown
-        virtual QueryResult QueryInterface(iid_t iid, void** pinstance);
+        virtual QueryResult QueryInterface(iid_t iid, void** pinstance) override;
 
         // IVaccineConsumer
-        virtual void UpdateVaccineAcquireRate( float acq );
-        virtual void UpdateVaccineTransmitRate( float xmit );
-        virtual void UpdateVaccineMortalityRate( float mort );
+        virtual void UpdateVaccineAcquireRate( float acq ) override;
+        virtual void UpdateVaccineTransmitRate( float xmit ) override;
+        virtual void UpdateVaccineMortalityRate( float mort ) override;
 
         // IDrugVaccineInterventionEffects
-        virtual float GetInterventionReducedAcquire()   const;
-        virtual float GetInterventionReducedTransmit()  const;
-        virtual float GetInterventionReducedMortality() const;
+        virtual float GetInterventionReducedAcquire()   const override;
+        virtual float GetInterventionReducedTransmit()  const override;
+        virtual float GetInterventionReducedMortality() const override;
 
 
         // IPropertyValueChangerEffects
-        virtual void ChangeProperty( const char *property, const char* new_value);
+        virtual void ChangeProperty( const char *property, const char* new_value) override;
 
-        virtual bool GiveIntervention( IDistributableIntervention * pIV );
+        virtual bool GiveIntervention( IDistributableIntervention * pIV ) override;
 
         virtual void Update(float dt); // hook to update interventions if they need it
 
@@ -98,18 +93,8 @@ namespace Kernel
         IIndividualHumanContext *parent;    // context for this interventions container
 
     private:
+        IDistributableIntervention* GetIntervention( const std::string& iv_name );
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class ::boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive &ar, InterventionsContainer &cont, const unsigned int v);
-#endif
-
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-    public:
-         // IJsonSerializable Interfaces
-         virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-         virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
+        DECLARE_SERIALIZABLE(InterventionsContainer);
     };
 }

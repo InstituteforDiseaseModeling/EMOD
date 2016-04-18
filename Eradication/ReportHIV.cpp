@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -14,9 +14,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeHIV.h"
 #include "SusceptibilityHIV.h"
 #include "InfectionHIV.h"
-#include "HIVInterventionsContainer.h"
+#include "IHIVInterventionsContainer.h"
 #include "NodeEventContext.h"
 #include "SimulationConfig.h" // to iterate over listed_events
+#include "IIndividualHumanHIV.h"
 
 static const char* _module = "ReportHIV";
 
@@ -47,10 +48,10 @@ namespace Kernel {
         : num_acute(0)
         , num_latent(0)
         , num_aids(0)
-        , num_hiv_cd4_hi_non_ART(0)
-        , num_hiv_cd4_hi_on_ART(0)
         , num_hiv_cd4_lo_non_ART(0)
+        , num_hiv_cd4_hi_non_ART(0)
         , num_hiv_cd4_lo_on_ART(0)
+        , num_hiv_cd4_hi_on_ART(0)
         , num_on_ART(0)
         , num_ART_dropouts(0)
         , num_events(0)
@@ -65,7 +66,7 @@ namespace Kernel {
         // --- so that it is 1.  Other objects will be AddRef'ing and Release'ing this report/observer
         // --- so it needs to start with a refcount of 1.
         // ------------------------------------------------------------------------------------------------
-        AddRef();
+        AddRef();   // TODO - this should be virtual, but isn't because the constructor isn't finished yet...
     }
 
     ReportHIV::~ReportHIV()
@@ -173,11 +174,11 @@ namespace Kernel {
 
     void
     ReportHIV::LogIndividualData(
-        IndividualHuman* individual
+        IIndividualHuman* individual
     )
     {
         ReportSTI::LogIndividualData( individual );
-        IIndividualHumanHIV* hiv_individual = NULL;
+        IIndividualHumanHIV* hiv_individual = nullptr;
         if( individual->QueryInterface( GET_IID( IIndividualHumanHIV ), (void**)&hiv_individual ) != s_OK )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndividualHIV", "IndividualHuman" );
@@ -230,7 +231,6 @@ namespace Kernel {
 
                 default:
                     throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "hiv_individual->GetHIVInfection()->GetStage()", hiv_individual->GetHIVInfection()->GetStage() );
-                break;
             }
 
             if( hiv_individual->GetHIVInterventionsContainer()->GetArtStatus() == ARTStatus::OFF_BY_DROPOUT )

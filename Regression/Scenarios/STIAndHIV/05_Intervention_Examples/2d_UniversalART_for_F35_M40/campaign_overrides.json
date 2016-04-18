@@ -79,11 +79,11 @@
             "Event_Coordinator_Config":
             {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "ExplicitGender",
-                "Target_Gender": "Male",
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
+                    "Target_Demographic": "ExplicitGender",
+                    "Target_Gender": "Male",
                     "Trigger_Condition": "ARTStaging8",
                     "Actual_IndividualIntervention_Config":
                     {
@@ -119,11 +119,11 @@
             "Event_Coordinator_Config":
             {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "ExplicitGender",
-                "Target_Gender": "Female",
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
+                    "Target_Demographic": "ExplicitGender",
+                    "Target_Gender": "Female",
                     "Trigger_Condition": "ARTStaging8",
                     "Actual_IndividualIntervention_Config":
                     {

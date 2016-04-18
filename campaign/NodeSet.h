@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,18 +13,23 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "IdmApi.h"
 #include "BoostLibWrapper.h"
-#include "ISupports.h"
 #include "Configuration.h"
 #include "Contexts.h"
 #include "FactorySupport.h"
 #include "Configure.h"
 #include "InterventionEnums.h"
+#include "ISerializable.h"
 
 namespace Kernel
 {
+    ENUM_DEFINE(PolygonFormatType,
+        ENUM_VALUE_SPEC(SHAPE      , 1) 
+        //ENUM_VALUE_SPEC(GEOJSON    , 2)
+        )
+
     struct INodeEventContext;
 
-    struct IDMAPI INodeSet : public ISupports
+    struct IDMAPI INodeSet : public ISerializable
     {
         virtual bool Contains(INodeEventContext *ndc) = 0; // must provide access to demographics id, lat, long, etc
     };
@@ -72,23 +77,11 @@ namespace Kernel
         
         virtual bool Contains(INodeEventContext *ndc);
 
-#if USE_JSON_SERIALIZATION
-    public:
-
-        // IJsonSerializable Interfaces
-        virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-        virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
-
-#if USE_BOOST_SERIALIZATION
-    private:
-        friend class ::boost::serialization::access;
-        template<class Archive>
-        void serialize(Archive &ar, NodeSetAll& nodeset, const unsigned int v)
-        {
-            boost::serialization::void_cast_register<NodeSetAll, INodeSet>();
-        }
-#endif
+    protected:
+#pragma warning( push )
+#pragma warning( disable: 4251 ) // See IdmApi.h for details
+        DECLARE_SERIALIZABLE(NodeSetAll);
+#pragma warning( pop )
     };
 
     class IDMAPI NodeSetPolygon : public INodeSet, public JsonConfigurable
@@ -113,21 +106,11 @@ namespace Kernel
         std::string vertices_raw;
 #pragma warning( pop )
 
-#if USE_JSON_SERIALIZATION
-    public:
-
-        // IJsonSerializable Interfaces
-        virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-        virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
-
-#if USE_BOOST_SERIALIZATION
+#if 0
     private:
-        friend class ::boost::serialization::access;
         template<class Archive>
         void serialize(Archive &ar, NodeSetPolygon& nodeset, const unsigned int v)
         {
-            boost::serialization::void_cast_register<NodeSetPolygon, INodeSet>();
             ar & vertices_raw;
             ar & num_points;
             ar & polygon_format;
@@ -162,20 +145,5 @@ namespace Kernel
 
     protected:
         NodeListConfig nodelist_config;
-
-#if USE_JSON_SERIALIZATION
-    public:
-
-        // IJsonSerializable Interfaces
-        virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-        virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
-
-#if USE_BOOST_SERIALIZATION
-    private:
-        friend class ::boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive &ar, NodeSetNodeList& nodeset, const unsigned int v);
-#endif
     };
 };

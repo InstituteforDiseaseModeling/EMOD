@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -18,11 +18,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Configuration.h"
 #include "Configure.h"
 #include "Contexts.h"
-#include "HealthSeekingBehavior.h"
 #include "InterventionEnums.h"
 #include "InterventionFactory.h"
 #include "Interventions.h"
-#include "SimpleTypemapRegistration.h"
+#include "Types.h"
+#include "EventTrigger.h"
 
 namespace Kernel
 {
@@ -31,7 +31,7 @@ namespace Kernel
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_FACTORY_REGISTERED(InterventionFactory, SimpleDiagnostic, IDistributableIntervention)
 
-    public: 
+    public:
         SimpleDiagnostic();
         SimpleDiagnostic( const SimpleDiagnostic& master );
         virtual ~SimpleDiagnostic() {  }
@@ -48,30 +48,27 @@ namespace Kernel
         virtual void onNegativeTestResult();
         virtual void onPatientDefault();
         virtual void positiveTestDistribute();
+        virtual bool applySensitivityAndSpecificity( bool infected ) const;
 
     protected:
 
-        void broadcastEvent(const std::string& event);
+        void broadcastEvent( const EventTrigger& event );
         virtual EventOrConfig::Enum getEventOrConfig( const Configuration* );
-
-        IIndividualHumanContext *parent;
-        int   diagnostic_type;
-        float base_specificity;
-        float base_sensitivity;
-        float treatment_fraction;
-        float days_to_diagnosis;
+        void CheckPostiveEventConfig();
 
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
-        IndividualInterventionConfig positive_diagnosis_config;
-        ConstrainedString positive_diagnosis_event;
-#pragma warning( pop )
+        IIndividualHumanContext *parent;
+        int   diagnostic_type;
+        ProbabilityNumber base_specificity;
+        ProbabilityNumber base_sensitivity;
+        ProbabilityNumber treatment_fraction;
+        float days_to_diagnosis; // can go negative if dt is > 1
 
-    private:
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class ::boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive &ar, SimpleDiagnostic &obj, const unsigned int v);
-#endif
+        IndividualInterventionConfig positive_diagnosis_config;
+        EventTrigger positive_diagnosis_event;
+
+        DECLARE_SERIALIZABLE(SimpleDiagnostic);
+#pragma warning( pop )
     };
 }

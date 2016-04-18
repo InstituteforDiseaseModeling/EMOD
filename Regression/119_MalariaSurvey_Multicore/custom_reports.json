@@ -1,0 +1,28 @@
+{
+    "Custom_Reports" : 
+    {
+        "Use_Explicit_Dlls" : 1,
+        "MalariaSurveyJSONAnalyzer" :
+        {
+            "Enabled" : 1,
+            "Reports" :
+            [
+                {
+                    "Start_Day": 0,
+                    "Duration_Days" : 10000,
+                    "Nodeset_Config": {
+                         "class": "NodeSetAll"
+                    }, 
+                    "Event_Trigger_List" :
+                    [
+                        "NewClinicalCase"
+                    ],
+                    "Max_Number_Reports": 2,
+                    "Report_Description": "XXX",
+                    "Reporting_Interval": 40,
+                    "Pretty_Format"     : 1
+                }
+            ]
+        }
+    }
+}

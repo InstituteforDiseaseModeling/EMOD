@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -12,7 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "NodeEventContext.h"  // for INodeEventContext
 #include "SimulationEnums.h"
-#include "MathFunctions.h"
+#include "Sigmoid.h"
 
 static const char * _module = "HIVSigmoidByYearAndSexDiagnostic";
 
@@ -37,7 +37,7 @@ namespace Kernel
     {
         initConfigTypeMap("Ramp_Min", &rampMin, HIV_Ramp_Min_DESC_TEXT , -1, 1, 0);
         initConfigTypeMap("Ramp_Max", &rampMax, HIV_Ramp_Max_DESC_TEXT , -1, 1, 1);
-        initConfigTypeMap("Ramp_MidYear", &rampMidYear, HIV_Ramp_MidYear_DESC_TEXT , 1900, 2100, 2000);
+        initConfigTypeMap("Ramp_MidYear", &rampMidYear, HIV_Ramp_MidYear_DESC_TEXT , MIN_YEAR, MAX_YEAR, 2000);
         initConfigTypeMap("Ramp_Rate", &rampRate, HIV_Ramp_Rate_DESC_TEXT , -100, 100, 1);
         initConfigTypeMap("Female_Multiplier", &femaleMultiplier, HIV_Female_Multiplier_DESC_TEXT , 0, FLT_MAX, 1);
     }
@@ -67,33 +67,23 @@ namespace Kernel
         LOG_DEBUG_F("min=%f, max=%f, rate=%f, midYear=%f, multiplier=%f, year=%f\n", rampMin, rampMax, rampRate, rampMidYear, valueMultiplier, year);
         LOG_DEBUG_F("rampMin + (rampMax-rampMin)/(1.0 + exp(-rampRate*(year-rampMidYear))) = %f\n", value_tmp );
 
-        float ran = randgen->e();
-        bool testResult = (ran < value);
-        LOG_DEBUG_F("Individual %d: sex=%d, year=%f, testing %f < %f, returning %d.\n", parent->GetSuid().data, gender, year, ran, value, testResult);
+        bool testResult = ( SMART_DRAW( value) );
+        LOG_DEBUG_F("Individual %d: sex=%d, year=%f, value=%f, returning %d.\n", parent->GetSuid().data, gender, year, value, testResult);
  
         return testResult;
     }
 
-}
+    REGISTER_SERIALIZABLE(HIVSigmoidByYearAndSexDiagnostic);
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::HIVSigmoidByYearAndSexDiagnostic)
-
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, HIVSigmoidByYearAndSexDiagnostic& obj, const unsigned int v)
+    void HIVSigmoidByYearAndSexDiagnostic::serialize(IArchive& ar, HIVSigmoidByYearAndSexDiagnostic* obj)
     {
-        static const char * _module = "HIVSigmoidByYearAndSexDiagnostic";
-        LOG_DEBUG("(De)serializing HIVSigmoidByYearAndSexDiagnostic\n");
+        HIVSimpleDiagnostic::serialize( ar, obj );
+        HIVSigmoidByYearAndSexDiagnostic& cascade = *obj;
 
-        boost::serialization::void_cast_register<HIVSigmoidByYearAndSexDiagnostic, IDistributableIntervention>();
-        ar & obj.rampMin;
-        ar & obj.rampMax;
-        ar & obj.rampMidYear;
-        ar & obj.rampRate;
-        ar & obj.femaleMultiplier;
-        ar & boost::serialization::base_object<Kernel::HIVSimpleDiagnostic>(obj);
+        ar.labelElement("rampMin"         ) & cascade.rampMin;
+        ar.labelElement("rampMax"         ) & cascade.rampMax;
+        ar.labelElement("rampMidYear"     ) & cascade.rampMidYear;
+        ar.labelElement("rampRate"        ) & cascade.rampRate;
+        ar.labelElement("femaleMultiplier") & cascade.femaleMultiplier;
     }
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, Kernel::HIVSigmoidByYearAndSexDiagnostic&, unsigned int);
 }
-#endif

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -46,20 +46,13 @@ namespace Kernel
     {
         return currentEffect;
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-#include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT(Kernel::WaningEffectBox)
-BOOST_SERIALIZATION_ASSUME_ABSTRACT(Kernel:IWaningEffect);
+    REGISTER_SERIALIZABLE(WaningEffectBox);
 
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, WaningEffectBox& we, const unsigned int v)
+    void WaningEffectBox::serialize(IArchive& ar, WaningEffectBox* obj)
     {
-        boost::serialization::void_cast_register<WaningEffectBox, IWaningEffect>();
-        ar & we.currentEffect;
-        ar & we.boxDuration;
+        WaningEffectBox& effect = *obj;
+        ar.labelElement("currentEffect") & effect.currentEffect;
+        ar.labelElement("boxDuration") & effect.boxDuration;
     }
 }
-#endif

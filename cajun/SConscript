@@ -1,0 +1,36 @@
+# -*- mode: python; -*-
+# This Python script, SConscript, invoked by the SConscript in the upper directory,
+#
+# 1. builds cajun static library
+
+Import("env")
+
+cajunSrcFiles = ["src/elements.cpp",
+                 "src/reader.cpp",
+                 "src/writer.cpp",
+                 "stdafx.cpp"]
+
+cajunIncFiles = ["include/elements.h",
+                 "include/reader.h",
+                 "include/writer.h",
+                 "include/quick.h"]
+cajunLocalInc = ["stdafx.h"]
+
+cajunLib = env.StaticLibrary('cajun', cajunSrcFiles)
+
+msvc = GetOption( "MSVC" )
+if msvc is not None and msvc != False and msvc != "":
+
+    bvar = env['BUILD_VARIANT'] + '|x64'
+    print "Cajun: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar
+    
+    env.MSVSProject(target = 'CajunScons' + env['MSVSPROJECTSUFFIX'],
+		srcs = cajunSrcFiles,
+		incs = cajunIncFiles,
+		localincs = cajunLocalInc,
+		buildtarget = cajunLib,
+                auto_build_solution = 0,
+                variant = bvar)
+
+
+

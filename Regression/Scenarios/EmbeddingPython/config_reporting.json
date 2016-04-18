@@ -1,0 +1,9 @@
+{
+    "parameters": {
+        "Enable_Default_Reporting": 1, 
+        "Enable_Demographics_Reporting": 0,
+        "Enable_Property_Output": 0, 
+        "Enable_Spatial_Output": 0,
+        "Report_Event_Recorder": 0
+    }
+}

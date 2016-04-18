@@ -1,0 +1,56 @@
+{
+    "Default_Config_Path": "defaults/sti_default_config.json", 
+    "parameters": {
+
+        "____________SIMULATION___________": "",
+        "Base_Year": 1980, 
+        "Simulation_Duration": 7300, 
+        "Simulation_Timestep": 30,
+        "Num_Cores": 1, 
+        "Run_Number": 1, 
+        "logLevel_default": "WARNING", 
+        
+        "____________INTRAHOST___________": "",
+        "Enable_Maternal_Transmission": 1, 
+
+        "____________NETWORK___________": "",
+        "PFA_Burnin_Duration_In_Days": 5475, 
+        "STI_Network_Params_By_Property": {
+            "Individual_Property_Name": "NONE", 
+            "NONE": {
+                "Extra_Relational_Flag_Type": "Independent", 
+                "Max_Simultaneous_Informal_Relationships_Females": 2, 
+                "Max_Simultaneous_Informal_Relationships_Males": 2, 
+                "Max_Simultaneous_Marital_Relationships_Females": 1, 
+                "Max_Simultaneous_Marital_Relationships_Males": 1, 
+                "Max_Simultaneous_Transitory_Relationships_Females": 3, 
+                "Max_Simultaneous_Transitory_Relationships_Males": 3, 
+                "Prob_Extra_Informal_Relationship_Female": 0.5, 
+                "Prob_Extra_Informal_Relationship_Male": 0.5, 
+                "Prob_Extra_Marital_Relationship_Female": 0.0, 
+                "Prob_Extra_Marital_Relationship_Male": 0.0, 
+                "Prob_Extra_Transitory_Relationship_Female": 0.5, 
+                "Prob_Extra_Transitory_Relationship_Male": 0.5
+            }
+        }, 
+        
+        "____________TRANSMISSION___________": "",
+        "Condom_Transmission_Blocking_Probability": 1.0, 
+        "Base_Infectivity": 10, 
+        "Infectious_Period_Mean": 120, 
+
+        "____________DEMOGRAPHICS___________": "",
+        "Base_Population_Scale_Factor": 0.0001, 
+        "Birth_Rate_Dependence": "POPULATION_DEP_RATE", 
+        "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF", 
+        "Demographics_Filenames": ["../../HIV/input/SA_UN_demographics.compiled.json", "../../HIV/input/PFA_overlay.json"],
+
+        "____________MIGRATION___________": "",
+        "____________REPORTING___________": "",
+
+        "____________REPLICATION_AND_DRUGS___________": "",
+        "____________RARELY_CHANGED___________": "",
+        "Config_Name": "102_STIBarrier",
+        "Geography": "SouthAfrica"
+    }
+}

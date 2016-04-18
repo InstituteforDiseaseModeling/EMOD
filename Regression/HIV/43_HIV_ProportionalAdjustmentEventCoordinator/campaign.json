@@ -1,0 +1,67 @@
+{
+     "Use_Defaults": 1,
+     "Events": [
+          {
+               "Event_Coordinator_Config": {
+                    "Intervention_Config": {
+                         "class": "MaleCircumcision",
+                         "Cost_To_Consumer": 10.0, 
+                         "Circumcision_Reduced_Acquire": 0.6,
+                         "Distributed_Event_Trigger" : "VMMC_1"
+                    }, 
+                    "Target_Demographic": "ExplicitGender",
+                    "Target_Gender": "Male",
+                    "Update_Period": 182,
+                    "End_Year": 1965,
+                    "Time_Value_Map": {
+                            "Times": [ 1960, 1961, 1962, 1963, 1964 ],
+                            "Values": [
+                                0.25,
+                                0.375,
+                                0.4,
+                                0.4375,
+                                0.46875
+                            ]
+
+                    },
+                    "class": "ReferenceTrackingEventCoordinator"
+               }, 
+               "Nodeset_Config": {
+                    "class": "NodeSetAll"
+               }, 
+               "Start_Year": 1960, 
+               "class": "CampaignEventByYear"
+          }
+,
+          {
+               "Event_Coordinator_Config": {
+                    "Intervention_Config": {
+                         "class": "MaleCircumcision",
+                         "Cost_To_Consumer": 10.0, 
+                         "Circumcision_Reduced_Acquire": 0.6,
+                         "Distributed_Event_Trigger" : "VMMC_2"
+                    }, 
+                    "Target_Demographic": "ExplicitGender",
+                    "Target_Gender": "Male",
+                    "Update_Period": 182,
+                    "End_Year": 1970,
+                    "Time_Value_Map": {
+                            "Times": [ 1965, 1966, 1967, 1968, 1969 ],
+                            "Values": [
+                                0.53125,
+                                0.5625,
+                                0.625,
+                                0.75,
+                                1
+                            ]
+                    },
+                    "class": "ReferenceTrackingEventCoordinator"
+               }, 
+               "Nodeset_Config": {
+                    "class": "NodeSetAll"
+               }, 
+               "Start_Year": 1965, 
+               "class": "CampaignEventByYear"
+          }
+     ]
+}

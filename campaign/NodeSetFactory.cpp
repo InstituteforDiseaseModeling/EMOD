@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -26,11 +26,9 @@ namespace Kernel
         // but with special 'don't error out' mode.
         //json::Object returnVal;
         support_spec_map_t& registrants = getRegisteredClasses();
-#ifdef WIN32
+
         JsonConfigurable::_dryrun = true;
-#else
-        setenv( "DRYRUN", "1", 1 );
-#endif
+
         json::Object nodeSetsJsonArray;
         for (auto& entry : registrants)
         {
@@ -40,7 +38,7 @@ namespace Kernel
             fakeJson["class"] = json::String(class_name);
             Configuration * fakeConfig = Configuration::CopyFromElement( fakeJson );
             instantiator_function_t creator = entry.second;
-#if 1
+
             try
             {
                 // TBD: Handle Node-targeted interventions
@@ -63,7 +61,7 @@ namespace Kernel
                     << std::endl;
                 LOG_INFO( msg.str().c_str() );
             }
-            catch( json::Exception &e )
+            catch( const json::Exception &e )
             {
                 std::ostringstream msg;
                 msg << "json Exception creating nodeset for GetSchema: "
@@ -71,8 +69,9 @@ namespace Kernel
                     << std::endl;
                 LOG_INFO( msg.str().c_str() );
             }
-#endif
             LOG_DEBUG( "Done with that class....\n" );
+            delete fakeConfig;
+            fakeConfig = nullptr;
         }
         campaignSchema[ "schema" ] = nodeSetsJsonArray;
         LOG_DEBUG( "Returning from GetSchema.\n" );
@@ -81,5 +80,5 @@ namespace Kernel
     }
 
     // NodeSet
-    INodeSetFactory * NodeSetFactory::_instance = NULL;
+    INodeSetFactory * NodeSetFactory::_instance = nullptr;
 }

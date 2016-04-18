@@ -1,30 +1,35 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 #include "FlowControllerImpl.h"
-#include "SimulationEnums.h"
+#include "IPairFormationStats.h"
+#include "IPairFormationRateTable.h"
+#include "IPairFormationParameters.h"
 
 #include "Log.h"
 
 static const char * _module = "FlowControllerImpl";
 
-namespace Kernel {
+namespace Kernel 
+{
+    BEGIN_QUERY_INTERFACE_BODY(FlowControllerImpl)
+    END_QUERY_INTERFACE_BODY(FlowControllerImpl)
 
-    void FlowControllerImpl::UpdateEntryRates()
+    void FlowControllerImpl::UpdateEntryRates( const IdmDateTime& rCurrentTime, float dt )
     {
         LOG_DEBUG_F("%s()\n", __FUNCTION__);
 
         // -------------------------
         // --- Update desired rates
         // -------------------------
-        UpdateDesiredFlow();
+        UpdateDesiredFlow( rCurrentTime, dt );
 
         if (LOG_LEVEL(INFO))
         {
@@ -87,14 +92,15 @@ namespace Kernel {
         , rate_table(rates)
         , parameters(params)
         , desired_flow()
-        , marginal_values(params->MarginalValues())
-        , base_pair_formation_rate(params->BasePairFormationRate())
     {
-        rate_ratio[Gender::MALE] = params->GetRateRatio(Gender::MALE);
-        rate_ratio[Gender::FEMALE] = params->GetRateRatio(Gender::FEMALE);
+        if( parameters != nullptr )
+        {
+            rate_ratio[Gender::MALE  ] = parameters->GetRateRatio(Gender::MALE);
+            rate_ratio[Gender::FEMALE] = parameters->GetRateRatio(Gender::FEMALE);
 
-        desired_flow[Gender::MALE].resize(parameters->GetMaleAgeBinCount());
-        desired_flow[Gender::FEMALE].resize(parameters->GetFemaleAgeBinCount());
+            desired_flow[Gender::MALE  ].resize(parameters->GetMaleAgeBinCount());
+            desired_flow[Gender::FEMALE].resize(parameters->GetFemaleAgeBinCount());
+        }
     }
 
     FlowControllerImpl::~FlowControllerImpl()
@@ -105,7 +111,7 @@ namespace Kernel {
         parameters = nullptr;
     }
 
-    void FlowControllerImpl::UpdateDesiredFlow()
+    void FlowControllerImpl::UpdateDesiredFlow( const IdmDateTime& rCurrentTime, float dt )
     {
         LOG_DEBUG_F("%s()\n", __FUNCTION__);
 
@@ -141,7 +147,7 @@ namespace Kernel {
         // ---------------------------------------------------------------------
         // --- Multiply the total number of people eligible times the base rate
         // ---------------------------------------------------------------------
-        cumulative_base_flow *= base_pair_formation_rate;
+        cumulative_base_flow *= parameters->FormationRate( rCurrentTime, dt );
 
         if (cumulative_base_flow > 0.0f)
         {
@@ -151,7 +157,7 @@ namespace Kernel {
             for (int sex = Gender::MALE; sex <= Gender::FEMALE; sex++)
             {
                 auto& desired = desired_flow.at(sex);       // important, use a reference here so we update desired_flow
-                auto& marginal = marginal_values.at(sex);   // use a reference here to avoid a copy
+                auto& marginal = parameters->MarginalValues().at(sex);   // use a reference here to avoid a copy
                 int bin_count = desired.size();
                 for (int bin_index = 0; bin_index < bin_count; bin_index++)
                 {
@@ -164,5 +170,21 @@ namespace Kernel {
             memset(desired_flow[Gender::MALE].data(), 0, desired_flow[Gender::MALE].size() * sizeof(float));
             memset(desired_flow[Gender::FEMALE].data(), 0, desired_flow[Gender::FEMALE].size() * sizeof(float));
         }
+    }
+    REGISTER_SERIALIZABLE(FlowControllerImpl);
+
+    void FlowControllerImpl::serialize(IArchive& ar, FlowControllerImpl* obj)
+    {
+        FlowControllerImpl& flow = *obj;
+        ar.labelElement("rate_ratio"              ); ar.serialize( flow.rate_ratio, Gender::COUNT );
+        ar.labelElement("desired_flow"            ) & flow.desired_flow;
+
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!! Needs to be set during serialization
+        //IPairFormationAgent* pair_formation_agent;
+        //IPairFormationStats* pair_formation_stats;
+        //IPairFormationRateTable* rate_table;
+        //const IPairFormationParameters* parameters;
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
 }

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 
 from __future__ import print_function
 import argparse
@@ -47,6 +47,8 @@ class MigrationNetwork(object):
         self.__links = {}
         self.__link_count = max_links
 
+        pass
+
     def get_node_ids(self): return self.__node_ids
     def set_node_ids(self, value): self.__node_ids = value
     def del_node_ids(self): del self.__node_ids
@@ -69,14 +71,13 @@ class MigrationNetwork(object):
 
     def loadDemographicsFile(self, filename):
         def tryLoadJson(filename):
-                handle = open(filename)
+            with open(filename, 'rb') as handle:
                 try:
                     json_data = json.load(handle)
                 except ValueError as e:
                     raise BuildException("Error '%s' loading JSON file" % e)
-                finally:
-                    handle.close()
-                return json_data
+
+            return json_data
 
         def tryExtractNodeIds(json_data):
             try:
@@ -85,6 +86,7 @@ class MigrationNetwork(object):
                 raise BuildException("Couldn't find entry 'Nodes' in JSON data")
             except TypeError:
                 raise BuildException("'Nodes' entry in JSON data doesn't appear to be an array")
+
             return node_ids
 
         def tryGetEntry(dictionary, key):
@@ -92,6 +94,7 @@ class MigrationNetwork(object):
                 entry = dictionary[key]
             except KeyError as ke:
                 raise BuildException("Couldn't find entry '%s' in data" % ke)
+
             return entry
 
         json_data = tryLoadJson(filename)
@@ -100,24 +103,35 @@ class MigrationNetwork(object):
 
         self.__node_ids = node_ids
         self.__id_reference = id_reference
+
         return self.__node_ids, self.__id_reference
 
-    def loadMigrationRates(self, filename):
+    def loadMigrationRates(self, filename, separator=' ', comment='#'):
         def validateRateInformation(line, node_ids, line_number):
+
+            source_id = None
+            destination_id = None
+            rate = 0.0
+
             def validateNodeId(node_id, label, node_ids):
                 if not node_id in node_ids:
                     raise BuildException('%s node ID %s not found in demographics.' % (label, node_id))
 
-            info = line.split('#')[0].strip().split()
-            if len(info) != 3:
-                raise BuildException("Poorly formed input in migration rates file (line %s): '%s'" % (line_number, line))
-            source_id = int(info[0])
-            destination_id = int(info[1])
-            rate = float(info[2])
-            validateNodeId(source_id,      'source',      node_ids)
-            validateNodeId(destination_id, 'destination', node_ids)
-            if destination_id == source_id:
-                raise BuildException("Destination node == source node in migration rates file (line %s): '%s'" % (line_number, line))
+                pass
+
+            no_comments = line.split(comment)[0]
+            stripped = no_comments.strip()
+            if stripped:
+                info = stripped.split(separator)
+                if len(info) != 3:
+                    raise BuildException("Poorly formed input in migration rates file (line %s): '%s'" % (line_number, line))
+                source_id = int(info[0])
+                destination_id = int(info[1])
+                rate = float(info[2])
+                validateNodeId(source_id,      'source',      node_ids)
+                validateNodeId(destination_id, 'destination', node_ids)
+                if destination_id == source_id:
+                    raise BuildException("Destination node == source node in migration rates file (line %s): '%s'" % (line_number, line))
 
             return source_id, destination_id, rate
 
@@ -130,18 +144,22 @@ class MigrationNetwork(object):
 
             links[source_id][destination_id] = rate
 
+            pass
+
         links = {}
-        migration = open(filename)
+        with open(filename, 'rb') as migration:
 
-        line_number = 1
-        for line in migration:
-            (source_id, destination_id, rate) = validateRateInformation(line, self.node_ids, line_number)
-            addMigrationLink(source_id, destination_id, rate, links)
-            line_number += 1
+            line_number = 1
+            for line in migration:
+                (source_id, destination_id, rate) = validateRateInformation(line, self.node_ids, line_number)
+                if source_id is not None:
+                    addMigrationLink(source_id, destination_id, rate, links)
+                line_number += 1
 
-        migration.close()
         self.links = links
+
         return self.links
+
 
     def validate(self):
         clean = True
@@ -165,39 +183,41 @@ class MigrationNetwork(object):
             if not source_id in outbound:
                 print('WARNING: node %s has no inbound links' % source_id, file=sys.stderr)
                 clean = False
+
         return clean
 
     def writeMigrationBinaryFile(self, binary_filename):
-        binary = open(binary_filename, 'wb')
+        with open(binary_filename, 'wb') as binary:
         
-        for source_id in self.node_ids:
-            print('Processing source node %s' % source_id)
-            destination_ids   = []
-            destination_rates = []
+            for source_id in self.node_ids:
+                print('Processing source node %s' % source_id)
+                destination_ids   = []
+                destination_rates = []
             
-            for i in xrange(self.link_count):
-                destination_ids.append(0)
-                destination_rates.append(0)
+                for i in xrange(self.link_count):
+                    destination_ids.append(0)
+                    destination_rates.append(0)
                 
-            if source_id in self.links:
-                destination_index = 0
-                for destination_id in self.links[source_id]:
-                    print('\tAdding destination %s with rate %s in slot %s' % (destination_id, self.links[source_id][destination_id], destination_index))
-                    destination_ids[destination_index]   = destination_id
-                    destination_rates[destination_index] = self.links[source_id][destination_id]
-                    destination_index += 1
+                if source_id in self.links:
+                    destination_index = 0
+                    for destination_id in self.links[source_id]:
+                        print('\tAdding destination %s with rate %s in slot %s' % (destination_id, self.links[source_id][destination_id], destination_index))
+                        destination_ids[destination_index]   = destination_id
+                        destination_rates[destination_index] = self.links[source_id][destination_id]
+                        destination_index += 1
     
-            print('\tDestination ids %s' % destination_ids)
-            print('\tRates %s' % destination_rates)
+                print('\tDestination ids %s' % destination_ids)
+                print('\tRates %s' % destination_rates)
                 
-            s_destinations = pack('L'*len(destination_ids), *destination_ids)
-            s_rates        = pack('d'*len(destination_rates), *destination_rates)
+                s_destinations = pack('L'*len(destination_ids), *destination_ids)
+                s_rates        = pack('d'*len(destination_rates), *destination_rates)
             
-            binary.write(s_destinations)
-            binary.write(s_rates)
-            
-        binary.close()
-    
+                binary.write(s_destinations)
+                binary.write(s_rates)
+
+        pass
+
+
     def writeMigrationHeaderFile(self, header_filename):
         def buildNodeOffsets(node_ids, link_count):
             offsets = []
@@ -219,20 +239,31 @@ class MigrationNetwork(object):
         }
         node_offsets = buildNodeOffsets(self.node_ids, self.link_count)
         header_json = {'Metadata': metadata, 'NodeOffsets': node_offsets}
-        header = open(header_filename, 'w')
-        json.dump(header_json, header, indent=4, separators=(',', ': '), sort_keys=True)
-        header.close()
+        with open(header_filename, 'wb') as header:
+            json.dump(header_json, header, indent=4, separators=(',', ': '), sort_keys=True)
+    
         return header_json
 
 
-def main(demographics_filename, rates_filename, migration_type, binary_filename, header_filename):
+def main(demographics_filename, rates_filename, migration_type, binary_filename, header_filename, separator, comment):
     network = MigrationNetwork(canonical_types[migration_type])
     network.loadDemographicsFile(demographics_filename)
-    network.loadMigrationRates(rates_filename)
+    network.loadMigrationRates(rates_filename, separator, comment)
     network.validate()
     network.writeMigrationBinaryFile(binary_filename)
     network.writeMigrationHeaderFile(header_filename)
+
+    pass
     
+
+def binaryFilenameFromBase(filename):
+    text_path = os.path.dirname(filename)
+    text_base = os.path.basename(filename)
+    binary_base = '.'.join([text_base.rsplit('.', 1)[0], 'bin'])
+    binary_full = os.path.join(text_path, binary_base)
+
+    return binary_full
+
 
 def canonicalTypeForMigration(user_type):
     for key in canonical_types.keys():
@@ -248,19 +279,29 @@ def displayArguments(arguments):
     print('Output migration rates file (binary): %s' % arguments.binary)
     print('Output migration file header (JSON):  %s' % arguments.header)
     print('Migration type:                       %s' % arguments.type)
+    print("Value separator:                     '{0}'".format(arguments.separator))
+    print("Comment separator:                   '{0}'".format(arguments.comment))
+
+    pass
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--demographics', help='master demographics filename (JSON)',          type=str, required=True)
     parser.add_argument('-r', '--rates',        help='migration rates filename (text)',              type=str, required=True)
-    parser.add_argument('-b', '--binary',       help='destination migration filename (binary)',      type=str, required=True)
+    parser.add_argument('-b', '--binary',       help='destination migration filename (binary)',      type=str, nargs='?')
     parser.add_argument('-t', '--type',         help='migration type [LOCAL|REGIONAL|SEA|AIR]',      type=str, required=True)
-    parser.add_argument(      '--header',       help='destination migration header filename (JSON)', nargs='?', type=str)
+    parser.add_argument(      '--header',       help='destination migration header filename (JSON)', type=str, nargs='?')
+    parser.add_argument('-s', '--separator',    help='Field separator (default is space)',   default=' ')
+    parser.add_argument('-c', '--comment', help="Comment separator (default is hash - '#')", default='#')
     args = parser.parse_args()
+    if not args.binary:
+        args.binary = binaryFilenameFromBase(args.rates)
     if not args.header:
         args.header = args.binary + '.json'
     args.type = canonicalTypeForMigration(args.type)
     displayArguments(args)
  
-    main(args.demographics, args.rates, args.type, args.binary, args.header)
+    main(args.demographics, args.rates, args.type, args.binary, args.header, args.separator, args.comment)
+
+    pass

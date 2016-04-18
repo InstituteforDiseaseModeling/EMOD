@@ -1,66 +1,23 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #pragma once
-#include <string>
-#include <list>
 #include <map>
-#include <functional>
 #include "BoostLibWrapper.h"
-#include "Environment.h"
 #include "suids.hpp"
+#include "INodeContext.h"
 
 namespace Kernel
 {
-    typedef uint32_t node_id_t;
-
-    struct IInitialLoadBalanceScheme
-    {
-        virtual int GetInitialRankFromNodeId(node_id_t node_id) = 0;
-    };
-
-    class CheckerboardInitialLoadBalanceScheme : public IInitialLoadBalanceScheme
-    {
-    public:
-        CheckerboardInitialLoadBalanceScheme();
-
-        virtual int GetInitialRankFromNodeId(node_id_t node_id);
-
-    protected:
-        uint32_t num_ranked;
-    };
-
-    class StripedInitialLoadBalanceScheme : public IInitialLoadBalanceScheme
-    {
-    public:
-        StripedInitialLoadBalanceScheme();
-
-        void Initialize(uint32_t in_num_nodes);
-
-        virtual int GetInitialRankFromNodeId(node_id_t node_id);
-
-    protected:
-        uint32_t num_nodes;
-        uint32_t num_ranked;
-    };
-
-    class LegacyFileInitialLoadBalanceScheme : public IInitialLoadBalanceScheme
-    {
-    public:
-        bool Initialize(std::string loadbalancefilename, uint32_t expected_num_nodes);
-
-        virtual int GetInitialRankFromNodeId(node_id_t node_id);
-
-    protected:
-        std::map<node_id_t, int> initialNodeRankMapping;
-    };
-
+    struct INodeInfo;
+    struct INodeInfoFactory;
+    struct IInitialLoadBalanceScheme;
 
     /*
     TODO: 
@@ -72,11 +29,16 @@ namespace Kernel
     {
     public:
         NodeRankMap();
+        ~NodeRankMap();
 
-        // NOTE: the initial scheme object is NOT serialized or cleaned up by this class. it is ONLY for initializing the node rank map the first time it is populated
-        void SetInitialLoadBalanceScheme(IInitialLoadBalanceScheme *ilbs);
+        // NOTE: the initial scheme object is NOT serialized.  It is ONLY for initializing the node rank map the first time it is populated
+        void SetInitialLoadBalanceScheme( IInitialLoadBalanceScheme *ilbs );
+
+        void SetNodeInfoFactory( INodeInfoFactory* pnif );
 
         int GetRankFromNodeSuid(suids::suid node_id);
+
+        suids::suid GetSuidFromExternalID( ExternalNodeId_t externalNodeId ) const ;
 
         size_t Size();
 
@@ -86,19 +48,24 @@ namespace Kernel
         // merge maps on multiple processors
         bool MergeMaps();
 
+        void Sync( IdmDateTime& currentTime );
+
         // this function encapsulates the initial mapping from node id on disk to rank.
         // although node ids should be simulation-unique we still track nodes by our own suid 
         // system. this may not ever be strictly advantageous but it might make it easier to, 
         // e.g., generate new nodes later in the simulation for example
-        int GetInitialRankFromNodeId(node_id_t node_id);
+        int GetInitialRankFromNodeId( ExternalNodeId_t node_id );
 
-        void Add(suids::suid node_suid, int rank);
+        void Add( int rank, INodeContext* pNC );
+        void Update( INodeContext* pNC );
+
+        INodeInfo& GetNodeInfo( const suids::suid& node_suid );
 
         std::string ToString();
 
         // hack: to let us get the complete list of nodes
-        typedef std::map<suids::suid, int> RankMap_t;
-        typedef std::pair<suids::suid, int> RankMapEntry_t;
+        typedef std::map< suids::suid, INodeInfo*> RankMap_t;
+        typedef std::pair<suids::suid, INodeInfo*> RankMapEntry_t;
 
         const RankMap_t& GetRankMap() const;
 
@@ -106,6 +73,10 @@ namespace Kernel
         IInitialLoadBalanceScheme *initialLoadBalanceScheme;
 
         RankMap_t rankMap;
+        INodeInfoFactory* pNodeInfoFactory;
+        std::vector<INodeInfo*> nodes_in_my_rank;
+        unsigned char* m_Buffer;
+        uint32_t m_BufferSize;
 
         struct merge_duplicate_key_exception : public std::exception
         {
@@ -116,20 +87,5 @@ namespace Kernel
         {
             RankMap_t operator()(const RankMap_t& x, const RankMap_t& y) const;
         };
-
-#if USE_JSON_SERIALIZATION
-    public:
-        // IJsonSerializable Interfaces
-        virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-        virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
-
-#if USE_BOOST_SERIALIZATION
-    private:
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, NodeRankMap& nrm, const unsigned int file_version);
-#endif
-        ///////////////////////////////////////////////////////////////////////////
     };
 }

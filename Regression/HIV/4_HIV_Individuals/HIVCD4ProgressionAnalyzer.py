@@ -5,8 +5,20 @@ import json
 import math
 import scipy.stats as sps
 
-LINEAR_CD4_DECLINE_MODEL_SLOPE = -508.92
-LINEAR_CD4_DECLINE_MODEL_INTERCEPT = 540.55
+# TODO: The model has changed!
+# TODO: Get these parameters from the config.json file instead of hard coding
+#"CD4_At_Death_LogLogistic_Heterogeneity": 0.0, 
+#"CD4_At_Death_LogLogistic_Scale": 31.63, 
+#"CD4_Post_Infection_Weibull_Heterogeneity": 0.0, 
+#"CD4_Post_Infection_Weibull_Scale": 540.55, 
+
+# OLD
+#LINEAR_CD4_DECLINE_MODEL_SLOPE = -508.92
+#LINEAR_CD4_DECLINE_MODEL_INTERCEPT = 540.55
+
+# NEW - should read from config
+CD4_POST_INFECTION = 540.55
+CD4_AT_DEATH = 31.63
 
 class HIVCD4ProgressionAnalyzer():
 
@@ -25,7 +37,8 @@ class HIVCD4ProgressionAnalyzer():
         self.map_count = 0
 
         # Here is the truth function
-        self.fun = lambda frac_prog: [LINEAR_CD4_DECLINE_MODEL_INTERCEPT + fp * LINEAR_CD4_DECLINE_MODEL_SLOPE for fp in frac_prog]
+        #self.fun = lambda frac_prog: [LINEAR_CD4_DECLINE_MODEL_INTERCEPT + fp * LINEAR_CD4_DECLINE_MODEL_SLOPE for fp in frac_prog]
+        self.fun = lambda frac_prog: [ (math.sqrt(CD4_POST_INFECTION) + fp * (math.sqrt(CD4_AT_DEATH) -math.sqrt(CD4_POST_INFECTION)))**2  for fp in frac_prog]
 
     def map(self, output_data):
         emit_data = {}
@@ -40,8 +53,7 @@ class HIVCD4ProgressionAnalyzer():
         for uid in uids:
             mine = [ ( \
                 float(r[colMap['PrognosisCompletedFraction']]), \
-                # SQRT CD4 should be linear
-                math.sqrt(float(r[colMap['CD4count']])) \
+                float(r[colMap['CD4count']])        # SQRT CD4 should be linear \
             )  for r in rows if r[colMap['Id']] == str(uid)]
 
             # Add map_count to the key so that individuals from separate simulations do not get reduced
@@ -73,6 +85,9 @@ class HIVCD4ProgressionAnalyzer():
 
             err2 = sum([(yy - yy_hat)**2 for (yy,yy_hat) in zip(y,self.fun(x))])
             err = math.sqrt(err2)
+
+            if( self.verbose ):
+                print (err, self.tol_fun)
 
             # Store results here
             self.results[key] = {'Valid': err < self.tol_fun, 'Error': err, 'X': x, 'Y': y}

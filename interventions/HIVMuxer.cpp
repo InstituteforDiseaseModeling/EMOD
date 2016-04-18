@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -14,7 +14,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"
 #include "RANDOM.h"
 #include "IHIVInterventionsContainer.h" // for access to campaign_semaphores
-#include "IndividualHIV.h"
 
 static const char * _module = "HIVMuxer";
 
@@ -53,15 +52,17 @@ namespace Kernel
         // The HIVMuxer can not work appropriately if the delay can be zero.
         if( !JsonConfigurable::_dryrun )
         {
-            if( (delay_distribution == DistributionFunction::FIXED_DURATION) && (delay_period == 0.0) )
+            if( (delay_distribution.GetType() == DistributionFunction::FIXED_DURATION) && (delay_distribution.GetParam1() == 0.0) )
             {
                 throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Delay_Distribution", "FIXED_DURATION", "Delay_Period", "0" );
             }
-            else if( delay_distribution == DistributionFunction::GAUSSIAN_DURATION )
+            else if( delay_distribution.GetType() == DistributionFunction::GAUSSIAN_DURATION )
             {
                 // 99.7% of all numbers will be with 3 std devs of the mean
-                float min = delay_period_mean - 3.0*delay_period_std_dev ;
-                float max = delay_period_mean + 3.0*delay_period_std_dev ;
+                float mean    = delay_distribution.GetParam1();
+                float std_dev = delay_distribution.GetParam2();
+                float min = mean - 3.0*std_dev ;
+                float max = mean + 3.0*std_dev ;
                 if( (min <= 0) && (0 <= max) )
                 {
                     throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, 
@@ -135,19 +136,14 @@ namespace Kernel
         }
     }
 
-}
+    REGISTER_SERIALIZABLE(HIVMuxer);
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::HIVMuxer)
-
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, HIVMuxer& obj, const unsigned int v)
+    void HIVMuxer::serialize(IArchive& ar, HIVMuxer* obj)
     {
-        boost::serialization::void_cast_register<HIVMuxer, IDistributableIntervention>();
-        ar & obj.max_entries;
-        ar & obj.muxer_name;
-        ar & boost::serialization::base_object<Kernel::DelayedIntervention>(obj);
+        HIVDelayedIntervention::serialize( ar, obj );
+        HIVMuxer& muxer = *obj;
+
+        ar.labelElement("max_entries") & muxer.max_entries;
+        ar.labelElement("muxer_name" ) & muxer.muxer_name;
     }
 }
-#endif

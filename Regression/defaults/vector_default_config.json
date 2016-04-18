@@ -35,7 +35,10 @@
                "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE", 
                "Base_Population_Scale_Factor": 1, 
                "Birth_Rate_Dependence": "POPULATION_DEP_RATE", 
-               "Demographics_Filename": "NO_DEFAULT_DEMOGRAPHICS_FILENAME", 
+               "Birth_Rate_Time_Dependence": "NONE",
+               "Demographics_Filenames": ["NO_DEFAULT_DEMOGRAPHICS_FILENAME"], 
+               "Default_Geography_Initial_Node_Population":1000,
+               "Default_Geography_Torus_Size":10,
                "Enable_Aging": 1, 
                "Enable_Birth": 1, 
                "Enable_Demographics_Birth": 0, 
@@ -43,8 +46,8 @@
                "Enable_Demographics_Initial": 1, 
                "Enable_Demographics_Other": 0, 
                "Enable_Demographics_Reporting": 1, 
-               "Enable_Immunity_Initialization_Distribution": 0, 
                "Enable_Vital_Dynamics": 1, 
+               "Minimum_Adult_Age_Years" : 15,
                "IMMUNITY": {
                     "Acquisition_Blocking_Immunity_Decay_Rate": 0.01, 
                     "Acquisition_Blocking_Immunity_Duration_Before_Decay": 90, 
@@ -52,6 +55,8 @@
                     "Enable_Immunity": 1, 
                     "Immunity_Acquisition_Factor": 1, 
                     "Immunity_Transmission_Factor": 1, 
+                    "Immunity_Initialization_Distribution_Type": "DISTRIBUTION_OFF",
+                    "Susceptibility_Scale_Type": "CONSTANT_SUSCEPTIBILITY", 
                     "Transmission_Blocking_Immunity_Decay_Rate": 0.01, 
                     "Transmission_Blocking_Immunity_Duration_Before_Decay": 90
                }, 
@@ -113,12 +118,8 @@
           "HPC": {
                "Job_Node_Groups": "Chassis08", 
                "Job_Priority": "BELOWNORMAL", 
-               "LB": {
-                    "Load_Balance_Filename": "", 
-                    "Load_Balance_Scheme": "STATIC"
-               }, 
+               "Load_Balance_Filename": "", 
                "Local_Simulation": 0, 
-               "Python_Script_Path": "\\\\10.210.40.98\\IDM\\public\\python\\",
                "Num_Cores": 1
           }, 
           "MALARIA": {}, 
@@ -135,6 +136,7 @@
           }, 
           "NEEDED_BUT_NOT_USEFUL": {}, 
           "OUTPUT": {
+               "Custom_Reports_Filename" : "NoCustomReports",
                "Report_Event_Recorder" : 0,
                "Enable_Default_Reporting" : 1,
                "Enable_Spatial_Output": 0,
@@ -170,10 +172,8 @@
                }, 
                "Enable_Temperature_Dependent_Feeding_Cycle": 0,
                "Enable_Vector_Aging": 0, 
+               "Enable_Vector_Mortality" : 1,
                "Enable_Vector_Migration": 0, 
-               "Enable_Vector_Migration_Human": 0, 
-               "Enable_Vector_Migration_Local": 0, 
-               "Enable_Vector_Migration_Wind": 0, 
                "Age_Dependent_Biting_Risk_Type": "OFF",
                "HABITAT": {
                     "Air_Temperature_Offset": 0, 
@@ -203,14 +203,13 @@
                               "Aquatic_Mortality_Rate": 0.1, 
                               "Days_Between_Feeds": 3, 
                               "Egg_Batch_Size": 100, 
-                              "Habitat_Type": ["TEMPORARY_RAINFALL"], 
+                              "Larval_Habitat_Types": {"TEMPORARY_RAINFALL": 11250000000}, 
                               "Immature_Duration": 4, 
                               "Indoor_Feeding_Fraction": 0.5, 
                               "Infected_Arrhenius_1": 117000000000, 
                               "Infected_Arrhenius_2": 8336, 
                               "Infected_Egg_Batch_Factor": 0.8, 
                               "Infectious_Human_Feed_Mortality_Factor": 1.5, 
-                              "Required_Habitat_Factor": [11250000000], 
                               "Transmission_Rate": 0.5
                          }, 
                          "farauti": {
@@ -222,14 +221,13 @@
                               "Aquatic_Mortality_Rate": 0.1, 
                               "Days_Between_Feeds": 2, 
                               "Egg_Batch_Size": 70, 
-                              "Habitat_Type": ["BRACKISH_SWAMP"], 
+                              "Larval_Habitat_Types": {"BRACKISH_SWAMP": 10000000000}, 
                               "Immature_Duration": 2, 
                               "Indoor_Feeding_Fraction": 0.05, 
                               "Infected_Arrhenius_1": 117000000000, 
                               "Infected_Arrhenius_2": 8336, 
                               "Infected_Egg_Batch_Factor": 0.8, 
                               "Infectious_Human_Feed_Mortality_Factor": 1.5, 
-                              "Required_Habitat_Factor": [10000000000], 
                               "Transmission_Rate": 0.8
                          }, 
                          "funestus": {
@@ -241,14 +239,13 @@
                               "Aquatic_Mortality_Rate": 0.1, 
                               "Days_Between_Feeds": 3, 
                               "Egg_Batch_Size": 100, 
-                              "Habitat_Type": ["WATER_VEGETATION"], 
+                              "Larval_Habitat_Types": {"WATER_VEGETATION": 600000000}, 
                               "Immature_Duration": 4, 
                               "Indoor_Feeding_Fraction": 1, 
                               "Infected_Arrhenius_1": 117000000000, 
                               "Infected_Arrhenius_2": 8336, 
                               "Infected_Egg_Batch_Factor": 0.8, 
                               "Infectious_Human_Feed_Mortality_Factor": 1.5, 
-                              "Required_Habitat_Factor": [600000000], 
                               "Transmission_Rate": 0.5
                          }, 
                          "gambiae": {
@@ -260,14 +257,13 @@
                               "Aquatic_Mortality_Rate": 0.1, 
                               "Days_Between_Feeds": 3, 
                               "Egg_Batch_Size": 100, 
-                              "Habitat_Type": ["TEMPORARY_RAINFALL"], 
+                              "Larval_Habitat_Types": {"TEMPORARY_RAINFALL": 1250000000}, 
                               "Immature_Duration": 4, 
                               "Indoor_Feeding_Fraction": 1, 
                               "Infected_Arrhenius_1": 117000000000, 
                               "Infected_Arrhenius_2": 8336, 
                               "Infected_Egg_Batch_Factor": 0.8, 
                               "Infectious_Human_Feed_Mortality_Factor": 1.5, 
-                              "Required_Habitat_Factor": [1250000000], 
                               "Transmission_Rate": 0.5
                          }
                     }

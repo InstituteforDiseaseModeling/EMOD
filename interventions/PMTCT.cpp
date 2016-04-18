@@ -1,15 +1,17 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 #include "PMTCT.h"
-#include "HIVInterventionsContainer.h"
+#include "Common.h"
+#include "IHIVInterventionsContainer.h"
+#include "Contexts.h"
 
 static const char * _module = "PMTCT";
 
@@ -66,6 +68,15 @@ namespace Kernel
         return success;
     }
 
+    void PMTCT::SetContextTo(IIndividualHumanContext *context)
+    {
+        if (s_OK != context->GetInterventionsContext()->QueryInterface(GET_IID(IHIVMTCTEffects), (void**)&ivc) )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHIVMTCTEffects", "IIndividualHumanInterventionsContext" );
+        }
+        release_assert( ivc );
+    }
+
     void
     PMTCT::Update( float dt )
     {
@@ -84,21 +95,16 @@ namespace Kernel
         }
     }
 
-}
+    REGISTER_SERIALIZABLE(PMTCT);
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::PMTCT)
-
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, PMTCT& obj, const unsigned int v)
+    void PMTCT::serialize(IArchive& ar, PMTCT* obj)
     {
-        static const char * _module = "PMTCT";
-        LOG_DEBUG("(De)serializing PMTCT\n");
+        BaseIntervention::serialize( ar, obj );
+        PMTCT& pmtct = *obj;
 
-        boost::serialization::void_cast_register<PMTCT, IDistributableIntervention>();
-        ar & boost::serialization::base_object<Kernel::BaseIntervention>(obj);
+        ar.labelElement("timer"   ) & pmtct.timer;
+        ar.labelElement("efficacy") & pmtct.efficacy;
+
+        // ivc gets set in SetContextTo
     }
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, Kernel::PMTCT&, unsigned int);
 }
-#endif

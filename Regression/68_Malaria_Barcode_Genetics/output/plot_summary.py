@@ -94,7 +94,7 @@ class MalariaSummaryAnalyzer():
 
 if __name__ == '__main__':
     a=MalariaSummaryAnalyzer()
-    a.filename='MalariaSummaryReport_.json' #no tag like "AnnualAverage" was passed in the campaign file
+    a.filename='MalariaSummaryReport.json' #no tag like "AnnualAverage" was passed in the campaign file
     a.read_data()
     a.plot()
     plt.show()

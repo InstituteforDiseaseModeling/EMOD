@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,6 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "FileSystem.h"
 #include "SimulationConfig.h"
+#include "IdmMpi.h"
 
 #include <string>
 #include <climits>
@@ -35,36 +36,35 @@ SUITE(SchemaTest)
 {
     struct SchemaFixture
     {
-        static bool environmentInitialized;
-        static boost::mpi::environment* env;
-        static boost::mpi::communicator* world;
+        IdmMpi::MessageInterface* m_pMpi;
 
         SchemaFixture()
         {
             JsonConfigurable::ClearMissingParameters();
 
-            if (!environmentInitialized)
-            {
-                Environment::setLogger(new SimpleLogger());
-                int argc      = 1;
-                char* exeName = "componentTests.exe";
-                char** argv   = &exeName;
-                env           = new boost::mpi::environment(argc, argv);
-                world         = new boost::mpi::communicator;
-                string configFilename("");
-                string inputPath("");
-                string outputPath("");
-                string statePath("");
-                string dllPath("");
-                Environment::Initialize(env, world, configFilename, inputPath, outputPath, /*statePath, */dllPath, true);
-                environmentInitialized = true;
-            }
+            m_pMpi = IdmMpi::MessageInterface::CreateNull();
+
+            Environment::Finalize();
+            Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
+            int argc      = 1;
+            char* exeName = "componentTests.exe";
+            char** argv   = &exeName;
+            string configFilename("");
+            string inputPath(".");
+            string outputPath(".");
+            string statePath(".");
+            string dllPath(".");
+            Environment::Initialize( m_pMpi, nullptr, configFilename, inputPath, outputPath, /*statePath, */dllPath, true);
+        }
+
+        ~SchemaFixture()
+        {
+            Environment::Finalize();
         }
     };
 
-    bool                      SchemaFixture::environmentInitialized = false ;
-    boost::mpi::environment*  SchemaFixture::env        = nullptr ;
-    boost::mpi::communicator* SchemaFixture::world      = nullptr ;
+
+
 #if 1
     TEST_FIXTURE(SchemaFixture, WriteSchema)
     {

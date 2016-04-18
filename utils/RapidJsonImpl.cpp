@@ -1,17 +1,15 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 #include <stdafx.h>
 #include <cstdio>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <time.h>
 #include <assert.h>
 
 #include <sstream>
@@ -26,10 +24,12 @@ static const char* _module = "RapidJsonObj";
 namespace Kernel {
 
     RapidJsonObj::RapidJsonObj()
-        : m_buffer(NULL)
-        , m_writer(NULL)
+        : m_buffer(nullptr)
+        , m_writer(nullptr)
+        , m_writerQueue()
+        , m_bufferQueue()
+        , m_document(nullptr)
         , m_bCacheWriter(false)
-        , m_document(NULL)
     {
     }
 
@@ -104,7 +104,7 @@ namespace Kernel {
         doc.Accept(writer);
 
         std::size_t len = os.str().size() + 1;
-        prettyString = (char*) malloc(len);
+        prettyString = static_cast<char*>(malloc( len ));
         if( prettyString != nullptr )
         {
             strcpy(prettyString, os.str().c_str());
@@ -203,15 +203,15 @@ namespace Kernel {
     void RapidJsonObj::Add( const bool val )     { m_writer->Bool(val); }
     void RapidJsonObj::Add( const IJsonObjectAdapter* val ) { m_writer->String(val->ToString()); }
 
-    IJsonObjectAdapter* RapidJsonObj::operator[](const char* key) const { return GetObject(key); }
+    IJsonObjectAdapter* RapidJsonObj::operator[](const char* key) const { return GetJsonObject(key); }
 
-    IJsonObjectAdapter* RapidJsonObj::GetObject(const char* key) const
+    IJsonObjectAdapter* RapidJsonObj::GetJsonObject(const char* key) const
     {
         RapidJsonObj* rjObj = (RapidJsonObj*) CreateJsonObjAdapter();
         if (!rjObj)
         {
             LOG_ERR_F("Failed to clone IJsonObjectAdapter object for key=%s\n", key);
-            return NULL;
+            return nullptr;
         }
 
         assert(m_document);
@@ -225,13 +225,13 @@ namespace Kernel {
         return rjObj;
     }
 
-    IJsonObjectAdapter* RapidJsonObj::GetArray(const char* key) const
+    IJsonObjectAdapter* RapidJsonObj::GetJsonArray(const char* key) const
     {
         RapidJsonObj* rjObj = (RapidJsonObj*) CreateJsonObjAdapter();
         if (!rjObj)
         {
             LOG_ERR_F("Failed to clone IJsonObjectAdapter object for key=%s\n", key);
-            return NULL;
+            return nullptr;
         }
 
         assert(m_document);
@@ -315,13 +315,13 @@ namespace Kernel {
         if (!rjObj)
         {
             LOG_ERR_F("Failed to clone IJsonObjectAdapter object for index=%d\n", index);
-            return NULL;
+            return nullptr;
         }
 
         assert(m_document);
         Document& document = *m_document;
         assert(document.IsArray());
-        rjObj->m_document = (Document*) &document[(SizeType)index];
+        rjObj->m_document = (Document*) &document[SizeType(index)];
 
         return rjObj;
     }
@@ -331,7 +331,7 @@ namespace Kernel {
     uint32_t    RapidJsonObj::AsUint()   const { assert(m_document->IsNumber()); return m_document->GetUint(); }
     int64_t     RapidJsonObj::AsInt64()  const { assert(m_document->IsNumber()); return m_document->GetInt64(); }
     uint64_t    RapidJsonObj::AsUint64() const { assert(m_document->IsNumber()); return m_document->GetUint64(); }
-    float       RapidJsonObj::AsFloat()  const { assert(m_document->IsNumber()); return (float)m_document->GetDouble(); }
+    float       RapidJsonObj::AsFloat()  const { assert(m_document->IsNumber()); return float(m_document->GetDouble()); }
     double      RapidJsonObj::AsDouble() const { assert(m_document->IsNumber()); return m_document->GetDouble(); }
     bool        RapidJsonObj::AsBool()   const { assert(m_document->IsNumber()); return m_document->GetBool(); }
 

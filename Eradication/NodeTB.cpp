@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,7 +13,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "NodeTB.h"
 #include "TransmissionGroupsFactory.h" //for SetupIntranodeTransmission
-#include "NodeEventContext.h" //for node level trigger
 #include "NodeEventContextHost.h" //for node level trigger
 #include "IndividualTB.h"
 #include "SimulationConfig.h"
@@ -56,7 +55,7 @@ namespace Kernel
         NodeAirborne::Initialize();
     }
 
-    IndividualHuman *NodeTB::createHuman(suids::suid suid, float monte_carlo_weight, float initial_age, int gender, float above_poverty)
+    IIndividualHuman* NodeTB::createHuman( suids::suid suid, float monte_carlo_weight, float initial_age, int gender, float above_poverty)
     {
         return IndividualHumanTB::CreateHuman(this, suid, monte_carlo_weight, initial_age, gender, above_poverty);
     }
@@ -65,7 +64,7 @@ namespace Kernel
     {
         // Trigger any node level HTI
 
-        IIndividualHumanTB2 *tb_ind= NULL;
+        IIndividualHumanTB2 *tb_ind= nullptr;
         if( ih->QueryInterface( GET_IID( IIndividualHumanTB2 ), (void**) &tb_ind ) != s_OK )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "ih", "IndividualHuman", "IIndividualHumanTB2" );
@@ -157,7 +156,7 @@ namespace Kernel
     
                             for (int iSink = 0; iSink < valueCount; iSink++) 
                             {
-                                 matrixRow.push_back((float)scalingMatrixRow[iSink].AsDouble());
+                                 matrixRow.push_back(float(scalingMatrixRow[iSink].AsDouble()));
                             }
                             scalingMatrix.push_back(matrixRow);
                         }
@@ -174,7 +173,7 @@ namespace Kernel
     
                             for (int iSink = 0; iSink < valueCount; iSink++) 
                             {
-                                 matrixRow.push_back((float)scalingMatrixRow[iSink].AsDouble());
+                                 matrixRow.push_back(float(scalingMatrixRow[iSink].AsDouble()));
                             }
                             scalingMatrix.push_back(matrixRow);
                         }
@@ -243,26 +242,26 @@ namespace Kernel
         }
     }
 
-    IndividualHuman *NodeTB::addNewIndividual( float monte_carlo_weight, float initial_age, int gender, int initial_infection_count, float immparam, float riskparam, float mighet, float init_poverty)
+    IIndividualHuman* NodeTB::addNewIndividual( float monte_carlo_weight, float initial_age, int gender, int initial_infection_count, float immparam, float riskparam, float mighet, float init_poverty)
     {
         auto tempind = NodeAirborne::addNewIndividual(monte_carlo_weight, initial_age, gender, initial_infection_count, immparam, riskparam, mighet, init_poverty);
         dynamic_cast<IndividualHumanTB*>(tempind)->RegisterInfectionIncidenceObserver( this );
         return tempind;
     }
 
-    void NodeTB::processEmigratingIndividual(IndividualHuman *individual)
+    void NodeTB::processEmigratingIndividual( IIndividualHuman* individual )
     {
         dynamic_cast<IndividualHumanTB*>(individual)->UnRegisterAllObservers( this );
-        NodeAirborne::processEmigratingIndividual(individual);
-
+        NodeAirborne::processEmigratingIndividual( individual );
     }
 
-    IndividualHuman* NodeTB::processImmigratingIndividual(IndividualHuman* movedind)
+    IIndividualHuman* NodeTB::processImmigratingIndividual( IIndividualHuman* individual )
     {
-        movedind = NodeAirborne::processImmigratingIndividual(movedind);
-        dynamic_cast<IndividualHumanTB*>(movedind)->RegisterInfectionIncidenceObserver( this );
-        return movedind;
+        individual = NodeAirborne::processImmigratingIndividual( individual );
+        dynamic_cast<IndividualHumanTB*>(individual)->RegisterInfectionIncidenceObserver( this );
+        return individual;
     }
+
     float NodeTB::GetIncidentCounter() const 
     {
         return incident_counter;
@@ -282,21 +281,18 @@ namespace Kernel
     {
         return MDR_fast_incident_counter;
     }
-}
 
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(Kernel::NodeTB)
-namespace Kernel
-{
-    template<class Archive>
-    void serialize(Archive & ar, NodeTB& node, const unsigned int  file_version )
+    REGISTER_SERIALIZABLE(NodeTB);
+
+    void NodeTB::serialize(IArchive& ar, NodeTB* obj)
     {
-        // Register derived types // Really????
-        ar.template register_type<IndividualHumanTB>();
-
-        ar &boost::serialization::base_object<NodeAirborne>(node);    
+        NodeAirborne::serialize(ar, obj);
+        NodeTB& node = *obj;
+        ar.labelElement("incident_counter") & node.incident_counter;
+        ar.labelElement("MDR_incident_counter") & node.MDR_incident_counter;
+        ar.labelElement("MDR_evolved_incident_counter") & node.MDR_evolved_incident_counter;
+        ar.labelElement("MDR_fast_incident_counter") & node.MDR_fast_incident_counter;
     }
 }
-#endif
 
 #endif // ENABLE_TB

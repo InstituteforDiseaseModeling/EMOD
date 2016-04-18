@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -37,6 +37,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
+    struct IVectorMigrationReporting ;
+
     class SimulationVector : public Simulation, public IVectorSimulationContext
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
@@ -48,18 +50,27 @@ namespace Kernel
         virtual ~SimulationVector();
 
         // IVectorSimulationContext methods
-        virtual void  PostMigratingVector(VectorCohort* ind);
+        virtual void  PostMigratingVector( const suids::suid& nodeSuid, VectorCohort* ind ) override;
+        virtual float GetNodePopulation( const suids::suid& nodeSuid ) override;
+        virtual float GetAvailableLarvalHabitat( const suids::suid& nodeSuid, const std::string& rSpeciesID ) override;
 
         // Allows correct type of community to be added by derived class Simulations
-        virtual void addNewNodeFromDemographics(suids::suid node_suid, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory);
+        virtual void addNewNodeFromDemographics(suids::suid node_suid, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory) override;
+        virtual int  populateFromDemographics(const char* campaign_filename, const char* loadbalance_filename);
 
         // Creates reporters.  Specifies vector-species-specific reporting in addition to base reporting
-        virtual void Reports_CreateBuiltIn();
+        virtual void Reports_CreateBuiltIn() override;
+
+        // INodeInfoFactory
+        virtual INodeInfo* CreateNodeInfo() override;
+        virtual INodeInfo* CreateNodeInfo( int rank, INodeContext* pNC ) override;
 
     protected:
 
         // holds a vector of migrating vectors for each node rank
-        vector< vector< IMigrate* > > migratingVectorQueues;
+        vector<vector<IVectorCohort*>> migratingVectorQueues;
+        vector< IVectorMigrationReporting* > vector_migration_reports ;
+        std::map<suids::suid,float> node_populations_map ;
 
         float drugdefaultcost;
         float vaccinedefaultcost;
@@ -67,7 +78,7 @@ namespace Kernel
         float awarenessdefaultcost[AWARENESS_ARRAY_LENGTH];
         float netdefaultcost[BEDNET_ARRAY_LENGTH];
 
-        void Initialize(const ::Configuration *config);
+        virtual void Initialize(const ::Configuration *config) override;
 
         SimulationVector();
         static bool ValidateConfiguration(const ::Configuration *config);
@@ -77,21 +88,6 @@ namespace Kernel
 
     private:
 
-#if USE_BOOST_SERIALIZATION
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, SimulationVector& sim, const unsigned int  file_version );
-#endif
-
         virtual ISimulationContext *GetContextPointer();
-
-        TypedPrivateMigrationQueueStorage<Kernel::IndividualHumanVector>  typed_migration_queue_storage;
-
-    protected:
-        TypedPrivateMigrationQueueStorage<Kernel::VectorCohortIndividual> typed_vector_migration_queue_storage; // inherited by SimulationMalaria
     };
 }
-
-#ifndef WIN32
-DECLARE_VIRTUAL_BASE_OF(Kernel::Simulation, Kernel::SimulationVector)
-#endif

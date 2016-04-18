@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -14,7 +14,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 #include "IIndividualHumanHIV.h"
 #include "SusceptibilityHIV.h"
-#include "SimulationConfig.h"
 
 static const char * _module = "AgeDiagnostic";
 
@@ -29,33 +28,88 @@ namespace Kernel
         LOG_DEBUG_F( "Configuring age thresholds from campaign.json\n" );
         // Now's as good a time as any to parse in the calendar schedule.
         json::QuickInterpreter a_qi( (*inputJson)[key] );
-        json::QuickInterpreter threshJson( a_qi.As<json::Array>() );
-        assert( a_qi.As<json::Array>().Size() );
-        for( unsigned int idx=0; idx<a_qi.As<json::Array>().Size(); idx++ )
-        {
-            ConstrainedString signal = "UNITIALIZED";
-            signal.constraints = "<configuration>:Listed_Events.*";
-            signal.constraint_param = &GET_CONFIGURABLE(SimulationConfig)->listed_events;
-            initConfigTypeMap( "Event", &signal, HIV_Age_Diagnostic_Event_Name_DESC_TEXT );
-            auto obj = Configuration::CopyFromElement((threshJson)[idx]);
-            JsonConfigurable::Configure( obj );
-            delete obj;
-            thresh_events.push_back( signal );
-
-            NaturalNumber low = float(threshJson[idx]["Low"].As<json::Number>());
-            NaturalNumber high = float(threshJson[idx]["High"].As<json::Number>());
-            if( high <= low )
+        try {
+            json::QuickInterpreter threshJson( a_qi.As<json::Array>() );
+            assert( a_qi.As<json::Array>().Size() );
+            for( unsigned int idx=0; idx<a_qi.As<json::Array>().Size(); idx++ )
             {
-                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__,
-                                                        "low",  std::to_string( low ).c_str(), 
-                                                        "high", std::to_string( high ).c_str(),
-                                                        "High value must be higher than Low value." );
-            }
+                EventTrigger signal;
+                initConfigTypeMap( "Event", &signal, HIV_Age_Diagnostic_Event_Name_DESC_TEXT );
+                auto obj = Configuration::CopyFromElement((threshJson)[idx]);
+                JsonConfigurable::Configure( obj );
+                delete obj;
+                obj = nullptr;
+                thresh_events.push_back( signal );
 
-            thresholds.push_back( std::make_pair( low, high ) );
-            LOG_DEBUG_F( "Found age threshold set from config: low/high/event = %d/%d/%s\n", (int) low, (int) high, signal.c_str() );
+                NaturalNumber low, high;
+                try {
+                    low = float(threshJson[idx]["Low"].As<json::Number>());
+                }
+                catch( const json::Exception & )
+                {
+                    throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Low", threshJson[idx], "Expected NUMBER" );
+                }
+                try {
+                    high = float(threshJson[idx]["High"].As<json::Number>());
+                }
+                catch( const json::Exception & )
+                {
+                    throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, "High", threshJson[idx], "Expected NUMBER" );
+                }
+                if( high <= low )
+                {
+                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                            "low",  std::to_string( low ).c_str(),
+                            "high", std::to_string( high ).c_str(),
+                            "High value must be higher than Low value." );
+                }
+
+                thresholds.push_back( std::make_pair( low, high ) );
+                LOG_DEBUG_F( "Found age threshold set from config: low/high/event = %d/%d/%s\n", (int) low, (int) high, signal.c_str() );
+            }
+        }
+        catch( const json::Exception & )
+        {
+            throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, key.c_str(), a_qi, "Expected ARRAY" );
         }
         LOG_DEBUG_F( "Found %d age thresholds\n", thresholds.size() );
+    }
+
+    static void serialize_thresholds( IArchive& ar, std::vector<std::pair<NaturalNumber,NaturalNumber>>& thresholds )
+    {
+        size_t count = ar.IsWriter() ? thresholds.size() : -1;
+
+        ar.startArray(count);
+        if( !ar.IsWriter() ) 
+        {
+            thresholds.resize(count);
+        }
+        for( auto& entry : thresholds )
+        {
+            ar.startObject();
+            ar.labelElement("first" ) & entry.first;
+            ar.labelElement("second") & entry.second;
+            ar.endObject();
+        }
+        ar.endArray();
+    }
+
+    void AgeThresholds::serialize(IArchive& ar, AgeThresholds& obj)
+    {
+        ar.startObject();
+        ar.labelElement("thresholds"   ); serialize_thresholds( ar, obj.thresholds );
+        ar.labelElement("thresh_events") & obj.thresh_events;
+        ar.endObject();
+
+        // verify events are valid
+        if( ar.IsReader() )
+        {
+            EventTrigger signal;
+            for( auto ev : obj.thresh_events )
+            {
+                signal = ev;
+            }
+        }
     }
 
     json::QuickBuilder
@@ -106,9 +160,9 @@ namespace Kernel
     {
         age_thresholds = master.age_thresholds;
     }
-        
+
     AgeDiagnostic::~AgeDiagnostic()
-    { 
+    {
         LOG_DEBUG("Destructing Age Diagnostic \n");
     }
 
@@ -118,9 +172,8 @@ namespace Kernel
 
         // Apply diagnostic test with given specificity/sensitivity
         bool test_pos = false;
-        float rand = parent->GetRng()->e();
 
-        IIndividualHumanEventContext* ind_hec = NULL;
+        IIndividualHumanEventContext* ind_hec = nullptr;
         if(parent->QueryInterface( GET_IID( IIndividualHumanEventContext ), (void**)&ind_hec ) != s_OK)
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanEventContext", "IIndividualHuman" );
@@ -151,25 +204,18 @@ namespace Kernel
         // always return negative if the person is not infected, intended to be used with GroupEventCoordinator
         // TODO: allow to distribute Smear diagnostic to non-infected individuals?
 
-        bool positiveTest = false;
         // True positive (sensitivity), or False positive (1-specificity)
-        positiveTest = ( test_pos && (rand < base_sensitivity) ) || ( !test_pos && (rand > base_specificity) );
         expired = true;
+        bool positiveTest = applySensitivityAndSpecificity( test_pos );
         return positiveTest;
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::AgeDiagnostic)
+    REGISTER_SERIALIZABLE(AgeDiagnostic);
 
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, AgeDiagnostic& obj, const unsigned int v)
+    void AgeDiagnostic::serialize(IArchive& ar, AgeDiagnostic* obj)
     {
-
-        boost::serialization::void_cast_register<AgeDiagnostic, IDistributableIntervention>();
-
-        ar & boost::serialization::base_object<Kernel::SimpleDiagnostic>(obj);
+        SimpleDiagnostic::serialize( ar, obj );
+        AgeDiagnostic& ad = *obj;
+        ar.labelElement("age_thresholds"); AgeThresholds::serialize( ar, ad.age_thresholds );
     }
 }
-#endif

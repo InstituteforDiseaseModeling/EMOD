@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -58,7 +58,7 @@ namespace Kernel
                     << std::endl;
                 LOG_INFO( msg.str().c_str() );
             }
-            catch( json::Exception &e )
+            catch( const json::Exception &e )
             {
                 std::ostringstream msg;
                 msg << "json Exception creating WaningEffect for GetSchema: "
@@ -66,8 +66,9 @@ namespace Kernel
                     << std::endl;
                 LOG_INFO( msg.str().c_str() );
             }
-
             LOG_DEBUG( "Done with that class....\n" );
+            delete fakeConfig;
+            fakeConfig = nullptr;
         }
         campaignSchema[ "schema" ] = waningEffectsJsonArray;
         LOG_DEBUG( "Returning from GetSchema.\n" );
@@ -75,5 +76,5 @@ namespace Kernel
         return retSchema;
     }
 
-    IWaningEffectFactory * WaningEffectFactory::_instance = NULL;
+    IWaningEffectFactory * WaningEffectFactory::_instance = nullptr;
 }

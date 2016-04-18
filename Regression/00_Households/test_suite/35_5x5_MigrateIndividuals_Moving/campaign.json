@@ -1,0 +1,48 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 5, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1, 2, 3, 4, 6, 7, 8, 9, 10 ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Residents_Only" : 1,
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "MigrateIndividuals",
+                    "NodeID_To_Migrate_To": 26,
+                    "Duration_Before_Leaving_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_Before_Leaving_Fixed": 0, 
+                    "Duration_At_Node_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_At_Node_Fixed": 0, 
+                    "Is_Moving" : 1
+                }
+            }
+        },
+        {
+            "Event_Name": "Outbreak", 
+            "class": "CampaignEvent",
+            "Start_Day": 30, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [ 1, 2 ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Outbreak_Source": "ImportCases",
+                    "Antigen": 0, 
+                    "Genome": 0
+                }
+            }
+        }
+    ]
+}

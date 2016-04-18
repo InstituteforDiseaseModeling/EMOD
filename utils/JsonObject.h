@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -29,8 +29,6 @@ namespace Kernel {
     // which is an ordered collection of json values
     struct IJsonAdapter
     {
-    public:
-
         virtual void CreateNewWriter(bool bCacheWriter = false) = 0;
         virtual void FinishWriter() = 0;
         virtual void BeginObject() = 0;
@@ -42,6 +40,8 @@ namespace Kernel {
         virtual void Parse(const char* jsBuffer) = 0;
 
         virtual void DeleteUnderlyingJsonObjs() = 0;
+
+        virtual ~IJsonAdapter() { }
     };
 
     // JSON
@@ -90,8 +90,8 @@ typedef uint32_t IndexType;
         virtual void Add( const IJsonObjectAdapter* val ) = 0;
 
         virtual IJsonObjectAdapter* operator[](const char* key) const = 0;
-        virtual IJsonObjectAdapter* GetObject(const char* key)  const = 0;
-        virtual IJsonObjectAdapter* GetArray(const char* key)   const = 0;
+        virtual IJsonObjectAdapter* GetJsonObject(const char* key)  const = 0;
+        virtual IJsonObjectAdapter* GetJsonArray(const char* key)   const = 0;
         virtual const char* GetString(const char* key)          const = 0;
         virtual int32_t GetInt(const char* key)                 const = 0;
         virtual uint32_t GetUint(const char* key)               const = 0;
@@ -129,6 +129,8 @@ typedef uint32_t IndexType;
         virtual operator bool()        const = 0;
 
         virtual unsigned int GetSize() const = 0;
+
+        virtual ~IJsonObjectAdapter() { }
     };
 
     IJsonObjectAdapter* CreateJsonObjAdapter(JsonLibType jsLib = JS_RAPIDJSON);

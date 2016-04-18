@@ -1,0 +1,8 @@
+{
+    "parameters": {
+        "Job_Node_Groups": "Chassis08", 
+        "Job_Priority": "BELOWNORMAL", 
+        "Local_Simulation": 0, 
+        "Num_Cores": 1
+    }
+}

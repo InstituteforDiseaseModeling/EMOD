@@ -1,4 +1,5 @@
 {
+     "Default_Config_Path": "defaults/malaria_default_config.json", 
      "CLIMATE": {
           "FILENAMES": {
                "Air_Temperature_Filename": "Namawala_single_node_air_temperature_daily.bin", 
@@ -9,9 +10,8 @@
           }
      }, 
      "DEMOGRAPHICS": {
-          "Demographics_Filename": "Namawala_single_node_demographics.compiled.json"
+          "Demographics_Filenames": ["Namawala_single_node_demographics.compiled.json"]
      }, 
-     "Default_Config_Path": "defaults\\malaria_default_config.json", 
      "MALARIA": {
           "Antibody_Memory_Level": 0.3, 
           "Antigen_Switch_Rate": 5e-09, 

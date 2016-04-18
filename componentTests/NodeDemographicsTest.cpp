@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -15,12 +15,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeDemographics.h"
 #include "SimulationConfig.h"
 #include "INodeContextFake.h"
+#include "IdmMpi.h"
 
 #include <string>
 #include <climits>
 #include <vector>
 #include <iostream>
 #include <memory> // unique_ptr
+#include "common.h"
 
 #ifdef WIN32
 #include <sys/stat.h> // _S_IREAD
@@ -29,14 +31,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 using namespace Kernel;
 using namespace std;
-
-
-void Print( const std::string& rMessage )
-{
-    std::wostringstream msg ;
-    msg << rMessage.c_str() ;
-    OutputDebugStringW( msg.str().c_str() );
-}
 
 
 class Stopwatch
@@ -78,47 +72,49 @@ private:
 
 SUITE(NodeDemographicsTest)
 {
-    typedef boost::bimap<uint32_t, suids::suid> nodeid_suid_map_t;
+    typedef boost::bimap<ExternalNodeId_t, suids::suid> nodeid_suid_map_t;
     typedef nodeid_suid_map_t::value_type nodeid_suid_pair;
 
     struct NodeDemographicsFactoryFixture
     {
-        static bool environmentInitialized;
-        static boost::mpi::environment* env;
-        static boost::mpi::communicator* world;
-
-        static SimulationConfig* pSimConfig ;
+        IdmMpi::MessageInterface* m_pMpi;
+        SimulationConfig* pSimConfig ;
 
         suids::suid next_suid;
 
         NodeDemographicsFactoryFixture()
         {
             JsonConfigurable::ClearMissingParameters();
+            JsonConfigurable::_useDefaults = false;
 
             next_suid.data = 1;
 
-            if (!environmentInitialized)
-            {
-                Environment::setLogger(new SimpleLogger());
-                int argc      = 1;
-                char* exeName = "componentTests.exe";
-                char** argv   = &exeName;
-                env           = new boost::mpi::environment(argc, argv);
-                world         = new boost::mpi::communicator;
-                string configFilename("testdata/NodeDemographicsTest/config.json");
-                string inputPath("testdata/NodeDemographicsTest");
-                string outputPath("testdata/NodeDemographicsTest/output");
-                string statePath("testdata/NodeDemographicsTest");
-                string dllPath("testdata/NodeDemographicsTest");
-                Environment::Initialize(env, world, configFilename, inputPath, outputPath, /*statePath, */dllPath, false);
-                environmentInitialized = true;
+            m_pMpi = IdmMpi::MessageInterface::CreateNull();
 
-                pSimConfig = SimulationConfigFactory::CreateInstance(Environment::getInstance()->Config);
-                if (pSimConfig)
-                {
-                    Environment::setSimulationConfig(pSimConfig);
-                }
+            Environment::Finalize();
+            Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
+            int argc      = 1;
+            char* exeName = "componentTests.exe";
+            char** argv   = &exeName;
+            string configFilename("testdata/NodeDemographicsTest/config.json");
+            string inputPath("testdata/NodeDemographicsTest");
+            string outputPath("testdata/NodeDemographicsTest/output");
+            string statePath("testdata/NodeDemographicsTest");
+            string dllPath("testdata/NodeDemographicsTest");
+            Environment::Initialize( m_pMpi, nullptr, configFilename, inputPath, outputPath, /*statePath, */dllPath, false);
+
+            pSimConfig = SimulationConfigFactory::CreateInstance(Environment::getInstance()->Config);
+            if (pSimConfig)
+            {
+                Environment::setSimulationConfig(pSimConfig);
             }
+        }
+
+        ~NodeDemographicsFactoryFixture()
+        {
+            delete m_pMpi;
+            delete pSimConfig;
+            Environment::Finalize();
         }
 
         suids::suid GetNextNodeSuid()
@@ -130,13 +126,12 @@ SUITE(NodeDemographicsTest)
 
         void TestHelper_FormatException( int lineNumber, const std::string& rDemoFilenames, const std::string& rExpMsg )
         {
-            pSimConfig->demographics_initial = true ;
             NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet(rDemoFilenames) ) ;
 
             nodeid_suid_map_t node_id_suid_map;
             try
             {
-                NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config);
+                NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 );
                 CHECK_LN( false, lineNumber ); // shouldn't get here
             }
             catch( DetailedException& e )
@@ -153,7 +148,7 @@ SUITE(NodeDemographicsTest)
                 bool passed = msg.find( rExpMsg ) != string::npos ;
                 if( !passed )
                 {
-                    Print( msg );
+                    PrintDebug( msg );
                 }
                 CHECK_LN( passed, lineNumber );
             }
@@ -161,11 +156,10 @@ SUITE(NodeDemographicsTest)
 
         void TestHelper_MissingAttributes_FormatException( int lineNumber, const std::string& rDemoFilenames, const std::string& rExpMsg )
         {
-            pSimConfig->demographics_initial = true ;
             NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet(rDemoFilenames) ) ;
 
             nodeid_suid_map_t node_id_suid_map;
-            unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config) );
+            unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory( &node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
 
             vector<uint32_t> nodeIDs = factory->GetNodeIDs();
             for (uint32_t node_id : nodeIDs)
@@ -192,7 +186,7 @@ SUITE(NodeDemographicsTest)
                 bool passed = msg.find( rExpMsg ) != string::npos ;
                 if( !passed )
                 {
-                    Print( msg );
+                    PrintDebug( msg );
                 }
                 CHECK_LN( passed, lineNumber );
             }
@@ -204,11 +198,10 @@ SUITE(NodeDemographicsTest)
                                                      const std::vector<std::string>& rAxisNames,
                                                      const std::string& rExpMsg )
         {
-            pSimConfig->demographics_initial = true ;
             NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet(rDemoFilenames) ) ;
 
             nodeid_suid_map_t node_id_suid_map;
-            unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config) );
+            unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
 
             vector<uint32_t> nodeIDs = factory->GetNodeIDs();
             for (uint32_t node_id : nodeIDs)
@@ -235,7 +228,7 @@ SUITE(NodeDemographicsTest)
                 bool passed = msg.find( rExpMsg ) != string::npos ;
                 if( !passed )
                 {
-                    Print( msg );
+                    PrintDebug( msg );
                 }
                 CHECK_LN( passed, lineNumber );
             }
@@ -244,29 +237,27 @@ SUITE(NodeDemographicsTest)
 
     };
 
-    bool NodeDemographicsFactoryFixture::environmentInitialized     = false;
-    boost::mpi::environment*  NodeDemographicsFactoryFixture::env   = nullptr;
-    boost::mpi::communicator* NodeDemographicsFactoryFixture::world = nullptr;
-    SimulationConfig*  NodeDemographicsFactoryFixture::pSimConfig   = nullptr;
-
 #ifndef INCLUDED  // Use this to control what tests are run during development
 
     TEST(LegacyDemographicsFilename)
     {
+        IdmMpi::MessageInterface* pMpi = IdmMpi::MessageInterface::CreateNull();
+        Environment::Finalize();
+        Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
         int argc      = 1;
         char* exeName = "componentTests.exe";
         char** argv   = &exeName;
-        boost::mpi::environment* env = new boost::mpi::environment(argc, argv);
-        boost::mpi::communicator* world = new boost::mpi::communicator;
         string configFilename("testdata/NodeDemographicsTest/config_legacy.json");
         string p("testdata/NodeDemographicsTest");
-        Environment::Initialize(env, world, configFilename, p, p, /*p, */p, false);
+        Environment::Initialize(pMpi,nullptr,configFilename, p, p, /*p, */p, false);
         SimulationConfig* pSimConfig = SimulationConfigFactory::CreateInstance(Environment::getInstance()->Config);
         CHECK(pSimConfig);
         Environment::setSimulationConfig(pSimConfig);
         nodeid_suid_map_t node_id_suid_map;
-        NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config);
+        NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 );
         CHECK_EQUAL(NodeDemographicsFactory::GetDemographicsFileList().front(),"demographics.compiled.json");
+        Environment::Finalize();
+        delete pMpi;
     }
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, Create)
@@ -280,7 +271,7 @@ SUITE(NodeDemographicsTest)
         _chmod(demo_filename.c_str(), _S_IREAD );
 #endif
         nodeid_suid_map_t node_id_suid_map;
-        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config) );
+        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
         const vector<uint32_t>& ids = factory->GetNodeIDs();
         CHECK_EQUAL(1, ids.size());
         CHECK_EQUAL(1, ids[0]);
@@ -297,7 +288,7 @@ SUITE(NodeDemographicsTest)
     TEST_FIXTURE(NodeDemographicsFactoryFixture, CreateNodeDemographics)
     {
         nodeid_suid_map_t node_id_suid_map;
-        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config) );
+        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
 
         vector<uint32_t> nodeIDs = factory->GetNodeIDs();
         for (uint32_t node_id : nodeIDs)
@@ -324,13 +315,12 @@ SUITE(NodeDemographicsTest)
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestFileNotFound)
     {
-        pSimConfig->demographics_initial = true ;
         NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet("unknown_demographics.json") ) ;
 
         nodeid_suid_map_t node_id_suid_map;
         try
         {
-            NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config);
+            NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 );
             CHECK( false ); // shouldn't get here
         }
         catch( FileNotFoundException& fnfe )
@@ -446,11 +436,10 @@ SUITE(NodeDemographicsTest)
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestTwoFileGood)
     {
-        pSimConfig->demographics_initial = true ;
         NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet("demographics_TestTwoFileGood_base.json;demographics_TestTwoFileGood_overlay.json") ) ;
 
         nodeid_suid_map_t node_id_suid_map;
-        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config) );
+        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
         const vector<uint32_t>& ids = factory->GetNodeIDs();
         CHECK_EQUAL(2, ids.size());
         CHECK_EQUAL(340461476, ids[0]);
@@ -463,11 +452,10 @@ SUITE(NodeDemographicsTest)
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestTwoFileGoodDifferentDirectories)
     {
-        pSimConfig->demographics_initial = true ;
         NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet("demographics_TestTwoFileGood_base.json;testdata/NodeDemographicsTest/another_folder/demographics_TestTwoFileGood_overlay.json") ) ;
 
         nodeid_suid_map_t node_id_suid_map;
-        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config) );
+        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
         const vector<uint32_t>& nodeIDs = factory->GetNodeIDs();
         CHECK_EQUAL(2, nodeIDs.size());
         CHECK_EQUAL(340461476, nodeIDs[0]);
@@ -490,11 +478,10 @@ SUITE(NodeDemographicsTest)
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestTwoFileGoodDefaultOverlayOneNode)
     {
-        pSimConfig->demographics_initial = true ;
         NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet("demographics_TestTwoFileGoodDefaultOverlayOneNode_base.json;demographics_TestTwoFileGoodDefaultOverlayOneNode_overlay.json") ) ;
 
         nodeid_suid_map_t node_id_suid_map;
-        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config) );
+        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
         const vector<uint32_t>& nodeIDs = factory->GetNodeIDs();
         CHECK_EQUAL(2, nodeIDs.size());
         CHECK_EQUAL(340461476, nodeIDs[0]);
@@ -517,7 +504,7 @@ SUITE(NodeDemographicsTest)
 
         double  lat_1 = (*p_node_demo_1)["NodeAttributes"]["Latitude"         ].AsDouble();
         double  lon_1 = (*p_node_demo_1)["NodeAttributes"]["Longitude"        ].AsDouble();
-        int32_t alt_1 = (*p_node_demo_1)["NodeAttributes"]["Altitude"         ].AsInt();
+        double  alt_1 = (*p_node_demo_1)["NodeAttributes"]["Altitude"         ].AsDouble();
         int32_t air_1 = (*p_node_demo_1)["NodeAttributes"]["Airport"          ].AsInt();
         int32_t reg_1 = (*p_node_demo_1)["NodeAttributes"]["Region"           ].AsInt();
         int32_t sea_1 = (*p_node_demo_1)["NodeAttributes"]["Seaport"          ].AsInt();
@@ -525,7 +512,7 @@ SUITE(NodeDemographicsTest)
 
         CHECK_EQUAL( -8.5, lat_1 );
         CHECK_EQUAL( 36.5, lon_1 );
-        CHECK_EQUAL(    1, alt_1 );
+        CHECK_EQUAL(  1.0, alt_1 );
         CHECK_EQUAL(    2, air_1 );
         CHECK_EQUAL(    3, reg_1 );
         CHECK_EQUAL(    4, sea_1 );
@@ -533,7 +520,7 @@ SUITE(NodeDemographicsTest)
 
         double  lat_2 = (*p_node_demo_2)["NodeAttributes"]["Latitude"         ].AsDouble();
         double  lon_2 = (*p_node_demo_2)["NodeAttributes"]["Longitude"        ].AsDouble();
-        int32_t alt_2 = (*p_node_demo_2)["NodeAttributes"]["Altitude"         ].AsInt();
+        double  alt_2 = (*p_node_demo_2)["NodeAttributes"]["Altitude"         ].AsDouble();
         int32_t air_2 = (*p_node_demo_2)["NodeAttributes"]["Airport"          ].AsInt();
         int32_t reg_2 = (*p_node_demo_2)["NodeAttributes"]["Region"           ].AsInt();
         int32_t sea_2 = (*p_node_demo_2)["NodeAttributes"]["Seaport"          ].AsInt();
@@ -541,7 +528,7 @@ SUITE(NodeDemographicsTest)
 
         CHECK_EQUAL( -9.5, lat_2 );
         CHECK_EQUAL( 37.5, lon_2 );
-        CHECK_EQUAL(    5, alt_2 );
+        CHECK_EQUAL(  5.0, alt_2 );
         CHECK_EQUAL(    6, air_2 );
         CHECK_EQUAL(    7, reg_2 );
         CHECK_EQUAL(    8, sea_2 );
@@ -572,14 +559,12 @@ SUITE(NodeDemographicsTest)
         CHECK_EQUAL( 0.1, ad2_2 );
     }
 
-#ifdef SUPPORT_NODES_ALL
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestTwoFileGoodDefaultOverlayAllNodes)
     {
-        pSimConfig->demographics_initial = true ;
-        NodeDemographicsFactory::SetDemographicsFilenames( NodeDemographicsFactory::ConvertLegacyStringToSet("demographics_TestTwoFileGoodDefaultOverlayAllNodes_base.json;demographics_TestTwoFileGoodDefaultOverlayAllNodes_overlay.json") ) ;
+        NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet("demographics_TestTwoFileGoodDefaultOverlayAllNodes_base.json;demographics_TestTwoFileGoodDefaultOverlayAllNodes_overlay.json") ) ;
 
         nodeid_suid_map_t node_id_suid_map;
-        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config) );
+        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
         const vector<uint32_t>& nodeIDs = factory->GetNodeIDs();
         CHECK_EQUAL(2, nodeIDs.size());
         CHECK_EQUAL(340461476, nodeIDs[0]);
@@ -615,7 +600,6 @@ SUITE(NodeDemographicsTest)
         CHECK_CLOSE( 0.777, node_br_1, 0.001 );
         CHECK_CLOSE( 0.777, node_br_2, 0.001 );
     }
-#endif
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestTwoFileDiffIdRef)
     {
@@ -631,11 +615,10 @@ SUITE(NodeDemographicsTest)
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestDistGood)
     {
-        pSimConfig->demographics_initial = true ;
         NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet("demographics_TestDistGood.json") ) ;
 
         nodeid_suid_map_t node_id_suid_map;
-        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config) );
+        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
         const vector<uint32_t>& nodeIDs = factory->GetNodeIDs();
         CHECK_EQUAL(1, nodeIDs.size());
         CHECK_EQUAL(1, nodeIDs[0]);
@@ -1551,10 +1534,8 @@ SUITE(NodeDemographicsTest)
         // --- Verify that with the Default Demographics selected that there
         // --- are 100 nodes with 1,000 initial people in each node.
         // ------------------------------------------------------------------
-        pSimConfig->demographics_initial = false ;
-
         nodeid_suid_map_t node_id_suid_map;
-        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config) );
+        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, false, 10, 1000 ) );
         const vector<uint32_t>& nodeIDs = factory->GetNodeIDs();
         CHECK_EQUAL(100, nodeIDs.size());
 
@@ -1595,22 +1576,21 @@ SUITE(NodeDemographicsTest)
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestReadLargeFile)
     {
-        pSimConfig->demographics_initial = true ;
         NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet("demographics_TestReadLargeFile.compiled.json") ) ;
 
         nodeid_suid_map_t node_id_suid_map;
 
         Stopwatch watch ;
         watch.Start();
-        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config) );
+        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
         double ms = watch.Stop();
         
         ostringstream msg ;
         msg << "Duration (ms) = " << ms << endl ;
-        Print( msg.str() );
+        PrintDebug( msg.str() );
 
 #ifdef _DEBUG
-        CHECK( ms < 4000 );
+        CHECK( ms < 5000 );
 #else
         CHECK( ms < 2000 );
 #endif
@@ -1621,11 +1601,10 @@ SUITE(NodeDemographicsTest)
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestTwoNodeCompiled)
     {
-        pSimConfig->demographics_initial = true ;
         NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet("Seattle_30arcsec_demographics.compiled.json;Seattle_30arcsec_demographics_zoonosis.compiled.json") ) ;
 
         nodeid_suid_map_t node_id_suid_map;
-        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config) );
+        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
         const vector<uint32_t>& nodeIDs = factory->GetNodeIDs();
         CHECK_EQUAL(124, nodeIDs.size());
         for( int id = 1 ; id <= 124 ; id++ )
@@ -1675,11 +1654,10 @@ SUITE(NodeDemographicsTest)
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestAgeAndAccess)
     {
-        pSimConfig->demographics_initial = true ;
         NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet("hint_ageandaccess_demographics.compiled.json;hint_ageandaccess_overlay.compiled.json") ) ;
 
         nodeid_suid_map_t node_id_suid_map;
-        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config) );
+        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
         const vector<uint32_t>& nodeIDs = factory->GetNodeIDs();
         CHECK_EQUAL(1, nodeIDs.size());
         CHECK_EQUAL(340461476, nodeIDs[0]);
@@ -1721,10 +1699,9 @@ SUITE(NodeDemographicsTest)
         // ------------------------------------------------------------
         // --- Test that we get the data out of the base file correctly
         // ------------------------------------------------------------
-        pSimConfig->demographics_initial = true ;
         NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet("Namawala_single_node_demographics.json") ) ;
 
-        unique_ptr<NodeDemographicsFactory> factory_a( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config) );
+        unique_ptr<NodeDemographicsFactory> factory_a( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
         const vector<uint32_t>& nodeIDs_a = factory_a->GetNodeIDs();
         CHECK_EQUAL(1, nodeIDs_a.size());
         CHECK_EQUAL(340461476, nodeIDs_a[0]);
@@ -1742,10 +1719,9 @@ SUITE(NodeDemographicsTest)
         // ----------------------------------------------------------------------------------------
         // --- Test that adding the overlay overrides the distribution found in the first/base file
         // ----------------------------------------------------------------------------------------
-        pSimConfig->demographics_initial = true ;
         NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet("Namawala_single_node_demographics.json;Namawala_single_node_demographics_complex_mortality.json") ) ;
 
-        unique_ptr<NodeDemographicsFactory> factory_b( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config) );
+        unique_ptr<NodeDemographicsFactory> factory_b( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
         const vector<uint32_t>& nodeIDs_b = factory_b->GetNodeIDs();
         CHECK_EQUAL(1, nodeIDs_b.size());
         CHECK_EQUAL(340461476, nodeIDs_b[0]);
@@ -1764,10 +1740,9 @@ SUITE(NodeDemographicsTest)
         // ----------------------------------------------------------------------------------------
         // --- Test that adding the overlay overrides the distribution found in the first/base file
         // ----------------------------------------------------------------------------------------
-        pSimConfig->demographics_initial = true ;
         NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet("Namawala_single_node_demographics.json;Namawala_single_node_demographics_complex_mortality.json;Namawala_single_node_demographics.immunity.json") ) ;
 
-        unique_ptr<NodeDemographicsFactory> factory_c( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config) );
+        unique_ptr<NodeDemographicsFactory> factory_c( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
         const vector<uint32_t>& nodeIDs_c = factory_c->GetNodeIDs();
         CHECK_EQUAL(1, nodeIDs_c.size());
         CHECK_EQUAL(340461476, nodeIDs_c[0]);

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "RANDOM.h"
 #include "Common.h"             // for INFINITE_TIME
 #include "InterventionEnums.h"  // for InterventionDurabilityProfile, ImmunoglobulinType, etc.
-#include "Individual.h"  // has to go?
+#include "IIndividualHuman.h"
 #include "InterventionsContainer.h"  // for IPropertyValueChangerEffects
 #include "MathFunctions.h"  // for IPropertyValueChangerEffects
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
@@ -34,12 +34,16 @@ namespace Kernel
     END_QUERY_INTERFACE_BODY(PropertyValueChanger)
 
     PropertyValueChanger::PropertyValueChanger()
-        :probability(1.0)
+        : BaseIntervention()
+        , parent(nullptr)
+        , target_property_key()
+        , target_property_value()
+        , ibc(nullptr)
+        , probability(1.0)
         , revert(0.0f)
         , max_duration(0.0f)
         , action_timer(0.0f)
         , reversion_timer(0.0f)
-        , ibc(NULL)
     {
         expired = false;
         //std::cout << __FUNCTION__ << ":" << __LINE__ << std::endl;
@@ -58,8 +62,8 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        target_property_key.constraints = "<demographics>::Defaults.Individual_Properties.*.Property.<keys>"; 
-        target_property_value.constraints = "<demographics>::Defaults.Individual_Properties.*.Value.<keys>"; 
+        target_property_key.constraints = "<demographics>::Defaults.Individual_Properties.*.Property.<keys>";
+        target_property_value.constraints = "<demographics>::Defaults.Individual_Properties.*.Value.<keys>";
         initConfigTypeMap("Target_Property_Key", &target_property_key, PC_Target_Property_Key_DESC_TEXT );
         initConfigTypeMap("Target_Property_Value", &target_property_value, PC_Target_Property_Value_DESC_TEXT );
         initConfigTypeMap("Daily_Probability", &probability, PC_Daily_Probability_DESC_TEXT, 0.0f, 1.0f );
@@ -166,29 +170,33 @@ namespace Kernel
     {
         return BaseIntervention::Release();
     }
-    
+
     const char * PropertyValueChanger::GetTargetPropertyValue()
     {
         return target_property_value.c_str();
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::PropertyValueChanger)
+    REGISTER_SERIALIZABLE(PropertyValueChanger);
 
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, PropertyValueChanger& pc, const unsigned int v)
+    void PropertyValueChanger::serialize(IArchive& ar, PropertyValueChanger* obj)
     {
-        boost::serialization::void_cast_register<PropertyValueChanger, IDistributableIntervention>();
-        ar & (std::string)pc.target_property_key;
-        ar & (std::string)pc.target_property_value;
-        ar & pc.probability;
-        ar & pc.revert;
-        ar & pc.max_duration;
-        ar & pc.action_timer;
-        ar & pc.reversion_timer;
-        ar & boost::serialization::base_object<Kernel::BaseIntervention>(pc);
+        BaseIntervention::serialize( ar, obj );
+        PropertyValueChanger& changer = *obj;
+
+        ar.labelElement("target_property_key"  ) & changer.target_property_key;
+        ar.labelElement("target_property_value") & changer.target_property_value;
+        ar.labelElement("probability"          ) & changer.probability;
+        ar.labelElement("revert"               ) & changer.revert;
+        ar.labelElement("max_duration"         ) & changer.max_duration;
+        ar.labelElement("action_timer"         ) & changer.action_timer;
+        ar.labelElement("reversion_timer"      ) & changer.reversion_timer;
+
+        if( !ar.IsWriter() )
+        {
+            changer.target_property_key.constraints   = "<demographics>::Defaults.Individual_Properties.*.Property.<keys>";
+            changer.target_property_value.constraints = "<demographics>::Defaults.Individual_Properties.*.Value.<keys>";
+
+            //TODO - Need to actual use the constrained string
+        }
     }
 }
-#endif

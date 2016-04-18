@@ -25,7 +25,7 @@
         "New Reported Infections",
         "Newly Cleared TB Infections",
         "Newly Inactivated TB Infections",
-        "Probability of New Infection",
+        "Daily (Human) Infection Rate",
         "Statistical Population",
         "TB Immune Fraction"
     ],
@@ -12547,7 +12547,7 @@
                 0
             ]
         },
-        "Probability of New Infection": {
+        "Daily (Human) Infection Rate": {
             "Units": "Infection Rate",
             "Data": [
                 0,

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -28,7 +28,7 @@ public:
     static IReport* CreateReport();
     virtual ~SpatialReportTB() { }
  
-    virtual void LogIndividualData( Kernel::IndividualHuman * individual );
+    virtual void LogIndividualData( Kernel::IIndividualHuman* individual );
     virtual void LogNodeData( Kernel::INodeContext * pNC );
 
 protected:
@@ -53,13 +53,5 @@ protected:
     float MDR_TB_persons;
     float active_MDR_TB_persons;
     float TB_immune_persons;
-
-
-private:
-#if USE_BOOST_SERIALIZATION
-    friend class ::boost::serialization::access;
-    template<class Archive>
-    friend void serialize(Archive &ar, SpatialReportTB& report, const unsigned int v);
-#endif
 };
 }

@@ -1,0 +1,9 @@
+{
+    "parameters": {
+        "Migration_Model": "NO_MIGRATION", 
+        ".x_Air_Migration": 1, 
+        ".x_Local_Migration": 1, 
+        ".x_Regional_Migration": 1, 
+        ".x_Sea_Migration": 1
+    }
+}

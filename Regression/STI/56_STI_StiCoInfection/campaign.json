@@ -34,6 +34,7 @@
                 "Intervention_Config": {
                     "class": "StiCoInfectionDiagnostic",
                     "Treatment_Fraction": 1.0,
+                    "Event_Or_Config": "Config",
                     "Positive_Diagnosis_Config":
                     {
                         "class": "ModifyStiCoInfectionStatus",
@@ -55,7 +56,7 @@
                 "Target_Age_Max": 31,
                 "Intervention_Config": {
                     "class": "StiCoInfectionDiagnostic",
-                    "Event_Or_Config": "Event",
+                    "Event_Or_Config": "Config",
                     "Treatment_Fraction": 1.0,
                     "Positive_Diagnosis_Config":
                     {

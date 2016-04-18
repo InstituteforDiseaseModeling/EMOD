@@ -33,10 +33,12 @@
                 "Intervention_Config":
                 {
                     "class": "SimpleVaccine",
-                    "Durability_Time_Profile": "BOXDURABILITY",
-                    "Primary_Decay_Time_Constant": 9000,
                     "Vaccine_Type" : "AcquisitionBlocking",
-                    "Reduced_Acquire" : 0.8
+                    "Waning_Config": {
+                        "class": "WaningEffectBox",
+                        "Initial_Effect" : 0.8,
+                        "Box_Duration": 9000
+                    }
                 }
             }
         }

@@ -19,6 +19,7 @@
             "Enable_Disease_Mortality": 0
         }, 
         "PRIMARY": {
+            "Custom_Reports_Filename" : "custom_reports.json",
             "Simulation_Duration": 150, 
             "Config_Name": "40_STI_Trivial_AllReporters"
         }, 

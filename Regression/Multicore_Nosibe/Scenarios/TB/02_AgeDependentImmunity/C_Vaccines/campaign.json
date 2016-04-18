@@ -1,0 +1,64 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.01, 
+                "Include_Arrivals": 0, 
+                "Include_Departures": 0, 
+                "Intervention_Config": {
+                    "Antigen": 0, 
+                    "Genome": 0, 
+                    "Outbreak_Source": "PrevalenceIncrease", 
+                    "class": "OutbreakIndividual"
+                }, 
+                "Number_Repetitions": 2, 
+                "Property_Restrictions": [], 
+                "Target_Age_Max": 15, 
+                "Target_Age_Min": 1, 
+                "Target_Demographic": "ExplicitAgeRanges", 
+                "Timesteps_Between_Repetitions": 1095, 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Event_Name": "Outbreak", 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 1, 
+            "class": "CampaignEvent"
+        }, 
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1, 
+                "Include_Arrivals": 0, 
+                "Include_Departures": 0, 
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "Cost_To_Consumer": 1, 
+                        "Vaccine_Take": 1, 
+                        "Vaccine_Take_Age_Decay_Rate": 0, 
+                        "Vaccine_Type": "AcquisitionBlocking", 
+                        "class": "BCGVaccine",
+                        "Waning_Config": {
+                            "class": "WaningEffectBox", 
+                            "Initial_Effect": 1, 
+                            "Box_Duration": 5475 
+                        }
+                    }, 
+                    "Trigger_Condition": "Births", 
+                    "class": "NodeLevelHealthTriggeredIV"
+                }, 
+                "Number_Repetitions": 1, 
+                "Property_Restrictions": [], 
+                "Target_Demographic": "Everyone", 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Event_Name": "vaccination for all new births", 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 1, 
+            "class": "CampaignEvent"
+        }
+    ], 
+    "Use_Defaults": 1
+}

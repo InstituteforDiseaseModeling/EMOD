@@ -1,15 +1,14 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 #include <iostream>
-#include <fstream>
 #include "UnitTest++.h"
 #include "Exceptions.h"
 #include "JsonObjectDemog.h"
@@ -59,10 +58,6 @@ SUITE(JsonObjectDemogTest)
 
     TEST(TestJsonReadWrite)
     {
-
-        float  fep = std::numeric_limits<float>::epsilon( );
-        double dep = std::numeric_limits<double>::epsilon( );
-
         JsonWriterDemog writer( true ) ;
 
         writer << '{' 
@@ -106,60 +101,60 @@ SUITE(JsonObjectDemogTest)
 
         CHECK_EQUAL( string("ThisString"),           json.GetString( "String"         ) );
         CHECK_EQUAL( true,                           json.GetBool(   "Bool"           ) );
-        CHECK_EQUAL( (int32_t)-2147483647,           json.GetInt(    "Int32"          ) );
-        CHECK_EQUAL( (uint32_t)4294967295,           json.GetUint(   "Uint32"         ) );
-        CHECK_EQUAL( (int64_t)-9223372036854775807,  json.GetInt64(  "Int64"          ) );
-        CHECK_EQUAL( (uint64_t)18446744073709551615, json.GetUint64( "Uint64"         ) );
-        CHECK_EQUAL( (float)1.17549435e-038,         json.GetFloat(  "FloatMin"       ) );
-        CHECK_EQUAL( (float)3.40282347e+038,         json.GetFloat(  "FloatMax"       ) );
-        CHECK_EQUAL( (float) 0.00001,                json.GetFloat(  "FloatEpsilon1"  ) );
-        CHECK_EQUAL( (float)-0.00001,                json.GetFloat(  "FloatEpsilon2"  ) );
-        CHECK_EQUAL( (double)2.225073858507e-308,    json.GetDouble( "DoubleMin"      ) );
-        CHECK_EQUAL( (double)1.797693134862e+308,    json.GetDouble( "DoubleMax"      ) );
-        CHECK_EQUAL( (double)0.000000001,            json.GetDouble( "DoubleEpsilon1" ) );
-        CHECK_EQUAL( (double)-0.000000001,           json.GetDouble( "DoubleEpsilon2" ) );
+        CHECK_EQUAL( int32_t(-2147483647),           json.GetInt(    "Int32"          ) );
+        CHECK_EQUAL( uint32_t(4294967295),           json.GetUint(   "Uint32"         ) );
+        CHECK_EQUAL( int64_t(-9223372036854775807),  json.GetInt64(  "Int64"          ) );
+        CHECK_EQUAL( uint64_t(18446744073709551615), json.GetUint64( "Uint64"         ) );
+        CHECK_EQUAL( float(1.17549435e-038),         json.GetFloat(  "FloatMin"       ) );
+        CHECK_EQUAL( float(3.40282347e+038),         json.GetFloat(  "FloatMax"       ) );
+        CHECK_EQUAL( float(0.00001),                json.GetFloat(  "FloatEpsilon1"  ) );
+        CHECK_EQUAL( float(-0.00001),                json.GetFloat(  "FloatEpsilon2"  ) );
+        CHECK_EQUAL( double(2.225073858507e-308),    json.GetDouble( "DoubleMin"      ) );
+        CHECK_EQUAL( double(1.797693134862e+308),    json.GetDouble( "DoubleMax"      ) );
+        CHECK_EQUAL( double(0.000000001),            json.GetDouble( "DoubleEpsilon1" ) );
+        CHECK_EQUAL( double(-0.000000001),           json.GetDouble( "DoubleEpsilon2" ) );
 
-        JsonObjectDemog obj = json.GetObject( "Object" );
+        JsonObjectDemog obj = json.GetJsonObject( "Object" );
 
         CHECK_EQUAL( string("String for Object"), obj.GetString( "ObjectString" ) );
-        CHECK_EQUAL( (int32_t)777, obj.GetInt( "Int32" ) );
+        CHECK_EQUAL( int32_t(777), obj.GetInt( "Int32" ) );
 
-        JsonObjectDemog obj_outer = json.GetObject( "ObjectOuter" );
+        JsonObjectDemog obj_outer = json.GetJsonObject( "ObjectOuter" );
 
         CHECK_EQUAL( string("String for ObjectOuter"), obj_outer.GetString( "ObjectString" ) );
-        CHECK_EQUAL( (int32_t)999, obj_outer.GetInt( "Int32" ) );
+        CHECK_EQUAL( int32_t(999), obj_outer.GetInt( "Int32" ) );
 
-        JsonObjectDemog obj_inner = obj_outer.GetObject( "ObjectInner" );
+        JsonObjectDemog obj_inner = obj_outer.GetJsonObject( "ObjectInner" );
 
-        CHECK_EQUAL( (float)0.12345, obj_inner.GetFloat( "Float" ) );
+        CHECK_EQUAL( float(0.12345), obj_inner.GetFloat( "Float" ) );
         CHECK_EQUAL( false, obj_inner.GetBool( "Bool" ) );
 
-        JsonObjectDemog array_single = json.GetArray( "SingleArray" );
+        JsonObjectDemog array_single = json.GetJsonArray( "SingleArray" );
 
         CHECK_EQUAL( 5, array_single.size() );
-        CHECK_EQUAL( 1, array_single[(IndexType)0].AsInt() );
-        CHECK_EQUAL( 2, array_single[(IndexType)1].AsInt() );
-        CHECK_EQUAL( 3, array_single[(IndexType)2].AsInt() );
-        CHECK_EQUAL( 4, array_single[(IndexType)3].AsInt() );
-        CHECK_EQUAL( 5, array_single[(IndexType)4].AsInt() );
+        CHECK_EQUAL( 1, array_single[IndexType(0)].AsInt() );
+        CHECK_EQUAL( 2, array_single[IndexType(1)].AsInt() );
+        CHECK_EQUAL( 3, array_single[IndexType(2)].AsInt() );
+        CHECK_EQUAL( 4, array_single[IndexType(3)].AsInt() );
+        CHECK_EQUAL( 5, array_single[IndexType(4)].AsInt() );
 
-        array_single.PushBack( array_single[(IndexType)0] );
+        array_single.PushBack( array_single[IndexType(0)] );
 
-        JsonObjectDemog array_double = json.GetArray( "DoubleArray" );
+        JsonObjectDemog array_double = json.GetJsonArray( "DoubleArray" );
 
         CHECK_EQUAL( 2, array_double.size() );
 
-        CHECK_EQUAL( 11, array_double[(IndexType)0][(IndexType)0].AsInt() );
-        CHECK_EQUAL( 12, array_double[(IndexType)0][(IndexType)1].AsInt() );
-        CHECK_EQUAL( 13, array_double[(IndexType)0][(IndexType)2].AsInt() );
-        CHECK_EQUAL( 14, array_double[(IndexType)0][(IndexType)3].AsInt() );
-        CHECK_EQUAL( 15, array_double[(IndexType)0][(IndexType)4].AsInt() );
+        CHECK_EQUAL( 11, array_double[IndexType(0)][IndexType(0)].AsInt() );
+        CHECK_EQUAL( 12, array_double[IndexType(0)][IndexType(1)].AsInt() );
+        CHECK_EQUAL( 13, array_double[IndexType(0)][IndexType(2)].AsInt() );
+        CHECK_EQUAL( 14, array_double[IndexType(0)][IndexType(3)].AsInt() );
+        CHECK_EQUAL( 15, array_double[IndexType(0)][IndexType(4)].AsInt() );
 
-        CHECK_EQUAL( 21, array_double[(IndexType)1][(IndexType)0].AsInt() );
-        CHECK_EQUAL( 22, array_double[(IndexType)1][(IndexType)1].AsInt() );
-        CHECK_EQUAL( 23, array_double[(IndexType)1][(IndexType)2].AsInt() );
-        CHECK_EQUAL( 24, array_double[(IndexType)1][(IndexType)3].AsInt() );
-        CHECK_EQUAL( 25, array_double[(IndexType)1][(IndexType)4].AsInt() );
+        CHECK_EQUAL( 21, array_double[IndexType(1)][IndexType(0)].AsInt() );
+        CHECK_EQUAL( 22, array_double[IndexType(1)][IndexType(1)].AsInt() );
+        CHECK_EQUAL( 23, array_double[IndexType(1)][IndexType(2)].AsInt() );
+        CHECK_EQUAL( 24, array_double[IndexType(1)][IndexType(3)].AsInt() );
+        CHECK_EQUAL( 25, array_double[IndexType(1)][IndexType(4)].AsInt() );
 
 //        CHECK_EQUAL( 18, json.size() );
 
@@ -176,62 +171,62 @@ SUITE(JsonObjectDemogTest)
         ++it ;
         CHECK( it != json.End() );
         CHECK_EQUAL( string("Int32"), it.GetKey() );
-        CHECK_EQUAL( (int32_t)-2147483647, it.GetValue().AsInt() );
+        CHECK_EQUAL( int32_t(-2147483647), it.GetValue().AsInt() );
 
         ++it ;
         CHECK( it != json.End() );
         CHECK_EQUAL( string("Uint32"), it.GetKey() );
-        CHECK_EQUAL( (uint32_t)4294967295, it.GetValue().AsUint() );
+        CHECK_EQUAL( uint32_t(4294967295), it.GetValue().AsUint() );
 
         ++it ;
         CHECK( it != json.End() );
         CHECK_EQUAL( string("Int64"), it.GetKey() );
-        CHECK_EQUAL( (int64_t)-9223372036854775807, it.GetValue().AsInt64() );
+        CHECK_EQUAL( int64_t(-9223372036854775807), it.GetValue().AsInt64() );
 
         ++it ;
         CHECK( it != json.End() );
         CHECK_EQUAL( string("Uint64"), it.GetKey() );
-        CHECK_EQUAL( (uint64_t)18446744073709551615, it.GetValue().AsUint64() );
+        CHECK_EQUAL( uint64_t(18446744073709551615), it.GetValue().AsUint64() );
 
         ++it ;
         CHECK( it != json.End() );
         CHECK_EQUAL( string("FloatMin"), it.GetKey() );
-        CHECK_EQUAL( (float)1.17549435e-038, it.GetValue().AsFloat() );
+        CHECK_EQUAL( float(1.17549435e-038), it.GetValue().AsFloat() );
 
         ++it ;
         CHECK( it != json.End() );
         CHECK_EQUAL( string("FloatMax"), it.GetKey() );
-        CHECK_EQUAL( (float)3.40282347e+038, it.GetValue().AsFloat() );
+        CHECK_EQUAL( float(3.40282347e+038), it.GetValue().AsFloat() );
 
         ++it ;
         CHECK( it != json.End() );
         CHECK_EQUAL( string("FloatEpsilon1"), it.GetKey() );
-        CHECK_EQUAL( (float)0.00001, it.GetValue().AsFloat() );
+        CHECK_EQUAL( float(0.00001), it.GetValue().AsFloat() );
 
         ++it ;
         CHECK( it != json.End() );
         CHECK_EQUAL( string("FloatEpsilon2"), it.GetKey() );
-        CHECK_EQUAL( (float)-0.00001, it.GetValue().AsFloat() );
+        CHECK_EQUAL( float(-0.00001), it.GetValue().AsFloat() );
 
         ++it ;
         CHECK( it != json.End() );
         CHECK_EQUAL( string("DoubleMin"), it.GetKey() );
-        CHECK_EQUAL( (double)2.225073858507e-308, it.GetValue().AsDouble() );
+        CHECK_EQUAL( double(2.225073858507e-308), it.GetValue().AsDouble() );
 
         ++it ;
         CHECK( it != json.End() );
         CHECK_EQUAL( string("DoubleMax"), it.GetKey() );
-        CHECK_EQUAL( (double)1.797693134862e+308, it.GetValue().AsDouble() );
+        CHECK_EQUAL( double(1.797693134862e+308), it.GetValue().AsDouble() );
 
         ++it ;
         CHECK( it != json.End() );
         CHECK_EQUAL( string("DoubleEpsilon1"), it.GetKey() );
-        CHECK_EQUAL( (double)0.000000001, it.GetValue().AsDouble() );
+        CHECK_EQUAL( double(0.000000001), it.GetValue().AsDouble() );
 
         ++it ;
         CHECK( it != json.End() );
         CHECK_EQUAL( string("DoubleEpsilon2"), it.GetKey() );
-        CHECK_EQUAL( (double)-0.000000001, it.GetValue().AsDouble() );
+        CHECK_EQUAL( double(-0.000000001), it.GetValue().AsDouble() );
 
         ++it ;
         CHECK( it != json.End() );
@@ -365,27 +360,27 @@ SUITE(JsonObjectDemogTest)
         TestHelper_BadAccessException( __LINE__, json, func12, 
                                        "'root' has an element named 'String' but it is not a 'Int'." );
 
-        auto func13 = [] ( const JsonObjectDemog& rJson ) { rJson.GetObject("SingleArray"); };
+        auto func13 = [] ( const JsonObjectDemog& rJson ) { rJson.GetJsonObject("SingleArray"); };
         TestHelper_BadAccessException( __LINE__, json, func13, 
                                        "'root' has an element named 'SingleArray' but it is not a 'Object'." );
 
-        auto func14 = [] ( const JsonObjectDemog& rJson ) { rJson.GetArray("ObjectOuter"); };
+        auto func14 = [] ( const JsonObjectDemog& rJson ) { rJson.GetJsonArray("ObjectOuter"); };
         TestHelper_BadAccessException( __LINE__, json, func14, 
                                        "'root' has an element named 'ObjectOuter' but it is not a 'Array'." );
 
-        auto func15 = [] ( const JsonObjectDemog& rJson ) { rJson.GetArray("SingleArray").AsString(); };
+        auto func15 = [] ( const JsonObjectDemog& rJson ) { rJson.GetJsonArray("SingleArray").AsString(); };
         TestHelper_BadAccessException( __LINE__, json, func15, 
                                        "'SingleArray' element is not a 'String'." );
 
-        auto func16 = [] ( const JsonObjectDemog& rJson ) { rJson.GetArray("SingleArray")[(IndexType)0].AsString(); };
+        auto func16 = [] ( const JsonObjectDemog& rJson ) { rJson.GetJsonArray("SingleArray")[IndexType(0)].AsString(); };
         TestHelper_BadAccessException( __LINE__, json, func16, 
                                        "'SingleArray[0]' element is not a 'String'." );
 
-        auto func17 = [] ( const JsonObjectDemog& rJson ) { rJson.GetArray("DoubleArray")[(IndexType)0][(IndexType)1].AsString(); };
+        auto func17 = [] ( const JsonObjectDemog& rJson ) { rJson.GetJsonArray("DoubleArray")[IndexType(0)][IndexType(1)].AsString(); };
         TestHelper_BadAccessException( __LINE__, json, func17, 
                                        "'DoubleArray[0][1]' element is not a 'String'." );
 
-        auto func18 = [] ( const JsonObjectDemog& rJson ) { rJson.GetArray("SingleArray")[(IndexType)3].AsInt(); };
+        auto func18 = [] ( const JsonObjectDemog& rJson ) { rJson.GetJsonArray("SingleArray")[IndexType(3)].AsInt(); };
         TestHelper_BadAccessException( __LINE__, json, func18, 
                                        "'SingleArray[3]' element is not a 'Int'." );
     }
@@ -513,12 +508,12 @@ SUITE(JsonObjectDemogTest)
         JsonObjectDemog node_array = it.GetValue();
         CHECK( node_array.IsArray() );
         CHECK_EQUAL( 3, node_array.size() );
-        CHECK_EQUAL( 1.1, node_array[(IndexType)0]["Latitude" ].AsDouble() );
-        CHECK_EQUAL( 2.1, node_array[(IndexType)1]["Latitude" ].AsDouble() );
-        CHECK_EQUAL( 3.1, node_array[(IndexType)2]["Latitude" ].AsDouble() );
-        CHECK_EQUAL( 1.2, node_array[(IndexType)0]["Longitude"].AsDouble() );
-        CHECK_EQUAL( 2.2, node_array[(IndexType)1]["Longitude"].AsDouble() );
-        CHECK_EQUAL( 3.2, node_array[(IndexType)2]["Longitude"].AsDouble() );
+        CHECK_EQUAL( 1.1, node_array[IndexType(0)]["Latitude" ].AsDouble() );
+        CHECK_EQUAL( 2.1, node_array[IndexType(1)]["Latitude" ].AsDouble() );
+        CHECK_EQUAL( 3.1, node_array[IndexType(2)]["Latitude" ].AsDouble() );
+        CHECK_EQUAL( 1.2, node_array[IndexType(0)]["Longitude"].AsDouble() );
+        CHECK_EQUAL( 2.2, node_array[IndexType(1)]["Longitude"].AsDouble() );
+        CHECK_EQUAL( 3.2, node_array[IndexType(2)]["Longitude"].AsDouble() );
 
         ++it ;
         CHECK( it == json_root.End() );

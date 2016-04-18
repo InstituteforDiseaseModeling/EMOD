@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -18,6 +18,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ConfigurationImpl.h"
 #include "FactorySupport.h"
 #include "InterventionFactory.h"
+
+#include "Log.h"
 
 static const char* _module = "EventCoordinator";
 
@@ -88,10 +90,6 @@ json::Object Kernel::EventCoordinatorFactory::ecSchema;
 
     */
 
-#if USE_BOOST_SERIALIZATION
-BOOST_SERIALIZATION_ASSUME_ABSTRACT(Kernel::IEventCoordinator);
-#endif
-
 namespace Kernel
 {
 
@@ -104,7 +102,7 @@ namespace Kernel
         return CreateInstanceFromSpecs<IEventCoordinator>(config, spec_list, true);
 
     }*/
-    IEventCoordinatorFactory * EventCoordinatorFactory::_instance = NULL;
+    IEventCoordinatorFactory * EventCoordinatorFactory::_instance = nullptr;
     bool EventCoordinatorFactory::doThisOnce = false;
     IEventCoordinator* EventCoordinatorFactory::CreateInstance( const Configuration *config )
     {
@@ -128,7 +126,7 @@ namespace Kernel
                         continue;
                     }
                     HMODULE ecDll = LoadLibrary( dllPath.c_str() );
-                    if( ecDll == NULL )
+                    if( ecDll == nullptr )
                     {
                         LOG_WARN_F("Failed to load dll %S\n", ffd.cFileName);
                     }
@@ -136,7 +134,7 @@ namespace Kernel
                     {
                         typedef int (*callProc)(IEventCoordinatorFactory*, IInterventionFactory *);
                         callProc _callProc = (callProc)GetProcAddress( ecDll, "RegisterWithFactory" );
-                        if( _callProc != NULL )
+                        if( _callProc != nullptr )
                         {
                             (_callProc)( EventCoordinatorFactory::getInstance(), InterventionFactory::getInstance() );
                         }
@@ -189,7 +187,7 @@ namespace Kernel
                     << std::endl;
                 LOG_INFO( msg.str().c_str() );
             }
-            catch( json::Exception &e )
+            catch( const json::Exception &e )
             {
                 std::ostringstream msg;
                 msg << "json Exception creating intervention for GetSchema: "
@@ -198,6 +196,8 @@ namespace Kernel
                 LOG_INFO( msg.str().c_str() );
             }
             LOG_DEBUG( "Done with that class....\n" );
+            delete fakeConfig;
+            fakeConfig = nullptr;
         }
         LOG_DEBUG( "Returning from GetSchema.\n" );
         json::QuickBuilder retSchema = json::QuickBuilder(ecSchema);

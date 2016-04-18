@@ -1,32 +1,39 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #pragma once
 #include "IdmApi.h"
-#include "ISupports.h"
+#include "ISerializable.h"
 #include "suids.hpp"
 #include "RANDOM.h"
 #include "IdmDateTime.h"
 #include "IInfectable.h"
 #include "TransmissionGroupMembership.h"
 #include "ITransmissionGroups.h"
+#include "SimulationEnums.h"
 
 namespace Kernel
 {
-    class  MigrationInfo;
+    struct IMigrationInfo;
+    struct IMigrationInfoFactory;
     struct NodeDemographics;
+    class NodeDemographicsFactory;
     struct NodeDemographicsDistribution;
     class  Climate;
+    class  ClimateFactory;
     struct INodeEventContext;
     struct IIndividualHuman;
+    struct ISimulationContext;
 
-    struct IDMAPI INodeContext : public ISupports // information and services related to the context in the simulation environment provided exposed by a node for its contained objects
+    typedef uint32_t ExternalNodeId_t;
+
+    struct IDMAPI INodeContext : ISerializable
     {
         // TODO/OPTION:
         // could have an PostMigratingIndividual interface too if individuals will call back to do migration....
@@ -42,26 +49,44 @@ namespace Kernel
             return !(*this == rThat);
         } ;
 
+        virtual ISimulationContext* GetParent() = 0;
+
         //individual can get an id of their parent to compare against, for instance, their home node id
         virtual suids::suid GetSuid() const = 0;
+
+        virtual void SetupMigration( IMigrationInfoFactory * migration_factory, 
+                                     MigrationStructure::Enum ms,
+                                     const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) = 0;
+
+        virtual void SetContextTo( ISimulationContext* ) = 0;
+        virtual void SetMonteCarloParameters(float indsamplerate =.05, int nummininf = 0) = 0;
+        virtual void SetParameters(NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory) = 0;
+        virtual void PopulateFromDemographics() = 0;
 
         virtual suids::suid GetNextInfectionSuid() = 0;
         virtual ::RANDOMBASE* GetRng() = 0; 
 
+        virtual void Update(float dt) = 0;
+        virtual IIndividualHuman* processImmigratingIndividual( IIndividualHuman* ) = 0;
+
         // heterogeneous intra-node transmission
         virtual void ExposeIndividual(IInfectable* candidate, const TransmissionGroupMembership_t* individual, float dt) = 0;
         virtual void DepositFromIndividual(StrainIdentity* strain_IDs, float contagion_quantity, const TransmissionGroupMembership_t* individual) = 0;
-        virtual void GetGroupMembershipForIndividual(RouteList_t& route, tProperties* properties, TransmissionGroupMembership_t* membershipOut ) = 0;
+        virtual void GetGroupMembershipForIndividual(const RouteList_t& route, tProperties* properties, TransmissionGroupMembership_t* membershipOut ) = 0;
         virtual void UpdateTransmissionGroupPopulation(const TransmissionGroupMembership_t* membership, float size_changes,float mc_weight) = 0;
         virtual float GetTotalContagion(const TransmissionGroupMembership_t* membership) = 0;
-        virtual RouteList_t& GetTransmissionRoutes( ) = 0;
+        virtual const RouteList_t& GetTransmissionRoutes( ) const = 0;
         
+        virtual float getSinusoidalCorrection(float sinusoidal_amplitude, float sinusoidal_phase) const = 0;
+        virtual float getBoxcarCorrection(float boxcar_amplitude, float boxcar_start_time, float boxcar_end_time) const = 0;
+
         // Discrete HINT contagion
         virtual act_prob_vec_t DiscreteGetTotalContagion(const TransmissionGroupMembership_t* membership) = 0;
 
-        virtual const MigrationInfo* GetMigrationInfo() const = 0;
+        virtual IMigrationInfo* GetMigrationInfo() = 0;
         virtual const NodeDemographics* GetDemographics() const = 0;
         virtual const NodeDemographicsDistribution* GetDemographicsDistribution(std::string) const = 0;
+        virtual std::vector<bool> GetMigrationTypeEnabledFromDemographics() const = 0 ;
 
         // reporting interfaces
         virtual IdmDateTime GetTime()          const = 0;
@@ -73,10 +98,16 @@ namespace Kernel
         virtual float       GetInfectionRate() const = 0;
         virtual float       GetSusceptDynamicScaling() const = 0;
         virtual const Climate* GetLocalWeather() const = 0;
-        virtual long int GetPossibleMothers() const = 0;
+        virtual long int GetPossibleMothers()  const = 0;
+        virtual float GetMeanAgeInfection()    const = 0;
+
+        // These methods are not const because they will extract the value from the demographics
+        // if it has not been done yet.
+        virtual float GetLatitudeDegrees() = 0;
+        virtual float GetLongitudeDegrees() = 0;
 
         // This method will ONLY be used for reporting by input node ID, don't use it elsewhere!
-        virtual int GetExternalID() const = 0;
+        virtual ExternalNodeId_t GetExternalID() const = 0;
 
         typedef std::function<void(IIndividualHuman*)> callback_t;
         virtual void RegisterNewInfectionObserver(void* id, INodeContext::callback_t observer) = 0;
@@ -87,9 +118,17 @@ namespace Kernel
         typedef std::map< std::string, std::multimap< float, std::string > > tDistrib;
         virtual const tDistrib& GetIndividualPropertyDistributions() const = 0;
         virtual void checkValidIPValue( const std::string& key, const std::string& to_value ) = 0;
+        virtual void AddEventsFromOtherNodes( const std::vector<std::string>& rEventNameList ) = 0;
 
         //Verify that the user entered in set of property key/value pairs which are included in the demographics file
         virtual void VerifyPropertyDefined( const std::string& rKey, const std::string& rVal ) const = 0;
+
+        virtual bool IsEveryoneHome() const = 0;
+        virtual void SetWaitingForFamilyTrip( suids::suid migrationDestination, 
+                                              MigrationType::Enum migrationType, 
+                                              float timeUntilTrip, 
+                                              float timeAtDestination,
+                                              bool isDestinationNewHome ) = 0;
     };
 }
 

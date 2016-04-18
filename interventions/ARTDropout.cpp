@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -15,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Contexts.h"                  // for IIndividualHumanContext, IIndividualHumanInterventionsContext
 #include "Debug.h"                  // for IIndividualHumanContext, IIndividualHumanInterventionsContext
-#include "HIVInterventionsContainer.h"  // for IHIVDrugEffectsApply methods
+#include "IHIVInterventionsContainer.h"  // for IHIVDrugEffectsApply methods
 
 static const char* _module = "ARTDropout";
 
@@ -28,7 +28,7 @@ namespace Kernel
 
     ARTDropout::ARTDropout()
     : GenericDrug()
-    , itbda(NULL)
+    , itbda(nullptr)
     {
         initSimTypes( 1, "HIV_SIM" );
     }
@@ -90,19 +90,16 @@ namespace Kernel
         //itbda->ApplyDrugInactivationRateEffect( GetDrugInactivationRate() );
         //itbda->ApplyDrugClearanceRateEffect( GetDrugClearanceRate() );
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::ARTDropout)
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, ARTDropout& drug, const unsigned int v)
+    REGISTER_SERIALIZABLE(ARTDropout);
+
+    void ARTDropout::serialize(IArchive& ar, ARTDropout* obj)
     {
-        boost::serialization::void_cast_register<ARTDropout, IDrug>();
-        //ar & drug.drug_type;
-        ar & boost::serialization::base_object<GenericDrug>(drug);
+        GenericDrug::serialize( ar, obj );
+        ARTDropout& art = *obj;
+
+        // itbda set in SetContextTo
     }
 }
-#endif
 
 //#endif // ENABLE_STI

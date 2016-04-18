@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 #include "stdafx.h"
@@ -37,7 +37,7 @@ void CaptureCallstack(char* buf)
     fprintf(stderr, "func=%p\n", func);
     fflush(stderr);
 
-    if(func == NULL)
+    if(func == nullptr)
         return; 
 
     int nf =  (func)(1, 62, bt, &dwHashCode);
@@ -144,10 +144,10 @@ void WalkCallstack( char* buf )
             thread,
             &stack,
             &context,
-            NULL,
+            nullptr,
             SymFunctionTableAccess64,
             SymGetModuleBase64,
-            NULL
+            nullptr
         );
 
         symbol.SizeOfStruct  = sizeof( IMAGEHLP_SYMBOL64 );

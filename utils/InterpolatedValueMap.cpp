@@ -1,14 +1,16 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 #include "InterpolatedValueMap.h"
+
+#include "Log.h"
 
 static const char* _module = "InterpolatedValueMap";
 
@@ -86,6 +88,7 @@ namespace Kernel
         }
 
         delete config;
+        config = nullptr;
     }
 
     json::QuickBuilder
@@ -131,7 +134,7 @@ namespace Kernel
                 break;
             }
             //ret_rdd = (int)year2DelayMap[ map_year ];
-            ret_rdd = (*this).at( (float) map_year );
+            ret_rdd = (*this).at( float(map_year) );
         }
         return ret_rdd;
     }
@@ -186,4 +189,36 @@ namespace Kernel
         return map_value;
     }
 
+    void InterpolatedValueMap::serialize( IArchive& ar, InterpolatedValueMap& mapping )
+    {
+        size_t count = ar.IsWriter() ? mapping.size() : -1;
+
+        ar.startArray(count);
+        if( ar.IsWriter() )
+        {
+            for( auto& entry : mapping )
+            {
+                float key   = entry.first;
+                float value = entry.second;
+                ar.startObject();
+                    ar.labelElement("key"  ) & key;
+                    ar.labelElement("value") & value;
+                ar.endObject();
+            }
+        }
+        else
+        {
+            for (size_t i = 0; i < count; ++i)
+            {
+                float key=0.0;
+                float value=0.0;
+                ar.startObject();
+                    ar.labelElement("key"  ) & key;
+                    ar.labelElement("value") & value;
+                ar.endObject();
+                mapping[key] = value;
+            }
+        }
+        ar.endArray();
+    }
 }

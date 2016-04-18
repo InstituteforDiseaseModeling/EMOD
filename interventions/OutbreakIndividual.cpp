@@ -1,16 +1,16 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 
 #include "OutbreakIndividual.h"
-#include "Individual.h"
+#include "IIndividualHuman.h"
 #include "InterventionFactory.h"
 #include "ConfigurationImpl.h"
 #include "NodeEventContext.h"
@@ -61,7 +61,7 @@ namespace Kernel
     {
         bool success = true;
         // TBD: Get individual from context, and infect
-        IndividualHuman* individual = dynamic_cast<IndividualHuman*>(context->GetParent()); // QI in new code
+        IIndividualHuman* individual = dynamic_cast<IIndividualHuman*>(context->GetParent()); // QI in new code
         INodeEventContext * pContext = individual->GetParent()->GetEventContext();
         StrainIdentity* strain_identity = GetNewStrainIdentity(pContext);   // JPS: no need to create strain before we call this if we're calling into node...?
         LOG_DEBUG( "Infecting individual from Outbreak.\n" );
@@ -78,12 +78,12 @@ namespace Kernel
 
     Kernel::StrainIdentity* OutbreakIndividual::GetNewStrainIdentity(INodeEventContext *context)
     {
-        StrainIdentity *outbreakIndividual_strainID = NULL;
+        StrainIdentity *outbreakIndividual_strainID = nullptr;
 
         // Important: Use the instance method to obtain the intervention factory obj instead of static method to cross the DLL boundary
         // NO usage of GET_CONFIGURABLE(SimulationConfig)->number_substrains in DLL
-        IGlobalContext *pGC = NULL;
-        const SimulationConfig* simConfigObj = NULL;
+        IGlobalContext *pGC = nullptr;
+        const SimulationConfig* simConfigObj = nullptr;
         if (s_OK == context->QueryInterface(GET_IID(IGlobalContext), (void**)&pGC))
         {
             simConfigObj = pGC->GetSimulationConfigObj();
@@ -91,6 +91,11 @@ namespace Kernel
         if (!simConfigObj)
         {
             throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "The pointer to IInterventionFactory object is not valid (could be DLL specific)" );
+        }
+
+        if (( antigen < 0 ) || ( antigen >= simConfigObj->number_basestrains ))
+        {
+            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "antigen", antigen, "number_basestrains", simConfigObj->number_basestrains );
         }
 
         if ( genome < 0 )
@@ -107,7 +112,7 @@ namespace Kernel
             outbreakIndividual_strainID = _new_ StrainIdentity(antigen, genome);
             LOG_DEBUG_F("random genome generation... antigen: %d\t genome: %d\n", antigen, genome);
         }
-        else if (genome >= 0 && genome < simConfigObj->number_substrains )
+        else if (genome >= 0 && genome <= simConfigObj->number_substrains )
         {
             outbreakIndividual_strainID = _new_ StrainIdentity(antigen, genome);
         }
@@ -120,13 +125,11 @@ namespace Kernel
     }
 }
 
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(Kernel::OutbreakIndividual)
+#if 0
 namespace Kernel {
     template<class Archive>
     void serialize(Archive &ar, OutbreakIndividual &ob, const unsigned int v)
     {
-        boost::serialization::void_cast_register<OutbreakIndividual, IDistributableIntervention>();
         ar & ob.antigen;
         ar & ob.genome;
         ar & ob.incubation_period_override;

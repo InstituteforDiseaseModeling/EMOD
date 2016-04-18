@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -15,9 +15,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Node.h"
 #include "SimulationConfig.h"
 
+static const char * _module = "Assortivity";
+
 namespace Kernel 
 {
-    static const char * _module = "Assortivity";
+    BEGIN_QUERY_INTERFACE_BODY(Assortivity)
+    END_QUERY_INTERFACE_BODY(Assortivity)
 
     std::string Assortivity::ValuesToString( const std::vector<std::string>& rList )
     {
@@ -37,21 +40,31 @@ namespace Kernel
         , m_PropertyName()
         , m_Axes()
         , m_WeightingMatrix()
+        , m_StartYear( 0.0 )
+        , m_StartUsing(false)
     {
-        release_assert( m_pRNG != nullptr );
+        //release_assert( m_pRNG != nullptr );
     }
 
     Assortivity::~Assortivity()
     {
     }
 
+    void Assortivity::SetParameters( RANDOMBASE* prng )
+    {
+        m_pRNG = prng;
+        release_assert( m_pRNG != nullptr );
+    }
+
     bool Assortivity::Configure(const Configuration *config)
     {
         bool ret = false ;
+        bool prev_use_defaults = JsonConfigurable::_useDefaults ;
+        bool resetTrackMissing = JsonConfigurable::_track_missing;
+        JsonConfigurable::_track_missing = false;
+        JsonConfigurable::_useDefaults = false ;
         try
         {
-            bool prev_use_defaults = JsonConfigurable::_useDefaults ;
-            JsonConfigurable::_useDefaults = false ;
 
             initConfig( "Group", m_Group, config, MetadataDescriptor::Enum("m_Group", "TBD", MDD_ENUM_ARGS(AssortivityGroup)) ); 
 
@@ -67,20 +80,34 @@ namespace Kernel
                 }
             }
 
+            if( JsonConfigurable::_dryrun || (m_Group == AssortivityGroup::STI_COINFECTION_STATUS     ) 
+                                          || (m_Group == AssortivityGroup::HIV_INFECTION_STATUS       )
+                                          || (m_Group == AssortivityGroup::HIV_TESTED_POSITIVE_STATUS )
+                                          || (m_Group == AssortivityGroup::HIV_RECEIVED_RESULTS_STATUS) )
+            {
+                initConfigTypeMap( "Start_Year", &m_StartYear, "TBD - The year to start using the assortivity preference.", MIN_YEAR, MAX_YEAR, 0.0f );
+            }
             AddConfigurationParameters( m_Group, config );
 
             ret = JsonConfigurable::Configure( config );
 
             JsonConfigurable::_useDefaults = prev_use_defaults ;
+            JsonConfigurable::_track_missing = resetTrackMissing;
         }
         catch( DetailedException& e )
         {
+            JsonConfigurable::_useDefaults = prev_use_defaults ;
+            JsonConfigurable::_track_missing = resetTrackMissing;
+
             std::stringstream ss ;
             ss << e.GetMsg() << "\n" << "Was reading values for " << RelationshipType::pairs::lookup_key( m_RelType ) << "." ;
             throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
         }
-        catch( json::Exception& e )
+        catch( const json::Exception &e )
         {
+            JsonConfigurable::_useDefaults = prev_use_defaults ;
+            JsonConfigurable::_track_missing = resetTrackMissing;
+
             std::stringstream ss ;
             ss << e.what() << "\n" << "Was reading values for " << RelationshipType::pairs::lookup_key( m_RelType ) << "." ;
             throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
@@ -272,10 +299,14 @@ namespace Kernel
                 p_partner_B = FindPartner( pPartnerA, potentialPartnerList, GetStringValueIndividualProperty );
                 break;
 
-            case AssortivityGroup::STI_COINFECTION_STATUS:
-                p_partner_B = FindPartner( pPartnerA, potentialPartnerList, GetStringValueStiCoInfection );
-                break;
-
+            case AssortivityGroup::STI_COINFECTION_STATUS:
+
+                p_partner_B = FindPartner( pPartnerA, potentialPartnerList, GetStringValueStiCoInfection );
+
+                break;
+
+
+
             default:
                 p_partner_B = SelectPartnerForExtendedGroups( group,  pPartnerA, potentialPartnerList );
         }
@@ -290,9 +321,20 @@ namespace Kernel
         throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "group", group, AssortivityGroup::pairs::lookup_key( group ) );
     }
 
+    void Assortivity::Update( const IdmDateTime& rCurrentTime, float dt )
+    {
+        float current_year = rCurrentTime.Year() ;
+        m_StartUsing = m_StartYear < current_year ;
+    }
+
     AssortivityGroup::Enum Assortivity::GetGroupToUse() const
     {
-        return m_Group ;
+        AssortivityGroup::Enum group = GetGroup() ;
+        if( !m_StartUsing )
+        {
+            group = AssortivityGroup::NO_GROUP ;
+        }
+        return group ;
     }
 
     struct PartnerScore
@@ -338,6 +380,7 @@ namespace Kernel
         // -------------------------------------------------------------------------
         // --- Select the partner based on their score/probability of being selected
         // -------------------------------------------------------------------------
+        release_assert( m_pRNG != nullptr );
         float ran_score = m_pRNG->e() * total_score ;
         float cum_score = 0.0 ;
         for( auto entry : partner_score_list )
@@ -363,5 +406,21 @@ namespace Kernel
             throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
         }
         return index ;
+    }
+
+    REGISTER_SERIALIZABLE(Assortivity);
+
+    void Assortivity::serialize(IArchive& ar, Assortivity* obj)
+    {
+        Assortivity& sort = *obj;
+        ar.labelElement("m_RelType"        ) & (uint32_t&)sort.m_RelType;
+        ar.labelElement("m_Group"          ) & (uint32_t&)sort.m_Group;
+        ar.labelElement("m_PropertyName"   ) & sort.m_PropertyName;
+        ar.labelElement("m_Axes"           ) & sort.m_Axes;
+        ar.labelElement("m_WeightingMatrix") & sort.m_WeightingMatrix;
+        ar.labelElement("m_StartYear"      ) & sort.m_StartYear;
+        ar.labelElement("m_StartUsing"     ) & sort.m_StartUsing;
+
+        //RANDOMBASE*                     m_pRNG ;
     }
 }

@@ -192,9 +192,6 @@
     <ClInclude Include="..\Eradication\Simulation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\utils\SimpleTypemapRegistration.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\rapidjson\include\rapidjson\internal\stack.h">
       <Filter>Header Files</Filter>
     </ClInclude>

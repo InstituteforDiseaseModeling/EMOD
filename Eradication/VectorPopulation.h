@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -17,7 +17,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Common.h"
 #include "IContagionPopulation.h"
 #include "IInfectable.h"
-#include "SimpleTypemapRegistration.h"
 
 #include "Vector.h"
 #include "VectorEnums.h"
@@ -28,23 +27,26 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorProbabilities.h"
 #include "VectorSpeciesParameters.h"
 
+#include "ISerializable.h"
+
 namespace Kernel
 {
     class IVectorCohortWithHabitat;
     class SimulationConfig ;
 
-    struct IVectorPopulation : public ISupports
+    struct IVectorPopulation : ISerializable
     {
-        /* Only for type-ID right now */
     };
 
-    struct IVectorReportingOperations : public ISupports
+    struct IVectorReportingOperations : ISupports
     {
         virtual float GetEIRByPool(VectorPoolIdEnum::Enum pool_id) const = 0;
         virtual float GetHBRByPool(VectorPoolIdEnum::Enum pool_id) const = 0;
         virtual int32_t getAdultCount()                            const = 0;
         virtual int32_t getInfectedCount()                         const = 0;
         virtual int32_t getInfectiousCount()                       const = 0;
+        virtual int32_t getMaleCount()                             const = 0;
+        virtual int32_t getNewEggsCount()                          const = 0;
         virtual double  getInfectivity()                           const = 0;
         virtual std::string get_SpeciesID()                        const = 0;
         virtual const VectorHabitatList_t& GetHabitats()           const = 0;
@@ -70,26 +72,30 @@ namespace Kernel
         virtual void UpdateVectorPopulation(float dt);
 
         // For NodeVector to calculate # of migrating vectors (processEmigratingVectors) and put them in new node (processImmigratingVector)
-        virtual unsigned long int Vector_Migration(float = 0, VectorCohortList_t * = NULL);
+        virtual void Vector_Migration( IMigrationInfo* pMigInfo, VectorCohortList_t* pMigratingQueue );
+        virtual unsigned long int Vector_Migration(float = 0, VectorCohortList_t * = nullptr);
         void AddAdults(VectorCohort *adults) { AdultQueues.push_front(adults); }
         virtual void AddVectors(VectorMatingStructure _vector_genetics, unsigned long int releasedNumber);
 
         // IInfectable
-        virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route );
+        virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route ) override;
 
         // IVectorReportingOperations
-        virtual float  GetEIRByPool(VectorPoolIdEnum::Enum pool_id) const;
-        virtual float  GetHBRByPool(VectorPoolIdEnum::Enum pool_id) const;
-        virtual int32_t getAdultCount()                             const;
-        virtual int32_t getInfectedCount()                          const;
-        virtual int32_t getInfectiousCount()                        const;
-        virtual double  getInfectivity()                            const;
-        virtual std::string get_SpeciesID()                         const;
-        virtual const VectorHabitatList_t& GetHabitats()            const;
+        virtual float  GetEIRByPool(VectorPoolIdEnum::Enum pool_id) const override;
+        virtual float  GetHBRByPool(VectorPoolIdEnum::Enum pool_id) const override;
+        virtual int32_t getAdultCount()                             const override;
+        virtual int32_t getInfectedCount()                          const override;
+        virtual int32_t getInfectiousCount()                        const override;
+        virtual int32_t getMaleCount()                              const override;
+        virtual int32_t getNewEggsCount()                           const override;
+        virtual double  getInfectivity()                            const override;
+        virtual std::string get_SpeciesID()                         const override;
+        virtual const VectorHabitatList_t& GetHabitats()            const override;
 
-        virtual const infection_list_t& GetInfections()             const;
-        virtual float GetInterventionReducedAcquire()               const;
+        virtual const infection_list_t& GetInfections()             const override;
+        virtual float GetInterventionReducedAcquire()               const override;
 
+        void SetVectorMortality( bool mortality ) { m_VectorMortality = mortality; }
     protected:
         VectorPopulation();
         void Initialize(INodeContext *context, std::string species_name, unsigned int adults, unsigned int infectious);
@@ -149,7 +155,7 @@ namespace Kernel
         float ADfeed_eggbatchmod;
 
         // List of habitats for this species
-        std::list<VectorHabitat*> m_larval_habitats;
+        VectorHabitatList_t m_larval_habitats;
         std::map<VectorHabitatType::Enum, float> m_larval_capacities;
 
         int32_t neweggs; 
@@ -202,12 +208,12 @@ namespace Kernel
         VectorProbabilities           *m_probabilities;
         ITransmissionGroups           *m_transmissionGroups;
 
-    private:
+        bool m_VectorMortality ;
 
-#if USE_BOOST_SERIALIZATION
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize( Archive& ar, VectorPopulation &obj, unsigned int file_version );
-#endif    
+        DECLARE_SERIALIZABLE(VectorPopulation);
     };
+
+    // clorton TODO - move these into IArchive
+    void serialize(IArchive&, std::pair<float, float>&);
+    void serialize(IArchive&, std::map<uint32_t, int>&);
 }

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -17,9 +17,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationEnums.h"
 #include "InterventionFactory.h"
 #include "Log.h"
-#include "SimpleTypemapRegistration.h"
 #include "Sugar.h"
 #include "IndividualSTI.h"
+#include "IRelationshipParameters.h"
 
 static const char * _module = "STIInterventionsContainer";
 
@@ -32,9 +32,11 @@ namespace Kernel
         HANDLE_INTERFACE(ISTICoInfectionStatusChangeApply)
     END_QUERY_INTERFACE_DERIVED(STIInterventionsContainer, InterventionsContainer)
 
-    STIInterventionsContainer::STIInterventionsContainer() :
-        InterventionsContainer(),
-        is_circumcised(false)
+    STIInterventionsContainer::STIInterventionsContainer() 
+    : InterventionsContainer()
+    , is_circumcised(false)
+    , circumcision_reduced_require(0.0)
+    , STI_blocking_overrides()
     {
     }
 
@@ -47,75 +49,38 @@ namespace Kernel
         InterventionsContainer::Update(dt);
     }
 
-    // For now, before refactoring Drugs to work in new way, just check if the intervention is a
-    // Drug, and if so, add to drugs list. In future, there will be no drugs list, just interventions.
     bool STIInterventionsContainer::GiveIntervention(
         IDistributableIntervention * pIV
     )
     {
-        bool ret = true;
-
-        // NOTE: Calling this AFTER the QI/GiveDrug crashes!!! Both win and linux. Says SetContextTo suddenly became a pure virtual.
-
-        ICircumcision * pCirc = NULL;
-        if( s_OK == pIV->QueryInterface(GET_IID(ICircumcision), (void**) &pCirc) )
-        {
-            LOG_DEBUG("Getting circumcised\n");
-            ret = ret && ApplyCircumcision(pCirc);
-        }
-
-        return ret && InterventionsContainer::GiveIntervention( pIV );
+        return InterventionsContainer::GiveIntervention( pIV );
     }
 
     void
     STIInterventionsContainer::UpdateSTIBarrierProbabilitiesByType(
         RelationshipType::Enum rel_type,
-        SigmoidConfig config_overrides
+        const Sigmoid& config_overrides
     )
     {
         STI_blocking_overrides[ rel_type ] = config_overrides;
     }
 
-    SigmoidConfig
+    const Sigmoid&
     STIInterventionsContainer::GetSTIBarrierProbabilitiesByRelType(
-        RelationshipType::Enum rel_type
+        const IRelationshipParameters* pRelParams
     )
     const
     {
-        SigmoidConfig ret;
-
-        if( STI_blocking_overrides.find( rel_type ) != STI_blocking_overrides.end() )
+        if( STI_blocking_overrides.find( pRelParams->GetType() ) != STI_blocking_overrides.end() )
         {
             LOG_DEBUG( "Using override condom config values from campaign.\n" );
-            ret = STI_blocking_overrides.at( rel_type );
+            return STI_blocking_overrides.at( pRelParams->GetType() );
         }
         else
         {
             LOG_DEBUG( "Using static (default/config.json) condom config values.\n" );
-            switch( rel_type )
-            {
-                case RelationshipType::MARITAL:
-                    ret.midyear = IndividualHumanSTIConfig::condom_usage_probability_in_marital_relationships_midyear;
-                    ret.rate = IndividualHumanSTIConfig::condom_usage_probability_in_marital_relationships_rate;
-                    ret.early = IndividualHumanSTIConfig::condom_usage_probability_in_marital_relationships_early;
-                    ret.late = IndividualHumanSTIConfig::condom_usage_probability_in_marital_relationships_late;
-                break;
-                case RelationshipType::INFORMAL:
-                    ret.midyear = IndividualHumanSTIConfig::condom_usage_probability_in_informal_relationships_midyear;
-                    ret.rate = IndividualHumanSTIConfig::condom_usage_probability_in_informal_relationships_rate;
-                    ret.early = IndividualHumanSTIConfig::condom_usage_probability_in_informal_relationships_early;
-                    ret.late = IndividualHumanSTIConfig::condom_usage_probability_in_informal_relationships_late;
-                break;
-                case RelationshipType::TRANSITORY:
-                    ret.midyear = IndividualHumanSTIConfig::condom_usage_probability_in_transitory_relationships_midyear;
-                    ret.rate = IndividualHumanSTIConfig::condom_usage_probability_in_transitory_relationships_rate;
-                    ret.early = IndividualHumanSTIConfig::condom_usage_probability_in_transitory_relationships_early;
-                    ret.late = IndividualHumanSTIConfig::condom_usage_probability_in_transitory_relationships_late;
-                break;
-            }
+            return pRelParams->GetCondomUsage();
         }
-        //LOG_DEBUG_F( "%s returning %f for type %s\n", __FUNCTION__, (float)ret, rel_type );
-        return ret;
     }
 
     float
@@ -132,13 +97,20 @@ namespace Kernel
         return drugVaccineReducedTransmit;
     }
 
-    bool STIInterventionsContainer::IsCircumcised( void ) const {
+    bool STIInterventionsContainer::IsCircumcised( void ) const 
+    {
         return is_circumcised;
     }
 
-    bool STIInterventionsContainer::ApplyCircumcision( ICircumcision *pCirc ) {
+    float STIInterventionsContainer::GetCircumcisedReducedAcquire() const
+    {
+        return circumcision_reduced_require;
+    }
+
+    void STIInterventionsContainer::ApplyCircumcision( float reduceAcquire ) 
+    {
         // Need to get gender
-        IIndividualHuman *ih = NULL;
+        IIndividualHuman *ih = nullptr;
         if( s_OK != parent->QueryInterface(GET_IID(IIndividualHuman), (void**) &ih) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHuman", "IIndividualHuman" );
@@ -146,21 +118,16 @@ namespace Kernel
 
         if( ih->GetGender() == Gender::FEMALE )
         {
-            return false;
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Females cannot be circumcised." );
         }
 
-        if( IsCircumcised() )
-        {
-            return false;
-        }
-
+        circumcision_reduced_require = reduceAcquire;
         is_circumcised = true;
-        return true;
     }
 
     void STIInterventionsContainer::ChangeProperty( const char *prop, const char* new_value)
     {
-        IIndividualHumanSTI *ihsti = NULL;
+        IIndividualHumanSTI *ihsti = nullptr;
         if( s_OK != parent->QueryInterface(GET_IID(IIndividualHumanSTI), (void**) &ihsti) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanContext", "IIndividualHumanSTI" );
@@ -173,7 +140,7 @@ namespace Kernel
     void
     STIInterventionsContainer::SpreadStiCoInfection()
     {
-        IIndividualHumanSTI *ihsti = NULL;
+        IIndividualHumanSTI *ihsti = nullptr;
         if( s_OK != parent->QueryInterface(GET_IID(IIndividualHumanSTI), (void**) &ihsti) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanContext", "IIndividualHumanSTI" );
@@ -184,27 +151,56 @@ namespace Kernel
     void
     STIInterventionsContainer::CureStiCoInfection()
     {
-        IIndividualHumanSTI *ihsti = NULL;
+        IIndividualHumanSTI *ihsti = nullptr;
         if( s_OK != parent->QueryInterface(GET_IID(IIndividualHumanSTI), (void**) &ihsti) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanContext", "IIndividualHumanSTI" );
         }
         ihsti->ClearStiCoInfectionState();
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::STIInterventionsContainer)
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, STIInterventionsContainer& container, const unsigned int v)
+    REGISTER_SERIALIZABLE(STIInterventionsContainer);
+
+    void serialize_overrides( IArchive& ar, std::map< RelationshipType::Enum, Sigmoid >& blocking_overrides )
     {
-        static const char * _module = "STIInterventionsContainer";
-        LOG_DEBUG("(De)serializing STIInterventionsContainer\n");
+        size_t count = ar.IsWriter() ? blocking_overrides.size() : -1;
 
-        ar & container.is_circumcised;
+        ar.startArray(count);
+        if (ar.IsWriter())
+        {
+            for (auto& entry : blocking_overrides)
+            {
+                std::string key = RelationshipType::pairs::lookup_key( entry.first );
+                ar.startObject();
+                    ar.labelElement("key"  ) & key;
+                    ar.labelElement("value") & entry.second;
+                ar.endObject();
+            }
+        }
+        else
+        {
+            for (size_t i = 0; i < count; ++i)
+            {
+                std::string key;
+                Sigmoid value;
+                ar.startObject();
+                    ar.labelElement("key"  ) & key;
+                    ar.labelElement("value") & value;
+                ar.endObject();
+                RelationshipType::Enum rt = (RelationshipType::Enum)RelationshipType::pairs::lookup_value( key.c_str() );
+                blocking_overrides[ rt ] = value;
+            }
+        }
+        ar.endArray();
+    }
 
-        ar & boost::serialization::base_object<InterventionsContainer>(container);
+    void STIInterventionsContainer::serialize(IArchive& ar, STIInterventionsContainer* obj)
+    {
+        InterventionsContainer::serialize( ar, obj );
+        STIInterventionsContainer& container = *obj;
+        ar.labelElement("is_circumcised"              ) & container.is_circumcised;
+        ar.labelElement("circumcision_reduced_require") & container.circumcision_reduced_require;
+        ar.labelElement("STI_blocking_overrides"      ); serialize_overrides( ar, container.STI_blocking_overrides );
     }
 }
-#endif
+

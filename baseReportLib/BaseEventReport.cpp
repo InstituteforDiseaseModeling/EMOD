@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,7 +11,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ISupports.h"
 #include "BaseEventReport.h"
 #include "NodeEventContext.h"
-#include "Types.h"
 
 static const char * _module = "BaseEventReport";
 
@@ -65,7 +64,7 @@ namespace Kernel
         // --- need to include SimulationConfig and it brings along too much baggage.
         // -------------------------------------------------------------------------------
         std::vector<std::string> listed_events_list = GET_CONFIG_VECTOR_STRING( EnvPtr->Config, "Listed_Events" );
-        JsonConfigurable::tDynamicStringSet listed_events;
+        jsonConfigurable::tDynamicStringSet listed_events;
         for( auto event_str : listed_events_list )
         {
             listed_events.insert( event_str );
@@ -114,8 +113,8 @@ namespace Kernel
     {
     }
 
-    void BaseEventReport::UpdateEventRegistration( float currentTime, 
-                                                   float dt, 
+    void BaseEventReport::UpdateEventRegistration( float currentTime,
+                                                   float dt,
                                                    std::vector<INodeEventContext*>& rNodeEventContextList )
     {
         bool register_now = false ;
@@ -129,7 +128,7 @@ namespace Kernel
             unregister_now = true ;
         }
         // --------------------------------------------------------
-        // --- if the events have been registered and unregistered, 
+        // --- if the events have been registered and unregistered,
         // --- then we are NOT going to register them again.
         // --------------------------------------------------------
 
@@ -162,7 +161,7 @@ namespace Kernel
         return false ;
     }
 
-    void BaseEventReport::LogIndividualData( IndividualHuman * individual )
+    void BaseEventReport::LogIndividualData( IIndividualHuman* individual )
     {
     }
 
@@ -186,17 +185,6 @@ namespace Kernel
     // -----------------------------
     // --- IIndividualEventObserver
     // -----------------------------
-
-#if USE_JSON_SERIALIZATION
-    // For JSON serialization
-    void BaseEventReport::JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const
-    {
-    }
-
-    void BaseEventReport::JDeserialize( IJsonObjectAdapter* root, JSerializer* helper )
-    {
-    }
-#endif
 
     float
     BaseEventReport::GetStartDay()
@@ -258,7 +246,7 @@ namespace Kernel
         }
     }
 
-    INodeTriggeredInterventionConsumer* 
+    INodeTriggeredInterventionConsumer*
         BaseEventReport::GetNodeTriggeredConsumer( INodeEventContext* pNEC )
     {
         release_assert( pNEC );
@@ -281,7 +269,7 @@ namespace Kernel
     {
         return events_unregistered ;
     }
-    
+
     Kernel::INodeEventContext* BaseEventReport::GetFirstINodeEventContext()
     {
         INodeEventContext* p_nec = nullptr ;

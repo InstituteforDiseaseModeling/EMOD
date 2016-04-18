@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -15,13 +15,14 @@ namespace Kernel
 {
     class Event2ProbabilityMapType : public JsonConfigurable, public JsonConfigurable::tStringFloatMapConfigType
     {
-        friend class ::boost::serialization::access;
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
         public:
             Event2ProbabilityMapType() {}
             virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key );
             virtual json::QuickBuilder GetSchema();
+
+            static void serialize(IArchive& ar, Event2ProbabilityMapType& obj);
     };
 
     class HIVRandomChoice : public HIVSimpleDiagnostic
@@ -41,14 +42,8 @@ namespace Kernel
         virtual void positiveTestDistribute();
 
     protected:
-
         Event2ProbabilityMapType event2ProbabilityMap;
 
-    private:
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class ::boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive &ar, HIVRandomChoice &obj, const unsigned int v);
-#endif
+        DECLARE_SERIALIZABLE(HIVRandomChoice);
     };
 }

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -12,7 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <fstream>
 #include <memory> // unique_ptr
 #include "UnitTest++.h"
-#include "MathFunctions.h"
+#include "Sigmoid.h"
 
 using namespace std; 
 using namespace Kernel; 
@@ -21,8 +21,6 @@ SUITE(SigmoidTest)
 {
     TEST(Test1)
     {
-        std::cout << "Testing Sigmoid functions." << std::endl;
-
         // Start of by checking that basic_sigmoid does what is expected. The reference values are 
         // basically just taken by duplicating the math in the code as of this writing.
         auto val = Sigmoid::basic_sigmoid(); // defaults

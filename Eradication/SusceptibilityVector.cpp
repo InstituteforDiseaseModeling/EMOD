@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -118,83 +118,44 @@ namespace Kernel
         return risk;
     }
 
-        float SusceptibilityVector::LinearBitingFunction(float _age)
+    float SusceptibilityVector::LinearBitingFunction(float _age)
+    {
+        if ( _age < 20 * DAYSPERYEAR )
         {
-            if ( _age < 20 * DAYSPERYEAR )
-            {
-                // linear from birth to age 20 years
-                float newborn_risk = m_newborn_biting_risk;
-                return newborn_risk + _age * (1 - newborn_risk) / (20 * DAYSPERYEAR);
-            }
-            else 
-            {
-                return 1.0f;
-            }
+            // linear from birth to age 20 years
+            float newborn_risk = m_newborn_biting_risk;
+            return newborn_risk + _age * (1 - newborn_risk) / (20 * DAYSPERYEAR);
         }
 
-        float SusceptibilityVector::SurfaceAreaBitingFunction(float _age)
+        return 1.0f;
+    }
+
+    float SusceptibilityVector::SurfaceAreaBitingFunction(float _age)
+    {
+        // piecewise linear rising from birth to age 2
+        // and then shallower slope to age 20
+        float newborn_risk = 0.07f;
+        float two_year_old_risk = 0.23f;
+        if ( _age < 2 * DAYSPERYEAR )
         {
-            // piecewise linear rising from birth to age 2
-            // and then shallower slope to age 20
-            float newborn_risk = 0.07f;
-            float two_year_old_risk = 0.23f;
-            if ( _age < 2 * DAYSPERYEAR )
-            {
-                return newborn_risk + _age * (two_year_old_risk - newborn_risk) / (2 * DAYSPERYEAR);
-            }
-            else if ( _age < 20 * DAYSPERYEAR )
-            {
-                return two_year_old_risk + (_age - 2 * DAYSPERYEAR) * (1 - two_year_old_risk) / ( (20 - 2) * DAYSPERYEAR );
-            }
-            else 
-            {
-                return 1.0f;
-            }
+            return newborn_risk + _age * (two_year_old_risk - newborn_risk) / (2 * DAYSPERYEAR);
         }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::SusceptibilityVector)
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive & ar, SusceptibilityVector& sus, const unsigned int file_version )
-    {
-        ar & sus.m_relative_biting_rate;
-        ar & sus.m_age_dependent_biting_risk;
-        ar & boost::serialization::base_object<Susceptibility>(sus);
-    }
-    template void serialize( boost::archive::binary_iarchive&, SusceptibilityVector &obj, unsigned int file_version );
-    template void serialize( boost::mpi::packed_iarchive&, SusceptibilityVector &obj, unsigned int file_version );
-    template void serialize( boost::mpi::packed_skeleton_oarchive&, SusceptibilityVector &obj, unsigned int file_version );
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, SusceptibilityVector &obj, unsigned int file_version );
-    template void serialize( boost::archive::binary_oarchive&, SusceptibilityVector &obj, unsigned int file_version );
-    template void serialize( boost::mpi::packed_oarchive&, SusceptibilityVector &obj, unsigned int file_version );
-    template void serialize( boost::mpi::detail::content_oarchive&, SusceptibilityVector &obj, unsigned int file_version );
-    template void serialize( boost::mpi::detail::mpi_datatype_oarchive&, SusceptibilityVector &obj, unsigned int file_version );
-}
-#endif
+        if ( _age < 20 * DAYSPERYEAR )
+        {
+            return two_year_old_risk + (_age - 2 * DAYSPERYEAR) * (1 - two_year_old_risk) / ( (20 - 2) * DAYSPERYEAR );
+        }
 
-
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-
-namespace Kernel {
-
-    // IJsonSerializable Interfaces
-    void SusceptibilityVector::JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const
-    {
-        root->BeginObject();
-
-        root->Insert("m_relative_biting_rate", m_relative_biting_rate);
-        root->Insert("m_age_dependent_biting_risk", m_age_dependent_biting_risk);
-        Susceptibility::JSerialize(root, helper);;
-
-        root->EndObject();
+        return 1.0f;
     }
 
-    void SusceptibilityVector::JDeserialize( IJsonObjectAdapter* root, JSerializer* helper )
+    REGISTER_SERIALIZABLE(SusceptibilityVector);
+
+    void SusceptibilityVector::serialize(IArchive& ar, SusceptibilityVector* obj)
     {
+        SusceptibilityVector& susceptibility = *obj;
+        Susceptibility::serialize(ar, obj);
+        ar.labelElement("m_relative_biting_rate") & susceptibility.m_relative_biting_rate;
+        ar.labelElement("m_age_dependent_biting_risk") & susceptibility.m_age_dependent_biting_risk;
     }
 }
-
-#endif
-

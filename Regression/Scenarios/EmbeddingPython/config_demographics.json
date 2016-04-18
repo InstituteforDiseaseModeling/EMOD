@@ -1,0 +1,26 @@
+{
+    "parameters": {
+        "Demographics_Filenames": ["demographics.json"], 
+        "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE", 
+        "Base_Mortality": 0, 
+        "Base_Population_Scale_Factor": 1, 
+        "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE",
+        "Birth_Rate_Time_Dependence": "NONE",
+        "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER", 
+        "Enable_Aging": 1, 
+        "Enable_Birth": 1, 
+        "Enable_Demographics_Birth": 0, 
+        "Enable_Demographics_Gender": 1, 
+        "Enable_Demographics_Initial": 1, 
+        "Enable_Demographics_Other": 0, 
+        "Enable_Vital_Dynamics": 1,
+        "Mortality_Blocking_Immunity_Decay_Rate": 0.001, 
+        "Mortality_Blocking_Immunity_Duration_Before_Decay": 60, 
+        "Mortality_Time_Course": "DAILY_MORTALITY", 
+        "Default_Geography_Initial_Node_Population": 1000,
+        "Default_Geography_Torus_Size": 5,
+        "Minimum_Adult_Age_Years": 20, 
+        "x_Birth": 1, 
+        "x_Other_Mortality": 1 
+    }
+}

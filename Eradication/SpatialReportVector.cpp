@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -16,11 +16,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <boost/math/special_functions/fpclassify.hpp>
 
 #include "SpatialReportVector.h"
-#include "NodeVector.h"
+#include "VectorContexts.h"
+#include "VectorPopulation.h"
 #include "Sugar.h"
 #include "Environment.h"
 #include "Exceptions.h"
-#include "Individual.h"
+#include "IIndividualHuman.h"
 #include "SimulationConfig.h"
 #include "ProgVersion.h"
 
@@ -50,6 +51,18 @@ SpatialReportVector::SpatialReportVector()
 {
 }
 
+void SpatialReportVector::Initialize( unsigned int nrmSize )
+{
+    SpatialReport::Initialize( nrmSize );
+
+    if( infectious_vectors_info.enabled && !adult_vectors_info.enabled )
+    {
+        LOG_WARN("Infectious_Vectors requires that Adult_Vectors be enabled.  Enabling Adult_Vectors.");
+        adult_vectors_info.enabled = true ;
+        channelDataMap.IncreaseChannelLength( adult_vectors_info.name, _nrmSize );
+    }
+}
+
 void SpatialReportVector::populateChannelInfos(tChanInfoMap &channel_infos)
 {
     SpatialReport::populateChannelInfos(channel_infos);
@@ -73,7 +86,7 @@ SpatialReportVector::LogNodeData(
     float daily_hbr          = 0;
 
     // We want to get the vector populations from our Node pointer. What a perfect use case for QI-ing...
-    INodeVector* pNV = NULL;
+    INodeVector* pNV = nullptr;
     if( pNC->QueryInterface( GET_IID( INodeVector ), (void**) & pNV ) != s_OK )
     {
         throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNC", "INodeVector", "INodeContext" );
@@ -91,7 +104,7 @@ SpatialReportVector::LogNodeData(
         daily_hbr          += vectorpopulation->GetHBRByPool(Kernel::VectorPoolIdEnum::BOTH_VECTOR_POOLS);
     }
 
-    int nodeid = pNC->GetExternalID();
+    auto nodeid = pNC->GetExternalID();
 
     if(adult_vectors_info.enabled)
         Accumulate(adult_vectors_info.name, nodeid, adult_vectors);
@@ -110,15 +123,16 @@ void SpatialReportVector::postProcessAccumulatedData()
 {
     SpatialReport::postProcessAccumulatedData();
 
-    normalizeChannel(infectious_vectors_info.name, adult_vectors_info.name);
+    if( infectious_vectors_info.enabled && adult_vectors_info.enabled )
+    {
+        normalizeChannel(infectious_vectors_info.name, adult_vectors_info.name);
+    }
 }
 
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(SpatialReport)
+#if 0
 template<class Archive>
 void serialize(Archive &ar, SpatialReport& report, const unsigned int v)
 {
-    boost::serialization::void_cast_register<SpatialReportVector,IReport>();
     ar & report.timesteps_reduced;
     ar & report.channelDataMap;
     ar & report._nrmSize;

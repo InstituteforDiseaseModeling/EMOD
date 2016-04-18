@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -44,15 +44,16 @@ namespace Kernel
     {
         JsonConfigurable::_useDefaults = InterventionFactory::useDefaults;
 
-        // The Target_Demographic initConfig is repeated in the call to the base class, but that is fine.
-        initConfig( "Target_Demographic", target_demographic, inputJson, MetadataDescriptor::Enum("target_demographic", Target_Demographic_DESC_TEXT, MDD_ENUM_ARGS(TargetDemographicType)), "Intervention_Config.*.iv_type", "IndividualTargeted");
-        if ( target_demographic == TargetDemographicType::ExplicitDiseaseState || JsonConfigurable::_dryrun )
+        bool ret = StandardInterventionDistributionEventCoordinator::Configure(inputJson);
+        if( ret )
         {
-            initConfig( "Target_Disease_State", target_disease_state, inputJson, MetadataDescriptor::Enum("target_disease_state", Target_Disease_State_DESC_TEXT, MDD_ENUM_ARGS(TargetGroupType)));
+            if( (demographic_restrictions.GetTargetDemographic() == TargetDemographicType::ExplicitDiseaseState) || JsonConfigurable::_dryrun )
+            {
+                initConfig( "Target_Disease_State", target_disease_state, inputJson, MetadataDescriptor::Enum("target_disease_state", Target_Disease_State_DESC_TEXT, MDD_ENUM_ARGS(TargetGroupType)));
+            }
         }
 
-        return StandardInterventionDistributionEventCoordinator::Configure(inputJson);
-
+        return ret;
     }
 
  
@@ -60,21 +61,20 @@ namespace Kernel
     GroupInterventionDistributionEventCoordinator::qualifiesDemographically(
         const IIndividualHumanEventContext * const pIndividual
     )
-    const
     {
         bool retQualifies = true;
 
-        IIndividualHumanTB* tb_ind = NULL;
+        IIndividualHumanTB* tb_ind = nullptr;
         if(const_cast<IIndividualHumanEventContext*>(pIndividual)->QueryInterface( GET_IID( IIndividualHumanTB ), (void**)&tb_ind ) != s_OK)
         { //error here
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pIndividual", "IIndividualHumanTB", "IIndividualHumanEventContext" );
         }
 
 
-        if ( target_demographic == TargetDemographicType::ExplicitDiseaseState )
+        if( demographic_restrictions.GetTargetDemographic() == TargetDemographicType::ExplicitDiseaseState )
         {
             //TB SPECIFIC DISEASE STATES
-            IIndividualHumanTB2* tb_ind = NULL;
+            IIndividualHumanTB2* tb_ind = nullptr;
             if(const_cast<IIndividualHumanEventContext*>(pIndividual)->QueryInterface( GET_IID( IIndividualHumanTB2 ), (void**)&tb_ind ) != s_OK)
             { 
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pIndividual", "IIndividualHumanTB2", "IIndividualHumanEventContext" );
@@ -120,18 +120,12 @@ namespace Kernel
 
 }
 
-#if USE_BOOST_SERIALIZATION
-// TODO: Consolidate with serialization code in header.
-#include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT(Kernel::GroupInterventionDistributionEventCoordinator);
-
+#if 0
 namespace Kernel
 {
-
     template<class Archive>
     void serialize(Archive &ar, GroupInterventionDistributionEventCoordinator &ec, const unsigned int v)
     {
-        boost::serialization::void_cast_register<GroupInterventionDistributionEventCoordinator, IEventCoordinator>();
         ar & ec.target_disease_state;
 
         ar & ec.node_suids;
@@ -139,5 +133,4 @@ namespace Kernel
         ar & boost::serialization::base_object<StandardInterventionDistributionEventCoordinator>(ec);
     }
 }
-
 #endif

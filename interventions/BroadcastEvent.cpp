@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,7 +13,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionEnums.h"
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
-#include "SimulationConfig.h"  // for listed_events
 
 static const char * _module = "BroadcastEvent";
 
@@ -32,21 +31,19 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        broadcast_event.constraints = "<configuration>:Listed_Events.*";
-        broadcast_event.constraint_param = &GET_CONFIGURABLE(SimulationConfig)->listed_events;
-        initConfigTypeMap( "Broadcast_Event", &broadcast_event, HIV_Broadcast_Event_DESC_TEXT, NO_TRIGGER_STR );
+        initConfigTypeMap( "Broadcast_Event", &broadcast_event, HIV_Broadcast_Event_DESC_TEXT );
 
         bool ret = JsonConfigurable::Configure( inputJson );
 
-        if( broadcast_event == NO_TRIGGER_STR )
+        if( (broadcast_event == NO_TRIGGER_STR) || broadcast_event.IsUninitialized() )
         {
-            LOG_WARN_F("BroadcastEvent was configured with NoTrigger as the Broadcast_Event.  This special event will not be broadcast.");
+            LOG_WARN_F("BroadcastEvent was configured with NoTrigger (or uninitialized) as the Broadcast_Event.  This special event will not be broadcast.\n");
         }
         return ret;
     }
 
     BroadcastEvent::BroadcastEvent()
-    : broadcast_event( NO_TRIGGER_STR )
+    : broadcast_event()
     {
     }
 
@@ -58,49 +55,27 @@ namespace Kernel
 
     void BroadcastEvent::Update( float dt )
     {
-        // broadcast the event
-        INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-        if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
+        if( (broadcast_event != NO_TRIGGER_STR) && !broadcast_event.IsUninitialized() )
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-        }
-        broadcaster->TriggerNodeEventObserversByString( parent->GetEventContext(), broadcast_event );
-
-        // expire the intervention
-        expired = true;
-    }
-
-    void 
-    BroadcastEvent::broadcastEvent(const std::string& event)
-    {
-        if( event != NO_TRIGGER_STR )
-        {
+            // broadcast the event
             INodeTriggeredInterventionConsumer* broadcaster = nullptr;
             if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
             }
-            LOG_DEBUG_F( "BroadcastEvent broadcasting event = %s.\n", broadcast_event.c_str() );
-            broadcaster->TriggerNodeEventObserversByString( parent->GetEventContext(), event );
+            broadcaster->TriggerNodeEventObserversByString( parent->GetEventContext(), broadcast_event );
         }
+
+        // expire the intervention
+        expired = true;
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::BroadcastEvent)
+    REGISTER_SERIALIZABLE(BroadcastEvent);
 
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, BroadcastEvent& obj, const unsigned int v)
+    void BroadcastEvent::serialize(IArchive& ar, BroadcastEvent* obj)
     {
-        static const char * _module = "BroadcastEvent";
-        LOG_DEBUG("(De)serializing BroadcastEvent\n");
-
-        boost::serialization::void_cast_register<BroadcastEvent, IDistributableIntervention>();
-        ar & (std::string) obj.broadcast_event;
-        ar & boost::serialization::base_object<Kernel::BaseIntervention>(obj);
-        //ar & boost::serialization::base_object<Kernel::SimpleHealthSeekingBehavior>(obj);
+        BaseIntervention::serialize( ar, obj );
+        BroadcastEvent& be = *obj;
+        ar.labelElement("broadcast_event") & be.broadcast_event;
     }
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, Kernel::BroadcastEvent&, unsigned int);
 }
-#endif

@@ -2,9 +2,10 @@
     "Default_Config_Path": "./defaults/sti_default_config.json", 
     "parameters": {
         ".Base_Population_Scale_Factor": 0.0002, 
-        ".Marriage_Formation_Rate_Heterosexual": 0.01,
         "DEMOGRAPHICS": {
+            "Demographics_Filenames": [ "../../HIV/input/SA_UN_demographics.json", "../../HIV/input/PFA_overlay.json", "../../HIV/input/PFA_overlay_marital_10_only.json" ],
             "Enable_Vital_Dynamics": 0,
+            "Individual_Sampling_Type": "FIXED_SAMPLING",
             "MORTALITY": {
                 "Base_Mortality": 0.01, 
                 "Immunity_Mortality_Factor": 0.5
@@ -24,15 +25,6 @@
             "Simulation_Duration": 1500, 
             "Config_Name": "21_STI_Marital_Concurrent_Max"
         }, 
-        "STI": {
-            "Marriage_Formation_Rate_Heterosexual": 0.000914427212, 
-            "Transitory_Formation_Rate_Heterosexual": 0.0,
-            "Informal_Formation_Rate_Heterosexual": 0.0,
-            "Condom_Usage_Probability_in_Marital_Relationships_Early": 0.0,
-            "Condom_Usage_Probability_in_Marital_Relationships_Late": 0.0,
-            "Condom_Usage_Probability_in_Marital_Relationships_Midyear": 2000,
-            "Condom_Usage_Probability_in_Marital_Relationships_Rate": 0
-        },
         "STI_Network_Params_By_Property" :
         {
             "NONE" :

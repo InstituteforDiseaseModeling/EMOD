@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -25,20 +25,21 @@ namespace Kernel
         virtual ~AntiTBDrug() {};
 
         // ISupports
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
-        virtual void SetContextTo(IIndividualHumanContext *context);
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+        virtual void SetContextTo(IIndividualHumanContext *context) override;
 
         // IDistributableIntervention
-        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pCCO );
+        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pCCO ) override;
 
         // inherited from base class Drugs.cpp
-        virtual int GetDrugType() const;
-        virtual std::string GetDrugName() const;
+        virtual int GetDrugType() const override;
+        virtual std::string GetDrugName() const override;
 
         //IDrug
-        virtual void  ConfigureDrugTreatment( IIndividualHumanInterventionsContext * ivc = NULL );
+        virtual void  ConfigureDrugTreatment( IIndividualHumanInterventionsContext * ivc = nullptr ) override;
 
     protected:
+
         // These have same names as analogous methods on container but are internal for this drug itself.
         float GetDrugInactivationRate() const;
         float GetDrugClearanceRate() const;
@@ -56,16 +57,10 @@ namespace Kernel
         float TB_drug_mortality_rate;
         ITBDrugEffectsApply * itbda;
 
-        virtual void Expire();
+        virtual void Expire() override;
 
         ICampaignCostObserver * m_pCCO;
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-    private:
-
-        friend class ::boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive &ar, AntiTBDrug& drug, const unsigned int v);
-#endif
+        DECLARE_SERIALIZABLE(AntiTBDrug);
     };
 }

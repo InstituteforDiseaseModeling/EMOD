@@ -1,4 +1,7 @@
 {
+    "Formation_Rate_Type" : "CONSTANT",
+    "Formation_Rate_Constant": 0.0000914427211999999,
+    "Update_Period" : 0.0,
     "Number_Age_Bins_Male"   : 20,
     "Age_of_First_Bin_Edge_Male"   : 17.5,
     "Age_of_First_Bin_Edge_Female" : 17.5,

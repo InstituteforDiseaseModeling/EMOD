@@ -1,15 +1,14 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 #include <iostream>
-#include <fstream>
 #include <memory> // unique_ptr
 #include "UnitTest++.h"
 #include "BehaviorPFA.h"
@@ -21,6 +20,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "INodeEventContextFake.h"
 #include "RandomFake.h"
 #include "Relationship.h"
+#include "RelationshipParameters.h"
 #include "IdmString.h"
 #include "NoCrtWarnings.h"
 
@@ -176,10 +176,10 @@ SUITE(BehaviorPfaTest)
         // --- Upper-tail critical values of chi-square distribution with ? degrees of freedom 
         // --- for v = 0.95, 0.975
         // --------------------------------------------------------------------------------------
-        float chi_sq_crit_val_095[] =  {  3.841f,  5.991f,  7.815f,  9.488f, 11.070f, 
-                                         12.592f, 14.067f, 15.507f, 16.919f, 18.307f,
-                                         19.675f, 21.026f, 22.362f, 23.685f, 24.996f,
-                                         26.296f, 27.587f, 28.869f, 30.144f, 31.410f } ;
+//        float chi_sq_crit_val_095[] =  {  3.841f,  5.991f,  7.815f,  9.488f, 11.070f, 
+//                                         12.592f, 14.067f, 15.507f, 16.919f, 18.307f,
+//                                         19.675f, 21.026f, 22.362f, 23.685f, 24.996f,
+//                                         26.296f, 27.587f, 28.869f, 30.144f, 31.410f } ;
 
         float chi_sq_crit_val_0975[] = {  5.042f,  7.378f,  9.348f, 11.143f, 12.833f,
                                          14.449f, 16.013f, 17.535f, 19.023f, 20.483f, 
@@ -192,8 +192,11 @@ SUITE(BehaviorPfaTest)
     class FakeRelationship : public Relationship
     {
     public:
-        FakeRelationship::FakeRelationship( IIndividualHumanSTI * husbandIn, IIndividualHumanSTI * wifeIn )
-            : Relationship( husbandIn, wifeIn, RelationshipType::TRANSITORY )
+        FakeRelationship::FakeRelationship( const suids::suid& rRelId, 
+                                            IRelationshipParameters* pRelParams, 
+                                            IIndividualHumanSTI * husbandIn, 
+                                            IIndividualHumanSTI * wifeIn )
+            : Relationship( rRelId, nullptr, pRelParams, husbandIn, wifeIn )
         {
             release_assert( husbandIn->GetSuid().data != wifeIn->GetSuid().data );
         }
@@ -202,8 +205,13 @@ SUITE(BehaviorPfaTest)
         {
         }
 
+        Relationship* Clone()
+        {
+            return new FakeRelationship( *this );
+        }
+
     protected:
-        virtual ProbabilityNumber getProbabilityUsingCondomThisAct() const { return 1.0f; }
+        virtual ProbabilityNumber getProbabilityUsingCondomThisAct() const override { return 1.0f; }
     };
 
     static int m_NextId = 1 ;
@@ -216,6 +224,8 @@ SUITE(BehaviorPfaTest)
         vector< Relationship* > m_relationship_list ;
         vector< IndividualHumanInterventionsContextFake* > m_hic_list ;
         vector< IndividualHumanContextFake*              > m_human_list ;
+        RelationshipParameters m_RelParams ;
+        suids::suid m_NextSuid;
 
         PfaFixture()
             : m_num_rel(0)
@@ -224,13 +234,25 @@ SUITE(BehaviorPfaTest)
             , m_relationship_list()
             , m_hic_list()
             , m_human_list()
+            , m_RelParams( RelationshipType::TRANSITORY )
+            , m_NextSuid()
         {
-            Environment::setInstance( nullptr );
+            m_NextSuid.data = 1;
+            Environment::Finalize();
+            Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
         }
 
         ~PfaFixture()
         {
             ClearData();
+            Environment::Finalize();
+        }
+
+        suids::suid GetNextSuid()
+        {
+            suids::suid next = m_NextSuid;
+            m_NextSuid.data++;
+            return next;
         }
 
         void ClearData()
@@ -259,7 +281,8 @@ SUITE(BehaviorPfaTest)
 
         void AddRelationship( IIndividualHumanSTI* male, IIndividualHumanSTI* female )
         {
-            Relationship* p_rel = new FakeRelationship( male, female );
+            suids::suid rel_id = GetNextSuid();
+            Relationship* p_rel = new FakeRelationship( rel_id, &m_RelParams, male, female );
             male->AddRelationship( p_rel );
             female->AddRelationship( p_rel );
             m_relationship_list.push_back( p_rel );
@@ -294,15 +317,13 @@ SUITE(BehaviorPfaTest)
 
     TEST_FIXTURE(PfaFixture, TestAddRemoveIndividual)
     {
-        float transitory_rate = 0.0013699f ;
-
         unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/BehaviorPfaTest.json" ) );
 
-        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get(), transitory_rate, 1.0f, 1.0f ) );
+        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get(), 1.0f, 1.0f ) );
 
         RandomFake fake_rng ;
 
-        unique_ptr<IPairFormationAgent> pfa( BehaviorPfa::CreatePfa( p_config.get(), from_data.get(), 0.0f, 0.0f, &fake_rng,
+        unique_ptr<IPairFormationAgent> pfa( BehaviorPfa::CreatePfa( p_config.get(), from_data.get(), 0.0f, &fake_rng,
                 [this](IIndividualHumanSTI* male,IIndividualHumanSTI* female) { AddRelationship( male, female ); } ) );
 
         BehaviorPfa* bpfa = dynamic_cast<BehaviorPfa*>( pfa.get() );
@@ -542,15 +563,14 @@ SUITE(BehaviorPfaTest)
     TEST_FIXTURE(PfaFixture, TestUpdateBasic)
     {
         IdmDateTime date_time_2000( 2000.0f * 365.0f ) ;
-        float transitory_rate = 0.0013699f ;
 
         unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/BehaviorPfaTest.json" ) );
 
-        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get(), transitory_rate, 1.0f, 1.0f ) );
+        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get(), 1.0f, 1.0f ) );
 
         RandomFake fake_rng ;
 
-        unique_ptr<IPairFormationAgent> pfa( BehaviorPfa::CreatePfa( p_config.get(), from_data.get(), 0.0f, 0.0f, &fake_rng,
+        unique_ptr<IPairFormationAgent> pfa( BehaviorPfa::CreatePfa( p_config.get(), from_data.get(), 0.0f, &fake_rng,
                 [this](IIndividualHumanSTI* male, IIndividualHumanSTI* female) { AddRelationship( male, female ); } ) );
 
         BehaviorPfa* bpfa = dynamic_cast<BehaviorPfa*>( pfa.get() );
@@ -606,11 +626,9 @@ SUITE(BehaviorPfaTest)
 
     TEST_FIXTURE(PfaFixture, TestDistributions)
     {
-        float transitory_rate = 0.0013699f ;
-
         unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/BehaviorPfaTest.json" ) );
 
-        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get(), transitory_rate, 1.0f, 1.0f ) );
+        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get(), 1.0f, 1.0f ) );
 
         PSEUDO_DES rng ;
 
@@ -633,7 +651,7 @@ SUITE(BehaviorPfaTest)
         std::vector<int> num_passed_list ;
         for( int male_bin_index = 0 ; male_bin_index < from_data->GetMaleAgeBinCount() ; male_bin_index++ )
         {
-            unique_ptr<IPairFormationAgent> pfa( BehaviorPfa::CreatePfa( p_config.get(), from_data.get(), 0.0f, 0.0f, &rng,
+            unique_ptr<IPairFormationAgent> pfa( BehaviorPfa::CreatePfa( p_config.get(), from_data.get(), 0.0f, &rng,
                     [this](IIndividualHumanSTI* male, IIndividualHumanSTI* female) { AddRelationship( male, female ); } ) );
 
             BehaviorPfa* bpfa = dynamic_cast<BehaviorPfa*>( pfa.get() );
@@ -647,7 +665,7 @@ SUITE(BehaviorPfaTest)
             // --- [0, initial_value).  The test logic assumed giving the initial value put it
             // --- in that bin.
             // ---------------------------------------------------------------------------------------------
-            float male_age_years = from_data->GetInitialMaleAge() + (from_data->GetMaleAgeIncrement() * (float)male_bin_index) - 0.1;
+            float male_age_years = from_data->GetInitialMaleAge() + (from_data->GetMaleAgeIncrement() * float(male_bin_index)) - 0.1;
             float male_age_days = male_age_years * DAYSPERYEAR ;
             for( int m = 0 ; m < NUM_MALES ; m++ )
             {
@@ -656,7 +674,7 @@ SUITE(BehaviorPfaTest)
 
             for( int female_bin_index = 0 ; female_bin_index < from_data->GetFemaleAgeBinCount() ; female_bin_index++ )
             {
-                float female_age_years = from_data->GetInitialFemaleAge() + (from_data->GetFemaleAgeIncrement() * (float)female_bin_index) - 0.1 ; // see note above
+                float female_age_years = from_data->GetInitialFemaleAge() + (from_data->GetFemaleAgeIncrement() * float(female_bin_index)) - 0.1 ; // see note above
                 float female_age_days = female_age_years * DAYSPERYEAR ;
                 for( int f = 0 ; f < NUM_FEMALES_PER_BIN ; f++ )
                 {
@@ -682,7 +700,7 @@ SUITE(BehaviorPfaTest)
             {
                 int act_in_relationship = NUM_FEMALES_PER_BIN - bpfa->GetNumFemalesInBin( female_bin_index ) ;
 
-                float exp_in_relationship = (float)(NUM_MALES)*from_data->JointProbabilityTable()[ male_bin_index ][ female_bin_index ] ;
+                float exp_in_relationship = float(NUM_MALES)*from_data->JointProbabilityTable()[ male_bin_index ][ female_bin_index ] ;
 
                 actual.push_back( act_in_relationship );
                 expected.push_back( exp_in_relationship );

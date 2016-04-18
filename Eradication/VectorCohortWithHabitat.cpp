@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -51,15 +51,3 @@ namespace Kernel
         return habitat;
     }
 }
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::VectorCohortWithHabitat)
-namespace Kernel {
-    template< typename Archive >
-    void serialize( Archive& ar, VectorCohortWithHabitat &obj, unsigned int file_version )
-    {
-        //ar & obj.habitat; // these guys don't migrate
-        ar & boost::serialization::base_object<Kernel::VectorCohort>(obj);
-    }
-}
-#endif

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -14,11 +14,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <vector>
 
 #include "StandardEventCoordinator.h"
-#include "InterventionEnums.h"
 
 namespace Kernel
 {
-    
+    ENUM_DEFINE(BssTargetingType,
+        ENUM_VALUE_SPEC(TargetBss               , 0)
+        ENUM_VALUE_SPEC(IgnoreBss               , 1)
+        ENUM_VALUE_SPEC(NeutralBss              , 2))
+
     // STI distribution ec that just gives out the intervention once to the fraction of people specified by the coverage parameter
     class STIInterventionDistributionEventCoordinator : public StandardInterventionDistributionEventCoordinator
     {
@@ -38,13 +41,5 @@ namespace Kernel
         // helpers
         virtual float getDemographicCoverageForIndividual( const IIndividualHumanEventContext *pInd ) const;
         BssTargetingType::Enum bss_targeting;
-
-    private:
-
-#if USE_BOOST_SERIALIZATION
-        friend class ::boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive &ar, STIInterventionDistributionEventCoordinator &ec, const unsigned int v);
-#endif
     };
 }

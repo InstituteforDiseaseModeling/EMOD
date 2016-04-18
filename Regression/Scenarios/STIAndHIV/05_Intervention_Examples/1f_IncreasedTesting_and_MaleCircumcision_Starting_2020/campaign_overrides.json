@@ -36,11 +36,11 @@
             "Event_Coordinator_Config":
             {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "Everyone",
                 "Intervention_Config":
                 {
-                    "Demographic_Coverage": 1,
                     "class": "BirthTriggeredIV",
+                    "Target_Demographic": "Everyone",
+                    "Demographic_Coverage": 1,
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "BroadcastEvent",
@@ -61,11 +61,11 @@
             "Event_Coordinator_Config":
             {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "ExplicitGender",
-                "Target_Gender": "Male",
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
+                    "Target_Demographic": "ExplicitGender",
+                    "Target_Gender": "Male",
                     "Property_Restrictions_Within_Node":
                     [
                         { "Accessibility": "Yes" }

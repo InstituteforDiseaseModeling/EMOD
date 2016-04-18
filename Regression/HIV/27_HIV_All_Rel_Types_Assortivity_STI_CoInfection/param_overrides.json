@@ -2,7 +2,11 @@
     "Default_Config_Path": "defaults/hiv_default_config.json", 
     "parameters": {
         "DEMOGRAPHICS": {
-            "Demographics_Filename": "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json;PFA_overlay_Assort_STI_Co.json"
+            "Demographics_Filenames": [
+                "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json",
+                "../input/PFA_overlay.json",
+                "PFA_overlay_Assort_STI_Co.json"
+            ]
         }, 
         "PRIMARY": {
             "Run_Number": 1, 
@@ -10,10 +14,7 @@
             "Simulation_Duration": 3000
         }, 
         "STI": {
-            "Report_Relationship_Start" : 1,
-            "PFA_Update_Period_Transitory" : 30,
-            "PFA_Update_Period_Informal"   : 30,
-            "PFA_Update_Period_Marital"    : 30
+            "Report_Relationship_Start" : 1
         }
     }
 }

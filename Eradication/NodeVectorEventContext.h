@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -22,6 +22,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"
 #include "NodeEventContextHost.h"
 #include "VectorEnums.h"
+#include "VectorContexts.h"
+#include "VectorMatingStructure.h"
+#include "Types.h"
 
 namespace Kernel
 {
@@ -44,12 +47,10 @@ namespace Kernel
         virtual void UpdateOutdoorRestKilling(float) = 0;
     };
 
-    struct IMosquitoRelease;
-
     class IMosquitoReleaseConsumer : public ISupports
     {
     public:
-        virtual void ReleaseMosquitoes(IMosquitoRelease *release) = 0;
+        virtual void ReleaseMosquitoes( NonNegativeFloat cost, const std::string& species, const VectorMatingStructure& genetics, NaturalNumber number ) = 0;
     };
 
     class NodeVectorEventContextHost :
@@ -99,7 +100,7 @@ namespace Kernel
         VectorHabitatType::Enum ovitrap_killing_target;
 
         // IMosquitoReleaseConsumer
-        virtual void ReleaseMosquitoes(IMosquitoRelease* release);
+        virtual void ReleaseMosquitoes( NonNegativeFloat cost, const std::string& species, const VectorMatingStructure& genetics, NaturalNumber number );
 
     protected: 
         float pLarvalKilling;
@@ -116,13 +117,6 @@ namespace Kernel
         float pOutdoorRestKilling;
 
     private:
-        NodeVectorEventContextHost() : NodeEventContextHost(NULL) { }
-
-#if USE_BOOST_SERIALIZATION
-        friend class ::boost::serialization::access;
-
-        template<class Archive>
-        friend void serialize(Archive &ar, NodeVectorEventContextHost &context, const unsigned int v);
-#endif    
+        NodeVectorEventContextHost() : NodeEventContextHost(nullptr) { }
     };
 }

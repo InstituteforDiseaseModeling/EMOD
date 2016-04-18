@@ -1,16 +1,15 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #pragma once
 
 #include "IdmApi.h"
-#include <string>
 #include <set>
 #include <map>
 #include "BoostLibWrapper.h"
@@ -35,20 +34,6 @@ namespace Kernel
 
         friend class Kernel::NodeDemographicsFactory;
         friend struct Kernel::NodeDemographics;
-
-#if USE_BOOST_SERIALIZATION
-        friend class ::boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, DemographicsContext& nd, const unsigned int /* file_version */); // { ar & stringTable; }
-#endif
-
-#if USE_JSON_SERIALIZATION
-    public:
-
-        // IJsonSerializable Interfaces
-        virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-        virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
     };
 
     struct IDMAPI NodeDemographics
@@ -138,21 +123,6 @@ namespace Kernel
 #pragma warning( pop )
 
         friend struct NodeDemographicsDistribution;
-
-#if USE_JSON_SERIALIZATION
-    public:
-
-        // IJsonSerializable Interfaces
-        virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-        virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
-
-#if USE_BOOST_SERIALIZATION
-        friend class ::boost::serialization::access;
-
-        template<class Archive>
-        friend void serialize(Archive & ar, NodeDemographics &nd, const unsigned int /* file_version */);
-#endif
     };
 
     class IDMAPI NodeDemographicsFactory : public JsonConfigurable
@@ -162,9 +132,11 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
 
     public:
-        static const uint32_t default_geography_torus_size;
-
-        static NodeDemographicsFactory* CreateNodeDemographicsFactory(boost::bimap<uint32_t, suids::suid> * nodeid_suid_map, const ::Configuration *config);
+        static NodeDemographicsFactory* CreateNodeDemographicsFactory( boost::bimap<uint32_t, suids::suid> * nodeid_suid_map,  
+                                                                       const ::Configuration *config,
+                                                                       bool isDataInFiles, 
+                                                                       uint32_t torusSize, 
+                                                                       uint32_t defaultPopulation );
         ~NodeDemographicsFactory();
 
         DemographicsContext* CreateDemographicsContext();
@@ -180,7 +152,7 @@ namespace Kernel
                                                          const std::string& rParentKey );
 
         const std::vector<uint32_t>& GetNodeIDs() { return nodeIDs; }
-        const std::string GetIdReference() { return idreference; }
+        const std::string& GetIdReference() { return idreference; }
 
         // If the user selected to use the default demographics, this routine can be used
         // to write the demographics to a file once the demographics have been initialized.
@@ -219,6 +191,10 @@ namespace Kernel
         // NOTE: we don't want to use unordered_map here because we want the order maintained.
         std::vector<std::map<uint32_t,JsonObjectDemog>> nodedata_maps ;
 
+        // values used when generating the default geography
+        uint32_t torus_size;
+        uint32_t default_population;
+
         static std::vector<std::string> demographics_filenames_list;
 
 #pragma warning( pop )
@@ -234,11 +210,13 @@ namespace Kernel
             , layer_string_sub_tables()
             , layer_string_value2key_tables()
             , nodedata_maps()
+            , torus_size(10)
+            , default_population(1000)
         { 
         };
-        void Initialize(const ::Configuration *config);
+        void Initialize( const ::Configuration *config, bool isDataInFiles, uint32_t torusSize, uint32_t defaultPopulation );
 
-        virtual bool Configure( const Configuration* config );
+        virtual bool Configure( const Configuration* config ) override;
 
         // Create json object of the data that is unique for this default node.
         JsonObjectDemog CreateDefaultNodeDemograhics( uint32_t nodeid );
@@ -308,6 +286,7 @@ namespace Kernel
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
         // A step towards limiting the lookup in Node for demographic_distributions by arbitrary keys
         // -- General --
+        static const std::string ImmunityDistribution;
         static const std::string FertilityDistribution;
         static const std::string MortalityDistribution;
         static const std::string MortalityDistributionMale;
@@ -394,19 +373,5 @@ namespace Kernel
         std::vector<double> result_values;
         std::vector< std::vector<double> > dist_values;
 #pragma warning( pop )
-
-#if USE_JSON_SERIALIZATION
-    public:
-
-        // IJsonSerializable Interfaces
-        virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-        virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
-
-#if USE_BOOST_SERIALIZATION
-        friend class ::boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, NodeDemographicsDistribution &ndd, const unsigned int /* file_version */);
-#endif
     };
 }

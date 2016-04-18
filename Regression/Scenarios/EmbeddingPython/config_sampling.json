@@ -1,0 +1,15 @@
+{
+    "parameters": {
+        "Base_Individual_Sample_Rate": 1, 
+        "Individual_Sampling_Type": "TRACK_ALL", 
+        "Max_Node_Population_Samples": 40, 
+        "Population_Scale_Type": "FIXED_SCALING", 
+        "Sample_Rate_0_18mo": 1, 
+        "Sample_Rate_10_14": 1, 
+        "Sample_Rate_15_19": 1, 
+        "Sample_Rate_18mo_4yr": 1, 
+        "Sample_Rate_20_Plus": 1, 
+        "Sample_Rate_5_9": 1, 
+        "Sample_Rate_Birth": 2 
+    }
+}

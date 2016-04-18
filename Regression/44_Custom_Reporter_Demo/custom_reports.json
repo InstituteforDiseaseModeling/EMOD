@@ -1,7 +1,7 @@
 {
     "Custom_Reports" : 
     {
-        "Use_Explicit_Dlls" : 0,
+        "Use_Explicit_Dlls" : 1,
         "ReportPluginBasic" :
         {
             "Enabled" : 1,

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -80,14 +80,14 @@ namespace Kernel
         return JsonConfigurable::Configure( inputJson );
     }
 
-    AntimalarialDrug::AntimalarialDrug() 
+    AntimalarialDrug::AntimalarialDrug()
         : GenericDrug(),
         drug_IRBC_killrate(0),
+        drug_hepatocyte(0),
         drug_gametocyte02(0),
         drug_gametocyte34(0),
         drug_gametocyteM(0),
-        drug_hepatocyte(0),
-        imda(NULL)
+        imda(nullptr)
     {
         initSimTypes( 1, "MALARIA_SIM" );
     }
@@ -101,7 +101,7 @@ namespace Kernel
         if (s_OK != context->QueryInterface(GET_IID(IMalariaDrugEffectsApply), (void**)&imda) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IMalariaDrugEffectsApply", "IIndividualHumanInterventionsContext" );
-        } 
+        }
 
         // just add in another Drug to list, can later check the person's records and apply accordingly (TODO)
         return GenericDrug::Distribute( context, pCCO );
@@ -112,25 +112,11 @@ namespace Kernel
         IIndividualHumanContext *context
     )
     {
+        release_assert( context );
+        release_assert( context->GetInterventionsContext() );
         if (s_OK != context->GetInterventionsContext()->QueryInterface(GET_IID(IMalariaDrugEffectsApply), (void**)&imda) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context->GetInterventionsContext()", "IMalariaDrugEffectsApply", "IIndividualHumanInterventionsContext" );
-        } 
-
-        IGlobalContext *pGC = NULL;
-        const SimulationConfig* simConfigObj = NULL;
-        if (s_OK == context->QueryInterface(GET_IID(IGlobalContext), (void**)&pGC))
-        {
-            simConfigObj = pGC->GetSimulationConfigObj();
-        }
-        if (!simConfigObj)
-        {
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "The pointer to SimulationConfig object is not valid (could be DLL specific)" );
-        }
-        const Configuration* jsonConfig = simConfigObj->GetJsonConfigObj();
-        if (!jsonConfig)
-        {
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "The pointer to Configuration object is not valid (could be DLL specific)" );
         }
 
         return GenericDrug::SetContextTo( context );
@@ -138,25 +124,20 @@ namespace Kernel
 
     void AntimalarialDrug::ConfigureDrugTreatment( IIndividualHumanInterventionsContext * ivc )
     {
-        // TBD: QI from ivc to MalariaInterventionsContainer, and then ask it for the MalariaDrugTypeParameters object.
-        IMalariaDrugEffects * mivc = NULL;
-        if( ivc->QueryInterface( GET_IID(IMalariaDrugEffects), (void**)&mivc ) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "ivc", "IMalariaDrugEffects", "IIndividualHumanInterventionsContext" );
-        };
-        auto mdtMap = mivc->GetMdtParams();
-
+        auto mdtMap = GET_CONFIGURABLE(SimulationConfig)->MalariaDrugMap;
         if( mdtMap.find( drug_type ) == mdtMap.end() )
         {
             throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, "mdtMap", drug_type.c_str() );
         }
+
+        auto drug_params = mdtMap.at( drug_type );
 
         if(dosing_type == (DrugUsageType::FullTreatmentCourse) ||
            dosing_type == (DrugUsageType::FullTreatmentNewDetectionTech) ||
            dosing_type == (DrugUsageType::FullTreatmentParasiteDetect) ||
            dosing_type == (DrugUsageType::FullTreatmentWhenSymptom))
         {
-            remaining_doses = mdtMap[drug_type]->drug_fulltreatment_doses;
+            remaining_doses = drug_params->drug_fulltreatment_doses;
         }
         else if(dosing_type == (DrugUsageType::SingleDose) ||
                 dosing_type == (DrugUsageType::SingleDoseNewDetectionTech) ||
@@ -170,12 +151,12 @@ namespace Kernel
             remaining_doses = 1000; //hack for prophylaxis--person keeps taking 1000 doses, because this lasts for several years.  This will be replaced with a different usage pattern when we reintroduce compliance
         }
 
-        time_between_doses = mdtMap[drug_type]->drug_dose_interval;
-        Cmax = mdtMap[drug_type]->drug_Cmax;
+        time_between_doses = drug_params->drug_dose_interval;
+        Cmax = drug_params->drug_Cmax;
 
         // Optional age-dependent dosing
-        float bodyweight_exponent = mdtMap[drug_type]->bodyweight_exponent;
-        DoseMap::dose_map_t fractional_dose_by_upper_age = mdtMap[drug_type]->dose_map.fractional_dose_by_upper_age;
+        float bodyweight_exponent = drug_params->bodyweight_exponent;
+        DoseMap::dose_map_t fractional_dose_by_upper_age = drug_params->dose_map.fractional_dose_by_upper_age;
         if ( bodyweight_exponent > 0 || !fractional_dose_by_upper_age.empty() )
         {
             float age_in_days = ivc->GetParent()->GetEventContext()->GetAge();
@@ -193,28 +174,17 @@ namespace Kernel
             Cmax *= Cmax_multiplier;
         }
 
-        Vd = mdtMap[drug_type]->drug_Vd;
-        drug_c50 = mdtMap[drug_type]->drug_pkpd_c50;
-        drug_IRBC_killrate = mdtMap[drug_type]->max_drug_IRBC_kill;
-        drug_gametocyte02  = mdtMap[drug_type]->drug_gametocyte02_killrate;
-        drug_gametocyte34  = mdtMap[drug_type]->drug_gametocyte34_killrate;
-        drug_gametocyteM   = mdtMap[drug_type]->drug_gametocyteM_killrate;
-        drug_hepatocyte    = mdtMap[drug_type]->drug_hepatocyte_killrate;
+        Vd = drug_params->drug_Vd;
+        drug_c50 = drug_params->drug_pkpd_c50;
+        drug_IRBC_killrate = drug_params->max_drug_IRBC_kill;
+        drug_gametocyte02  = drug_params->drug_gametocyte02_killrate;
+        drug_gametocyte34  = drug_params->drug_gametocyte34_killrate;
+        drug_gametocyteM   = drug_params->drug_gametocyteM_killrate;
+        drug_hepatocyte    = drug_params->drug_hepatocyte_killrate;
 
-        IGlobalContext *pGC = NULL;
-        const SimulationConfig* simConfigObj = NULL;
-        if (s_OK == parent->QueryInterface(GET_IID(IGlobalContext), (void**)&pGC))
-        {
-            simConfigObj = pGC->GetSimulationConfigObj();
-        }
-        if (!simConfigObj)
-        {
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "The pointer obtained to SimulationConfig object is not valid (could be DLL specific)" );
-        }
-
-        durability_time_profile = simConfigObj->PKPD_model;
-        fast_decay_time_constant = mdtMap[drug_type]->drug_decay_T1;
-        slow_decay_time_constant = mdtMap[drug_type]->drug_decay_T2;
+        durability_time_profile = GET_CONFIGURABLE(SimulationConfig)->PKPD_model;
+        fast_decay_time_constant = drug_params->drug_decay_T1;
+        slow_decay_time_constant = drug_params->drug_decay_T2;
 
         PkPdParameterValidation();
     }
@@ -268,7 +238,7 @@ namespace Kernel
 
         // 20yr (used in original Cmax fitting)
         m[7300.0f] = _adult_bodyweight_kg;
-        
+
         return m;
     }
 
@@ -295,24 +265,18 @@ namespace Kernel
 
         return lower_bw + (upper_bw-lower_bw)*(age_in_days-lower_age)/(upper_age-lower_age);
     }
-}
 
-// TODO: move to single serialization block
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::AntimalarialDrug)
-namespace Kernel {
-     REGISTER_SERIALIZATION_VOID_CAST(AntimalarialDrug, IDrug)
-    template <typename Archive>
-    void serialize(Archive &ar, AntimalarialDrug& drug, const unsigned int v)
+    REGISTER_SERIALIZABLE(AntimalarialDrug);
+
+    void AntimalarialDrug::serialize(IArchive& ar, AntimalarialDrug* obj)
     {
-        ar & drug.drug_IRBC_killrate;
-        ar & drug.drug_hepatocyte;
-        ar & drug.drug_gametocyte02;
-        ar & drug.drug_gametocyte34;
-        ar & drug.drug_gametocyteM;
-        ar & (std::string) drug.drug_type;
-        ar & boost::serialization::base_object<GenericDrug>(drug);
+        GenericDrug::serialize(ar, obj);
+        AntimalarialDrug& drug = *obj;
+        ar.labelElement("drug_IRBC_killrate") & drug.drug_IRBC_killrate;
+        ar.labelElement("drug_hepatocyte") & drug.drug_hepatocyte;
+        ar.labelElement("drug_gametocyte02") & drug.drug_gametocyte02;
+        ar.labelElement("drug_gametocyte34") & drug.drug_gametocyte34;
+        ar.labelElement("drug_gametocyteM") & drug.drug_gametocyteM;
+        ar.labelElement("drug_type") & (std::string&)drug.drug_type;
     }
 }
-
-#endif

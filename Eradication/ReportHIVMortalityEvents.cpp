@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -14,11 +14,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeHIV.h"
 #include "SusceptibilityHIV.h"
 #include "InfectionHIV.h"
-#include "HIVInterventionsContainer.h"
-#include "NodeLevelHealthTriggeredIV.h"
+#include "IHIVInterventionsContainer.h"
 #include "ISimulation.h"
-#include "SimulationConfig.h"
-#include "FileSystem.h"
+#include "IIndividualHumanHIV.h"
+#include "INodeContext.h"
+#include "NodeEventContext.h"
 
 static const char* _module = "ReportHIVMortalityEvents";
 
@@ -28,6 +28,7 @@ namespace Kernel {
     {
         float             death_time;
         bool              death_by_HIV;
+        ExternalNodeId_t  node_id;
         int               individual_id;
         int               gender;
         float             age;
@@ -92,7 +93,8 @@ namespace Kernel {
     std::string ReportHIVMortalityEvents::GetHeader() const
     {
         std::stringstream header ;
-        header << "id,"
+        header << "Node_ID,"
+               << "id,"
                << "Death_time,"
                << "Death_was_HIV_cause,"
                << "Gender,"
@@ -131,12 +133,27 @@ namespace Kernel {
                      context->GetSuid().data,
                      StateChange.c_str()
                    );
-        auto hiv_individual = dynamic_cast<IIndividualHumanHIV*>(context);
+        IIndividualHumanHIV* hiv_individual = nullptr;
+        if ( context->QueryInterface( GET_IID(IIndividualHumanHIV), (void**)&hiv_individual ) != s_OK )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IIndividualHumanEventContext", "IIndividualHumanHIV" );
+        }
         release_assert( hiv_individual );
-        auto sti_individual = dynamic_cast<IIndividualHumanSTI*>(context);
+        IIndividualHumanSTI* sti_individual = nullptr;
+        if (context->QueryInterface( GET_IID(IIndividualHumanSTI), (void**)&sti_individual ) != s_OK )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IIndividualHumanEventContext", "IIndividualHumanSTI" );
+        }
         release_assert( sti_individual );
 
         MortalityInfo info;
+
+        // --------------------------------------------------------
+        // --- Assuming that the individuals in a relationship
+        // --- must be in the same node.
+        //release_assert( false );
+        // --------------------------------------------------------
+        info.node_id = context->GetNodeEventContext()->GetNodeContext()->GetExternalID();
 
         info.death_time = _parent->GetSimulationTime().time;
         info.death_by_HIV = false;
@@ -219,7 +236,8 @@ namespace Kernel {
 
         std::string art_status = ARTStatus::pairs::lookup_key( info.ART_status_at_death );
                  
-        GetOutputStream() << info.individual_id                << ","
+        GetOutputStream() << info.node_id                      << ","
+                          << info.individual_id                << ","
                           << info.death_time                   << ','
                           << info.death_by_HIV                 << ','
                           << info.gender                       << ','

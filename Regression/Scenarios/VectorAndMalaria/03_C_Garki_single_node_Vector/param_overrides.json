@@ -20,10 +20,10 @@
             }
         },
         "DEMOGRAPHICS": {
-            "Demographics_Filename": "Garki_single_demographics.json"
+            "Demographics_Filenames": ["Garki_single_demographics.json"]
         },
         "PRIMARY": {
-            "Config_Name": "PrimaryScenarios_3C_Garki_single_node_Vector",
+            "Config_Name": "VectorAndMalaria_3C_Garki_single_node_Vector",
             "Geography": "Garki_Single",
             "Run_Number": 1,
             "Simulation_Duration": 3650,

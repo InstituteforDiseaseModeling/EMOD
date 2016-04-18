@@ -1,26 +1,32 @@
 {
-     "Use_Defaults": 1,
-     "Events": [
-          {
-               "Event_Coordinator_Config": {
-                    "Demographic_Coverage": 0.8, 
-                    "Intervention_Config": {
-                         "Blocking_Rate": 0, 
-                         "Cost_To_Consumer": 8, 
-                         "Durability_Time_Profile": "BOXDURABILITY", 
-                         "Killing_Rate": 0.53429, 
-                         "Primary_Decay_Time_Constant": 3650, 
-                         "class": "IRSHousingModification"
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.8, 
+                "Intervention_Config": {
+                    "Blocking_Config": {
+                        "Box_Duration": 3650, 
+                        "Initial_Effect": 0, 
+                        "class": "WaningEffectBox"
                     }, 
-                    "Target_Demographic": "Everyone",  
-		    "Property_Restrictions": [],
-                    "class": "StandardInterventionDistributionEventCoordinator"
-               }, 
-               "Nodeset_Config": {
-                    "class": "NodeSetAll"
-               }, 
-               "Start_Day": 730, 
-               "class": "CampaignEvent"
-          }
-     ]
+                    "Cost_To_Consumer": 8, 
+                    "Killing_Config": {
+                        "Box_Duration": 3650, 
+                        "Initial_Effect": 0.53429, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "class": "IRSHousingModification"
+                }, 
+                "Property_Restrictions": [], 
+                "Target_Demographic": "Everyone", 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 730, 
+            "class": "CampaignEvent"
+        }
+    ], 
+    "Use_Defaults": 1
 }

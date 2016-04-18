@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,17 +13,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 //
 #pragma once
 
-#include "rapidjson/prettywriter.h" // for stringify JSON
-#include "rapidjson/filestream.h"   // wrapper of C stream for prettywriter as output
-#include "rapidjson/document.h"
-#include <cstdio>
-#include <string>
-#include <vector>
-#include <iostream>
-#include <sstream>
-#include <time.h>
-
 #include "JsonObject.h"
+
+#include "rapidjson/prettywriter.h" // for stringify JSON
+#include "rapidjson/document.h"
+#include <vector>
 
 #include "rapidjson/stringbuffer.h"
 
@@ -45,62 +39,62 @@ namespace Kernel {
         virtual ~RapidJsonObj();
 
         // IJsonAdapter interface
-        virtual void CreateNewWriter(bool bCacheWriter = false);
-        virtual void FinishWriter();
-        virtual void BeginObject();
-        virtual void EndObject();
-        virtual void BeginArray();
-        virtual void EndArray();
-        virtual const char* ToString() const;
-        virtual char* ToPrettyString() const;
-        virtual void Parse(const char* jsBuffer);
+        virtual void CreateNewWriter(bool bCacheWriter = false) override;
+        virtual void FinishWriter() override;
+        virtual void BeginObject() override;
+        virtual void EndObject() override;
+        virtual void BeginArray() override;
+        virtual void EndArray() override;
+        virtual const char* ToString() const override;
+        virtual char* ToPrettyString() const override;
+        virtual void Parse(const char* jsBuffer) override;
 
-        virtual void DeleteUnderlyingJsonObjs();
+        virtual void DeleteUnderlyingJsonObjs() override;
 
         // IJsonObjectAdapter interface
-        virtual void Insert( const char* key);
-        virtual void Insert( const char* key, const char* val );
-        virtual void Insert( const char* key, const int32_t val );
-        virtual void Insert( const char* key, const uint32_t val );
-        virtual void Insert( const char* key, const int64_t val );
-        virtual void Insert( const char* key, const uint64_t val );
-        virtual void Insert( const char* key, const float val );
-        virtual void Insert( const char* key, const double val );
-        virtual void Insert( const char* key, const bool val );
-        virtual void Insert( const char* key, const IJsonObjectAdapter* val );
+        virtual void Insert( const char* key) override;
+        virtual void Insert( const char* key, const char* val ) override;
+        virtual void Insert( const char* key, const int32_t val ) override;
+        virtual void Insert( const char* key, const uint32_t val ) override;
+        virtual void Insert( const char* key, const int64_t val ) override;
+        virtual void Insert( const char* key, const uint64_t val ) override;
+        virtual void Insert( const char* key, const float val ) override;
+        virtual void Insert( const char* key, const double val ) override;
+        virtual void Insert( const char* key, const bool val ) override;
+        virtual void Insert( const char* key, const IJsonObjectAdapter* val ) override;
 
-        virtual void Add( const char* val );
-        virtual void Add( const int32_t val );
-        virtual void Add( const uint32_t val );
-        virtual void Add( const int64_t val );
-        virtual void Add( const uint64_t val );
-        virtual void Add( const float val );
-        virtual void Add( const double val );
-        virtual void Add( const bool val );
-        virtual void Add( const IJsonObjectAdapter* val );
+        virtual void Add( const char* val ) override;
+        virtual void Add( const int32_t val ) override;
+        virtual void Add( const uint32_t val ) override;
+        virtual void Add( const int64_t val ) override;
+        virtual void Add( const uint64_t val ) override;
+        virtual void Add( const float val ) override;
+        virtual void Add( const double val ) override;
+        virtual void Add( const bool val ) override;
+        virtual void Add( const IJsonObjectAdapter* val ) override;
 
-        virtual IJsonObjectAdapter* operator[](const char* key) const;
-        virtual IJsonObjectAdapter* GetObject(const char* key) const;
-        virtual IJsonObjectAdapter* GetArray(const char* key) const;
-        virtual const char* GetString(const char* key) const;
-        virtual int32_t GetInt(const char* key) const;
-        virtual uint32_t GetUint(const char* key) const;
-        virtual int64_t GetInt64(const char* key) const;
-        virtual uint64_t GetUInt64(const char* key) const;
-        virtual float GetFloat(const char* key) const;
-        virtual double GetDouble(const char* key) const;
-        virtual bool GetBool(const char* key) const;
+        virtual IJsonObjectAdapter* operator[](const char* key) const override;
+        virtual IJsonObjectAdapter* GetJsonObject(const char* key) const override;
+        virtual IJsonObjectAdapter* GetJsonArray(const char* key) const override;
+        virtual const char* GetString(const char* key) const override;
+        virtual int32_t GetInt(const char* key) const override;
+        virtual uint32_t GetUint(const char* key) const override;
+        virtual int64_t GetInt64(const char* key) const override;
+        virtual uint64_t GetUInt64(const char* key) const override;
+        virtual float GetFloat(const char* key) const override;
+        virtual double GetDouble(const char* key) const override;
+        virtual bool GetBool(const char* key) const override;
 
-        virtual IJsonObjectAdapter* operator[](IndexType index) const;
+        virtual IJsonObjectAdapter* operator[](IndexType index) const override;
 
-        virtual const char* AsString() const;
-        virtual int32_t AsInt() const;
-        virtual uint32_t AsUint() const;
-        virtual int64_t AsInt64() const;
-        virtual uint64_t AsUint64() const;
-        virtual float AsFloat() const;
-        virtual double AsDouble() const;
-        virtual bool AsBool() const;
+        virtual const char* AsString() const override;
+        virtual int32_t AsInt() const override;
+        virtual uint32_t AsUint() const override;
+        virtual int64_t AsInt64() const override;
+        virtual uint64_t AsUint64() const override;
+        virtual float AsFloat() const override;
+        virtual double AsDouble() const override;
+        virtual bool AsBool() const override;
 
 /*
         operator const char*() { return AsString(); }
@@ -113,12 +107,12 @@ namespace Kernel {
         operator bool()        { return AsBool(); }
 */
 
-        virtual operator const char*() const;
-        virtual operator int32_t() const;
-        virtual operator float() const;
-        virtual operator bool() const;
+        virtual operator const char*() const override;
+        virtual operator int32_t() const override;
+        virtual operator float() const override;
+        virtual operator bool() const override;
 
-        virtual unsigned int GetSize() const;
+        virtual unsigned int GetSize() const override;
 
     private:
 

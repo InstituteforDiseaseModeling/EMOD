@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -20,12 +20,13 @@ SUITE(FileSystemTest)
 {
     TEST(TestRemoveTrailingChars)
     {
-        string str_space     = "Ends in a space ";
-        string str_line_feed = "Ends in a line feed\n" ;
-        string str_return    = "Ends in a return\r" ;
-        string str_backslash = "Ends in a backslash\\" ;
+        string str_space        = "Ends in a space ";
+        string str_line_feed    = "Ends in a line feed\n" ;
+        string str_return       = "Ends in a return\r" ;
+        string str_backslash    = "Ends in a backslash\\" ;
         string str_forwardslash = "Ends in a forward slash/" ;
         string str_all          = "Ends in all the characters to replace \n\r\t\\/" ;
+        string str_all_spaces   = "     " ;
 
         string exp_space        = "Ends in a space";
         string exp_line_feed    = "Ends in a line feed" ;
@@ -33,6 +34,7 @@ SUITE(FileSystemTest)
         string exp_backslash    = "Ends in a backslash" ;
         string exp_forwardslash = "Ends in a forward slash" ;
         string exp_all          = "Ends in all the characters to replace" ;
+        string exp_empty        = "" ;
 
         string act_space        = FileSystem::RemoveTrailingChars( str_space        );
         string act_line_feed    = FileSystem::RemoveTrailingChars( str_line_feed    );
@@ -40,6 +42,7 @@ SUITE(FileSystemTest)
         string act_backslash    = FileSystem::RemoveTrailingChars( str_backslash    );
         string act_forwardslash = FileSystem::RemoveTrailingChars( str_forwardslash );
         string act_all          = FileSystem::RemoveTrailingChars( str_all          );
+        string act_empty        = FileSystem::RemoveTrailingChars( str_all_spaces   );
 
         CHECK_EQUAL( exp_space,        act_space        );
         CHECK_EQUAL( exp_line_feed,    act_line_feed    );
@@ -47,6 +50,7 @@ SUITE(FileSystemTest)
         CHECK_EQUAL( exp_backslash,    act_backslash    );
         CHECK_EQUAL( exp_forwardslash, act_forwardslash );
         CHECK_EQUAL( exp_all,          act_all          );
+        CHECK_EQUAL( exp_empty,        act_empty        );
 
         wstring w_str_all ;
         wstring w_exp_all ;

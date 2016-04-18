@@ -24,7 +24,7 @@ CFLAGS = $(INCS) -w -O3 -fpermissive -ffloat-store  -std=c++0x -Wno-unknown-prag
 CFLAGS_DBG = $(INCS) -Wall -g -fpermissive -ffloat-store  -std=c++0x -Wno-unknown-pragmas -I $(BOOST_PATH) -DDONT_USE_BOOST_MPI
 COMPILE = $(CC) $(CFLAGS) -c -D_new_=new
 DBG_COMPILE = $(CC) $(CFLAGS_DBG) -c
-LDFLAGS=-L/usr/local/lib -L/usr/local/lib -L/usr/lib/mpich2/lib/ -L /usr/lib/mpich2/lib/ -lmpichcxx -L$(BOOST_LIBS) -Wl,-R$(BOOST_LIBS) -L libs/ -ljson_spirit -lboost_program_options -lboost_mpi -lboost_serialization -lboost_filesystem -lboost_system #-lmpich #-lopa -lpthread -lrt -lstdc++ -pthreads
+LDFLAGS=-L/usr/local/lib -L/usr/local/lib -L/usr/lib/mpich2/lib/ -L /usr/lib/mpich2/lib/ -lmpichcxx -L$(BOOST_LIBS) -Wl,-R$(BOOST_LIBS) -L libs/ -ljson_spirit -lboost_program_options -lboost_filesystem -lboost_system #-lmpich #-lopa -lpthread -lrt -lstdc++ -pthreads
 SOURCES=$(wildcard *.cpp) $(wildcard cajun/src/*.cpp) $(wildcard UnitTest++/src/*.cpp) $(wildcard UnitTest++/src/Posix/*.cpp) $(wildcard json_spirit/*.cpp)
 #SOURCES=$(wildcard *.cpp) $(wildcard cajun/src/*.cpp) $(wildcard UnitTest++/src/*.cpp) $(wildcard UnitTest++/src/Posix/*.cpp)
 OBJFILES := $(patsubst %.cpp,%.o,$(SOURCES))

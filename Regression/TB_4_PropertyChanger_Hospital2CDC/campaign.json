@@ -75,7 +75,6 @@
                     "Treatment_Fraction": 1,
                     "class": "ActiveDiagnostic"
                 },
-                "Number_Distributions": 100,
                 "Number_Repetitions": 50,
                 "Property_Restrictions": [
                     "QualityOfCare:CDC"

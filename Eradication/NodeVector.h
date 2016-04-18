@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -16,15 +16,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Node.h"
 #include "VectorHabitat.h"
 #include "VectorPopulation.h"
-#include "NodeVectorEventContext.h"
 
 class ReportVector;
 class VectorSpeciesReport;
 
-#include "BoostLibWrapper.h"
-
 namespace Kernel
 {
+    struct IMigrationInfoVector;
     class SpatialReportVector;
     class NodeVector : public Node, public IVectorNodeContext , public INodeVector
     {
@@ -39,32 +37,36 @@ namespace Kernel
     public:
         static NodeVector *CreateNode(ISimulationContext *context, suids::suid suid);
         virtual ~NodeVector();
-        virtual bool Configure( const Configuration* config );
+        virtual bool Configure( const Configuration* config ) override;
 
         // INodeContext methods
         // IVectorNodeContext methods
-        virtual VectorProbabilities* GetVectorLifecycleProbabilities();
-        virtual VectorHabitat*       GetVectorHabitatByType(VectorHabitatType::Enum type);
-        virtual void                 AddVectorHabitat(VectorHabitat* habitat);
-        virtual float                GetLarvalHabitatMultiplier(VectorHabitatType::Enum type) const;
+        virtual VectorProbabilities* GetVectorLifecycleProbabilities() override;
+        virtual VectorHabitat*       GetVectorHabitatByType(VectorHabitatType::Enum type) override;
+        virtual void                 AddVectorHabitat(VectorHabitat* habitat) override;
+        virtual float                GetLarvalHabitatMultiplier(VectorHabitatType::Enum type) const override;
 
-        virtual IndividualHuman *processImmigratingIndividual(IndividualHumanVector *);
-        virtual IndividualHuman *addNewIndividual(float = 1.0f, float = 0.0f, int = 0, int = 0, float = 1.0f, float = 1.0f, float = 1.0f, float = 0.0f);
+        virtual IIndividualHuman* processImmigratingIndividual(IIndividualHuman*) override;
+        virtual IIndividualHuman* addNewIndividual(float = 1.0f, float = 0.0f, int = 0, int = 0, float = 1.0f, float = 1.0f, float = 1.0f, float = 0.0f) override;
 
-        virtual void PopulateFromDemographics();
-        virtual void SetupIntranodeTransmission();
-        virtual void SetParameters(NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory);
-        virtual void updateInfectivity(float dt = 0.0f);
-        virtual void updatePopulationStatistics(float dt = 1.0f);
+        virtual void PopulateFromDemographics() override;
+        virtual void SetupIntranodeTransmission() override;
+        virtual void SetParameters(NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory) override;
+        virtual void updateInfectivity(float dt = 0.0f) override;
+        virtual void updatePopulationStatistics(float dt = 1.0f) override;
         void         updateVectorLifecycleProbabilities(float dt);
 
         void SetVectorPopulations(void);    //default--1 population as before
-        virtual void AddVectors(std::string releasedSpecies, VectorMatingStructure _vector_genetics, unsigned long int releasedNumber);
+        virtual void AddVectors(std::string releasedSpecies, VectorMatingStructure _vector_genetics, unsigned long int releasedNumber) override;
 
-        virtual void processImmigratingVector( VectorCohort* immigrant );
+        virtual void SetupMigration( IMigrationInfoFactory * migration_factory, 
+                                     MigrationStructure::Enum ms,
+                                     const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) override;
+        virtual void processImmigratingVector( VectorCohort* immigrant ) override;
         void processEmigratingVectors();
 
-        virtual VectorPopulationList_t& GetVectorPopulations();
+        virtual const std::list<VectorHabitat *>& GetHabitats() const ;
+        virtual VectorPopulationList_t& GetVectorPopulations() override;
 
         static TransmissionGroupMembership_t human_to_vector_all;
         static TransmissionGroupMembership_t human_to_vector_indoor;
@@ -86,33 +88,29 @@ namespace Kernel
 
         std::map<VectorHabitatType::Enum,float> larval_habitat_multiplier;
 
-        bool vector_migration;
-        bool vector_migration_wind;
-        bool vector_migration_human;
-        bool vector_migration_local;
+        bool vector_mortality;
         int32_t mosquito_weight;
+        IMigrationInfoVector* vector_migration_info;
 
         NodeVector();
         NodeVector(ISimulationContext *context, suids::suid node_suid);
-        void Initialize();
+        /* clorton virtual */ void Initialize() /* clorton override */;
 
-        virtual void setupEventContextHost();
+        virtual void setupEventContextHost() override;
         virtual void InitializeVectorPopulation(VectorPopulation* vp);
         float HabitatMultiplierByType(VectorHabitatType::Enum type) const;
+        void VectorMigrationBasedOnFiles();
+        void VectorMigrationToAdjacentNodes();
             
-        virtual IndividualHuman *createHuman(suids::suid id, float MCweight, float init_age, int gender, float init_poverty);
+        virtual IIndividualHuman *createHuman( suids::suid id, float MCweight, float init_age, int gender, float init_poverty) override;
 
-        const SimulationConfig *params();
+        /* clorton virtual */ const SimulationConfig *params() /* clorton override */;
         IVectorSimulationContext *context() const; // N.B. this is returning a non-const context because of the PostMigratingVector function
 
-    private:
-        virtual INodeContext *getContextPointer() { return (INodeContext*)this; }
-        virtual void propagateContextToDependents();
+        DECLARE_SERIALIZABLE(NodeVector);
 
-#if USE_BOOST_SERIALIZATION
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, NodeVector& node, const unsigned int  file_version );
-#endif
+    private:
+        virtual INodeContext *getContextPointer() override { return static_cast<INodeContext*>(this); }
+        virtual void propagateContextToDependents() override;
     };
 } // end namespace Kernel

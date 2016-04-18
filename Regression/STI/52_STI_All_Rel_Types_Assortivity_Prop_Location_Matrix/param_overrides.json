@@ -4,7 +4,7 @@
         "DEMOGRAPHICS": {
             "Enable_Vital_Dynamics": 0,
             "Base_Population_Scale_Factor": 0.001,
-            "Demographics_Filename": "../../HIV/input/SA_UN_demographics.compiled.json;PFA_overlay_Assort_Prop_Location_Matrix.json",
+            "Demographics_Filenames": [ "../../HIV/input/SA_UN_demographics.json", "../../HIV/input/PFA_overlay.json", "PFA_overlay_Assort_Prop_Location_Matrix.json" ], 
             "MORTALITY": {
                 "Base_Mortality": 0.01, 
                 "Immunity_Mortality_Factor": 0.5
@@ -29,13 +29,7 @@
         "STI": {
             "Report_Relationship_Start" : 1,
             "Enable_Property_Output" : 1,
-            "PFA_Cum_Prob_Selection_Threshold" : 0.4,
-            ".Transitory_Formation_Rate_Heterosexual": 0.0013699000000000001,
-            ".Informal_Formation_Rate_Heterosexual": 0.0014419999999999999,
-            ".Marriage_Formation_Rate_Heterosexual": 9.1323999999999995e-05,
-            "PFA_Update_Period_Transitory": 30.0, 
-            "PFA_Update_Period_Informal": 30.0, 
-            "PFA_Update_Period_Marital": 30.0
+            "PFA_Cum_Prob_Selection_Threshold" : 0.4
         }
     }
 }

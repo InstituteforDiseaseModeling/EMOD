@@ -29,11 +29,11 @@
             "Nodeset_Config": { "class": "NodeSetAll" },
             "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Property_Restrictions": [ "ARTAdherence:Good" ],
                 "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
                     "Trigger_Condition": "NewInfectionEvent",
                     "Demographic_Coverage": 1.0,
+                    "Property_Restrictions_Within_Node": [ { "ARTAdherence" : "Good" } ],
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "ARTBasic",
@@ -49,11 +49,11 @@
             "Nodeset_Config": { "class": "NodeSetAll" },
             "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Property_Restrictions": [ "ARTAdherence:Poor" ],
                 "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
                     "Trigger_Condition": "NewInfectionEvent",
                     "Demographic_Coverage": 1.0,
+                    "Property_Restrictions_Within_Node": [ { "ARTAdherence" : "Poor" } ],
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "ARTBasic",

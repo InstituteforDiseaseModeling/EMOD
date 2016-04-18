@@ -66,7 +66,6 @@
                          "Duration": -1, 
                          "class": "BirthTriggeredIV"
                     }, 
-                    "Number_Distributions": -1, 
                     "Number_Repetitions": 1, 
                     "Target_Demographic": "Everyone", 
                     "Timesteps_Between_Repetitions": 1, 
@@ -104,7 +103,6 @@
                          "Treatment_Fraction": 0.9, 
                          "class": "SimpleDiagnostic"
                     }, 
-                    "Number_Distributions": -1, 
                     "Number_Repetitions": -1, 
                     "Target_Demographic": "Everyone", 
                     "Timesteps_Between_Repetitions": 146, 

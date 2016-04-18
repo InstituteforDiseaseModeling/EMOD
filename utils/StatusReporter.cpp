@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 #include "stdafx.h"
@@ -72,8 +72,8 @@ time_t lastProgressUpdateTime = 0;
 StatusReporter::StatusReporter(void) :
     scheduler(nullptr),
     schedulerJob(nullptr),
-    m_pLocalWinsockJunk(nullptr),
-    m_nPort(4444)
+    m_nPort(4444),
+    m_pLocalWinsockJunk(nullptr)
 {
     LOG_DEBUG("Beginning to construct StatusReporter...\n");
 
@@ -153,7 +153,7 @@ long StatusReporter::GetJobId()
 void StatusReporter::GetSchedulerInterface()
 {
     HRESULT hr;
-    if (FAILED(hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED)))
+    if (FAILED(hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)))
     {
         errorMessage << "CoInitializeEx() failed - " << hr << std::endl;
         throw errorMessage.str().c_str();
@@ -163,7 +163,7 @@ void StatusReporter::GetSchedulerInterface()
 
     hr = CoCreateInstance(
         __uuidof(Scheduler),
-        NULL,
+        nullptr,
         CLSCTX_INPROC_SERVER,
         __uuidof(IScheduler),
         reinterpret_cast<void **>(&scheduler));
@@ -300,7 +300,7 @@ void StatusReporter::UpdateJobProgress( int step, int steps, const std::string &
 {
     if (schedulerJob)
     {
-        time_t now = time(NULL);
+        time_t now = time(nullptr);
         if(now - lastProgressUpdateTime >= SECONDS_BETWEEN_UPDATES || step == steps )
         {
             lastProgressUpdateTime = now;
@@ -321,7 +321,7 @@ void StatusReporter::UpdateJobProgressMessage( const std::string &status )
 {
     if (schedulerJob)
     {
-        time_t now = time(NULL);
+        time_t now = time(nullptr);
         if(now - lastProgressUpdateTime >= SECONDS_BETWEEN_UPDATES)
         {
             lastProgressUpdateTime = now;
@@ -378,7 +378,7 @@ void StatusReporter::publish(const std::string &newLogLine) const
 {
     sendto(m_pLocalWinsockJunk->SendSocket,
         newLogLine.c_str(),
-        (int)strlen( newLogLine.c_str() ),
+        int(strlen( newLogLine.c_str() )),
         0,
         (SOCKADDR *) &(m_pLocalWinsockJunk->RecvAddr),
         sizeof(m_pLocalWinsockJunk->RecvAddr));

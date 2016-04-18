@@ -14,13 +14,13 @@
             "Event_Coordinator_Config":
             {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "ExplicitAgeRangesAndGender",
-                "Target_Age_Min": 15,
-                "Target_Age_Max": 49,
-                "Target_Gender": "Female",
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
+                    "Target_Demographic": "ExplicitAgeRangesAndGender",
+                    "Target_Age_Min": 15,
+                    "Target_Age_Max": 49,
+                    "Target_Gender": "Female",
                     "Trigger_Condition": "TriggerList",
                     "Trigger_Condition_List": ["HCTTestingLoop8", "ARTStaging9"],
                     "Actual_IndividualIntervention_Config":
@@ -53,10 +53,12 @@
                     "Actual_IndividualIntervention_Config":
                     {
                       "class":"SimpleVaccine",
-                      "Durability_Time_Profile":"BOXDURABILITY",
-                      "Primary_Decay_Time_Constant":30000,
                       "Vaccine_Type":"AcquisitionBlocking",
-                      "Reduced_Acquire":0.8
+                      "Waning_Config": {
+                          "class": "WaningEffectBox",
+                          "Initial_Effect": 0.8,
+                          "Box_Duration": 30000
+                      }
                     }
                 }
             }
@@ -79,10 +81,12 @@
                     "Actual_IndividualIntervention_Config":
                     {
                       "class":"SimpleVaccine",
-                      "Durability_Time_Profile":"BOXDURABILITY",
-                      "Primary_Decay_Time_Constant":30000,
                       "Vaccine_Type":"AcquisitionBlocking",
-                      "Reduced_Acquire":0.2
+                      "Waning_Config": {
+                          "class": "WaningEffectBox",
+                          "Initial_Effect": 0.2,
+                          "Box_Duration": 30000
+                      }
                     }
                 }
             }
@@ -157,14 +161,14 @@
             "Event_Coordinator_Config":
             {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Property_Restrictions_Within_Node": 
-                [
-                    { "Accessibility": "Yes" }
-                ],
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
                     "Trigger_Condition": "HCTTestingLoop7",
+                    "Property_Restrictions_Within_Node": 
+                    [
+                        { "Accessibility": "Yes" }
+                    ],
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "HIVPiecewiseByYearAndSexDiagnostic",
@@ -224,14 +228,14 @@
             "Event_Coordinator_Config":
             {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Property_Restrictions_Within_Node": 
-                [
-                    { "Accessibility": "Yes" }
-                ],
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
                     "Trigger_Condition": "ARTStaging8",
+                    "Property_Restrictions_Within_Node": 
+                    [
+                        { "Accessibility": "Yes" }
+                    ],
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "HIVPiecewiseByYearAndSexDiagnostic",

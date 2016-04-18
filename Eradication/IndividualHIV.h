@@ -1,16 +1,15 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #pragma once
 
 #include <set>
-#include <list>
 #include "BoostLibWrapper.h"
 #include "NodeHIV.h"
 #include "IndividualSTI.h"
@@ -32,25 +31,25 @@ namespace Kernel
                                                   suids::suid _suid, 
                                                   float monte_carlo_weight = 1.0f, 
                                                   float initial_age = 0.0f, 
-                                                  int gender = (int)Gender::MALE, 
+                                                  int gender = int(Gender::MALE), 
                                                   float initial_poverty = 0.5f );
-        virtual void InitializeHuman();
-        virtual bool Configure( const Configuration* config );
-        virtual void Update( float currenttime, float dt );
+        virtual void InitializeHuman() override;
+        virtual bool Configure( const Configuration* config ) override;
+        virtual void Update( float currenttime, float dt ) override;
 
         // Infections and Susceptibility
-        virtual void CreateSusceptibility( float imm_mod=1.0f, float risk_mod=1.0f );
+        virtual void CreateSusceptibility( float imm_mod=1.0f, float risk_mod=1.0f ) override;
 
-        virtual	bool HasHIV() const;
+        virtual bool HasHIV() const override;
 
-        virtual	IInfectionHIV* GetHIVInfection() const;
-        virtual	ISusceptibilityHIV* GetHIVSusceptibility() const;
-        virtual	IHIVInterventionsContainer* GetHIVInterventionsContainer() const;
-        virtual bool  UpdatePregnancy(float dt=1);
-        virtual ProbabilityNumber getProbMaternalTransmission() const;
+        virtual IInfectionHIV* GetHIVInfection() const override;
+        virtual ISusceptibilityHIV* GetHIVSusceptibility() const override;
+        virtual IHIVInterventionsContainer* GetHIVInterventionsContainer() const override;
+        virtual bool UpdatePregnancy(float dt=1) override;
+        virtual ProbabilityNumber getProbMaternalTransmission() const override;
 
         // healthcare interactions
-        virtual std::string toString() const;
+        virtual std::string toString() const override;
 
     protected:
         IndividualHumanHIV( suids::suid id = suids::nil_suid(), 
@@ -59,8 +58,8 @@ namespace Kernel
                             int gender = 0, 
                             float initial_poverty = 0.5f );
         
-        virtual Infection* createInfection(suids::suid _suid);
-        virtual void setupInterventionsContainer();
+        virtual IInfection* createInfection(suids::suid _suid) override;
+        virtual void setupInterventionsContainer() override;
         ISusceptibilityHIV * hiv_susceptibility;
 
         // from HIVPerson (HIV branch), kto: clean up these comments later
@@ -73,12 +72,6 @@ namespace Kernel
         unsigned int pos_num_partners_while_CD4500plus;
         unsigned int neg_num_partners_while_CD4500plus;
 
-    private:
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, IndividualHumanHIV& human, const unsigned int  file_version );
-#endif
+        DECLARE_SERIALIZABLE(IndividualHumanHIV);
     };
 }

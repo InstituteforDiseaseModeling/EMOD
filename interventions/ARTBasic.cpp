@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -15,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Contexts.h"                  // for IIndividualHumanContext, IIndividualHumanInterventionsContext
 #include "Debug.h"                  // for IIndividualHumanContext, IIndividualHumanInterventionsContext
-#include "HIVInterventionsContainer.h"  // for IHIVDrugEffectsApply methods
+#include "IHIVInterventionsContainer.h"  // for IHIVDrugEffectsApply methods
 
 static const char* _module = "ARTBasic";
 
@@ -28,7 +28,7 @@ namespace Kernel
 
     ARTBasic::ARTBasic()
     : GenericDrug()
-    , itbda(NULL)
+    , itbda(nullptr)
     , viral_suppression(true)
     , days_to_achieve_suppression(183.0f)
     {
@@ -95,19 +95,18 @@ namespace Kernel
         //itbda->ApplyDrugInactivationRateEffect( GetDrugInactivationRate() );
         //itbda->ApplyDrugClearanceRateEffect( GetDrugClearanceRate() );
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::ARTBasic)
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, ARTBasic& drug, const unsigned int v)
+    REGISTER_SERIALIZABLE(ARTBasic);
+
+    void ARTBasic::serialize(IArchive& ar, ARTBasic* obj)
     {
-        boost::serialization::void_cast_register<ARTBasic, IDrug>();
-        //ar & drug.drug_type;
-        ar & boost::serialization::base_object<GenericDrug>(drug);
+        GenericDrug::serialize( ar, obj );
+        ARTBasic& art = *obj;
+        ar.labelElement("viral_suppression"          ) & art.viral_suppression;
+        ar.labelElement("days_to_achieve_suppression") & art.days_to_achieve_suppression;
+
+        // itbda set in SetContextTo
     }
 }
-#endif
 
 //#endif // ENABLE_STI

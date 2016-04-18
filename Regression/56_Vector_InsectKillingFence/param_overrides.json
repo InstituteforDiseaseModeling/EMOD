@@ -1,5 +1,5 @@
 {
-     "Default_Config_Path": "defaults\\vector_default_config.json", 
+     "Default_Config_Path": "defaults/vector_default_config.json", 
      "parameters": {
           "CLIMATE": {
                "AIR": {
@@ -17,7 +17,7 @@
           }, 
           "DEMOGRAPHICS": {
                "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE", 
-               "Demographics_Filename": "Namawala_single_node_demographics.compiled.json"
+               "Demographics_Filenames": ["Namawala_single_node_demographics.compiled.json"]
           }, 
           "PRIMARY": {
                "Config_Name": "56_Vector_InsectKillingFence",

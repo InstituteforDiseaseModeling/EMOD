@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,9 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Environment.h"
 #include "Susceptibility.h"
-#include "RANDOM.h"
 #include "SimulationConfig.h"
-#include "Individual.h"
 #include "RapidJsonImpl.h"
 
 static const char* _module = "Susceptibility";
@@ -37,7 +35,7 @@ namespace Kernel
     END_QUERY_INTERFACE_BODY(SusceptibilityConfig)
 
     Susceptibility::Susceptibility() :
-        parent(NULL)
+        parent(nullptr)
     {
     }
 
@@ -50,7 +48,7 @@ namespace Kernel
     Susceptibility::Susceptibility(IIndividualHumanContext *context) :
         parent(context)
     {
-        //SetFlags(parent != NULL ? parent->GetSusceptibilityFlags() : NULL);
+        //SetFlags(parent != nullptr ? parent->GetSusceptibilityFlags() : nullptr);
     }
 
     bool 
@@ -77,7 +75,7 @@ namespace Kernel
         age = _age;
 
         // immune modifiers
-        mod_acquire   = 1;
+        mod_acquire   = immmod;
         mod_transmit  = 1;
         mod_mortality = 1;
 
@@ -126,7 +124,7 @@ namespace Kernel
             << mod_acquire 
             << std::endl;
         LOG_DEBUG_F( msg.str().c_str() );*/
-        return mod_acquire;
+        return mod_acquire * getSusceptibilityCorrection();
     }
 
     float Susceptibility::GetModTransmit()
@@ -137,7 +135,21 @@ namespace Kernel
     Susceptibility::getModMortality()
     const
     { return mod_mortality; }
-
+    
+    float
+    Susceptibility::getSusceptibilityCorrection()
+    const
+    {
+        float susceptibility_correction = 1;
+        if( GET_CONFIGURABLE(SimulationConfig)->susceptibility_scaling == SusceptibilityScaling::LINEAR_FUNCTION_OF_AGE &&
+            GET_CONFIGURABLE(SimulationConfig)->susceptibility_scaling_rate > 0.0f )
+        {
+            susceptibility_correction = GET_CONFIGURABLE(SimulationConfig)->susceptibility_scaling_intercept + age*GET_CONFIGURABLE(SimulationConfig)->susceptibility_scaling_rate/DAYSPERYEAR;
+        }
+        BOUND_RANGE(susceptibility_correction, 0.0f, 1.0f);
+        LOG_DEBUG_F( "%s returning %f\n", __FUNCTION__, susceptibility_correction );
+        return susceptibility_correction;
+    }
 
     void Susceptibility::Update( float dt )
     {
@@ -185,76 +197,17 @@ namespace Kernel
         // no-op
     }
 
-} // end Kernel namespace
+    REGISTER_SERIALIZABLE(Susceptibility);
 
-
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-namespace Kernel
-{
-    void Susceptibility::JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const
+    void Susceptibility::serialize(IArchive& ar, Susceptibility* obj)
     {
-        root->BeginObject();
-
-        root->Insert("age", age);
-
-        root->Insert("mod_acquire", mod_acquire);
-        root->Insert("mod_transmit", mod_transmit);
-        root->Insert("mod_mortality", mod_mortality);
-
-        root->Insert("acqdecayoffset", acqdecayoffset);
-        root->Insert("trandecayoffset", trandecayoffset);
-        root->Insert("mortdecayoffset", mortdecayoffset);
-
-        root->EndObject();
-    }
-
-    void Susceptibility::JDeserialize( IJsonObjectAdapter* root, JSerializer* helper )
-    {
-        rapidjson::Document * doc = (rapidjson::Document*) root; // total hack to get around build path issues with rapid json and abstraction
-
-        age             = (*doc)[ "age" ].GetDouble();
-        mod_acquire     = (*doc)[ "mod_acquire" ].GetDouble();
-        mod_transmit    = (*doc)[ "mod_transmit" ].GetDouble();
-        mod_mortality   = (*doc)[ "mod_mortality" ].GetDouble();
-        acqdecayoffset  = (*doc)[ "acqdecayoffset" ].GetDouble();
-        trandecayoffset = (*doc)[ "trandecayoffset" ].GetDouble();
-        mortdecayoffset = (*doc)[ "mortdecayoffset" ].GetDouble();
-
-        LOG_DEBUG_F("Susceptibility::JDeserialize age=%f,%f,%f,%f,%f,%f,%f\n",age,mod_acquire,mod_transmit,mod_mortality,acqdecayoffset,trandecayoffset,mortdecayoffset);
+        Susceptibility& susceptibility = *obj;
+        ar.labelElement("age") & susceptibility.age;
+        ar.labelElement("mod_acquire") & susceptibility.mod_acquire;
+        ar.labelElement("mod_transmit") & susceptibility.mod_transmit;
+        ar.labelElement("mod_mortality") & susceptibility.mod_mortality;
+        ar.labelElement("acqdecayoffset") & susceptibility.acqdecayoffset;
+        ar.labelElement("trandecayoffset") & susceptibility.trandecayoffset;
+        ar.labelElement("mortdecayoffset") & susceptibility.mortdecayoffset;
     }
 } // namespace Kernel
-
-#endif
-
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::Susceptibility)
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive & ar, Susceptibility& sus, const unsigned int file_version )
-    {
-        // current status
-        ar & sus.age;
-
-        // immune modifiers
-        ar & sus.mod_acquire;
-        ar & sus.mod_transmit;
-        ar & sus.mod_mortality;
-
-        ar & sus.acqdecayoffset;
-        ar & sus.trandecayoffset;
-        ar & sus.mortdecayoffset;
-    }
-    template void serialize( boost::archive::binary_oarchive&, Kernel::Susceptibility&, unsigned int);
-    template void serialize( boost::mpi::detail::content_oarchive&, Kernel::Susceptibility&, unsigned int);
-    template void serialize( boost::mpi::packed_skeleton_oarchive&, Kernel::Susceptibility&, unsigned int);
-    template void serialize( boost::mpi::detail::mpi_datatype_oarchive&, Kernel::Susceptibility&, unsigned int);
-    template void serialize( boost::mpi::packed_oarchive&, Kernel::Susceptibility&, unsigned int);
-    template void serialize( boost::mpi::packed_iarchive&, Kernel::Susceptibility&, unsigned int);
-    template void serialize( boost::archive::binary_iarchive&, Kernel::Susceptibility&, unsigned int);
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, Kernel::Susceptibility&, unsigned int);
-}
-
-BOOST_CLASS_IMPLEMENTATION(Kernel::Susceptibility, boost::serialization::object_serializable);
-BOOST_CLASS_TRACKING(Kernel::Susceptibility, boost::serialization::track_never);
-#endif

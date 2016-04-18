@@ -1,6 +1,8 @@
 #ifndef UNITTEST_TESTRUNNER_H
 #define UNITTEST_TESTRUNNER_H
 
+#include <string>
+
 #include "Test.h"
 #include "TestList.h"
 #include "CurrentTest.h"
@@ -12,6 +14,7 @@ class TestResults;
 class Timer;
 
 int RunAllTests();
+int RunSuite( const std::string& testSuiteName );
 
 struct True
 {
@@ -45,6 +48,8 @@ public:
 
 	    return Finish();
 	}	
+
+    int RunTests( TestList const& list, const std::string& testSuiteName );
 
 private:
 	TestReporter* m_reporter;

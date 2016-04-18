@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,6 +11,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "FileSystem.h"
 #include "BaseTextReport.h"
+#include "Sugar.h"
+#include "IdmMpi.h"
 
 static const char* _module = "BaseTextReport";
 
@@ -22,6 +24,7 @@ namespace Kernel {
         , report_name( rReportName )
         , output_stream()
         , reduced_stream()
+        , outfile()
     {
     }
 
@@ -54,8 +57,11 @@ namespace Kernel {
         if( write_every_time_step )
         {
             GetDataFromOtherCores();
-            WriteData( reduced_stream.str() );
-            reduced_stream.str( std::string() ); // clear stream
+            if( EnvPtr->MPI.Rank == 0 )
+            {
+                WriteData( reduced_stream.str() );
+                reduced_stream.str( std::string() ); // clear stream
+            }
         }
     }
 
@@ -69,12 +75,16 @@ namespace Kernel {
 
     void BaseTextReport::Finalize()
     {
-        if( !write_every_time_step )
+        if( EnvPtr->MPI.Rank == 0 )
         {
-            WriteData( reduced_stream.str() );
-            reduced_stream.str( std::string() ); // clear stream
+            if( !write_every_time_step )
+            {
+                WriteData( reduced_stream.str() );
+                reduced_stream.str( std::string() ); // clear stream
+            }
+
+            outfile.close();
         }
-        outfile.close();
     }
 
     std::string BaseTextReport::GetOutputFilePath() const
@@ -85,23 +95,16 @@ namespace Kernel {
     
     void BaseTextReport::GetDataFromOtherCores()
     {
-        std::string receive_buffer;
         std::string to_send = output_stream.str();
+        std::string received;
 
-        receive_buffer.resize(to_send.length());
+        EnvPtr->MPI.p_idm_mpi->GatherToRoot( to_send, received );
+        if (EnvPtr->MPI.Rank == 0)
+        {
+            reduced_stream << received;
+        }
 
-        boost::mpi::reduce(
-            *(EnvPtr->MPI.World),
-            to_send,
-            receive_buffer,
-            std::plus<std::string>(),
-            0);
-
-        // Clear output_stream
-        output_stream.str(std::string());
-
-        if( EnvPtr->MPI.Rank == 0 )
-            reduced_stream << receive_buffer;
+        output_stream.str(std::string());   // Clear the output stream.
     }
 
     void BaseTextReport::WriteData( const std::string& rStringData )

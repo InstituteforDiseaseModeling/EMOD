@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,12 +13,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorCohortIndividual.h"
 #include "Vector.h"
 #include "IContagionPopulation.h"
-#include "TransmissionGroupMembership.h"
 #include "StrainIdentity.h"
 #include "NodeVector.h"
 #include "Exceptions.h"
 #include "Log.h"
 #include "Debug.h"
+#include "IMigrationInfoVector.h"
 
 #ifdef randgen
 #undef randgen
@@ -35,7 +35,7 @@ static const char * _module = "VectorPopulationIndividual";
 // All vectors are in AdultQueues, the others are not used
 
 namespace Kernel
-{ 
+{
     // QI stuff
     BEGIN_QUERY_INTERFACE_DERIVED(VectorPopulationIndividual, VectorPopulation)
     END_QUERY_INTERFACE_DERIVED(VectorPopulationIndividual, VectorPopulation)
@@ -44,7 +44,7 @@ namespace Kernel
     : VectorPopulation()
     , m_mosquito_weight(mosquito_weight)
     , m_average_oviposition_killing(0.0f)
-    , current_vci(NULL)
+    , current_vci(nullptr)
     { 
     }
 
@@ -66,7 +66,7 @@ namespace Kernel
 
             // and a population of males as well
             MaleQueues.push_front( VectorCohortAging::CreateCohort( 0.0f, 0.0f, adult, VectorMatingStructure( VectorGender::VECTOR_MALE ) ) );
-            males = (int32_t)adult;
+            males = int32_t(adult);
         }
 
         if (infectious > 0)
@@ -125,7 +125,7 @@ namespace Kernel
         // Use the verbose "foreach" construct here because empty queues (i.e. dead individuals) will be removed
         for ( VectorCohortList_t::iterator iList = AdultQueues.begin(); iList != AdultQueues.end(); )
         { 
-            IVectorCohortIndividual *tempentry2 = NULL;
+            IVectorCohortIndividual *tempentry2 = nullptr;
             if( (*iList)->QueryInterface( GET_IID( IVectorCohortIndividual ), (void**)&tempentry2 ) != s_OK )
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "(*iList)", "IVectorCohortIndividual", "VectorCohort" );
@@ -142,7 +142,7 @@ namespace Kernel
             // Progress with sporogony in infected mosquitoes
             if(tempentry2->GetState() == VectorStateEnum::STATE_INFECTED )
             {
-                (*iCurrent)->IncreaseProgress( (species()->infectedarrhenius1 * exp(-species()->infectedarrhenius2 / (temperature + (float)CELSIUS_TO_KELVIN))) * dt );
+                (*iCurrent)->IncreaseProgress( (species()->infectedarrhenius1 * exp(-species()->infectedarrhenius2 / (temperature + float(CELSIUS_TO_KELVIN)))) * dt );
 
                 if( (*iCurrent)->GetProgress() >=1 && (*iCurrent)->GetPopulation() > 0 )
                 {
@@ -164,7 +164,6 @@ namespace Kernel
             else
             {
                 // Increment counters
-                int32_t pop = (*iCurrent)->GetPopulation();
                 queueIncrementTotalPopulation((*iCurrent), tempentry2->GetState());
             }
         }
@@ -194,21 +193,19 @@ namespace Kernel
         // Adjust human-feeding mortality for longer-probing infectious vectors
         // Wekesa, J. W., R. S. Copeland, et al. (1992). "Effect of Plasmodium Falciparum on Blood Feeding Behavior of Naturally Infected Anopheles Mosquitoes in Western Kenya." Am J Trop Med Hyg 47(4): 484-488.
         // ANDERSON, R. A., B. G. J. KNOLS, et al. (2000). "Plasmodium falciparum sporozoites increase feeding-associated mortality of their mosquito hosts Anopheles gambiae s.l." Parasitology 120(04): 329-333.
-        float x_infectioushfmortmod  = (state == VectorStateEnum::STATE_INFECTIOUS) ? (float) species()->infectioushfmortmod  : 1.0f;
-        float x_infectiouscorrection = (state == VectorStateEnum::STATE_INFECTIOUS) ? (float) infectiouscorrection : 1.0f;
+        float x_infectioushfmortmod  = (state == VectorStateEnum::STATE_INFECTIOUS) ? float(species()->infectioushfmortmod)  : 1.0f;
+        float x_infectiouscorrection = (state == VectorStateEnum::STATE_INFECTIOUS) ? float(infectiouscorrection) : 1.0f;
 
         //Wolbachia-related impacts on mortality and infection susceptibility
         float x_mortalityWolbachia = 1.0;
-        float x_infectionWolbachia = 1.0; 
         if( queue->GetVectorGenetics().GetWolbachia() != VectorWolbachia::WOLBACHIA_FREE )
         {
             x_mortalityWolbachia = params()->WolbachiaMortalityModification;
-            x_infectionWolbachia = params()->WolbachiaInfectionModification;
         }
 
         // Oocysts, not sporozoites affect egg batch size:
         // Hogg, J. C. and H. Hurd (1997). "The effects of natural Plasmodium falciparum infection on the fecundity and mortality of Anopheles gambiae s. l. in north east Tanzania." Parasitology 114(04): 325-331.
-        float x_infectedeggbatchmod  = (state == VectorStateEnum::STATE_INFECTED)   ? (float) species()->infectedeggbatchmod  : 1.0f;
+        float x_infectedeggbatchmod  = (state == VectorStateEnum::STATE_INFECTED)   ? float(species()->infectedeggbatchmod)  : 1.0f;
 
         // Calculate local mortality (with or without age dependence) and convert to probability
         if (params()->vector_aging)
@@ -235,7 +232,7 @@ namespace Kernel
                 cumulative_probability += (1 - cumulative_probability) * probs()->sugarTrapKilling;  // add in sugarTrap to kill rate
             }
             
-            if(outcome <= cumulative_probability)
+            if( m_VectorMortality && (outcome <= cumulative_probability) )
             { 
                 queue->SetPopulation(0);  //mosquito dies
             }
@@ -250,7 +247,10 @@ namespace Kernel
             {
                 if ( randgen->e() < m_average_oviposition_killing )
                 {
-                    queue->SetPopulation(0); // mosquito dies
+                    if( m_VectorMortality )
+                    {
+                        queue->SetPopulation(0); // mosquito dies
+                    }
                     tempentry2->SetNewEggs(0);    // and does not lay eggs
 
                     return 0;                 // exit feeding cycle
@@ -269,7 +269,10 @@ namespace Kernel
             {
                 if(randgen->e() < probs()->sugarTrapKilling)
                 {
-                    queue->SetPopulation(0);
+                    if( m_VectorMortality )
+                    {
+                        queue->SetPopulation(0);
+                    }
 
                     return 0;  // dead mosquito: no blood-feeding cycle
                 }
@@ -292,8 +295,11 @@ namespace Kernel
         cumulative_probability = p_local_mortality + (1 - p_local_mortality) * probs()->diebeforeattempttohumanfeed;
         if (outcome <= cumulative_probability)
         {
-            //mosquito dies
-            queue->SetPopulation(0);
+            if( m_VectorMortality )
+            {
+                //mosquito dies
+                queue->SetPopulation(0);
+            }
             return 0;
         }
 
@@ -342,10 +348,13 @@ namespace Kernel
                 cumulative_probability = 0;
 
                 // (a) die in attempt to indoor feed?
-                cumulative_probability = (float)(cumulative_probability + probs()->indoor_diebeforefeeding + probs()->indoor_dieduringfeeding * x_infectioushfmortmod + probs()->indoor_diepostfeeding * x_infectiouscorrection);
+                cumulative_probability = float(cumulative_probability + probs()->indoor_diebeforefeeding + probs()->indoor_dieduringfeeding * x_infectioushfmortmod + probs()->indoor_diepostfeeding * x_infectiouscorrection);
                 if (outcome <= cumulative_probability)
                 {
-                    queue->SetPopulation(0);
+                    if( m_VectorMortality )
+                    {
+                        queue->SetPopulation(0);
+                    }
                     return 0;
                 }
 
@@ -398,13 +407,15 @@ namespace Kernel
                 //     (a) die in attempt to feed
                 //     (b) outdoor_successfulfeed_human
                 outcome = randgen->e();
-                cumulative_probability = 0;
 
                 // (a) die in attempt to outdoor feed?
-                cumulative_probability = (float)(probs()->outdoor_diebeforefeeding + probs()->outdoor_dieduringfeeding * x_infectioushfmortmod + probs()->outdoor_diepostfeeding* x_infectiouscorrection + probs()->outdoor_successfulfeed_human * probs()->outdoor_returningmortality * x_infectiouscorrection);
+                cumulative_probability = float(probs()->outdoor_diebeforefeeding + probs()->outdoor_dieduringfeeding * x_infectioushfmortmod + probs()->outdoor_diepostfeeding* x_infectiouscorrection + probs()->outdoor_successfulfeed_human * probs()->outdoor_returningmortality * x_infectiouscorrection);
                 if (outcome <= cumulative_probability)
                 { 
-                    queue->SetPopulation(0);
+                    if( m_VectorMortality )
+                    {
+                        queue->SetPopulation(0);
+                    }
                     return 0;
                 }
 
@@ -430,7 +441,7 @@ namespace Kernel
         while(0); // just one feed for now, but here is where we will decide whether to continue feeding
 
         // now adjust egg batch size
-        uint32_t tempeggs = (uint32_t)(species()->eggbatchsize * x_infectedeggbatchmod * (successful_human_feed + successful_AD_feed * ADfeed_eggbatchmod + successful_animal_feed * animalfeed_eggbatchmod));
+        uint32_t tempeggs = uint32_t(species()->eggbatchsize * x_infectedeggbatchmod * (successful_human_feed + successful_AD_feed * ADfeed_eggbatchmod + successful_animal_feed * animalfeed_eggbatchmod));
         tempentry2->SetNewEggs( tempeggs );
 
         // reset oviposition timer for next cycle
@@ -453,15 +464,15 @@ namespace Kernel
 
             // Allocate timers randomly to upper and lower bounds of fractional duration
             // If mean is 2.8 days: 80% will have 3-day cycles, and 20% will have 2-day cycles
-            if ( randgen->e() < ( mean_cycle_duration - (int)mean_cycle_duration ) )
+            if ( randgen->e() < ( mean_cycle_duration - int(mean_cycle_duration) ) )
             {
-                mosquito->SetOvipositionTimer ( (int)mean_cycle_duration + 1.0f );
-                LOG_DEBUG_F("Reset oviposition timer by %d days.\n", (int)mean_cycle_duration + 1);
+                mosquito->SetOvipositionTimer ( int(mean_cycle_duration) + 1.0f );
+                LOG_DEBUG_F("Reset oviposition timer by %d days.\n", int(mean_cycle_duration) + 1);
             }
             else
             {
-                mosquito->SetOvipositionTimer( (int)mean_cycle_duration );
-                LOG_DEBUG_F("Reset oviposition timer by %d days.\n", (int)mean_cycle_duration);
+                mosquito->SetOvipositionTimer( int(mean_cycle_duration) );
+                LOG_DEBUG_F("Reset oviposition timer by %d days.\n", int(mean_cycle_duration));
             }
         }
 
@@ -480,7 +491,7 @@ namespace Kernel
 
         // calculate local mortality, includes outdoor area killing, converting rates to probabilities
         localadultmortality = dryheatmortality + species()->adultmortality;
-        p_local_mortality   = (float)(1.0f - exp(-dt * localadultmortality));
+        p_local_mortality   = float(1.0f - exp(-dt * localadultmortality));
         p_local_mortality   = p_local_mortality + (1.0f - p_local_mortality) * probs()->outdoorareakilling;
 
         // Use the verbose "for" construct here because we may be modifying the list and need to protect the iterator.
@@ -492,7 +503,11 @@ namespace Kernel
             VectorCohortList_t::iterator iCurrent = iList++;
 
             tempentry1->IncreaseProgress( dt * species()->immaturerate ); // introduce climate dependence here if we can figure it out
-            tempentry1->SetPopulation( (int32_t)(tempentry1->GetPopulation() - randgen->binomial_approx(tempentry1->GetPopulation(), p_local_mortality)) );
+            if( m_VectorMortality )
+            {
+                int32_t die = randgen->binomial_approx(tempentry1->GetPopulation(), p_local_mortality) ;
+                tempentry1->SetPopulation( tempentry1->GetPopulation() - die );
+            }
 
             if (tempentry1->GetProgress() >= 1 || tempentry1->GetPopulation() <= 0)
             { 
@@ -598,7 +613,7 @@ namespace Kernel
         // Use the verbose "foreach" construct here because empty male cohorts (e.g. old vectors) will be removed
         for ( VectorCohortList_t::iterator iList = MaleQueues.begin(); iList != MaleQueues.end(); )
         { 
-            IVectorCohortAging *tempentry = NULL;
+            IVectorCohortAging *tempentry = nullptr;
             if( (*iList)->QueryInterface( GET_IID( IVectorCohortAging ), (void**)&tempentry ) != s_OK )
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "(*iList)", "IVectorCohortAging", "VectorCohort" );
@@ -610,13 +625,14 @@ namespace Kernel
             localadultmortality = dryheatmortality + species()->adultmortality + mortalityFromAge(tempentry->GetAge());
 
             // Convert mortality rates to mortality probability (can make age dependent)
-            float p_local_male_mortality = (float)EXPCDF(-dt * localadultmortality);
+            float p_local_male_mortality = float(EXPCDF(-dt * localadultmortality));
             p_local_male_mortality = p_local_male_mortality + (1.0f - p_local_male_mortality) * probs()->outdoorareakilling_male;
 
             // adults die
-            if ((*iCurrent)->GetPopulation() > 0)
+            if( m_VectorMortality && ((*iCurrent)->GetPopulation() > 0) )
             {
-                (*iCurrent)->SetPopulation(  (int32_t)((*iCurrent)->GetPopulation() - randgen->binomial_approx((*iCurrent)->GetPopulation(), p_local_male_mortality)) );
+                int32_t die = (int32_t)(randgen->binomial_approx((*iCurrent)->GetPopulation(), p_local_male_mortality)) ;
+                (*iCurrent)->SetPopulation( (*iCurrent)->GetPopulation() - die );
             }
 
             if ((*iCurrent)->GetPopulation() <= 0)
@@ -635,8 +651,7 @@ namespace Kernel
     {
         VectorCohortIndividual* tempentry;
         VectorCohortAging* tempentrym;
-        unsigned long int temppop = 0;
-        temppop = releasedNumber / m_mosquito_weight;
+        unsigned long int temppop = releasedNumber / m_mosquito_weight;
         // insert into correct Male or Female list
         if (_vector_genetics.GetGender() == VectorGender::VECTOR_FEMALE) //female
         {
@@ -677,7 +692,6 @@ namespace Kernel
     void VectorPopulationIndividual::Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route )
     {
         VectorCohortList_t list;
-        float success_prob = 0;
 
         // Get the infectiouness from the contagion population
         float infection_prob = cp->GetTotalContagion();
@@ -720,7 +734,7 @@ namespace Kernel
                 cp->ResolveInfectingStrain(&strainID);
 
                 // Set state to STATE_INFECTED and store strainID
-                IVectorCohortIndividual *vci = NULL;
+                IVectorCohortIndividual *vci = nullptr;
                 if( (exposed)->QueryInterface( GET_IID( IVectorCohortIndividual ), (void**)&vci ) != s_OK )
                 {
                     throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "exposed", "IVectorCohortIndividual", "VectorCohort" );
@@ -733,6 +747,35 @@ namespace Kernel
             }
         }
     }
+
+    void VectorPopulationIndividual::Vector_Migration( IMigrationInfo* pMigInfo, VectorCohortList_t* pMigratingQueue )
+    {
+        release_assert( pMigInfo );
+        release_assert( pMigratingQueue );
+
+        // Use the verbose "for" construct here because we may be modifying the list and need to protect the iterator.
+        for (VectorCohortList_t::iterator iList = AdultQueues.begin(); iList != AdultQueues.end(); /* iList++ */)
+        { 
+            VectorCohort *tempentry = *iList;
+            VectorCohortList_t::iterator iCurrent = iList++;
+
+            suids::suid destination = suids::nil_suid();
+            MigrationType::Enum mig_type = MigrationType::NO_MIGRATION;
+            float time = 0.0;
+            pMigInfo->PickMigrationStep( nullptr, 1.0, destination, mig_type, time );
+
+            // test if each vector will migrate this time step
+            if( !destination.is_nil() && (time <= 1.0) )
+            { 
+                AdultQueues.erase(iCurrent);
+
+                tempentry->SetMigrating( destination, mig_type, 0.0, 0.0, false );
+                pMigratingQueue->push_front( tempentry );
+            }
+        }
+
+    }
+
 
     // receives a rate, and sends that fraction of mosquitoes to other communities
     unsigned long int VectorPopulationIndividual::Vector_Migration(float migrate, VectorCohortList_t *Migration_Queue)
@@ -764,19 +807,22 @@ namespace Kernel
         return migrating_vectors;
     }
 
+    REGISTER_SERIALIZABLE(VectorPopulationIndividual);
 
-    //template void VectorPopulationIndividual::serialize(boost::archive::binary_iarchive & ar, const unsigned int file_version);
-    //template void VectorPopulationIndividual::serialize(boost::archive::binary_oarchive & ar, const unsigned int file_version);
-}
-
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(Kernel::VectorPopulationIndividual)
-namespace Kernel {
-    template<typename Archive>
-    void serialize( Archive & ar, VectorPopulationIndividual& vpi, unsigned int version )
+    void VectorPopulationIndividual::serialize(IArchive& ar, VectorPopulationIndividual* obj)
     {
-        ar & vpi.m_mosquito_weight;
-        ar & boost::serialization::base_object<Kernel::VectorPopulation>(vpi);
+        VectorPopulation::serialize(ar, obj);
+
+        VectorPopulationIndividual& population = *obj;
+        ar.labelElement("m_mosquito_weight") & population.m_mosquito_weight;
+
+        // ------------------------------------------------------------------
+        // --- The following are only use temporarily during an update cycle.
+        // ---  They are cleared and populated each update.
+        // ------------------------------------------------------------------
+        //m_average_oviposition_killing
+        //IndoorExposedQueues
+        //OutdoorExposedQueues
+        //current_vci
     }
 }
-#endif

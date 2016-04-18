@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -28,26 +28,21 @@ namespace Kernel {
 
     public:
         static ISociety* Create(IRelationshipManager*);
-        virtual void BeginUpdate();
-        virtual void UpdatePairFormationRates( const IdmDateTime& rCurrentTime, float dt );
-        virtual void UpdatePairFormationAgents( const IdmDateTime& rCurrentTime, float dt );
+        virtual void BeginUpdate() override;
+        virtual void UpdatePairFormationRates( const IdmDateTime& rCurrentTime, float dt ) override;
+        virtual void UpdatePairFormationAgents( const IdmDateTime& rCurrentTime, float dt ) override;
 
-        virtual const IPairFormationRateTable* GetRates(RelationshipType::Enum);
-        virtual IPairFormationAgent* GetPFA(RelationshipType::Enum);
-        virtual IPairFormationStats* GetStats(RelationshipType::Enum);
+        virtual const IPairFormationRateTable* GetRates(RelationshipType::Enum) override;
+        virtual IPairFormationAgent* GetPFA(RelationshipType::Enum) override;
+        virtual IPairFormationStats* GetStats(RelationshipType::Enum) override;
 
-        virtual void SetParameters( const Configuration* config );
+        virtual void SetParameters( IIdGeneratorSTI* pIdGen, const Configuration* config ) override;
+        virtual IRelationshipParameters* GetRelationshipParameters( RelationshipType::Enum type ) override;
 
         // ---------------------------
         // --- JsonConfiurable Methods
         // ---------------------------
-        virtual bool Configure(const Configuration *config);
-
-#if USE_JSON_SERIALIZATION
-        // For JSON serialization
-        virtual void JSerialize( Kernel::IJsonObjectAdapter* root, Kernel::JSerializer* helper ) const {}
-        virtual void JDeserialize( Kernel::IJsonObjectAdapter* root, Kernel::JSerializer* helper ) {}
-#endif
+        virtual bool Configure(const Configuration *config) override;
 
     protected:
         SocietyImpl(IRelationshipManager* pmgr = nullptr );
@@ -55,13 +50,12 @@ namespace Kernel {
 
         IRelationshipManager* relationship_manager;
 
-        const IPairFormationParameters* parameters[    RelationshipType::COUNT ];
+        IRelationshipParameters*        rel_params[    RelationshipType::COUNT ];
+        const IPairFormationParameters* form_params[   RelationshipType::COUNT ];
         IPairFormationRateTable*        rates[         RelationshipType::COUNT ];
         IPairFormationStats*            stats[         RelationshipType::COUNT ];
         IPairFormationAgent*            pfa[           RelationshipType::COUNT ];
         IPairFormationFlowController*   controller[    RelationshipType::COUNT ];
-        float                           base_rate[     RelationshipType::COUNT ];
-        float                           update_period[ RelationshipType::COUNT ];
 
         float extra_relational_rate_ratio_male;
         float extra_relational_rate_ratio_female;

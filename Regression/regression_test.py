@@ -14,6 +14,7 @@ import httplib
 import json
 import os # e.g., mkdir
 import plotAllCharts
+import re
 import shutil # copyfile
 import subprocess
 import sys # for stdout.flush
@@ -29,7 +30,7 @@ import pdb
 params = None
 MAX_ACTIVE_JOBS=20
 
-class RuntimeParameters():
+class RuntimeParameters:
     def __init__(self, args):
         print( "os = " + os.name )
         self.args = args
@@ -53,6 +54,7 @@ class RuntimeParameters():
         self.config.read(args.config)
         self.config.set('ENVIRONMENT', 'username', os.environ[username_key])
         self._use_user_input_root = False
+        self.PSP = None
     
     @property
     def suite(self):
@@ -75,11 +77,19 @@ class RuntimeParameters():
         return self.args.debug
     
     @property
+    def quick_start(self):
+        return self.args.quick_start
+    
+    @property
     def use_dlls(self):
         if self.args.dll_path is not None:
             return True
         else:
             return self.args.use_dlls
+    
+    @property
+    def scons(self):
+        return self.args.scons
     
     @property
     def label(self):
@@ -146,6 +156,10 @@ class RuntimeParameters():
         return self.config.get('ENVIRONMENT', 'home_input')
         
     @property
+    def py_input(self):
+        return self.config.get('ENVIRONMENT', 'py_input')
+        
+    @property
     def use_user_input_root(self):
         return self._use_user_input_root
         
@@ -188,6 +202,19 @@ class RuntimeParameters():
     def dts(self):
         return self.args.disable_schema_test
         
+    @property
+    def sec(self):
+        return self.args.skip_emodule_check
+
+    @property
+    def constraints_dict(self):
+        constraints_list = self.args.config_constraints
+        constraints_dict = {}
+        for raw_nvp in constraints_list:
+            nvp = raw_nvp.split(":")
+            constraints_dict[ nvp[0] ] = nvp[1]
+        return constraints_dict
+        
 class Monitor(threading.Thread):
     def __init__(self, sim_id, config_id, report, config_json=None, compare_results_to_baseline=True):
         threading.Thread.__init__( self )
@@ -210,7 +237,13 @@ class Monitor(threading.Thread):
         starttime = datetime.datetime.now()
 
         with open(os.path.join(sim_dir, "stdout.txt"), "w") as stdout, open(os.path.join(sim_dir, "stderr.txt"), "w") as stderr:
-            cmd = [self.config_json["bin_path"], "-C", "config.json", "--input-path", params.input_path]
+            actual_input_dir = os.path.join( params.input_path, self.config_json["parameters"]["Geography"] )
+            cmd = None
+            # python-script-path is optional parameter.
+            if "PSP" in self.config_json:
+                cmd = [self.config_json["bin_path"], "-C", "config.json", "--input-path", actual_input_dir, "--python-script-path", self.config_json["PSP"]]
+            else:
+                cmd = [self.config_json["bin_path"], "-C", "config.json", "--input-path", actual_input_dir ]
             print( "Calling '" + str(cmd) + "' from " + sim_dir + "\n" )
             proc = subprocess.Popen( cmd, stdout=stdout, stderr=stderr, cwd=sim_dir )
             proc.wait()
@@ -233,7 +266,88 @@ class Monitor(threading.Thread):
                         self.verify( sim_dir, file, "Channels" )
         MyRegressionRunner.sems.release()
 
-    def compareCsvOutputs( self, ref_path, test_path ):
+    def get_json_data_hash( self, data ):
+        #json_data = collections.OrderedDict([])
+        #json_data["Data"] = data
+        with tempfile.TemporaryFile() as handle:
+            json.dump( data, handle )
+            hash = md5_hash( handle )
+        return hash
+
+    def compareJsonOutputs( self, sim_dir, report_name, ref_path, test_path, failures ):
+        fail_validation = False
+        failure_txt = ""
+
+        ref_json = json.loads( open( os.path.join( cache_cwd, ref_path ) ).read() )
+        if "Channels" not in ref_json.keys():
+            ref_md5  = md5_hash_of_file( ref_path )
+            test_md5 = md5_hash_of_file( test_path )
+            if ref_md5 == test_md5:
+                return False, ""
+            else:
+                print( self.config_id + " completed but did not match reference! (" + str(self.duration) + ") - " + report_name )
+                return True, "Non-Channel JSON failed MD5."
+        else:
+            test_json = json.loads( open( os.path.join( sim_dir, test_path ) ).read() )
+
+            if "Channels" not in test_json.keys():
+                return True, "Reference has Channel data and Test file does not."
+
+            ref_md5  = self.get_json_data_hash( ref_json["Channels"] )
+            test_md5 = self.get_json_data_hash( test_json["Channels"] )
+
+            ref_channels = set(ref_json["Channels"])
+            test_channels = set(test_json["Channels"])
+
+            if ref_md5 == test_md5:
+                return False, ""
+
+            missing_channels = ref_channels - test_channels
+            new_channels = test_channels - ref_channels
+
+            if len(missing_channels) > 0:
+                fail_validation = True
+                print("ERROR: Missing channels - " + ', '.join(missing_channels))
+                failure_txt += "Missing channels:\n" + '\n'.join(missing_channels) + "\n"
+                self.report.addFailingTest( self.config_id, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ) )
+
+            if len(new_channels) > 0:
+                print("WARNING: The test "+report_name+" has " + str(len(new_channels)) + " channels not found in the reference.  Please update the reference "+report_name+".")
+                global final_warnings
+                final_warnings += self.config_id + " - New channels not found in reference:\n  " + '\n  '.join(new_channels) + "\nPlease update reference from " + os.path.join( sim_dir, os.path.join( "output", "InsetChart.json" ) ) + "!\n"
+                self.report.addFailingTest( self.config_id, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ) )
+
+            if "Header" in ref_json.keys() and ref_json["Header"]["Timesteps"] != test_json["Header"]["Timesteps"]:
+                warning_msg = "WARNING: test "+report_name+" has timesteps " + str(test_json["Header"]["Timesteps"])  + " DIFFERRING from ref "+report_name+" timesteps " + str(ref_json["Header"]["Timesteps"]) + "!\n"
+                if params.hide_graphs:
+                    # This is treated as automated running mode (or bamboo nightly build mode)
+                    fail_validation = True
+                    failure_txt += warning_msg
+                else:
+                    # This is treated as manual running mode
+                    final_warnings += warning_msg
+                    print(warning_msg)
+
+            if not fail_validation:
+                #print( "Hasn't failed validation on second level review. Time to look channel by channel, timestep by timestep." )
+                # BinnedReport and its derived classes have "Subchannel_Metadata" in the header
+                if "Header" in ref_json.keys() and "Subchannel_Metadata" in ref_json["Header"].keys():
+                    self.compareBinnedReportType( ref_json, test_json, failures )
+                elif "Header" in ref_json.keys() and "Report_Type" in ref_json["Header"].keys() and ref_json["Header"]["Report_Type"] =="InsetChart":
+                    # Assuming a BaseChannelReport
+                    self.compareChannelReportType( ref_json, test_json, failures )
+                else:
+                    fail_validation = True
+                    failures.append(report_name + " - Files are different but cannot do deep dive.")
+
+            if len(failures) > 0:
+                fail_validation = True
+                failure_txt += "Channel Timestep Reference_Value Test_Value\n" + ''.join(failures)
+                print( self.config_id + " completed but did not match reference! (" + str(self.duration) + ") - " + report_name )
+
+        return fail_validation, failure_txt
+
+    def compareCsvOutputs( self, ref_path, test_path, failures ):
         # print( "Comparing CSV files: ref = " + ref_path + ", test = " + test_path )
         # Do Md5 comp first.
         ref_md5 = md5_hash_of_file( ref_path )
@@ -277,6 +391,16 @@ class Monitor(threading.Thread):
         #self.report.addFailingTest( self.config_id, failure_txt, test_path )
         return fail_validation, failure_txt
 
+    def compareOtherOutputs( self, report_name, ref_path, test_path, failures ):
+        ref_md5 = md5_hash_of_file( ref_path )
+        test_md5 = md5_hash_of_file( test_path )
+        if ref_md5 == test_md5:
+            # print( "CSV files passed MD5 comparison test." )
+            return False, ""
+        else:
+            print( self.config_id + " completed but did not match reference! (" + str(self.duration) + ") - " + report_name )
+            return True, "Failes MD5 check."
+
     # Compare Binned Report Types
     def compareBinnedReportType( self, ref_json, test_json, failures ):
         num_bins_ref  = ref_json[ "Header"]["Subchannel_Metadata"]["NumBinsPerAxis"][0][0]
@@ -310,6 +434,12 @@ class Monitor(threading.Thread):
 
         for chan_title in (ref_channels & test_channels):
             #print( "Looking at channel {0}".format( chan_title ) )
+            num_steps_ref  = len(ref_json["Channels"][chan_title]["Data"])
+            num_steps_test = len(test_json["Channels"][chan_title]["Data"])
+            if( (min_tstep_ind > num_steps_ref) or (min_tstep_ind > num_steps_test) ):
+                failures.append("Reference has "+str(num_steps_ref) + " steps and test has "+str(num_steps_test)+" steps, but the header says the min Timesteps is "+str(min_tstep_ind))
+                print("!!!! Reference has "+str(num_steps_ref) + " steps and test has "+str(num_steps_test)+" steps, but the header says the min Timesteps is "+str(min_tstep_ind))
+                return
             for tstep_idx in range( 0, min_tstep_ind ):
                 if test_json["Channels"][chan_title]["Data"][tstep_idx] != ref_json["Channels"][chan_title]["Data"][tstep_idx]:
                     failures.append(chan_title + " " + str(tstep_idx) + " " + str( ref_json["Channels"][chan_title]["Data"][tstep_idx] ) + " " + str( test_json["Channels"][chan_title]["Data"][tstep_idx] ) + "\n")
@@ -332,9 +462,17 @@ class Monitor(threading.Thread):
         failures = []
         failure_txt = ""
 
-        #if test_hash != ref_hash:
-        ref_path = os.path.join( cache_cwd, os.path.join( str(self.config_id), os.path.join( "output", report_name ) ) )
         test_path = os.path.join( sim_dir, os.path.join( "output", report_name ) )
+        ref_path = os.path.join( cache_cwd, os.path.join( str(self.config_id), os.path.join( "output", report_name ) ) )
+
+        # if on linux, use alternate InsetChart.json, but only if exists
+        if os.name != "nt" and report_name == "InsetChart.json":
+            report_name = "InsetChart.linux.json" 
+            alt_ref_path = os.path.join( cache_cwd, os.path.join( str(self.config_id), os.path.join( "output", report_name ) ) )
+            if os.path.exists( alt_ref_path ):
+                ref_path = alt_ref_path
+
+        #if test_hash != ref_hash:
         if os.path.exists( test_path ) == False:
             print( "Test file \"" + test_path + "\" -- for " + self.config_id + " -- does not exist." )
             failure_txt = "Report not generated by executable."
@@ -342,70 +480,19 @@ class Monitor(threading.Thread):
             return False
 
         if test_path.endswith( ".csv" ):
-            fail_validation, failure_txt = self.compareCsvOutputs( ref_path, test_path )
+            fail_validation, failure_txt = self.compareCsvOutputs( ref_path, test_path, failures )
 
-        elif( areTheseJsonFilesTheSame( ref_path, test_path, key ) == False ):
-            #print( "Output doesn't match based on initial simple test." )
-            
-            #print( "Looking at actual channel data for report " + report_name )
-            ref_json = json.loads( open( os.path.join( cache_cwd, ref_path ) ).read() )
-            test_json = json.loads( open( os.path.join( sim_dir, test_path ) ).read() )
+        elif test_path.endswith( ".json" ):
+            fail_validation, failure_txt = self.compareJsonOutputs( sim_dir, report_name, ref_path, test_path, failures )
 
-            if key not in ref_json.keys():
-                print( "Can't do deep dive yet on non-standard detailed data." )
-                # Don't even chalk these up as failure
-                return True
-
-            ref_channels = set(ref_json["Channels"])
-            test_channels = set(test_json["Channels"])
-            missing_channels = ref_channels - test_channels
-            new_channels = test_channels - ref_channels
-
-            if len(missing_channels) > 0:
-                fail_validation = True
-                print("ERROR: Missing channels - " + ', '.join(missing_channels))
-                failure_txt += "Missing channels:\n" + '\n'.join(missing_channels) + "\n"
-                self.report.addFailingTest( self.config_id, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ) )
-
-            if len(new_channels) > 0:
-                print("WARNING: The test "+report_name+" has " + str(len(new_channels)) + " channels not found in the reference.  Please update the reference "+report_name+".")
-                global final_warnings
-                final_warnings += self.config_id + " - New channels not found in reference:\n  " + '\n  '.join(new_channels) + "\nPlease update reference from " + os.path.join( sim_dir, os.path.join( "output", "InsetChart.json" ) ) + "!\n"
-                self.report.addFailingTest( self.config_id, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ) )
-
-            if "Header" in ref_json.keys() and ref_json["Header"]["Timesteps"] != test_json["Header"]["Timesteps"]:
-                warning_msg = "WARNING: test "+report_name+" has timesteps " + str(test_json["Header"]["Timesteps"])  + " DIFFERRING from ref "+report_name+" timesteps " + str(ref_json["Header"]["Timesteps"]) + "!\n"
-                if params.hide_graphs:
-                    # This is treated as automated running mode (or bamboo nightly build mode)
-                    fail_validation = True
-                    failure_txt += warning_msg
-                else:
-                    # This is treated as manual running mode
-                    final_warnings += warning_msg
-                    print(warning_msg)
-
-            if not fail_validation:
-                #print( "Hasn't failed validation on second level review. Time to look channel by channel, timestep by timestep." )
-                # BinnedReport and its derived classes have "Subchannel_Metadata" in the header
-                if "Header" in ref_json.keys() and "Subchannel_Metadata" in ref_json["Header"].keys():
-                    self.compareBinnedReportType( ref_json, test_json, failures )
-                elif "Header" in ref_json.keys() and "Report_Type" in ref_json["Header"].keys() and ref_json["Header"]["Report_Type"] =="InsetChart":
-                    # Assuming a BaseChannelReport
-                    self.compareChannelReportType( ref_json, test_json, failures )
-                else:
-                    fail_validation = True
-                    print(report_name + " - Files are different but cannot do deep dive.")
-
-            if len(failures) > 0:
-                fail_validation = True
-                failure_txt += "Channel Timestep Reference_Value Test_Value\n" + ''.join(failures)
-                print( self.config_id + " completed but did not match reference! (" + str(self.duration) + ") - " + report_name )
+        elif test_path.endswith( ".kml" ) or test_path.endswith( ".bin" ):
+            fail_validation, failure_txt = self.compareOtherOutputs( report_name, ref_path, test_path, failures )
 
         if fail_validation:
             #print( "Validation failed, add to failing tests report." )
             self.report.addFailingTest( self.config_id, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ) )
 
-            if len(failures) > 0 and not params.hide_graphs and report_name == "InsetChart.json":
+            if len(failures) > 0 and not params.hide_graphs and report_name.startswith( "InsetChart" ):
                 #print( "Plotting charts for failure deep dive." )  
                 # Note: Use python version 2 for plotAllCharts.py
                 subprocess.Popen( ["python", "plotAllCharts.py", ref_path, test_path, self.config_id ] )
@@ -473,7 +560,7 @@ class HpcMonitor(Monitor):
             else:
                print( "Didn't find key 'parameters/Num_Cores' in '{0}'. Using 1.".format( self.config_id ) )
                
-            return num_cores
+            return int(num_cores)
     
         input_dir = params.input_root + self.config_json["parameters"]["Geography"] + "\\"
         sim_dir = self.sim_root + "\\" + self.sim_timestamp   # can't use os.path.join() here because on linux it'll give us the wrong dir-separator...
@@ -506,6 +593,10 @@ class HpcMonitor(Monitor):
         #eradication.exe commandline
         eradication_bin = self.config_json['bin_path']
         eradication_options = { '--config':'config.json', '--input-path':input_dir, '--progress':' ' }
+
+        # python-script-path is optional parameter.
+        if "PSP" in self.config_json:
+            eradication_options[ "--python-script-path" ] = self.config_json["PSP"]
         #if params.dll_root is not None and params.use_dlls is True:
         #    eradication_options['--dll-path'] = params.dll_root
         eradication_params = []
@@ -625,7 +716,7 @@ class HpcMonitor(Monitor):
                             else:
                                 # Every .json file in output (not hidden with . prefix) will be used for validation
                                 for file in os.listdir( os.path.join( self.config_id, "output" ) ):
-                                    if ( file.endswith( ".json" ) or file.endswith( ".csv" ) ) and file[0] != "." and file != "transitions.json":
+                                    if ( file.endswith( ".json" ) or file.endswith( ".csv" ) or file.endswith( ".kml" ) or file.endswith( ".bin" ) ) and file[0] != "." and file != "transitions.json" and "linux" not in file:
                                         self.verify( sim_dir, file, "Channels" )
                     break
             time.sleep(5)
@@ -690,8 +781,8 @@ class Report:
         failure_el.setAttribute("type", "Validation failure")
         failure_el.setAttribute("message", name + " failed validation!  Result data can be found at " + insetchart_path)
         
-        failure_txt_el = self.doc.createTextNode(failure_txt)
-        failure_el.appendChild(failure_txt_el)
+        #failure_txt_el = self.doc.createTextNode(failure_txt)
+        #failure_el.appendChild(failure_txt_el)
         
         sysout_el = self.doc.createElement("system-out")
         sysout_txt = self.doc.createTextNode("n/a") # could fill this out more in the future, but not right now...
@@ -863,9 +954,6 @@ class MyRegressionRunner():
         remote_input_dir = os.path.join( self.params.shared_input, reply_json["parameters"]["Geography"] )
         # print( "remote_input_dir = " + remote_input_dir )
         actual_input_dir = os.path.join( self.params.user_input, reply_json["parameters"]["Geography"] )
-        
-        if is_local:
-            actual_input_dir = params.input_path
 
         if os.path.exists( actual_input_dir ) == False:
             print( "Creating " + actual_input_dir )
@@ -881,6 +969,8 @@ class MyRegressionRunner():
             if( os.path.exists( filename ) ) :
                 #print( "Copying " + filename )
                 shutil.copy( filename, sim_dir )
+            else:
+                print( "ERROR: Failed to find file to copy: " + filename )
         return
 
     def commissionFromConfigJson( self, sim_id, reply_json, config_id, report, compare_results_to_baseline=True ):
@@ -953,6 +1043,22 @@ class MyRegressionRunner():
             f.write( str( reports_json ) )
             f.close()
 
+        # Use a local variable here because we don't want the PSP in the config.json that gets written out to disk
+        # but we need it passed through to the monitor thread execution in the reply_json/config_json.
+        py_input = None
+        if "Python_Script_Path" in reply_json["parameters"]:
+            psp_param = reply_json["parameters"]["Python_Script_Path"]
+            if psp_param == "LOCAL":
+                py_input = "."
+                for py_file in glob.glob( os.path.join( config_id, "dtk_*.py" ) ):
+                    regression_runner.copy_sim_file( config_id, sim_dir, os.path.basename( py_file ) )
+            elif psp_param == "SHARED":
+                py_input = params.py_input
+            elif psp_param != "NO":
+                print( psp_param + " is not a valid value for Python_Script_Path. Valid values are NO, LOCAL, SHARED. Exiting." )
+                sys.exit() 
+            del( reply_json["parameters"]["Python_Script_Path"] )
+
         self.copy_input_files_to_user_input(sim_id, config_id, reply_json, is_local)
 
         #print "Writing out config and campaign.json."
@@ -960,6 +1066,10 @@ class MyRegressionRunner():
         f = open( sim_dir + "/config.json", 'w' )
         f.write( json.dumps( reply_json, sort_keys=True, indent=4 ) )
         f.close()
+
+        # now that config.json is written out, add Py Script Path back (if non-empty)
+        if py_input is not None:
+            reply_json["PSP"] = py_input
 
         # save campaign.json
         f = open( sim_dir + "/campaign.json", 'w' )
@@ -980,7 +1090,8 @@ class MyRegressionRunner():
         #shutil.copy( "../Eradication/x64/Release/Eradication.pdb", sim_dir )
         # ------------------------------------------------------------------
 
-        regression_runner.copy_sim_file( config_id, sim_dir, "dtk_post_process.py" )
+        if os.path.exists( os.path.join( config_id, "dtk_post_process.py" ) ):
+            regression_runner.copy_sim_file( config_id, sim_dir, "dtk_post_process.py" )
 
         monitorThread = None # need scoped here
 
@@ -1011,19 +1122,6 @@ class MyRegressionRunner():
             print( "schema failed!" )
             return "fail"
 
-def md5_hash_of_file( filename ):
-    #print( "Getting md5 for " + filename )
-    file_handle = open( filename )
-    md5calc = md5()
-    while True:
-        file_bytes = file_handle.read( 10240 ) # value picked from example!
-        if len(file_bytes) == 0:
-            break
-        md5calc.update( file_bytes )
-    file_handle.close()
-    hash = md5calc.hexdigest()
-    return hash
-
 # Copy just build dlls to deployed places based on commandline argument 
 # - The default is to use all of the DLLs found in the location the DLL projects
 #   place the DLLs (<trunk>\x64\Release).
@@ -1035,9 +1133,15 @@ def copyEModulesOver( params ):
     if params.dll_path is not None:
         emodule_dir = params.dll_path
     else:
-        emodule_dir = os.path.join( params.src_root, "x64" )
+        if params.scons:
+            emodule_dir = os.path.join( params.src_root, "build" )
+            emodule_dir = os.path.join( emodule_dir, "x64" )
+        else:
+            emodule_dir = os.path.join( params.src_root, "x64" )
         if params.debug == True:
             emodule_dir = os.path.join( emodule_dir, "Debug" )
+        elif params.quick_start == True:
+            emodule_dir = os.path.join( emodule_dir, "QuickStart" )
         else:
             emodule_dir = os.path.join( emodule_dir, "Release" )
 
@@ -1065,12 +1169,14 @@ def copyEModulesOver( params ):
                 target_dir = os.path.join( params.dll_root, dll_subdir )
                 target_dir = os.path.join( target_dir, dll_hash )
 
-                if not (os.path.isdir( target_dir ) ):
+                if params.sec:
+                    print( dll + " will be used without checking 'new-ness'." )
+                elif not (os.path.isdir( target_dir ) ):
                     print( dll + ": copying to cluster" )
                 else:
                     print( dll + ": Already on cluster" )
 
-                if not (os.path.isdir( target_dir ) ):
+                if not (os.path.isdir( target_dir ) ) and params.sec == False: # sec = command-line option to skip this
                     os.makedirs( target_dir )
                     shutil.copy( dll, os.path.join( target_dir, os.path.basename( dll ) ) )
 
@@ -1106,9 +1212,8 @@ def main():
     if "tests" in reglistjson:
         p = subprocess.Popen( (params.executable_path + " -v").split(), shell=False, stdout=subprocess.PIPE )
         [pipe_stdout, pipe_stderr] = p.communicate()
-        verstr_split = pipe_stdout.split("EMOD Disease Transmission Kernel ")[-1].split(' ')[:2]
         global version_string
-        version_string = ' '.join(verstr_split)
+        version_string = re.search('[0-9]+.[0-9]+.[0-9]+.[0-9]+', pipe_stdout).group(0)
 
         starttime = datetime.datetime.now()
         report = Report(params, version_string)
@@ -1140,6 +1245,20 @@ def main():
             if configjson is None:
                 print("Error flattening config.  Skipping " + simcfg["path"])
                 final_warnings += "Error flattening config.  Skipped " + simcfg["path"] + "\n"
+                continue
+
+            constraints_satisfied = True
+            if len(params.constraints_dict) != 0:
+                real_params = configjson["parameters"]
+                cons = params.constraints_dict
+                for key in cons:
+                    val = cons[key]
+                    if key not in real_params.keys() or str(real_params[ key ]) != val:
+                        print( "Scenario configuration did not satisfy constraint: {0} == {1} but must == {2}.".format( key, str(real_params[ key ]), val ) )
+                        constraints_satisfied = False
+                        continue
+
+            if constraints_satisfied == False:
                 continue
 
             if campjson is None:
@@ -1268,13 +1387,18 @@ def setup():
     parser.add_argument("--perf", action="store_true", default=False, help="Run for performance measurement purposes")
     parser.add_argument("--hidegraphs", action="store_true", default=False, help="Suppress pop-up graphs in case of validation failure")
     parser.add_argument("--debug", action="store_true", default=False, help="Use debug path for emodules")
+    parser.add_argument("--quick-start", action="store_true", default=False, help="Use QuickStart path for emodules")
     parser.add_argument("--label", help="Custom suffix for HPC job name")
     parser.add_argument("--config", default="regression_test.cfg", help="Regression test configuration [regression_test.cfg]")
     parser.add_argument("--disable-schema-test", action="store_false", default=True, help="Test schema (true by default, use to suppress schema testing)")
     parser.add_argument("--use-dlls", action="store_true", default=False, help="Use emodules/DLLs when running tests")
     parser.add_argument("--all-outputs", action="store_true", default=False, help="Use all output .json files for validation, not just InsetChart.json")
     parser.add_argument("--dll-path", help="Path to the root directory of the DLLs to use (e.g. contains reporter_plugins)")
+    parser.add_argument("--skip-emodule-check", action="store_true", default=False, help="Use this to skip sometimes slow check that EMODules on cluster are up-to-date.")
+    parser.add_argument("--config-constraints", default=[], action="append", help="Use this to skip sometimes slow check that EMODules on cluster are up-to-date.")
+    parser.add_argument("--scons", action="store_true", default=False, help="Indicates scons build so look for custom DLLs in the build/64/Release directory.")
     args = parser.parse_args()
+
     global params
     params = RuntimeParameters(args)
 

@@ -8,7 +8,7 @@
         "DEMOGRAPHICS": {
             "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE",
             "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
-            "Demographics_Filename": "generic_scenarios_demographics.json",
+            "Demographics_Filenames": ["generic_scenarios_demographics.json"],
             "Enable_Aging": 1,
             "Enable_Birth": 0,
             "Enable_Demographics_Birth": 0,

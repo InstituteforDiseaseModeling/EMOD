@@ -55,13 +55,21 @@
         { "path": "STI/53_Simplified_PFA" },
         { "path": "STI/54_Non_Square_PFA" },
         { "path": "STI/55_STI_IsPostDebut" },
-        { "path": "STI/56_STI_StiCoInfection" }
+        { "path": "STI/56_STI_StiCoInfection" },
+        { "path": "STI/101_MaleCircumcision" },
+        { "path": "STI/102_STIBarrier" }
+    ],
+    "Migration" : [
+        { "path": "STI/57_STI_Marital_Only_Relationship_Migration" },
+        { "path": "STI/58_STI_Informal_Only_Relationship_Pause" },
+        { "path": "STI/59_STI_Transitory_Only_Relationship_Terminate" },
+        { "path": "STI/60_STI_All_Rel_Types_All_Rel_States" },
+        { "path": "STI/61_STI_Marital_Only_Relationship_Migration_Multicore" },
+        { "path": "STI/62_STI_ERAD_2931_PauseAndRelationshipTermination" },
+        { "path": "STI/63_STI_All_Rel_Types_All_Rel_States_Multicore" }
     ],
     "ENABLE_PYTHON": [
         { "path": "STI/44_STI_PFA_Report" },
         { "path": "STI/45_STI_Cross_Report_Validation" }
-    ],
-    ".tests": [
-        { "path": "STI/51_STI_Transitory_Only_Assortivity_Prop_Locations" }
     ]
 }

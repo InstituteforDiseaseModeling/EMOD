@@ -12,14 +12,15 @@
             "Job_Node_Groups":"Chassis08",
             "Job_Priority":"BELOWNORMAL",
             "Load_Balance_Filename":"",
-            "Load_Balance_Scheme":"STATIC",
             "Local_Simulation":0,
             "Listed_Events": [],
             "Node_Grid_Size":0.009,
             "Num_Cores":1
         },
         "DEMOGRAPHICS": {
-            "Demographics_Filename":"../../demog/Single_node_demographics_10000.json",
+            "Demographics_Filenames":["../../demog/Single_node_demographics_10000.json"],
+            "Default_Geography_Initial_Node_Population":1000,
+            "Default_Geography_Torus_Size":10,
             "Enable_Vital_Dynamics":1,
             "Enable_Aging":1,
             "Age_Initialization_Distribution_Type":"DISTRIBUTION_SIMPLE",
@@ -27,6 +28,7 @@
             "Enable_Demographics_Initial":1,
             "Enable_Demographics_Other":0,
             "Base_Population_Scale_Factor":1,
+            "Minimum_Adult_Age_Years" : 15,
             "SAMPLING": {
                 "Base_Individual_Sample_Rate":1,
                 "Population_Scale_Type":"FIXED_SCALING",
@@ -44,6 +46,7 @@
                 "Enable_Demographics_Birth":0,
                 "x_Birth":1,
                 "Birth_Rate_Dependence":"FIXED_BIRTH_RATE",
+                "Birth_Rate_Time_Dependence": "NONE",
                 "Sample_Rate_Birth":1
             },
             "DEATH": {
@@ -62,7 +65,7 @@
             "Enable_Maternal_Transmission":0,
             "Maternal_Transmission_Probability":0,
             "Infection_Updates_Per_Timestep":1,
-            "Infectious_Period_Distribution":"EXPONENTIAL_DURATION",
+            "Infectious_Period_Distribution":"FIXED_DURATION",
             "Infectivity_Scale_Type":"CONSTANT_INFECTIVITY",
             "Population_Density_C50":1,
             "Population_Density_Infectivity_Correction":"CONSTANT_INFECTIVITY"
@@ -71,7 +74,7 @@
             "Enable_Superinfection":0,
             "Max_Individual_Infections":3,
             "Base_Incubation_Period":0.0,
-            "Incubation_Period_Distribution":"EXPONENTIAL_DURATION",
+            "Incubation_Period_Distribution":"FIXED_DURATION",
             "Number_Basestrains":1,
             "Number_Substrains":2
         },
@@ -80,12 +83,13 @@
             "Acquisition_Blocking_Immunity_Duration_Before_Decay":0,
             "Enable_Immune_Decay":1,
             "Enable_Immunity":1,
-            "Enable_Immunity_Initialization_Distribution":0,
             "Immunity_Acquisition_Factor":0,
             "Immunity_Mortality_Factor":1,
             "Immunity_Transmission_Factor":1,
+            "Immunity_Initialization_Distribution_Type": "DISTRIBUTION_OFF",
             "Mortality_Blocking_Immunity_Decay_Rate":0,
             "Mortality_Blocking_Immunity_Duration_Before_Decay":0,
+            "Susceptibility_Scale_Type": "CONSTANT_SUSCEPTIBILITY", 
             "Transmission_Blocking_Immunity_Decay_Rate":0,
             "Transmission_Blocking_Immunity_Duration_Before_Decay":0,
             "x_Population_Immunity":1
@@ -149,6 +153,16 @@
             ".Enable_Climate_Stochasticity":0,
             ".Enable_Rainfall_Stochasticity":0
         },
+        "FUDGE_FACTORS": {
+            "x_Air_Migration": 1,
+            "x_Birth": 1,
+            "x_Local_Migration": 1,
+            "x_Other_Mortality": 1,
+            "x_Population_Immunity": 1,
+            "x_Regional_Migration": 1,
+            "x_Sea_Migration": 1,
+            "x_Temporary_Larval_Habitat": 1
+        },        
         "MIGRATION": {
             "Migration_Model":"NO_MIGRATION"
         },
@@ -157,6 +171,7 @@
             "Campaign_Filename":"campaign.json"
         },
         "REPORTING": {
+            "Custom_Reports_Filename" : "NoCustomReports",
             "Report_Event_Recorder" : 0,
             "Enable_Default_Reporting" : 1,
             "Enable_Demographics_Reporting":0,

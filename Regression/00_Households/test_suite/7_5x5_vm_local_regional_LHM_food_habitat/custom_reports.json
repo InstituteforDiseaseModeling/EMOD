@@ -1,0 +1,11 @@
+{
+    "Custom_Reports" : 
+    {
+        "Use_Explicit_Dlls" : 1,
+        "ReportVectorStats" :
+        {
+            "Enabled" : 1,
+            "Reports" : [ {} ]
+        }
+    }
+}

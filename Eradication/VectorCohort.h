@@ -1,28 +1,25 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #pragma once
 
-#include <boost/serialization/access.hpp>
 #include <list>
 #include "suids.hpp"
-#include "ISupports.h"
 #include "IMigrate.h"
 #include "Vector.h"
-#include "VectorEnums.h"
 #include "VectorMatingStructure.h"
+#include "ISerializable.h"
 
 namespace Kernel
 {
-    struct IVectorCohort : public ISupports
+    struct IVectorCohort : ISerializable
     {
-    public:
         /* Only for type-ID right now */
         virtual int32_t GetPopulation() const = 0;
         virtual void SetPopulation( int32_t new_pop ) = 0;
@@ -34,10 +31,13 @@ namespace Kernel
         virtual float GetMortality( uint32_t addition ) const = 0;
     };
 
-    class Node;
+    struct INodeContext;
     class StrainIdentity;
 
-    struct VectorCohort : public IVectorCohort, public IMigrate
+    struct VectorCohort;
+    typedef std::list<VectorCohort *> VectorCohortList_t;
+
+    struct VectorCohort : IMigrate, IVectorCohort
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
@@ -49,18 +49,23 @@ namespace Kernel
         virtual const StrainIdentity* GetStrainIdentity() const;
 
         // IMigrate interfaces
-        virtual void ImmigrateTo(Node* destination_node);
-        virtual void SetMigrationDestination(suids::suid destination);
-        virtual const suids::suid & GetMigrationDestination();
+        virtual void ImmigrateTo(INodeContext* destination_node) override;
+        virtual void SetMigrating( suids::suid destination, 
+                                   MigrationType::Enum type, 
+                                   float timeUntilTrip, 
+                                   float timeAtDestination,
+                                   bool isDestinationNewHome ) override;
+        virtual const suids::suid & GetMigrationDestination() override;
+        virtual MigrationType::Enum GetMigrationType() const  override;
 
-        virtual int32_t GetPopulation() const; // used by VPI
-        virtual void SetPopulation( int32_t new_pop ); // used by VPI (1x besides ClearPop)
-        virtual double GetProgress() const; // NOT used by VPI
-        virtual void ClearProgress(); // NOT used by VPI, implicit
-        virtual void IncreaseProgress( double delta ); // used by VPI (2x)
-        virtual VectorMatingStructure& GetVectorGenetics(); // used by VPI
-        virtual void SetVectorGenetics( const VectorMatingStructure& new_value );
-        virtual float GetMortality( uint32_t addition ) const;
+        virtual int32_t GetPopulation() const override; // used by VPI
+        virtual void SetPopulation( int32_t new_pop ) override; // used by VPI (1x besides ClearPop)
+        virtual double GetProgress() const override; // NOT used by VPI
+        virtual void ClearProgress() override; // NOT used by VPI, implicit
+        virtual void IncreaseProgress( double delta ) override; // used by VPI (2x)
+        virtual VectorMatingStructure& GetVectorGenetics() override; // used by VPI
+        virtual void SetVectorGenetics( const VectorMatingStructure& new_value ) override;
+        virtual float GetMortality( uint32_t addition ) const override;
 
     protected:
         VectorCohort();
@@ -71,14 +76,6 @@ namespace Kernel
         double progress;
         int32_t population;
 
-    private:
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, VectorCohort &obj, const unsigned int  file_version );
-#endif
+        DECLARE_SERIALIZABLE(VectorCohort);
     };
-
-    typedef std::list<VectorCohort *> VectorCohortList_t;
 }

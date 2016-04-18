@@ -1,17 +1,15 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #pragma once
 
-#include <string>
 #include <list>
-#include <vector>
 
 #include "IdmApi.h"
 #include "NodeEventContext.h"
@@ -40,55 +38,55 @@ namespace Kernel
         virtual ~NodeEventContextHost();
 
         // INodeEventContext
-        virtual QueryResult QueryInterface(iid_t iid, void** pinstance);
-        virtual void VisitIndividuals(individual_visit_function_t func);
-        virtual int VisitIndividuals(IVisitIndividual*, int limit = -1 );
-        virtual const NodeDemographics& GetDemographics();
-        virtual bool GetUrban() const;
-        virtual IdmDateTime GetTime() const;
-        virtual bool IsInPolygon(float* vertex_coords, int numcoords); // might want to create a real polygon object at some point
-        virtual bool IsInPolygon( const json::Array &poly );
-        virtual bool IsInExternalIdSet( const tNodeIdList& nodelist );
-        virtual ::RANDOMBASE* GetRng();
-        virtual INodeContext* GetNodeContext();
-        virtual int GetIndividualHumanCount() const;
-        virtual int GetExternalId() const;
+        virtual QueryResult QueryInterface(iid_t iid, void** pinstance) override;
+        virtual void VisitIndividuals(individual_visit_function_t func) override;
+        virtual int VisitIndividuals(IVisitIndividual*, int limit = -1 ) override;
+        virtual const NodeDemographics& GetDemographics() override;
+        virtual bool GetUrban() const override;
+        virtual IdmDateTime GetTime() const override;
+        virtual bool IsInPolygon(float* vertex_coords, int numcoords) override; // might want to create a real polygon object at some point
+        virtual bool IsInPolygon( const json::Array &poly ) override;
+        virtual bool IsInExternalIdSet( const tNodeIdList& nodelist ) override;
+        virtual ::RANDOMBASE* GetRng() override;
+        virtual INodeContext* GetNodeContext() override;
+        virtual int GetIndividualHumanCount() const override;
+        virtual ExternalNodeId_t GetExternalId() const override;
 
-        virtual void UpdateInterventions(float = 0.0f);
+        virtual void UpdateInterventions(float = 0.0f) override;
 
         // TODO: methods to install hooks for birth and other things...can follow similar pattern presumably
 
-        virtual void RegisterTravelDistributionSource(ITravelLinkedDistributionSource *tles, TravelEventType type);
-        virtual void UnregisterTravelDistributionSource(ITravelLinkedDistributionSource *tles, TravelEventType type);
+        virtual void RegisterTravelDistributionSource(ITravelLinkedDistributionSource *tles, TravelEventType type) override;
+        virtual void UnregisterTravelDistributionSource(ITravelLinkedDistributionSource *tles, TravelEventType type) override;
 
-        virtual const suids::suid & GetId() const;
-        virtual void SetContextTo(INodeContext* context);
-        virtual std::list<INodeDistributableIntervention*> GetInterventionsByType(const std::string& type_name);
-        virtual void PurgeExisting( const std::string& iv_name );
+        virtual const suids::suid & GetId() const override;
+        virtual void SetContextTo(INodeContext* context) override;
+        virtual std::list<INodeDistributableIntervention*> GetInterventionsByType(const std::string& type_name) override;
+        virtual void PurgeExisting( const std::string& iv_name ) override;
 
         // INodeInterventionConsumer
-        virtual bool GiveIntervention( INodeDistributableIntervention * pIV );
+        virtual bool GiveIntervention( INodeDistributableIntervention * pIV ) override;
 
         // IOutbreakConsumer
-        virtual void AddImportCases(StrainIdentity* outbreak_strainID, float import_age, NaturalNumber num_cases_per_node );
-        //virtual void IncreasePrevalence(StrainIdentity* outbreak_strainID, IEventCoordinator2* pEC);
+        virtual void AddImportCases(StrainIdentity* outbreak_strainID, float import_age, NaturalNumber num_cases_per_node ) override;
+        //virtual void IncreasePrevalence(StrainIdentity* outbreak_strainID, IEventCoordinator2* pEC) override;
 
         // IIndividualTriggeredInterventionConsumer
-        virtual void RegisterNodeEventObserver( IIndividualEventObserver *pIEO, const IndividualEventTriggerType::Enum &trigger );
-        virtual void UnregisterNodeEventObserver( IIndividualEventObserver *pIEO, const IndividualEventTriggerType::Enum &trigger );
-        virtual void TriggerNodeEventObservers( IIndividualHumanEventContext *ihec, const IndividualEventTriggerType::Enum &trigger );
-        virtual void RegisterNodeEventObserverByString( IIndividualEventObserver *pIEO, const std::string &trigger );
-        virtual void UnregisterNodeEventObserverByString( IIndividualEventObserver *pIEO, const std::string &trigger );
-        virtual void TriggerNodeEventObserversByString( IIndividualHumanEventContext *ihec, const std::string &trigger );
+        virtual void RegisterNodeEventObserver( IIndividualEventObserver *pIEO, const IndividualEventTriggerType::Enum &trigger ) override;
+        virtual void UnregisterNodeEventObserver( IIndividualEventObserver *pIEO, const IndividualEventTriggerType::Enum &trigger ) override;
+        virtual void TriggerNodeEventObservers( IIndividualHumanEventContext *ihec, const IndividualEventTriggerType::Enum &trigger ) override;
+        virtual void RegisterNodeEventObserverByString( IIndividualEventObserver *pIEO, const std::string &trigger ) override;
+        virtual void UnregisterNodeEventObserverByString( IIndividualEventObserver *pIEO, const std::string &trigger ) override;
+        virtual void TriggerNodeEventObserversByString( IIndividualHumanEventContext *ihec, const std::string &trigger ) override;
 
         //////////////////////////////////////////////////////////////////////////
          
-        void ProcessArrivingIndividual(IndividualHuman *ih);
-        void ProcessDepartingIndividual(IndividualHuman *ih);
+        void ProcessArrivingIndividual( IIndividualHuman* );
+        void ProcessDepartingIndividual( IIndividualHuman * );
 
         // ICampaignCostObserver
-        virtual void notifyCampaignExpenseIncurred( float expenseIncurred, const IIndividualHumanEventContext * pIndiv );
-        virtual void notifyCampaignEventOccurred( /*const*/ ISupports * pDistributedIntervention, /*const*/ ISupports * pDistributor, /*const*/ IIndividualHumanContext * pDistributeeIndividual );
+        virtual void notifyCampaignExpenseIncurred( float expenseIncurred, const IIndividualHumanEventContext * pIndiv ) override;
+        virtual void notifyCampaignEventOccurred( /*const*/ ISupports * pDistributedIntervention, /*const*/ ISupports * pDistributor, /*const*/ IIndividualHumanContext * pDistributeeIndividual ) override;
 
     protected:
         void DisposeOfUnregisteredObservers();
@@ -116,19 +114,5 @@ namespace Kernel
 
         virtual void PropagateContextToDependents(); // pass context to interventions if they need it
         void IncrementCampaignCost(float cost);
-
-#if USE_JSON_SERIALIZATION
-    public:
-        // IJsonSerializable Interfaces
-        virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-        virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
-
-#if USE_BOOST_SERIALIZATION
-    private:
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive &ar, NodeEventContextHost& nec, const unsigned int v);
-#endif
     };
 }

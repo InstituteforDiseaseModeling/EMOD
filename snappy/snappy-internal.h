@@ -38,7 +38,7 @@ namespace internal {
 
 class WorkingMemory {
  public:
-  WorkingMemory() : large_table_(NULL) { }
+  WorkingMemory() : large_table_(nullptr) { }
   ~WorkingMemory() { delete[] large_table_; }
 
   // Allocates and clears a hash table using memory in "*this",

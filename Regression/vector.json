@@ -44,7 +44,7 @@
         { "path" : "86_Vector_SimpleIndividualRepellent" },
         { "path" : "87_Vector_SpatialRepellent" },
         { "path" : "88_Vector_SpatialRepellentHousingModification" },
-        { "path" : "89_Generic_SimpleImmunoglobulin" },
+        { "path" : "104_Vector_DrivingYHEGs" },
         { "path": "Scenarios/VectorAndMalaria/01_A_Namawala3Vectors_lowEIR" },
         { "path": "Scenarios/VectorAndMalaria/01_B_Namawala3Vectors_highEIR" },
         { "path": "Scenarios/VectorAndMalaria/03_A_Namawala_Vector" },

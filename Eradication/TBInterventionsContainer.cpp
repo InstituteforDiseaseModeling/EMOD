@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -17,7 +17,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Drugs.h" // for IDrug interface
 #include "InterventionFactory.h"
 #include "Log.h"
-#include "SimpleTypemapRegistration.h"
 #include "Sugar.h"
 #include "IHealthSeekingBehavior.h" //for IHealthSeekingBehavior interface
 #include "NodeEventContext.h"    // for INodeEventContext (ICampaignCostObserver)
@@ -53,11 +52,15 @@ namespace Kernel
 
     void TBInterventionsContainer::UpdateHealthSeekingBehaviors(float new_probability_of_seeking)
     {
-        IHealthSeekingBehavior * IHSB = NULL;
+        IHealthSeekingBehavior * IHSB = nullptr;
 
         //this section for counting the number of HSB interventions in the interventionslist
         //in future clean up so that this function doesn't have hard coded intervention class names
-        std::list<IDistributableIntervention*> list_of_HSB = GetInterventionsByType("class Kernel::HealthSeekingBehaviorUpdateable");
+        std::string classname = "Kernel::HealthSeekingBehaviorUpdateable";
+#ifdef WIN32
+        classname = "class " + classname;
+#endif
+        std::list<IDistributableIntervention*> list_of_HSB = GetInterventionsByType(classname);
         LOG_DEBUG_F("Number of HSBUpdateable in intervention list %d\n", list_of_HSB.size()); 
         
         if (list_of_HSB.size() == 0)
@@ -71,7 +74,7 @@ namespace Kernel
             {
                 if (s_OK == active_HSB->QueryInterface(GET_IID(IHealthSeekingBehavior), (void **)&IHSB))
                 {
-                    IHSB->UpdateProbabilityofSeeking( new_probability_of_seeking); 
+                    IHSB->UpdateProbabilityofSeeking( new_probability_of_seeking ); 
                 }
                 else
                 {
@@ -84,7 +87,7 @@ namespace Kernel
 
     int TBInterventionsContainer::GetNumTBDrugsActive()
     {
-        IDrug * ITB_drug = NULL;
+        IDrug * ITB_drug = nullptr;
 
         //this section for counting the number of AntiTBDrug interventions in the interventionslist
         std::list<IDistributableIntervention*> list_of_tb_drugs = GetInterventionsByType("class Kernel::AntiTBDrug");
@@ -155,7 +158,7 @@ namespace Kernel
         //this function is called when the drug is started and stopped/expires
         
         //first get the pointer to the person, parent is the generic individual
-        IIndividualHumanTB2* tb_patient = NULL;
+        IIndividualHumanTB2* tb_patient = nullptr;
         if ( parent->QueryInterface( GET_IID(IIndividualHumanTB2), (void**) &tb_patient ) != s_OK )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndvidualHumanTB2", "IndividualHuman" );
@@ -241,7 +244,7 @@ namespace Kernel
     {
         // NOTE: Calling this AFTER the QI/GiveDrug crashes!!! Both win and linux. Says SetContextTo suddenly became a pure virtual.
         pIV->SetContextTo( parent ); 
-        IDrug * pDrug = NULL;
+        IDrug * pDrug = nullptr;
         if( s_OK == pIV->QueryInterface(GET_IID(IDrug), (void**) &pDrug) )
         {
             LOG_DEBUG("Getting a drug\n");
@@ -255,50 +258,60 @@ namespace Kernel
     { 
         return TB_drug_effects; 
     }
-    
-    TBDrugTypeParameters::tTBDTPMap& TBInterventionsContainer::GetTBdtParams()    
-    { 
-        return TBDrugTypeParameters::_tbdtMap;   
-    }
 
-}
+    REGISTER_SERIALIZABLE(TBInterventionsContainer);
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::TBInterventionsContainer)
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, TBInterventionsContainer& container, const unsigned int v)
+    void TBDrugEffects_t::serialize(IArchive& ar, TBDrugEffects_t& effects)
     {
-        static const char * _module = "TBInterventionsContainer";
-        LOG_DEBUG("(De)serializing TBInterventionsContainer\n");
-
-        //ar & container.TB_drug_inactivation_rate;
-        //ar & container.TB_drug_clearance_rate;
-        ar & container.TB_drug_effects;
-        ar & container.m_is_tb_tx_naive_TBIVC;
-        ar & container.m_failed_tx_TBIVC;
-        ar & container.m_ever_relapsed_TBIVC;
-        ar & boost::serialization::base_object<InterventionsContainer>(container);
+        ar.startObject();
+            ar.labelElement("clearance_rate") & effects.clearance_rate;
+            ar.labelElement("inactivation_rate") & effects.inactivation_rate;
+            ar.labelElement("resistance_rate") & effects.resistance_rate;
+            ar.labelElement("relapse_rate") & effects.relapse_rate;     // Boost serialization didn't include this member.
+            ar.labelElement("mortality_rate") & effects.mortality_rate; // Boost serialization didn't include this member.
+        ar.endObject();
     }
-    template void serialize( boost::archive::binary_oarchive&, Kernel::TBInterventionsContainer&, unsigned int);
-    template void serialize( boost::mpi::packed_skeleton_oarchive&, Kernel::TBInterventionsContainer&, unsigned int);
-    template void serialize( boost::mpi::detail::content_oarchive&, Kernel::TBInterventionsContainer&, unsigned int);
-    template void serialize( boost::mpi::packed_oarchive&, Kernel::TBInterventionsContainer&, unsigned int);
-    template void serialize( boost::mpi::detail::mpi_datatype_oarchive&, Kernel::TBInterventionsContainer&, unsigned int);
-    template void serialize( boost::mpi::packed_iarchive&, Kernel::TBInterventionsContainer&, unsigned int);
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, Kernel::TBInterventionsContainer&, unsigned int);
-    template void serialize( boost::archive::binary_iarchive&, Kernel::TBInterventionsContainer&, unsigned int);
-}
 
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, TBDrugEffects_t& drugeffects, const unsigned int v)
+    // clorton TODO - could serialize(map<A, B>) be templatized in IArchive.h?
+    void serialize(IArchive& ar, TBDrugEffectsMap_t& map)
     {
-        ar & drugeffects.clearance_rate;
-        ar & drugeffects.inactivation_rate;
-        ar & drugeffects.resistance_rate;
+        size_t count = ar.IsWriter() ? map.size() : -1;
+        ar.startArray(count);
+        if (ar.IsWriter())
+        {
+            for (auto& entry : map)
+            {
+                ar.startObject();
+                    ar.labelElement("key") & (uint32_t&)entry.first;
+                    ar.labelElement("value") & entry.second; // clorton Kernel::serialize(ar, entry.second);
+                ar.endObject();
+            }
+        }
+        else
+        {
+            for (size_t i = 0; i < count; i++)
+            {
+                TBDrugType::Enum type;
+                TBDrugEffects_t effects;
+                ar.startObject();
+                    ar.labelElement("key") & (uint32_t&)type;
+                    ar.labelElement("value") & effects; // clorton Kernel::serialize(ar, effects);
+                ar.endObject();
+                map[type] = effects;
+            }
+        }
+        ar.endArray();
+    }
+
+    void TBInterventionsContainer::serialize(IArchive& ar, TBInterventionsContainer* obj)
+    {
+        InterventionsContainer::serialize(ar, obj);
+        TBInterventionsContainer& interventions = *obj;
+        ar.labelElement("TB_drug_effects"); Kernel::serialize(ar, interventions.TB_drug_effects);
+        ar.labelElement("m_is_tb_tx_naive_TBIVC") & interventions.m_is_tb_tx_naive_TBIVC;
+        ar.labelElement("m_failed_tx_TBIVC") & interventions.m_failed_tx_TBIVC;
+        ar.labelElement("m_ever_relapsed_TBIVC") & interventions.m_ever_relapsed_TBIVC;
     }
 }
-#endif // BOOST
 
 #endif // ENABLE_TB

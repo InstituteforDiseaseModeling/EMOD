@@ -1,24 +1,23 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 #include "MalariaDrugTypeParameters.h"
 
+#include "Debug.h"
 #include "Common.h"
 #include "Exceptions.h"
-#include <algorithm> // for transform
-#include <cctype> // for tolower
+
+#include "Log.h"
 
 static const char * _module = "DTP";
-
-Kernel::MalariaDrugTypeParameters::tMDTPMap Kernel::MalariaDrugTypeParameters::_mdtMap;
-
+#if !defined( DISABLE_MALARIA )
 namespace Kernel
 {
     void
@@ -27,18 +26,38 @@ namespace Kernel
         const std::string& key
     )
     {
-        const Array dose_by_age = (*inputJson)[key].As<Array>();
-        std::ostringstream oss;
-        oss << "<drugType>" << ": fraction of adult dose\n";
-        for( int i=0; i<dose_by_age.Size(); i++)
-        {
-            QuickInterpreter dosing(dose_by_age[i]);
-            float upper_age_in_years = dosing["Upper_Age_In_Years"].As<Number>();
-            float fractional_dose = dosing["Fraction_Of_Adult_Dose"].As<Number>();
-            fractional_dose_by_upper_age[upper_age_in_years] = fractional_dose;
-            oss << "under " << int(upper_age_in_years) << ", " << fractional_dose << "\n";
+        try {
+            const Array dose_by_age = (*inputJson)[key].As<Array>();
+            std::ostringstream oss;
+            oss << "<drugType>" << ": fraction of adult dose\n";
+            for( int i=0; i<dose_by_age.Size(); i++)
+            {
+                QuickInterpreter dosing(dose_by_age[i]);
+                float upper_age_in_years = 0.0f;
+                float fractional_dose = 0.0f; 
+                try {
+                    upper_age_in_years = dosing["Upper_Age_In_Years"].As<Number>();
+                }
+                catch( const json::Exception & )
+                {
+                    throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Upper_Age_In_Years", dosing, "Expected NUMBER" );
+                }
+                try {
+                    fractional_dose = dosing["Fraction_Of_Adult_Dose"].As<Number>();
+                }
+                catch( const json::Exception & )
+                {
+                    throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Fraction_Of_Adult_Dose", dosing, "Expected NUMBER" );
+                }
+                fractional_dose_by_upper_age[upper_age_in_years] = fractional_dose;
+                oss << "under " << int(upper_age_in_years) << ", " << fractional_dose << "\n";
+                LOG_DEBUG_F(oss.str().c_str()); 
+            }
         }
-        LOG_DEBUG_F(oss.str().c_str()); 
+        catch( const json::Exception & )
+        {
+            throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, key.c_str(), (*inputJson), "Expected ARRAY" );
+        }
     }
 
     json::QuickBuilder
@@ -100,44 +119,38 @@ namespace Kernel
         // at which point we would probably just make those configurable properties of AntimalarialDrug itself,
         // there is no need to keep leaking memory here.
 
-        MalariaDrugTypeParameters* params = NULL;
-        tMDTPMap::const_iterator itMap = _mdtMap.find(drugType);
-
-        if ( itMap == _mdtMap.end() )
+        // There used to be code to check for and retrieve the existing instance for a given drugType from the map
+        // but there was no use case for that and function name suggests creation.
+        auto * params = _new_ MalariaDrugTypeParameters( drugType );
+        release_assert( params );
+        params->Initialize(drugType);
+        if( !JsonConfigurable::_dryrun )
         {
-            params = _new_ MalariaDrugTypeParameters( drugType );
-            params->Initialize(drugType);
-            if( !JsonConfigurable::_dryrun )
+            try
             {
-                try
-                {
-                    Configuration* drug_config = Configuration::CopyFromElement( (*EnvPtr->Config)["Malaria_Drug_Params"][drugType] );
-                    params->Configure( drug_config );
+                Configuration* drug_config = Configuration::CopyFromElement( (*EnvPtr->Config)["Malaria_Drug_Params"][drugType] );
+                params->Configure( drug_config );
+                delete drug_config;
+                drug_config = nullptr;
 
-                    // Check validity of dosing regimen
-                    float sim_tstep = (*EnvPtr->Config)["Simulation_Timestep"].As<Number>();
-                    float updates_per_tstep = (*EnvPtr->Config)["Infection_Updates_Per_Timestep"].As<Number>();
-                    if ( params->drug_dose_interval < sim_tstep/updates_per_tstep )
-                    {
-                        std::ostringstream oss;
-                        oss << "time_between_doses (" << params->drug_dose_interval << ") is less than dt (" << sim_tstep/updates_per_tstep << ")" << std::endl;
-                        throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, oss.str().c_str() );
-                    }
-
-                }
-                catch(json::Exception &e)
+                // Check validity of dosing regimen
+                float sim_tstep = (*EnvPtr->Config)["Simulation_Timestep"].As<Number>();
+                float updates_per_tstep = (*EnvPtr->Config)["Infection_Updates_Per_Timestep"].As<Number>();
+                if ( params->drug_dose_interval < sim_tstep/updates_per_tstep )
                 {
-                    // Exception getting parameter block for drug of type "drugType" from config.json
-                    throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, e.what() ); 
+                    std::ostringstream oss;
+                    oss << "time_between_doses (" << params->drug_dose_interval << ") is less than dt (" << sim_tstep/updates_per_tstep << ")" << std::endl;
+                    throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, oss.str().c_str() );
                 }
+
             }
-            _mdtMap[ drugType ] = params;
-            return params;
+            catch( const json::Exception &e )
+            {
+                // Exception getting parameter block for drug of type "drugType" from config.json
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, e.what() ); 
+            }
         }
-        else
-        {
-            return itMap->second;
-        }
+        return params;
     }
 
     bool
@@ -178,4 +191,4 @@ namespace Kernel
     }
 
 }
-
+#endif

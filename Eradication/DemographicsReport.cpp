@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,9 +13,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "BoostLibWrapper.h"
 #include "Debug.h"
 #include "DemographicsReport.h"
-#include "Node.h"
+#include "INodeContext.h"
 #include "Exceptions.h"
-#include "Individual.h"
+#include "IIndividualHuman.h"
 #include "SimulationEnums.h"
 
 using namespace std;
@@ -107,7 +107,7 @@ DemographicsReport::LogNodeData(
 
 void
 DemographicsReport::LogIndividualData(
-    Kernel::IndividualHuman * individual
+    Kernel::IIndividualHuman* individual
 )
 {
     pseudoPop++;

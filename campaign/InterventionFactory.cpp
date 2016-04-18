@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -18,7 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "InterventionFactory.h"
 #include "Interventions.h"
-#include "InterventionEnums.h"
+#include "Log.h"
 
 static const char * _module = "InterventionFactory";
 
@@ -29,12 +29,12 @@ namespace Kernel
     bool InterventionFactory::useDefaults = false; // stores value from campaign.json
     // Technically this should be in its own file, BaseIntervention.cpp, but I couldn't bring myself to 
     // create such a miniscule file, so I talked myself into putting it here. :)
-    IInterventionFactory* InterventionFactory::_instance = NULL;
+    IInterventionFactory* InterventionFactory::_instance = nullptr;
 
     // ctor
     InterventionFactory::InterventionFactory()
     {
-        if( _instance != NULL )
+        if( _instance != nullptr )
         {
             throw std::runtime_error( "Second InterventionFactory being created." );
         }
@@ -113,7 +113,7 @@ namespace Kernel
                     << std::endl;
                 LOG_INFO( msg.str().c_str() );
             }
-            catch( json::Exception &e )
+            catch( const json::Exception &e )
             {
                 std::ostringstream msg;
                 msg << "json Exception creating intervention for GetSchema: "
@@ -122,6 +122,8 @@ namespace Kernel
                 LOG_INFO( msg.str().c_str() );
             }
             LOG_DEBUG( "Done with that class....\n" );
+            delete fakeConfig;
+            fakeConfig = nullptr;
         }
         LOG_DEBUG( "Returning from GetSchema.\n" );
         json::QuickBuilder retSchema = json::QuickBuilder(campaignSchema);

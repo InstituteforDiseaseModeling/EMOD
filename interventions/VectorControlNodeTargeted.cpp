@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,7 +11,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorControlNodeTargeted.h"
 
 #include "Exceptions.h"
-#include "InterventionEnums.h"
 #include "InterventionFactory.h"
 #include "NodeVectorEventContext.h" // for INodeVectorInterventionEffectsApply methods
 #include "SimulationConfig.h"
@@ -43,27 +42,41 @@ namespace Kernel
         // TODO: consider to what extent we want to pull the decay constants out of here as well
         //       in particular, for spatial repellents where there is reduction but not killing, the primary constant is un-used in BOX and DECAY (but not BOXDECAY)
         //       whereas, oviposition traps only have a killing effect.  (ERAD-599)
-        initConfig( "Durability_Time_Profile", durability_time_profile, inputJson, MetadataDescriptor::Enum("Durability_Time_Profile", VCN_Durability_Time_Profile_DESC_TEXT, MDD_ENUM_ARGS(InterventionDurabilityProfile)) );
-        initConfigTypeMap("Primary_Decay_Time_Constant", &primary_decay_time_constant, VCN_Primary_Decay_Time_Constant_DESC_TEXT, 0, 1000000, 0);
-        initConfigTypeMap("Secondary_Decay_Time_Constant", &secondary_decay_time_constant, VCN_Secondary_Decay_Time_Constant_DESC_TEXT, 0, 1000000, 0);
         initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, VCN_Cost_To_Consumer_DESC_TEXT, 0, 999999, 10.0);
-
-        return JsonConfigurable::Configure( inputJson );
+        return JsonConfigurable::Configure( inputJson );;
     }
 
-    SimpleVectorControlNode::SimpleVectorControlNode() 
-        : killing(0)
-        , reduction(0)
-        , habitat_target(VectorHabitatType::ALL_HABITATS)
-        , primary_decay_time_constant(0)
-        , secondary_decay_time_constant(0)
+    SimpleVectorControlNode::SimpleVectorControlNode()
+        : killing_effect( nullptr )
+        , blocking_effect( nullptr )
+        , habitat_target(VectorHabitatType::ALL_HABITATS) 
         , invic(NULL)
     {
         initSimTypes( 2, "VECTOR_SIM", "MALARIA_SIM" );
     }
 
+    SimpleVectorControlNode::SimpleVectorControlNode( const SimpleVectorControlNode& master )
+    : BaseNodeIntervention( master )
+    {
+        killing_config  = master.killing_config;
+        blocking_config = master.blocking_config;
+
+        auto tmp_killing  = Configuration::CopyFromElement( killing_config._json  );
+        auto tmp_blocking = Configuration::CopyFromElement( blocking_config._json );
+
+        killing_effect  = WaningEffectFactory::CreateInstance( tmp_killing  );
+        blocking_effect = WaningEffectFactory::CreateInstance( tmp_blocking );
+
+        delete tmp_killing;
+        delete tmp_blocking;
+        tmp_killing  = nullptr;
+        tmp_blocking = nullptr;
+    }
+
     SimpleVectorControlNode::~SimpleVectorControlNode()
     {
+        delete killing_effect;
+        delete blocking_effect;
     }
 
     void SimpleVectorControlNode::SetContextTo( INodeEventContext *context )
@@ -88,6 +101,7 @@ namespace Kernel
 
     float SimpleVectorControlNode::GetReduction() const
     {
+    	LOG_DEBUG_F( "Returning reduction value of %f.\n", reduction );
         return reduction;
     }
 
@@ -98,49 +112,17 @@ namespace Kernel
 
     void SimpleVectorControlNode::Update( float dt )
     {
-        if(durability_time_profile == (int)(InterventionDurabilityProfile::BOXDECAYDURABILITY))
+        if( killing_effect != nullptr )
         {
-            if(primary_decay_time_constant > 0)
-            {
-                primary_decay_time_constant -= dt;
-            }
-            else
-            {
-                if(secondary_decay_time_constant > dt)
-                {
-                    killing *= (1-dt/secondary_decay_time_constant);
-                    reduction *= (1-dt/secondary_decay_time_constant);
-                }
-                else
-                {
-                    killing = 0;
-                    reduction = 0;
-                }
-            }
+            killing_effect->Update(dt);
+            killing  = killing_effect->Current();
         }
-        else if(durability_time_profile == (int)(InterventionDurabilityProfile::DECAYDURABILITY))
+        if( blocking_effect != nullptr )
         {
-            if(primary_decay_time_constant > dt)
-                killing *= (1-dt/primary_decay_time_constant);
-            else
-                killing = 0;
-
-            if(secondary_decay_time_constant > dt)
-                reduction *= (1-dt/secondary_decay_time_constant);
-            else
-                reduction = 0;
+            blocking_effect->Update(dt);
+            reduction = blocking_effect->Current();
         }
-        else if(durability_time_profile == (int)(InterventionDurabilityProfile::BOXDURABILITY))
-        {
-            primary_decay_time_constant -= dt;
-            if(primary_decay_time_constant < 0)
-                killing = 0;
-
-            secondary_decay_time_constant -= dt;
-            if(secondary_decay_time_constant < 0)
-                reduction = 0;
-        }
-
+        
         ApplyEffects();
     }
 
@@ -155,8 +137,22 @@ namespace Kernel
     bool Larvicides::Configure( const Configuration * inputJson )
     {
         initConfig( "Habitat_Target", habitat_target, inputJson, MetadataDescriptor::Enum("Habitat_Target", LV_Habitat_Target_DESC_TEXT, MDD_ENUM_ARGS(VectorHabitatType)) );
-        initConfigTypeMap("Killing", &killing, LV_Killing_DESC_TEXT, 0, 1, 0);
-        initConfigTypeMap("Reduction", &reduction, LV_Reduction_DESC_TEXT, 0, 1, 0);
+        initConfigComplexType("Killing_Config",  &killing_config, LV_Killing_Config_DESC_TEXT );
+        initConfigComplexType("Blocking_Config",  &blocking_config, LV_Blocking_Config_DESC_TEXT );
+        bool configured = JsonConfigurable::Configure( inputJson );
+        if( !JsonConfigurable::_dryrun )
+        {
+            auto tmp_killing  = Configuration::CopyFromElement( killing_config._json  );
+            auto tmp_blocking = Configuration::CopyFromElement( blocking_config._json );
+
+            killing_effect  = WaningEffectFactory::CreateInstance( tmp_killing  );
+            blocking_effect = WaningEffectFactory::CreateInstance( tmp_blocking );
+
+            delete tmp_killing;
+            delete tmp_blocking;
+            tmp_killing  = nullptr;
+            tmp_blocking = nullptr;
+        }
         return SimpleVectorControlNode::Configure( inputJson );
     }
 
@@ -177,9 +173,23 @@ namespace Kernel
     bool SpaceSpraying::Configure( const Configuration * inputJson )
     {
         initConfig( "Habitat_Target", habitat_target, inputJson, MetadataDescriptor::Enum("Habitat_Target", SS_Habitat_Target_DESC_TEXT, MDD_ENUM_ARGS(VectorHabitatType)) );
-        initConfigTypeMap("Reduction", &reduction, SS_Reduction_DESC_TEXT, 0, 1, 0);
         initConfig( "Spray_Kill_Target", kill_target, inputJson, MetadataDescriptor::Enum("Spray_Kill_Target", SS_Kill_Target_DESC_TEXT, MDD_ENUM_ARGS(SpaceSprayTarget)) );
-        initConfigTypeMap("Killing", &killing, SS_Killing_DESC_TEXT, 0, 1, 0);
+        initConfigComplexType("Killing_Config",  &killing_config, SS_Killing_Config_DESC_TEXT );
+        initConfigComplexType("Reduction_Config",  &blocking_config, SS_Reduction_Config_DESC_TEXT );
+        bool configured = JsonConfigurable::Configure( inputJson );
+        if( !JsonConfigurable::_dryrun )
+        {
+            auto tmp_killing  = Configuration::CopyFromElement( killing_config._json  );
+            auto tmp_blocking = Configuration::CopyFromElement( blocking_config._json );
+
+            killing_effect  = WaningEffectFactory::CreateInstance( tmp_killing  );
+            blocking_effect = WaningEffectFactory::CreateInstance( tmp_blocking );
+
+            delete tmp_killing;
+            delete tmp_blocking;
+            tmp_killing  = nullptr;
+            tmp_blocking = nullptr;
+        }
         return SimpleVectorControlNode::Configure( inputJson );
     }
 
@@ -219,9 +229,19 @@ namespace Kernel
     //--------------------------------------------- SpatialRepellent ---------------------------------------------
 
     bool SpatialRepellent::Configure( const Configuration * inputJson )
-    {
-        initConfigTypeMap("Repellency", &reduction, SR_Repellency_DESC_TEXT, 0, 1, 0);
-        return SimpleVectorControlNode::Configure( inputJson );
+    { 
+        initConfigComplexType("Repellency_Config", &blocking_config, SR_Repellency_Config_DESC_TEXT );
+        bool configured = SimpleVectorControlNode::Configure( inputJson );
+        if( !JsonConfigurable::_dryrun )
+        {
+            auto tmp_blocking = Configuration::CopyFromElement( blocking_config._json );
+
+            blocking_effect = WaningEffectFactory::CreateInstance( tmp_blocking );
+
+            delete tmp_blocking;
+            tmp_blocking = nullptr;
+        }
+	return configured;
     }
 
     void SpatialRepellent::ApplyEffects()
@@ -237,8 +257,19 @@ namespace Kernel
     bool ArtificialDiet::Configure( const Configuration * inputJson )
     {
         initConfig( "Artificial_Diet_Target", attraction_target, inputJson, MetadataDescriptor::Enum("Artificial_Diet_Target", AD_Target_DESC_TEXT, MDD_ENUM_ARGS(ArtificialDietTarget)) );
-        initConfigTypeMap("Attraction", &reduction, AD_Attraction_DESC_TEXT, 0, 1, 0);
-        return SimpleVectorControlNode::Configure( inputJson );
+        initConfigComplexType("Attraction_Config", &blocking_config, AD_Attraction_Config_DESC_TEXT );
+        bool configured = SimpleVectorControlNode::Configure( inputJson );
+        if( !JsonConfigurable::_dryrun )
+        {
+            auto tmp_blocking = Configuration::CopyFromElement( blocking_config._json );
+
+            blocking_effect = WaningEffectFactory::CreateInstance( tmp_blocking );
+
+            delete tmp_blocking;
+            tmp_blocking = nullptr;
+        }
+
+        return configured;
     }
 
     void ArtificialDiet::ApplyEffects()
@@ -270,7 +301,18 @@ namespace Kernel
 
     bool InsectKillingFence::Configure( const Configuration * inputJson )
     {
-        initConfigTypeMap("Killing", &killing, VCN_Killing_DESC_TEXT, 0, 1, 0);
+        //initConfigTypeMap("Killing", &killing, VCN_Killing_DESC_TEXT, 0, 1, 0);
+        initConfigComplexType("Killing_Config",  &killing_config, VCN_Killing_DESC_TEXT );
+        bool configured = JsonConfigurable::Configure( inputJson );
+        if( !JsonConfigurable::_dryrun )
+        {
+            auto tmp_killing  = Configuration::CopyFromElement( killing_config._json  );
+
+            killing_effect  = WaningEffectFactory::CreateInstance( tmp_killing  );
+
+            delete tmp_killing;
+            tmp_killing  = nullptr;
+        }
         return SimpleVectorControlNode::Configure( inputJson );
     }
 
@@ -299,8 +341,19 @@ namespace Kernel
             }
         }
 
-        initConfigTypeMap("Killing", &killing, VCN_Killing_DESC_TEXT, 0, 1, 0);
-        return SimpleVectorControlNode::Configure( inputJson );
+        //initConfigTypeMap("Killing", &killing, VCN_Killing_DESC_TEXT, 0, 1, 0);
+        initConfigComplexType("Killing_Config",  &killing_config, VCN_Killing_DESC_TEXT );
+        bool configured = SimpleVectorControlNode::Configure( inputJson );
+        if( !JsonConfigurable::_dryrun )
+        {
+            auto tmp_killing  = Configuration::CopyFromElement( killing_config._json  );
+
+            killing_effect  = WaningEffectFactory::CreateInstance( tmp_killing  );
+
+            delete tmp_killing;
+            tmp_killing  = nullptr;
+        }
+        return configured;
     }
 
     void SugarTrap::ApplyEffects()
@@ -325,8 +378,16 @@ namespace Kernel
         }
 
         initConfig( "Habitat_Target", habitat_target, inputJson, MetadataDescriptor::Enum("Habitat_Target", OT_Habitat_Target_DESC_TEXT, MDD_ENUM_ARGS(VectorHabitatType)) );
-        initConfigTypeMap("Killing", &killing, OT_Killing_DESC_TEXT, 0, 1, 0);
-        return SimpleVectorControlNode::Configure( inputJson );
+        initConfigComplexType("Killing_Config",  &killing_config, VCN_Killing_DESC_TEXT );
+        bool configured = SimpleVectorControlNode::Configure( inputJson );
+        if( !JsonConfigurable::_dryrun )
+        {
+            auto tmp_killing  = Configuration::CopyFromElement( killing_config._json  );
+            killing_effect  = WaningEffectFactory::CreateInstance( tmp_killing  );
+            delete tmp_killing;
+            tmp_killing  = nullptr;
+        }
+        return configured;
     }
 
     void OvipositionTrap::ApplyEffects()
@@ -341,8 +402,19 @@ namespace Kernel
 
     bool OutdoorRestKill::Configure( const Configuration * inputJson )
     {
-        initConfigTypeMap("Killing", &killing, VCN_Killing_DESC_TEXT, 0, 1, 0);
-        return SimpleVectorControlNode::Configure( inputJson );
+        //initConfigTypeMap("Killing", &killing, VCN_Killing_DESC_TEXT, 0, 1, 0);
+        initConfigComplexType("Killing_Config",  &killing_config, VCN_Killing_DESC_TEXT );
+        bool configured = SimpleVectorControlNode::Configure( inputJson );
+        if( !JsonConfigurable::_dryrun )
+        {
+            auto tmp_killing  = Configuration::CopyFromElement( killing_config._json  );
+
+            killing_effect  = WaningEffectFactory::CreateInstance( tmp_killing  );
+
+            delete tmp_killing;
+            tmp_killing  = nullptr;
+        }
+        return configured;
     }
 
     void OutdoorRestKill::ApplyEffects()
@@ -357,8 +429,19 @@ namespace Kernel
 
     bool AnimalFeedKill::Configure( const Configuration * inputJson )
     {
-        initConfigTypeMap("Killing", &killing, AFK_Killing_DESC_TEXT, 0, 1, 0);
-        return SimpleVectorControlNode::Configure( inputJson );
+        //initConfigTypeMap("Killing", &killing, AFK_Killing_DESC_TEXT, 0, 1, 0);
+        initConfigComplexType("Killing_Config",  &killing_config, VCN_Killing_DESC_TEXT );
+        bool configured = SimpleVectorControlNode::Configure( inputJson );
+        if( !JsonConfigurable::_dryrun )
+        {
+            auto tmp_killing  = Configuration::CopyFromElement( killing_config._json  );
+
+            killing_effect  = WaningEffectFactory::CreateInstance( tmp_killing  );
+
+            delete tmp_killing;
+            tmp_killing  = nullptr;
+        }
+        return configured;
     }
 
     void AnimalFeedKill::ApplyEffects()
@@ -370,24 +453,18 @@ namespace Kernel
     }
 }
 
-// This shows how to do serialization from outside the class.
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(Kernel::SimpleVectorControlNode)
-
+#if 0
 namespace Kernel {
-
-REGISTER_SERIALIZATION_VOID_CAST(SimpleVectorControlNode, INodeDistributableIntervention);
-
-template<class Archive>
-void serialize(Archive &ar, SimpleVectorControlNode& vcn, const unsigned int v)
-{
-    ar & vcn.durability_time_profile;
-    ar & vcn.killing;
-    ar & vcn.reduction;
-    ar & vcn.habitat_target;
-    ar & vcn.primary_decay_time_constant;
-    ar & vcn.secondary_decay_time_constant;
-    // TODO: if we put some functionality into a BaseNodeIntervention, then we may need to serialize that here
-}
+    template<class Archive>
+    void serialize(Archive &ar, SimpleVectorControlNode& vcn, const unsigned int v)
+    {
+        ar & vcn.durability_time_profile;
+        ar & vcn.killing;
+        ar & vcn.reduction;
+        ar & vcn.habitat_target;
+        ar & vcn.primary_decay_time_constant;
+        ar & vcn.secondary_decay_time_constant;
+        // TODO: if we put some functionality into a BaseNodeIntervention, then we may need to serialize that here
+    }
 }
 #endif

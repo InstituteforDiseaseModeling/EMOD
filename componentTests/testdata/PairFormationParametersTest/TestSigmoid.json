@@ -1,0 +1,26 @@
+{
+    "Formation_Rate_Type" : "SIGMOID_VARIABLE_WIDTH_HEIGHT",
+    "Formation_Rate_Sigmoid":
+    {
+        "Mid": 1995,
+        "Rate": 0.5,
+        "Min": 0.001,
+        "Max": 0.9
+    },
+    "Update_Period" : 0.0,
+    "Number_Age_Bins_Male"   : 2,
+    "Number_Age_Bins_Female" : 2,
+    "Age_of_First_Bin_Edge_Male"   : 15,
+    "Age_of_First_Bin_Edge_Female" : 15,
+    "Years_Between_Bin_Edges_Male"   : 50,
+    "Years_Between_Bin_Edges_Female" : 50,
+    "Joint_Probabilities" :
+    [
+        [ 0.1, 0.4 ],
+        [ 0.3, 0.2 ]
+    ],
+    "Assortivity" :
+    {
+        "Group" : "NO_GROUP"
+    }
+}

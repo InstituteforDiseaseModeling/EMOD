@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -48,6 +48,7 @@ namespace Kernel
     {
         std::stringstream header ;
         header << "Year"        << ","
+               << "Node_ID"     << ","
                << "ID"          << ","
                << "Age"         << ","
                << "Gender"      << ","
@@ -71,12 +72,13 @@ namespace Kernel
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IHIVMedicalHistory", "IIndividualHumanContext" );
         }
 
-        float       sim_year   = simulation->GetSimulationTime().Year();
-        int         id         = context->GetSuid().data;
-        float       age        = context->GetAge();
-        bool        gender     = (context->GetGender() == Gender::MALE) ? 0 : 1 ;
-        //float       cd4count   = iindividual_hiv->GetHIVSusceptibility()->GetCD4count();
-        float       cd4count   = med_parent->LastRecordedCD4();
+        float            sim_year = simulation->GetSimulationTime().Year();
+        ExternalNodeId_t node_id  = context->GetNodeEventContext()->GetNodeContext()->GetExternalID();
+        int              id       = context->GetSuid().data;
+        float            age      = context->GetAge();
+        bool             gender   = (context->GetGender() == Gender::MALE) ? 0 : 1 ;
+        //float            cd4count = iindividual_hiv->GetHIVSusceptibility()->GetCD4count();
+        float            cd4count = med_parent->LastRecordedCD4();
 
         bool startingART = 1;
         if( StateChange == "StoppedART" )
@@ -84,12 +86,13 @@ namespace Kernel
             startingART = 0;
         }
 
-        GetOutputStream() << sim_year << "," 
-                          << id            << ","
-                          << age           << ","
-                          << gender        << ","
-                          << cd4count      << ","
-                          << startingART   << std::endl ;
+        GetOutputStream() << sim_year    << "," 
+                          << node_id     << ","
+                          << id          << ","
+                          << age         << ","
+                          << gender      << ","
+                          << cd4count    << ","
+                          << startingART << std::endl ;
 
         return true ;
     }

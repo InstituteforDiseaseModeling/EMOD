@@ -38,8 +38,12 @@ if __name__ == '__main__':
                 print( 'Copying *.json and *.csv from {0} to {1}'.format( source_dir, regression_name ))
                 for item in os.listdir(source_dir):
                     if item.split('.')[-1].lower() == 'json' or item.split('.')[-1].lower() == 'csv':
+                        if os.name == "posix" and item != "InsetChart.json":
+                            continue
                         source_file = os.path.join( source_dir, item )
                         if os.path.exists( source_file ):
                             dest_file = os.path.join( regression_name, 'output', item )
+                            if os.name == "posix":
+                                dest_file = dest_file.replace( "InsetChart.json", "InsetChart.linux.json" )
                             print( '\tCopying {0} to {1} ...'.format( source_file, dest_file ) )
                             shutil.copy( source_file, dest_file )

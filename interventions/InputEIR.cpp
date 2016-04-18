@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -27,17 +27,30 @@ namespace Kernel
     {
         // Now's as good a time as any to parse in the calendar schedule.
         json::QuickInterpreter iec_qi( (*inputJson)[key] );
-        json::QuickInterpreter scheduleJson( iec_qi.As<json::Array>() );
-        release_assert( iec_qi.As<json::Array>().Size() );
-        if( iec_qi.As<json::Array>().Size() != MONTHSPERYEAR )
-        {
-            std::ostringstream msg;
-            msg << "InputEIR configuration key " << key << " must be array of size " << MONTHSPERYEAR;
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+        try {
+            const auto iec_qi_array = iec_qi.As<json::Array>();
+            json::QuickInterpreter scheduleJson( iec_qi_array );
+            release_assert( iec_qi_array.Size() );
+            if( iec_qi_array.Size() != MONTHSPERYEAR )
+            {
+                std::ostringstream msg;
+                msg << "InputEIR configuration key " << key << " must be array of size " << MONTHSPERYEAR;
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            }
+            for( unsigned int idx=0; idx<iec_qi_array.Size(); idx++ )
+            {
+                try {
+                    (*this)[idx] = float(scheduleJson[idx].As<json::Number>());
+                }
+                catch( const json::Exception & )
+                {
+                    throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, key.c_str(), scheduleJson[idx], "Expected NUMBER" );
+                }
+            }
         }
-        for( unsigned int idx=0; idx<iec_qi.As<json::Array>().Size(); idx++ )
+        catch( const json::Exception & )
         {
-            (*this)[idx] = float(scheduleJson[idx].As<json::Number>());
+            throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, key.c_str(), iec_qi, "Expected ARRAY" );
         }
     }
 
@@ -74,7 +87,7 @@ namespace Kernel
     InputEIR::InputEIR() 
         : today(0)
         , daily_EIR(0.0f)
-        , risk_function(NULL)
+        , risk_function(nullptr)
     {
         initSimTypes( 1, "MALARIA_SIM" ); // using sporozoite challenge
     }
@@ -87,7 +100,7 @@ namespace Kernel
         switch(age_dependence)
         {
             case AgeDependentBitingRisk::OFF:
-                risk_function=NULL;
+                risk_function=nullptr;
                 break;
 
             case AgeDependentBitingRisk::LINEAR:
@@ -125,9 +138,12 @@ namespace Kernel
 
     void InputEIR::Update( float dt )
     {
-        daily_EIR = monthly_EIR.at( (today / IDEALDAYSPERMONTH) % MONTHSPERYEAR ) / IDEALDAYSPERMONTH;
-        today++;
-        LOG_DEBUG_F("Day = %d, annualized EIR = %0.2f\n", today, 365*daily_EIR);
+        float ACTUALDAYSPERMONTH = float(DAYSPERYEAR) / MONTHSPERYEAR;  // 30.416666
+        int month_index = int(today / ACTUALDAYSPERMONTH) % MONTHSPERYEAR;
+        daily_EIR = monthly_EIR.at(month_index) / ACTUALDAYSPERMONTH;
+        today += dt;
+
+        LOG_DEBUG_F("Day = %d, annualized EIR = %0.2f\n", today, DAYSPERYEAR*daily_EIR);
 
         ISporozoiteChallengeConsumer *iscc;
         if (s_OK == parent->QueryInterface(GET_IID(ISporozoiteChallengeConsumer), (void**)&iscc))

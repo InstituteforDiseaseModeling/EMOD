@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -19,33 +19,39 @@ static const char * _module = "VectorCohortIndividual";
 
 namespace Kernel
 {
+    static uint64_t VCI_COUNTER = 1 ; //TODO - need to make multi-core
+
     // QI stuff
     BEGIN_QUERY_INTERFACE_DERIVED(VectorCohortIndividual, VectorCohortAging)
         HANDLE_INTERFACE( IVectorCohortIndividual )
     END_QUERY_INTERFACE_DERIVED(VectorCohortIndividual, VectorCohortAging)
 
     VectorCohortIndividual::VectorCohortIndividual() 
-    : state(VectorStateEnum::STATE_ADULT)
+    : m_ID( VCI_COUNTER++ )
+    , state(VectorStateEnum::STATE_ADULT)
     , additional_mortality(0.0f)
     , oviposition_timer(-0.1f)
     , parity(0)
     , neweggs(0)
-    , m_strain(NULL)
     , migration_destination(suids::nil_suid())
+    , migration_type(MigrationType::NO_MIGRATION)
     , species("gambiae")
+    , m_strain(nullptr)
     {
     }
 
     VectorCohortIndividual::VectorCohortIndividual(VectorStateEnum::Enum _state, float age, float progress, int32_t initial_population, VectorMatingStructure _vector_genetics, std::string vector_species_name)
     : VectorCohortAging(age, progress, initial_population, _vector_genetics)
+    , m_ID( VCI_COUNTER++ )
     , state(_state)
     , additional_mortality(0.0f)
     , oviposition_timer(-0.1f) // newly-mated mosquitoes feed on first cycle
     , parity(0)
     , neweggs(0)
-    , m_strain(NULL)
     , migration_destination(suids::nil_suid())
+    , migration_type(MigrationType::NO_MIGRATION)
     , species(vector_species_name)
+    , m_strain(nullptr)
     {
     }
 
@@ -70,7 +76,6 @@ namespace Kernel
         }
         else
         {
-
             progress = 0;
             state    = VectorStateEnum::STATE_INFECTED;
             m_strain = _new_ StrainIdentity( infstrain->GetAntigenID(), infstrain->GetGeneticID() );
@@ -82,10 +87,10 @@ namespace Kernel
         return m_strain;
     }
 
-    void VectorCohortIndividual::ImmigrateTo(Node* node)
+    void VectorCohortIndividual::ImmigrateTo( INodeContext* node )
     {
         LOG_DEBUG_F( "Vector immigrating to node #%d\n", (node->GetSuid()).data );
-        INodeVector* pNV = NULL;
+        INodeVector* pNV = nullptr;
         if( node->QueryInterface( GET_IID( INodeVector ), (void**)&pNV ) != s_OK )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "node", "INodeVector", "Node" );
@@ -93,10 +98,15 @@ namespace Kernel
         pNV->processImmigratingVector(this);
     }
 
-    void VectorCohortIndividual::SetMigrationDestination(suids::suid destination)
+    void VectorCohortIndividual::SetMigrating( suids::suid destination, 
+                                               MigrationType::Enum type, 
+                                               float timeUntilTrip, 
+                                               float timeAtDestination,
+                                               bool isDestinationNewHome )
     {
         LOG_DEBUG_F( "Setting vector migration destination to node ID #%d\n", destination.data );
         migration_destination = destination;
+        migration_type        = type;
     }
 
     const suids::suid& VectorCohortIndividual::GetMigrationDestination()
@@ -107,7 +117,7 @@ namespace Kernel
 
     VectorCohortIndividual::~VectorCohortIndividual()
     {
-        if ( m_strain != NULL ) delete m_strain;
+        if ( m_strain != nullptr ) delete m_strain;
     }
 
     void
@@ -213,25 +223,23 @@ namespace Kernel
             // does this really ever get called?
             ret = additional_mortality + addition;
         }
+
         return ret;
     }
 
     float VectorCohortIndividual::GetOvipositionTimer()
     {
         return oviposition_timer;
-
     }
 
     int VectorCohortIndividual::GetParity()
     {
         return parity;
-
     }
 
     int VectorCohortIndividual::GetNewEggs()
     {
         return neweggs;
-
     }
 
     const std::string & VectorCohortIndividual::GetSpecies()
@@ -239,47 +247,32 @@ namespace Kernel
         return species;
     }
 
-#if 0
-    template<class Archive>
-    void VectorCohortIndividual::serialize_inner( Archive & ar, const unsigned int file_version )
+    REGISTER_SERIALIZABLE(VectorCohortIndividual);
+
+    void VectorCohortIndividual::serialize(IArchive& ar, VectorCohortIndividual* obj)
     {
-        // Register derived types - N/A
+        VectorCohortAging::serialize(ar, obj);
+        VectorCohortIndividual& cohort = *obj;
+        ar.labelElement("m_ID"                 ) & cohort.m_ID;
+        ar.labelElement("state"                ) & (uint32_t&)cohort.state;
+        ar.labelElement("additional_mortality" ) & cohort.additional_mortality;
+        ar.labelElement("oviposition_timer"    ) & cohort.oviposition_timer;
+        ar.labelElement("parity"               ) & cohort.parity;
+        ar.labelElement("neweggs"              ) & cohort.neweggs;
+        ar.labelElement("migration_destination") & cohort.migration_destination.data;
+        ar.labelElement("migration_type"       ) & (uint32_t&)cohort.migration_type;
+        ar.labelElement("species"              ) & cohort.species;
 
-        // Serialize fields
-        typemap.serialize(this, ar, file_version);
-        ar & m_strain;
-
-        // Serialize base class
-        ar & boost::serialization::base_object<VectorCohortAging>(*this);
-    }
-
-    template void VectorCohortIndividual::serialize_inner( boost::archive::binary_iarchive & ar, const unsigned int file_version );
-    template void VectorCohortIndividual::serialize_inner( boost::archive::binary_oarchive & ar, const unsigned int file_version );
+        bool has_strain = ar.IsWriter() ? (cohort.m_strain != nullptr) : false; // We put false here, but this is just a placeholder since we're reading from the archive.
+        ar.labelElement("__has_strain__");
+        ar & has_strain;
+        // clorton TODO - perhaps the cohort should always have a non-null m_strain, just use a dummy StrainIdentity when there's no infection.
+        if (has_strain)
+        {
+            ar.labelElement("m_strain");
+#if defined(WIN32)
+            Kernel::serialize(ar, cohort.m_strain);
 #endif
-}
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::VectorCohortIndividual)
-namespace Kernel {
-    template< typename Archive >
-    void serialize( Archive& ar, VectorCohortIndividual &obj, unsigned int file_version )
-    {
-        ar & obj.state;
-        ar & obj.additional_mortality;
-        ar & obj.oviposition_timer;
-        ar & obj.parity;
-        ar & obj.neweggs;
-        ar & obj.migration_destination;
-        ar & obj.species;
-        ar & obj.m_strain;
-        ar & boost::serialization::base_object<Kernel::VectorCohortAging>(obj);
+        }
     }
-    template void serialize( boost::archive::binary_iarchive&, VectorCohortIndividual &obj, unsigned int file_version );
-    template void serialize( boost::mpi::packed_iarchive&, VectorCohortIndividual &obj, unsigned int file_version );
-    template void serialize( boost::mpi::packed_skeleton_oarchive&, VectorCohortIndividual &obj, unsigned int file_version );
-    template void serialize( boost::archive::binary_oarchive&, VectorCohortIndividual &obj, unsigned int file_version );
-    template void serialize( boost::mpi::packed_oarchive&, VectorCohortIndividual &obj, unsigned int file_version );
-    template void serialize( boost::mpi::detail::content_oarchive&, VectorCohortIndividual &obj, unsigned int file_version );
-    template void serialize( boost::mpi::detail::mpi_datatype_oarchive&, VectorCohortIndividual &obj, unsigned int file_version );
 }
-#endif

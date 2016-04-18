@@ -13,7 +13,6 @@
                          "Outbreak_Source": "PrevalenceIncrease", 
                          "class": "Outbreak"
                     }, 
-                    "Number_Distributions": 1, 
                     "Number_Repetitions": 1, 
                     "Target_Demographic": "Everyone", 
                     "class": "StandardInterventionDistributionEventCoordinator"
@@ -34,15 +33,15 @@
                               "Actual_IndividualIntervention_Configs": [
                                    {
                                         "Cost_To_Consumer": 8, 
-                                        "Durability_Time_Profile": "DECAYDURABILITY", 
-                                        "Primary_Decay_Time_Constant": 3650, 
-                                        "Reduced_Acquire": 0.9, 
-                                        "Reduced_Transmit": 0,
-                                        "Reduced_Mortality": 0, 
                                         "Vaccine_Take": 0.8, 
                                         "Vaccine_Take_Age_Decay_Rate": 0.2, 
-                                        "Vaccine_Type": "Generic", 
-                                        "class": "BCGVaccine"
+                                        "class": "BCGVaccine",
+                                        "Waning_Config": {
+                                            "Initial_Effect": 0.9,
+                                            "Box_Duration": 3650,
+                                            "Decay_Rate_Factor": 3650,
+                                            "class": "WaningEffectBoxExponential"
+                                        }
                                    }
                               ], 
                               "Calendar": [
@@ -91,7 +90,6 @@
                          "Treatment_Fraction": 1, 
                          "class": "ActiveDiagnostic"
                     }, 
-                    "Number_Distributions": -1, 
                     "Number_Repetitions": -1, 
                     "Target_Demographic": "Everyone", 
                     "Timesteps_Between_Repetitions": 73, 
@@ -128,7 +126,6 @@
                          "Treatment_Fraction": 1, 
                          "class": "SmearDiagnostic"
                     }, 
-                    "Number_Distributions": -1, 
                     "Number_Repetitions": -1, 
                     "Target_Demographic": "Everyone", 
                     "Timesteps_Between_Repetitions": 73, 

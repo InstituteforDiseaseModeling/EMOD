@@ -16,7 +16,7 @@
             "Event_Coordinator_Config":
             {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "ExplicitAgeRangesAndGender",
+                "Target_Demographic": "ExplicitGender",
                 "Target_Gender": "Male",
                 "Demographic_Coverage": 0.2,
                 "Intervention_Config":

@@ -12,10 +12,10 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include "IdmApi.h"
 #include "BoostLibWrapper.h"
-#include "Serializer.h" // For IJsonSerializable
-#include <stdint.h>
 
 // helper macros for verifying 
 
@@ -140,23 +140,9 @@ private:
     static double cdf_random_num_precision;
     static double tan_pi_4;
     static double pi;
-
-#if USE_BOOST_SERIALIZATION
-    friend class boost::serialization::access;
-    template<class Archive>
-    friend void serialize(Archive & ar, RANDOMBASE &rng, const unsigned int /* file_version */);
-#endif
-
-#if USE_JSON_SERIALIZATION
-     public:
-
-         // IJsonSerializable Interfaces
-         virtual void JSerialize( Kernel::IJsonObjectAdapter* root, Kernel::JSerializer* helper ) const;
-         virtual void JDeserialize( Kernel::IJsonObjectAdapter* root, Kernel::JSerializer* helper );
-#endif
 };
 
-#if USE_BOOST_SERIALIZATION
+#if 0
 template<class Archive>
 void serialize(Archive & ar, RANDOMBASE &rng, const unsigned int /* file_version */)
 {
@@ -217,16 +203,9 @@ public:
     }
     
     __ULONG ul();
-
-private:
-#if USE_BOOST_SERIALIZATION
-    friend class boost::serialization::access;
-    template<class Archive>
-    friend void serialize(Archive & ar, PSEUDO_DES& rng, const unsigned int /* file_version */);
-#endif
 };
 
-#if USE_BOOST_SERIALIZATION
+#if 0
 template<class Archive>
 void serialize(Archive & ar, PSEUDO_DES& rng, const unsigned int /* file_version */)
 {

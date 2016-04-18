@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -17,15 +17,17 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <boost/math/special_functions/fpclassify.hpp>
 
 #include "SpatialReport.h"
-#include "Node.h"
+#include "INodeContext.h"
+#include "Climate.h"
 #include "Sugar.h"
 #include "Debug.h"
 #include "Environment.h"
 #include "FileSystem.h"
 #include "Exceptions.h"
-#include "Individual.h"
+#include "IIndividualHuman.h"
 #include "SimulationConfig.h"
 #include "ProgVersion.h"
+#include "IdmMpi.h"
 
 using namespace std;
 
@@ -115,7 +117,10 @@ SpatialReport::Initialize( unsigned int nrmSize )
     channelDataMap.IncreaseChannelLength( "NodeID", _nrmSize );
 
     if( !channelDataMap.HasChannel("Population") )
+    {
+        population_info.enabled = true ;
         channelDataMap.IncreaseChannelLength( "Population", _nrmSize );
+    }
 
     timesteps_to_store_in_memory = 1; // TODO: could read this from a config value instead...
     total_timesteps = 0;
@@ -146,7 +151,7 @@ void SpatialReport::BeginTimestep()
 
 void
 SpatialReport::LogIndividualData(
-    Kernel::IndividualHuman * individual
+    Kernel::IIndividualHuman* individual
 )
 {
     LOG_DEBUG( "LogIndividualData\n" );
@@ -174,7 +179,7 @@ SpatialReport::LogNodeData(
 
     // a bit of a hack... store nodeid's as "floats" so that we can just reduce them like any other channel;
     // they're same size as floats anyway, so we can write them out to the output file just fine...
-    int nodeid = pNC->GetExternalID();
+    auto nodeid = pNC->GetExternalID();
     float * flt = (float*)&nodeid;
     Accumulate("NodeID", nodeid, *flt);
 
@@ -347,7 +352,9 @@ SpatialReport::postProcessAccumulatedData()
 {
     LOG_DEBUG( "postProcessAccumulatedData\n" );
 
-    normalizeChannel(prevalence_info.name, population_info.name);
+    if( prevalence_info.enabled )
+        normalizeChannel(prevalence_info.name, population_info.name);
+
     normalizeChannel(rainfall_info.name, (1 / 1000.0f)); // multiply by 1000 (divide by 1/1000) to get result in mm
 
     // Turn these off for now... can add them back later if they're really needed
@@ -392,13 +399,8 @@ void SpatialReport::shuffleNodeData()
         nodeids.push_back(entry.first);
     }
 
-    // reduce nodeids and sort
-    boost::mpi::all_reduce(
-        *(EnvPtr->MPI.World),
-        &nodeids,
-        1,
-        &all_nodeids,
-        vec_append< vector<int> >() );
+    // synchronize nodeids and sort
+    EnvPtr->MPI.p_idm_mpi->Sync( nodeids, all_nodeids );
 
     std::sort(all_nodeids.begin(), all_nodeids.end());
 
@@ -427,12 +429,10 @@ void SpatialReport::shuffleNodeData()
     nodeid_index_map = new_nodeid_index_map;
 }
 
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(SpatialReport)
+#if 0
 template<class Archive>
 void serialize(Archive &ar, SpatialReport& report, const unsigned int v)
 {
-    boost::serialization::void_cast_register<SpatialReport,IReport>();
     ar & report.timesteps_reduced;
     ar & report.channelDataMap;
     ar & report._nrmSize;

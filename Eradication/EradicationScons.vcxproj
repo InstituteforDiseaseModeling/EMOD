@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{42A8C9AC-18EA-CFC0-7345-A66046BFC3AA}</ProjectGuid>
+    <RootNamespace>EradicationScons</RootNamespace>
+    <Keyword>MakeFileProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <PlatformToolset>v110</PlatformToolset>
+    <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|x64'">echo Starting SCons &amp;&amp; "C:\Python27-32\python.exe" -c "from os.path import join; import sys; sys.path = [ join(sys.prefix, 'Lib', 'site-packages', 'scons-2.3.0'), join(sys.prefix, 'scons-2.3.0'), join(sys.prefix, 'Lib', 'site-packages', 'scons'), join(sys.prefix, 'scons') ] + sys.path; import SCons.Script; SCons.Script.main()" -C "C:\EMOD3\trunk" -f SConstruct "C:\EMOD3\trunk\build\win32\Release\Eradication\Eradication.exe"</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|x64'">echo Starting SCons &amp;&amp; "C:\Python27-32\python.exe" -c "from os.path import join; import sys; sys.path = [ join(sys.prefix, 'Lib', 'site-packages', 'scons-2.3.0'), join(sys.prefix, 'scons-2.3.0'), join(sys.prefix, 'Lib', 'site-packages', 'scons'), join(sys.prefix, 'scons') ] + sys.path; import SCons.Script; SCons.Script.main()" -C "C:\EMOD3\trunk" -f SConstruct "C:\EMOD3\trunk\build\win32\Release\Eradication\Eradication.exe"</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|x64'">echo Starting SCons &amp;&amp; "C:\Python27-32\python.exe" -c "from os.path import join; import sys; sys.path = [ join(sys.prefix, 'Lib', 'site-packages', 'scons-2.3.0'), join(sys.prefix, 'scons-2.3.0'), join(sys.prefix, 'Lib', 'site-packages', 'scons'), join(sys.prefix, 'scons') ] + sys.path; import SCons.Script; SCons.Script.main()" -C "C:\EMOD3\trunk" -f SConstruct -c "C:\EMOD3\trunk\build\win32\Release\Eradication\Eradication.exe"</NMakeCleanCommandLine>
+    <NMakeOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\EMOD3\trunk\build\win32\Release\Eradication\Eradication.exe</NMakeOutput>
+    <NMakePreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WIN32;_UNICODE;UNICODE;_CONSOLE;NDEBUG;_DLLS_;DISABLE_VECTOR;DISABLE_MALARIA;DISABLE_HIV</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/boost/boost_1_51_0;#/C:/Python27/Include;#/Dependencies/ComputeClusterPack/Include;#/cajun/include;#/Eradication;#/campaign;#/interventions;#/utils;#/baseReportLib;#/libgeneric_static;#/rapidjson/include;#/rapidjson/modp;#/unittest/UnitTest++/src;C:/Program Files (x86)/Windows Kits/8.0//Include/um</NMakeIncludeSearchPath>
+    <NMakeForcedIncludes Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(NMakeForcedIncludes)</NMakeForcedIncludes>
+    <NMakeAssemblySearchPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
+    <NMakeForcedUsingAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(NMakeForcedUsingAssemblies)</NMakeForcedUsingAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClInclude Include="Contexts.h" />
+    <ClInclude Include="SimulationFactory.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="StdAfx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Eradication.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="ControllerFactory.cpp" />
+    <ClCompile Include="Eradication.cpp" />
+    <ClCompile Include="SimulationFactory.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SConstruct" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
+<!-- SCons Data:
+fXEBVQtSZWxlYXNlfHg2NHECY2NvcHlfcmVnCl9yZWNvbnN0cnVjdG9yCnEDKGNTQ29ucy5Ub29s
+Lm1zdnMKQ29uZmlnCnEEY19fYnVpbHRpbl9fCm9iamVjdApxBU50UnEGfXEHKFUHdmFyaWFudHEI
+VQdSZWxlYXNlcQlVB2NtZGFyZ3NxClUAVQhwbGF0Zm9ybXELVQN4NjRxDFUHcnVuZmlsZXENVT5D
+OlxFTU9EM1x0cnVua1xidWlsZFx3aW4zMlxSZWxlYXNlXEVyYWRpY2F0aW9uXEVyYWRpY2F0aW9u
+LmV4ZXEOVQtidWlsZHRhcmdldHEPaA5VBm91dGRpcnEQVQB1YnMu
+
+fXEBKFULT3RoZXIgRmlsZXNxAl1VDUxvY2FsIEhlYWRlcnNxA11xBFUIU3RkQWZ4LmhxBWFVDEhl
+YWRlciBGaWxlc3EGXXEHKFUKQ29udGV4dHMuaHEIVRNTaW11bGF0aW9uRmFjdG9yeS5ocQllVQxT
+b3VyY2UgRmlsZXNxCl1xCyhVDkNvbnRyb2xsZXIuY3BwcQxVFUNvbnRyb2xsZXJGYWN0b3J5LmNw
+cHENVQ9FcmFkaWNhdGlvbi5jcHBxDlUVU2ltdWxhdGlvbkZhY3RvcnkuY3BwcQ9VCnN0ZGFmeC5j
+cHBxEGVVDlJlc291cmNlIEZpbGVzcRFdcRJVDkVyYWRpY2F0aW9uLnJjcRNhdS4=
+-->

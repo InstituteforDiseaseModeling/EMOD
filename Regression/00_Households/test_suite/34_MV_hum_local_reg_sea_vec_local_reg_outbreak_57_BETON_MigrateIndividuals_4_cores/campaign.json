@@ -1,0 +1,247 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "Event_Name": "Broadcast to Other Households If Person Infected", 
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": 
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "NewClinicalCase",
+                    "Blackout_Event_Trigger" : "Blackout",
+                    "Blackout_Period" : 100.0,
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "BroadcastEventToOtherNodes",
+                        "Event_Trigger": "VaccinateNeighbors",
+                        "Include_My_Node" : 1,
+                        "Node_Selection_Type" : "DISTANCE_AND_MIGRATION",
+                        "Max_Distance_To_Other_Nodes_Km" : 2
+                    }
+                }
+            }
+        },
+        {
+            "Event_Name": "Get Vaccinated If Neighbor Infected", 
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config":
+            {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": 
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config":
+                {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition": "TriggerString",
+                    "Trigger_Condition_String": "VaccinateNeighbors",
+                    "Blackout_Event_Trigger" : "Blackout",
+                    "Blackout_Period" : 0.0,
+                    "Actual_IndividualIntervention_Config":
+                    {
+                         "class": "AntimalarialDrug",
+                         "Cost_To_Consumer": 10, 
+                         "Dosing_Type": "FullTreatmentParasiteDetect", 
+                         "Drug_Type": "Chloroquine", 
+                         "Dont_Allow_Duplicates" : 1
+                    }
+                }
+            }
+        },
+        {
+            "Event_Name": "Outbreak", 
+            "class": "CampaignEvent",
+            "Start_Day": 200, 
+            "Nodeset_Config": {
+                "Node_List": [
+                    57
+                ],
+                "class": "NodeSetNodeList"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 0.1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Outbreak_Source": "ImportCases",
+                    "Antigen": 0, 
+                    "Genome": 0
+                }
+            }
+        },
+        {
+            "Event_Name": "Migrate Klingons away from infected house - 58->8", 
+            "class": "CampaignEvent",
+            "Start_Day": 216, 
+            "Nodeset_Config": {
+                "Node_List": [
+                        58
+                ], 
+                "class": "NodeSetNodeList"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "MigrateFamily",
+                    "NodeID_To_Migrate_To": 8,
+                    "Duration_Before_Leaving_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_Before_Leaving_Fixed": 0, 
+                    "Duration_At_Node_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_At_Node_Fixed": 100, 
+                    "Is_Moving" : 0
+                }
+            }
+        },
+        {
+            "Event_Name": "Migrate Klingons away from infected house - 59->9", 
+            "class": "CampaignEvent",
+            "Start_Day": 216, 
+            "Nodeset_Config": {
+                "Node_List": [
+                        59
+                ], 
+                "class": "NodeSetNodeList"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "MigrateFamily",
+                    "NodeID_To_Migrate_To": 9,
+                    "Duration_Before_Leaving_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_Before_Leaving_Fixed": 0, 
+                    "Duration_At_Node_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_At_Node_Fixed": 100, 
+                    "Is_Moving" : 0
+                }
+            }
+        },
+        {
+            "Event_Name": "Migrate Klingons away from infected house - 60->10", 
+            "class": "CampaignEvent",
+            "Start_Day": 216, 
+            "Nodeset_Config": {
+                "Node_List": [
+                        60
+                ], 
+                "class": "NodeSetNodeList"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "MigrateFamily",
+                    "NodeID_To_Migrate_To": 10,
+                    "Duration_Before_Leaving_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_Before_Leaving_Fixed": 0, 
+                    "Duration_At_Node_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_At_Node_Fixed": 100, 
+                    "Is_Moving" : 0
+                }
+            }
+        },
+        {
+            "Event_Name": "Migrate Klingons away from infected house - 47->50", 
+            "class": "CampaignEvent",
+            "Start_Day": 216, 
+            "Nodeset_Config": {
+                "Node_List": [
+                        47
+                ], 
+                "class": "NodeSetNodeList"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "MigrateFamily",
+                    "NodeID_To_Migrate_To": 50,
+                    "Duration_Before_Leaving_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_Before_Leaving_Fixed": 0, 
+                    "Duration_At_Node_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_At_Node_Fixed": 100, 
+                    "Is_Moving" : 0
+                }
+            }
+        },
+        {
+            "Event_Name": "Migrate Klingons away from infected house - 37->40", 
+            "class": "CampaignEvent",
+            "Start_Day": 216, 
+            "Nodeset_Config": {
+                "Node_List": [
+                        37
+                ], 
+                "class": "NodeSetNodeList"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "MigrateFamily",
+                    "NodeID_To_Migrate_To": 40,
+                    "Duration_Before_Leaving_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_Before_Leaving_Fixed": 0, 
+                    "Duration_At_Node_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_At_Node_Fixed": 100, 
+                    "Is_Moving" : 0
+                }
+            }
+        },
+        {
+            "Event_Name": "Migrate Klingons away from infected house - 27->30", 
+            "class": "CampaignEvent",
+            "Start_Day": 216, 
+            "Nodeset_Config": {
+                "Node_List": [
+                        27
+                ], 
+                "class": "NodeSetNodeList"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "MigrateFamily",
+                    "NodeID_To_Migrate_To": 30,
+                    "Duration_Before_Leaving_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_Before_Leaving_Fixed": 0, 
+                    "Duration_At_Node_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_At_Node_Fixed": 100, 
+                    "Is_Moving" : 0
+                }
+            }
+        },
+        {
+            "Event_Name": "Migrate Klingons away from infected house - 17->20", 
+            "class": "CampaignEvent",
+            "Start_Day": 216, 
+            "Nodeset_Config": {
+                "Node_List": [
+                        17
+                ], 
+                "class": "NodeSetNodeList"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "MigrateFamily",
+                    "NodeID_To_Migrate_To": 20,
+                    "Duration_Before_Leaving_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_Before_Leaving_Fixed": 0, 
+                    "Duration_At_Node_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_At_Node_Fixed": 100, 
+                    "Is_Moving" : 0
+                }
+            }
+        }
+    ]
+}

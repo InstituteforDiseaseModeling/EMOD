@@ -12,7 +12,6 @@
                     "Outbreak_Source": "PrevalenceIncrease", 
                     "class": "OutbreakIndividual"
                 }, 
-                "Number_Distributions": 50, 
                 "Number_Repetitions": 1, 
                 "Property_Restrictions": [], 
                 "Target_Demographic": "Everyone", 

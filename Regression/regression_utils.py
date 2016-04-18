@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import json
+import collections
 import os
 import tempfile
 import string
@@ -83,20 +84,37 @@ def flattenConfig( configjson_path ):
     
     return configjson
 
+
+def md5_hash(handle):
+    handle.seek(0)
+    md5calc = md5()
+    while True:
+        data = handle.read( 10240 ) # reasonable value from examples
+        if len(data) == 0:
+            break;
+        md5calc.update(data)
+    hash = md5calc.hexdigest()
+    return hash
+        
+def md5_hash_of_file( filename ):
+    #print( "Getting md5 for " + filename )
+    file_handle = open( filename )
+    hash = md5_hash( file_handle )
+    #md5calc = md5()
+    #while True:
+        #file_bytes = file_handle.read( 10240 ) # value picked from example!
+        #if len(file_bytes) == 0:
+            #break
+        #md5calc.update( file_bytes )
+    file_handle.close()
+    #hash = md5calc.hexdigest()
+    return hash
+
+
+
 def areTheseJsonFilesTheSame( file1, file2, key = None ):
     #print( "Comparing " + file1 + " and " + file2 )
     
-    def md5_hash(handle):
-        handle.seek(0)
-        md5calc = md5()
-        while True:
-            data = handle.read( 10240 ) # reasonable value from examples
-            if len(data) == 0:
-                break;
-            md5calc.update(data)
-        hash = md5calc.hexdigest()
-        return hash
-        
     def get_json_data( filename, key ):
         with open( filename ) as handle:
             json_data = json.load( handle )
@@ -182,9 +200,9 @@ def strToEventList( str_in ):
 
 
 def flattenCampaign(override_fn, verbose):
-    print "Looking for " + override_fn + " relative to " + os.getcwd()
+    #print "Looking for " + override_fn + " relative to " + os.getcwd()
     if os.path.exists( override_fn ) == False:
-        print( "Path \'" + override_fn + "\' supposedly doesn't exist!!! Looking relative to " + os.getcwd() )
+        #print( "Path \'" + override_fn + "\' supposedly doesn't exist!!! Looking relative to " + os.getcwd() )
         return None
 
     override_str = open( override_fn ).read()

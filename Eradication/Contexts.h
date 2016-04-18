@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -15,11 +15,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ISupports.h"
 #include "IdmDateTime.h"
 #include "IInfectable.h"
-#include "SimpleTypemapRegistration.h"
-#include "ITransmissionGroups.h"
 #include "INodeContext.h"
-#include "Exceptions.h"
 #include "IdmApi.h"
+#include "ISusceptibilityContext.h"
 
 class RANDOMBASE;
 
@@ -29,9 +27,9 @@ namespace Kernel
     class SimulationConfig;
     class IInterventionFactory;
     struct DemographicsContext;
-    class MigrationInfo;
     struct NodeDemographics;
     struct NodeDemographicsDistribution;
+    struct INodeQualifier;
 
     ////////////////////////////////////////////////////////////////////////
     /* Design pattern for allowing access of child objects to methods of Simulation
@@ -65,12 +63,20 @@ namespace Kernel
         virtual suids::suid GetNextNodeSuid() = 0;
         virtual suids::suid GetNextIndividualHumanSuid() = 0;
         virtual suids::suid GetNextInfectionSuid() = 0;
+        virtual suids::suid GetNodeSuid( ExternalNodeId_t external_node_id ) = 0 ;
+        virtual ExternalNodeId_t GetNodeExternalID( const suids::suid& rNodeSuid ) = 0;
+        virtual uint32_t    GetNodeRank( const suids::suid& rNodeSuid ) = 0;
 
         // random number services
         virtual RANDOMBASE* GetRng() = 0;
 
         // migration
-        virtual void PostMigratingIndividualHuman(IndividualHuman *i) = 0;
+        virtual void PostMigratingIndividualHuman(IIndividualHuman *i) = 0;
+        virtual bool CanSupportFamilyTrips() const = 0;
+
+        // events
+        virtual void DistributeEventToOtherNodes( const std::string& rEventName, INodeQualifier* pQualifier ) = 0;
+        virtual void UpdateNodeEvents() = 0;
 
         // reporting
         virtual std::vector<IReport*>& GetReports() = 0;
@@ -83,9 +89,8 @@ namespace Kernel
 
     struct IIndividualHumanInterventionsContext;
     struct IIndividualHumanEventContext;
-    struct ISusceptibilityContext;
 
-    struct IIndividualHumanContext : public ISupports
+    struct IIndividualHumanContext : ISupports
     {
         virtual suids::suid GetSuid() const = 0;
 
@@ -103,13 +108,9 @@ namespace Kernel
         
         virtual void UpdateGroupMembership() = 0;
         virtual void UpdateGroupPopulation(float size_changes) = 0;
-    };
 
-    struct ISusceptibilityContext : public ISupports
-    {
-        virtual float getModAcquire() const = 0;
-        virtual float GetModTransmit() const = 0;
-        virtual float getModMortality() const = 0;
+        virtual const std::string& GetPropertyReportString() const = 0;
+        virtual void SetPropertyReportString( const std::string& str ) = 0;
     };
 
 // helper macro for readability

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -100,18 +100,5 @@ namespace Kernel
         std::priority_queue< CampaignEvent*, std::vector<CampaignEvent*>, campaign_event_comparison>  event_queue;
 
         void propagateContextToDependents();
-
-#if USE_JSON_SERIALIZATION
-    public:
-        // IJsonSerializable Interfaces
-        virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const {};
-        virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper ) {};
-#endif
-
-#if USE_BOOST_SERIALIZATION
-    private:
-        template<class Archive>
-        friend void serialize(Archive &ar, SimulationEventContextHost& sech, const unsigned int v);
-#endif 
     };
 }

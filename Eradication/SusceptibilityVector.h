@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -21,7 +21,7 @@ namespace Kernel
     {
         friend class IndividualHumanVector;
     public:
-        virtual bool Configure( const Configuration* config );
+        virtual bool Configure( const Configuration* config ) override;
 
     protected:
         // configurable mode of biting-risk age-dependence
@@ -42,10 +42,10 @@ namespace Kernel
         static SusceptibilityVector *CreateSusceptibility(IIndividualHumanContext *context, float _age = (20*DAYSPERYEAR), float immmod = 1.0f, float riskmod = 1.0f);
         virtual ~SusceptibilityVector();
 
-        virtual void Update(float dt=0.0);
+        virtual void Update(float dt=0.0) override;
 
         // IVectorSusceptibilityContext interface
-        virtual float GetRelativeBitingRate(void) const;
+        virtual float GetRelativeBitingRate(void) const override;
 
         static float LinearBitingFunction(float);
         static float SurfaceAreaBitingFunction(float);
@@ -53,8 +53,8 @@ namespace Kernel
     protected:
         SusceptibilityVector();
         SusceptibilityVector(IIndividualHumanContext *context);
-        void Initialize(float _age, float immmod, float riskmod);
-        const SimulationConfig *params();
+        /* clorton virtual */ void Initialize(float _age, float immmod, float riskmod) /* clorton override */;
+        /* clorton virtual */ const SimulationConfig *params() /* clorton override */;
         float BitingRiskAgeFactor(float _age);
 
         // effect of heterogeneous biting explored in Smith, D. L., F. E. McKenzie, et al. (2007). "Revisiting the basic reproductive number for malaria and its implications for malaria control." PLoS Biol 5(3): e42.
@@ -62,21 +62,6 @@ namespace Kernel
         float m_relative_biting_rate;
         float m_age_dependent_biting_risk;
 
-    private:
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, SusceptibilityVector& sus, const unsigned int file_version );
-#endif
-
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-    public:
-     // IJsonSerializable Interfaces
-     virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-     virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
-
+        DECLARE_SERIALIZABLE(SusceptibilityVector);
     };
-
-
 }

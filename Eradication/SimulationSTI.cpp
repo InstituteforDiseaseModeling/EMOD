@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -17,12 +17,22 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SusceptibilitySTI.h"
 #include "SimulationConfig.h"
 #include "StiObjectFactory.h"
+#include "NodeInfoSTI.h"
 
 static const char * _module = "SimulationSTI";
+
+static const float DEFAULT_BASE_YEAR = 2015.0f ;
 
 namespace Kernel
 {
     GET_SCHEMA_STATIC_WRAPPER_IMPL(SimulationSTI,SimulationSTI)
+
+    BEGIN_QUERY_INTERFACE_DERIVED(SimulationSTI, Simulation)
+        HANDLE_INTERFACE(IIdGeneratorSTI)
+        HANDLE_INTERFACE(ISTISimulationContext)
+    END_QUERY_INTERFACE_DERIVED(SimulationSTI, Simulation)
+
+    float SimulationSTI::base_year = 0.0f;
 
     SimulationSTI::SimulationSTI()
         : relationshipSuidGenerator(EnvPtr->MPI.Rank, EnvPtr->MPI.NumTasks)
@@ -53,7 +63,7 @@ namespace Kernel
 
     SimulationSTI *SimulationSTI::CreateSimulation(const ::Configuration *config)
     {
-        SimulationSTI *newsimulation = NULL;
+        SimulationSTI *newsimulation = nullptr;
 
         newsimulation = _new_ SimulationSTI();
         if (newsimulation)
@@ -64,7 +74,7 @@ namespace Kernel
             if(!ValidateConfiguration(config))
             {
                 delete newsimulation;
-                newsimulation = NULL;
+                newsimulation = nullptr;
             }
         }
 
@@ -74,6 +84,7 @@ namespace Kernel
     void
     SimulationSTI::Initialize()
     {
+        Simulation::Initialize();
     }
 
     void
@@ -85,6 +96,11 @@ namespace Kernel
         IndividualHumanSTIConfig fakeHumanSTIConfig;
         LOG_INFO( "Calling Configure on fakeHumanSTIConfig\n" );
         fakeHumanSTIConfig.Configure( config );
+
+        if( !JsonConfigurable::_dryrun && this->GetSimulationConfigObj()->migration_structure != MigrationStructure::NO_MIGRATION )
+        {
+            throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Migration is not yet supported in STI/HIV." );
+        }
     }
 
     bool
@@ -92,7 +108,15 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
+        initConfigTypeMap( "Base_Year",  &base_year, Base_Year_DESC_TEXT, MIN_YEAR, MAX_YEAR, DEFAULT_BASE_YEAR );
+
         bool ret = Simulation::Configure( inputJson );
+        if( ret )
+        {
+            LOG_INFO_F("Setting Base_Year to %f\n", base_year );
+            currentTime.setBaseYear( base_year );
+        }
+
         return ret;
     }
 
@@ -149,30 +173,45 @@ namespace Kernel
         addNode_internal(node, nodedemographics_factory, climate_factory);
     }
 
-    void SimulationSTI::resolveMigration()
-    {
-        resolveMigrationInternal( typed_migration_queue_storage, migratingIndividualQueues );
-    }
-
     suids::suid SimulationSTI::GetNextRelationshipSuid()
     {
         return relationshipSuidGenerator();
     }
-}
 
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(Kernel::SimulationSTI)
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive & ar, SimulationSTI &sim, const unsigned int  file_version )
+    void SimulationSTI::AddTerminatedRelationship( const suids::suid& nodeSuid, const suids::suid& relId )
     {
-        // Register derived types
-        ar.template register_type<NodeSTI>();
-        ar.template register_type<NodeSTIFlags>();
-
-        // Serialize base class
-        ar & boost::serialization::base_object<Simulation>(sim);
+        INodeInfo& r_ni = nodeRankMap.GetNodeInfo( nodeSuid );
+        NodeInfoSTI* p_ni_sti = dynamic_cast<NodeInfoSTI*>(&r_ni);
+        p_ni_sti->AddTerminatedRelationship( relId );
     }
-}
-#endif
 
+    bool SimulationSTI::WasRelationshipTerminatedLastTimestep( const suids::suid& relId ) const
+    {
+        const NodeRankMap::RankMap_t& rank_map = nodeRankMap.GetRankMap();
+
+        for( auto& entry : rank_map )
+        {
+            NodeInfoSTI* p_nis = dynamic_cast<NodeInfoSTI*>(entry.second);
+            release_assert( p_nis );
+
+            if( p_nis->WasRelationshipTerminatedLastTimestep( relId ) )
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    INodeInfo* SimulationSTI::CreateNodeInfo()
+    {
+        INodeInfo* pin = new NodeInfoSTI();
+        return pin ;
+    }
+
+    INodeInfo* SimulationSTI::CreateNodeInfo( int rank, INodeContext* pNC )
+    {
+        INodeInfo* pin = new NodeInfoSTI( rank, pNC );
+        return pin ;
+    }
+
+}

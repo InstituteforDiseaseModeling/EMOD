@@ -3,7 +3,7 @@
      "parameters": {
           "DEMOGRAPHICS": {
                "Birth_Rate_Dependence": "POPULATION_DEP_RATE", 
-               "Demographics_Filename": "Seattle_30arcsec_demographics.compiled.json;Seattle_30arcsec_demographics_zoonosis.compiled.json", 
+               "Demographics_Filenames": [ "Seattle_30arcsec_demographics.compiled.json", "Seattle_30arcsec_demographics_zoonosis.compiled.json" ], 
                "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF"
           }, 
           "DISEASE": {
@@ -21,6 +21,9 @@
                     "Air_Migration_Filename": ""
                },
                "Enable_Migration_Heterogeneity": 1, 
+               "Enable_Family_Migration": 0, 
+               "Family_Migration_Filename": "", 
+               "x_Family_Migration": 1,
                "LOCAL": {
                     "Enable_Local_Migration": 1,
                     "Local_Migration_Filename": "Seattle_30arcsec_local_migration.bin"
@@ -50,6 +53,9 @@
                "Max_Individual_Infections": 5, 
                "Max_Node_Population_Samples": 100, 
                "Sample_Rate_Birth": 1
+          },
+          "HPC": {
+               "Num_Cores": 4
           }
      }
 }

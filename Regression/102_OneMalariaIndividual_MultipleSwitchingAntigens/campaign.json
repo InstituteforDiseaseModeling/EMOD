@@ -8,7 +8,6 @@
                "class": "CampaignEvent", 
                "Event_Coordinator_Config": {
                     "Demographic_Coverage": 1, 
-                    "Number_Distributions": 1, 
                     "Number_Repetitions": -1, 
                     "Target_Demographic": "Everyone", 
                     "Timesteps_Between_Repetitions": 500, 

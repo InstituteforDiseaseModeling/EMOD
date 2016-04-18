@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -28,7 +28,7 @@ namespace Kernel
     {
     }
 
-    json::QuickBuilder 
+    json::QuickBuilder
     NodeSetConfig::GetSchema()
     {
         json::QuickBuilder schema( jsonSchemaBase );
@@ -54,11 +54,11 @@ namespace Kernel
 
         _json = (*inputJson)[key];
         //std::cout << "NodeSetConfig::Configure called with json blob." << std::endl;
-        //json::Writer::Write( _json, std::cout ); 
+        //json::Writer::Write( _json, std::cout );
     }
 
     /// END NodeSetConfig
- 
+
     /// EventConfig
     EventConfig::EventConfig()
     {}
@@ -83,7 +83,7 @@ namespace Kernel
         //json::Writer::Write( _json, std::cout );
     }
 
-    json::QuickBuilder 
+    json::QuickBuilder
     EventConfig::GetSchema()
     {
         json::QuickBuilder schema( jsonSchemaBase );
@@ -125,11 +125,11 @@ namespace Kernel
         // This might be useful for debugging, but couldn't agree on how to whether to include or not. Uncomment if you need it.
         /*std::ostringstream msg;
         msg << "InterventionConfig::" << __FUNCTION__ << " called with json blob." << std::endl;
-        json::Writer::Write( _json, msg ); 
+        json::Writer::Write( _json, msg );
         LOG_DEBUG_F( "%s", msg.str().c_str() );*/
     }
 
-    json::QuickBuilder 
+    json::QuickBuilder
     InterventionConfig::GetSchema()
     {
         json::QuickBuilder schema( jsonSchemaBase );
@@ -142,17 +142,36 @@ namespace Kernel
         return schema;
     }
 
-    template < class Archive >
-    void serialize( Archive &ar, InterventionConfig& config, unsigned int file_version )
+    void InterventionConfig::serialize(IArchive& ar, InterventionConfig& config)
     {
-        ar & config._json;
+#if defined(WIN32)
+        if ( ar.IsWriter() )
+        {
+            std::ostringstream string_stream;
+            json::Writer::Write( config._json, string_stream );
+            ar & string_stream.str();
+        }
+        else
+        {
+            std::string json;
+            ar & json;
+            std::istringstream string_stream( json );
+            json::Reader::Read( config._json, string_stream );
+        }
+#endif
     }
+
+// clorton    template < class Archive >
+// clorton    void serialize( Archive &ar, InterventionConfig& config, unsigned int file_version )
+// clorton    {
+// clorton        ar & config._json;
+// clorton    }
 
     IndividualInterventionConfig::IndividualInterventionConfig()
     {
     }
 
-    json::QuickBuilder 
+    json::QuickBuilder
     IndividualInterventionConfig::GetSchema()
     {
         json::QuickBuilder schema = InterventionConfig::GetSchema();
@@ -163,7 +182,7 @@ namespace Kernel
         return schema;
     }
 
-    json::QuickBuilder 
+    json::QuickBuilder
     NodeInterventionConfig::GetSchema()
     {
         json::QuickBuilder schema = InterventionConfig::GetSchema();
@@ -186,7 +205,7 @@ namespace Kernel
     {
     }
 
-    json::QuickBuilder 
+    json::QuickBuilder
     WaningConfig::GetSchema()
     {
         json::QuickBuilder schema( jsonSchemaBase );
@@ -211,60 +230,57 @@ namespace Kernel
         }
         _json = (*inputJson)[key];
         //std::cout << "WaningConfig::Configure called with json blob." << std::endl;
-        //json::Writer::Write( _json, std::cout ); 
+        //json::Writer::Write( _json, std::cout );
     }
 
     /// END WaningConfig
 
     std::map< std::string, IJsonConfigurable* > IJsonConfigurable::generic_container;
 
-    JsonConfigurable::ConstrainedString::ConstrainedString( std::string &init_str )
-    : constraint_param(nullptr)
+    namespace jsonConfigurable
     {
-        *((std::string*)(this)) = init_str;
-    }
-
-    JsonConfigurable::ConstrainedString::ConstrainedString( const char* init_str )
-    : constraint_param(nullptr)
-    {
-        *((std::string*)(this)) = std::string( init_str );
-    }
-
-    const JsonConfigurable::ConstrainedString&
-    JsonConfigurable::ConstrainedString::operator=( const std::string& new_value )
-    {
-        *((std::string*)(this)) = new_value;
-        //release_assert( constraint_param );
-        if( constraint_param && constraint_param->count( new_value ) == 0 )
+        ConstrainedString::ConstrainedString( std::string &init_str )
+        : constraint_param(nullptr)
         {
-            std::ostringstream msg;
-            msg << "Constrained String" ;
-            if( !parameter_name.empty() )
-            {
-                msg << " (" << parameter_name << ")" ;
-            }
-            msg << " with specified value " 
-                << new_value 
-                << " invalid. Possible values are: " << std::endl ;
-            for( auto value : (*constraint_param) )
-            {
-                msg << value << std::endl;
-            }
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            *((std::string*)(this)) = init_str;
         }
-        return *this ;
-    }
 
-    template < class Archive >
-    void serialize( Archive &ar, JsonConfigurable::ConstrainedString& cs, unsigned int file_version )
-    {
-        //ar & cs.;
+        ConstrainedString::ConstrainedString( const char* init_str )
+        : constraint_param(nullptr)
+        {
+            *((std::string*)(this)) = std::string( init_str );
+        }
+
+        const ConstrainedString&
+        ConstrainedString::operator=( const std::string& new_value )
+        {
+            *((std::string*)(this)) = new_value;
+            //release_assert( constraint_param );
+            if( constraint_param && (constraint_param->count( new_value ) == 0) && (new_value != JsonConfigurable::default_string)  )
+            {
+                std::ostringstream msg;
+                msg << "Constrained String" ;
+                if( !parameter_name.empty() )
+                {
+                    msg << " (" << parameter_name << ")" ;
+                }
+                msg << " with specified value "
+                    << new_value
+                    << " invalid. Possible values are: " << std::endl ;
+                for( auto value : (*constraint_param) )
+                {
+                    msg << value << std::endl;
+                }
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            }
+            return *this ;
+        }
     }
 
     const char * JsonConfigurable::default_description = "No Description Yet";
     const char * JsonConfigurable::default_string = "UNINITIALIZED STRING";
     bool JsonConfigurable::_dryrun = false;
-    bool JsonConfigurable::_useDefaults = true;
+    bool JsonConfigurable::_useDefaults = false;
     bool JsonConfigurable::_track_missing = true;
     bool JsonConfigurable::_possibleNonflatConfig = false;
     std::set< std::string > JsonConfigurable::empty_set;
@@ -379,7 +395,7 @@ namespace Kernel
     void
     JsonConfigurable::initConfigTypeMap(
         const char* paramName,
-        ConstrainedString * pVariable,
+        jsonConfigurable::ConstrainedString * pVariable,
         const char * description,
         const std::string& default_str
     )
@@ -398,7 +414,7 @@ namespace Kernel
     void
     JsonConfigurable::initConfigTypeMap(
         const char* paramName,
-        tStringSetBase * pVariable,
+        jsonConfigurable::tStringSetBase * pVariable,
         const char* description,
         const char* condition_key,
         const char* condition_value
@@ -415,14 +431,14 @@ namespace Kernel
         if( pVariable->getTypeName() == FIXED_STRING_SET_LABEL )
         {
             newStringSetSchema["possible_values"] = json::Array();
-            for( auto& value : ((tFixedStringSet*)pVariable)->possible_values )
+            for( auto& value : ((jsonConfigurable::tFixedStringSet*)pVariable)->possible_values )
             {
                 newStringSetSchema["possible_values"][counter++] = json::String( value );
             }
         }
         else if( pVariable->getTypeName() == DYNAMIC_STRING_SET_LABEL )
         {
-            newStringSetSchema["value_source"] = json::String( ((tDynamicStringSet*)pVariable)->value_source );
+            newStringSetSchema["value_source"] = json::String( ((jsonConfigurable::tDynamicStringSet*)pVariable)->value_source );
         }
         else
         {
@@ -452,7 +468,7 @@ namespace Kernel
         vectorStringConstraintsTypeMap[ paramName ] = &constraint_variable;
         json::Object newVectorStringSchema;
         newVectorStringSchema["description"] = json::String(description);
-        newVectorStringSchema["type"] = json::String("vector string");
+        newVectorStringSchema["type"] = json::String("Vector String");
         if( constraint_schema )
         {
             newVectorStringSchema["value_source"] = json::String( constraint_schema );
@@ -472,11 +488,30 @@ namespace Kernel
         vectorFloatConfigTypeMap[ paramName ] = pVariable;
         json::Object newVectorFloatSchema;
         newVectorFloatSchema["description"] = json::String(description);
-        newVectorFloatSchema["type"] = json::String("vector float");
+        newVectorFloatSchema["type"] = json::String("Vector Float");
         newVectorFloatSchema["min"] = json::Number(min);
         newVectorFloatSchema["max"] = json::Number(max);
         newVectorFloatSchema["default"] = json::Number(defaultvalue);
         jsonSchemaBase[paramName] = newVectorFloatSchema;
+    }
+
+    void
+    JsonConfigurable::initConfigTypeMap(
+        const char* paramName,
+        std::vector< int > * pVariable,
+        const char* description,
+        int min, int max, int defaultvalue
+    )
+    {
+        LOG_DEBUG_F( "initConfigTypeMap<vector<int>>: %s\n", paramName);
+        vectorIntConfigTypeMap[ paramName ] = pVariable;
+        json::Object newVectorIntSchema;
+        newVectorIntSchema["description"] = json::String(description);
+        newVectorIntSchema["type"] = json::String("Vector Int");
+        newVectorIntSchema["min"] = json::Number(min);
+        newVectorIntSchema["max"] = json::Number(max);
+        newVectorIntSchema["default"] = json::Number(defaultvalue);
+        jsonSchemaBase[paramName] = newVectorIntSchema;
     }
 
     void
@@ -491,11 +526,30 @@ namespace Kernel
         vector2dFloatConfigTypeMap[ paramName ] = pVariable;
         json::Object newVector2dFloatSchema;
         newVector2dFloatSchema["description"] = json::String(description);
-        newVector2dFloatSchema["type"] = json::String("vector2d float");
+        newVector2dFloatSchema["type"] = json::String("Vector2d Float");
         newVector2dFloatSchema["min"] = json::Number(min);
         newVector2dFloatSchema["max"] = json::Number(max);
         newVector2dFloatSchema["default"] = json::Number(defaultvalue);
         jsonSchemaBase[paramName] = newVector2dFloatSchema;
+    }
+
+    void
+    JsonConfigurable::initConfigTypeMap(
+        const char* paramName,
+        std::vector< std::vector< int > > * pVariable,
+        const char* description,
+        int min, int max, int defaultvalue
+    )
+    {
+        LOG_DEBUG_F( "initConfigTypeMap<vector,vector<int>>>: %s\n", paramName);
+        vector2dIntConfigTypeMap[ paramName ] = pVariable;
+        json::Object newVector2dIntSchema;
+        newVector2dIntSchema["description"] = json::String(description);
+        newVector2dIntSchema["type"] = json::String("Vector2d Int");
+        newVector2dIntSchema["min"] = json::Number(min);
+        newVector2dIntSchema["max"] = json::Number(max);
+        newVector2dIntSchema["default"] = json::Number(defaultvalue);
+        jsonSchemaBase[paramName] = newVector2dIntSchema;
     }
 
     // We have sets/vectors from json arrays, now add maps from json dictonaries
@@ -553,16 +607,157 @@ namespace Kernel
         jsonSchemaBase[paramName] = newNestedSchema;
     }
 
+    void
+    JsonConfigurable::initConfigTypeMap(
+        const char* paramName,
+        RangedFloat * pVariable,
+        const char * description,
+        float defaultvalue,
+        const char* condition_key, const char* condition_value
+    )
+    {
+        LOG_DEBUG_F( "initConfigTypeMap<RangedFloat>: %s\n", paramName);
+        rangedFloatConfigTypeMap[ paramName ] = pVariable;
+        json::Object newFloatSchema;
+        newFloatSchema["description"] = json::String(description);
+        newFloatSchema["type"] = json::String( "float" );
+        newFloatSchema["min"] = json::Number( pVariable->getMin() );
+        newFloatSchema["max"] = json::Number( pVariable->getMax() );
+        newFloatSchema["default"] = json::Number(defaultvalue);
+        if( condition_key && condition_value )
+        {
+            json::Object condition;
+            condition[ condition_key ] = json::String( condition_value );
+            newFloatSchema["depends-on"] = condition;
+        }
+        jsonSchemaBase[paramName] = newFloatSchema;
+    }
+
+    void
+    JsonConfigurable::initConfigTypeMap(
+        const char* paramName,
+        NonNegativeFloat * pVariable,
+        const char * description,
+        float max,
+        float defaultvalue,
+        const char* condition_key, const char* condition_value
+    )
+    {
+        RangedFloat * pTmp = (RangedFloat*) pVariable;
+        return initConfigTypeMap( paramName, pTmp, description, defaultvalue, condition_key, condition_value );
+    }
+
+
+    void
+    JsonConfigurable::initConfigTypeMap(
+        const char* paramName,
+        NaturalNumber * pVariable,
+        const char * description,
+        unsigned int max,
+        NaturalNumber defaultvalue,
+        const char* condition_key, const char* condition_value
+    )
+    {
+        LOG_DEBUG_F( "initConfigTypeMap<NaturalNumber>: %s\n", paramName);
+        naturalNumberConfigTypeMap[ paramName ] = pVariable;
+        json::Object newNNSchema;
+        newNNSchema["description"] = json::String(description);
+        newNNSchema["type"] = json::String( "NaturalNumber" );
+        newNNSchema["min"] = json::Number( 0 );
+        newNNSchema["max"] = json::Number( max );
+        newNNSchema["default"] = json::Number(defaultvalue);
+        if( condition_key && condition_value )
+        {
+            json::Object condition;
+            condition[ condition_key ] = json::String( condition_value );
+            newNNSchema["depends-on"] = condition;
+        }
+        jsonSchemaBase[paramName] = newNNSchema;
+    }
+
+    void
+    JsonConfigurable::initConfigTypeMap(
+        const char* paramName,
+        JsonConfigurable * pVariable,
+        const char* defaultDesc,
+        const char* condition_key, const char* condition_value
+    )
+    {
+        LOG_DEBUG_F( "initConfigTypeMap<JsonConfigurable>: %s\n", paramName);
+
+        // --------------------------------------------------------
+        // --- Get the type of variable and declare it an "idmType"
+        // --------------------------------------------------------
+        std::string variable_type = typeid(*pVariable).name() ;
+        if( variable_type.find( "class Kernel::" ) == 0 )
+        {
+            variable_type = variable_type.substr( 14 );
+        }
+        else if( variable_type.find( "struct Kernel::" ) == 0 )
+        {
+            variable_type = variable_type.substr( 15 );
+        }
+        variable_type = std::string("idmType:") + variable_type ;
+
+        // ------------------------------------------------------
+        // --- Put the schema for the special type into map first
+        // --- so that its definition appears before it is used.
+        // ------------------------------------------------------
+        bool tmp = _dryrun ;
+        _dryrun = true ;
+        pVariable->Configure( nullptr );
+        _dryrun = tmp ;
+        jsonSchemaBase[ variable_type ] = pVariable->GetSchema();
+
+        jcTypeMap[ paramName ] = pVariable;
+        json::Object newNestedSchema;
+        newNestedSchema["description"] = json::String(defaultDesc);
+        newNestedSchema["type"] = json::String(variable_type);
+        if( condition_key && condition_value )
+        {
+            json::Object condition;
+            condition[ condition_key ] = json::String( condition_value );
+            newNestedSchema["depends-on"] = condition;
+        }
+        jsonSchemaBase[paramName] = newNestedSchema;
+    }
+
+    void
+    JsonConfigurable::handleMissingParam( const std::string& key )
+    {
+        if( _track_missing )
+        {
+            missing_parameters_set.insert(key);
+        }
+        else
+        {
+            throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, "N/A", key.c_str() );
+        }
+    }
 
     bool JsonConfigurable::Configure( const Configuration* inputJson )
     {
-        //if( getenv( "DRYRUN" ) )
         if( _dryrun )
         {
             LOG_DEBUG("Returning from Configure because doing dryrun\n");
             return true;
         }
 
+        // Desired logic
+        //
+        //  | SPECIFIED | USE_DEFAULTS | BEHAVIOUR |
+        //  |--------------------------------------|
+        //  |   TRUE    |     TRUE     | USE_JSON  |
+        //  |   TRUE    |     FALSE    | USE_JSON  |
+        //  |   FALSE   |     TRUE     | USE_DEF   |
+        //  |   FALSE   |     FALSE    |   ERROR   |
+        //
+        //  This reduces to:
+        //
+        //  |   TRUE    |       X      | USE_JSON  |
+        //  |   FALSE   |     TRUE     | USE_DEF   |
+        //  |   FALSE   |     FALSE    |   ERROR   |
+        //
         // INIT STAGE
         // initVarFromConfig: iterate over all config keys...
         // until we figure that out, go the other way
@@ -574,22 +769,23 @@ namespace Kernel
             json::QuickInterpreter schema = jsonSchemaBase[key];
 
             // check if parameter was specified in input json (TODO: improve performance by getting the iterator here with Find() and reusing instead of GET_CONFIG_BOOLEAN below)
-            if ( !inputJson->Exist(key) && _useDefaults )
+            if( inputJson->Exist(key) )
             {
-                // using the default value
-                /* Use this when boolean configuration parameters are actually 'true'/'false'.
-                bool defaultValue = (bool)schema["default"].As<json::Boolean>();*/
-                bool defaultValue = ((int)schema["default"].As<json::Number>() == 1);
-                *(entry.second) = defaultValue;
-                LOG_INFO_F( "Using the default value ( \"%s\" : %d ) for unspecified parameter.\n", key.c_str(), defaultValue );
-                if( _track_missing )
-                {
-                    missing_parameters_set.insert(key);
-                }
+                *(entry.second) = (bool)GET_CONFIG_BOOLEAN(inputJson,key.c_str());
             }
             else
             {
-                *(entry.second) = (bool)GET_CONFIG_BOOLEAN(inputJson,key.c_str());
+                if( _useDefaults )
+                {
+                    // using the default value
+                    bool defaultValue = ((int)schema["default"].As<json::Number>() == 1);
+                    *(entry.second) = defaultValue;
+                    LOG_DEBUG_F( "Using the default value ( \"%s\" : %d ) for unspecified parameter.\n", key.c_str(), defaultValue );
+                }
+                else
+                {
+                    handleMissingParam( key );
+                }
             }
 
             LOG_DEBUG_F("the key %s = bool %d\n", key.c_str(), *(entry.second));
@@ -603,17 +799,7 @@ namespace Kernel
             int val = -1;
 
             // check if parameter was specified in input json (TODO: improve performance by getting the iterator here with Find() and reusing instead of GET_CONFIG_INTEGER below)
-            if ( !inputJson->Exist(key) && _useDefaults )
-            {
-                // using the default value
-                val = (int)schema["default"].As<json::Number>();
-                LOG_INFO_F( "Using the default value ( \"%s\" : %d ) for unspecified parameter.\n", key.c_str(), val );
-                if( _track_missing )
-                {
-                    missing_parameters_set.insert(key);
-                }
-            }
-            else
+            if( inputJson->Exist(key) )
             {
                 double jsonValueAsDouble = GET_CONFIG_DOUBLE( inputJson, key.c_str() );
                 if( jsonValueAsDouble != (int) jsonValueAsDouble )
@@ -626,12 +812,25 @@ namespace Kernel
                 }
                 // get specified configuration parameter
                 val = (int)GET_CONFIG_INTEGER(inputJson,key.c_str());
+                // throw exception if value is outside of range
+                EnforceParameterRange<int>( key, val, schema );
+                *(entry.second) = val;
+            }
+            else
+            {
+                if( _useDefaults )
+                {
+                    // using the default value
+                    val = (int)schema["default"].As<json::Number>();
+                    LOG_INFO_F( "Using the default value ( \"%s\" : %d ) for unspecified parameter.\n", key.c_str(), val );
+                    *(entry.second) = val;
+                }
+                else 
+                {
+                    handleMissingParam( key );
+                }
             }
 
-            // throw exception if value is outside of range
-            EnforceParameterRange<int>( key, val, schema );
-
-            *(entry.second) = val;
 
             LOG_DEBUG_F("the key %s = int %d\n", key.c_str(), *(entry.second));
         }
@@ -644,27 +843,27 @@ namespace Kernel
             float val = -1.0f;
 
             // Check if parameter was specified in input json (TODO: improve performance by getting the iterator here with Find() and reusing instead of GET_CONFIG_DOUBLE below)
-            LOG_DEBUG_F( "useDefaults = %d\n", _useDefaults );
-            if ( !inputJson->Exist(key) && _useDefaults )
+            if( inputJson->Exist(key) )
             {
-                // using the default value
-                val = (float)schema["default"].As<json::Number>();
-                LOG_INFO_F( "Using the default value ( \"%s\" : %f ) for unspecified parameter.\n", key.c_str(), val );
-                if( _track_missing ) // EAW: umm... don't we want to also track missing even if useDefaults is FALSE!
-                {
-                    missing_parameters_set.insert(key);
-                }
+                val = (float) GET_CONFIG_DOUBLE( inputJson, key.c_str() );
+                // throw exception if specified value is outside of range
+                EnforceParameterRange<float>( key, val, schema);
+                *(entry.second) = val;
             }
             else
             {
-                // get specified configuration parameter
-                val = (float) GET_CONFIG_DOUBLE( inputJson, key.c_str() );
+                if ( _useDefaults )
+                {
+                    // using the default value
+                    val = (float)schema["default"].As<json::Number>();
+                    LOG_INFO_F( "Using the default value ( \"%s\" : %f ) for unspecified parameter.\n", key.c_str(), val );
+                    *(entry.second) = val;
+                }
+                else 
+                {
+                    handleMissingParam( key );
+                }
             }
-
-            // throw exception if specified value is outside of range
-            EnforceParameterRange<float>( key, val, schema);
-
-            *(entry.second) = val;
 
             LOG_DEBUG_F("the key %s = float %f\n", key.c_str(), *(entry.second));
         }
@@ -677,28 +876,97 @@ namespace Kernel
             double val = -1.0;
 
             // Check if parameter was specified in input json (TODO: improve performance by getting the iterator here with Find() and reusing instead of GET_CONFIG_DOUBLE below)
-            if ( !inputJson->Exist(key) && _useDefaults )
+            if( inputJson->Exist(key) )
             {
-                // using the default value
-                val = schema["default"].As<json::Number>();
-                LOG_INFO_F( "Using the default value ( \"%s\" : %f ) for unspecified parameter.\n", key.c_str(), val );
-                if( _track_missing )
-                {
-                    missing_parameters_set.insert(key);
-                }
+                val = GET_CONFIG_DOUBLE( inputJson, key.c_str() );
+                *(entry.second) = val;
+                // throw exception if specified value is outside of range
+                EnforceParameterRange<double>( key, val, schema);
             }
             else
             {
+                if ( _useDefaults )
+                {
+                    // using the default value
+                    val = schema["default"].As<json::Number>();
+                    LOG_INFO_F( "Using the default value ( \"%s\" : %f ) for unspecified parameter.\n", key.c_str(), val );
+                    *(entry.second) = val;
+                }
+                else 
+                {
+                    handleMissingParam( key );
+                }
+            }
+            LOG_DEBUG_F("the key %s = double %f\n", key.c_str(), *(entry.second));
+        }
+
+        // ---------------------------------- RANGEDFLOAT ------------------------------------
+        for (auto& entry : rangedFloatConfigTypeMap)
+        {
+            const std::string& key = entry.first;
+            json::QuickInterpreter schema = jsonSchemaBase[key];
+            float val = -1.0f;
+
+            // Check if parameter was specified in input json
+            LOG_DEBUG_F( "useDefaults = %d\n", _useDefaults );
+            if( inputJson->Exist(key) )
+            {
                 // get specified configuration parameter
                 val = GET_CONFIG_DOUBLE( inputJson, key.c_str() );
+                *(entry.second) = val;
+                // throw exception if specified value is outside of range even though this datatype enforces ranges inherently.
+                EnforceParameterRange<float>( key, val, schema);
+            }
+            else
+            {
+                if( _useDefaults )
+                {
+                    // using the default value
+                    val = (float)schema["default"].As<json::Number>();
+                    LOG_INFO_F( "Using the default value ( \"%s\" : %f ) for unspecified parameter.\n", key.c_str(), val );
+                    *(entry.second) = val;
+                }
+                else 
+                {
+                    handleMissingParam( key );
+                }
             }
 
-            // throw exception if specified value is outside of range
-            EnforceParameterRange<double>( key, val, schema);
+            LOG_DEBUG_F("the key %s = float %f\n", key.c_str(), (float) *(entry.second));
+        }
 
-            *(entry.second) = val;
+        // ---------------------------------- NATURALNUMBER ------------------------------------
+        for (auto& entry : naturalNumberConfigTypeMap)
+        {
+            const std::string& key = entry.first;
+            json::QuickInterpreter schema = jsonSchemaBase[key];
+            int val = 0;
 
-            LOG_DEBUG_F("the key %s = double %f\n", key.c_str(), *(entry.second));
+            // Check if parameter was specified in input json
+            LOG_DEBUG_F( "useDefaults = %d\n", _useDefaults );
+            if( inputJson->Exist(key) )
+            {
+                // get specified configuration parameter
+                val = (int) GET_CONFIG_INTEGER( inputJson, key.c_str() );
+                *(entry.second) = val;
+                EnforceParameterRange<int>( key, val, schema);
+            }
+            else
+            {
+                if( _useDefaults )
+                {
+                    // using the default value
+                    val = (int)schema["default"].As<json::Number>();
+                    LOG_INFO_F( "Using the default value ( \"%s\" : %f ) for unspecified parameter.\n", key.c_str(), val );
+                    *(entry.second) = val;
+                }
+                else 
+                {
+                    handleMissingParam( key );
+                }
+            }
+
+            LOG_DEBUG_F("the key %s = int %f\n", key.c_str(), (int) *(entry.second));
         }
 
         // ---------------------------------- STRING ------------------------------------
@@ -707,39 +975,48 @@ namespace Kernel
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
             std::string val = schema["default"].As<json::String>();
-            if ( !inputJson->Exist(key) && _useDefaults )
+            if( inputJson->Exist(key) )
             {
-                LOG_INFO_F( "Using the default value ( \"%s\" : \"%s\" ) for unspecified parameter.\n", key.c_str(), val.c_str() );
-                if( _track_missing )
-                {
-                    missing_parameters_set.insert(key);
-                }
+                *(entry.second) = (std::string) GET_CONFIG_STRING( inputJson, (entry.first).c_str() );
             }
             else
             {
-                val = (std::string) GET_CONFIG_STRING( inputJson, (entry.first).c_str() );
+                if( _useDefaults )
+                {
+                    val = (std::string)schema["default"].As<json::String>();
+                    LOG_INFO_F( "Using the default value ( \"%s\" : \"%s\" ) for unspecified parameter.\n", key.c_str(), val.c_str() );
+                    *(entry.second) = val;
+                }
+                else
+                {
+                    handleMissingParam( key );
+                }
             }
-            *(entry.second) = val;
         }
 
         for (auto& entry : conStringConfigTypeMap)
         {
             const std::string& key = entry.first;
+            entry.second->parameter_name = key ;
             json::QuickInterpreter schema = jsonSchemaBase[key];
             std::string val = schema["default"].As<json::String>();
-            if ( !inputJson->Exist(key) && _useDefaults )
+            if( inputJson->Exist(key) )
             {
-                LOG_INFO_F( "Using the default value ( \"%s\" : %f ) for unspecified parameter.\n", key.c_str(), val.c_str() );
-                if( _track_missing )
-                {
-                    missing_parameters_set.insert(key);
-                }
+                *(entry.second) = (std::string) GET_CONFIG_STRING( inputJson, (entry.first).c_str() );
             }
             else
             {
-                val = (std::string) GET_CONFIG_STRING( inputJson, (entry.first).c_str() );
+                if( _useDefaults )
+                {
+                    val = (std::string)schema["default"].As<json::String>();
+                    LOG_INFO_F( "Using the default value ( \"%s\" : \"%s\" ) for unspecified parameter.\n", key.c_str(), val.c_str() );
+                    *(entry.second) = val;
+                }
+                else
+                {
+                    handleMissingParam( key );
+                }
             }
-            *(entry.second) = val;
         }
 
         // ---------------------------------- SET of STRINGs ------------------------------------
@@ -747,24 +1024,22 @@ namespace Kernel
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
-            if ( !inputJson->Exist(key) )
-            {
-                if( _useDefaults )
-                {
-                    // using the default value
-                    auto val = schema["default"].As<json::Array>();
-                    LOG_INFO_F( "Using the default value ( \"%s\" : <empty string set> ) for unspecified string set parameter.\n", key.c_str() );
-                }
-
-                if( _track_missing )
-                {
-                    missing_parameters_set.insert(key);
-                }
-            }
-            else
+            if ( inputJson->Exist(key) )
             {
                 *(entry.second) = GET_CONFIG_STRING_SET( inputJson, (entry.first).c_str() );
-                // TODO: validate against value_source
+            }
+            else
+            { 
+                if( _useDefaults )
+                {
+                    //auto val = schema["default"].As<json::Array>();
+                    //LOG_INFO_F( "Using the default value ( \"%s\" : <empty string set> ) for unspecified string set parameter.\n", key.c_str() );
+                    //*(entry.second) = val;
+                }
+                else
+                {
+                    handleMissingParam( key );
+                }
             }
         }
 
@@ -773,7 +1048,11 @@ namespace Kernel
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
-            if ( !inputJson->Exist(key) )
+            if ( inputJson->Exist(key) )
+            {
+                *(entry.second) = GET_CONFIG_VECTOR_STRING( inputJson, (entry.first).c_str() );
+            }
+            else
             {
                 if( _useDefaults )
                 {
@@ -786,18 +1065,15 @@ namespace Kernel
                     missing_parameters_set.insert(key);
                 }
             }
-            else
-            {
-                *(entry.second) = GET_CONFIG_VECTOR_STRING( inputJson, (entry.first).c_str() );
-            }
+
             auto allowed_values = vectorStringConstraintsTypeMap[ key ];
             for( auto &candidate : *(entry.second) )
             {
                 if( allowed_values->size() > 0 && std::find( allowed_values->begin(), allowed_values->end(), candidate ) == allowed_values->end() )
                 {
                     std::ostringstream msg;
-                    msg << "Constrained strings (dynamic enum) with specified value " 
-                        << candidate 
+                    msg << "Constrained strings (dynamic enum) with specified value "
+                        << candidate
                         << " invalid. Possible values are: ";
                     for( auto value: *allowed_values )
                     {
@@ -813,16 +1089,34 @@ namespace Kernel
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
-            if ( !inputJson->Exist(key) && _track_missing )
-            {
-                missing_parameters_set.insert(key);
-            }
-            else
+            if( inputJson->Exist(key) )
             {
                 std::vector<float> configValues = GET_CONFIG_VECTOR_FLOAT( inputJson, (entry.first).c_str() );
                 *(entry.second) = configValues;
 
                 EnforceVectorParameterRanges<float>(key, configValues, schema);
+            }
+            else
+            {
+                handleMissingParam( key );
+            }
+        }
+
+        //----------------------------------- VECTOR of INTs ------------------------------
+        for (auto& entry : vectorIntConfigTypeMap)
+        {
+            const std::string& key = entry.first;
+            json::QuickInterpreter schema = jsonSchemaBase[key];
+            if( inputJson->Exist(key) )
+            {
+                std::vector<int> configValues = GET_CONFIG_VECTOR_INT( inputJson, (entry.first).c_str() );
+                *(entry.second) = configValues;
+
+                EnforceVectorParameterRanges<int>(key, configValues, schema);
+            }
+            else
+            {
+                handleMissingParam( key );
             }
         }
 
@@ -831,11 +1125,7 @@ namespace Kernel
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
-            if ( !inputJson->Exist(key) && _track_missing )
-            {
-                missing_parameters_set.insert(key);
-            }
-            else
+            if( inputJson->Exist(key) )
             {
                 std::vector<std::vector<float>> configValues = GET_CONFIG_VECTOR2D_FLOAT( inputJson, (entry.first).c_str() );
                 *(entry.second) = configValues;
@@ -845,16 +1135,42 @@ namespace Kernel
                     EnforceVectorParameterRanges<float>(key, values, schema);
                 }
             }
+            else
+            {
+                handleMissingParam( key );
+            }
         }
+
+        //----------------------------------- VECTOR VECTOR of INTs ------------------------------
+        for (auto& entry : vector2dIntConfigTypeMap)
+        {
+            const std::string& key = entry.first;
+            json::QuickInterpreter schema = jsonSchemaBase[key];
+            if( inputJson->Exist(key) )
+            {
+                std::vector<std::vector<int>> configValues = GET_CONFIG_VECTOR2D_INT( inputJson, (entry.first).c_str() );
+                *(entry.second) = configValues;
+
+                for( auto values : configValues )
+                {
+                    EnforceVectorParameterRanges<int>(key, values, schema);
+                }
+            }
+            else
+            {
+                handleMissingParam( key );
+            }
+        }
+/////////////////// END FIX BOUNDARY
 
         // Let's see if we can iterate over our template base class generic container!
         //std::cout << "IJsonConfigurable::generic_container.size() = " << IJsonConfigurable::generic_container.size() << std::endl;
         for( auto iter = IJsonConfigurable::generic_container.begin();
-			 IJsonConfigurable::generic_container.size() > 0;
-			 )
+             IJsonConfigurable::generic_container.size() > 0;
+             )
         {
             auto temp_cont = *iter;
-			IJsonConfigurable::generic_container.erase( iter++ );
+            IJsonConfigurable::generic_container.erase( iter++ );
             temp_cont.second->Configure( inputJson );
         }
 
@@ -870,7 +1186,7 @@ namespace Kernel
                       ++data )
             {
                 float year = atof( data->name.c_str() );
-                auto tvcs = inputJson->As< json::Object >()[ key ]; 
+                auto tvcs = inputJson->As< json::Object >()[ key ];
                 float constant = (float) ((json::QuickInterpreter( tvcs ))[ data->name ].As<json::Number>());
                 LOG_DEBUG_F( "Inserting year %f and delay %f into map.\n", year, constant );
                 pFFMap->insert( std::make_pair( year, constant ) );
@@ -888,11 +1204,26 @@ namespace Kernel
                       data != tvcs_jo.End();
                       ++data )
             {
-                auto tvcs = inputJson->As< json::Object >()[ key ]; 
+                auto tvcs = inputJson->As< json::Object >()[ key ];
                 float value = (float) ((json::QuickInterpreter( tvcs ))[ data->name ].As<json::Number>());
                 LOG_DEBUG_F( "Inserting string %s and value %f into map.\n", data->name.c_str(), value );
                 pSFMap->insert( std::make_pair( data->name, value ) );
             }
+        }
+
+        // ---------------------------------- JsonConfigurable MAP ------------------------------------
+        for (auto& entry : jcTypeMap)
+        {
+            // NOTE that this could be used for general float to float, but right now hard-coding year-as-int to float
+            const auto & key = entry.first;
+            JsonConfigurable * pJc = entry.second;
+
+            Configuration * p_config = Configuration::CopyFromElement( (*inputJson)[key] );
+
+            pJc->Configure( p_config );
+
+            delete p_config ;
+            p_config = nullptr;
         }
 
         return true;
@@ -911,22 +1242,25 @@ namespace Kernel
         static JsonConfigurable::name2CreatorMapType name2CreatorMap;
         return name2CreatorMap;
     }
-    
+
     JsonConfigurable::Registrator::Registrator( const char* classname, get_schema_funcptr_t gs_callback )
     {
         const std::string stored_class_name = std::string( classname );
         get_registration_map()[ stored_class_name ] = gs_callback;
     }
-
-    // IJsonSerializable Interfaces Implementation
-    void JsonConfigurable::JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const
-    {
-        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Nothing to serialize because IJsonSerializable has to be implemented by each individual class for actual serialization." );
-    }
-
-    void JsonConfigurable::JDeserialize( IJsonObjectAdapter* root, JSerializer* helper )
-    {
-        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Nothing to deserialize because IJsonSerializable has to be implemented by each individual class for actual deserialization." );
-    }
-
 }
+
+#if 0
+namespace Kernel
+{
+    namespace jsonConfigurable
+    {
+        template <class Archive>
+        void serialize( Archive &ar, Kernel::jsonConfigurable::ConstrainedString& cs, const unsigned int file_version )
+        {
+          ar & cs.constraints;
+          ar & cs.constraint_param;
+        }
+    }
+}
+#endif

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -15,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <map>
 #include "BoostLibWrapper.h"
 
-#include "Node.h"
+#include "INodeContext.h"
 #include "SpatialReportTB.h"
 #include "IndividualTB.h"
 #include "Sugar.h"
@@ -75,7 +75,7 @@ void SpatialReportTB::populateChannelInfos(tChanInfoMap &channel_infos)
 
 void
 SpatialReportTB::LogIndividualData(
-    Kernel::IndividualHuman * individual
+    Kernel::IIndividualHuman* individual
 )
 {
     LOG_DEBUG( "LogIndividualData in SpatialReportTB\n" );
@@ -134,7 +134,7 @@ SpatialReportTB::LogNodeData(
 {
     SpatialReport::LogNodeData(pNC);
 
-    int nodeid = pNC->GetExternalID();
+    auto nodeid = pNC->GetExternalID();
 
     if(active_tb_prevalence_info.enabled)
     {
@@ -185,19 +185,26 @@ SpatialReportTB::postProcessAccumulatedData()
     SpatialReport::postProcessAccumulatedData();
 
     // Normalize TB-specific summary data channels
-    normalizeChannel(active_tb_prevalence_info.name, population_info.name);
-    normalizeChannel(latent_tb_prevalence_info.name, population_info.name);
-    normalizeChannel(mdr_tb_prevalence_info.name, population_info.name);
-    normalizeChannel(active_mdr_tb_prevalence_info.name, population_info.name);
-    normalizeChannel(tb_immune_fraction_info.name, population_info.name);
+    if( active_tb_prevalence_info.enabled )
+        normalizeChannel(active_tb_prevalence_info.name, population_info.name);
+
+    if( latent_tb_prevalence_info.enabled )
+        normalizeChannel(latent_tb_prevalence_info.name, population_info.name);
+
+    if( mdr_tb_prevalence_info.enabled )
+        normalizeChannel(mdr_tb_prevalence_info.name, population_info.name);
+
+    if( active_mdr_tb_prevalence_info.enabled )
+        normalizeChannel(active_mdr_tb_prevalence_info.name, population_info.name);
+
+    if( tb_immune_fraction_info.enabled )
+        normalizeChannel(tb_immune_fraction_info.name, population_info.name);
 }
 
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(SpatialReport)
+#if 0
 template<class Archive>
 void serialize(Archive &ar, SpatialReportTB& report, const unsigned int v)
 {
-    boost::serialization::void_cast_register<SpatialReportTB,IReport>();
     ar & report.timesteps_reduced;
     ar & report.channelDataMap;
     ar & report._nrmSize;

@@ -9,17 +9,17 @@
 
         "_____________DEMOGRAPHICS___________": "",
         "Base_Population_Scale_Factor": 0.0001,
+        "Demographics_Filenames": [
+            "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json",
+            "../input/PFA_overlay.json",
+            "PFA_overlay_rates.json"
+        ],
         "Enable_Birth": 0,
         "x_Other_Mortality": 0,
 
         "_____________INTRAHOST___________": "",
 
         "_____________TRANSMISSION___________": "",
-
-        "_____________NETWORK___________": "",
-        "Transitory_Formation_Rate_Heterosexual": 0.0,
-        "Informal_Formation_Rate_Heterosexual": 0.0,
-        "Marriage_Formation_Rate_Heterosexual": 0.0,
 
         "_____________REPORTING___________": "",
         "Report_Event_Recorder": 1,

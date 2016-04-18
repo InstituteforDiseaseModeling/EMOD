@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -50,15 +50,13 @@ namespace Kernel
         LOG_DEBUG("Positive test Result function\n");
 
         // Apply diagnostic test with given specificity/sensitivity
-        float rand = parent->GetRng()->e();
 
-        IIndividualHumanTB* tb_ind = NULL;
+        IIndividualHumanTB* tb_ind = nullptr;
         if(parent->QueryInterface( GET_IID( IIndividualHumanTB ), (void**)&tb_ind ) != s_OK)
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanTB", "IIndividualHuman" );
         }
         bool activeinf = tb_ind->HasActiveInfection() && !tb_ind->HasActivePresymptomaticInfection();
-        bool smearpos = tb_ind->IsSmearPositive();
 
         // always return negative if the person is not infected, intended to be used with GroupEventCoordinator
         // TODO: allow to distribute Smear diagnostic to non-infected individuals?
@@ -66,27 +64,19 @@ namespace Kernel
         if (activeinf)
         {
             // True positive (sensitivity), or False positive (1-specificity)
-            bool positiveTest = ( smearpos && (rand < base_sensitivity) ) || ( !smearpos && (rand > base_specificity) );
+            bool smearpos = tb_ind->IsSmearPositive();
+            bool positiveTest = applySensitivityAndSpecificity( smearpos );
             return positiveTest;
         }
         else
         { return false;}
     }
 
+    REGISTER_SERIALIZABLE(SmearDiagnostic);
 
-}
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::SmearDiagnostic)
-
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, SmearDiagnostic& obj, const unsigned int v)
+    void SmearDiagnostic::serialize(IArchive& ar, SmearDiagnostic* obj)
     {
-
-        boost::serialization::void_cast_register<SmearDiagnostic, IDistributableIntervention>();
-
-        ar & boost::serialization::base_object<Kernel::SimpleDiagnostic>(obj);
+        SimpleDiagnostic::serialize( ar, obj );
+        // No SmearDiagnostic specific fields yet.
     }
 }
-#endif

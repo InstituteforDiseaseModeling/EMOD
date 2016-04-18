@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -37,6 +37,9 @@ static const char* _yfi = "Prevalence (Females, 15-49)";
 static const char* _pdi = "Post-Debut Population";
 static const char* _num_circ_males_label = "Number of Circumcised Males" ;
 
+static const char* _ymc = "Total Number of Males (15-49)" ;
+static const char* _yfc = "Total Number of Females (15-49)" ;
+
 static NaturalNumber num_adults_not_related = 0;
 
     ReportSTI::ReportSTI()
@@ -57,6 +60,10 @@ static NaturalNumber num_adults_not_related = 0;
         , num_sexually_active_prevalance(0)
         , num_post_debut_pop(0)
         , num_circumcised_males(0)
+        , youngMaleInfected(0.0f)
+        , youngMaleCount(0.0f)
+        , youngFemaleInfected(0.0f)
+        , youngFemaleCount(0.0f)
     {
         //std::cout << "ReportSTI created." << std::endl;
     }
@@ -82,32 +89,12 @@ static NaturalNumber num_adults_not_related = 0;
     }
 
     void
-    ReportSTI::LogNodeData(
-        INodeContext* pNC
-    )
-    {
-        Report::LogNodeData( pNC );
-
-        const INodeSTI* pSTINode = NULL;
-        if( pNC->QueryInterface( GET_IID(INodeSTI), (void**)&pSTINode ) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNC", "INodeSTI", "INodeContext" );
-        }
-        Accumulate( _sexually_active_universe_label, num_sexually_active_universe );
-    }
-
-static NonNegativeFloat youngMaleInfected = 0.0f;
-static NonNegativeFloat youngMaleDenom = 0.0f;
-static NonNegativeFloat youngFemaleInfected = 0.0f;
-static NonNegativeFloat youngFemaleDenom = 0.0f;
-
-    void
     ReportSTI::LogIndividualData(
-        IndividualHuman* individual
+        IIndividualHuman* individual
     )
     {
         Report::LogIndividualData( individual );
-        IIndividualHumanSTI* sti_individual = NULL;
+        IIndividualHumanSTI* sti_individual = nullptr;
         if( individual->QueryInterface( GET_IID( IIndividualHumanSTI ), (void**)&sti_individual ) != s_OK )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndividualSTI", "IndividualHuman" );
@@ -123,7 +110,7 @@ static NonNegativeFloat youngFemaleDenom = 0.0f;
         {
             if( individual->GetGender() == Gender::MALE )
             {
-                youngMaleDenom += mcw;
+                youngMaleCount += mcw;
                 if( individual->IsInfected() )
                 {
                     youngMaleInfected += mcw;
@@ -131,7 +118,7 @@ static NonNegativeFloat youngFemaleDenom = 0.0f;
             }
             else
             {
-                youngFemaleDenom += mcw;
+                youngFemaleCount += mcw;
                 if( individual->IsInfected() )
                 {
                     youngFemaleInfected += mcw;
@@ -210,14 +197,17 @@ static NonNegativeFloat youngFemaleDenom = 0.0f;
         Accumulate( _active_transitory,   num_transitory );
         Accumulate( _active_informal,     num_informal );
         Accumulate( _active_marital,      num_marital );
-        Accumulate( _ymi, youngMaleInfected/youngMaleDenom );
+        Accumulate( _ymi, youngMaleInfected );
+        Accumulate( _ymc, youngMaleCount );
+        Accumulate( _yfi, youngFemaleInfected );
+        Accumulate( _yfc, youngFemaleCount );
         Accumulate( _num_circ_males_label, num_circumcised_males );
+        Accumulate( _sexually_active_universe_label, num_sexually_active_universe );
 
         youngMaleInfected = 0;
-        youngMaleDenom = 0;
-        Accumulate( _yfi, youngFemaleInfected/youngFemaleDenom );
+        youngMaleCount = 0;
         youngFemaleInfected = 0;
-        youngFemaleDenom = 0;
+        youngFemaleCount = 0;
 
         Accumulate( _sexually_active_prevalence_label, num_sexually_active_prevalance ); 
         Accumulate( _pdi, num_post_debut_pop );
@@ -240,10 +230,14 @@ static NonNegativeFloat youngFemaleDenom = 0.0f;
     {
         Report::postProcessAccumulatedData();
         normalizeChannel( _sexually_active_prevalence_label, _sexually_active_universe_label );
+        normalizeChannel( _ymi, _ymc );
+        normalizeChannel( _yfi, _yfc );
         channelDataMap.RemoveChannel( _new_reported_infections_label );
         channelDataMap.RemoveChannel( _cum_reported_infections_label );
         channelDataMap.RemoveChannel( _hum_infectious_res_label      );
         channelDataMap.RemoveChannel( _log_prev_label                );
-        channelDataMap.RemoveChannel( _prob_new_infection_label      );
+        channelDataMap.RemoveChannel( _infection_rate_label          );
+        channelDataMap.RemoveChannel( _ymc      );
+        channelDataMap.RemoveChannel( _yfc      );
     }
 }

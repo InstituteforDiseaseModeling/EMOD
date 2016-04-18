@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<Filter Include="Header Files">
+			<UniqueIdentifier>{7b42d31d-d53c-4868-8b92-ca2bc9fc052f}</UniqueIdentifier>
+			<Extensions>h;hpp;hxx;hm;inl</Extensions>
+		</Filter>
+		<Filter Include="Local Headers">
+			<UniqueIdentifier>{7b42d31d-d53c-4868-8b92-ca2bc9fc052f}</UniqueIdentifier>
+			<Extensions>h;hpp;hxx;hm;inl</Extensions>
+		</Filter>
+		<Filter Include="Source Files">
+			<UniqueIdentifier>{7b42d31d-d53c-4868-8b92-ca2bc9fc052f}</UniqueIdentifier>
+			<Extensions>cpp;c;cxx;l;y;def;odl;idl;hpj;bat</Extensions>
+		</Filter>
+		<Filter Include="Source Files\..">
+			<UniqueIdentifier>{F5C28AFC-909B-4C09-9A80-0ED49EDEE137}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\..\rapidjson">
+			<UniqueIdentifier>{C20F489D-050A-8B2D-1F6F-D36475D387F9}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\..\rapidjson\modp">
+			<UniqueIdentifier>{C55FA869-D1FD-E993-B11A-B4058CEB23ED}</UniqueIdentifier>
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="BoostLibWrapper.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="Configuration.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="ConfigurationImpl.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="Configure.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="EnumSupport.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="Environment.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="FactorySupport.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="InterpolatedValueMap.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="ISupports.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="Log.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="MathFunctions.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="Profile.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="ProgVersion.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="SimpleTypemapRegistration.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="StatusReporter.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="Sugar.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="ValidationLog.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="version_info.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="stdafx.h">
+			<Filter>Local Headers</Filter>
+		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\rapidjson\modp\modp_numtoa.cpp">
+			<Filter>Source Files\..\rapidjson\modp</Filter>
+		</ClCompile>
+		<ClCompile Include="Configuration.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="Configure.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="Coredump.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="Environment.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="Exceptions.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="FileSystem.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="IdmDateTime.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="InterpolatedValueMap.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="ISupports.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="JsonObject.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="Log.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="MathFunctions.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="ProgramOptions.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="ProgVersion.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="RANDOM.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="RapidJsonImpl.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="Serializer.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="StatusReporter.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="stdafx.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="suids.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="ValidationLog.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+	</ItemGroup>
+</Project>

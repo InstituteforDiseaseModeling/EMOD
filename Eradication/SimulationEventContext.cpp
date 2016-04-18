@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -19,6 +19,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "Log.h"
 #include "Configure.h"
+#include "InterventionFactory.h"
 
 /*
     Notes on extending ECH functionality
@@ -42,7 +43,7 @@ namespace Kernel
     }
 
     SimulationEventContextHost::SimulationEventContextHost()
-    : sim(NULL)
+    : sim(nullptr)
     {
     }
 
@@ -113,8 +114,8 @@ namespace Kernel
     void SimulationEventContextHost::Update( float dt )
     {
         // check the queue, execute pending events for this timestep
-        LOG_DEBUG_F("sim->GetSimulationTime() = %f, event_queue.top()->GetStartDay() = %f\n", (float) sim->GetSimulationTime().time, event_queue.empty() ? -1 : event_queue.top()->GetStartDay());
-        while (!(event_queue.empty()) && ((float)sim->GetSimulationTime().time >= event_queue.top()->GetStartDay()))
+        LOG_DEBUG_F("sim->GetSimulationTime() = %f, event_queue.top()->GetStartDay() = %f\n", float(sim->GetSimulationTime().time), event_queue.empty() ? -1 : event_queue.top()->GetStartDay());
+        while (!(event_queue.empty()) && (float(sim->GetSimulationTime().time) >= event_queue.top()->GetStartDay()))
         {
             CampaignEvent *next_event = event_queue.top();
             LOG_INFO("Time for campaign event. Calling Dispatch...\n");
@@ -148,7 +149,7 @@ namespace Kernel
             }
             else
             {
-                iterator++;
+                ++iterator;
             }
         }
     }
@@ -170,7 +171,7 @@ namespace Kernel
             if( campaign->Exist( "Use_Defaults" ) )
             {
                 // store value of Use_Defaults from campaign.json in InterventionFactory.
-                InterventionFactory::useDefaults = (bool) (*campaign)["Use_Defaults"].As< json::Number >();
+                InterventionFactory::useDefaults = ((*campaign)["Use_Defaults"].As< json::Number >() != 0);
                 // We're about to parse some campaign event stuff from campaign.json. Set JC::_useDefaults.
                 JsonConfigurable::_useDefaults = InterventionFactory::useDefaults;
                 LOG_DEBUG_F( "UseDefault values for campaign.json (when key not found) specified in campaign.json as: %d.\n", JsonConfigurable::_useDefaults );
@@ -196,6 +197,8 @@ namespace Kernel
                         LOG_WARN_F("Discarding old event for t=%0.1f.\n", ce->GetStartDay());
                         delete event_config;
                         delete ce;
+                        event_config = nullptr;
+                        ce = nullptr;
                         continue;
                     }
                     ce->SetEventIndex(k);
@@ -255,14 +258,6 @@ namespace Kernel
             event_coordinator->SetContextTo(this);
         }
     }
-    
-
- 
-#if USE_BOOST_SERIALIZATION
-
-    template void serialize(boost::archive::binary_oarchive &ar, SimulationEventContextHost& sech, unsigned int);
-    template void serialize(boost::archive::binary_iarchive &ar, SimulationEventContextHost& sech, unsigned int);
-#endif
 
     bool SimulationEventContextHost::campaign_event_comparison::operator()(const CampaignEvent* _Left, const CampaignEvent* _Right) const
     {    // Apply operator< to operands:
@@ -271,7 +266,6 @@ namespace Kernel
         return ( (_Left->GetStartDay() > _Right->GetStartDay()) || 
                  (_Left->GetStartDay() == _Right->GetStartDay() && _Left->GetEventIndex() > _Right->GetEventIndex()) );
     }
-
 }
 
 namespace Kernel {
@@ -288,45 +282,17 @@ namespace Kernel {
                  (_Left->GetStartDay() == _Right->GetStartDay() && _Left->GetEventIndex() > _Right->GetEventIndex()) );
     }
 
+#if 0
     template<class Archive>
     void serialize(Archive &ar, SimulationEventContextHost& sech, const unsigned int v)
     {
         ar & sech.sim; // hope this works!
         ar & sech.event_coordinators;
-#if 0
-//#ifdef WIN32
-        // HACK: should really use a container like the fabled boost::priority_queue so I dont have to do this manually
-        if (!typename Archive::is_loading())
-        {
-            size_t queue_length = sech.event_queue.size();
-            ar & queue_length;
-
-            std::priority_queue<CampaignEvent*, std::vector<CampaignEvent*>, campaign_event_comparison> queue_copy(sech.event_queue); // copy the queue so the existing one isnt destroyed
-            while (!queue_copy.empty())
-            {
-                ar & queue_copy.top();
-                queue_copy.pop(); 
-            }
-
-        } else
-        {
-            size_t queue_length = 0;
-            ar & queue_length;
-            for (int k = 0; k < queue_length; k++)
-            {
-                CampaignEvent *ce = _new_ CampaignEvent();
-                ar & ce;
-                sech.event_queue.push(ce);
-            }
-
-            sech.propagateContextToDependents(); // NB: this could also be triggered by a SetSimulation() call, which might be necessary if duplicate pointer tracking fails on this class too
-        }
-#else
         ar & sech.campaign_filename;
         if (typename Archive::is_loading())
         {
             sech.LoadCampaignFromFile(sech.campaign_filename);
         }
-#endif
     }
+#endif
 }

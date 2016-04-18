@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -27,6 +27,11 @@ class ValidationLog;
 class RANDOMBASE;
 class StatusReporter;
 
+namespace IdmMpi
+{
+    class MessageInterface;
+}
+
 
 class IDMAPI Environment
 {
@@ -35,13 +40,13 @@ public:
     {
         int NumTasks;
         int Rank;
-        mutable boost::mpi::communicator *World;
-        mutable boost::mpi::environment *Environment;
+        IdmMpi::MessageInterface* p_idm_mpi;
     } MPI;
 
     SimpleLogger *Log;
     Configuration *Config;
     void* SimConfig;
+    void* pPythonSupport;
     StatusReporter * Status_Reporter;
     
 #pragma warning( push )
@@ -60,8 +65,8 @@ public:
 
     // Sets up the environment for this process. Returns false if something went wrong
     static bool Initialize(
-        boost::mpi::environment *mpienv,
-        boost::mpi::communicator *world,
+        IdmMpi::MessageInterface* pMpi,
+        void* p_python_support,
         std::string configFileName,
         std::string inputPath,
         std::string outputPath,
@@ -73,7 +78,7 @@ public:
     // Cleans up open files, handles, memory, etc held by the environment
     static void Finalize();
 
-    static void setLogger(SimpleLogger* log) { if(localEnv == NULL) localEnv = new Environment();  localEnv->Log = log; }
+    static void setLogger(SimpleLogger* log) { if(localEnv == nullptr) localEnv = new Environment();  localEnv->Log = log; }
     static const Configuration* getConfiguration() { return localEnv->Config ; }
     static Configuration* CopyFromElement( const json::Element& rElement );
     static Configuration* LoadConfigurationFile( const std::string& rFileName );

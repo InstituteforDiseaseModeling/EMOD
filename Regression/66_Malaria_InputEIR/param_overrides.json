@@ -58,7 +58,7 @@
         "Enable_Birth": 1, 
         "Enable_Demographics_Reporting": 0, 
         "Enable_Demographics_Other": 1, 
-        "Demographics_Filename": "demographics/calibration_challenge.json", 
+        "Demographics_Filenames": ["demographics/calibration_challenge.json"], 
         "Enable_Demographics_Birth": 1
     }, 
     "PRIMARY": {

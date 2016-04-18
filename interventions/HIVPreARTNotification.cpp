@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -16,7 +16,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "STIInterventionsContainer.h"
 
-#include "HIVInterventionsContainer.h" // for time-date util function and access into IHIVCascadeOfCare
+#include "IHIVInterventionsContainer.h" // for time-date util function and access into IHIVCascadeOfCare
 #include "IIndividualHumanHIV.h"
 
 static const char * _module = "HIVPreARTNotification";
@@ -80,17 +80,14 @@ namespace Kernel
         // Nothing to do for this intervention, which doesn't have ongoing effects
         expired = true;
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::HIVPreARTNotification)
+    REGISTER_SERIALIZABLE(HIVPreARTNotification);
 
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, HIVPreARTNotification& obj, const unsigned int v)
+    void HIVPreARTNotification::serialize(IArchive& ar, HIVPreARTNotification* obj)
     {
-        boost::serialization::void_cast_register<HIVPreARTNotification, IDistributableIntervention>();
-        ar & boost::serialization::base_object<Kernel::BaseIntervention>(obj);
+        BaseIntervention::serialize( ar, obj );
+        HIVPreARTNotification& note = *obj;
+
+        ar.labelElement("startingPreART") & note.startingPreART;
     }
 }
-#endif

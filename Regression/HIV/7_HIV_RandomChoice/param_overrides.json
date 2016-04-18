@@ -1,5 +1,5 @@
 {
-	"Default_Config_Path": "defaults\\hiv_default_config.json", 
+	"Default_Config_Path": "defaults/hiv_default_config.json", 
 	"parameters": {
 
 		"____________SIMULATION___________": "",
@@ -16,10 +16,9 @@
         "Enable_Birth": 0,
 
 		"____________REPORTING___________": "",
-		"Enable_Demographics_Reporting": 1,
 		"Report_HIV_Infection": 1,
-		"Report_HIV_Infection_Start_Year": 0,
-		"Report_HIV_Infection_Stop_Year": 9999,
+		"Report_HIV_Infection_Start_Year": 1900,
+		"Report_HIV_Infection_Stop_Year": 2100,
 		"Report_Event_Recorder": 1, 
 		"Report_Event_Recorder_Ignore_Events_In_List": 0, 
 		"Report_Event_Recorder_Events": [

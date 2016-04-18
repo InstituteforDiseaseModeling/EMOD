@@ -15,7 +15,6 @@
                     "Genome": 0,
                     "Outbreak_Source": "PrevalenceIncrease"
                 },
-                "Number_Distributions": 100,
                 "Number_Repetitions": 1,
                 "Property_Restrictions": [],
                 "Target_Age_Min": 30,

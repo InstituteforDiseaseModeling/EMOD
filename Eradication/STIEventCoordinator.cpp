@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -18,7 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ConfigurationImpl.h"
 #include "FactorySupport.h"
 #include "InterventionFactory.h"
-#include "Individual.h"
+#include "IIndividualHuman.h"
 #include "NodeEventContext.h"
 #include "Log.h"
 #include "IIndividualHumanSTI.h"
@@ -164,24 +164,4 @@ namespace Kernel
         }
         return ret;
     }
-
-
 }
-#if USE_BOOST_SERIALIZATION
-// TODO: Consolidate with serialization code in header.
-#include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT(Kernel::STIInterventionDistributionEventCoordinator);
-namespace Kernel
-{
-
-    template<class Archive>
-    void serialize(Archive &ar, STIInterventionDistributionEventCoordinator &ec, const unsigned int v)
-    {
-        //ar & ec.coverage;
-
-        // need to save the list of suids and restore from them, rather than saving the context pointers
-        //ar & cached_nodes;
-    }
-}
-
-#endif

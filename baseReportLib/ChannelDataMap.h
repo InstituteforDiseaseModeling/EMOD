@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -76,11 +76,12 @@ public:
     virtual void addDerivedCumulativeSummaryChannel( const std::string& channel_name, const std::string& channel_cumulative_name );
 
     void SetAugmentor( IChannelDataMapOutputAugmentor* pAugmentor ) { p_output_augmentor = pAugmentor; }
-private:
+
     typedef std::map<  std::string, channel_data_t > channel_data_map_t;
     typedef std::pair< std::string, channel_data_t > channel_data_map_element_t;
 
     channel_data_map_t channel_data_map;
+private:
     int timesteps_reduced; // number of time steps reduced so far
     IChannelDataMapOutputAugmentor* p_output_augmentor ;
 };

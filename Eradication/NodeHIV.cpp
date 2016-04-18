@@ -1,20 +1,17 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 
 #include "NodeHIV.h"
-#include "Debug.h"
 
 #include "IndividualHIV.h"
-#include "RelationshipReporting.h"
-#include "SimulationSTI.h"
 
 static const char * _module = "NodeHIV";
 
@@ -46,7 +43,7 @@ namespace Kernel
         return newnode;
     }
 
-    IndividualHuman *NodeHIV::createHuman(suids::suid suid, float monte_carlo_weight, float initial_age, int gender, float above_poverty)
+    IIndividualHuman* NodeHIV::createHuman( suids::suid suid, float monte_carlo_weight, float initial_age, int gender, float above_poverty)
     {
         return IndividualHumanHIV::CreateHuman(this, suid, monte_carlo_weight, initial_age, gender,  above_poverty);
     }
@@ -62,21 +59,12 @@ namespace Kernel
         return terminated_relationships;
     }
 */
-}
 
-#if USE_BOOST_SERIALIZATION
-#include "IndividualHIV.h"
-BOOST_CLASS_EXPORT(Kernel::NodeHIV)
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive & ar, NodeHIV& node, const unsigned int file_version)
+    REGISTER_SERIALIZABLE(NodeHIV);
+
+    void NodeHIV::serialize(IArchive& ar, NodeHIV* obj)
     {
-        // Register derived types
-        //ar.template register_type<IndividualHumanHIV>();
-
-        // Serialize base class
-        ar &boost::serialization::base_object<Node>(node);    
+        NodeSTI::serialize(ar, obj);
+        // clorton TODO
     }
 }
-#endif
-

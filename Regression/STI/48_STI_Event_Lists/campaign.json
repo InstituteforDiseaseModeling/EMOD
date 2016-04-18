@@ -41,6 +41,7 @@
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "STIBarrier",
+                         "Cost_To_Consumer": 1.0,
                          "Relationship_Type": "TRANSITORY",
                          "Rate": 1,
                          "Early": 1.0,

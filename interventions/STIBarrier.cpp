@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -17,6 +17,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "STIInterventionsContainer.h"  // for ISTIBarrierConsumer methods
 #include "IRelationship.h"
+#include "Sigmoid.h"
 
 static const char* _module = "STIBarrier";
 
@@ -34,9 +35,10 @@ namespace Kernel
     {
         LOG_DEBUG_F( "STIBarrier\n" );
         initSimTypes( 2, "STI_SIM", "HIV_SIM" );
+        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, STI_Barrier_Cost_DESC_TEXT, 0, 999999, 10.0);
         initConfigTypeMap( "Early", &early, STI_Barrier_Early_DESC_TEXT, 0.0, 1.0, 1.0 );
         initConfigTypeMap( "Late", &late, STI_Barrier_Late_DESC_TEXT, 0.0, 1.0, 1.0 );
-        initConfigTypeMap( "MidYear", &midyear, STI_Barrier_MidYear_DESC_TEXT, 1900, 2100, 2000 );
+        initConfigTypeMap( "MidYear", &midyear, STI_Barrier_MidYear_DESC_TEXT, MIN_YEAR, MAX_YEAR, 2000 );
         initConfigTypeMap( "Rate", &rate, STI_Barrier_Rate_DESC_TEXT, -100.0, 100.0, 1.0 );
     }
 
@@ -68,11 +70,7 @@ namespace Kernel
     void STIBarrier::Update( float dt )
     {
         LOG_DEBUG_F( "%s\n", __FUNCTION__ );
-        SigmoidConfig probs;
-        probs.early = early;
-        probs.late = late;
-        probs.midyear = midyear;
-        probs.rate = rate;
+        Sigmoid probs( early, late, midyear, rate );
         ibc->UpdateSTIBarrierProbabilitiesByType( rel_type, probs );
         expired = true;
     }
@@ -119,19 +117,19 @@ namespace Kernel
         return status;
 
     }*/
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::STIBarrier)
+    REGISTER_SERIALIZABLE(STIBarrier);
 
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, STIBarrier& bn, const unsigned int v)
+    void STIBarrier::serialize(IArchive& ar, STIBarrier* obj)
     {
-        //LOG_DEBUG("(De)serializing SimpleHousingSTIBarrier\n");
+        BaseIntervention::serialize( ar, obj );
+        STIBarrier& barrier = *obj;
+        ar.labelElement("early"   ) & barrier.early;
+        ar.labelElement("late"    ) & barrier.late;
+        ar.labelElement("midyear" ) & barrier.midyear;
+        ar.labelElement("rate"    ) & barrier.rate;
+        ar.labelElement("rel_type") & (uint32_t&)barrier.rel_type;
 
-        boost::serialization::void_cast_register<STIBarrier, IDistributableIntervention>();
-        ar & boost::serialization::base_object<Kernel::BaseIntervention>(bn);
+        // ibc is set in SetContextTo()
     }
 }
-#endif

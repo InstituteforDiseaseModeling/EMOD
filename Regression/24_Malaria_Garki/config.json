@@ -36,6 +36,7 @@
         "Base_Relative_Humidity": 0.75, 
         "Base_Sporozoite_Survival_Fraction": 0.25, 
         "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE", 
+        "Birth_Rate_Time_Dependence": "NONE", 
         "Burnin_Cache_Mode": "none", 
         "Burnin_Cache_Period": 0, 
         "Burnin_Name": "", 
@@ -45,9 +46,14 @@
         "Clinical_Fever_Threshold_High": 1, 
         "Clinical_Fever_Threshold_Low": 0.5, 
         "Config_Name": "24_Malaria_Garki", 
+        "Custom_Reports_Filename": "NoCustomReports", 
         "Cytokine_Gametocyte_Inactivation": 0.05, 
         "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF", 
-        "Demographics_Filename": "Garki_30arcsec_demographics.compiled.json", 
+        "Default_Geography_Initial_Node_Population": 1000, 
+        "Default_Geography_Torus_Size": 10, 
+        "Demographics_Filenames": [
+            "Garki_30arcsec_demographics.compiled.json"
+        ], 
         "Egg_Hatch_Delay_Distribution": "NO_DELAY", 
         "Egg_Saturation_At_Oviposition": "SATURATION_AT_OVIPOSITION", 
         "Enable_Absolute_Time": "NO", 
@@ -63,10 +69,10 @@
         "Enable_Demographics_Other": 0, 
         "Enable_Demographics_Reporting": 1, 
         "Enable_Disease_Mortality": 0, 
+        "Enable_Family_Migration": 0, 
         "Enable_Heterogeneous_Intranode_Transmission": 0, 
         "Enable_Immune_Decay": 1, 
         "Enable_Immunity": 1, 
-        "Enable_Immunity_Initialization_Distribution": 0, 
         "Enable_Interventions": 1, 
         "Enable_Local_Migration": 1, 
         "Enable_Maternal_Transmission": 0, 
@@ -81,14 +87,13 @@
         "Enable_Temperature_Dependent_Feeding_Cycle": 0, 
         "Enable_Vector_Aging": 0, 
         "Enable_Vector_Migration": 0, 
-        "Enable_Vector_Migration_Human": 0, 
-        "Enable_Vector_Migration_Local": 0, 
-        "Enable_Vector_Migration_Wind": 0, 
+        "Enable_Vector_Mortality": 1, 
         "Enable_Vital_Dynamics": 1, 
         "Erythropoiesis_Anemia_Effect": 0.0, 
         "Falciparum_MSP_Variants": 4, 
         "Falciparum_Nonspecific_Types": 4, 
         "Falciparum_PfEMP1_Variants": 300, 
+        "Family_Migration_Filename": "", 
         "Fever_Detection_Threshold": 1, 
         "Fever_IRBC_Kill_Rate": 0.2, 
         "Fever_Mortality_Inverse_Width": 10, 
@@ -102,6 +107,7 @@
         "HEG_Model": "OFF", 
         "Human_Feeding_Mortality": 0.1, 
         "Immunity_Acquisition_Factor": 1, 
+        "Immunity_Initialization_Distribution_Type": "DISTRIBUTION_OFF", 
         "Immunity_Mortality_Factor": 1, 
         "Immunity_Transmission_Factor": 1, 
         "Incubation_Period_Distribution": "FIXED_DURATION", 
@@ -120,7 +126,6 @@
         "Larval_Density_Dependence": "UNIFORM_WHEN_OVERPOPULATION", 
         "Listed_Events": [], 
         "Load_Balance_Filename": "Garki_30arcsec_load_balancing_32procs.bin", 
-        "Load_Balance_Scheme": "STATIC", 
         "Local_Migration_Filename": "Garki_30arcsec_local_migration.bin", 
         "Local_Simulation": 0, 
         "MSP1_Merozoite_Kill_Fraction": 0.5, 
@@ -276,6 +281,7 @@
         "Migration_Pattern": "WAYPOINTS_HOME", 
         "Min_Adapted_Response": 0.02, 
         "Min_Days_Between_Clinical_Incidents": 3, 
+        "Minimum_Adult_Age_Years": 15, 
         "Mortality_Blocking_Immunity_Decay_Rate": 0.001, 
         "Mortality_Blocking_Immunity_Duration_Before_Decay": 90, 
         "Mortality_Time_Course": "DAILY_MORTALITY", 
@@ -300,7 +306,6 @@
         "Population_Density_Infectivity_Correction": "CONSTANT_INFECTIVITY", 
         "Population_Scale_Type": "USE_INPUT_FILE", 
         "Pyrogenic_Threshold": 1000, 
-        "Python_Script_Path": "\\\\10.210.40.98\\IDM\\public\\python\\", 
         "RBC_Destruction_Multiplier": 1, 
         "Rainfall_Filename": "Garki_30arcsec_rainfall_daily.bin", 
         "Rainfall_In_mm_To_Fill_Swamp": 1000.0, 
@@ -332,6 +337,7 @@
             "Daily_EIR"
         ], 
         "Start_Time": 0, 
+        "Susceptibility_Scale_Type": "CONSTANT_SUSCEPTIBILITY", 
         "Temporary_Habitat_Decay_Factor": 0.05, 
         "Transmission_Blocking_Immunity_Decay_Rate": 0.01, 
         "Transmission_Blocking_Immunity_Duration_Before_Decay": 90, 
@@ -352,18 +358,15 @@
                 "Aquatic_Mortality_Rate": 0.1, 
                 "Days_Between_Feeds": 3, 
                 "Egg_Batch_Size": 100, 
-                "Habitat_Type": [
-                    "TEMPORARY_RAINFALL"
-                ], 
                 "Immature_Duration": 4, 
                 "Indoor_Feeding_Fraction": 1, 
                 "Infected_Arrhenius_1": 117000000000, 
                 "Infected_Arrhenius_2": 8336, 
                 "Infected_Egg_Batch_Factor": 0.8, 
                 "Infectious_Human_Feed_Mortality_Factor": 1.5, 
-                "Required_Habitat_Factor": [
-                    11250000000
-                ], 
+                "Larval_Habitat_Types": {
+                    "TEMPORARY_RAINFALL": 11250000000
+                }, 
                 "Transmission_Rate": 0.5
             }, 
             "funestus": {
@@ -375,18 +378,15 @@
                 "Aquatic_Mortality_Rate": 0.1, 
                 "Days_Between_Feeds": 3, 
                 "Egg_Batch_Size": 100, 
-                "Habitat_Type": [
-                    "WATER_VEGETATION"
-                ], 
                 "Immature_Duration": 4, 
                 "Indoor_Feeding_Fraction": 1, 
                 "Infected_Arrhenius_1": 117000000000, 
                 "Infected_Arrhenius_2": 8336, 
                 "Infected_Egg_Batch_Factor": 0.8, 
                 "Infectious_Human_Feed_Mortality_Factor": 1.5, 
-                "Required_Habitat_Factor": [
-                    600000000
-                ], 
+                "Larval_Habitat_Types": {
+                    "WATER_VEGETATION": 600000000
+                }, 
                 "Transmission_Rate": 0.5
             }, 
             "gambiae": {
@@ -398,18 +398,15 @@
                 "Aquatic_Mortality_Rate": 0.1, 
                 "Days_Between_Feeds": 3, 
                 "Egg_Batch_Size": 100, 
-                "Habitat_Type": [
-                    "TEMPORARY_RAINFALL"
-                ], 
                 "Immature_Duration": 4, 
                 "Indoor_Feeding_Fraction": 1, 
                 "Infected_Arrhenius_1": 117000000000, 
                 "Infected_Arrhenius_2": 8336, 
                 "Infected_Egg_Batch_Factor": 0.8, 
                 "Infectious_Human_Feed_Mortality_Factor": 1.5, 
-                "Required_Habitat_Factor": [
-                    1250000000
-                ], 
+                "Larval_Habitat_Types": {
+                    "TEMPORARY_RAINFALL": 1250000000
+                }, 
                 "Transmission_Rate": 0.5
             }
         }, 
@@ -419,6 +416,7 @@
         "logLevel_VectorPopulation": "WARNING", 
         "x_Air_Migration": 1, 
         "x_Birth": 1, 
+        "x_Family_Migration": 1, 
         "x_Local_Migration": 1, 
         "x_Other_Mortality": 1, 
         "x_Population_Immunity": 1, 

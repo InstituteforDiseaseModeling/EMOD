@@ -1,0 +1,20 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Habitat_Target": "TEMPORARY_RAINFALL",
+                    "Habitat_Scale": 0.05,
+                    "class": "ScaleLarvalHabitat"
+                },
+                "class": "NodeEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 730,
+            "class": "CampaignEvent"
+        }
+    ]
+}

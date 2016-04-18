@@ -5,15 +5,8 @@
         "Simulation_Duration": 1095,
         "Simulation_Timestep": 30.41667,
         "Base_Population_Scale_Factor": 1,
-        "Demographics_Filenames": ["uniform_demographics.json", "pfa_transitory_2x2.json"],
+        "Demographics_Filenames": ["uniform_demographics.json", "pfa_transitory_2x2.json", "short_transitory_overlay.json"],
         "Report_Relationship_Start": 1,
-
-        "Transitory_Formation_Rate_Heterosexual": 0.01,
-
-        "NOTE_Make_relationships_break_fast": {
-            "Relationships_Transitory_Weibull_Scale": 0.10630830949895
-        },
-
         "PFA_Cum_Prob_Selection_Threshold" : 0
     }
 }

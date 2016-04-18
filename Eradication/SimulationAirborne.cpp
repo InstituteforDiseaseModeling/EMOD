@@ -1,15 +1,15 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 
-#ifdef ENABLE_TB
+#ifndef DISABLE_AIRBORNE
 
 #include "SimulationAirborne.h"
 
@@ -35,7 +35,7 @@ namespace Kernel
 
     SimulationAirborne *SimulationAirborne::CreateSimulation(const ::Configuration *config)
     {
-        SimulationAirborne *newsimulation = NULL;
+        SimulationAirborne *newsimulation = nullptr;
 
         newsimulation = _new_ SimulationAirborne();
         if (newsimulation)
@@ -46,7 +46,7 @@ namespace Kernel
             if(!ValidateConfiguration(config))
             {
                 delete newsimulation;
-                newsimulation = NULL;
+                newsimulation = nullptr;
             }
         }
 
@@ -69,28 +69,6 @@ namespace Kernel
         NodeAirborne *node = NodeAirborne::CreateNode(this, node_suid);
         addNode_internal(node, nodedemographics_factory, climate_factory);
     }
-
-    void SimulationAirborne::resolveMigration()
-    {
-        resolveMigrationInternal( typed_migration_queue_storage, migratingIndividualQueues );
-    }
-
 }
-
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(Kernel::SimulationAirborne)
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive & ar, SimulationAirborne &sim, const unsigned int  file_version )
-    {
-        // Register derived types
-        ar.template register_type<NodeAirborne>();
-        ar.template register_type<NodeAirborneFlags>();
-
-        // Serialize base class
-        ar & boost::serialization::base_object<Simulation>(sim);
-    }
-}
-#endif
 
 #endif // ENABLE_TB

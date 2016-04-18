@@ -3,7 +3,7 @@
     "parameters": {
         "DEMOGRAPHICS": {
             "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
-            "Demographics_Filename": "generic_scenarios_demographics.json",
+            "Demographics_Filenames": ["generic_scenarios_demographics.json"],
             "MORTALITY": {
                 "Base_Mortality": 0
             },

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,17 +11,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include <functional>
 #include <map>
-#include "BoostLibWrapper.h"
-// not in boost wrapper???
-#include <boost/math/special_functions/fpclassify.hpp>
 
 #include "SpatialReportMalaria.h"
-#include "NodeMalaria.h"
+#include "MalariaContexts.h"
 #include "Sugar.h"
 #include "Environment.h"
 #include "Exceptions.h"
-#include "Individual.h"
-#include "SimulationConfig.h"
+#include "IIndividualHuman.h"
 #include "ProgVersion.h"
 
 using namespace std;
@@ -52,6 +48,18 @@ SpatialReportMalaria::SpatialReportMalaria()
 {
 }
 
+void SpatialReportMalaria::Initialize( unsigned int nrmSize )
+{
+    SpatialReportVector::Initialize( nrmSize );
+
+    if( mean_parasitemia_info.enabled && !parasite_prevalence_info.enabled )
+    {
+        LOG_WARN("Mean_Parasitemia requires that Parasite_Prevalence be enabled.  Enabling Parasite_Prevalence.");
+        parasite_prevalence_info.enabled = true ;
+        channelDataMap.IncreaseChannelLength( parasite_prevalence_info.name, _nrmSize );
+    }
+}
+
 void SpatialReportMalaria::populateChannelInfos(tChanInfoMap &channel_infos)
 {
     SpatialReportVector::populateChannelInfos(channel_infos);
@@ -72,9 +80,9 @@ SpatialReportMalaria::LogNodeData(
 {
     SpatialReportVector::LogNodeData(pNC);
 
-    int nodeid = pNC->GetExternalID();
+    auto nodeid = pNC->GetExternalID();
 
-    const INodeMalaria* pMalariaNode = NULL;
+    const INodeMalaria* pMalariaNode = nullptr;
     if( pNC->QueryInterface( GET_IID(INodeMalaria), (void**)&pMalariaNode ) != s_OK )
     {
         throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNC", "INodeMalaria", "INodeContext" );
@@ -105,29 +113,37 @@ SpatialReportMalaria::postProcessAccumulatedData()
     SpatialReportVector::postProcessAccumulatedData();
 
     // make sure to normalize Mean Parasitemia BEFORE Parasite Prevalence, then it is exponentiated
-    normalizeChannel(mean_parasitemia_info.name, parasite_prevalence_info.name);
-
-    // Only need to transform mean log-parasitemia to geometric-mean parasitemia if that channel is enabled.  
-    // N.B. Using std::map.find() instead of operator[] on channelDataMap or else this channel will be 
-    //      inserted only on rank-0 of multi-core simulations resulting in an infinite wait on next Reduce()
-    if( channelDataMap.HasChannel( mean_parasitemia_info.name ) )
+    if( mean_parasitemia_info.enabled && parasite_prevalence_info.enabled )
     {
-        channelDataMap.ExponentialValues( mean_parasitemia_info.name );
+        normalizeChannel(mean_parasitemia_info.name, parasite_prevalence_info.name);
+
+        // Only need to transform mean log-parasitemia to geometric-mean parasitemia if that channel is enabled.  
+        if( channelDataMap.HasChannel( mean_parasitemia_info.name ) )
+        {
+            channelDataMap.ExponentialValues( mean_parasitemia_info.name );
+        }
+    }
+    else if( mean_parasitemia_info.enabled && !parasite_prevalence_info.enabled )
+    {
+        throw GeneralConfigurationException(  __FILE__, __LINE__, __FUNCTION__, "If 'Mean_Parasitemia' is enabled, then 'Parasite_Prevalence' must be enabled.");
     }
 
     // now normalize rest of channels
-    normalizeChannel(parasite_prevalence_info.name, population_info.name);
-    normalizeChannel(new_diagnostic_prevalence_info.name, population_info.name);
-    normalizeChannel(fever_prevalence_info.name, population_info.name);
+    if( parasite_prevalence_info.enabled )
+        normalizeChannel(parasite_prevalence_info.name, population_info.name);
+
+    if( new_diagnostic_prevalence_info.enabled )
+        normalizeChannel(new_diagnostic_prevalence_info.name, population_info.name);
+
+    if( fever_prevalence_info.enabled )
+        normalizeChannel(fever_prevalence_info.name, population_info.name);
 }
 
 
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(SpatialReport)
+#if 0
 template<class Archive>
 void serialize(Archive &ar, SpatialReportMalaria& report, const unsigned int v)
 {
-    boost::serialization::void_cast_register<SpatialReportMalaria,IReport>();
     ar & report.timesteps_reduced;
     ar & report.channelDataMap;
     ar & report._nrmSize;

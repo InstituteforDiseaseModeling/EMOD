@@ -6,7 +6,7 @@
             "Enable_Climate_Stochasticity": 0
         },
         "DEMOGRAPHICS": {
-            "Demographics_Filename": "Namawala_single_node_demographics.compiled.json"
+            "Demographics_Filenames": ["Namawala_single_node_demographics.compiled.json"]
         },
         "PRIMARY": {
             "Config_Name": "74_Vector_ArtificialDiet",
@@ -29,18 +29,13 @@
                     "Aquatic_Mortality_Rate": 0.1,
                     "Days_Between_Feeds": 3,
                     "Egg_Batch_Size": 100,
-                    "Habitat_Type": [
-                        "TEMPORARY_RAINFALL"
-                    ],
+                    "Larval_Habitat_Types": { "TEMPORARY_RAINFALL": 11250000000 },
                     "Immature_Duration": 4,
                     "Indoor_Feeding_Fraction": 0.5,
                     "Infected_Arrhenius_1": 117000000000,
                     "Infected_Arrhenius_2": 8336,
                     "Infected_Egg_Batch_Factor": 0.8,
                     "Infectious_Human_Feed_Mortality_Factor": 1.5,
-                    "Required_Habitat_Factor": [
-                        11250000000
-                    ],
                     "Transmission_Rate": 0.5
                 }
             }

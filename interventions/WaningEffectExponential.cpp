@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -12,6 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "WaningEffect.h"
 #include "CajunIncludes.h"
 #include "ConfigurationImpl.h"
+#include "IArchive.h"
 
 static const char* _module = "WaningEffectExponential";
 
@@ -49,20 +50,13 @@ namespace Kernel
     {
         return currentEffect;
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-#include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT(Kernel::WaningEffectExponential)
-BOOST_SERIALIZATION_ASSUME_ABSTRACT(Kernel:IWaningEffect);
+    REGISTER_SERIALIZABLE(WaningEffectExponential);
 
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, WaningEffectExponential& we, const unsigned int v)
+    void WaningEffectExponential::serialize(IArchive& ar, WaningEffectExponential* obj)
     {
-        boost::serialization::void_cast_register<WaningEffectExponential, IWaningEffect>();
-        ar & we.currentEffect;
-        ar & we.decayTimeConstant;
+        WaningEffectExponential& effect = *obj;
+        ar.labelElement("currentEffect") & effect.currentEffect;
+        ar.labelElement("decayTimeConstant") & effect.decayTimeConstant;
     }
 }
-#endif

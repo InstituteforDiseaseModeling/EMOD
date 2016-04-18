@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,6 +11,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "RelationshipManager.h"
 #include "IRelationship.h"
 #include "Debug.h"
+#include "Log.h"
+#include "ISTISimulationContext.h"
 
 static const char * _module = "RelationshipMgr";
 
@@ -20,20 +22,28 @@ static void
         const char * label = "NA"
     )
 {
-    clock_t after = clock();
-    clock_t diff = after - before;
-    float thediff = diff/(float)CLOCKS_PER_SEC;
-
+    //clock_t after = clock();
+    //clock_t diff = after - before;
+    //float thediff = diff/(float)CLOCKS_PER_SEC;
     //std::cout << label << " took " << thediff << " seconds." << std::endl;
 }
 
 namespace Kernel
 {
+    BEGIN_QUERY_INTERFACE_BODY(RelationshipManager)
+        HANDLE_INTERFACE(IRelationshipManager)
+        HANDLE_ISUPPORTS_VIA(IRelationshipManager)
+    END_QUERY_INTERFACE_BODY(RelationshipManager)
+
     RelationshipManager::RelationshipManager( INodeContext* parent )
         : nodeRelationships()
         , relationshipListsForMP()
         , _node(parent)
         , nodePools(nullptr)
+        , new_relationship_observers()
+        , relationship_termination_observers()
+        , relationship_consummation_observers()
+        , dead_relationships_by_type()
     {
     }
 
@@ -81,7 +91,7 @@ namespace Kernel
         IIndividualHumanSTI** partnerOut
     )
     {
-        *partnerOut = NULL;
+        *partnerOut = nullptr;
         float targetPartnerAge = selectAgeFromCDF( targetAge );
         LOG_DEBUG_F( "%s: Searching sorted-by-age individuals with %d people.\n", __FUNCTION__, candidatesByAge.size() );
 
@@ -104,7 +114,6 @@ namespace Kernel
     }
 */
 
-//    void RelationshipManager::Update( Node::individual_human_list_t &individualHumans, ITransmissionGroups* parent, float dt )
     void RelationshipManager::Update( list<IIndividualHuman*>& individualHumans, ITransmissionGroups* parent, float dt )
     {
         clock_t before = clock();
@@ -113,99 +122,146 @@ namespace Kernel
 
         // update all existing relationships
         LOG_INFO_F( "%s: Updating %d relationships\n", __FUNCTION__, nodeRelationships.size() );
-        clock_t before_update = clock();
+        //clock_t before_update = clock();
         for( auto it = nodeRelationships.begin();
                   it != nodeRelationships.end();
                    )
         {
-            auto relId = it->first;
             IRelationship* pRel = it->second;
-            it++;
-            LOG_DEBUG_F( "%s: Updating relationship %d at node %lu\n", __FUNCTION__, pRel->GetId(), _node->GetSuid().data );
-            if( pRel->Update( dt ) == false )
+            ++it;
+            LOG_DEBUG_F( "%s: Updating relationship %d at node %lu\n", __FUNCTION__, pRel->GetSuid().data, _node->GetSuid().data );
+
+            RelationshipTerminationReason::Enum termination_reason = RelationshipTerminationReason::NOT_TERMINATING;
+            bool partner_terminated = false;
+            bool brokeup = false; //i.e. timedout
+            if( pRel->GetState() == RelationshipState::PAUSED )
             {
-                // Need to notify individuals in relationship and also nodePools should be destroyed
-                // May be false because someone died.
-                pRel->terminate( this );
+                ISTISimulationContext* p_sti_sim = dynamic_cast<ISTISimulationContext*>(_node->GetParent());
+                partner_terminated = p_sti_sim->WasRelationshipTerminatedLastTimestep( pRel->GetSuid() );
+            }
+
+            if( !partner_terminated )
+            {
+                LOG_DEBUG_F( "%s: Updating relationship %d at node %lu\n", __FUNCTION__, pRel->GetSuid().data, _node->GetSuid().data );
+                brokeup = (pRel->Update( dt ) == false); //i.e. timedout
+            }
+
+            if( partner_terminated || brokeup )
+            {
+                if( partner_terminated )
+                {
+                    termination_reason = RelationshipTerminationReason::PARTNER_TERMINATED;
+                }
+                else
+                {
+                    termination_reason = RelationshipTerminationReason::BROKEUP;
+                }
+                pRel->Terminate( termination_reason );
+
+                // ----------------------------------------------------------
+                // --- IRelationship::Terminate() is responsible for telling
+                // --- IRelationshipManager to remove the relationship
+                // ----------------------------------------------------------
                 delete pRel;
             }
             else
             {
-                LOG_DEBUG_F( "%s: relationship %d is ongoing. No action.\n", __FUNCTION__, pRel->GetId() );
+                LOG_DEBUG_F( "%s: relationship %d is ongoing. No action.\n", __FUNCTION__, pRel->GetSuid().data );
             }
         }
-        //howlong( before_update, "update_rels" );
-
-        unsigned int new_marriages_counter = 0;
-        unsigned int new_hookups_counter = 0;
-        unsigned int new_affairs_counter = 0;
-
-        //howlong( before_build, "Build" );
-        LOG_INFO_F( "%s: END Pair-Forming System update: %d new marriages, %d new hookups, %d new affairs: %d total relationships.\n", __FUNCTION__, new_marriages_counter, new_hookups_counter, new_affairs_counter, nodeRelationships.size() );
         howlong( before, "RM::Update" );
+    }
+
+    IRelationship* RelationshipManager::Emigrate( IRelationship* pRel )
+    {
+        return pRel;
+    }
+
+    IRelationship* RelationshipManager::Immigrate( IRelationship* pRel )
+    {
+        IRelationship* p_return_rel = pRel;
+        if( nodeRelationships.find( pRel->GetSuid().data ) != nodeRelationships.end() )
+        {
+            IRelationship*p_existing_rel = nodeRelationships.at( pRel->GetSuid().data );
+            release_assert( p_existing_rel );
+            release_assert( pRel->GetSuid().data == p_existing_rel->GetSuid().data );
+            p_return_rel = p_existing_rel;
+        }
+        return p_return_rel;
     }
 
     void
     RelationshipManager::AddRelationship(
-        IRelationship* new_relationship
+        IRelationship* relationship,
+        bool isNewRelationship
     )
     {
-        LOG_INFO_F("%s( 0x%08X )\n", __FUNCTION__, new_relationship);
-        nodeRelationships[ new_relationship->GetId() ] = new_relationship;
-        new_relationship->Initialize( this );
-        const string& propertyKey  = new_relationship->GetPropertyKey();
-        const string& propertyName = new_relationship->GetPropertyName();
-        AddToPrimaryRelationships( propertyKey, propertyName ); 
-        notifyObservers(new_relationship_observers, new_relationship);
-    }
+        LOG_INFO_F("%s( 0x%08X )\n", __FUNCTION__, relationship);
+        // if not in the map, add it
+        if( nodeRelationships.find( relationship->GetSuid().data ) == nodeRelationships.end() )
+        {
+            nodeRelationships[ relationship->GetSuid().data ] = relationship;
+        }
 
-#define MAX_DEAD_REL_QUEUE_SIZE 200 // found by sweeping, might make config param
+        // If we have a normal relationship, we want couple open for disease transmission
+        if( relationship->GetState() == RelationshipState::NORMAL )
+        {
+            AddToPrimaryRelationships( relationship ); 
+        }
+
+        if( isNewRelationship )
+        {
+            notifyObservers(new_relationship_observers, relationship);
+        }
+    }
 
     void
     RelationshipManager::RemoveRelationship(
-        IRelationship* relationship
+        IRelationship* relationship,
+        bool leavingNode
         )
     {
-        notifyObservers(relationship_termination_observers, relationship);
-
-        nodeRelationships.erase( relationship->GetId() );
-
-        // Instead of deleting the relationship string from list each time, we batch them up
-        // and do a batch delete. This is a big performance gain. We do the batch delete by
-        // transferring all elements from live list into new list one at a time, checking if
-        // they are in the (sorted) dead list first. 
-        auto thisRelTypeKey = relationship->GetPropertyKey();
-        auto &deadRelsThisType = dead_relationships_by_type[ thisRelTypeKey ];
-
-        // performance killing sanity check. Is this already in the morgue?
-        //release_assert( std::find( deadRelsThisType.begin(), deadRelsThisType.end(), atoi( relationship->GetPropertyName().c_str() ) ) == deadRelsThisType.end() );
-
-        deadRelsThisType.push_back( atoi( relationship->GetPropertyName().c_str() ) );
-
-        //if( deadRelsThisType.size() > GET_CONFIGURABLE(SimulationConfig)->maximum_dead_relationship_queue_size )
-        if( deadRelsThisType.size() > MAX_DEAD_REL_QUEUE_SIZE )
+        if( nodeRelationships.find( relationship->GetSuid().data ) == nodeRelationships.end() )
         {
-            // Doing batch delete of dead relationships for slot
-            deadRelsThisType.sort();
-            std::list< std::string > newList;
-            auto& current = relationshipListsForMP.at( thisRelTypeKey );
-            while( current.size() > 0 )
-            {
-                auto rel_name = current.front();
-                auto rel_name_as_int = atoi( rel_name.c_str() );
-            //    auto next_dead_rel_name = deadRelsThisType.front();
+            return;
+        }
 
-                current.pop_front(); // removed from current, either dead or gets put in newList
-                if( deadRelsThisType.size() > 0 && rel_name_as_int == deadRelsThisType.front() )
-                {
-                    deadRelsThisType.pop_front();
-                }
-                else
-                {
-                    newList.push_back( rel_name );
-                }
-            }
-            relationshipListsForMP[ thisRelTypeKey ] = newList;
+        RelationshipState::Enum state = relationship->GetState();
+        RelationshipState::Enum previous_state = relationship->GetPreviousState();
+
+        if( state == RelationshipState::TERMINATED )
+        {
+            notifyObservers(relationship_termination_observers, relationship);
+        }
+
+        if( leavingNode )
+        {
+            nodeRelationships.erase( relationship->GetSuid().data );
+        }
+
+
+        // -----------------------------------------------------------------------
+        // --- If the previous_state is Normal, then the relationship should be in the pool.
+        // --- If the previous_state is Paused, Migrating, or Terminated, then the relationship should NOT be in the pool.
+        // -----------------------------------------------------------------------
+        if( previous_state == RelationshipState::NORMAL )
+        {
+            RemoveFromPrimaryRelationships( relationship );
+        }
+
+        // ------------------------------------------------------------------------
+        // --- Needed so that the other partner can find out that the relationship
+        // --- has been terminated.  It could have been by choice or by death.
+        // --- If we are terminating the relationship because the partner terminated it,
+        // --- then we don't need to tell him.
+        // ------------------------------------------------------------------------
+        if( (state == RelationshipState::TERMINATED) && 
+            (previous_state == RelationshipState::PAUSED) &&
+            (relationship->GetTerminationReason() != RelationshipTerminationReason::PARTNER_TERMINATED)
+          )
+        {
+            ISTISimulationContext* p_sti_sim = dynamic_cast<ISTISimulationContext*>(_node->GetParent());
+            p_sti_sim->AddTerminatedRelationship( _node->GetSuid(), relationship->GetSuid() );
         }
     }
 
@@ -257,7 +313,7 @@ namespace Kernel
         if( nodeRelationships.find( relId ) == nodeRelationships.end() )
         {
             LOG_WARN_F( "%s: Failed to find relationship %d in the container of %d nodeRelationships at this node. Is this person an immigrant?\n", __FUNCTION__, relId, nodeRelationships.size() );
-            return NULL;
+            return nullptr;
         }
 
         return nodeRelationships.at( relId );
@@ -272,10 +328,11 @@ namespace Kernel
 
     void
     RelationshipManager::AddToPrimaryRelationships(
-        const std::string& propertyKey,
-        const std::string& propertyValue
+        IRelationship* relationship
     )
     {
+        std::string propertyKey = relationship->GetPropertyKey();
+        std::string propertyValue = relationship->GetPropertyName();
         ScalingMatrix_t scalingMatrix; // { 1 }
         MatrixRow_t matrixRow;
         matrixRow.push_back( 1.0f );
@@ -284,10 +341,110 @@ namespace Kernel
         nodePools->AddProperty( propertyKey.c_str(), relationshipListsForMP[ propertyKey ], scalingMatrix, "contact" );
     }
 
+#define MAX_DEAD_REL_QUEUE_SIZE 0 //200 // found by sweeping, might make config param
+
+    void RelationshipManager::RemoveFromPrimaryRelationships( IRelationship* relationship )
+    {
+        // Instead of deleting the relationship string from list each time, we batch them up
+        // and do a batch delete. This is a big performance gain. We do the batch delete by
+        // transferring all elements from live list into new list one at a time, checking if
+        // they are in the (sorted) dead list first. 
+        auto thisRelTypeKey = relationship->GetPropertyKey();
+        auto &deadRelsThisType = dead_relationships_by_type[ thisRelTypeKey ];
+
+        // stop trying to remove relationship if the type isn't there
+        if( relationshipListsForMP.count( thisRelTypeKey ) == 0 )
+        {
+            return;
+        }
+
+        // performance killing sanity check. Is this already in the morgue?
+        //release_assert( std::find( deadRelsThisType.begin(), deadRelsThisType.end(), atoi( relationship->GetPropertyName().c_str() ) ) == deadRelsThisType.end() );
+
+        deadRelsThisType.push_back( atoi( relationship->GetPropertyName().c_str() ) );
+
+        if( deadRelsThisType.size() > MAX_DEAD_REL_QUEUE_SIZE )
+        {
+            // Doing batch delete of dead relationships for slot
+            deadRelsThisType.sort();
+            std::list< std::string > newList;
+            auto& current = relationshipListsForMP.at( thisRelTypeKey );
+            while( current.size() > 0 )
+            {
+                auto rel_name = current.front();
+                auto rel_name_as_int = atoi( rel_name.c_str() );
+
+                current.pop_front(); // removed from current, either dead or gets put in newList
+                if( deadRelsThisType.size() > 0 && rel_name_as_int == deadRelsThisType.front() )
+                {
+                    deadRelsThisType.pop_front();
+                }
+                else
+                {
+                    newList.push_back( rel_name );
+                }
+            }
+            relationshipListsForMP[ thisRelTypeKey ] = newList;
+
+            // --------------------------------------------------------------------------------------------
+            // ---  Update the transmission group so that this relationship is no longer part of the group
+            // --------------------------------------------------------------------------------------------
+            ScalingMatrix_t scalingMatrix; // { 1 }
+            MatrixRow_t matrixRow;
+            matrixRow.push_back( 1.0f );
+            scalingMatrix.push_back( matrixRow );
+            nodePools->AddProperty( thisRelTypeKey.c_str(), relationshipListsForMP[ thisRelTypeKey ], scalingMatrix, "contact" );
+        }
+    }
+
     INodeContext*
     RelationshipManager::GetNode()
     const
     {
         return _node;
+    }
+
+    REGISTER_SERIALIZABLE(RelationshipManager);
+
+    void RelationshipManager::serialize(IArchive& ar, RelationshipManager* obj)
+    {
+        // ---------------------------------------------------------------------------------------
+        // --- NOTE: I'm not really sure that we should be serializing any of these parameters.
+        // --- I think that before we serilize, we should remove all of the dead relationships
+        // --- (this would make dead_relationships_by_type empty).  Then, when we are deserializing 
+        // --- the individuals and their relationships, we should should add them to the 
+        // --- relaitonship manager.
+        // ---------------------------------------------------------------------------------------
+        RelationshipManager& mgr = *obj;
+        ar.labelElement("nodeRelationships");
+        size_t count = ar.IsWriter() ? mgr.nodeRelationships.size() : -1;
+        ar.startArray( count );
+        if( ar.IsWriter() )
+        {
+            for( auto& entry : mgr.nodeRelationships )
+            {
+                unsigned int id = entry.first;
+                ar & id;
+            }
+        }
+        else
+        {
+            for( int i = 0 ; i < count ; i++ )
+            {
+                unsigned int id = 0;
+                ar & id;
+                mgr.nodeRelationships[ id ] = nullptr;
+            }
+        }
+        ar.endArray();
+ 
+        ar.labelElement("relationshipListsForMP"    ) & mgr.relationshipListsForMP;
+        //_node
+        // nodePools
+        ar.labelElement("dead_relationships_by_type") & mgr.dead_relationships_by_type;
+        //std::list<IRelationshipManager::callback_t> new_relationship_observers;
+        //std::list<IRelationshipManager::callback_t> relationship_termination_observers;
+        //std::list<IRelationshipManager::callback_t> relationship_consummation_observers;
+
     }
 }

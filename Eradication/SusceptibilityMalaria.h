@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -12,11 +12,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "BoostLibWrapper.h"
 #include "Common.h"
 #include "IMalariaAntibody.h" // for MalariaAntibodyType enum, containers of IMalariaAntibody pointers
-#include "SimpleTypemapRegistration.h"
 #include "MalariaEnums.h"
 #include "MalariaContexts.h"
 #include "SusceptibilityVector.h"
-#include "InterventionEnums.h"
 
 namespace Kernel
 {
@@ -25,7 +23,7 @@ namespace Kernel
         friend class IndividualHumanMalaria;
 
     public:
-        virtual bool Configure( const Configuration* config );
+        virtual bool Configure( const Configuration* config ) override;
 
         // These public configurable parameters are accessed by MalariaAntibody for Decay and Update functions
         static float memory_level;
@@ -82,36 +80,36 @@ namespace Kernel
         static SusceptibilityMalaria *CreateSusceptibility(IIndividualHumanContext *context, float _age = 20 * DAYSPERYEAR, float immmod = 1.0f, float riskmod = 1.0f);
         virtual ~SusceptibilityMalaria();
 
-        virtual void Update(float dt);
-        virtual void UpdateInfectionCleared();
+        virtual void Update(float dt) override;
+        virtual void UpdateInfectionCleared() override;
 
         // functions to mediate interaction with Infection_Malaria objects
-        virtual void  UpdateActiveAntibody( pfemp1_antibody_t &pfemp1_variant, int minor_variant, int major_variant );
+        virtual void UpdateActiveAntibody( pfemp1_antibody_t &pfemp1_variant, int minor_variant, int major_variant ) override;
 
         // IMalariaSusceptibility interfaces
-        virtual void   SetAntigenPresent();
-        virtual float  get_fever()              const;
-        virtual float  get_fever_celsius()      const;
-        virtual float  get_cytokines()          const;
-        virtual double get_RBC_availability()   const;
-        virtual float  get_parasite_density()   const;
-        virtual float  GetMaxFever()            const;
-        virtual float  GetMaxParasiteDensity()  const;
-        virtual float  GetHemoglobin()          const;
-        virtual bool   CheckForParasitesWithTest( int test_type = MALARIA_TEST_BLOOD_SMEAR ) const;
-        virtual float  CheckParasiteCountWithTest( int test_type = MALARIA_TEST_BLOOD_SMEAR ) const;
-        virtual float  get_fraction_of_variants_with_antibodies(MalariaAntibodyType::Enum type) const;
-        virtual IMalariaAntibody* RegisterAntibody(MalariaAntibodyType::Enum type, int variant, float capacity=0.0f);
-        virtual SevereCaseTypesEnum::Enum  CheckSevereCaseType() const;
-        virtual float  get_inv_microliters_blood() const;
-        virtual void   ResetMaximumSymptoms();
-        virtual long long get_RBC_count()             const;
-        virtual float  get_maternal_antibodies() const;
-        virtual void   init_maternal_antibodies(float mother_factor);
-        virtual float  get_fever_killing_rate() const;
+        virtual void   SetAntigenPresent() override;
+        virtual float  get_fever()              const override;
+        virtual float  get_fever_celsius()      const override;
+        virtual float  get_cytokines()          const override;
+        virtual double get_RBC_availability()   const override;
+        virtual float  get_parasite_density()   const override;
+        virtual float  GetMaxFever()            const override;
+        virtual float  GetMaxParasiteDensity()  const override;
+        virtual float  GetHemoglobin()          const override;
+        virtual bool   CheckForParasitesWithTest( int test_type = MALARIA_TEST_BLOOD_SMEAR ) const override;
+        virtual float  CheckParasiteCountWithTest( int test_type = MALARIA_TEST_BLOOD_SMEAR ) const override;
+        virtual float  get_fraction_of_variants_with_antibodies(MalariaAntibodyType::Enum type) const override;
+        virtual IMalariaAntibody* RegisterAntibody(MalariaAntibodyType::Enum type, int variant, float capacity=0.0f) override;
+        virtual SevereCaseTypesEnum::Enum  CheckSevereCaseType() const override;
+        virtual float  get_inv_microliters_blood() const override;
+        virtual void   ResetMaximumSymptoms() override;
+        virtual long long get_RBC_count() const override;
+        virtual float  get_maternal_antibodies() const override;
+        virtual void   init_maternal_antibodies(float mother_factor) override;
+        virtual float  get_fever_killing_rate() const override;
 
         // functions to mediate interactions with red blood cell count
-        virtual void   remove_RBCs(int64_t infectedAsexual, int64_t infectedGametocytes, double RBC_destruction_multiplier);
+        virtual void   remove_RBCs(int64_t infectedAsexual, int64_t infectedGametocytes, double RBC_destruction_multiplier) override;
 
     protected:
 
@@ -131,7 +129,7 @@ namespace Kernel
         std::vector<int> InitialVariants(int n_choose, int n_total);
 
         // IAntibodyBoostable functions
-        virtual void BoostAntibody( MalariaAntibodyType::Enum type, int variant, float boosted_antibody_concentration );
+        virtual void BoostAntibody( MalariaAntibodyType::Enum type, int variant, float boosted_antibody_concentration ) override;
 
         // Clinical outcome calculations
         void  updateClinicalStates( float dt );
@@ -183,23 +181,12 @@ namespace Kernel
         float  cumulative_days_of_severe_anemia_incident;
         float  days_between_incidents;
 
+        DECLARE_SERIALIZABLE(SusceptibilityMalaria);
+
     private:
 
         SusceptibilityMalaria();
         SusceptibilityMalaria(IIndividualHumanContext *context);
-        void Initialize(float _age, float immmod, float riskmod);
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, SusceptibilityMalaria& sus, const unsigned int file_version );
-#endif
-
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-    public:
-     // IJsonSerializable Interfaces
-     virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-     virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
+        /* clorton virtual */ void Initialize(float _age, float immmod, float riskmod) /* clorton override */;
     };
 }

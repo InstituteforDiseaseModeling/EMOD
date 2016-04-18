@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -25,8 +25,24 @@ namespace Kernel
         const std::string& key
     )
     {
-        initConfig( "Pesticide_Resistance", pesticideResistance, &(*inputJson)[key], MetadataDescriptor::Enum("Pesticide_Resistance", MR_Released_Pesticide_Resistance_DESC_TEXT , MDD_ENUM_ARGS(VectorAllele)));
-        initConfig( "HEG", HEG, &(*inputJson)[key], MetadataDescriptor::Enum("HEG", MR_Released_Pesticide_Resistance_DESC_TEXT , MDD_ENUM_ARGS(VectorAllele)));
+        try
+        {
+            initConfig( "Pesticide_Resistance", pesticideResistance, &(*inputJson)[key], MetadataDescriptor::Enum("Pesticide_Resistance", MR_Released_Pesticide_Resistance_DESC_TEXT , MDD_ENUM_ARGS(VectorAllele)));
+        }
+        catch( Kernel::DetailedException &e )
+        {
+            //throw JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Pesticide_Resistance", (*inputJson)[key], e.GetMsg() );
+            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, e.GetMsg() );
+        }
+        try
+        {
+            initConfig( "HEG", HEG, &(*inputJson)[key], MetadataDescriptor::Enum("HEG", MR_Released_HEGs_DESC_TEXT, MDD_ENUM_ARGS(VectorAllele)));
+        }
+        catch( Kernel::DetailedException &e )
+        { 
+            //throw JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, "HEG", (*inputJson)[key], e.GetMsg() );
+            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, e.GetMsg() );
+        }
         LOG_INFO_F( "pesticideResistance = %s, HEG = %s\n", VectorAllele::pairs::lookup_key(pesticideResistance), VectorAllele::pairs::lookup_key(HEG) );
     }
 
@@ -37,14 +53,25 @@ namespace Kernel
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
 
-        auto enum_md = MetadataDescriptor::Enum("VectorAllele", MR_Released_Pesticide_Resistance_DESC_TEXT, MDD_ENUM_ARGS(VectorAllele));
-        MetadataDescriptor::Enum * pEnumMd = const_cast<MetadataDescriptor::Enum *>(&enum_md);
-        json::Element *elem_copy = _new_ json::Element(pEnumMd->GetSchemaElement());
-        auto enumSchema = json::QuickBuilder( *elem_copy );
+        // 2 blocks needed for correct schema text
+        {
+            auto enum_md = MetadataDescriptor::Enum("VectorAllele", MR_Released_Pesticide_Resistance_DESC_TEXT, MDD_ENUM_ARGS(VectorAllele));
+            MetadataDescriptor::Enum * pEnumMd = const_cast<MetadataDescriptor::Enum *>(&enum_md);
+            json::Element *elem_copy = _new_ json::Element(pEnumMd->GetSchemaElement());
+            auto enumSchema = json::QuickBuilder( *elem_copy ); 
+            schema[ ts ][ "Pesticide_Resistance" ] = enumSchema.As< json::Object >();
+            delete elem_copy;
+        }
 
-        schema[ ts ][ "Pesticide_Resistance" ] = enumSchema.As< json::Object >();
-        schema[ ts ][ "HEG" ] = enumSchema.As< json::Object >();
-        schema[ tn ] = json::String( "idmType:ResistanceHegGenetics" );
+        {
+            auto enum_md = MetadataDescriptor::Enum("VectorAllele", MR_Released_HEGs_DESC_TEXT, MDD_ENUM_ARGS(VectorAllele));
+            MetadataDescriptor::Enum * pEnumMd = const_cast<MetadataDescriptor::Enum *>(&enum_md);
+            json::Element *elem_copy = _new_ json::Element(pEnumMd->GetSchemaElement());
+            auto enumSchema = json::QuickBuilder( *elem_copy ); 
+            schema[ ts ][ "HEG" ] = enumSchema.As< json::Object >();
+            schema[ tn ] = json::String( "idmType:ResistanceHegGenetics" );
+            delete elem_copy;
+        }
         return schema;
     }
 
@@ -53,7 +80,7 @@ namespace Kernel
         //HANDLE_INTERFACE(IDistributableIntervention)
         HANDLE_INTERFACE(IBaseIntervention)
         HANDLE_INTERFACE(INodeDistributableIntervention)
-        HANDLE_INTERFACE(IMosquitoRelease)
+        //HANDLE_INTERFACE(IMosquitoRelease)
         HANDLE_ISUPPORTS_VIA(INodeDistributableIntervention)
     END_QUERY_INTERFACE_BODY(MosquitoRelease)
 
@@ -124,7 +151,7 @@ namespace Kernel
         {
             if(releasedNumber > 0)
             {
-                imrc->ReleaseMosquitoes(this);
+                imrc->ReleaseMosquitoes( cost_per_unit, getSpecies(), getVectorGenetics(), getNumber() );
                 wasDistributed = true;
             }
         }
@@ -142,17 +169,17 @@ namespace Kernel
         // Distribute() doesn't call GiveIntervention() for this intervention, so it isn't added to the NodeEventContext's list of NDI
     }
 
-    std::string MosquitoRelease::GetSpecies() const
+    std::string MosquitoRelease::getSpecies() const
     {
         return releasedSpecies;
     }
 
-    VectorMatingStructure MosquitoRelease::GetVectorGenetics() const
+    VectorMatingStructure MosquitoRelease::getVectorGenetics() const
     {
         return vector_genetics;
     }
 
-    int MosquitoRelease::GetNumber() const
+    int MosquitoRelease::getNumber() const
     {
         return releasedNumber;
     }
@@ -166,16 +193,14 @@ namespace Kernel
     } 
 }
 
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(Kernel::MosquitoRelease)
+#if 0
 namespace Kernel {
-        template<class Archive>
-        void serialize_inner(Archive &ar, const unsigned int v)
-        {
-            boost::serialization::void_cast_register<MosquitoRelease, INodeDistributableIntervention>();
-            ar & releasedSpecies;
-            ar & vector_genetics;
-            ar & releasedNumber;
-        }
+    template<class Archive>
+    void serialize_inner(Archive &ar, const unsigned int v)
+    {
+        ar & releasedSpecies;
+        ar & vector_genetics;
+        ar & releasedNumber;
+    }
 }
 #endif

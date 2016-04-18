@@ -25,7 +25,8 @@
                 "Values": [ "Yes", "No" ],
                 "Initial_Distribution": [ 0.80000000000000004, 0.20000000000000001 ],
                 "Transitions": []
-            } ],
+            }
+        ],
         "IndividualAttributes": 
         { 
             "FertilityDistribution": 

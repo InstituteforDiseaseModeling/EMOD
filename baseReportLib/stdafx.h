@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -15,28 +15,28 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #pragma once
 
 #ifdef WIN32
-    #include <Windows.h>
-    #define USE_DEBUG_NEW
-    #ifdef USE_DEBUG_NEW
-        // for memory leak reporting
-        #define _CRTDBG_MAP_ALLOC
+    #include <windows.h>
+    #if defined(_DEBUG)
+        #define USE_DEBUG_NEW
+        #ifdef USE_DEBUG_NEW
+            #define _CRTDBG_MAP_ALLOC
+            #include <stdlib.h>
+            #include <crtdbg.h>
+            #pragma message( "Using debug new()" )
+            #define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+            #define _new_ DEBUG_NEW
+        #else
 
-        #include <stdlib.h>
-        #include <crtdbg.h>
-
-        #define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-        #define _new_ DEBUG_NEW
+            #define _new_ new
+        #endif
     #else
-    
+
         #define _new_ new
-    #endif 
+    #endif
 #else  // not doing anything special on unix
 
     #define _new_ new
 #endif
-
-
-
 
 #ifdef WIN32
     #ifndef _WIN32_WINNT               // Allow use of features specific to Windows Vista or later. 

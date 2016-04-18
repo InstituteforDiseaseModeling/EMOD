@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -16,7 +16,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "BoostLibWrapper.h"
 
 #include "Interventions.h"
-#include "SimpleTypemapRegistration.h"
 #include "Configuration.h"
 #include "InterventionFactory.h"
 #include "InterventionEnums.h"
@@ -29,9 +28,9 @@ namespace Kernel
 {
     class RTSSVaccine : public BaseIntervention
     {
-    public:
         DECLARE_FACTORY_REGISTERED(InterventionFactory, RTSSVaccine, IDistributableIntervention)
 
+    public:
         RTSSVaccine();
         virtual ~RTSSVaccine() { }
 
@@ -48,11 +47,6 @@ namespace Kernel
         int antibody_variant;
         float boosted_antibody_concentration;
 
-    private:
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class ::boost::serialization::access;
-        template<typename Archive>
-        friend void serialize( Archive &ar, RTSSVaccine& obj, unsigned int version );
-#endif
+        DECLARE_SERIALIZABLE(RTSSVaccine);
     };
 }

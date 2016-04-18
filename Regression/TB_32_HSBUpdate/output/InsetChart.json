@@ -1,7 +1,7 @@
 {
     "Header": {
-        "DateTime": "Thu Nov 13 17:51:08 2014",
-        "DTK_Version": "4431 v1.8Release 2014/11/04 12:59:30",
+        "DateTime": "Wed Jan 28 15:37:54 2015",
+        "DTK_Version": "4676 trunk 2015/01/26 15:31:47",
         "Report_Type": "InsetChart",
         "Report_Version": "3.2",
         "Start_Time": 0,
@@ -10990,7 +10990,7 @@
                 0
             ]
         },
-        "Probability of New Infection": {
+        "Daily (Human) Infection Rate": {
             "Units": "Infection Rate",
             "Data": [
                 0,

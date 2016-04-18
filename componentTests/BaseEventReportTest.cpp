@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,6 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"
 #include "NodeEventContextHost.h"
 #include "SimulationConfig.h"
+#include "IdmMpi.h"
 
 using namespace Kernel; 
 using namespace std; 
@@ -30,7 +31,7 @@ public:
 
     virtual ~TestReport() {};
 
-    virtual bool Configure( const Configuration* inputJson )
+    virtual bool Configure( const Configuration* inputJson ) override
     {
         initConfigTypeMap("Report_Value", &m_ReportValue, "Test getting subclass value from config", 0, 10, 1 );
 
@@ -39,7 +40,7 @@ public:
     }
 
     virtual bool notifyOnEvent( Kernel::IIndividualHumanEventContext *context, 
-                                const std::string& StateChange)
+                                const std::string& StateChange) override
     {
         if( HaveUnregisteredAllEvents() )
         {
@@ -79,22 +80,18 @@ public:
         , m_pNTIC( pNTIC )
     {};
 
-    virtual void Update(float dt)
+    virtual void Update(float dt) override
     {
         m_pNTIC->TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::NonDiseaseDeaths );
     };
 
-    virtual bool Distribute(INodeEventContext *context, IEventCoordinator2* pEC = NULL ) { assert( false ) ; return false ; }; 
-    virtual void SetContextTo(INodeEventContext *context) {};
-    virtual void ValidateSimType( const std::string& simTypeStr ) {};
-    virtual QueryResult QueryInterface(iid_t iid, void** pinstance) { return Kernel::e_NOINTERFACE; };
-    virtual int32_t AddRef() { return 0 ;};
-    virtual int32_t Release() { return 0 ;};
-#if USE_JSON_SERIALIZATION
-    // For JSON serialization
-    virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const {} ;
-    virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper ) {};
-#endif
+    virtual bool Distribute(INodeEventContext *context, IEventCoordinator2* pEC = nullptr ) override { assert( false ); return false; };
+    virtual void SetContextTo(INodeEventContext *context) override {};
+    virtual void ValidateSimType( const std::string& simTypeStr ) override {};
+    virtual QueryResult QueryInterface(iid_t iid, void** pinstance) override { return Kernel::e_NOINTERFACE; };
+    virtual int32_t AddRef() override { return 0 ;};
+    virtual int32_t Release() override { return 0 ;};
+
 private:
     INodeTriggeredInterventionConsumer* m_pNTIC ;
 };
@@ -104,9 +101,7 @@ SUITE(BaseEventReportTest)
 {
     struct ReportFixture
     {
-        static bool environmentInitialized;
-        static boost::mpi::environment* env;
-        static boost::mpi::communicator* world;
+        IdmMpi::MessageInterface* m_pMpi;
         SimulationConfig* m_pSimulationConfig ;
 
         ReportFixture()
@@ -115,22 +110,19 @@ SUITE(BaseEventReportTest)
             m_pSimulationConfig = new SimulationConfig();
             m_pSimulationConfig->sim_type = SimType::HIV_SIM ;
 
-            if (!environmentInitialized)
-            {
-                Environment::setLogger(new SimpleLogger());
-                int argc      = 1;
-                char* exeName = "componentTests.exe";
-                char** argv   = &exeName;
-                env           = new boost::mpi::environment(argc, argv);
-                world         = new boost::mpi::communicator;
-                string configFilename("testdata/BaseEventReportTest/TestReport.config.json");
-                string inputPath("testdata/BaseEventReportTest");
-                string outputPath("testdata/BaseEventReportTest");
-                string statePath("testdata/BaseEventReportTest");
-                string dllPath("");
-                Environment::Initialize(env, world, configFilename, inputPath, outputPath, /*statePath, */dllPath, false);
-                environmentInitialized = true;
-            }
+            m_pMpi = IdmMpi::MessageInterface::CreateNull();
+
+            Environment::Finalize();
+            Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
+            int argc      = 1;
+            char* exeName = "componentTests.exe";
+            char** argv   = &exeName;
+            string configFilename("testdata/BaseEventReportTest/TestReport.config.json");
+            string inputPath("testdata/BaseEventReportTest");
+            string outputPath("testdata/BaseEventReportTest");
+            string statePath("testdata/BaseEventReportTest");
+            string dllPath("");
+            Environment::Initialize( m_pMpi, nullptr, configFilename, inputPath, outputPath, /*statePath, */dllPath, false);
 
             Environment::setSimulationConfig( m_pSimulationConfig );
             m_pSimulationConfig->listed_events.insert("Births"          );
@@ -139,14 +131,11 @@ SUITE(BaseEventReportTest)
 
         ~ReportFixture()
         {
+            delete m_pMpi;
             delete m_pSimulationConfig;
             Environment::setSimulationConfig( nullptr );
         }
     };
-
-    bool                      ReportFixture::environmentInitialized = false ;
-    boost::mpi::environment*  ReportFixture::env        = nullptr ;
-    boost::mpi::communicator* ReportFixture::world      = nullptr ;
 
     TEST_FIXTURE(ReportFixture, TestConfigure)
     {
@@ -161,7 +150,7 @@ SUITE(BaseEventReportTest)
         CHECK_EQUAL( 1, report_data.Size() );
 
         unique_ptr<Configuration> p_cfg( Environment::CopyFromElement( report_data[0] ) );
-        std::string class_name = (string)((*p_cfg)["class"].As<json::String>());
+        std::string class_name = string((*p_cfg)["class"].As<json::String>());
 
         CHECK_EQUAL( std::string("TestReport"), class_name );
 

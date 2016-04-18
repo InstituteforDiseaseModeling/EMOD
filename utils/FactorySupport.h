@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -43,7 +43,7 @@ namespace Kernel
     ReturnTypeT* CreateInstanceFromSpecs(const Configuration* config, support_spec_map_t &specs, bool query_for_return_interface = true)
     {
         string classname = GET_CONFIG_STRING(config, "class");
-        ISupports* obj = NULL;
+        ISupports* obj = nullptr;
 
         map<string, instantiator_function_t>::iterator it = specs.find(classname);
         if (specs.end() == it)
@@ -60,7 +60,7 @@ namespace Kernel
             obj = it->second(); // create object
             obj->AddRef(); // increment reference counting for 'obj'
 
-            IConfigurable *conf_obj = NULL;
+            IConfigurable *conf_obj = nullptr;
             if (s_OK == obj->QueryInterface(GET_IID(IConfigurable), (void**)&conf_obj))
             {
                 if (!conf_obj->Configure(config))
@@ -68,7 +68,7 @@ namespace Kernel
                     // release references to the objects
                     conf_obj->Release();
                     obj->Release();
-                    return NULL;
+                    return nullptr;
                 }
             }
             else
@@ -81,7 +81,7 @@ namespace Kernel
         /* now return an interface type the user actually wants*/
         if (query_for_return_interface)
         {
-            ReturnTypeT *ri = NULL;
+            ReturnTypeT *ri = nullptr;
 
             // get iid. Interesting issue here where macros and templates args interact unpredictably.
             string templateClassName = typeid(ReturnTypeT).name();
@@ -107,7 +107,7 @@ namespace Kernel
             {                
                 /* Didn't even support what we wanted, dispose of it and return null */
                 obj->Release(); 
-                return NULL;
+                return nullptr;
             }
 
             obj->Release(); // reduce reference count as 'obj' is going out of scope

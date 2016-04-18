@@ -1,0 +1,49 @@
+{
+    "Metadata": {
+        "Author": "dbridenbecker", 
+        "NodeCount": 1, 
+        "Tool": "notepad", 
+        "IdReference": "0", 
+        "DateCreated": "2015-3-21"
+    },
+    "Defaults": {
+        "Society" : {
+            "TRANSITORY" :
+            {
+                "Relationship_Parameters" :
+                {
+                    "Coital_Act_Rate": 2.0, 
+                    "Duration_Weibull_Scale" : 0.009567748
+                },
+                "Pair_Formation_Parameters" :
+                {
+                    "Formation_Rate_Constant": 0.014424307
+                }
+            },
+            "INFORMAL" :
+            {
+                "Pair_Formation_Parameters" :
+                {
+                    "Formation_Rate_Constant": 0.0
+                }
+            },
+            "MARITAL" :
+            {
+                "Relationship_Parameters" :
+                {
+                    "Condom_Usage_Probability" :
+                    {
+                        "Min": 0.9,
+                        "Max": 0.9,
+                        "Mid": 0,
+                        "Rate": 1
+                    }
+                },
+                "Pair_Formation_Parameters" :
+                {
+                    "Formation_Rate_Constant": 0.0
+                }
+            }
+        }
+    }
+}

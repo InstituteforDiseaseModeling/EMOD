@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -20,7 +20,7 @@ namespace Kernel
         friend class IndividualHumanCoinfection;
 
     public:
-        virtual bool Configure( const Configuration* config );
+        virtual bool Configure( const Configuration* config ) override;
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
         DECLARE_QUERY_INTERFACE()
         static float TB_immune_loss_fraction;
@@ -55,23 +55,23 @@ namespace Kernel
         static SusceptibilityTB *CreateSusceptibility(IIndividualHumanContext *context, float age, float immmod, float riskmod);
         virtual ~SusceptibilityTB(void);
 
-        virtual void Update(float dt = 0.0);
-        virtual void UpdateInfectionCleared();
-        virtual float GetFastProgressorFraction();
-        virtual float GetSmearPositiveFraction();
-        virtual float GetExtraPulmonaryFraction();
-        virtual void  InitNewInfection();
-        virtual bool  IsImmune() const;
-        virtual float GetCoughInfectiousness();
-        virtual bool GetCD4ActFlag() const;
-        virtual void SetCD4ActFlag(bool bin);
+        virtual void Update(float dt = 0.0) override;
+        virtual void UpdateInfectionCleared() override;
+        virtual float GetFastProgressorFraction() override;
+        virtual float GetSmearPositiveFraction() override;
+        virtual float GetExtraPulmonaryFraction() override;
+        virtual void  InitNewInfection() override;
+        virtual bool  IsImmune() const override;
+        virtual float GetCoughInfectiousness() override;
+        virtual bool GetCD4ActFlag() const override;
+        virtual void SetCD4ActFlag(bool bin) override;
 
     protected:
         bool  Flag_use_CD4_for_act;
         SusceptibilityTB();
         SusceptibilityTB(IIndividualHumanContext *context);
 
-        void Initialize(float age, float immmod, float riskmod);
+        /* clorton virtual */ void Initialize(float age, float immmod, float riskmod) /* clorton override */;
 
         // additional members of SusceptibilityTB
         bool m_is_immune_competent;
@@ -82,12 +82,6 @@ namespace Kernel
         int  m_current_infections;  
         float m_cough_infectiousness;
 
-    private:
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, SusceptibilityTB &sus, const unsigned int  file_version );
-#endif
+        DECLARE_SERIALIZABLE(SusceptibilityTB);
     };
 }

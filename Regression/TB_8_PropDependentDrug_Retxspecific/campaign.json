@@ -12,7 +12,6 @@
                     "Outbreak_Source": "PrevalenceIncrease",
                     "class": "OutbreakIndividual"
                 },
-                "Number_Distributions": 500,
                 "Number_Repetitions": 1,
                 "Target_Demographic": "Everyone",
                 "Property_Restrictions": [],
@@ -39,7 +38,6 @@
                     "class": "AntiTBPropDepDrug"
                 },
                 "Target_Demographic": "ExplicitDiseaseState",
-                "Number_Distributions": -1,
                 "Number_Repetitions": 1,
                 "Property_Restrictions": [],
 				"Target_Disease_State": "Infected",
@@ -66,7 +64,6 @@
                     "class": "AntiTBPropDepDrug"
                 },
                 "Target_Demographic": "ExplicitDiseaseState",
-                "Number_Distributions": -1,
                 "Number_Repetitions": 1,
                 "Property_Restrictions": [],
 				"Target_Disease_State": "Infected",

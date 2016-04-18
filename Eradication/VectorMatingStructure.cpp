@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -279,23 +279,9 @@ namespace Kernel
             throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "_allele", _allele, VectorAllele::pairs::lookup_key(_allele) );
         }
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::VectorMatingStructure)
-namespace Kernel {
-    template< typename Archive >
-    void serialize( Archive& ar, VectorMatingStructure &obj, unsigned int file_version )
+    void VectorMatingStructure::serialize(IArchive& ar, VectorMatingStructure& structure)
     {
-        ar & obj.vector_mating.index;
+        ar & structure.vector_mating.index;
     }
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, VectorMatingStructure &obj, unsigned int file_version );
-    template void serialize( boost::archive::binary_iarchive&, VectorMatingStructure &obj, unsigned int file_version );
-    template void serialize( boost::mpi::packed_iarchive&, VectorMatingStructure &obj, unsigned int file_version );
-    template void serialize( boost::mpi::packed_skeleton_oarchive&, VectorMatingStructure &obj, unsigned int file_version );
-    template void serialize( boost::archive::binary_oarchive&, VectorMatingStructure &obj, unsigned int file_version );
-    template void serialize( boost::mpi::packed_oarchive&, VectorMatingStructure &obj, unsigned int file_version );
-    template void serialize( boost::mpi::detail::content_oarchive&, VectorMatingStructure &obj, unsigned int file_version );
-    template void serialize( boost::mpi::detail::mpi_datatype_oarchive&, VectorMatingStructure &obj, unsigned int file_version );
 }
-#endif

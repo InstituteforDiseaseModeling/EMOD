@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -18,7 +18,7 @@ namespace Kernel
 {
     ITransmissionGroups* TransmissionGroupsFactory::CreateNodeGroups(TransmissionGroupType::Enum groupsType)
     {
-        ITransmissionGroups* groups = NULL;
+        ITransmissionGroups* groups = nullptr;
 
         switch (groupsType)
         {
@@ -38,11 +38,13 @@ namespace Kernel
             groups = (ITransmissionGroups*) _new_ VectorTransmissionGroups;
             break;
 #endif
-//#ifndef DISABLE_STI
+#ifndef DISABLE_HIV
+#ifndef _DLLS_
         case TransmissionGroupType::RelationshipGroups:
             groups = (ITransmissionGroups*) _new_ RelationshipGroups;
             break;
-//#endif
+#endif
+#endif
         default:
             throw BadEnumInSwitchStatementException(__FILE__, __LINE__, __FUNCTION__, "Unknown transmission groups type.");
         }

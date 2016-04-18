@@ -1,0 +1,17 @@
+{
+    "Custom_Reports" : 
+    {
+        "Use_Explicit_Dlls" : 1,
+        "Report_HIV_WHO2015" :
+        {
+            "Enabled" : 1,
+            "Reports" :
+            [ 
+                {
+                    "Start_Year" : 1996,
+                    "Stop_Year"  : 1998
+                }
+            ]
+        }
+    }
+}

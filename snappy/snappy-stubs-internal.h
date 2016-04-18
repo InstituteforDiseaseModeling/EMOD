@@ -125,6 +125,9 @@ class LogMessage {
     PREDICT_TRUE(condition) ? (void)0 : \
     snappy::LogMessageVoidify() & snappy::LogMessageCrash()
 
+#pragma warning( push )
+#pragma warning( disable: 4722 )
+
 class LogMessageCrash : public LogMessage {
  public:
   LogMessageCrash() { }
@@ -133,6 +136,8 @@ class LogMessageCrash : public LogMessage {
     abort();
   }
 };
+
+#pragma warning( pop )
 
 // This class is used to explicitly ignore values in the conditional
 // logging macros.  This avoids compiler warnings like "value computed

@@ -1,0 +1,20 @@
+{
+    "Metadata": {
+        "Tool": "PythonApplication1.py", 
+        "IdReference": "ABC", 
+        "DateCreated": "Wed Dec  2 14:08:48 2015", 
+        "InterpolationType": "PIECEWISE_CONSTANT", 
+        "GenderDataType": "SAME_FOR_BOTH_GENDERS", 
+        "NodeCount": 4, 
+        "MigrationType": "LOCAL_MIGRATION", 
+        "AgesYears": [
+            14.99, 
+            15, 
+            45, 
+            75, 
+            105
+        ], 
+        "DatavalueCount": 3
+    }, 
+    "NodeOffsets": "000000010000000000000002000000240000000300000048000000040000006C"
+}

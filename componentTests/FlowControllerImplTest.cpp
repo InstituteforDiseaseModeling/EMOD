@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -25,23 +25,35 @@ using namespace Kernel;
 
 SUITE(FlowControllerImplTest)
 {
-    TEST(TestGetSetRates)
+    struct FlowControllerFixture
     {
-        Environment::setLogger( new SimpleLogger() );
+        FlowControllerFixture()
+        {
+            Environment::Finalize();
+            Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
+        }
+
+        ~FlowControllerFixture()
+        {
+            Environment::Finalize();
+        }
+    };
+
+    TEST_FIXTURE(FlowControllerFixture, TestGetSetRates)
+    {
         SimulationConfig* p_sim_config = new SimulationConfig();
         p_sim_config->sim_type = SimType::HIV_SIM ;
         Environment::setSimulationConfig( p_sim_config );
 
-        float transitory_rate = 0.0013699f * 1.052946f ;
         PSEUDO_DES ran ;
 
-        unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/PairFormationParametersTest/TransitoryParameters.json" ) );
+        unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/FlowControllerImplTest.json" ) );
 
-        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get(), transitory_rate, 1.0f, 1.0f ) );
+        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get(), 1.0f, 1.0f ) );
 
         unique_ptr<IPairFormationRateTable> rate_table( RateTableImpl::CreateRateTable( from_data.get() ) );
         unique_ptr<IPairFormationStats> stats( PairFormationStatsImpl::CreateStats( from_data.get() ) );
-        unique_ptr<IPairFormationAgent> pfa( BehaviorPfa::CreatePfa( p_config.get(), from_data.get(), 30.0f, 0.2f, &ran,
+        unique_ptr<IPairFormationAgent> pfa( BehaviorPfa::CreatePfa( p_config.get(), from_data.get(), 0.2f, &ran,
                 [this](IIndividualHumanSTI* male, IIndividualHumanSTI* female) { /*AddRelationship( male, female );*/ } ) );
 
         unique_ptr<IPairFormationFlowController> controller( FlowControllerImpl::CreateController( pfa.get(), 
@@ -68,7 +80,8 @@ SUITE(FlowControllerImplTest)
         // --- Verify that if the elibility and rates are zero, 
         // --- then calling update doesn't change anything.
         // -----------------------------------------------------
-        controller->UpdateEntryRates();
+        IdmDateTime current_time;
+        controller->UpdateEntryRates( current_time, 1.0 );
 
         for( int i = 0 ; i < from_data->GetMaleAgeBinCount() ; i++ )
         {
@@ -103,7 +116,7 @@ SUITE(FlowControllerImplTest)
             stats->UpdateEligible( age_days, Gender::FEMALE, RiskGroup::HIGH, 20*(i+1) );
         }
 
-        controller->UpdateEntryRates();
+        controller->UpdateEntryRates( current_time, 1.0 );
 
         float exp_rates_m[] = { 0.048263057f, 0.025510424f, 0.019590163f, 0.016030330f, 0.011445053f, 
                                 0.007249568f, 0.004470678f, 0.002753004f, 0.001933519f, 0.001506529f,

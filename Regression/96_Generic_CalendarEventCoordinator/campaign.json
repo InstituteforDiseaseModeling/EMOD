@@ -1,0 +1,63 @@
+{
+    "Campaign_Name": "Initial Seeding",
+    "Events": [
+        { 
+            "Event_Coordinator_Config": 
+            { 
+                "Demographic_Coverage": 0.0001,
+                "Include_Arrivals": 0,
+                "Include_Departures": 0,
+                "Intervention_Config": 
+                { 
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "class": "OutbreakIndividual"
+                },
+                "Number_Repetitions": 260,
+                "Timesteps_Between_Repetitions": 7,
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Outbreak",
+            "Nodeset_Config": 
+            { 
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
+        },
+        { 
+            "Event_Name": "SIA Calendar", 
+            "Event_Coordinator_Config": 
+            { 
+                "Demographic_Coverage": 1,
+                "Intervention_Config": 
+                { 
+                    "Cost_To_Consumer": 0,
+                    "Vaccine_Take": 1,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "class": "SimpleVaccine",
+		    "Waning_Config": {
+                        "Initial_Effect": 1,
+                        "Box_Duration": 1825,
+                        "class": "WaningEffectBox"
+		    }
+                },
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Target_Demographic": "Everyone",
+                "Distribution_Times": [ 100, 200, 400, 800, 1200 ],
+                "Distribution_Coverages": [ 0.01, 0.05, 0.1, 0.2, 1.0 ],
+                "class": "CalendarEventCoordinator"
+            },
+            "Nodeset_Config": 
+            { 
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

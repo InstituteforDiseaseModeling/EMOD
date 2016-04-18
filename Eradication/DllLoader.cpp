@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -41,7 +41,7 @@ static const char* _module = "DllLoader";
 
 DllLoader::DllLoader(const char* sSimType)
 {
-    m_sSimType = NULL;
+    m_sSimType = nullptr;
     memset(m_sSimTypeAll, 0, SIMTYPES_MAXNUM*sizeof(char *));
     if (sSimType)
     {
@@ -55,13 +55,13 @@ DllLoader::~DllLoader ()
     if (m_sSimType)
     {
         delete m_sSimType;
-        m_sSimType = NULL;
+        m_sSimType = nullptr;
     }
     int i=0;
-    while (m_sSimTypeAll[i] != NULL && i<SIMTYPES_MAXNUM )
+    while (m_sSimTypeAll[i] != nullptr && i<SIMTYPES_MAXNUM )
     {
         delete m_sSimTypeAll[i];
-        m_sSimTypeAll[i] = NULL;
+        m_sSimTypeAll[i] = nullptr;
         i++;
     }
 }
@@ -102,7 +102,7 @@ DllLoader::ReadEmodulesJson(
         }
         LOG_INFO( "Stored all dll_paths.\n" );
     }
-    catch( json::Exception &e )
+    catch( const json::Exception &e )
     {
         throw Kernel::InitializationException( __FILE__, __LINE__, __FUNCTION__, e.what() );
     }
@@ -174,7 +174,7 @@ DllLoader::LoadDiseaseDlls(
                 }
                 LOG_INFO_F("Calling LoadLibrary for %S\n", dllPath.c_str());
                 HMODULE disDll = LoadLibrary( dllPath.c_str() );
-                if( disDll == NULL )
+                if( disDll == nullptr )
                 {
                     LOG_WARN_F("Failed to load dll %S\n", ffd.cFileName);
                 }
@@ -192,7 +192,7 @@ DllLoader::LoadDiseaseDlls(
                     typedef const char * (*gdt)();
                     gdt _gdt = (gdt)GetProcAddress( disDll, "GetDiseaseType" );
                     std::string diseaseType = std::string("");
-                    if( _gdt != NULL )
+                    if( _gdt != nullptr )
                     {
                         diseaseType = (_gdt)();
                     }
@@ -206,7 +206,7 @@ DllLoader::LoadDiseaseDlls(
 
                     LOG_INFO("Calling GetProcAddress for CreateSimulation\n");
                     createSim _createSim = (createSim)GetProcAddress( disDll, "CreateSimulation" );
-                    if( _createSim != NULL )
+                    if( _createSim != nullptr )
                     {
                         LOG_INFO_F("Caching create_sim function pointer for disease type: %s\n", diseaseType.c_str());
                         createSimFuncPtrMap[diseaseType] = _createSim;
@@ -220,7 +220,7 @@ DllLoader::LoadDiseaseDlls(
 
                     LOG_INFO("Calling GetProcAddress for GetSchema\n");
                     getSchema _getSchema = (getSchema)GetProcAddress( disDll, "GetSchema" );
-                    if( _getSchema != NULL )
+                    if( _getSchema != nullptr )
                     {
                         LOG_INFO_F("Caching get_schema function pointer for disease type: %s\n", diseaseType.c_str());
                         getSchemaFuncPtrMap[diseaseType] = _getSchema;
@@ -307,7 +307,7 @@ bool DllLoader::LoadReportDlls( std::unordered_map< std::string, Kernel::report_
                 LOG_INFO_F( "Calling LoadLibrary on reporter emodule %S\n", dllPath.c_str() );
                 HMODULE repDll = LoadLibrary( dllPath.c_str() );
 
-                if( repDll == NULL )
+                if( repDll == nullptr )
                 {
                     LOG_WARN_F( "Failed to load dll %S\n", ffd.cFileName );
                 }
@@ -364,7 +364,7 @@ bool DllLoader::GetSimTypes( const TCHAR* pFilename, HMODULE repDll )
     LOG_INFO_F( "Calling GetProcAddress for GetSupportedSimTypes on %S\n", pFilename );
     typedef void (*gst)(char* simType[]);
     gst _gst = (gst)GetProcAddress( repDll, "GetSupportedSimTypes" );
-    if( _gst != NULL )
+    if( _gst != nullptr )
     {
         (_gst)(m_sSimTypeAll);
         if (!MatchSimType(m_sSimTypeAll)) 
@@ -423,7 +423,7 @@ bool DllLoader::GetType( const TCHAR* pFilename,
         if( p_class_name != nullptr )
         {
             rClassName = std::string( p_class_name );
-            LOG_INFO_F( "Found Report DLL = %s", p_class_name );
+            LOG_INFO_F( "Found Report DLL = %s\n", p_class_name );
         }
         else
         {
@@ -498,7 +498,7 @@ bool DllLoader::LoadInterventionDlls(const char* dllName)
 
                 LOG_INFO_F("Calling LoadLibrary on interventions emodule %S\n", dllPath.c_str());
                 HMODULE intvenDll = LoadLibrary( dllPath.c_str() );
-                if( intvenDll == NULL )
+                if( intvenDll == nullptr )
                 {
                     LOG_WARN_F("Failed to load dll %S\n", ffd.cFileName);
                 }
@@ -517,14 +517,14 @@ bool DllLoader::LoadInterventionDlls(const char* dllName)
                     LOG_INFO("Calling GetProcAddress for RegisterWithFactory...\n");
                     typedef int (*callProc)(Kernel::IInterventionFactory *);
                     callProc _callProc = (callProc)GetProcAddress( intvenDll, "RegisterWithFactory" );
-                    if( _callProc != NULL )
+                    if( _callProc != nullptr )
                     {
                         (_callProc)( Kernel::InterventionFactory::getInstance() );
                         bRet = true;
                     }
                     else
                     {
-                        LOG_WARN("GetProcAddr failed for RegisterWithFactory.\n");
+                        LOG_WARN_F("GetProcAddr failed for RegisterWithFactory for filename %s.\n", std::wstring(ffd.cFileName).c_str());
                     }
                 }
             }
@@ -539,16 +539,16 @@ bool DllLoader::LoadInterventionDlls(const char* dllName)
 #else // WIN32
 
     // Scan for intervention dlls/shared libraries and Register them with us.
-    void * newSimDlHandle = NULL;
+    void * newSimDlHandle = nullptr;
     int (*RegisterDotsoIntervention)( Kernel::InterventionFactory* );
     DIR * dp;
     struct dirent *dirp;
-    if( ( dp = opendir( "/var/opt/plugins/interventions" ) ) == NULL )
+    if( ( dp = opendir( "/var/opt/plugins/interventions" ) ) == nullptr )
     {
         LOG_WARN("Failed to open interventions plugin directory.\n");
         return;
     }
-    while( ( dirp = readdir( dp ) ) != NULL )
+    while( ( dirp = readdir( dp ) ) != nullptr )
     {
         if( std::string( dirp->d_name ) == "." ||
             std::string( dirp->d_name ) == ".." )
@@ -613,7 +613,7 @@ bool DllLoader::MatchSimType(char* simTypes[])
 
     int i=0;
     bMatched = false;
-    while (simTypes[i] != NULL && i < SIMTYPES_MAXNUM)
+    while (simTypes[i] != nullptr && i < SIMTYPES_MAXNUM)
     {
         if( (simTypes[i][0] == '*') || (strcmp(simTypes[i], m_sSimType) == 0) )
         {
@@ -629,7 +629,7 @@ bool DllLoader::MatchSimType(char* simTypes[])
 void DllLoader::LogSimTypes(char* simTypes[])
 {
     int i=0;
-    while (simTypes[i] != NULL && i < SIMTYPES_MAXNUM)
+    while (simTypes[i] != nullptr && i < SIMTYPES_MAXNUM)
     {
         LOG_INFO_F("SimType: %s \n", simTypes[i]);
         i++;
@@ -712,7 +712,7 @@ bool DllLoader::CheckEModuleVersion(HMODULE hEMod, char* emodVer)
 {
     bool bRet = false;
     gver _gver = (gver)GetProcAddress( hEMod, "GetEModuleVersion" );
-    if( _gver != NULL )
+    if( _gver != nullptr )
     {
         char emodVersion[64];
         (_gver)(emodVersion,EnvPtr);
@@ -758,7 +758,7 @@ bool DllLoader::GetDllsVersion(const char* dllPath, std::wstring& wsPluginDir,li
 
             LOG_INFO_F("Calling LoadLibrary for %S\n", dllPath.c_str());
             HMODULE ecDll = LoadLibrary( dllPath.c_str() );
-            if( ecDll == NULL )
+            if( ecDll == nullptr )
             {
                 LOG_WARN_F("Failed to load dll %S\n",ffd.cFileName);
             }

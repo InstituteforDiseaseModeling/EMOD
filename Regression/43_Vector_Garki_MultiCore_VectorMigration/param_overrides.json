@@ -17,7 +17,7 @@
           }, 
           "DEMOGRAPHICS": {
                "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE", 
-               "Demographics_Filename": "Garki_30arcsec_demographics.compiled.json", 
+               "Demographics_Filenames": ["Garki_30arcsec_demographics.compiled.json"], 
                "MORTALITY": {
                     "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF"
                }, 
@@ -41,6 +41,9 @@
                "Migration_Model": "FIXED_RATE_MIGRATION", 
                "Migration_Pattern": "WAYPOINTS_HOME", 
                "Enable_Migration_Heterogeneity" : 0,
+               "Enable_Family_Migration": 0, 
+               "Family_Migration_Filename": "", 
+               "x_Family_Migration": 1,
                "Roundtrip_Waypoints": 10,
                "AIR" : {
                     "Enable_Air_Migration" : 0,
@@ -70,6 +73,15 @@
           "VECTOR": {
                "Enable_Vector_Migration": 1, 
                "Enable_Vector_Migration_Local": 1, 
+               "Vector_Migration_Filename_Local" : "",
+               "x_Vector_Migration_Local" : 1,
+               "Enable_Vector_Migration_Regional" : 0,
+               "Vector_Migration_Filename_Regional" : "",
+               "x_Vector_Migration_Regional" : 1,
+               "Vector_Migration_Modifier_Equation" : "LINEAR",
+               "Vector_Migration_Food_Modifier" : 0.0,
+               "Vector_Migration_Habitat_Modifier" : 0.0,
+               "Vector_Migration_Stay_Put_Modifier" : 0.0,
                "Mosquito_Weight": 10, 
                "Vector_Sampling_Type": "SAMPLE_IND_VECTORS"
           }, 

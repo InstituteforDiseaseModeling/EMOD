@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,7 +11,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "IdmApi.h"
 #include "IReport.h"
-#include "suids.hpp"
 #include "NodeSet.h"
 #include "Interventions.h" //IIndividualEventObserver
 
@@ -33,39 +32,33 @@ namespace Kernel
         // -----------------------
         // --- IReport Methods
         // -----------------------
-        virtual bool Configure( const Configuration* );
+        virtual bool Configure( const Configuration* ) override;
 
-        virtual std::string GetReportName() const;
-        virtual void Initialize( unsigned int nrmSize );
+        virtual std::string GetReportName() const override;
+        virtual void Initialize( unsigned int nrmSize ) override;
 
         virtual void UpdateEventRegistration( float currentTime, 
                                               float dt, 
-                                              std::vector<INodeEventContext*>& rNodeEventContextList );
-        virtual void BeginTimestep() ;
-        virtual bool IsCollectingIndividualData( float currentTime, float dt ) const ;
-        virtual void LogIndividualData( Kernel::IndividualHuman * individual );
-        virtual void LogNodeData( Kernel::INodeContext * pNC );
-        virtual void EndTimestep( float currentTime, float dt );
+                                              std::vector<INodeEventContext*>& rNodeEventContextList ) override;
+        virtual void BeginTimestep() override;
+        virtual bool IsCollectingIndividualData( float currentTime, float dt ) const override;
+        virtual void LogIndividualData( Kernel::IIndividualHuman* individual ) override;
+        virtual void LogNodeData( Kernel::INodeContext * pNC ) override;
+        virtual void EndTimestep( float currentTime, float dt ) override;
 
-        virtual void Reduce();
-        virtual void Finalize();
+        virtual void Reduce() override;
+        virtual void Finalize() override;
 
         // -----------------------------
         // --- IIndividualEventObserver
         // -----------------------------
         virtual bool notifyOnEvent( Kernel::IIndividualHumanEventContext *context, 
-                                    const std::string& StateChange) { return false; };
-
-#if USE_JSON_SERIALIZATION
-        // For JSON serialization
-        virtual void JSerialize( Kernel::IJsonObjectAdapter* root, Kernel::JSerializer* helper ) const;
-        virtual void JDeserialize( Kernel::IJsonObjectAdapter* root, Kernel::JSerializer* helper );
-#endif
+                                    const std::string& StateChange) override { return false; };
 
         // --------------
         // --- ISupports
         // --------------
-        virtual Kernel::QueryResult QueryInterface(Kernel::iid_t iid, void **ppvObject) { return Kernel::e_NOINTERFACE; }
+        virtual Kernel::QueryResult QueryInterface(Kernel::iid_t iid, void **ppvObject) override { return Kernel::e_NOINTERFACE; }
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
 
         // ----------

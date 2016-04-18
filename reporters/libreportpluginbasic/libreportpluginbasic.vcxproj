@@ -52,14 +52,14 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_REPORT_DLL;IDM_EXPORT;_SCL_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBREPORTPLUGINBASIC_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;_REPORT_DLL;IDM_EXPORT;_SCL_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBREPORTPLUGINBASIC_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\Dependencies\ComputeClusterPack\Include;C:\boost\boost_1_51_0;..\..\cajun\Include;..\..\utils;..\..\baseReportLib;..\..\Eradication;..\..\jsonspirit;..\..\campaign;..\..\rapidjson\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\Dependencies\ComputeClusterPack\Lib\amd64;c:\boost\boost_1_51_0\lib\x64;..\..\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\Dependencies\ComputeClusterPack\Lib\amd64;..\..\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>baseReportLib.lib cajun.lib utils.lib campaign.lib msmpi.lib %(AdditionalOptions)</AdditionalOptions>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <AdditionalDependencies>Dbghelp.lib;Ws2_32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -72,7 +72,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>_REPORT_DLL;IDM_EXPORT;_SCL_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBREPORTPLUGINBASIC_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;_REPORT_DLL;IDM_EXPORT;_SCL_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBREPORTPLUGINBASIC_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\Dependencies\ComputeClusterPack\Include;C:\boost\boost_1_51_0;..\..\cajun\Include;..\..\utils;..\..\baseReportLib;..\..\Eradication;..\..\jsonspirit;..\..\campaign;..\..\rapidjson\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -80,67 +80,13 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\Dependencies\ComputeClusterPack\Lib\amd64;c:\boost\boost_1_51_0\lib\x64;..\..\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\Dependencies\ComputeClusterPack\Lib\amd64;..\..\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>baseReportLib.lib cajun.lib utils.lib campaign.lib msmpi.lib %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>Dbghelp.lib;Ws2_32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\BaseReportLib\BaseChannelReport.h" />
-    <ClInclude Include="..\..\BaseReportLib\ChannelDataMap.h" />
-    <ClInclude Include="..\..\BaseReportLib\IReport.h" />
-    <ClInclude Include="..\..\campaign\InterventionEnums.h" />
-    <ClInclude Include="..\..\campaign\InterventionFactory.h" />
-    <ClInclude Include="..\..\campaign\Interventions.h" />
-    <ClInclude Include="..\..\campaign\InterventionValidator.h" />
-    <ClInclude Include="..\..\Eradication\Climate.h" />
-    <ClInclude Include="..\..\Eradication\Contexts.h" />
-    <ClInclude Include="..\..\Eradication\DllDefs.h" />
-    <ClInclude Include="..\..\Eradication\DllInterfaceHelper.h" />
-    <ClInclude Include="..\..\Eradication\IContagionPopulation.h" />
-    <ClInclude Include="..\..\Eradication\IIndividualHuman.h" />
-    <ClInclude Include="..\..\Eradication\IInfectable.h" />
-    <ClInclude Include="..\..\Eradication\IMigrate.h" />
-    <ClInclude Include="..\..\Eradication\Individual.h" />
-    <ClInclude Include="..\..\Eradication\IndividualEventContext.h" />
-    <ClInclude Include="..\..\Eradication\INodeContext.h" />
-    <ClInclude Include="..\..\Eradication\InterventionsContainer.h" />
-    <ClInclude Include="..\..\Eradication\IntranodeTransmissionTypes.h" />
-    <ClInclude Include="..\..\Eradication\ITransmissionGroups.h" />
-    <ClInclude Include="..\..\Eradication\MalariaDrugTypeParameters.h" />
-    <ClInclude Include="..\..\Eradication\Properties.h" />
-    <ClInclude Include="..\..\Eradication\Report.h" />
-    <ClInclude Include="..\..\Eradication\SimulationEnums.h" />
-    <ClInclude Include="..\..\Eradication\StrainIdentity.h" />
-    <ClInclude Include="..\..\Eradication\TBDrugTypeParameters.h" />
-    <ClInclude Include="..\..\Eradication\TransmissionGroupMembership.h" />
-    <ClInclude Include="..\..\Eradication\VectorEnums.h" />
-    <ClInclude Include="..\..\utils\BoostLibWrapper.h" />
-    <ClInclude Include="..\..\utils\Common.h" />
-    <ClInclude Include="..\..\utils\Configuration.h" />
-    <ClInclude Include="..\..\utils\ConfigurationImpl.h" />
-    <ClInclude Include="..\..\utils\Configure.h" />
-    <ClInclude Include="..\..\utils\Debug.h" />
-    <ClInclude Include="..\..\utils\EnumSupport.h" />
-    <ClInclude Include="..\..\utils\Environment.h" />
-    <ClInclude Include="..\..\utils\Exceptions.h" />
-    <ClInclude Include="..\..\utils\FactorySupport.h" />
-    <ClInclude Include="..\..\utils\IdmApi.h" />
-    <ClInclude Include="..\..\utils\IdmDateTime.h" />
-    <ClInclude Include="..\..\utils\ISupports.h" />
-    <ClInclude Include="..\..\utils\JsonObject.h" />
-    <ClInclude Include="..\..\utils\Log.h" />
-    <ClInclude Include="..\..\utils\Profile.h" />
-    <ClInclude Include="..\..\utils\ProgVersion.h" />
-    <ClInclude Include="..\..\utils\RANDOM.h" />
-    <ClInclude Include="..\..\utils\Serializer.h" />
-    <ClInclude Include="..\..\utils\SimpleTypemapRegistration.h" />
-    <ClInclude Include="..\..\utils\Sugar.h" />
-    <ClInclude Include="..\..\utils\Types.h" />
-    <ClInclude Include="..\..\utils\ValidationLog.h" />
     <ClInclude Include="ReportPluginBasic.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ReportPluginBasic.cpp" />

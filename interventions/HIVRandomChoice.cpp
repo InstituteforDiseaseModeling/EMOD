@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,8 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionEnums.h"
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
-#include "HIVInterventionsContainer.h" // for time-date util function and access into IHIVCascadeOfCare
-#include "SimulationConfig.h"
+#include "IHIVInterventionsContainer.h" // for time-date util function and access into IHIVCascadeOfCare
 
 static const char * _module = "HIVRandomChoice";
 
@@ -29,10 +28,8 @@ namespace Kernel
         const std::string& key
     )
     {
-        ConstrainedString event ;
+        EventTrigger event ;
         event.parameter_name = "HIVRandomChoices::Choices::Event" ;
-        event.constraints = "<configuration>:Listed_Events.*";
-        event.constraint_param = &GET_CONFIGURABLE(SimulationConfig)->listed_events;
 
         float total = 0.0 ;
         const auto& tvcs_jo = json_cast<const json::Object&>( (*inputJson)[key] );
@@ -40,28 +37,41 @@ namespace Kernel
                   data != tvcs_jo.End();
                   ++data )
         {
-            auto tvcs = inputJson->As< json::Object >()[ key ]; 
+            try {
+                auto tvcs = inputJson->As< json::Object >()[ key ];
 
-            event = data->name;
-            float probability = (float) ((json::QuickInterpreter( tvcs ))[ data->name ].As<json::Number>());
+                event = data->name;
+                float probability = 0.0f;
+                try {
+                    probability = (float) ((json::QuickInterpreter( tvcs ))[ data->name ].As<json::Number>());
+                }
+                catch( const json::Exception & )
+                {
+                    throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, data->name.c_str(), (json::QuickInterpreter( tvcs )), "Expected NUMBER" );
+                }
 
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // !!! BEWARE when duplicating this pattern.  Try to use the initConfig() pattern.
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            if ( probability > MAX_PROBABILITY )
-            {
-                throw ConfigurationRangeException( __FILE__, __LINE__, __FUNCTION__, 
-                                                   "HIVRandomChoices::Choices::Probability", probability, MAX_PROBABILITY );
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // !!! BEWARE when duplicating this pattern.  Try to use the initConfig() pattern.
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                if ( probability > MAX_PROBABILITY )
+                {
+                    throw ConfigurationRangeException( __FILE__, __LINE__, __FUNCTION__,
+                            "HIVRandomChoices::Choices::Probability", probability, MAX_PROBABILITY );
+                }
+                else if ( probability < MIN_PROBABILITY )
+                {
+                    throw ConfigurationRangeException( __FILE__, __LINE__, __FUNCTION__,
+                            "HIVRandomChoices::Choices::Probability", probability, MIN_PROBABILITY );
+                }
+
+                (this)->insert( std::make_pair( event, probability ) );
+
+                total += probability ;
             }
-            else if ( probability < MIN_PROBABILITY )
+            catch( const json::Exception & )
             {
-                throw ConfigurationRangeException( __FILE__, __LINE__, __FUNCTION__,
-                                                   "HIVRandomChoices::Choices::Probability", probability, MIN_PROBABILITY );
+                throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, key.c_str(), (*inputJson), "Expected OBJECT" );
             }
-
-            (this)->insert( std::make_pair( event, probability ) );
-
-            total += probability ;
         }
 
         if( total == 0.0 )
@@ -76,6 +86,44 @@ namespace Kernel
         }
     }
 
+    void Event2ProbabilityMapType::serialize( IArchive& ar, Event2ProbabilityMapType& mapping )
+    {
+        size_t count = ar.IsWriter() ? mapping.size() : -1;
+
+        ar.startArray(count);
+        if( ar.IsWriter() )
+        {
+            for (auto& entry : mapping)
+            {
+                std::string key   = entry.first;
+                float value = entry.second;
+                ar.startObject();
+                    ar.labelElement("key"  ) & key;
+                    ar.labelElement("value") & value;
+                ar.endObject();
+            }
+        }
+        else
+        {
+            for (size_t i = 0; i < count; ++i)
+            {
+                std::string key;
+                float value = 0.0;
+                ar.startObject();
+                    ar.labelElement("key"  ) & key;
+                    ar.labelElement("value") & value;
+                ar.endObject();
+
+                EventTrigger event ;
+                event.parameter_name = "HIVRandomChoices::Choices::Event" ;
+                event = key;
+
+                mapping[key] = value;
+            }
+        }
+        ar.endArray();
+    }
+
     json::QuickBuilder
     Event2ProbabilityMapType::GetSchema()
     {
@@ -83,7 +131,7 @@ namespace Kernel
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
         schema[ tn ] = json::String( "idmType:Event2ProbabilityMapType" );
-    
+
         schema[ts]["Event"] = json::Object();
         schema[ts]["Event"][ "type" ] = json::String( "Constrained String" );
         schema[ts]["Event"][ "description" ] = json::String( HIV_Event2ProbabilityMap_Event_DESC_TEXT );
@@ -93,7 +141,7 @@ namespace Kernel
         schema[ts]["Probability"][ "min" ] = json::Number( MIN_PROBABILITY );
         schema[ts]["Probability"][ "max" ] = json::Number( MAX_PROBABILITY );
         schema[ts]["Probability"][ "description" ] = json::String( HIV_Event2ProbabilityMap_Probability_DESC_TEXT );
-        
+
         return schema;
     }
     BEGIN_QUERY_INTERFACE_DERIVED(HIVRandomChoice, SimpleDiagnostic)
@@ -124,7 +172,7 @@ namespace Kernel
 
         // random number to choose an event from the dictionary
         float p = Environment::getInstance()->RNG->e();
-        
+
         std::string eventEnum = NO_TRIGGER_STR ;
         float probSum = 0;
 
@@ -148,7 +196,7 @@ namespace Kernel
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
                                            "parent->GetEventContext()->GetNodeEventContext()",
-                                           "INodeTriggeredInterventionConsumer", 
+                                           "INodeTriggeredInterventionConsumer",
                                            "INodeEventContext" );
         }
         if( eventEnum != NO_TRIGGER_STR )
@@ -156,22 +204,14 @@ namespace Kernel
             broadcaster->TriggerNodeEventObserversByString( parent->GetEventContext(), eventEnum );
         }
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::HIVRandomChoice)
+    REGISTER_SERIALIZABLE(HIVRandomChoice);
 
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, HIVRandomChoice& obj, const unsigned int v)
+    void HIVRandomChoice::serialize(IArchive& ar, HIVRandomChoice* obj)
     {
-        static const char * _module = "HIVRandomChoice";
-        LOG_DEBUG("(De)serializing HIVRandomChoice\n");
+        HIVSimpleDiagnostic::serialize( ar, obj );
+        HIVRandomChoice& choice = *obj;
 
-        boost::serialization::void_cast_register<HIVRandomChoice, IDistributableIntervention>();
-        //ar & obj.event2ProbabilityMap;     // todo: serialize this!
-        ar & boost::serialization::base_object<Kernel::HIVSimpleDiagnostic>(obj);
+        ar.labelElement("event2ProbabilityMap") & choice.event2ProbabilityMap;
     }
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, Kernel::HIVRandomChoice&, unsigned int);
 }
-#endif

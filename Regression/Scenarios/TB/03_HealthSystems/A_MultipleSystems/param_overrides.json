@@ -1,8 +1,9 @@
 {
-    "Default_Config_Path":"defaults\\tb_scenario_default_config.json",
+    "Default_Config_Path":"defaults/tb_scenario_default_config.json",
     "parameters":{
         "Config_Name":"03_HealthSystems_A_MultipleSystems",
-        "Demographics_Filename":"TB_03_HealthSystems_demographics.json",
+        "Custom_Reports_Filename" : "custom_reports.json",
+        "Demographics_Filenames":["TB_03_HealthSystems_demographics.json"],
         "Simulation_Duration":1000,
         "Simulation_Timestep":5,
         "TB_Active_Cure_Rate":1e-09,

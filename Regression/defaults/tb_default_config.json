@@ -13,16 +13,19 @@
                "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE", 
                "Base_Population_Scale_Factor": 1, 
                "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE", 
-               "Demographics_Filename": "", 
+               "Birth_Rate_Time_Dependence": "NONE",
+               "Demographics_Filenames": ["NO_DEFAULT_DEMOGRAPHICS"], 
+               "Default_Geography_Initial_Node_Population":1000,
+               "Default_Geography_Torus_Size":10,
                "Enable_Aging": 1, 
                "Enable_Birth": 1, 
                "Enable_Demographics_Birth": 0, 
                "Enable_Demographics_Gender": 1, 
                "Enable_Demographics_Initial": 1, 
                "Enable_Demographics_Other": 0, 
-               "Enable_Demographics_Reporting": 1, 
-               "Enable_Immunity_Initialization_Distribution": 0, 
+               "Enable_Demographics_Reporting": 0, 
                "Enable_Vital_Dynamics": 1, 
+               "Minimum_Adult_Age_Years" : 15,
                "IMMUNITY": {
                     "Acquisition_Blocking_Immunity_Decay_Rate": 0.1, 
                     "Acquisition_Blocking_Immunity_Duration_Before_Decay": 60, 
@@ -30,6 +33,8 @@
                     "Enable_Immunity": 1, 
                     "Immunity_Acquisition_Factor": 0, 
                     "Immunity_Transmission_Factor": 0, 
+                    "Immunity_Initialization_Distribution_Type": "DISTRIBUTION_OFF",
+                    "Susceptibility_Scale_Type": "CONSTANT_SUSCEPTIBILITY", 
                     "Transmission_Blocking_Immunity_Decay_Rate": 0.1, 
                     "Transmission_Blocking_Immunity_Duration_Before_Decay": 60
                }, 
@@ -101,13 +106,9 @@
           "HPC": {
                "Job_Node_Groups": "Chassis08", 
                "Job_Priority": "BELOWNORMAL", 
-               "LB": {
-                    "Load_Balance_Filename": "", 
-                    "Load_Balance_Scheme": "STATIC"
-               }, 
+               "Load_Balance_Filename": "", 
                "Local_Simulation": 0, 
-               "Num_Cores": 1,
-               "Python_Script_Path": "\\\\10.210.40.98\\IDM\\public\\python\\"
+               "Num_Cores": 1
           }, 
           "MIGRATION": {
                "Migration_Model": "NO_MIGRATION"
@@ -122,6 +123,7 @@
           }, 
           "NEEDED_BUT_NOT_USEFUL": {}, 
           "OUTPUT": {
+               "Custom_Reports_Filename" : "NoCustomReports",
                "Report_Event_Recorder" : 0,
                "Enable_Default_Reporting" : 1,
                "Enable_Spatial_Output": 0,

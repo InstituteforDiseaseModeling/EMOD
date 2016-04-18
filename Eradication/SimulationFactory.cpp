@@ -1,13 +1,15 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
+
+#pragma warning(disable:4996)
 
 #ifdef WIN32
 #include "windows.h"
@@ -23,8 +25,15 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #ifndef DISABLE_MALARIA
 #include "SimulationMalaria.h"
 #endif
+#ifndef DISABLE_VECTOR
+#include "SimulationVector.h"
+#endif
 #ifdef ENABLE_POLIO
 #include "SimulationPolio.h"
+#endif
+
+#ifndef DISABLE_AIRBORNE
+#include "SimulationAirborne.h"
 #endif
 
 #ifdef ENABLE_TB
@@ -34,10 +43,16 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #ifdef ENABLE_TBHIV
 #include "SimulationTBHIV.h"
 #endif
-#ifndef DISABLE_HIV
+#ifndef DISABLE_STI
 #include "SimulationSTI.h"
+#endif
+#ifndef DISABLE_HIV
 #include "SimulationHIV.h"
 #endif
+#endif
+
+#ifdef ENABLE_PYTHON_FEVER
+#include "SimulationPy.h"
 #endif
 
 #include "DllLoader.h"
@@ -73,9 +88,11 @@ namespace Kernel
             else if (sSimType == "POLIO_SIM")
                 sim_type = SimType::POLIO_SIM;
 #endif
-#ifdef ENABLE_TB
+#ifndef DISABLE_AIRBORNE
             else if (sSimType == "AIRBORNE_SIM")
                 sim_type = SimType::AIRBORNE_SIM;
+#endif
+#ifdef ENABLE_TB
             else if (sSimType == "TB_SIM")
                 sim_type = SimType::TB_SIM;
 #ifdef ENABLE_TBHIV
@@ -83,12 +100,18 @@ namespace Kernel
                 sim_type = SimType::TBHIV_SIM;
 #endif // TBHIV
 #endif // TB
-#ifndef DISABLE_HIV
+#ifndef DISABLE_STI
             else if (sSimType == "STI_SIM")
                 sim_type = SimType::STI_SIM;
+#endif
+#ifndef DISABLE_HIV
             else if (sSimType == "HIV_SIM")
                 sim_type = SimType::HIV_SIM;
 #endif // HIV
+#ifdef ENABLE_PYTHON_FEVER
+            else if (sSimType == "PY_SIM")
+                sim_type = SimType::PY_SIM;
+#endif
             else
             {
                 std::ostringstream msg;
@@ -140,11 +163,14 @@ namespace Kernel
                     newsim = SimulationMalaria::CreateSimulation(EnvPtr->Config);
                 break;
 #endif
-#ifdef ENABLE_TB
+
+#ifndef DISABLE_AIRBORNE
                 case SimType::AIRBORNE_SIM:
                     newsim = SimulationAirborne::CreateSimulation(EnvPtr->Config);
                 break;
+#endif
 
+#ifdef ENABLE_TB
                 case SimType::TB_SIM:
                     newsim = SimulationTB::CreateSimulation(EnvPtr->Config);
                 break;
@@ -154,16 +180,21 @@ namespace Kernel
                 break;
 #endif // TBHIV
 #endif // TB
-#ifndef DISABLE_HIV 
+#ifndef DISABLE_STI
                 case SimType::STI_SIM:
                     newsim = SimulationSTI::CreateSimulation(EnvPtr->Config);
                 break;
-
+#endif
+#ifndef DISABLE_HIV 
                 case SimType::HIV_SIM:
                     newsim = SimulationHIV::CreateSimulation(EnvPtr->Config);
                 break;
 #endif // HIV
-
+#ifdef ENABLE_PYTHON_FEVER 
+                case SimType::PY_SIM:
+                    newsim = SimulationPy::CreateSimulation(EnvPtr->Config);
+                break;
+#endif
                 default: 
                 // Is it even possible to get here anymore?  Won't the SimulationConfig error out earlier parsing the parameter-string?
                 //("SimulationFactory::CreateSimulation(): Error, Simulation_Type %d is not implemented.\n", sim_type);

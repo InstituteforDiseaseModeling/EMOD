@@ -1,16 +1,15 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 
 #include "Drugs.h" // for IDrug interface
-#include "SimpleTypemapRegistration.h"
 #include "Sugar.h"
 #include "MalariaContexts.h"
 
@@ -33,7 +32,7 @@ namespace Kernel
         drug_gametocyte02(0.0),
         drug_gametocyte34(0.0),
         drug_gametocyteM(0.0),
-        individual(NULL)
+        individual(nullptr)
     {
     }
 
@@ -58,7 +57,7 @@ namespace Kernel
         drug->QueryInterface(GET_IID(IDistributableIntervention), (void**)&di);
         bool keep = false;
 
-        if( individual == NULL )
+        if( individual == nullptr )
         {
             if( parent->QueryInterface( GET_IID( IMalariaHumanContext ), (void**) &individual ) != s_OK )
             {
@@ -114,7 +113,7 @@ namespace Kernel
     {
         // NOTE: Calling this AFTER the QI/GiveDrug crashes!!! Both win and linux. Says SetContextTo suddenly became a pure virtual.
         pIV->SetContextTo( parent );
-        IDrug * pDrug = NULL;
+        IDrug * pDrug = nullptr;
         if( s_OK == pIV->QueryInterface(GET_IID(IDrug), (void**) &pDrug) )
         {
             LOG_DEBUG("[MalariaInterventionsContainer::GiveIntervention] Got a drug\n");
@@ -182,35 +181,17 @@ namespace Kernel
     float MalariaInterventionsContainer::get_drug_gametocyte02()  { return drug_gametocyte02;  }
     float MalariaInterventionsContainer::get_drug_gametocyte34()  { return drug_gametocyte34;  }
     float MalariaInterventionsContainer::get_drug_gametocyteM()   { return drug_gametocyteM;   }
-    MalariaDrugTypeParameters::tMDTPMap& MalariaInterventionsContainer::GetMdtParams()
+
+    REGISTER_SERIALIZABLE(MalariaInterventionsContainer);
+
+    void MalariaInterventionsContainer::serialize(IArchive& ar, MalariaInterventionsContainer* obj)
     {
-        return MalariaDrugTypeParameters::_mdtMap;
+        MalariaInterventionsContainer& container = *obj;
+        VectorInterventionsContainer::serialize(ar, obj);
+        ar.labelElement("drug_IRBC_killrate") & container.drug_IRBC_killrate;
+        ar.labelElement("drug_hepatocyte")    & container.drug_hepatocyte;
+        ar.labelElement("drug_gametocyte02")  & container.drug_gametocyte02;
+        ar.labelElement("drug_gametocyte34")  & container.drug_gametocyte34;
+        ar.labelElement("drug_gametocyteM")   & container.drug_gametocyteM;
     }
 }
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::MalariaInterventionsContainer)
-
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, MalariaInterventionsContainer& mic, const unsigned int v)
-    {
-        ar & mic.drug_IRBC_killrate;
-        ar & mic.drug_hepatocyte;
-        ar & mic.drug_gametocyte02;
-        ar & mic.drug_gametocyte34;
-        ar & mic.drug_gametocyteM;
-
-        // this works only because this class is bound uniquely to a node which owns these pointers
-        ar & boost::serialization::base_object<Kernel::VectorInterventionsContainer>(mic);
-    }
-    template void serialize( boost::mpi::packed_oarchive&, Kernel::MalariaInterventionsContainer&, unsigned int);
-    template void serialize( boost::mpi::detail::mpi_datatype_oarchive&, Kernel::MalariaInterventionsContainer&, unsigned int);
-    template void serialize( boost::mpi::packed_skeleton_oarchive&, Kernel::MalariaInterventionsContainer&, unsigned int);
-    template void serialize( boost::mpi::detail::content_oarchive&, Kernel::MalariaInterventionsContainer&, unsigned int);
-    template void serialize( boost::mpi::packed_iarchive&, Kernel::MalariaInterventionsContainer&, unsigned int);
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, Kernel::MalariaInterventionsContainer&, unsigned int);
-    template void serialize( boost::archive::binary_iarchive&, Kernel::MalariaInterventionsContainer&, unsigned int);
-    template void serialize( boost::archive::binary_oarchive&, Kernel::MalariaInterventionsContainer&, unsigned int);
-}
-#endif

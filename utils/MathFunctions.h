@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,7 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include <math.h>
 #include "Exceptions.h"
-#include "SimulationEnums.h" // to get DistributionFunction enum. Don't want utils reaching into Eradication though. TBD!!!
+#include "EnumSupport.h"
 
 struct Gamma
 {
@@ -31,48 +31,29 @@ struct Gamma
     }
 };
 
-struct Sigmoid
-{
-    inline static double basic_sigmoid ( double threshold = 100.0, double variable = 0.0 )
-    {
-        return (variable > 0) ? (variable / (threshold + variable)) : 0.0;
-    }
-
-    inline static float variableWidthSigmoid( float variable, float threshold, float invwidth )
-    {
-        if ( invwidth > 0 )
-        {
-            return 1.0f / ( 1.0f + exp( (threshold-variable) / (threshold/invwidth) ) );
-        }
-        else
-        {
-            throw Kernel::OutOfRangeException( __FILE__, __LINE__, __FUNCTION__, "invwidth", invwidth, 0 );
-        }
-    }
-
-    inline static float variableWidthAndHeightSigmoid( float variable, float center, float rate, float min_val, float max_val)
-    {
-        // max_val must be >= min_val, however rate can be negative.
-        // A positive (negative) rate creates a sigmoid that increases (decreases) with variable
-        if ( max_val - min_val >= 0 )
-        {
-            return min_val + (max_val-min_val) / ( 1 + exp(-rate * (variable-center)) );
-        }
-        else
-        {
-            throw Kernel::ConfigurationRangeException( __FILE__, __LINE__, __FUNCTION__, "max_val - min_val", max_val - min_val, 0);
-        }
-    }
-};
-
 namespace Kernel {
+
+    // ENUM defs for INCUBATION_DISTRIBUTION, INFECTIOUS_DISTRIBUTION
+    ENUM_DEFINE(DistributionFunction, 
+        ENUM_VALUE_SPEC(NOT_INITIALIZED                                     , -1)
+        ENUM_VALUE_SPEC(FIXED_DURATION                                      , 0)
+        ENUM_VALUE_SPEC(UNIFORM_DURATION                                    , 1)
+        ENUM_VALUE_SPEC(GAUSSIAN_DURATION                                   , 2)
+        ENUM_VALUE_SPEC(EXPONENTIAL_DURATION                                , 3)
+        ENUM_VALUE_SPEC(POISSON_DURATION                                    , 4)
+        ENUM_VALUE_SPEC(LOG_NORMAL_DURATION                                 , 5)
+        ENUM_VALUE_SPEC(BIMODAL_DURATION                                    , 6)
+        ENUM_VALUE_SPEC(PIECEWISE_CONSTANT                                  , 7)
+        ENUM_VALUE_SPEC(PIECEWISE_LINEAR                                    , 8)
+        ENUM_VALUE_SPEC(WEIBULL_DURATION                                    , 9)
+        )
 
 class Probability
 {
     public:
         static Probability * getInstance()
         {
-            if( _instance == NULL )
+            if( _instance == nullptr )
             {
                 _instance = new Probability();
             }
@@ -91,4 +72,7 @@ class Probability
 };
 
 #define LOG_2 0.6931472f
+
+    // calculate the great-circle distance between two points along the surface a spherical earth in kilometers
+    double IDMAPI CalculateDistanceKm( double lon_1_deg, double lat_1_deg, double lon_2_deg, double lat_2_deg );
 }

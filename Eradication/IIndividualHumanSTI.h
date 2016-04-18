@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -18,6 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IRelationship.h"
 
 namespace Kernel {
+    struct IRelationshipParameters;
     struct IRelationship;
     struct IDMAPI RelationshipSetSorter :
       public binary_function<const IRelationship*,
@@ -33,6 +34,7 @@ namespace Kernel {
     {
         virtual suids::suid GetSuid() const = 0; // pass-through to base
         virtual bool IsInfected() const = 0; //  pass-through to base
+        virtual suids::suid GetNodeSuid() const = 0;
         virtual bool IsBehavioralSuperSpreader() const = 0;
         virtual unsigned int GetExtrarelationalFlags() const = 0;
         virtual bool IsCircumcised() const = 0;
@@ -48,14 +50,14 @@ namespace Kernel {
 
         // Relationships
         virtual void UpdateEligibility() = 0;
-        virtual void UpdateSTINetworkParams(const char *prop = NULL, const char* new_value = NULL) = 0;
+        virtual void UpdateSTINetworkParams(const char *prop = nullptr, const char* new_value = nullptr) = 0;
         virtual void ConsiderRelationships(float dt) = 0;
         virtual void AddRelationship( IRelationship* pNewRelationship ) = 0;
         virtual void RemoveRelationship( IRelationship* pNewRelationship ) = 0;
-        virtual void VacateRelationship( IRelationship* relationship ) = 0;
-        virtual void RejoinRelationship( IRelationship* relationship ) = 0;
         virtual RelationshipSet_t& GetRelationships() = 0;
         virtual RelationshipSet_t& GetRelationshipsAtDeath() = 0;
+        virtual void onEmigrating() = 0;
+        virtual void onImmigrating() = 0;
 
         virtual std::string toString() const = 0; // serialization, for logging
         virtual unsigned int GetOpenRelationshipSlot() const = 0; // change name
@@ -64,7 +66,7 @@ namespace Kernel {
         virtual NaturalNumber GetNumRelationshipsAtDeath() const = 0;
         virtual float GetDebutAge() const = 0;
         virtual void NotifyPotentialExposure() = 0;
-        virtual ProbabilityNumber getProbabilityUsingCondomThisAct( RelationshipType::Enum ) const = 0;
+        virtual ProbabilityNumber getProbabilityUsingCondomThisAct( const IRelationshipParameters* pRelParams ) const = 0;
     };
 
 }

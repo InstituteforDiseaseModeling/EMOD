@@ -1,5 +1,5 @@
 {
-     "Default_Config_Path": "defaults\\malaria_default_config.json", 
+     "Default_Config_Path": "defaults/malaria_default_config.json", 
      "parameters": {
           "CLIMATE": {
                "AIR_TEMPERATURE": {
@@ -17,6 +17,9 @@
                     "Air_Migration_Filename": ""
                },
                "Enable_Migration_Heterogeneity": 0, 
+               "Enable_Family_Migration": 0, 
+               "Family_Migration_Filename": "", 
+               "x_Family_Migration": 1,
                "LOCAL": {
                     "Enable_Local_Migration": 0,
                     "Local_Migration_Filename": ""

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -33,7 +33,7 @@ namespace Kernel
     HIVSetCascadeState::Configure(const Configuration* inputJson)
     {
         bool ret = HIVSimpleDiagnostic::Configure( inputJson );
-        if( negative_diagnosis_event != NO_TRIGGER_STR )
+        if( (negative_diagnosis_event != NO_TRIGGER_STR) && !negative_diagnosis_event.IsUninitialized() )
         {
             throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "HIVSetCascadeState can't have a Negative_Diagnosis_Event." );
         }
@@ -45,21 +45,14 @@ namespace Kernel
     {
         return true;
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::HIVSetCascadeState)
+    REGISTER_SERIALIZABLE(HIVSetCascadeState);
 
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, HIVSetCascadeState& obj, const unsigned int v)
+    void HIVSetCascadeState::serialize(IArchive& ar, HIVSetCascadeState* obj)
     {
-        static const char * _module = "HIVSetCascadeState";
-        LOG_DEBUG("(De)serializing HIVSetCascadeState\n");
+        HIVSimpleDiagnostic::serialize( ar, obj );
+        HIVSetCascadeState& cascade = *obj;
 
-        boost::serialization::void_cast_register<HIVSetCascadeState, IDistributableIntervention>();
-        ar & boost::serialization::base_object<Kernel::HIVSimpleDiagnostic>(obj);
+        //ar.labelElement("xxx") & cascade.xxx;
     }
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, Kernel::HIVSetCascadeState&, unsigned int);
 }
-#endif

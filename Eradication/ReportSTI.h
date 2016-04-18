@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -21,8 +21,7 @@ namespace Kernel {
         ReportSTI();
         static IReport* ReportSTI::CreateReport() { return new ReportSTI(); }
 
-        virtual void LogNodeData( INodeContext* pNC );
-        virtual void LogIndividualData( IndividualHuman* individual );
+        virtual void LogIndividualData( IIndividualHuman* individual );
         virtual void EndTimestep( float currentTime, float dt );
 
     protected:
@@ -51,5 +50,12 @@ namespace Kernel {
         unsigned int num_sexually_active_prevalance;
         unsigned int num_post_debut_pop;
         NaturalNumber num_circumcised_males;
+
+        NonNegativeFloat youngMaleInfected;
+        NonNegativeFloat youngMaleCount;
+        NonNegativeFloat youngFemaleInfected;
+        NonNegativeFloat youngFemaleCount;
+
+
     };
 }

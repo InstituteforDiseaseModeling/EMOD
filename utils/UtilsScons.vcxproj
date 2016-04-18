@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup Label="ProjectConfigurations">
+		<ProjectConfiguration Include="Release|x64">
+			<Configuration>Release</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+	</ItemGroup>
+	<PropertyGroup Label="Globals">
+		<ProjectGuid>{E40C180C-27FC-7EC2-94C6-C47E894CD9C0}</ProjectGuid>
+		<RootNamespace>UtilsScons</RootNamespace>
+		<Keyword>MakeFileProj</Keyword>
+	</PropertyGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<UseOfMfc>false</UseOfMfc>
+	</PropertyGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+	<ImportGroup Label="ExtensionSettings">
+	</ImportGroup>
+	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<PropertyGroup Label="UserMacros" />
+	<PropertyGroup>
+        <PlatformToolset>v110</PlatformToolset>
+		<NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|x64'">echo Starting SCons &amp;&amp; &quot;C:\Python27-32\python.exe&quot; -c &quot;from os.path import join; import sys; sys.path = [ join(sys.prefix, &apos;Lib&apos;, &apos;site-packages&apos;, &apos;scons-2.3.0&apos;), join(sys.prefix, &apos;scons-2.3.0&apos;), join(sys.prefix, &apos;Lib&apos;, &apos;site-packages&apos;, &apos;scons&apos;), join(sys.prefix, &apos;scons&apos;) ] + sys.path; import SCons.Script; SCons.Script.main()&quot; -C &quot;C:\EMOD3\trunk&quot; -f SConstruct &quot;C:\EMOD3\trunk\build\win32\Release\utils\utils.lib&quot;</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|x64'">echo Starting SCons &amp;&amp; &quot;C:\Python27-32\python.exe&quot; -c &quot;from os.path import join; import sys; sys.path = [ join(sys.prefix, &apos;Lib&apos;, &apos;site-packages&apos;, &apos;scons-2.3.0&apos;), join(sys.prefix, &apos;scons-2.3.0&apos;), join(sys.prefix, &apos;Lib&apos;, &apos;site-packages&apos;, &apos;scons&apos;), join(sys.prefix, &apos;scons&apos;) ] + sys.path; import SCons.Script; SCons.Script.main()&quot; -C &quot;C:\EMOD3\trunk&quot; -f SConstruct &quot;C:\EMOD3\trunk\build\win32\Release\utils\utils.lib&quot;</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|x64'">echo Starting SCons &amp;&amp; &quot;C:\Python27-32\python.exe&quot; -c &quot;from os.path import join; import sys; sys.path = [ join(sys.prefix, &apos;Lib&apos;, &apos;site-packages&apos;, &apos;scons-2.3.0&apos;), join(sys.prefix, &apos;scons-2.3.0&apos;), join(sys.prefix, &apos;Lib&apos;, &apos;site-packages&apos;, &apos;scons&apos;), join(sys.prefix, &apos;scons&apos;) ] + sys.path; import SCons.Script; SCons.Script.main()&quot; -C &quot;C:\EMOD3\trunk&quot; -f SConstruct -c &quot;C:\EMOD3\trunk\build\win32\Release\utils\utils.lib&quot;</NMakeCleanCommandLine>
+		<NMakeOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\EMOD3\trunk\build\win32\Release\utils\utils.lib</NMakeOutput>
+		<NMakePreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WIN32;_UNICODE;UNICODE;_CONSOLE;NDEBUG;_DLLS_;DISABLE_VECTOR;DISABLE_MALARIA;DISABLE_HIV</NMakePreprocessorDefinitions>
+		<NMakeIncludeSearchPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/boost/boost_1_51_0;#/C:/Python27/Include;#/Dependencies/ComputeClusterPack/Include;#/cajun/include;#/Eradication;#/campaign;#/interventions;#/utils;#/baseReportLib;#/libgeneric_static;#/rapidjson/include;#/rapidjson/modp;#/unittest/UnitTest++/src;C:/Program Files (x86)/Windows Kits/8.0//Include/um</NMakeIncludeSearchPath>
+		<NMakeForcedIncludes Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(NMakeForcedIncludes)</NMakeForcedIncludes>
+		<NMakeAssemblySearchPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
+		<NMakeForcedUsingAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(NMakeForcedUsingAssemblies)</NMakeForcedUsingAssemblies>
+	</PropertyGroup>
+	<ItemGroup>
+		<ClInclude Include="BoostLibWrapper.h" />
+		<ClInclude Include="Configuration.h" />
+		<ClInclude Include="ConfigurationImpl.h" />
+		<ClInclude Include="Configure.h" />
+		<ClInclude Include="EnumSupport.h" />
+		<ClInclude Include="Environment.h" />
+		<ClInclude Include="FactorySupport.h" />
+		<ClInclude Include="InterpolatedValueMap.h" />
+		<ClInclude Include="ISupports.h" />
+		<ClInclude Include="Log.h" />
+		<ClInclude Include="MathFunctions.h" />
+		<ClInclude Include="Profile.h" />
+		<ClInclude Include="ProgVersion.h" />
+		<ClInclude Include="SimpleTypemapRegistration.h" />
+		<ClInclude Include="StatusReporter.h" />
+		<ClInclude Include="Sugar.h" />
+		<ClInclude Include="ValidationLog.h" />
+		<ClInclude Include="version_info.h" />
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="stdafx.h" />
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\rapidjson\modp\modp_numtoa.cpp" />
+		<ClCompile Include="Configuration.cpp" />
+		<ClCompile Include="Configure.cpp" />
+		<ClCompile Include="Coredump.cpp" />
+		<ClCompile Include="Environment.cpp" />
+		<ClCompile Include="Exceptions.cpp" />
+		<ClCompile Include="FileSystem.cpp" />
+		<ClCompile Include="IdmDateTime.cpp" />
+		<ClCompile Include="InterpolatedValueMap.cpp" />
+		<ClCompile Include="ISupports.cpp" />
+		<ClCompile Include="JsonObject.cpp" />
+		<ClCompile Include="Log.cpp" />
+		<ClCompile Include="MathFunctions.cpp" />
+		<ClCompile Include="ProgramOptions.cpp" />
+		<ClCompile Include="ProgVersion.cpp" />
+		<ClCompile Include="RANDOM.cpp" />
+		<ClCompile Include="RapidJsonImpl.cpp" />
+		<ClCompile Include="Serializer.cpp" />
+		<ClCompile Include="StatusReporter.cpp" />
+		<ClCompile Include="stdafx.cpp" />
+		<ClCompile Include="suids.cpp" />
+		<ClCompile Include="ValidationLog.cpp" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="SConstruct" />
+	</ItemGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+	<ImportGroup Label="ExtensionTargets">
+	</ImportGroup>
+</Project>
+<!-- SCons Data:
+fXEBVQtSZWxlYXNlfHg2NHECY2NvcHlfcmVnCl9yZWNvbnN0cnVjdG9yCnEDKGNTQ29ucy5Ub29s
+Lm1zdnMKQ29uZmlnCnEEY19fYnVpbHRpbl9fCm9iamVjdApxBU50UnEGfXEHKFUHdmFyaWFudHEI
+VQdSZWxlYXNlcQlVB2NtZGFyZ3NxClUAVQhwbGF0Zm9ybXELVQN4NjRxDFUHcnVuZmlsZXENVTJD
+OlxFTU9EM1x0cnVua1xidWlsZFx3aW4zMlxSZWxlYXNlXHV0aWxzXHV0aWxzLmxpYnEOVQtidWls
+ZHRhcmdldHEPaA5VBm91dGRpcnEQVQB1YnMu
+
+fXEBKFULT3RoZXIgRmlsZXNxAl1VDUxvY2FsIEhlYWRlcnNxA11xBFUIc3RkYWZ4LmhxBWFVDEhl
+YWRlciBGaWxlc3EGXXEHKFURQm9vc3RMaWJXcmFwcGVyLmhxCFUPQ29uZmlndXJhdGlvbi5ocQlV
+E0NvbmZpZ3VyYXRpb25JbXBsLmhxClULQ29uZmlndXJlLmhxC1UNRW51bVN1cHBvcnQuaHEMVQ1F
+bnZpcm9ubWVudC5ocQ1VEEZhY3RvcnlTdXBwb3J0LmhxDlUWSW50ZXJwb2xhdGVkVmFsdWVNYXAu
+aHEPVQtJU3VwcG9ydHMuaHEQVQVMb2cuaHERVQ9NYXRoRnVuY3Rpb25zLmhxElUJUHJvZmlsZS5o
+cRNVDVByb2dWZXJzaW9uLmhxFFUbU2ltcGxlVHlwZW1hcFJlZ2lzdHJhdGlvbi5ocRVVEFN0YXR1
+c1JlcG9ydGVyLmhxFlUHU3VnYXIuaHEXVQ9WYWxpZGF0aW9uTG9nLmhxGFUOdmVyc2lvbl9pbmZv
+LmhxGWVVDFNvdXJjZSBGaWxlc3EaXXEbKFUhLi4vcmFwaWRqc29uL21vZHAvbW9kcF9udW10b2Eu
+Y3BwcRxVEUNvbmZpZ3VyYXRpb24uY3BwcR1VDUNvbmZpZ3VyZS5jcHBxHlUMQ29yZWR1bXAuY3Bw
+cR9VD0Vudmlyb25tZW50LmNwcHEgVQ5FeGNlcHRpb25zLmNwcHEhVQ5GaWxlU3lzdGVtLmNwcHEi
+VQ9JZG1EYXRlVGltZS5jcHBxI1UYSW50ZXJwb2xhdGVkVmFsdWVNYXAuY3BwcSRVDUlTdXBwb3J0
+cy5jcHBxJVUOSnNvbk9iamVjdC5jcHBxJlUHTG9nLmNwcHEnVRFNYXRoRnVuY3Rpb25zLmNwcHEo
+VRJQcm9ncmFtT3B0aW9ucy5jcHBxKVUPUHJvZ1ZlcnNpb24uY3BwcSpVClJBTkRPTS5jcHBxK1UR
+UmFwaWRKc29uSW1wbC5jcHBxLFUOU2VyaWFsaXplci5jcHBxLVUSU3RhdHVzUmVwb3J0ZXIuY3Bw
+cS5VCnN0ZGFmeC5jcHBxL1UJc3VpZHMuY3BwcTBVEVZhbGlkYXRpb25Mb2cuY3BwcTFlVQ5SZXNv
+dXJjZSBGaWxlc3EyXXUu
+-->

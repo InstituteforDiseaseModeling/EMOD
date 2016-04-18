@@ -1,0 +1,35 @@
+{
+    "Default_Config_Path": "defaults/generic_default_config.json", 
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Minimum_Adult_Age_Years": 20, 
+            "Default_Geography_Torus_Size": 3, 
+            "Default_Geography_Initial_Node_Population": 0, 
+            "Birth_Rate_Dependence": "INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR", 
+            "Enable_Demographics_Reporting": 0, 
+            "Demographics_Filenames": ["TestDemographics.json"], 
+            "MORTALITY": {
+                "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER"
+            }, 
+            "Age_Initialization_Distribution_Type": "DISTRIBUTION_COMPLEX"
+        }, 
+        "DISEASE": {
+            "INFECTIOUSNESS": {
+                "Base_Infectious_Period": 70000000
+            }, 
+            "INCUBATION": {
+                "Base_Incubation_Period": 3000000
+            }
+        }, 
+        "PRIMARY": {
+            "Run_Number": 1, 
+            "Node_Grid_Size": 0.009, 
+            "Config_Name": "149_PyDemo", 
+            "ENUMS": {
+                "Simulation_Type": "PY_SIM"
+            }, 
+            "Geography": ""
+        },
+        "Python_Script_Path": "LOCAL"
+    }
+}

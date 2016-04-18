@@ -36,12 +36,20 @@ class HIVDebutAnalyzer():
         # Extract parameters from config
         config_json = output_data[ self.filenames[0] ]
         cp = config_json['parameters']
-        muv = {}
+
+        lamv = {}
         kapv = {}
-        muv[MALE]  = float(cp['Sexual_Debut_Age_Male_Mean'])
-        kapv[MALE] = float(cp['Sexual_Debut_Age_Male_Shape'])
-        muv[FEMALE]   = float(cp['Sexual_Debut_Age_Female_Mean'])
-        kapv[FEMALE]     = float(cp['Sexual_Debut_Age_Female_Shape'])
+
+        tmp = float(cp['Sexual_Debut_Age_Male_Weibull_Heterogeneity'])
+        assert( tmp > 0 )
+
+        tmp = float(cp['Sexual_Debut_Age_Female_Weibull_Heterogeneity'])
+        assert( tmp > 0 )
+
+        lamv[MALE]      = float(cp['Sexual_Debut_Age_Male_Weibull_Scale'])          # Lamba = scale
+        kapv[MALE]      = 1.0 / float(cp['Sexual_Debut_Age_Male_Weibull_Heterogeneity'])   # Kappa = shape = 1/heterogeneity
+        lamv[FEMALE]    = float(cp['Sexual_Debut_Age_Female_Weibull_Scale'])
+        kapv[FEMALE]    = 1.0 / float(cp['Sexual_Debut_Age_Female_Weibull_Heterogeneity'])
 
         for gender in [MALE, FEMALE]:
             gendername = gendernames[gender]
@@ -52,20 +60,12 @@ class HIVDebutAnalyzer():
             # Get debut_age for each gender_row
             debut_age = [ float(r[colMap['DebutAge']])/DAYS_PER_YEAR for r in gender_rows]
 
-            mu = float(muv[gender])
-            kap = float(kapv[gender])
-            lam = mu / math.gamma(1+1/kap)
-            #z = 1.0+1.0/float(kap)
-            #gamma_approx_sterling = math.sqrt(2*math.pi/z) * (1/math.e*(z + 1/(12*z - 1/(10*z))))**z
-            #gamma_approx_winschitl = (2.5066282746310002 * math.sqrt(1.0/z) * ((z/math.e) * math.sqrt(z*math.sinh(1/z) + 1/(810*z**6)))**z)
-            #lam = mu / gamma_approx_winschitl
-
-            key = ( id(self), gender, lam, kap )
+            key = ( id(self), gender, lamv[gender], kapv[gender] )
             emit_data[key] = {'DebutAge': debut_age}
 
             # Note dummy parameters in the lambda below kapp necessary variable (lam, kap) in scope
             if key not in self.fun:
-                self.fun[key] = lambda x, lam=lam, kap=kap: \
+                self.fun[key] = lambda x, lam=lamv[gender], kap=kapv[gender]: \
                     sps.exponweib(1,kap).cdf([xx/lam for xx in x])
 
         return emit_data

@@ -1,15 +1,15 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 #include "ReportMalaria.h" // for base class
-#include "NodeMalaria.h" // for base class
+#include "MalariaContexts.h" // for base class
 
 static const string _parasite_prevalence_label( "Parasite Prevalence" );
 static const string _mean_parasitemia_label( "Mean Parasitemia" );
@@ -21,69 +21,58 @@ static const string _statistical_population_label( "Statistical Population" );
 
 namespace Kernel {
 
-ReportMalaria::ReportMalaria()
-{}
+    ReportMalaria::ReportMalaria()
+    {}
 
-void
-ReportMalaria::populateSummaryDataUnitsMap(
-    std::map<std::string, std::string> &units_map
-)
-{
-    ReportVector::populateSummaryDataUnitsMap(units_map);
-    
-    // Additional malaria channels
-    units_map[_parasite_prevalence_label]       = "Infected %";
-    units_map[_mean_parasitemia_label]          = "Geo. mean parasites/microliter";
-    units_map[_new_diagnostic_prevalence_label] = "Infected %";
-    units_map[_fever_prevalence_label]          = "Infected %";
-    units_map[_new_clinical_cases_label]        = "";
-    units_map[_new_severe_cases_label]          = "";
-}
-
-void
-ReportMalaria::postProcessAccumulatedData()
-{
-    ReportVector::postProcessAccumulatedData();
-
-    // make sure to normalize Mean Parasitemia BEFORE Parasite Prevalence, then it is exponentiated
-    normalizeChannel(_mean_parasitemia_label, _parasite_prevalence_label);
-    channelDataMap.ExponentialValues( _mean_parasitemia_label );
-
-    // now normalize rest of channels
-    normalizeChannel(_parasite_prevalence_label, _statistical_population_label);
-    normalizeChannel(_new_diagnostic_prevalence_label, _statistical_population_label);
-    normalizeChannel(_fever_prevalence_label, _statistical_population_label);
-}
-
-
-void
-ReportMalaria::LogNodeData(
-    INodeContext * pNC
-)
-{
-    ReportVector::LogNodeData( pNC );
-
-    const INodeMalaria* pMalariaNode = NULL;
-    if( pNC->QueryInterface( GET_IID(INodeMalaria), (void**)&pMalariaNode ) != s_OK )
+    void
+    ReportMalaria::populateSummaryDataUnitsMap(
+        std::map<std::string, std::string> &units_map
+    )
     {
-        throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNC", "INodeMalaria", "INodeContext" );
+        ReportVector::populateSummaryDataUnitsMap(units_map);
+        
+        // Additional malaria channels
+        units_map[_parasite_prevalence_label]       = "Infected %";
+        units_map[_mean_parasitemia_label]          = "Geo. mean parasites/microliter";
+        units_map[_new_diagnostic_prevalence_label] = "Infected %";
+        units_map[_fever_prevalence_label]          = "Infected %";
+        units_map[_new_clinical_cases_label]        = "";
+        units_map[_new_severe_cases_label]          = "";
     }
-    Accumulate(_parasite_prevalence_label,       pMalariaNode->GetParasitePositive());
-    Accumulate(_mean_parasitemia_label,          pMalariaNode->GetLogParasites());
-    Accumulate(_new_diagnostic_prevalence_label, pMalariaNode->GetNewDiagnosticPositive());
-    Accumulate(_fever_prevalence_label,          pMalariaNode->GetFeverPositive());
-    Accumulate(_new_clinical_cases_label,        pMalariaNode->GetNewClinicalCases());
-    Accumulate(_new_severe_cases_label,          pMalariaNode->GetNewSevereCases());
-}
 
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(ReportMalaria)
-template<class Archive>
-void serialize(Archive &ar, ReportMalaria& report, const unsigned int v)
-{
-    boost::serialization::void_cast_register<ReportMalaria,IReport>();
-    ar &boost::serialization::base_object<ReportVector>(report);
-}
-#endif
+    void
+    ReportMalaria::postProcessAccumulatedData()
+    {
+        ReportVector::postProcessAccumulatedData();
 
+        // make sure to normalize Mean Parasitemia BEFORE Parasite Prevalence, then it is exponentiated
+        normalizeChannel(_mean_parasitemia_label, _parasite_prevalence_label);
+        channelDataMap.ExponentialValues( _mean_parasitemia_label );
+
+        // now normalize rest of channels
+        normalizeChannel(_parasite_prevalence_label, _statistical_population_label);
+        normalizeChannel(_new_diagnostic_prevalence_label, _statistical_population_label);
+        normalizeChannel(_fever_prevalence_label, _statistical_population_label);
+    }
+
+
+    void
+    ReportMalaria::LogNodeData(
+        INodeContext * pNC
+    )
+    {
+        ReportVector::LogNodeData( pNC );
+
+        const INodeMalaria* pMalariaNode = nullptr;
+        if( pNC->QueryInterface( GET_IID(INodeMalaria), (void**)&pMalariaNode ) != s_OK )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNC", "INodeMalaria", "INodeContext" );
+        }
+        Accumulate(_parasite_prevalence_label,       pMalariaNode->GetParasitePositive());
+        Accumulate(_mean_parasitemia_label,          pMalariaNode->GetLogParasites());
+        Accumulate(_new_diagnostic_prevalence_label, pMalariaNode->GetNewDiagnosticPositive());
+        Accumulate(_fever_prevalence_label,          pMalariaNode->GetFeverPositive());
+        Accumulate(_new_clinical_cases_label,        pMalariaNode->GetNewClinicalCases());
+        Accumulate(_new_severe_cases_label,          pMalariaNode->GetNewSevereCases());
+    }
 }

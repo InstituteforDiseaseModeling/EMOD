@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -16,8 +16,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ISTIInterventionsContainer.h"
 #include "Interventions.h"
 #include "InterventionsContainer.h"
-#include "MaleCircumcision.h" // for ICircumcision interface
-#include "SimpleTypemapRegistration.h"
 #include "IRelationship.h"
 
 namespace Kernel
@@ -40,39 +38,36 @@ namespace Kernel
         virtual ~STIInterventionsContainer();
 
         // ISupports
-        virtual QueryResult QueryInterface(iid_t iid, void** pinstance);
-        virtual bool GiveIntervention( IDistributableIntervention * pIV );
+        virtual QueryResult QueryInterface(iid_t iid, void** pinstance) override;
+        virtual bool GiveIntervention( IDistributableIntervention * pIV ) override;
 
         // ISTIBarrierConsumer 
-        virtual void UpdateSTIBarrierProbabilitiesByType( RelationshipType::Enum rel_type, SigmoidConfig config_overrides );
-        virtual SigmoidConfig GetSTIBarrierProbabilitiesByRelType( RelationshipType::Enum rel_type ) const;
+        virtual void UpdateSTIBarrierProbabilitiesByType( RelationshipType::Enum rel_type, const Sigmoid& config_overrides ) override;
+        virtual const Sigmoid& GetSTIBarrierProbabilitiesByRelType( const IRelationshipParameters* pRelParams ) const override;
 
         // ISTICircumcisionConsumer 
-        virtual bool IsCircumcised( void ) const;
-        virtual bool ApplyCircumcision( ICircumcision *);
+        virtual bool IsCircumcised( void ) const override;
+        virtual float GetCircumcisedReducedAcquire() const override;
+        virtual void ApplyCircumcision( float reduceAcquire ) override;
 
         // IPropertyValueChangerEffects
-        virtual void ChangeProperty( const char *property, const char* new_value);
+        virtual void ChangeProperty( const char *property, const char* new_value) override;
 
-        virtual void Update(float dt); // hook to update interventions if they need it
+        virtual void Update(float dt) override; // hook to update interventions if they need it
 
-        virtual float GetInterventionReducedAcquire() const;
-        virtual float GetInterventionReducedTransmit() const;
+        virtual float GetInterventionReducedAcquire() const override;
+        virtual float GetInterventionReducedTransmit() const override;
 
         // ISTICoInfectionStatusChangeApply 
-        virtual void SpreadStiCoInfection();
-        virtual void CureStiCoInfection();
+        virtual void SpreadStiCoInfection() override;
+        virtual void CureStiCoInfection() override;
 
     protected:
         bool is_circumcised;
+        float circumcision_reduced_require;
 
-        std::map< RelationshipType::Enum, SigmoidConfig > STI_blocking_overrides;
+        std::map< RelationshipType::Enum, Sigmoid > STI_blocking_overrides;
 
-    private:
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class ::boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive &ar, STIInterventionsContainer& container, const unsigned int v);
-#endif
+        DECLARE_SERIALIZABLE(STIInterventionsContainer);
     };
 }

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,22 +11,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "IdmApi.h"
 #include <string>
-#include <list>
 #include <set>
 #include <vector>
-#include <set>
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
 
 #include "BoostLibWrapper.h"
-
 #include "ISupports.h"
-#include "EnumSupport.h"
-#include "SimpleTypemapRegistration.h"
 #include "CajunIncludes.h"
-#include "Sugar.h"
-#include "ValidationLog.h"
-#include "Log.h"
 
 #include "Serializer.h"
 
@@ -46,13 +36,6 @@ public:
     static Configuration* LoadFromPython(const std::string &configFileName);
     virtual ~Configuration() { delete pElement; }
 
-#if USE_JSON_SERIALIZATION
-public:
-    // IJsonSerializable Interfaces
-    virtual void JSerialize( Kernel::IJsonObjectAdapter* root, Kernel::JSerializer* helper ) const;
-    virtual void JDeserialize( Kernel::IJsonObjectAdapter* root, Kernel::JSerializer* helper );
-#endif
-
 private:
     // Don't let users create an empty one.
     Configuration(json::Element* element) : QuickInterpreter(*element) { pElement = element; }
@@ -61,13 +44,7 @@ private:
 
     json::Element* pElement; // maintain the backing string containing the original data also
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI // N.B. CalendarIV, HealthSeekingBehavior serialize their "actual_intervention_config" when individuals migrate via MPI
-    friend class ::boost::serialization::access;
-    template<class Archive>
-    void serialize(Archive &ar, const unsigned int v);
-#endif
-
-    Configuration() : QuickInterpreter(json::Element()), pElement(NULL) {} // this ctor only for serialization, the base class will be initialized to an invalid state which deserialization must repair
+    Configuration() : QuickInterpreter(json::Element()), pElement(nullptr) {} // this ctor only for serialization, the base class will be initialized to an invalid state which deserialization must repair
 };
 
 class JsonUtility
@@ -76,16 +53,6 @@ public:
     static void logJsonException( const json::ParseException &pe, std::string& err_msg );
     static void logJsonException( const json::ScanException &pe, std::string& err_msg );
 };
-
-
-
-#if USE_BOOST_SERIALIZATION
-#ifdef WIN32
-template void Configuration::serialize(boost::archive::binary_oarchive &ar, unsigned int);
-template void Configuration::serialize(boost::archive::binary_iarchive &ar, unsigned int);
-#endif
-#endif
-
 
 Configuration IDMAPI *Configuration_Load( const std::string& rFilename ) ;
 
@@ -110,10 +77,22 @@ inline std::vector< float > GET_CONFIG_VECTOR_FLOAT(const json::QuickInterpreter
     return GET_CONFIG_VECTOR_FLOAT(parameter_source, name.c_str());
 }
 
+std::vector< int > GET_CONFIG_VECTOR_INT(const json::QuickInterpreter* parameter_source, const char *name);
+inline std::vector< int > GET_CONFIG_VECTOR_INT(const json::QuickInterpreter* parameter_source, const std::string& name)
+{
+    return GET_CONFIG_VECTOR_INT(parameter_source, name.c_str());
+}
+
 std::vector< std::vector< float > > GET_CONFIG_VECTOR2D_FLOAT(const json::QuickInterpreter* parameter_source, const char *name);
 inline std::vector< std::vector< float > > GET_CONFIG_VECTOR2D_FLOAT(const json::QuickInterpreter* parameter_source, const std::string& name)
 {
     return GET_CONFIG_VECTOR2D_FLOAT(parameter_source, name.c_str());
+}
+
+std::vector< std::vector< int > > GET_CONFIG_VECTOR2D_INT(const json::QuickInterpreter* parameter_source, const char *name);
+inline std::vector< std::vector< int > > GET_CONFIG_VECTOR2D_INT(const json::QuickInterpreter* parameter_source, const std::string& name)
+{
+    return GET_CONFIG_VECTOR2D_INT(parameter_source, name.c_str());
 }
 
 std::string GET_CONFIG_STRING(const json::QuickInterpreter* parameter_source, const char *name);
@@ -172,12 +151,7 @@ namespace Kernel
     //////////////////////////////////////////////////////////////////////
     // Configuration Mechanism
 
-    struct IDMAPI IConfigurable
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-        : public IJsonSerializable
-#else
-        : public ISupports
-#endif
+    struct IDMAPI IConfigurable : ISupports
     {
         virtual bool Configure(const Configuration *config) = 0;
         virtual QuickBuilder GetSchema() = 0;

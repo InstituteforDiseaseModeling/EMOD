@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 #include "SusceptibilityHIV.h" // for time-date util function and access into IHIVCascadeOfCare
-#include "HIVInterventionsContainer.h" // for time-date util function and access into IHIVCascadeOfCare
+#include "IHIVInterventionsContainer.h" // for time-date util function and access into IHIVCascadeOfCare
 #include "IIndividualHumanHIV.h"
 
 static const char * _module = "HIVDrawBlood";
@@ -39,7 +39,7 @@ namespace Kernel
     bool HIVDrawBlood::Configure(const Configuration* inputJson)
     {
         bool ret = HIVSimpleDiagnostic::Configure( inputJson );
-        if( negative_diagnosis_event != NO_TRIGGER_STR )
+        if( (negative_diagnosis_event != NO_TRIGGER_STR) && !negative_diagnosis_event.IsUninitialized() )
         {
             throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "HIVDrawBlood can't have a Negative_Diagnosis_Event." );
         }
@@ -72,22 +72,14 @@ namespace Kernel
 
         HIVSimpleDiagnostic::positiveTestDistribute();
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::HIVDrawBlood)
+    REGISTER_SERIALIZABLE(HIVDrawBlood);
 
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, HIVDrawBlood& obj, const unsigned int v)
+    void HIVDrawBlood::serialize(IArchive& ar, HIVDrawBlood* obj)
     {
-        static const char * _module = "HIVDrawBlood";
-        LOG_DEBUG("(De)serializing HIVDrawBlood\n");
+        HIVSimpleDiagnostic::serialize( ar, obj );
+        HIVDrawBlood& blood = *obj;
 
-        boost::serialization::void_cast_register<HIVDrawBlood, IDistributableIntervention>();
-        //ar & obj.event2ProbabilityMap;     // todo: serialize this!
-        ar & boost::serialization::base_object<Kernel::HIVSimpleDiagnostic>(obj);
+        //ar.labelElement("xxx") & delayed.xxx;
     }
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, Kernel::HIVDrawBlood&, unsigned int);
 }
-#endif

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,12 +13,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "VectorContexts.h"
 #include "Individual.h"
-#include "SusceptibilityVector.h"
 
-#include "Common.h"
 #include "VectorInterventionsContainer.h"
-#include "Infection.h"
-#include "InfectionVector.h" // for serialization only
+#include "IInfection.h"
 #include "IContagionPopulation.h"
 
 namespace Kernel
@@ -37,15 +34,15 @@ namespace Kernel
         static IndividualHumanVector *CreateHuman(INodeContext *context, suids::suid _suid, double monte_carlo_weight = 1.0, double initial_age = 0.0, int gender = 0, double initial_poverty = 0.5);
         virtual ~IndividualHumanVector();
 
-        virtual void CreateSusceptibility(float immunity_modifier = 1.0, float risk_modifier = 1.0);
-        virtual void ExposeToInfectivity(float dt = 1.0, const TransmissionGroupMembership_t* transmissionGroupMembership = NULL);
-        virtual void UpdateInfectiousness(float dt);
-        virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum tranmsission_route = TransmissionRoute::TRANSMISSIONROUTE_ALL );
+        virtual void CreateSusceptibility(float immunity_modifier = 1.0, float risk_modifier = 1.0) override;
+        virtual void ExposeToInfectivity(float dt = 1.0, const TransmissionGroupMembership_t* transmissionGroupMembership = nullptr) override;
+        virtual void UpdateInfectiousness(float dt) override;
+        virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum tranmsission_route = TransmissionRoute::TRANSMISSIONROUTE_ALL ) override;
 
-        virtual void UpdateGroupPopulation(float size_changes);
+        virtual void UpdateGroupPopulation(float size_changes) override;
 
         // IIndividualHumanVectorContext methods
-        virtual float GetRelativeBitingRate(void) const;
+        virtual float GetRelativeBitingRate(void) const override;
 
     protected:
         // cumulative exposure by pool stored along with randomly selected strain from each pool + total exposure
@@ -58,29 +55,19 @@ namespace Kernel
         IndividualHumanVector(suids::suid id = suids::nil_suid(), double monte_carlo_weight = 1.0, double initial_age = 0.0, int gender = 0, double initial_poverty = 0.5);
         IndividualHumanVector(INodeContext *context);
 
-        virtual Infection *createInfection(suids::suid _suid);
+        virtual IInfection *createInfection(suids::suid _suid) override;
        
-        virtual void setupInterventionsContainer();
+        virtual void setupInterventionsContainer() override;
         virtual void ApplyTotalBitingExposure();
 
-        virtual void PropagateContextToDependents();
+        virtual void PropagateContextToDependents() override;
 
-        virtual bool Configure( const Configuration* config );
+        virtual bool Configure( const Configuration* config ) override;
 
-    private:
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, IndividualHumanVector& human, const unsigned int  file_version );
-#endif
-
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-    public:
-     // IJsonSerializable Interfaces
-     virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-     virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
+        DECLARE_SERIALIZABLE(IndividualHumanVector);
     };
+
+    IArchive& serialize(IArchive&, std::vector<strain_exposure_t>&);
 
     struct compare_strain_exposure_float_less
     {

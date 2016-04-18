@@ -20,10 +20,10 @@
      }, 
      "DEMOGRAPHICS": {
           "Base_Population_Scale_Factor": 0.001, 
-          "Demographics_Filename": "Namawala_single_node_demographics.compiled.json", 
+          "Demographics_Filenames": ["Namawala_single_node_demographics.compiled.json"], 
           "Population_Scale_Type": "FIXED_SCALING"
      }, 
-     "Default_Config_Path": "defaults\\malaria_default_config.json", 
+     "Default_Config_Path": "defaults/malaria_default_config.json", 
      "GENERAL_DISEASE": {
           "Enable_Superinfection": 0
      }, 
@@ -40,6 +40,7 @@
      }, 
      "PRIMARY": {
           "Config_Name": "101_OneMalariaIndividual_MultipleAntigens", 
+          "Custom_Reports_Filename": "custom_reports.json", 
           "Geography": "Namawala", 
           "Run_Number": 101, 
           "Simulation_Duration": 5000

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -12,15 +12,18 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IdmApi.h"
 #include "SimulationEnums.h"
 #include "IRelationship.h"
+#include "IdmDateTime.h"
 #include <map>
 #include <vector>
+#include "ISerializable.h"
 
 using namespace std;
 
-namespace Kernel {
+namespace Kernel 
+{
 
-    struct IDMAPI IPairFormationParameters {
-
+    struct IDMAPI IPairFormationParameters : virtual ISerializable
+    {
         virtual RelationshipType::Enum GetRelationshipType() const = 0;
 
         virtual int GetMaleAgeBinCount() const = 0;
@@ -46,7 +49,8 @@ namespace Kernel {
 
         virtual const vector<float>& SingularValues() const = 0;                          // female age bins count
 
-        virtual float BasePairFormationRate() const = 0;
+        virtual float FormationRate( const IdmDateTime& rCurrentTime, float dt ) const = 0;
+        virtual float UpdatePeriod() const = 0;
 
         virtual ~IPairFormationParameters() {}
     };

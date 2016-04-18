@@ -10,14 +10,15 @@
 
 		"____________NETWORK___________": "",
 		
-		"Transitory_Formation_Rate_Heterosexual": 1,
-		"Informal_Formation_Rate_Heterosexual": 1,
-		"Marriage_Formation_Rate_Heterosexual": 1,
-
 		"____________TRANSMISSION___________": "",
 
 		"____________DEMOGRAPHICS___________": "",
 		"Base_Population_Scale_Factor": 1e-3,
+		"Demographics_Filenames": [
+			"../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json",
+			"../input/PFA_overlay.json",
+			"PFA_overlay_rates.json"
+		], 
 
 		"____________REPORTING___________": "",
 		"Report_Relationship_End": 1,

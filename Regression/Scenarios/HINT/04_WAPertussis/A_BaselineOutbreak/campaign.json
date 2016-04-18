@@ -7,15 +7,25 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Configs": [
                         {
-                            "Cost_To_Consumer": 20.0,
-                            "Durability_Time_Profile": "DECAYDURABILITY",
-                            "Primary_Decay_Time_Constant": 2525,
-                            "Reduced_Acquire": 0.9,
-                            "Reduced_Mortality": 1,
-                            "Reduced_Transmit": 0.6,
+                            "Cost_To_Consumer": 20,
                             "Vaccine_Take": 0.95,
                             "Vaccine_Type": "Generic",
-                            "class": "SimpleVaccine"
+                            "class": "MultiEffectVaccine",
+                            "Acquire_Config": {
+                                "Initial_Effect": 0.9,
+                                "Decay_Time_Constant": 2525,
+                                "class": "WaningEffectExponential"
+                            },
+                            "Transmit_Config": {
+                                "Initial_Effect": 0.6,
+                                "Decay_Time_Constant": 2525,
+                                "class": "WaningEffectExponential"
+                            },
+                            "Mortality_Config": {
+                                "Initial_Effect": 1.0,
+                                "Decay_Time_Constant": 2525,
+                                "class": "WaningEffectExponential"
+                            }
                         }
                     ],
                     "Calendar": [
@@ -65,17 +75,27 @@
             "Campaign_Name": "Dummy campaign to give adults some initial immunity from historical whole-cell DTP",
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1,
-                "Intervention_Config": {
-                    "Cost_To_Consumer": 20.0,
-                    "Durability_Time_Profile": "DECAYDURABILITY",
-                    "Primary_Decay_Time_Constant": 7300,
-                    "Reduced_Acquire": 0.9,
-                    "Reduced_Mortality": 1,
-                    "Reduced_Transmit": 0.9,
-                    "Vaccine_Take": 1,
-                    "Vaccine_Type": "Generic",
-                    "class": "SimpleVaccine"
-                },
+                "Intervention_Config": { 
+                        "Cost_To_Consumer": 20,
+                        "Vaccine_Take": 1,
+                        "Vaccine_Type": "Generic",
+                        "class": "MultiEffectVaccine",
+                        "Acquire_Config": {
+                            "Initial_Effect": 0.9,
+                            "Decay_Time_Constant": 7300,
+                            "class": "WaningEffectExponential"
+                        },
+                        "Transmit_Config": {
+                            "Initial_Effect": 0.9,
+                            "Decay_Time_Constant": 7300,
+                            "class": "WaningEffectExponential"
+                        },
+                        "Mortality_Config": {
+                            "Initial_Effect": 1.0,
+                            "Decay_Time_Constant": 7300,
+                            "class": "WaningEffectExponential"
+                        } 
+                    },
                 "Property_Restrictions": [
                     "Accessibility:VaccineTake"
                 ],
@@ -95,21 +115,31 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
-                    "Actual_IndividualIntervention_Config": {
-                        "Cost_To_Consumer": 20.0,
-                        "Durability_Time_Profile": "DECAYDURABILITY",
-                        "Primary_Decay_Time_Constant": 2525,
-                        "Reduced_Acquire": 0.9,
-                        "Reduced_Mortality": 1,
-                        "Reduced_Transmit": 0.6,
-                        "Vaccine_Take": 0.95,
-                        "Vaccine_Type": "Generic",
-                        "class": "SimpleVaccine"
-                    },
+                    "class": "SimpleHealthSeekingBehavior",
                     "Event_Or_Config": "Config",
                     "Single_Use": 1,
                     "Tendency": 0.000548,
-                    "class": "SimpleHealthSeekingBehavior"
+                    "Actual_IndividualIntervention_Config": {
+                        "Cost_To_Consumer": 20,
+                        "Vaccine_Take": 0.95,
+                        "Vaccine_Type": "Generic",
+                        "class": "MultiEffectVaccine",
+                        "Acquire_Config": {
+                            "Initial_Effect": 0.9,
+                            "Decay_Time_Constant": 2525,
+                            "class": "WaningEffectExponential"
+                        },
+                        "Transmit_Config": {
+                            "Initial_Effect": 0.6,
+                            "Decay_Time_Constant": 2525,
+                            "class": "WaningEffectExponential"
+                        },
+                        "Mortality_Config": {
+                            "Initial_Effect": 1.0,
+                            "Decay_Time_Constant": 2525,
+                            "class": "WaningEffectExponential"
+                        }
+                    }
                 },
                 "Property_Restrictions": [
                     "Accessibility:VaccineTake"
@@ -132,15 +162,25 @@
                     "Actual_IndividualIntervention_Config": {
                         "Actual_IndividualIntervention_Configs": [
                             {
-                                "Cost_To_Consumer": 20.0,
-                                "Durability_Time_Profile": "DECAYDURABILITY",
-                                "Primary_Decay_Time_Constant": 2525,
-                                "Reduced_Acquire": 0.9,
-                                "Reduced_Mortality": 1,
-                                "Reduced_Transmit": 0.6,
+                                "Cost_To_Consumer": 20,
                                 "Vaccine_Take": 0.95,
                                 "Vaccine_Type": "Generic",
-                                "class": "SimpleVaccine"
+                                "class": "MultiEffectVaccine",
+                                "Acquire_Config": {
+                                    "Initial_Effect": 0.9,
+                                    "Decay_Time_Constant": 2525,
+                                    "class": "WaningEffectExponential"
+                                },
+                                "Transmit_Config": {
+                                    "Initial_Effect": 0.6,
+                                    "Decay_Time_Constant": 2525,
+                                    "class": "WaningEffectExponential"
+                                },
+                                "Mortality_Config": {
+                                    "Initial_Effect": 1.0,
+                                    "Decay_Time_Constant": 2525,
+                                    "class": "WaningEffectExponential"
+                                }
                             }
                         ],
                         "Calendar": [
@@ -172,12 +212,12 @@
                         "Dropout": 0,
                         "class": "IVCalendar"
                     },
+                    "Property_Restrictions": [
+                        "Accessibility:VaccineTake"
+                    ],
                     "Demographic_Coverage": 1,
                     "class": "BirthTriggeredIV"
                 },
-                "Property_Restrictions": [
-                    "Accessibility:VaccineTake"
-                ],
                 "class": "StandardInterventionDistributionEventCoordinator"
             },
             "Nodeset_Config": {

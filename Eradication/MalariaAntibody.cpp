@@ -1,15 +1,15 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 #include "MalariaAntibody.h"
-#include "MathFunctions.h"
+#include "Sigmoid.h"
 #include "SusceptibilityMalaria.h"
 
 #define NON_TRIVIAL_ANTIBODY_THRESHOLD  (0.0000001)
@@ -23,9 +23,6 @@ namespace Kernel
 {
 
     BEGIN_QUERY_INTERFACE_BODY(MalariaAntibody)
-#if USER_JSON_SERIALIZATION || USE_JSON_MPI    
-        HANDLE_INTERFACE(IJsonSerializable)
-#endif
     END_QUERY_INTERFACE_BODY(MalariaAntibody)
 
     MalariaAntibody::MalariaAntibody()
@@ -84,7 +81,7 @@ namespace Kernel
         float growth_rate = params->MSP1_antibody_growthrate;
         float threshold   = params->antibody_stimulation_c50;
 
-        m_antibody_capacity += growth_rate  * (1.0f - m_antibody_capacity) * (float)Sigmoid::basic_sigmoid( threshold, float(m_antigen_count) * inv_uL_blood);
+        m_antibody_capacity += growth_rate  * (1.0f - m_antibody_capacity) * float(Sigmoid::basic_sigmoid( threshold, float(m_antigen_count) * inv_uL_blood));
 
         // rapid B cell proliferation above a threshold given stimulation
         if (m_antibody_capacity > B_CELL_PROLIFERATION_THRESHOLD)
@@ -119,7 +116,7 @@ namespace Kernel
 
         if (m_antibody_capacity <= B_CELL_PROLIFERATION_THRESHOLD)
         {
-            m_antibody_capacity += growth_rate * dt * (1.0f - m_antibody_capacity) * (float)Sigmoid::basic_sigmoid(threshold, float(m_antigen_count) * inv_uL_blood + min_stimulation);
+            m_antibody_capacity += growth_rate * dt * (1.0f - m_antibody_capacity) * float(Sigmoid::basic_sigmoid(threshold, float(m_antigen_count) * inv_uL_blood + min_stimulation));
         }
         else
         {
@@ -143,7 +140,7 @@ namespace Kernel
         if (m_antibody_capacity <= B_CELL_PROLIFERATION_THRESHOLD)
         {
             //ability and number of B-cells to produce antibodies, with saturation
-            m_antibody_capacity += growth_rate * dt * (1.0f - m_antibody_capacity) * (float)Sigmoid::basic_sigmoid(threshold, float(m_antigen_count) * inv_uL_blood + min_stimulation);
+            m_antibody_capacity += growth_rate * dt * (1.0f - m_antibody_capacity) * float(Sigmoid::basic_sigmoid(threshold, float(m_antigen_count) * inv_uL_blood + min_stimulation));
 
             // check for antibody capacity out of range
             if (m_antibody_capacity > 1.0)
@@ -284,134 +281,49 @@ namespace Kernel
         return antibody;
     }
 
-}
+    REGISTER_SERIALIZABLE(MalariaAntibody);
 
-namespace Kernel {
-
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-     void MalariaAntibody::JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const
-     {
-         root->BeginObject();
-         root->Insert("m_antibody_capacity", m_antibody_capacity);
-         root->Insert("m_antibody_concentration", m_antibody_concentration);
-         root->Insert("m_antigen_count", m_antigen_count);
-         root->Insert("m_antigen_present", m_antigen_present);
-         root->Insert("m_antibody_type", (int) m_antibody_type);
-         root->Insert("m_antibody_variant", m_antibody_variant);
-         root->EndObject();
-     }
-        
-     void MalariaAntibody::JDeserialize( IJsonObjectAdapter* root, JSerializer* helper )
-     {
-#if 0
-        m_antibody_capacity = (float) helper->FindValue(root, "m_antibody_capacity").get_real();
-        m_antibody_concentration = (float) helper->FindValue(root, "m_antibody_concentration").get_real();
-        m_antigen_count = helper->FindValue(root, "m_antigen_count").get_int64();
-        m_antigen_present = helper->FindValue(root, "m_antigen_present").get_bool();
-        m_antibody_type = static_cast<MalariaAntibodyType::Enum>(helper->FindValue(root, "m_antibody_type").get_int());
-        m_antibody_variant = helper->FindValue(root, "m_antibody_variant").get_int();
-#endif
-     }
-
-     void MalariaAntibodyCSP::JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const
-     {
-        MalariaAntibody::JSerialize( root, helper );
-     }
-        
-     void MalariaAntibodyCSP::JDeserialize( IJsonObjectAdapter* root, JSerializer* helper )
-     {
-        MalariaAntibody::JDeserialize( root, helper );
-     }
-
-     void MalariaAntibodyMSP::JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const
-     {
-        MalariaAntibody::JSerialize( root, helper );
-     }
-        
-     void MalariaAntibodyMSP::JDeserialize( IJsonObjectAdapter* root, JSerializer* helper )
-     {
-        MalariaAntibody::JDeserialize( root, helper );
-     }
-
-     void MalariaAntibodyPfEMP1Minor::JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const
-     {
-        MalariaAntibody::JSerialize( root, helper );
-     }
-        
-     void MalariaAntibodyPfEMP1Minor::JDeserialize( IJsonObjectAdapter* root, JSerializer* helper )
-     {
-        MalariaAntibody::JDeserialize( root, helper );
-     }
-
-     void MalariaAntibodyPfEMP1Major::JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const
-     {
-        MalariaAntibody::JSerialize( root, helper );
-     }
-
-     void MalariaAntibodyPfEMP1Major::JDeserialize( IJsonObjectAdapter* root, JSerializer* helper )
-     {
-        MalariaAntibody::JDeserialize( root, helper );
-     }
-#endif
-}
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::MalariaAntibody)
-BOOST_CLASS_EXPORT(Kernel::MalariaAntibodyCSP)
-BOOST_CLASS_EXPORT(Kernel::MalariaAntibodyMSP)
-BOOST_CLASS_EXPORT(Kernel::MalariaAntibodyPfEMP1Minor)
-BOOST_CLASS_EXPORT(Kernel::MalariaAntibodyPfEMP1Major)
-namespace Kernel
-{
-    // need to register derived types, so containers of abstract base class can serialize properly
-    REGISTER_SERIALIZATION_VOID_CAST(MalariaAntibodyCSP, IMalariaAntibody)
-    REGISTER_SERIALIZATION_VOID_CAST(MalariaAntibodyMSP, IMalariaAntibody)
-    REGISTER_SERIALIZATION_VOID_CAST(MalariaAntibodyPfEMP1Minor, IMalariaAntibody)
-    REGISTER_SERIALIZATION_VOID_CAST(MalariaAntibodyPfEMP1Major, IMalariaAntibody)
-
-    template<class Archive>
-    void serialize(Archive &ar, MalariaAntibody &ab, const unsigned int v)
+    void MalariaAntibody::serialize(IArchive& ar, MalariaAntibody* obj)
     {
-        static const char * _module = "MalariaAntibody";
-        LOG_DEBUG("(De)serializing MalariaAntibody\n");
-        ar & ab.m_antibody_capacity;
-        ar & ab.m_antibody_concentration;
-        ar & ab.m_antigen_count;
-        ar & ab.m_antigen_present;
-        ar & ab.m_antibody_type;
-        ar & ab.m_antibody_variant;
+        MalariaAntibody& antibody = *obj;
+        ar.labelElement("m_antibody_capacity") & antibody.m_antibody_capacity;
+        ar.labelElement("m_antibody_concentration") & antibody.m_antibody_concentration;
+        ar.labelElement("m_antigen_count") & antibody.m_antigen_count;
+        ar.labelElement("m_antigen_present") & antibody.m_antigen_present;
+        ar.labelElement("m_antibody_type") & (uint32_t&)antibody.m_antibody_type;
+        ar.labelElement("m_antibody_variant") & antibody.m_antibody_variant;
     }
 
-    template<class Archive>
-    void serialize(Archive &ar, MalariaAntibodyCSP &ab, const unsigned int v)
+    void serialize(IArchive& ar, pfemp1_antibody_t& antibodies)
     {
-        static const char * _module = "MalariaAntibodyCSP";
-        LOG_DEBUG("(De)serializing MalariaAntibodyCSP\n");
-        ar & boost::serialization::base_object<MalariaAntibody>(ab);
+        ar.startObject();
+            ar.labelElement("minor") & antibodies.minor;
+            ar.labelElement("major") & antibodies.major;
+        ar.endObject();
     }
 
-    template<class Archive>
-    void serialize(Archive &ar, MalariaAntibodyMSP &ab, const unsigned int v)
+    REGISTER_SERIALIZABLE(MalariaAntibodyCSP);
+    REGISTER_SERIALIZABLE(MalariaAntibodyMSP);
+    REGISTER_SERIALIZABLE(MalariaAntibodyPfEMP1Minor);
+    REGISTER_SERIALIZABLE(MalariaAntibodyPfEMP1Major);
+
+    void MalariaAntibodyCSP::serialize(IArchive& ar, MalariaAntibodyCSP* obj)
     {
-        static const char * _module = "MalariaAntibodyMSP";
-        LOG_DEBUG("(De)serializing MalariaAntibodyMSP\n");
-        ar & boost::serialization::base_object<MalariaAntibody>(ab);
+        MalariaAntibody::serialize(ar, obj);
     }
 
-    template<class Archive>
-    void serialize(Archive &ar, MalariaAntibodyPfEMP1Minor &ab, const unsigned int v)
+    void MalariaAntibodyMSP::serialize(IArchive& ar, MalariaAntibodyMSP* obj)
     {
-        static const char * _module = "MalariaAntibodyPfEMP1Minor";
-        LOG_DEBUG("(De)serializing MalariaAntibodyPfEMP1Minor\n");
-        ar & boost::serialization::base_object<MalariaAntibody>(ab);
+        MalariaAntibody::serialize(ar, obj);
     }
 
-    template<class Archive>
-    void serialize(Archive &ar, MalariaAntibodyPfEMP1Major &ab, const unsigned int v)
+    void MalariaAntibodyPfEMP1Minor::serialize(IArchive& ar, MalariaAntibodyPfEMP1Minor* obj)
     {
-        static const char * _module = "MalariaAntibodyPfEMP1Major";
-        LOG_DEBUG("(De)serializing MalariaAntibodyPfEMP1Major\n");
-        ar & boost::serialization::base_object<MalariaAntibody>(ab);
+        MalariaAntibody::serialize(ar, obj);
+    }
+
+    void MalariaAntibodyPfEMP1Major::serialize(IArchive& ar, MalariaAntibodyPfEMP1Major* obj)
+    {
+        MalariaAntibody::serialize(ar, obj);
     }
 }
-#endif

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -12,7 +12,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include "NodeVectorEventContext.h"
 
-#include "MosquitoRelease.h" // for IMosquitoRelease only
 #include "NodeVector.h"
 #include "SimulationEventContext.h"
 #include "Debug.h"
@@ -204,15 +203,23 @@ namespace Kernel
         VectorHabitatType::Enum habitat_query // shouldn't the type be the enum???
     )
     {
+        auto ret = 0.0f;
         if( larval_reduction_target == VectorHabitatType::ALL_HABITATS ||
             habitat_query == larval_reduction_target )
         {
-            return pLarvalHabitatReduction;
+            LOG_DEBUG_F( "%s: actual larval habitat matches intervention target.\n", __FUNCTION__ );
+            ret = pLarvalHabitatReduction;
         }
         else
         {
-            return 0;
+            LOG_DEBUG_F( "%s: actual larval habitat (%s) does NOT match intervention target (%s).\n",
+                         __FUNCTION__, 
+                        VectorHabitatType::pairs::lookup_key( habitat_query ),
+                        VectorHabitatType::pairs::lookup_key( larval_reduction_target )
+                       );
         }
+        LOG_DEBUG_F( "%s returning %f (habitat_query = %s)\n", __FUNCTION__, ret, VectorHabitatType::pairs::lookup_key( habitat_query ) );
+        return ret;
     }
 
     float NodeVectorEventContextHost::GetVillageSpatialRepellent()
@@ -273,41 +280,30 @@ namespace Kernel
         return pOutdoorRestKilling;
     }
 
-    void NodeVectorEventContextHost::ReleaseMosquitoes(IMosquitoRelease* release)
+    void NodeVectorEventContextHost::ReleaseMosquitoes(
+        NonNegativeFloat cost,
+        const std::string& species,
+        const VectorMatingStructure& genetics,
+        NaturalNumber number
+    )
     {
-        IBaseIntervention * pBaseIV = NULL;
-        if( release->QueryInterface( GET_IID(IBaseIntervention), (void**)&pBaseIV ) == s_OK ) 
-        {
-            IncrementCampaignCost( pBaseIV->GetCostPerUnit() );
-        }
-        else
-        {
-            LOG_WARN("Unsuccessful in querying for IBaseIntervention from INodeDistributableIntervention for passing Campaign_Cost back to Node.\n");
-        }
-        INodeVector * pNV = NULL;
+        IncrementCampaignCost( cost );
+        INodeVector * pNV = nullptr;
         if( node->QueryInterface( GET_IID( INodeVector ), (void**)&pNV ) != s_OK )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "node", "Node", "INodeVector" );
         }
-        pNV->AddVectors( release->GetSpecies(), release->GetVectorGenetics(), release->GetNumber() );
+        pNV->AddVectors( species, genetics, number );
         return;
     }
-
-
-    //template void NodeVectorEventContextHost::serialize(boost::archive::binary_oarchive &ar, unsigned int);
-    //template void NodeVectorEventContextHost::serialize(boost::archive::binary_iarchive &ar, unsigned int);
 }
 
-#if USE_BOOST_SERIALIZATION
-#include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT(Kernel::NodeVectorEventContextHost)
-
+#if 0
 namespace Kernel
 {
     template<class Archive>
     void serialize(Archive &ar, NodeVectorEventContextHost &context, const unsigned int v)
     {
-#if 1
         // Serialize base class
         ar & context.pLarvalKilling; // by habitat???
         ar & context.pLarvalHabitatReduction; // by habitat???
@@ -339,7 +335,6 @@ namespace Kernel
         ar & context.pOutdoorRestKilling;
 
         ar & boost::serialization::base_object<Kernel::NodeEventContextHost>(context);
-#endif
     }
 }
 #endif

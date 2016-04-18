@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -23,6 +23,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "FileSystem.h"
 #include "Configuration.h"
 #include "Simulation.h"
+#include "Node.h"
 #include "SimulationConfig.h"
 
 using namespace Kernel;
@@ -46,11 +47,15 @@ SUITE(HivArtStagingCD4AgnosticDiagnosticTest)
             , m_Diag()
             , m_pSimulationConfig( new SimulationConfig() )
         {
+            Environment::Finalize();
+            Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
+            Environment::setSimulationConfig( m_pSimulationConfig );
+
             m_InterventionsContext.setCascadeState( "not_set" );
             m_InterventionsContext.SetContextTo( &m_Human );
             m_Diag.SetContextTo( &m_Human );
+
             m_pSimulationConfig->sim_type = SimType::HIV_SIM ;
-            Environment::setSimulationConfig( m_pSimulationConfig );
             m_pSimulationConfig->listed_events.insert("Births"          );
             m_pSimulationConfig->listed_events.insert("NonDiseaseDeaths");
 
@@ -67,7 +72,7 @@ SUITE(HivArtStagingCD4AgnosticDiagnosticTest)
         ~DiagnosticFixture()
         {
             delete m_pSimulationConfig;
-            Environment::setSimulationConfig( nullptr );
+            Environment::Finalize();
             Node::TestOnly_ClearProperties();
         }
     };

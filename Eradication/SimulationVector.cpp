@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -15,11 +15,17 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorSpeciesReport.h"
 #include "NodeVector.h"
 #include "IndividualVector.h"
-#include "InfectionVector.h"
-#include "SusceptibilityVector.h"
 #include "Sugar.h"
 #include "Vector.h"
 #include "SimulationConfig.h"
+#include "IVectorMigrationReporting.h"
+#include "NodeInfoVector.h"
+#include "BinaryArchiveWriter.h"
+#include "BinaryArchiveReader.h"
+#include "MpiDataExchanger.h"
+
+#include <chrono>
+typedef std::chrono::high_resolution_clock _clock;
 
 static const char * _module = "SimulationVector";
 
@@ -32,6 +38,8 @@ namespace Kernel
 
     SimulationVector::SimulationVector()
         : Kernel::Simulation()
+        , vector_migration_reports()
+        , node_populations_map()
         , drugdefaultcost(1.0f)
         , vaccinedefaultcost(DEFAULT_VACCINE_COST)
     {
@@ -53,24 +61,24 @@ namespace Kernel
                 netdefaultcost[i] = DEFAULT_RETREATMENT_COST;
 
             //cost to user/campaign
-            // Those magic numbers you see before you today, you will never see again, but will be removed in distribution refactor in August 2011
-            if ((int)(i / 64) == 1 || (int)(i / 64) == 4 || (int)(i / 64) == 7 || (int)(i / 64) == 10)
+            // TODO Those magic numbers you see before you today, you will never see again, but will be removed in distribution refactor in August 2011
+            if (int(i / 64) == 1 || int(i / 64) == 4 || int(i / 64) == 7 || int(i / 64) == 10)
                 netdefaultcost[i] *= 0.75;
-            else if ((int)(i / 64) == 2 || (int)(i / 64) == 5 || (int)(i / 64) == 8 || (int)(i / 64) == 11)
+            else if (int(i / 64) == 2 || int(i / 64) == 5 || int(i / 64) == 8 || int(i / 64) == 11)
                 netdefaultcost[i] *= 0.1f;
 
             //delivery type
-            if ((int)(i / 16) % 4 == 0)
+            if (int(i / 16) % 4 == 0)
                 netdefaultcost[i] += 0.50; //sentinel
-            else if ((int)(i / 16) % 4 == 1)
+            else if (int(i / 16) % 4 == 1)
                 netdefaultcost[i] += 1.00; //catchup without other campaign to share costs
-            else if ((int)(i / 16) % 4 == 2)
+            else if (int(i / 16) % 4 == 2)
                 netdefaultcost[i] += 2.00; //door-to-door
-            else if ((int)(i / 16) % 4 == 3)
+            else if (int(i / 16) % 4 == 3)
                 netdefaultcost[i] += 4.00; //door-to-door with verification
 
             //urban vs rural
-            if ((int)(i / 2) % 2 == 0)
+            if (int(i / 2) % 2 == 0)
                 netdefaultcost[i] += 0.17f; //urban
             else
                 netdefaultcost[i] += 0.33f;   //rural
@@ -84,7 +92,7 @@ namespace Kernel
                 housingmoddefaultcost[i] = DEFAULT_SCREENING_COST;
             else
                 housingmoddefaultcost[i] = DEFAULT_IRS_COST + DEFAULT_SCREENING_COST;
-            if ((int)(i / 2) % 2 == 0)
+            if (int(i / 2) % 2 == 0)
                 netdefaultcost[i] += 0.50; //urban
             else
                 netdefaultcost[i] += 1.00; //rural
@@ -104,6 +112,15 @@ namespace Kernel
         IndividualHumanVector fakeHuman;
         LOG_INFO( "Calling Configure on fakeHumanVector\n" );
         fakeHuman.Configure( config );
+
+        for( auto report : reports )
+        {
+            IVectorMigrationReporting* pivmr = dynamic_cast<IVectorMigrationReporting*>(report);
+            if( pivmr != nullptr )
+            {
+                vector_migration_reports.push_back( pivmr );
+            }
+        }
     }
 
     SimulationVector *SimulationVector::CreateSimulation()
@@ -113,8 +130,7 @@ namespace Kernel
 
     SimulationVector *SimulationVector::CreateSimulation(const ::Configuration *config)
     {
-        SimulationVector *newsimulation = NULL;
-        newsimulation = _new_ SimulationVector();
+        SimulationVector *newsimulation = _new_ SimulationVector();
         if (newsimulation)
         {
             // This sequence is important: first
@@ -123,7 +139,7 @@ namespace Kernel
             if(!ValidateConfiguration(config))
             {
                 delete newsimulation;
-                newsimulation = NULL;
+                /* newsimulation = nullptr; */
                 throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "VECTOR_SIM requested with invalid configuration." );
             }
         }
@@ -149,6 +165,18 @@ namespace Kernel
         // No need to do any deletion for the flags
     }
 
+    INodeInfo* SimulationVector::CreateNodeInfo()
+    {
+        INodeInfo* pin = new NodeInfoVector();
+        return pin ;
+    }
+
+    INodeInfo* SimulationVector::CreateNodeInfo( int rank, INodeContext* pNC )
+    {
+        INodeInfo* pin = new NodeInfoVector( rank, pNC );
+        return pin ;
+    }
+
     void SimulationVector::Reports_CreateBuiltIn()
     {
         // Do base-class behavior for creating one or more reporters
@@ -166,22 +194,121 @@ namespace Kernel
     {
         NodeVector *node = NodeVector::CreateNode(this, node_suid);
         addNode_internal(node, nodedemographics_factory, climate_factory);
+        node_populations_map.insert( std::make_pair( node_suid, node->GetStatPop() ) );
     }
 
     void SimulationVector::resolveMigration()
     {
-        resolveMigrationInternal( typed_migration_queue_storage, migratingIndividualQueues );
-        resolveMigrationInternal( typed_vector_migration_queue_storage, migratingVectorQueues );
+        Simulation::resolveMigration(); // Take care of the humans
+
+        WithSelfFunc to_self_func = [this](int myRank) 
+        { 
+#ifndef CLORTON
+            // Don't bother to serialize locally
+            for (auto iterator = migratingVectorQueues[myRank].rbegin(); iterator != migratingVectorQueues[myRank].rend(); ++iterator)
+            {
+                auto vector = *iterator;
+                IMigrate* emigre = dynamic_cast<IMigrate*>(vector);
+                emigre->ImmigrateTo( nodes[emigre->GetMigrationDestination()] );
+            }
+#else
+            auto writer = new BinaryArchiveWriter();
+            (*static_cast<IArchive*>(writer)) & migratingVectorQueues[myRank];
+            for (auto& individual : migratingVectorQueues[myRank])
+                individual->Recycle();
+            migratingVectorQueues[myRank].clear();
+
+            //if ( EnvPtr->Log->CheckLogLevel(Logger::VALIDATION, _module) ) {
+            //    _write_json( int(currentTime.time), EnvPtr->MPI.Rank, myRank, "vect", static_cast<IArchive*>(writer)->GetBuffer(), static_cast<IArchive*>(writer)->GetBufferSize() );
+            //}
+
+            const char* buffer = static_cast<IArchive*>(writer)->GetBuffer();
+            auto reader = new BinaryArchiveReader(buffer, static_cast<IArchive*>(writer)->GetBufferSize());
+            (*static_cast<IArchive*>(reader)) & migratingVectorQueues[myRank];
+            for (auto individual : migratingVectorQueues[myRank])
+            {
+                IMigrate* immigrant = dynamic_cast<IMigrate*>(individual);
+                immigrant->ImmigrateTo( nodes[immigrant->GetMigrationDestination()]);
+            }
+            delete reader;
+            delete writer;
+#endif
+        };
+
+        SendToOthersFunc to_others_func = [this](IArchive* writer, int toRank)
+        {
+            *writer & migratingVectorQueues[toRank];
+            for (auto& vector : migratingVectorQueues[toRank])
+                vector->Recycle();  // delete vector
+        };
+
+        ClearDataFunc clear_data_func = [this](int rank)
+        {
+            migratingVectorQueues[rank].clear();
+        };
+
+        ReceiveFromOthersFunc from_others_func = [this](IArchive* reader, int fromRank)
+        {
+            *reader & migratingVectorQueues[fromRank];
+            for (auto vector : migratingVectorQueues[fromRank])
+            {
+                IMigrate* immigrant = dynamic_cast<IMigrate*>(vector);
+                immigrant->ImmigrateTo( nodes[immigrant->GetMigrationDestination()] );
+            }
+        };
+
+        MpiDataExchanger exchanger( "VectorMigration", to_self_func, to_others_func, from_others_func, clear_data_func );
+        exchanger.ExchangeData( this->currentTime );
     }
 
-    void SimulationVector::PostMigratingVector(VectorCohort* ind)
+    int SimulationVector::populateFromDemographics( const char* campaign_filename, const char* loadbalance_filename )
     {
+        int num_nodes = Simulation::populateFromDemographics( campaign_filename, loadbalance_filename );
+
+        int total_vector_population = 0;
+        for( auto node_entry : nodes )
+        {
+            node_populations_map[ node_entry.first ] = node_entry.second->GetStatPop() ;
+
+            NodeVector* pnv = static_cast<NodeVector*>( node_entry.second );
+
+            for( auto vp : pnv->GetVectorPopulations() )
+            {
+                total_vector_population += vp->getAdultCount();
+            }
+        }
+
+        if( total_vector_population == 0 )
+        {
+            LOG_WARN_F("!!!! NO VECTORS !!!!!  There are %d nodes on this core and zero vectors.",nodes.size());
+        }
+
+        return num_nodes ;
+    }
+
+    void SimulationVector::PostMigratingVector( const suids::suid& nodeSuid, VectorCohort* ind )
+    {
+        for( auto report : vector_migration_reports )
+        {
+            report->LogVectorMigration( this, currentTime.time, nodeSuid, ind );
+        }
+
         // cast to VectorCohortIndividual
         // TBD: Get rid of cast, replace with QI. Not such a big deal at Simulation level
         VectorCohortIndividual* vci = static_cast<VectorCohortIndividual*>(ind);
 
         // put in queue by species and node rank
         migratingVectorQueues[nodeRankMap.GetRankFromNodeSuid(vci->GetMigrationDestination())].push_back(vci);
+    }
+
+    float SimulationVector::GetNodePopulation( const suids::suid& nodeSuid )
+    {
+        return nodeRankMap.GetNodeInfo( nodeSuid ).GetPopulation() ;
+    }
+
+    float SimulationVector::GetAvailableLarvalHabitat( const suids::suid& nodeSuid, const std::string& rSpeciesID )
+    {
+        return ((NodeInfoVector&)nodeRankMap.GetNodeInfo( nodeSuid )).GetAvailableLarvalHabitat( rSpeciesID ) ;
     }
 
     void SimulationVector::setupMigrationQueues()
@@ -192,25 +319,16 @@ namespace Kernel
 
     ISimulationContext *SimulationVector::GetContextPointer()
     {
-        return (ISimulationContext*)this;
+        return dynamic_cast<ISimulationContext*>(this);
     }
 
 }
 
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(Kernel::SimulationVector)
+#if 0
 namespace Kernel {
     template<class Archive>
     void serialize(Archive & ar, SimulationVector& sim, const unsigned int  file_version )
     {
-        static const char * _module = "SimulationVector";
-        LOG_DEBUG("(De)serializing SimulationVector\n");
-
-        // Register derived types (um these aren't derived...)
-        ar.template register_type<Kernel::NodeVector>();
-        ar.template register_type<Kernel::SusceptibilityVector>();
-        ar.template register_type<Kernel::VectorCohort>();
-
         ar & sim.vaccinedefaultcost;
         ar & sim.housingmoddefaultcost;
         ar & sim.awarenessdefaultcost;
@@ -221,8 +339,6 @@ namespace Kernel {
 
         // Serialize base class
         ar & boost::serialization::base_object<Kernel::Simulation>(sim);
-
     }
 }
 #endif
-

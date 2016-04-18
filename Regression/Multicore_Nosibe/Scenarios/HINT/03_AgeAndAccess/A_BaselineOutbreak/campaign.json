@@ -1,0 +1,28 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "class": "OutbreakIndividual",
+                    "outbreak_source": "PrevalenceIncrease"
+                },
+                "Property_Restrictions": [
+                    "Accessibility:Easy"
+                ],
+                "Target_Age_Max": 20,
+                "Target_Age_Min": 10,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 2,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

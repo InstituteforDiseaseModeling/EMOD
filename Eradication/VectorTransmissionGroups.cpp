@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -16,12 +16,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IInfectable.h"
 #include "IContagionPopulation.h"
 
+
 // These includes are required to bring in randgen
 #include "Environment.h"
 #include "Contexts.h"
 #include "RANDOM.h"
 
 static const char* _module = "VectorNodeTransmissionGroups";
+
 
 namespace Kernel
 {
@@ -31,6 +33,7 @@ namespace Kernel
 
     void VectorTransmissionGroups::ExposeToContagion( IInfectable* candidate, const TransmissionGroupMembership_t* transmissionGroupMembership, float deltaTee ) const
     {
+#ifndef DISABLE_VECTOR
         for (int iAntigen = 0; iAntigen < antigenCount; iAntigen++)
         {
             const vector<TransmissionGroupsBase::ContagionAccumulator_t>& forceOfInfectionForRouteGroup = forceOfInfectionByAntigenRouteGroup[iAntigen];
@@ -42,7 +45,7 @@ namespace Kernel
                 groupindex = entry.second;
                 float forceOfInfection = forceOfInfectionForRouteGroup[routeIndex][groupindex];
                 vector<const SubstrainMap_t*> substrainDistributions(1, &sumInfectivityByAntigenRouteGroupSubstrain[iAntigen][routeIndex][groupindex]);
-                if ((forceOfInfection > 0) && (candidate != NULL))
+                if ((forceOfInfection > 0) && (candidate != nullptr))
                 {
                     SubstrainPopulationImpl contagionPopulation(iAntigen, forceOfInfection, substrainDistributions);
                      // Are you a human or mosquito?
@@ -66,5 +69,6 @@ namespace Kernel
                 }
             }
         }
+#endif
     }
 }

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,7 +13,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionEnums.h"
 #include "InterventionFactory.h"
 #include "IndividualSTI.h"
-#include "SimulationConfig.h"
 
 static const char * _module = "STIIsPostDebut";
 
@@ -43,13 +42,11 @@ namespace Kernel
 
     STIIsPostDebut::STIIsPostDebut()
     : SimpleDiagnostic()
-    , negative_diagnosis_event(NO_TRIGGER_STR)
+    , negative_diagnosis_event()
     {
-        negative_diagnosis_event.constraints = "<configuration>:Listed_Events.*";
-        negative_diagnosis_event.constraint_param = &GET_CONFIGURABLE(SimulationConfig)->listed_events;
-        initConfigTypeMap( "Negative_Diagnosis_Event", &negative_diagnosis_event, STI_IPD_Negative_Diagnosis_Event_DESC_TEXT, NO_TRIGGER_STR );
-        initConfigTypeMap( "Days_To_Diagnosis", &days_to_diagnosis, SD_Days_To_Diagnosis_DESC_TEXT, 0, FLT_MAX, 0 );
         initSimTypes( 2, "STI_SIM", "HIV_SIM" );
+        initConfigTypeMap( "Negative_Diagnosis_Event", &negative_diagnosis_event, STI_IPD_Negative_Diagnosis_Event_DESC_TEXT );
+        initConfigTypeMap( "Days_To_Diagnosis", &days_to_diagnosis, SD_Days_To_Diagnosis_DESC_TEXT, 0, FLT_MAX, 0 );
     }
 
     STIIsPostDebut::STIIsPostDebut( const STIIsPostDebut& master )
@@ -82,10 +79,10 @@ namespace Kernel
         auto iid = parent->GetSuid().data;
         LOG_DEBUG_F( "Individual %d tested 'negative' in STIIsPostDebut, broadcasting negative event.\n", iid );
         
-        if (negative_diagnosis_event != NO_TRIGGER_STR )
+        if( (negative_diagnosis_event != NO_TRIGGER_STR) && !negative_diagnosis_event.IsUninitialized() )
         {
             LOG_DEBUG_F( "Brodcasting event %s as negative diagnosis event for individual %d.", negative_diagnosis_event.c_str(), iid );
-            broadcastEvent(negative_diagnosis_event);
+            broadcastEvent( negative_diagnosis_event );
         }
         else
         {
@@ -93,21 +90,13 @@ namespace Kernel
         }
         expired = true;
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::STIIsPostDebut)
+    REGISTER_SERIALIZABLE(STIIsPostDebut);
 
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, STIIsPostDebut& obj, const unsigned int v)
+    void STIIsPostDebut::serialize(IArchive& ar, STIIsPostDebut* obj)
     {
-        static const char * _module = "STIIsPostDebut";
-        LOG_DEBUG("(De)serializing STIIsPostDebut\n");
-
-        boost::serialization::void_cast_register<STIIsPostDebut, IDistributableIntervention>();
-        ar & boost::serialization::base_object<Kernel::SimpleDiagnostic>(obj);
+        SimpleDiagnostic::serialize( ar, obj );
+        STIIsPostDebut& debut = *obj;
+        ar.labelElement("negative_diagnosis_event") & debut.negative_diagnosis_event;
     }
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, Kernel::STIIsPostDebut&, unsigned int);
 }
-#endif

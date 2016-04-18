@@ -7,67 +7,64 @@
         "DateCreated": "2015-4-11"
     },
     "Defaults": {
-
         "Society" : {
-            "Pair_Formation_Parameters_TRANSITORY" :
+            "TRANSITORY" :
             {
-                "Number_Age_Bins_Male"   : 2,
-                "Number_Age_Bins_Female" : 2,
-                "Age_of_First_Bin_Edge_Male"   : 50,
-                "Age_of_First_Bin_Edge_Female" : 50,
-                "Years_Between_Bin_Edges_Male"   : 35,
-                "Years_Between_Bin_Edges_Female" : 35,
-                "Assortivity" :
+                "Pair_Formation_Parameters" :
                 {
-                    "Group" : "NO_GROUP"
-                },
-                "Joint_Probabilities" :
-                [
-                    [ 0, 1],
-                    [ 1, 0]
-                ]
+                    "Formation_Rate_Constant": 0.0027398,
+                    "Update_Period" : 7.0,
+                    "Number_Age_Bins_Male"   : 2,
+                    "Number_Age_Bins_Female" : 2,
+                    "Age_of_First_Bin_Edge_Male"   : 50,
+                    "Age_of_First_Bin_Edge_Female" : 50,
+                    "Years_Between_Bin_Edges_Male"   : 35,
+                    "Years_Between_Bin_Edges_Female" : 35,
+                    "Joint_Probabilities" :
+                    [
+                        [ 0, 1],
+                        [ 1, 0]
+                    ]
+                }
             },
-            "Pair_Formation_Parameters_INFORMAL" :
+            "INFORMAL" :
             {
-                "Number_Age_Bins_Male"   : 3,
-                "Number_Age_Bins_Female" : 3,
-                "Age_of_First_Bin_Edge_Male"   : 40,
-                "Age_of_First_Bin_Edge_Female" : 40,
-                "Years_Between_Bin_Edges_Male"   : 25,
-                "Years_Between_Bin_Edges_Female" : 25,
-                "Assortivity" :
+                "Pair_Formation_Parameters" :
                 {
-                    "Group" : "NO_GROUP"
-                },
-                "Joint_Probabilities" :
-                [
-                    [ 0, 0.33, 0],
-                    [ 0, 0, 0.33],
-                    [ 0.33, 0, 0]
-                ]
+                    "Formation_Rate_Constant": 0.00142758001441999,
+                    "Update_Period" : 7.0,
+                    "Number_Age_Bins_Male"   : 3,
+                    "Number_Age_Bins_Female" : 3,
+                    "Age_of_First_Bin_Edge_Male"   : 40,
+                    "Age_of_First_Bin_Edge_Female" : 40,
+                    "Years_Between_Bin_Edges_Male"   : 25,
+                    "Years_Between_Bin_Edges_Female" : 25,
+                    "Joint_Probabilities" :
+                    [
+                        [ 0, 0.33, 0],
+                        [ 0, 0, 0.33],
+                        [ 0.33, 0, 0]
+                    ]
+                }
             },
-            "Pair_Formation_Parameters_MARITAL" :
+            "MARITAL" :
             {
-                "Number_Age_Bins_Male"   : 1,
-                "Number_Age_Bins_Female" : 1,
-                "Age_of_First_Bin_Edge_Male"   : 100,
-                "Age_of_First_Bin_Edge_Female" : 100,
-                "Years_Between_Bin_Edges_Male"   : 1,
-                "Years_Between_Bin_Edges_Female" : 1,
-                "Assortivity" :
+                "Pair_Formation_Parameters" :
                 {
-                    "Group" : "NO_GROUP"
-                },
-                "Joint_Probabilities" :
-                [
-                    [ 1 ]
-                ]
+                    "Formation_Rate_Constant": 9.1323999999999995e-05,
+                    "Update_Period" : 30.0,
+                    "Number_Age_Bins_Male"   : 1,
+                    "Number_Age_Bins_Female" : 1,
+                    "Age_of_First_Bin_Edge_Male"   : 100,
+                    "Age_of_First_Bin_Edge_Female" : 100,
+                    "Years_Between_Bin_Edges_Male"   : 1,
+                    "Years_Between_Bin_Edges_Female" : 1,
+                    "Joint_Probabilities" :
+                    [
+                        [ 1 ]
+                    ]
+                }
             }
         }
-    }, 
-    "Nodes": [
-        {
-            "NodeID": 1
-        }
-    ]
+    }
 }

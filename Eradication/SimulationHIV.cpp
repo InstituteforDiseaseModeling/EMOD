@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,16 +11,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "SimulationHIV.h"
 
-#include "InfectionHIV.h"
 #include "NodeHIV.h"
 #include "ReportHIV.h"
-#include "SusceptibilityHIV.h"
 #include "SimulationConfig.h"
 #include "HivObjectFactory.h"
 #include "IHIVCascadeStateIntervention.h"
 #include "HIVReportEventRecorder.h"
-
-static const float DEFAULT_BASE_YEAR = 2015.0f ;
+#include "IndividualHIV.h"
 
 static const char * _module = "SimulationHIV";
 
@@ -32,10 +29,10 @@ namespace Kernel
     END_QUERY_INTERFACE_BODY(SimulationHIV)
 
     SimulationHIV::SimulationHIV()
-    : report_hiv_mortality(false)
-    , report_hiv_by_age_and_gender(false)
+    : report_hiv_by_age_and_gender(false)
     , report_hiv_ART(false)
     , report_hiv_infection(false)
+    , report_hiv_mortality(false)
     , report_hiv_period(DAYSPERYEAR)
     , valid_cascade_states()
     {
@@ -67,9 +64,7 @@ namespace Kernel
 
     SimulationHIV *SimulationHIV::CreateSimulation(const ::Configuration *config)
     {
-        SimulationHIV *newsimulation = NULL;
-
-        newsimulation = _new_ SimulationHIV();
+        SimulationHIV *newsimulation = _new_ SimulationHIV();
         if (newsimulation)
         {
             InterventionValidator::SetDiseaseSpecificValidator( newsimulation );
@@ -80,7 +75,7 @@ namespace Kernel
             if(!ValidateConfiguration(config))
             {
                 delete newsimulation;
-                newsimulation = NULL;
+                newsimulation = nullptr;
             }
         }
 
@@ -116,15 +111,7 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        // Set base_year
-        float base_year = DEFAULT_BASE_YEAR ;
-        initConfigTypeMap( "Base_Year",  &base_year, Base_Year_DESC_TEXT, 1800.0, 2100.0, DEFAULT_BASE_YEAR );
-
         bool ret = SimulationSTI::Configure( inputJson );
-
-        LOG_INFO_F("Setting Base_Year to %f\n", base_year );
-        Simulation::currentTime._base_year =  base_year;
-
         return ret;
     }
 
@@ -197,11 +184,6 @@ namespace Kernel
         addNode_internal(node, nodedemographics_factory, climate_factory);
     }
 
-    void SimulationHIV::resolveMigration()
-    {
-        resolveMigrationInternal( typed_migration_queue_storage, migratingIndividualQueues );
-    }
-
     void SimulationHIV::Validate( const std::string& rClassName,
                                   IDistributableIntervention* pInterventionToValidate )
     {
@@ -253,24 +235,6 @@ namespace Kernel
 
     void SimulationHIV::AddDataToHeader( IJsonObjectAdapter* pIJsonObj )
     {
-        // This class is a friend of IdmDateTime so allowed to access private member.
-        float base_year = IdmDateTime::_base_year;
-        pIJsonObj->Insert("Base_Year", base_year);
+        pIJsonObj->Insert("Base_Year", SimulationSTI::base_year);
     }
 }
-
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(Kernel::SimulationHIV)
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive & ar, SimulationHIV &sim, const unsigned int  file_version )
-    {
-        // Register derived types
-        ar.template register_type<NodeHIV>();
-        ar.template register_type<NodeHIVFlags>();
-
-        // Serialize base class
-        ar & boost::serialization::base_object<SimulationSTI>(sim);
-    }
-}
-#endif

@@ -1,21 +1,21 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 
 #include "StrainAwareTransmissionGroups.h"
-#include "Exceptions.h"
 
 // These includes are required to bring in randgen
 #include "Environment.h"
 #include "Contexts.h"
 #include "RANDOM.h"
+#include "Log.h"
 
 static const char* _module = "StrainAwareTransmissionGroups";
 
@@ -132,7 +132,7 @@ namespace Kernel
                 substrainDistributions.push_back(&sumInfectivityByAntigenRouteGroupSubstrain[iAntigen][routeIndex][groupIndex]);
             }
 
-            if ((forceOfInfection > 0) && (candidate != NULL))
+            if ((forceOfInfection > 0) && (candidate != nullptr))
             {
                 LOG_DEBUG_F("ExposureToContagion: [Antigen:%d] Route:%d, Group:%d, exposure qty = %f\n", iAntigen, routeIndex, groupIndex, forceOfInfection );
                 SubstrainPopulationImpl contagionPopulation(iAntigen, forceOfInfection, substrainDistributions);
@@ -164,34 +164,37 @@ namespace Kernel
 
     void StrainAwareTransmissionGroups::CorrectInfectivityByGroup(float infectivityCorrection, const TransmissionGroupMembership_t* transmissionGroupMembership)
     {
-        //by antigen total
-        for (int iAntigen = 0; iAntigen < antigenCount; iAntigen++)
+        if (infectivityCorrection != 1.0f)
         {
-            for (const auto& entry : (*transmissionGroupMembership))
+            //by antigen total
+            for (int iAntigen = 0; iAntigen < antigenCount; iAntigen++)
             {
-                int routeIndex = entry.first;
-                int groupIndex = entry.second;
-                LOG_DEBUG_F("CorrectInfectivityByGroup: [Antigen:%d] Route:%d, Group:%d, ContagionBefore = %f, infectivityCorrection = %f\n", iAntigen, routeIndex, groupIndex, newInfectivityByAntigenRouteGroup[iAntigen][routeIndex][groupIndex], infectivityCorrection);
-                newInfectivityByAntigenRouteGroup[iAntigen][routeIndex][groupIndex] *= infectivityCorrection;
-                LOG_DEBUG_F("CorrectInfectivityByGroup: [Antigen:%d] Route:%d, Group:%d, ContagionAfter = %f\n", iAntigen, routeIndex, groupIndex, newInfectivityByAntigenRouteGroup[iAntigen][routeIndex][groupIndex]);
-            }
-        }
-
-        //by substrain
-        for (int iAntigen = 0; iAntigen < antigenCount; iAntigen++)
-        {
-            RouteGroupSubstrainMap_t& shedAntigen = newInfectivityByAntigenRouteGroupSubstrain[iAntigen];
-            for (const auto& membership : *transmissionGroupMembership)
-            {
-                int routeIndex = membership.first;
-                int groupIndex = membership.second;
-
-                for (auto& entry : shedAntigen[routeIndex][groupIndex])
+                for (const auto& entry : (*transmissionGroupMembership))
                 {
-                    unsigned int iSubstrain = entry.first;
-                    LOG_DEBUG_F("CorrectInfectivityByGroup: [Antigen:%d][Route:%d][Group:%d][Substrain:%d], ContagionBefore = %f, infectivityCorrection = %f\n", iAntigen, routeIndex, groupIndex, iSubstrain, shedAntigen[routeIndex][groupIndex][iSubstrain], infectivityCorrection);
-                    entry.second *= infectivityCorrection;
-                    LOG_DEBUG_F("CorrectInfectivityByGroup: [Antigen:%d][Route:%d][Group:%d][Substrain:%d], ContagionAfter  = %f\n", iAntigen, routeIndex, groupIndex, iSubstrain, shedAntigen[routeIndex][groupIndex][iSubstrain]);
+                    int routeIndex = entry.first;
+                    int groupIndex = entry.second;
+                    LOG_DEBUG_F("CorrectInfectivityByGroup: [Antigen:%d] Route:%d, Group:%d, ContagionBefore = %f, infectivityCorrection = %f\n", iAntigen, routeIndex, groupIndex, newInfectivityByAntigenRouteGroup[iAntigen][routeIndex][groupIndex], infectivityCorrection);
+                    newInfectivityByAntigenRouteGroup[iAntigen][routeIndex][groupIndex] *= infectivityCorrection;
+                    LOG_DEBUG_F("CorrectInfectivityByGroup: [Antigen:%d] Route:%d, Group:%d, ContagionAfter = %f\n", iAntigen, routeIndex, groupIndex, newInfectivityByAntigenRouteGroup[iAntigen][routeIndex][groupIndex]);
+                }
+            }
+
+            //by substrain
+            for (int iAntigen = 0; iAntigen < antigenCount; iAntigen++)
+            {
+                RouteGroupSubstrainMap_t& shedAntigen = newInfectivityByAntigenRouteGroupSubstrain[iAntigen];
+                for (const auto& membership : *transmissionGroupMembership)
+                {
+                    int routeIndex = membership.first;
+                    int groupIndex = membership.second;
+
+                    for (auto& entry : shedAntigen[routeIndex][groupIndex])
+                    {
+                        unsigned int iSubstrain = entry.first;
+                        LOG_DEBUG_F("CorrectInfectivityByGroup: [Antigen:%d][Route:%d][Group:%d][Substrain:%d], ContagionBefore = %f, infectivityCorrection = %f\n", iAntigen, routeIndex, groupIndex, iSubstrain, shedAntigen[routeIndex][groupIndex][iSubstrain], infectivityCorrection);
+                        entry.second *= infectivityCorrection;
+                        LOG_DEBUG_F("CorrectInfectivityByGroup: [Antigen:%d][Route:%d][Group:%d][Substrain:%d], ContagionAfter  = %f\n", iAntigen, routeIndex, groupIndex, iSubstrain, shedAntigen[routeIndex][groupIndex][iSubstrain]);
+                    }
                 }
             }
         }
@@ -326,7 +329,7 @@ namespace Kernel
 
     AntigenId StrainAwareTransmissionGroups::SubstrainPopulationImpl::GetAntigenId( void ) const
     {
-        return (AntigenId)antigenId;
+        return AntigenId(antigenId);
     }
 
     float StrainAwareTransmissionGroups::SubstrainPopulationImpl::GetTotalContagion( void ) const

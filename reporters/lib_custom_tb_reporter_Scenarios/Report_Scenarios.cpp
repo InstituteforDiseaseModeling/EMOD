@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -12,7 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Report_Scenarios.h"
 #include "TBContexts.h"
-#include "Individual.h"
+#include "IIndividualHuman.h"
 #include "NodeEventContext.h" //for calling INodeTriggredInterventionConsumer
 #include "Debug.h"
 #include "TBInterventionsContainer.h"
@@ -52,7 +52,7 @@ DllInterfaceHelper DLL_HELPER( _module, _sim_types, rif );
 
 //channels done at the node level
 static std::string _stat_pop_label                          = "Statistical Population";
-static std::string _prob_new_inf_label                      = "Probability of New Infection";
+static std::string _inf_rate_label                          = "Daily (Human) Infection Rate";
 static std::string _new_active_label                        = "New Active TB Infections";
 static std::string _stat_pop_births_label                   = "Births";
 static std::string _stat_pop_deaths_label                   = "Deaths";
@@ -279,7 +279,7 @@ Report_Scenarios::Report_Scenarios()
     INIT_CHAN_WITH_ZERO ( _stat_pop_label );
     INIT_CHAN_WITH_ZERO ( _stat_pop_births_label );
     INIT_CHAN_WITH_ZERO ( _stat_pop_deaths_label );
-    INIT_CHAN_WITH_ZERO ( _prob_new_inf_label );
+    INIT_CHAN_WITH_ZERO ( _inf_rate_label );
     INIT_CHAN_WITH_ZERO ( _new_active_label );
     INIT_CHAN_WITH_ZERO ( _disease_deaths_label );
     INIT_CHAN_WITH_ZERO ( _new_active_mdr_label );
@@ -405,7 +405,7 @@ Report_Scenarios::LogNodeData(
 
     Accumulate(_stat_pop_label, pNC->GetStatPop());
     this_years_births = pNC->GetBirths();
-    Accumulate(_prob_new_inf_label,   pNC->GetInfectionRate());
+    Accumulate(_inf_rate_label,   pNC->GetInfectionRate());
 
     // get pointer to INodeTB
     INodeTB* pTBNode = nullptr;
@@ -448,9 +448,9 @@ Report_Scenarios::LogNodeData(
      }
 }
 
-int Report_Scenarios::calcBinIndex(const IndividualHuman * individual)
+int Report_Scenarios::calcBinIndex(const IIndividualHuman* individual)
 {
-    float age = (float)individual->GetAge();
+    float age = float(individual->GetAge());
 
     // Calculate age bin
     int agebin = lower_bound( actual_age_bins.begin(), actual_age_bins.end(), age/DAYSPERYEAR ) - actual_age_bins.begin();
@@ -462,11 +462,11 @@ int Report_Scenarios::calcBinIndex(const IndividualHuman * individual)
 
 void 
 Report_Scenarios::LogIndividualData(
-    IndividualHuman * individual
+    IIndividualHuman* individual
 )
 {
     // get monte carlo weight
-    float mc_weight = (float)individual->GetMonteCarloWeight();
+    float mc_weight = float(individual->GetMonteCarloWeight());
 
     // get pointer to IIndividualHumanTB2 (full TB interface) and the person's SusceptibilityTB
     IIndividualHumanTB2* individual_tb = nullptr;
@@ -515,7 +515,7 @@ Report_Scenarios::LogIndividualData(
     // --- ".at" will throw an exception if the value is not found in the map.
     // ------------------------------------------------------------------------------
     const tProperties* pProp = individual->GetEventContext()->GetProperties();
-    float age = (float)individual->GetAge();
+    float age = float(individual->GetAge());
     float age_limit = TB_REPORTING_AGE_LIMIT;
 
     // string literals used more than once get a variable
@@ -782,7 +782,7 @@ Report_Scenarios::populateSummaryDataUnitsMap(
     units_map[_stat_pop_label]                      = "Population";
     units_map[_stat_pop_births_label]               = 
     units_map[_stat_pop_deaths_label]               = "Population";
-    units_map[_prob_new_inf_label]                  = "Infection Rate";
+    units_map[_inf_rate_label]                      = "Infection Rate";
     units_map[_new_active_label]                    =
     units_map[_disease_deaths_label]                =
     units_map[_new_active_mdr_label]                =
@@ -873,7 +873,7 @@ void
 Report_Scenarios::postProcessAccumulatedData()
 {
     LOG_DEBUG( "getSummaryDataCustomProcessed\n" );
-    normalizeChannel(_prob_new_inf_label, (float)_nrmSize);
+    normalizeChannel(_inf_rate_label, float(_nrmSize));
 }
 
 void
@@ -925,7 +925,7 @@ Report_Scenarios::EndTimestep( float currentTime, float dt )
                 || name == _new_active_acquired_mdr_label
                 || name == _new_active_fast_label
                 || name == _new_active_twoyrs_label
-                || name == _prob_new_inf_label 
+                || name == _inf_rate_label 
                 || name == _num_tbactivation_label
                 || name == _num_providerorderstbtest_label
                 || name == _num_tbtestdefault_label
@@ -1019,7 +1019,7 @@ Report_Scenarios::notifyOnEvent(
     }
     release_assert( individual_tb );
 
-    float mc_weight = (float)context->GetMonteCarloWeight();
+    float mc_weight = float(context->GetMonteCarloWeight());
 
     LOG_DEBUG_F( "Individual %d with weight %f experienced event %s\n",
                  context->GetSuid().data,

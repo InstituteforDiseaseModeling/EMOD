@@ -4,7 +4,7 @@
         "DEMOGRAPHICS": {
             "Base_Mortality": 0.01, 
             "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
-            "Demographics_Filename": "Seattle_30arcsec_demographics.json;Seattle_30arcsec_demographics_zoonosis.json",
+            "Demographics_Filenames": [ "Seattle_30arcsec_demographics.json", "Seattle_30arcsec_demographics_zoonosis.json" ],
             "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF", 
             "SAMPLING": {
                 "Base_Individual_Sample_Rate": 0.05,
@@ -31,6 +31,9 @@
                 "Enable_Air_Migration": 0
             },
             "Enable_Migration_Heterogeneity": 1,
+            "Enable_Family_Migration": 0, 
+            "Family_Migration_Filename": "", 
+            "x_Family_Migration": 1,
             "LOCAL": {
                 "Enable_Local_Migration": 1,
                 "Local_Migration_Filename": "Seattle_30arcsec_local_migration.bin"

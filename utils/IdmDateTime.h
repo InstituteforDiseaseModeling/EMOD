@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,9 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "IdmApi.h"
 #include "Common.h" // for constants
-#include "Debug.h" // for release_assert
 #include "Types.h" // for NaturalNumber
-#include "Exceptions.h" // for Exceptions(!)
 
 // fwd declare outside namespace
 class BaseChannelReport;
@@ -93,10 +91,21 @@ namespace Kernel {
             return timestep;
         }
 
+        void setBaseYear( NonNegativeFloat base_year_in )
+        {
+            _base_year = base_year_in;
+        }
+
+        NonNegativeFloat getBaseYear() const
+        {
+            return _base_year;
+        }
+
         NaturalNumber timestep;
         NonNegativeFloat time;
 
         private:
-        static NonNegativeFloat _base_year;
+        NonNegativeFloat _base_year;
+
     };
 }

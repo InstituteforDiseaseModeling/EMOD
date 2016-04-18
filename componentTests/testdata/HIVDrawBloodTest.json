@@ -1,5 +1,6 @@
 {
     "Event_Or_Config"          : "Event",
+    "Dont_Allow_Duplicates"    : 0,
     "Positive_Diagnosis_Event" : "Births",
     "Base_Specificity"         : 0,
     "Base_Sensitivity"         : 0,

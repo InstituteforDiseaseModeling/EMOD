@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -43,6 +43,11 @@ namespace Kernel
             // skip check if getting schema
             return ;
         }
+
+#if defined(_DLLS_)
+        // For now just skip this test during dll builds: need to develop non-static solution.
+        return;
+#endif
 
         std::string class_name = std::string(json::QuickInterpreter(rElement)["class"].As<json::String>()) ;
         LOG_DEBUG_F( "Attempting to instantiate intervention of class %s\n", class_name.c_str() );

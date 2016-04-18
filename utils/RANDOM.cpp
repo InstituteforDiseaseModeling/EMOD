@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -253,24 +253,24 @@ double RANDOMBASE::time_varying_rate_dist( std::vector <float> v_rate, float tim
     double e_log = -log(e());
     double tempsum = 0.0f;
     int temp_break_step = 0;
-    int break_step = 0;
     double ret= 0.0f;
 
-    for ( auto rit = v_rate.begin(); rit!= v_rate.end()-1; rit++ )
+    for ( auto rit = v_rate.begin(); rit!= v_rate.end()-1; ++rit )
     {
-        tempsum = tempsum + (double)*rit * (double) timestep +  (double) (0.5*(*(rit+1)-*rit) * (double) timestep )+ (double) rate * (double) timestep;
+        tempsum = tempsum + double(*rit) * double(timestep) +  double(0.5*(*(rit+1)-*rit) * double(timestep))+ double(rate) * double(timestep);
 
         if (tempsum  > e_log)
         {
-            break_step = temp_break_step + 1;
-            ret = (double)break_step * (double)timestep  - (tempsum - e_log)/( (double) v_rate[break_step-1] + 0.5*( v_rate[break_step]- v_rate[break_step - 1]) + (double) rate) ;
+            int break_step = temp_break_step + 1;
+            ret = double(break_step) * double(timestep)  - (tempsum - e_log)/( double(v_rate[break_step-1]) + 0.5*( v_rate[break_step]- v_rate[break_step - 1]) + double(rate)) ;
 
             return ret;
         }
 
         temp_break_step ++ ;
     }
-    ret =  (double)temp_break_step *  (double)timestep + (e_log-tempsum)/((double) rate + (double) v_rate.back() ) ;
+
+    ret =  double(temp_break_step) *  double(timestep) + (e_log-tempsum)/(double(rate) + double(v_rate.back()));
     return ret;
 }
 
@@ -278,7 +278,7 @@ double RANDOMBASE::time_varying_rate_dist( std::vector <float> v_rate, float tim
 /*unsigned long int*/uint64_t RANDOMBASE::binomial_approx(uint64_t n, double p)
 {
     /*long int*/int64_t tempval = 0;
-    double mean = 0;
+
     if (n <= 0 || p <= 0)
     {
         tempval = 0;
@@ -289,7 +289,7 @@ double RANDOMBASE::time_varying_rate_dist( std::vector <float> v_rate, float tim
     }
     else
     {
-        mean = n * p;
+        double mean = n * p;
         if (n < 10)
         {
             for (int i = 0; i < n; i++)
@@ -302,7 +302,7 @@ double RANDOMBASE::time_varying_rate_dist( std::vector <float> v_rate, float tim
         }
         else
         {
-            tempval = (int64_t)(eGauss() * sqrt(mean * (1.0 - p)) + mean + .5);
+            tempval = int64_t(eGauss() * sqrt(mean * (1.0 - p)) + mean + 0.5);
             if (tempval < 0)
             {
                 tempval = 0;
@@ -314,7 +314,7 @@ double RANDOMBASE::time_varying_rate_dist( std::vector <float> v_rate, float tim
     {
         tempval = 0;
     }
-    if ((uint64_t)tempval > n)
+    if (uint64_t(tempval) > n)
     {
         tempval = n;
     }
@@ -325,7 +325,7 @@ double RANDOMBASE::time_varying_rate_dist( std::vector <float> v_rate, float tim
 uint64_t RANDOMBASE::binomial_true(uint64_t n, double p)
 {
     int64_t tempval = 0;
-    double mean = 0;
+
     if (n <= 0 || p <= 0)
     {
         tempval = 0;
@@ -336,7 +336,6 @@ uint64_t RANDOMBASE::binomial_true(uint64_t n, double p)
     }
     else
     {
-        mean = n * p;
         for (int i = 0; i < n; i++)
         {
             if (e() < p)
@@ -350,7 +349,8 @@ uint64_t RANDOMBASE::binomial_true(uint64_t n, double p)
     {
         tempval = 0;
     }
-    if ((uint64_t)tempval > n)
+
+    if (uint64_t(tempval) > n)
     {
         tempval = n;
     }
@@ -366,7 +366,7 @@ uint64_t RANDOMBASE::binomial_true(uint64_t n, double p)
 uint64_t RANDOMBASE::binomial_approx2(uint64_t n, double p)
 {
     int64_t tempval = 0;
-    double mean = 0;
+
     if (n <= 0 || p <= 0)
     {
         tempval = 0;
@@ -377,7 +377,7 @@ uint64_t RANDOMBASE::binomial_approx2(uint64_t n, double p)
     }
     else
     {
-        mean = n * p;
+        double mean = n * p;
         // for small numbers, just do n random draws for true binomial
         if (n < 10)
         {
@@ -403,7 +403,7 @@ uint64_t RANDOMBASE::binomial_approx2(uint64_t n, double p)
             else
             {
                 // use normal approximation for intermediate probabilities
-                tempval = (int64_t)(eGauss() * sqrt(mean * (1.0 - p)) + mean + .5);
+                tempval = int64_t(eGauss() * sqrt(mean * (1.0 - p)) + mean + .5);
                 if (tempval < 0)
                 {
                     tempval = 0;
@@ -416,37 +416,13 @@ uint64_t RANDOMBASE::binomial_approx2(uint64_t n, double p)
     {
         tempval = 0;
     }
-    if ((uint64_t)tempval > n)
+    if (uint64_t(tempval) > n)
     {
         tempval = n;
     }
 
     return uint64_t(tempval);
 }
-
-#if USE_JSON_SERIALIZATION
-
-// IJsonSerializable Interfaces
-void RANDOMBASE::JSerialize( Kernel::IJsonObjectAdapter* root, Kernel::JSerializer* helper ) const
-{
-    root->BeginObject();
-    root->Insert("iSeq", iSeq);
-    root->Insert("bSeq", bSeq);
-    root->Insert("bWrite", bWrite);
-    root->Insert("bGauss", bGauss);
-    root->Insert("eGauss_", eGauss_);
-    root->EndObject();
-}
-void RANDOMBASE::JDeserialize( Kernel::IJsonObjectAdapter* root, Kernel::JSerializer* helper )
-{
-    iSeq = root->GetUint("iSeq");
-    bSeq = root->GetBool("bSeq");
-    bWrite = root->GetBool("bWrite");
-    bGauss = root->GetBool("bGauss");
-    eGauss_ = root->GetDouble("eGauss_");
-}
-
-#endif
 
 __ULONG RANDOM::ul()
 {

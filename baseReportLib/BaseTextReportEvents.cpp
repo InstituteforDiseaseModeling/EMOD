@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -67,18 +67,6 @@ namespace Kernel
             UnregisterAllNodes();
         }
     }
-
-#if USE_JSON_SERIALIZATION
-   void BaseTextReportEvents::JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const 
-   {
-        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "JSerialize() needs to be implemented.\n" );
-   }
-
-   void BaseTextReportEvents::JDeserialize( IJsonObjectAdapter* root, JSerializer* helper )
-   {
-        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "JDeserialize() needs to be implemented.\n" );
-   }
-#endif
 
     void BaseTextReportEvents::UpdateRegistration( INodeTriggeredInterventionConsumer* pNTIC,
                                                    bool registering )

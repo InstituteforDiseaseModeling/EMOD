@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -16,7 +16,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "BoostLibWrapper.h"
 
 #include "Interventions.h"
-#include "SimpleTypemapRegistration.h"
 #include "Contexts.h"
 #include "Configuration.h"
 #include "InterventionFactory.h"
@@ -28,7 +27,6 @@ namespace Kernel
 {
     class TargetAgeArrayConfig : public JsonConfigurable
     {
-        friend class ::boost::serialization::access;
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
 
@@ -38,6 +36,8 @@ namespace Kernel
             virtual json::QuickBuilder GetSchema();
             std::map< float, float > age2ProbabilityMap;
             bool dropout;
+
+            static void serialize(IArchive&, TargetAgeArrayConfig&);
     };
 
     class IVCalendar : public BaseIntervention
@@ -66,14 +66,10 @@ namespace Kernel
         IndividualInterventionConfig actual_intervention_config;
         bool dropout;
 
+        DECLARE_SERIALIZABLE(IVCalendar);
+
     private:
         std::list<float> scheduleAges;
         std::string dumpCalendar();
-        
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class ::boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive &ar, IVCalendar& cal, const unsigned int v);
-#endif        
     };
 }

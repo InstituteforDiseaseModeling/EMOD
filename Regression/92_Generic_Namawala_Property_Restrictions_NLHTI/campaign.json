@@ -1,59 +1,60 @@
 {
-    "Campaign_Name": "Initial Seeding",
+    "Campaign_Name": "Initial Seeding", 
     "Events": [
         {
             "Event_Coordinator_Config": {
-                "Demographic_Coverage": 0.1,
+                "Demographic_Coverage": 0.1, 
                 "Intervention_Config": {
-                    "Antigen": 0,
-                    "Genome": 0,
-                    "Outbreak_Source": "PrevalenceIncrease",
+                    "Antigen": 0, 
+                    "Genome": 0, 
+                    "Outbreak_Source": "PrevalenceIncrease", 
                     "class": "OutbreakIndividual"
-                },
-                "Target_Demographic": "Everyone",
+                }, 
+                "Target_Demographic": "Everyone", 
                 "class": "StandardInterventionDistributionEventCoordinator"
-            },
-            "Event_Name": "Outbreak",
+            }, 
+            "Event_Name": "Outbreak", 
             "Nodeset_Config": {
                 "class": "NodeSetAll"
-            },
-            "Start_Day": 100,
+            }, 
+            "Start_Day": 100, 
             "class": "CampaignEvent"
-        },
+        }, 
         {
-               "Event_Coordinator_Config": {
-                    "Intervention_Config": {
-                        "class": "NodeLevelHealthTriggeredIV",
-                        "Trigger_Condition": "EveryUpdate",
-                        "Duration": 1,
-                        "Property_Restrictions_Within_Node": [
-                            {
-                                "Character": "Good"
-                            },
-                            {
-                                "Character": "Bad",
-                                "Income": "Rich"
-                            }
-                        ],
-                        "Actual_IndividualIntervention_Config": {
-                             "Cost_To_Consumer": 1.0, 
-                             "Durability_Time_Profile": "BOXDURABILITY", 
-                             "Primary_Decay_Time_Constant": 3650, 
-                             "Reduced_Acquire": 1, 
-                             "Reduced_Transmit": 0, 
-                             "Vaccine_Take": 1, 
-                             "Vaccine_Type": "AcquisitionBlocking", 
-                             "class": "SimpleVaccine"
-                        }
-                    },
-                    "class": "StandardInterventionDistributionEventCoordinator"
-               }, 
-               "Nodeset_Config": {
-                    "class": "NodeSetAll"
-               }, 
-               "Start_Day": 2, 
-               "class": "CampaignEvent"
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "Cost_To_Consumer": 1.0, 
+                        "Vaccine_Take": 1, 
+                        "Vaccine_Type": "AcquisitionBlocking", 
+                        "class": "SimpleVaccine",
+                        "Waning_Config": {
+                            "Initial_Effect": 1,
+                            "Box_Duration": 3650,
+                            "class": "WaningEffectBox"
+                        }
+                    }, 
+                    "Duration": 1, 
+                    "Property_Restrictions_Within_Node": [
+                        {
+                            "Character": "Good"
+                        }, 
+                        {
+                            "Character": "Bad", 
+                            "Income": "Rich"
+                        }
+                    ], 
+                    "Trigger_Condition": "EveryUpdate", 
+                    "class": "NodeLevelHealthTriggeredIV"
+                }, 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 2, 
+            "class": "CampaignEvent"
         }
-    ],
+    ], 
     "Use_Defaults": 1
 }

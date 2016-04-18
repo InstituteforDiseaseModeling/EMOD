@@ -33,8 +33,16 @@ class Writer {
 public:
     typedef typename Encoding::Ch Ch;
 
-    Writer(Stream& stream, Allocator* allocator = 0, size_t levelDepth = kDefaultLevelDepth) : 
-        stream_(stream), level_stack_(allocator, levelDepth * sizeof(Level)) {}
+    Writer(Stream& stream, bool defaultPercision=true, Allocator* allocator = 0, size_t levelDepth = kDefaultLevelDepth)
+    : stream_(stream) 
+    , level_stack_( allocator, levelDepth * sizeof(Level) )
+    , p_double_format("%.13g")
+    {
+        if( !defaultPercision )
+        {
+            p_double_format = "%g";
+        }
+    }
 
     //@name Implementation of Handler
     //@{
@@ -162,11 +170,13 @@ protected:
         int ret = strlen(buffer);
 #else
         //int ret = sprintf_s(buffer, sizeof(buffer), "%g", d);
-        int ret = sprintf_s(buffer, sizeof(buffer), "%.13g", d);
+        //int ret = sprintf_s(buffer, sizeof(buffer), "%.13g", d);
+        int ret = sprintf_s(buffer, sizeof(buffer), p_double_format, d);
 #endif
 #else
         //int ret = snprintf(buffer, sizeof(buffer), "%g", d);
-        int ret = snprintf(buffer, sizeof(buffer), "%.13g", d);
+        //int ret = snprintf(buffer, sizeof(buffer), "%.13g", d);
+        int ret = snprintf(buffer, sizeof(buffer), p_double_format, d);
 #endif
         RAPIDJSON_ASSERT(ret >= 1);
         for (int i = 0; i < ret; i++)
@@ -229,6 +239,7 @@ protected:
 
     Stream& stream_;
     internal::Stack<Allocator> level_stack_;
+    char* p_double_format;
 };
 
 } // namespace rapidjson

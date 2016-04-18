@@ -1,5 +1,5 @@
 {
-     "Default_Config_Path": "defaults\\vector_default_config.json", 
+     "Default_Config_Path": "defaults/vector_default_config.json", 
      "parameters": {
           "CLIMATE": {
                "AIR": {
@@ -17,7 +17,7 @@
           }, 
           "DEMOGRAPHICS": {
                "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE", 
-               "Demographics_Filename": "Namawala_single_node_demographics.compiled.json"
+               "Demographics_Filenames": ["Namawala_single_node_demographics.compiled.json"]
           }, 
           "PRIMARY": {
                "Config_Name": "47_Vector_An_arabiensis_MultipleHabitats_Oviposition", 
@@ -31,8 +31,7 @@
                     "Vector_Species_Names": [ "arabiensis" ],
                     "Vector_Species_Params": {
                          "arabiensis": {
-                                "Habitat_Type": [ "TEMPORARY_RAINFALL", "WATER_VEGETATION" ],
-                                "Required_Habitat_Factor": [ 11250000000, 6000000000 ]
+                                "Larval_Habitat_Types": { "TEMPORARY_RAINFALL": 11250000000, "WATER_VEGETATION": 6000000000 }
                          }
                     }
                }

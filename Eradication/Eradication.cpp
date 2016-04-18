@@ -1,26 +1,22 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 
-#include <iostream>
-#include <fstream>
-#include <sstream> // ostringstream
-#include <cstdlib>
-#include <mpi.h>
+#pragma warning(disable:4996)
 
 #include <iostream>
 #include <fstream>
+#include <sstream> // ostringstream
+
 #include <math.h>
 #include <stdio.h>
-#include <mpi.h>
-#include <iterator>
 
 #include "Environment.h"
 #include "FileSystem.h"
@@ -32,28 +28,24 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "ProgramOptions.h"
 #include "Controller.h"
-#include "CajunIncludes.h"
 #include "Debug.h"
-#include "Environment.h"
 #include "ControllerFactory.h"
 #include "StatusReporter.h"
+#include "PythonSupport.h"
 
-#include "RANDOM.h"
 #include "Exceptions.h"
 
 // Version info extraction for both program and dlls
-#include "SimulationFactory.h"
 #include "ProgVersion.h"
 #include "SimulationConfig.h"
 #include "InterventionFactory.h"
 #include "EventCoordinator.h"
-#include "WaningEffect.h"
+#include "IWaningEffect.h"
 #include "CampaignEvent.h"
 #include "StandardEventCoordinator.h"
 #include "DllLoader.h"
-#ifdef ENABLE_PYTHON
-#include "Python.h"
-#endif
+#include "IdmMpi.h"
+#include "IdmString.h"
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!! By creating an instance of this object, we ensure that the linker does not optimize it away.
@@ -83,6 +75,44 @@ void Usage(char* cmd)
     exit(1);
 }
 
+    const std::vector<std::string> 
+    getSimTypeList()
+    {
+    const char * simTypeListC[] = { "GENERIC_SIM"
+#ifndef DISABLE_VECTOR
+        , "VECTOR_SIM"
+#endif
+#ifndef DISABLE_MALARIA
+            , "MALARIA_SIM"
+#endif
+#ifndef DISABLE_AIRBORNE
+            , "AIRBORNE_SIM"
+#endif
+#ifdef ENABLE_POLIO
+            , "POLIO_SIM"
+#endif
+#ifdef ENABLE_TB
+            , "TB_SIM"
+#endif
+#ifdef ENABLE_TBHIV
+            , "TBHIV_SIM"
+#endif
+#ifndef DISABLE_STI
+            , "STI_SIM"
+#endif
+#ifndef DISABLE_HIV
+            , "HIV_SIM"
+#endif
+#ifdef ENABLE_PYTHON_FEVER
+            , "PY_SIM"
+#endif
+    };
+
+#define KNOWN_SIM_COUNT (sizeof(simTypeListC)/sizeof(simTypeListC[0]))
+    std::vector<std::string> simTypeList( simTypeListC, simTypeListC + KNOWN_SIM_COUNT );
+    return simTypeList;
+    }
+
 int main(int argc, char* argv[])
 {
     // First thing to do when app launches
@@ -97,7 +127,21 @@ int main(int argc, char* argv[])
 #endif
 
     ProgDllVersion* pv = new ProgDllVersion(); // why new this instead of just put it on the stack?
-    LOG_INFO_F( "Intellectual Ventures(R)/EMOD Disease Transmission Kernel %s %s %s\n", pv->getVersion(), pv->getBranch(), pv->getBuildDate() );
+    auto sims = getSimTypeList();
+    std::stringstream output;
+    output << "Intellectual Ventures(R)/EMOD Disease Transmission Kernel " << pv->getVersion() << std::endl
+           << "Built on " << pv->getBuildDate() << " from " << pv->getSccsBranch() << " checked in on " << pv->getSccsDate() << std::endl;
+    
+    std::string sim_types_str = "Supports sim_types: ";
+    for( auto sim_type: sims  )
+    {
+        sim_types_str += IdmString( sim_type ).split('_')[0];
+        sim_types_str += ", ";
+    }
+    sim_types_str.pop_back();
+    sim_types_str.pop_back();
+    output << sim_types_str << "." << std::endl;
+    LOG_INFO_F( output.str().c_str() );
     delete pv;
  
 /* // for debugging all kernel allocations, use inner block around controller lifetime to ignore some environment and mpi stuff
@@ -150,19 +194,18 @@ void setStackSize()
 #endif
 
 
-bool ControllerInitWrapper(boost::mpi::environment *mpienv, boost::mpi::communicator *world, int argc, char *argv[]); // returns false if something broke
+bool ControllerInitWrapper(int argc, char *argv[], IdmMpi::MessageInterface* pMpi ); // returns false if something broke
 
 int MPIInitWrapper( int argc, char* argv[])
 {
     try 
     {
         bool fSuccessful = false;
-        boost::mpi::environment env(argc, argv);
-        boost::mpi::communicator world;
+        IdmMpi::MessageInterface* p_mpi = IdmMpi::MessageInterface::Create( argc, argv );
 
         try 
         {
-            fSuccessful = ControllerInitWrapper(&env, &world, argc, argv);
+            fSuccessful = ControllerInitWrapper( argc, argv, p_mpi );
         }
         catch( std::exception& e) 
         {
@@ -173,9 +216,16 @@ int MPIInitWrapper( int argc, char* argv[])
         // caught, tear everything down, decisively.
         if (!fSuccessful)
         {
-            EnvPtr->Log->Flush();
-            MPI_Abort(world, -1);
+            if( EnvPtr != nullptr )
+            {
+                EnvPtr->Log->Flush();
+            }
+            p_mpi->Abort(-1);
         }
+
+        p_mpi->Finalize();
+        delete p_mpi;
+        p_mpi = nullptr;
 
         // Shouldn't get here unless ControllerInitWrapper() returned true (success).
         // MPI_Abort() implementations generally exit the process. If not, return a
@@ -189,137 +239,9 @@ int MPIInitWrapper( int argc, char* argv[])
     }
 }
 
-#ifdef ENABLE_PYTHON
-
-#define DEFAULT_PYTHON_HOME "c:/python27/"
-
-#pragma warning( push )
-#pragma warning( disable: 4996 )
-char* PythonHomePath()
-{
-    char* python_path = getenv("PYTHON_PATH");
-    if (!python_path)
-    {
-        python_path = DEFAULT_PYTHON_HOME;
-    }
-
-    std::cout << "Python home path: " << python_path << std::endl;
-
-    return python_path;
-}
-#pragma warning( pop )
-
-PyObject * 
-IdmPyInit( 
-    const char * python_script_name,
-    const char * python_function_name
-)
-{
-    //std::cout << __FUNCTION__ << ": " << python_script_name << ": " << python_function_name << std::endl;
-    auto python_script_path = std::string("");
-    if( EnvPtr != nullptr && EnvPtr->Config != nullptr && EnvPtr->Config->Exist( "Python_Script_Path") )
-    {
-        python_script_path = GET_CONFIG_STRING(EnvPtr->Config, "Python_Script_Path");
-    }
-#ifdef WIN32
-    Py_SetPythonHome(PythonHomePath()); // add capability to override from command line???
-#endif
-
-    //std::cout << "Calling Py_Initialize." << std::endl;
-    Py_Initialize();
-
-    //std::cout << "Calling PySys_GetObject('path')." << std::endl;
-    PyObject * sys_path = PySys_GetObject("path");
-
-    release_assert( sys_path );
-    // Get this from Environment::scripts???
-    // how about we use the config.json python script path by default and if that is missing
-
-    //std::cout << "Appending our path to existing python path." << std::endl;
-    PyObject * path = nullptr;
-    if( python_script_path != "" )
-    {
-        //std::cout << "Using dtk python path: " << GET_CONFIGURABLE(SimulationConfig)->python_script_path << std::endl;
-        path = PyString_FromString( python_script_path.c_str() );
-    }
-    else
-    {
-        // because say we're running locally (or --get-schema doesn't read config.json!) we can look locally... 
-        path = PyString_FromString( "." );
-        //std::cout << "Using dtk python path: " << "." << std::endl;
-    }
-    //LOG_DEBUG_F( "Using Python Script Path: %s.\n", GET_CONFIGURABLE(SimulationConfig)->python_script_path );
-    release_assert( path );
-    
-    //std::cout << "Calling PyList_Append." << std::endl;
-    if (PyList_Append(sys_path, path) < 0)
-    {
-        PyErr_Print();
-        throw Kernel::InitializationException( __FILE__, __LINE__, __FUNCTION__, "Failed to append Scripts path to python path." );
-    }
-    // to here.
-
-    PyObject * pName, *pModule, *pDict, *pFunc; // , *pValue;
-
-    //std::cout << "Calling PyUnicode_FromString." << std::endl;
-    pName = PyUnicode_FromString( python_script_name );
-    if( !pName )
-    {
-        PyErr_Print();
-        // Don't throw exception, return without doing anything.
-        LOG_WARN( "Embedded python code failed (PyUnicode_FromString). Returning without doing anything.\n" );
-        return nullptr;
-    }
-    //std::cout << "Calling PyImport_Import." << std::endl;
-    pModule = PyImport_Import( pName );
-    if( !pModule )
-    {
-        //PyErr_Print(); // This error message on console seems to alarm folks. We'll let python errors log as warnings.
-        LOG_WARN( "Embedded python code failed (PyImport_Import). Returning without doing anything.\n" );
-        return nullptr;
-    }
-    //std::cout << "Calling PyModule_GetDict." << std::endl;
-    pDict = PyModule_GetDict( pModule ); // I don't really know what this does...
-    if( !pDict )
-    {
-        PyErr_Print();
-        throw Kernel::InitializationException( __FILE__, __LINE__, __FUNCTION__, "Calling to PyModule_GetDict failed." );
-    }
-    //std::cout << "Calling PyDict_GetItemString." << std::endl;
-    pFunc = PyDict_GetItemString( pDict, python_function_name ); // function name
-    if( !pFunc )
-    {
-        PyErr_Print();
-        throw Kernel::InitializationException( __FILE__, __LINE__, __FUNCTION__, "Failed to find function 'application' in python script." );
-    }
-    //std::cout << "Returning from IdmPyInit." << std::endl;
-    return pFunc;
-}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // access to input schema embedding
-
-void
-postProcessSchemaFiles(
-    const char* schema_path
-)
-{
-    std::cout << __FUNCTION__ << ": " << schema_path << std::endl;
-    PyObject * pFunc = IdmPyInit( "dtk_post_process_schema", "application" );
-    std::cout << __FUNCTION__ << ": " << pFunc << std::endl;
-    if( pFunc )
-    {
-        // Pass filename into python script
-        PyObject * vars = PyTuple_New(1);
-        PyObject* py_filename_str = PyString_FromString( schema_path );
-        PyTuple_SetItem(vars, 0, py_filename_str);
-        PyObject * returnArgs = PyObject_CallObject( pFunc, vars );
-        std::cout << "Back from python script." << std::endl;
-        PyErr_Print();
-    }
-    return;
-}
-#endif
 
 void IDMAPI writeInputSchemas(
     const char* dll_path,
@@ -335,7 +257,7 @@ void IDMAPI writeInputSchemas(
     json::QuickBuilder versionSchema( vsRoot );
     ProgDllVersion pv;
     versionSchema["DTK_Version"] = json::String( pv.getVersion() );
-    versionSchema["DTK_Branch"] = json::String( pv.getBranch() );
+    versionSchema["DTK_Branch"] = json::String( pv.getSccsBranch() );
     versionSchema["DTK_Build_Date"] = json::String( pv.getBuildDate() );
     total_schema["Version"] = versionSchema.As<json::Object>();
 
@@ -372,27 +294,9 @@ void IDMAPI writeInputSchemas(
     Kernel::JsonConfigurable::_dryrun = true;
     std::ostringstream oss;
 
-    const char * simTypeListC[] = { "GENERIC_SIM", "VECTOR_SIM", "MALARIA_SIM"
-#ifdef ENABLE_POLIO
-        , "POLIO_SIM"
-#endif
-#ifdef ENABLE_TB
-        , "TB_SIM"
-#endif
-#ifdef ENABLE_TBHIV
-        , "TBHIV_SIM"
-#endif
-#ifndef DISABLE_HIV
-        , "STI_SIM"
-        , "HIV_SIM"
-#endif
-    };
-
-#define KNOWN_SIM_COUNT (sizeof(simTypeListC)/sizeof(simTypeListC[0]))
-
-    std::vector<std::string> simTypeList( simTypeListC, simTypeListC + KNOWN_SIM_COUNT );
+    
     json::Object configSchemaAll;
-    for (auto& sim_type : simTypeList)
+    for (auto& sim_type : getSimTypeList())
     {
         json::Object fakeSimTypeConfigJson;
         fakeSimTypeConfigJson["Simulation_Type"] = json::String(sim_type);
@@ -402,6 +306,9 @@ void IDMAPI writeInputSchemas(
 
         json::QuickBuilder config_schema = pConfig->GetSchema();
         configSchemaAll[sim_type] = config_schema;
+
+        delete fakeConfig;
+        fakeConfig = nullptr;
     }
 
     for (auto& entry : Kernel::JsonConfigurable::get_registration_map())
@@ -418,7 +325,9 @@ void IDMAPI writeInputSchemas(
     fakeECJson["class"] = json::String("StandardInterventionDistributionEventCoordinator");
     auto fakeConfig = Configuration::CopyFromElement( fakeECJson );
     Kernel::StandardInterventionDistributionEventCoordinator * pTempEC = dynamic_cast<Kernel::StandardInterventionDistributionEventCoordinator*>( Kernel::EventCoordinatorFactory::CreateInstance( fakeConfig ) );
-    json::QuickBuilder ec_schema = pTempEC->GetSchema();
+    delete fakeConfig;
+    fakeConfig = nullptr;
+    /* json::QuickBuilder ec_schema = */ pTempEC->GetSchema();
 
     if( !Kernel::InterventionFactory::getInstance() )
     {
@@ -453,32 +362,14 @@ void IDMAPI writeInputSchemas(
     json::Writer::Write( total_schema, schema_ostream );
     schema_ostream_file.close();
 
-#ifdef ENABLE_PYTHON
-    if( szOutputPath != "stdout" )
+    // PythonSupportPtr can be null during componentTests
+    if( (szOutputPath != "stdout") && (PythonSupportPtr != nullptr) )
     {
-        std::cout << "Successfully created schema in file " << output_path << ". Attempting to post-process." << std::endl;
-        postProcessSchemaFiles( output_path );
+        PythonSupportPtr->RunPostProcessSchemaScript( output_path );
     }
-#endif
 }
 
-void
-pythonOnExitHook()
-{
-    //PyObject * pName, *pModule, *pDict, *pFunc, *pValue;
-
-#ifdef ENABLE_PYTHON
-    auto pFunc = IdmPyInit( "dtk_post_process", "application" );
-    if( pFunc )
-    {
-        PyObject * vars = NULL;
-        PyObject_CallObject( pFunc, vars );
-        PyErr_Print();
-    }
-#endif
-}
-
-bool ControllerInitWrapper(boost::mpi::environment *mpienv, boost::mpi::communicator *world, int argc, char *argv[])
+bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pMpi )
 {
     using namespace std;
 
@@ -488,20 +379,22 @@ bool ControllerInitWrapper(boost::mpi::environment *mpienv, boost::mpi::communic
     ProgramOptions po("Recognized options");
     try
     {
-        po.AddOption( "help",         "Show this help message." );
-        po.AddOption( "version", "v", "Get version info." );
-        po.AddOption("get-schema",     "Request the kernel to write all its input definition schema json to the current working directory and exit." );
-        po.AddOptionWithValue( "schema-path", "stdout",                        "Path to write schema(s) to instead of writing to stdout." );
+        po.AddOption(          "help",         "Show this help message." );
+        po.AddOption(          "version",      "v",          "Get version info." );
+        po.AddOption(          "get-schema",   "Request the kernel to write all its input definition schema json to the current working directory and exit." );
+        po.AddOptionWithValue( "schema-path",  "stdout",     "Path to write schema(s) to instead of writing to stdout." );
         po.AddOptionWithValue( "config",       "C",          "default-config.json", "Name of config.json file to use" );
         po.AddOptionWithValue( "input-path",   "I",          ".",                   "Relative or absolute path to location of model input files" );       
         po.AddOptionWithValue( "output-path",  "O",          "output",              "Relative or absolute path for output files" );
         po.AddOptionWithValue( "dll-path",     "D",          "",                    "Relative (to the executable) or absolute path for EMODule (dll/shared object) root directory" );
 // 2.5        po.AddOptionWithValue( "state-path",   "S",          ".",                   "Relative or absolute path for state files" );  // should we remove this...?
-        po.AddOptionWithValue( "monitor_host",               "none",                "IP of commissioning/monitoring host" );
-        po.AddOptionWithValue( "monitor_port",               0,                     "port of commissioning/monitoring host" );
-        po.AddOptionWithValue( "sim_id",                    "none",                 "Unique id of this simulation, formerly sim_guid. Needed for self-identification to UDP host" );
-        po.AddOption( "progress",        "Send updates on the progress of the simulation to the HPC job scheduler." );
-
+        po.AddOptionWithValue( "monitor_host", "none",       "IP of commissioning/monitoring host" );
+        po.AddOptionWithValue( "monitor_port", 0,            "port of commissioning/monitoring host" );
+        po.AddOptionWithValue( "sim_id",       "none",       "Unique id of this simulation, formerly sim_guid. Needed for self-identification to UDP host" );
+        po.AddOption(          "progress",     "Send updates on the progress of the simulation to the HPC job scheduler." );
+#ifdef ENABLE_PYTHON
+        po.AddOptionWithValue( "python-script-path", "P", "", "Path to python scripts." );
+#endif
 
         std::string errmsg = po.ParseCommandLine( argc, argv );
         if( !errmsg.empty() )
@@ -535,8 +428,8 @@ bool ControllerInitWrapper(boost::mpi::environment *mpienv, boost::mpi::communic
                     std::list<string>::iterator iter1;
                     std::list<string>::iterator iter2;
                     for(iter1 = dllNames.begin(),iter2 = dllVersions.begin(); 
-                        iter1 != dllNames.end(); 
-                        iter1++, iter2++)
+                        iter1 != dllNames.end();
+                        ++iter1, ++iter2)
                     {
                         oss << *iter1 << " version: " << *iter2 << std::endl;
                     }
@@ -584,13 +477,15 @@ bool ControllerInitWrapper(boost::mpi::environment *mpienv, boost::mpi::communic
     }
     EnvPtr->Log->Flush();
 
+    bool is_getting_schema = po.CommandLineHas( "get-schema" );
+
     // --------------------------------------------------------------------------------------------------
     // --- DMB 9-9-2014 ERAD-1621 Users complained that a file not found exception on default-config.json
     // --- really didn't tell them that they forgot to specify the configuration file on the command line.
     // --- One should be able to get the schema without specifying a config file.
     // --------------------------------------------------------------------------------------------------
     if( (po.GetCommandLineValueString( "config" ) == po.GetCommandLineValueDefaultString( "config" )) &&
-       !po.CommandLineHas( "get-schema" ) )
+       !is_getting_schema )
     {
         if( !FileSystem::FileExists( po.GetCommandLineValueDefaultString( "config" ) ) )
         {
@@ -616,18 +511,48 @@ bool ControllerInitWrapper(boost::mpi::environment *mpienv, boost::mpi::communic
             StatusReporter::updateScheduler = true;
         }
 
+        auto configFileName = po.GetCommandLineValueString( "config" );
+
+        auto schema_path = po.GetCommandLineValueString("schema-path");
+
+        std::string python_script_path = "";
+#ifdef ENABLE_PYTHON
+        python_script_path = po.GetCommandLineValueString( "python-script-path" );
+        if( python_script_path == "" )
+        {
+            std::cout << "--python-script-path (-P) not on command line - not using embedded python" << std::endl;
+        }
+        else
+        {
+            if( is_getting_schema && (schema_path == "stdout") )
+            {
+                throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, 
+                    "--schema-path=stdout and --python-script-path is defined:  the post processing script can only work on a file.  Please define --schema-path as a filename." );
+            }
+            std::cout << "python_script_path = " << python_script_path << std::endl;
+        }
+#endif
+        
+        Kernel::PythonSupport* p_python_support = new Kernel::PythonSupport();
+        p_python_support->CheckPythonSupport( is_getting_schema, python_script_path );
+
+        // Where to put config preprocessing? After command-line processing (e.g., what if we are invoked with --get-schema?) but before loading config.json
+        // Prefer to put it in this function rather than inside Environment::Intialize, but note that in --get-schema mode we'll unnecessarily call preproc.
+        // NOTE: This enables functionality to allow config.json to be specified in (semi-)arbitrary formats as long as python preproc's into standard config.json
+        configFileName = p_python_support->RunPreProcessScript( configFileName );
+
         // set up the environment
         EnvPtr->Log->Flush();
         LOG_INFO("Initializing environment...\n");
         bool env_ok = Environment::Initialize(
-            mpienv,
-            world,
-            po.GetCommandLineValueString( "config" ),
+            pMpi,
+            p_python_support,
+            configFileName,
             po.GetCommandLineValueString( "input-path"  ),
             po.GetCommandLineValueString( "output-path" ),
 // 2.5            po.GetCommandLineValueString( "state-path"  ),
             po.GetCommandLineValueString( "dll-path"    ),
-            po.CommandLineHas( "get-schema" )
+            is_getting_schema
             );
 
         if (!env_ok)
@@ -636,11 +561,16 @@ bool ControllerInitWrapper(boost::mpi::environment *mpienv, boost::mpi::communic
             return false;
         }
 
-        if( po.CommandLineHas( "get-schema" ) )
+        if( is_getting_schema )
         {
             writeInputSchemas( po.GetCommandLineValueString( "dll-path" ).c_str(), po.GetCommandLineValueString( "schema-path" ).c_str() );
             return true;
         }
+
+        // check if we can support python scripts based on simulation type
+        std::string sim_type_str = GET_CONFIG_STRING( EnvPtr->Config, "Simulation_Type" );
+        PythonSupportPtr->CheckSimScripts( sim_type_str );
+
 
         // UDP-enabled StatusReporter needs host and sim unique id.
         if( po.GetCommandLineValueString( "monitor_host" ) != "none" )
@@ -660,20 +590,6 @@ bool ControllerInitWrapper(boost::mpi::environment *mpienv, boost::mpi::communic
             LOG_INFO_F("Status monitor sim id: %s\n", po.GetCommandLineValueString( "sim_id" ).c_str() );
             EnvPtr->getStatusReporter()->SetHPCId( po.GetCommandLineValueString( "sim_id" ) );
         }
-
-#if 0
-    Kernel::SimulationConfig* SimConfig = Kernel::SimulationConfigFactory::CreateInstance(EnvPtr->Config);
-    if (SimConfig)
-    {
-        Environment::setSimulationConfig(SimConfig);
-        LOG_INFO_F( "setSimulationConfig: %p\n", SimConfig );
-    }
-    else
-    {
-        LOG_ERR("Failed to create SimulationConfig instance\n");
-        return false;
-    }
-#endif
 
 #ifdef _DEBUG
     //#define DEBUG_MEMORY_LEAKS // uncomment this to run an extra warm-up pass and enable dumping objects 
@@ -703,20 +619,22 @@ bool ControllerInitWrapper(boost::mpi::environment *mpienv, boost::mpi::communic
         //LOG_INFO_F( "Name: %s\n", GET_CONFIGURABLE(SimulationConfig)->ConfigName.c_str() );  // can't get ConfigName because we haven't initialized SimulationConfig yet...
         LOG_INFO_F( "%d parameters found.\n", (EnvPtr->Config)->As<json::Object>().Size() );
 
-        IController *controller = NULL;
-
         // override controller selection if unit tests requested on command line
         LOG_INFO("Initializing Controller...\n");
-        controller = ControllerFactory::CreateController(EnvPtr->Config);
-            
+        IController *controller = ControllerFactory::CreateController(EnvPtr->Config);
+
         if (controller)
         {
             status = controller->Execute();
             if (status)
+        {
+            release_assert( EnvPtr );
+            if ( EnvPtr->MPI.Rank == 0 )
             {
-                pythonOnExitHook();
-                LOG_INFO( "Controller executed successfully.\n" );
+                PythonSupportPtr->RunPostProcessScript( EnvPtr->OutputPath );
             }
+            LOG_INFO( "Controller executed successfully.\n" );
+        }
             else
             {
                 LOG_INFO( "Controller execution failed, exiting.\n" );
@@ -793,15 +711,18 @@ bool ControllerInitWrapper(boost::mpi::environment *mpienv, boost::mpi::communic
 #endif
     }
 
-    if( EnvPtr != NULL )
+    if( EnvPtr != nullptr )
     {
         EnvPtr->Log->Flush();
+#if 0
+        // Workaround: let's not do this.
         if((Kernel::SimulationConfig*)EnvPtr->SimConfig)
         {
             ((Kernel::SimulationConfig*)EnvPtr->SimConfig)->Release();
         }
+#endif
+        EnvPtr->Log->Flush();
     }
-    EnvPtr->Log->Flush();
 
     Environment::Finalize();
     return status;

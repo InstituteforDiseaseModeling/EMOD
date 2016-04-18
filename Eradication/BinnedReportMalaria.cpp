@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,9 +11,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "BinnedReportMalaria.h"
 
 #include <map>
-#include <string>
+// clorton #include <string>
 
-#include "BoostLibWrapper.h"
+// clorton #include "BoostLibWrapper.h"
 #include "Environment.h"
 #include "Exceptions.h"
 #include "Sugar.h"
@@ -50,7 +50,6 @@ BinnedReportMalaria::BinnedReportMalaria()
     , ss_nonspec_variant_bins(nullptr)
     , ss_pfemp1_variant_bins(nullptr)
 {
-    LOG_DEBUG( "BinnedReportMalaria ctor\n" );
 }
 
 BinnedReportMalaria::~BinnedReportMalaria()
@@ -125,18 +124,19 @@ void BinnedReportMalaria::EndTimestep( float currentTime, float dt )
     clearChannelsBins();
 }
 
-void BinnedReportMalaria::LogIndividualData( Kernel::IndividualHuman * individual )
+void BinnedReportMalaria::LogIndividualData( Kernel::IIndividualHuman* individual )
 {
     LOG_DEBUG( "BinnedReportMalaria::LogIndividualData\n" );
 
     BinnedReport::LogIndividualData(individual);
 
     // Get individual weight and bin variables
-    float mc_weight    = (float)individual->GetMonteCarloWeight();
+    float mc_weight    = float(individual->GetMonteCarloWeight());
 
     int bin_index = calcBinIndex(individual);
+    LOG_DEBUG_F( "bin_index = %d\n", bin_index );
 
-    Kernel::IMalariaHumanContext* individual_malaria = NULL;
+    Kernel::IMalariaHumanContext* individual_malaria = nullptr;
     if( individual->QueryInterface( GET_IID( Kernel::IMalariaHumanContext), (void**) &individual_malaria ) != Kernel::s_OK )
     {
         throw Kernel::QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IndividualHuman", "IMalariaHumanContext" );

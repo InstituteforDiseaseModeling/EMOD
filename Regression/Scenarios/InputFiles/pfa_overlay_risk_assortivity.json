@@ -8,53 +8,59 @@
     },
     "Defaults": {
         "Society" : {
-            "Pair_Formation_Parameters_TRANSITORY" :
+            "TRANSITORY" :
             {
-                "Assortivity" :
+                "Pair_Formation_Parameters" :
                 {
-                    "Group" : "INDIVIDUAL_PROPERTY",
-                    "Property_Name" : "Risk",
-                    "Axes" : [ "LOW", "HIGH" ],
-                    "Weighting_Matrix_RowMale_ColumnFemale" :
-                    [
-                        [ 0.2, 0.8 ],
-                        [ 0.8, 0.2]
-                    ]
+                    "Assortivity" :
+                    {
+                        "Group" : "INDIVIDUAL_PROPERTY",
+                        "Property_Name" : "Risk",
+                        "Axes" : [ "LOW", "HIGH" ],
+                        "Weighting_Matrix_RowMale_ColumnFemale" :
+                        [
+                            [ 0.2, 0.8 ],
+                            [ 0.8, 0.2]
+                        ]
+                    }
                 }
             },
-            "Pair_Formation_Parameters_INFORMAL" :
+            "INFORMAL" :
             {
-                "Assortivity" :
+                "Pair_Formation_Parameters" :
                 {
-                    "Group" : "INDIVIDUAL_PROPERTY",
-                    "Property_Name" : "Risk",
-                    "Axes" : [ "LOW", "HIGH" ],
-                    "Weighting_Matrix_RowMale_ColumnFemale" :
-                    [
-                        [ 0.5, 0.5 ],
-                        [ 0.5, 0.5 ]
-                    ]
+                    "Formation_Rate_Constant": 0.001369863,
+                    "Assortivity" :
+                    {
+                        "Group" : "INDIVIDUAL_PROPERTY",
+                        "Property_Name" : "Risk",
+                        "Axes" : [ "LOW", "HIGH" ],
+                        "Weighting_Matrix_RowMale_ColumnFemale" :
+                        [
+                            [ 0.5, 0.5 ],
+                            [ 0.5, 0.5 ]
+                        ]
+                    }
                 }
             },
-            "Pair_Formation_Parameters_MARITAL" :
+            "MARITAL" :
             {
-                "Assortivity" :
+                "Pair_Formation_Parameters" :
                 {
-                    "Group" : "INDIVIDUAL_PROPERTY",
-                    "Property_Name" : "Risk",
-                    "Axes" : [ "LOW", "HIGH" ],
-                    "Weighting_Matrix_RowMale_ColumnFemale" :
-                    [
-                        [ 0.8, 0.2 ],
-                        [ 0.2, 0.8 ]
-                    ]
+                    "Formation_Rate_Constant": 0.0001826484,
+                    "Assortivity" :
+                    {
+                        "Group" : "INDIVIDUAL_PROPERTY",
+                        "Property_Name" : "Risk",
+                        "Axes" : [ "LOW", "HIGH" ],
+                        "Weighting_Matrix_RowMale_ColumnFemale" :
+                        [
+                            [ 0.8, 0.2 ],
+                            [ 0.2, 0.8 ]
+                        ]
+                    }
                 }
             }
         }
-    }, 
-    "Nodes": [
-        {
-            "NodeID": 1
-        }
-    ]
+    }
 }

@@ -1,9 +1,9 @@
 {
-    "Default_Config_Path":"defaults\\tb_default_config.json",
+    "Default_Config_Path":"defaults/tb_default_config.json",
     "parameters":{
         "DEMOGRAPHICS":{
             "Birth_Rate_Dependence":"FIXED_BIRTH_RATE",
-            "Demographics_Filename":"Single_node_demographics_100_young.compiled.json",
+            "Demographics_Filenames":["Single_node_demographics_100_young.compiled.json"],
             "IMMUNITY":{
                 "Acquisition_Blocking_Immunity_Decay_Rate":0,
                 "Acquisition_Blocking_Immunity_Duration_Before_Decay":0,

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -15,11 +15,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Report.h"
 #include "Sugar.h"
 #include "Environment.h"
-#include "Node.h"
-#include "Individual.h"
-#include "Exceptions.h"
-#include "ProgVersion.h"
-#include "ISimulation.h"
+#include "INodeContext.h"
+#include "IIndividualHuman.h"
+#include "Climate.h"
 
 using namespace std;
 using namespace json;
@@ -32,6 +30,7 @@ const string Report::_exposed_pop_label    ( "Exposed Population" );
 const string Report::_infectious_pop_label ( "Infectious Population" );
 const string Report::_recovered_pop_label  ( "Recovered Population" );
 const string Report::_waning_pop_label     ( "Waning Population" );
+const string Report::_immunized_pop_label  ( "Immunized Population" );
 
 static const std::string _report_name        ( "InsetChart.json" );
 const string Report::_new_infections_label   ( "New Infections" );
@@ -40,7 +39,8 @@ const string Report::_new_reported_infections_label( "New Reported Infections" )
 const string Report::_cum_reported_infections_label( "Cumulative Reported Infections" );
 const string Report::_hum_infectious_res_label( "Human Infectious Reservoir" );
 const string Report::_log_prev_label( "Log Prevalence" );
-const string Report::_prob_new_infection_label( "Probability of New Infection" );
+const string Report::_infection_rate_label( "Daily (Human) Infection Rate" );
+const string Report::_aoi_label( "Age Of Infection" );
 
 /////////////////////////
 // Initialization methods
@@ -80,35 +80,35 @@ void Report::BeginTimestep()
 
 void Report::EndTimestep( float currentTime, float dt )
 {
-#ifdef __GNUC__
-    auto now = clock(); // msec on linux, seconds on windoze!
-#else
-    auto now = GetTickCount(); // msec on win
-#endif
-
-    float diff = 0;
-    if( last_time > 0 )
-    {
-        //std::cout << "now = " << now << ", last = " << last_time << std::endl;
-        diff = now - last_time;
-    }
+//#ifdef __GNUC__
+//    auto now = clock(); // msec on linux, seconds on windoze!
+//#else
+//    auto now = GetTickCount(); // msec on win
+//#endif
+//
+//    float diff = 0;
+//    if( last_time > 0 )
+//    {
+//        //std::cout << "now = " << now << ", last = " << last_time << std::endl;
+//        diff = now - last_time;
+//    }
     Accumulate("Disease Deaths", disease_deaths);
     //Accumulate("Timestep Wallclock Duration", diff);
     BaseChannelReport::EndTimestep( currentTime, dt );
     //last_time = clock();
-#ifdef __GNUC__
-    last_time = clock(); // msec on linux, seconds on windoze!
-#else
-    last_time = GetTickCount();
-#endif
+//#ifdef __GNUC__
+//    last_time = clock(); // msec on linux, seconds on windoze!
+//#else
+//    last_time = GetTickCount();
+//#endif
 }
 
 void
 Report::LogIndividualData(
-    Kernel::IndividualHuman * individual
+    Kernel::IIndividualHuman* individual
 )
 {
-    float monte_carlo_weight = (float)individual->GetMonteCarloWeight();
+    float monte_carlo_weight = float(individual->GetMonteCarloWeight());
 
     NewInfectionState::_enum nis = individual->GetNewInfectionState();
 
@@ -134,6 +134,7 @@ Report::LogNodeData(
     Accumulate(_stat_pop_label, pNC->GetStatPop());
     Accumulate("Births", pNC->GetBirths());
     Accumulate("Infected", pNC->GetInfected());
+    //Accumulate(_aoi_label, pNC->GetMeanAgeInfection() * pNC->GetInfected());
 
     if (pNC->GetLocalWeather())
     {
@@ -150,7 +151,7 @@ Report::LogNodeData(
 
     Accumulate("Campaign Cost",                  pNC->GetCampaignCost());
     Accumulate("Human Infectious Reservoir",     pNC->GetInfectivity());
-    Accumulate("Probability of New Infection",   pNC->GetInfectionRate());  // TODO: does accumulating probabilities in this way make sense for multinode sims?
+    Accumulate(_infection_rate_label,   pNC->GetInfectionRate());
 
     AccumulateSEIRW();
 }
@@ -160,20 +161,20 @@ Report::populateSummaryDataUnitsMap(
     std::map<std::string, std::string> &units_map
 )
 {
-    units_map[_stat_pop_label]         = "Population";
+    units_map[_stat_pop_label]                  = "Population";
     units_map["Births"]                         = "Births";
     units_map["Infected"]                       = _infected_fraction_label;
-    units_map[_log_prev_label]                 = "Log Prevalence";
+    units_map[_log_prev_label]                  = "Log Prevalence";
     units_map["Rainfall"]                       = "mm/day";
     units_map["Temperature"]                    = "degrees C";
-    units_map[_new_infections_label]                 = "";
+    units_map[_new_infections_label]            = "";
     units_map["Cumulative Infections"]          = "";
     units_map["Reported New Infections"]        = "";
     units_map[_cum_reported_infections_label]   = "";
     units_map["Disease Deaths"]                 = "";
     units_map["Campaign Cost"]                  = "USD";
     units_map[_hum_infectious_res_label]        = "Total Infectivity";
-    units_map[_prob_new_infection_label]   = "Infection Rate";
+    units_map[_infection_rate_label]            = "Infection Rate";
 
     AddSEIRWUnits(units_map);
 }
@@ -188,13 +189,13 @@ Report::postProcessAccumulatedData()
     normalizeChannel("Infected", _stat_pop_label);
     if( channelDataMap.HasChannel( "Air Temperature" ) )
     {
-        normalizeChannel("Air Temperature", (float)_nrmSize);
-        normalizeChannel("Land Temperature", (float)_nrmSize);
-        normalizeChannel("Relative Humidity", (float)_nrmSize);
-        normalizeChannel("Rainfall", (float)_nrmSize * (1 / 1000.0f)); // multiply by 1000 to get result in mm/day
+        normalizeChannel("Air Temperature", float(_nrmSize));
+        normalizeChannel("Land Temperature", float(_nrmSize));
+        normalizeChannel("Relative Humidity", float(_nrmSize));
+        normalizeChannel("Rainfall", float(_nrmSize) * (1 / 1000.0f)); // multiply by 1000 to get result in mm/day
     }
-    normalizeChannel( _hum_infectious_res_label, (float)_nrmSize );
-    normalizeChannel( _prob_new_infection_label, (float)_nrmSize );
+    normalizeChannel( _hum_infectious_res_label, float(_nrmSize) );
+    normalizeChannel( _infection_rate_label, float(_nrmSize) );
 
     // add derived channels
     addDerivedLogScaleSummaryChannel("Infected", _log_prev_label);
@@ -204,7 +205,7 @@ Report::postProcessAccumulatedData()
     NormalizeSEIRWChannels();
 }
 
-void Report::UpdateSEIRW( const Kernel::IndividualHuman * individual, float monte_carlo_weight )
+void Report::UpdateSEIRW( const Kernel::IIndividualHuman* individual, float monte_carlo_weight )
 {
     if (!individual->IsInfected())  // Susceptible, Recovered (Immune), or Waning
     {
@@ -268,8 +269,7 @@ void Report::NormalizeSEIRWChannels()
     normalizeChannel(_waning_pop_label,      _stat_pop_label);
 }
 
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(Report)
+#if 0
 template<class Archive>
 void serialize(Archive &ar, Report& report, const unsigned int v)
 {

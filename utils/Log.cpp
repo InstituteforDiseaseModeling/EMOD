@@ -1,23 +1,18 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 #include <stdarg.h>
-#ifdef WIN32
-#include <varargs.h>
-#endif
 #include <iostream>
-#include <fstream>
 #include "Log.h"
 #include "Environment.h"
 #include "Exceptions.h"
-#include "CajunIncludes.h" // for QuickInterpreter
 #include <map>
 
 using namespace std;
@@ -66,7 +61,18 @@ SimpleLogger::SimpleLogger()
       _warnings_are_fatal(false),
       _rank(0)
 {
-    _initTime = time(NULL);
+    _initTime = time(nullptr);
+}
+
+SimpleLogger::SimpleLogger( Logger::tLevel syslevel )
+    : _systemLogLevel(syslevel),
+      _throttle(false),
+      _initialized(false),
+      _flush_all(false),
+      _warnings_are_fatal(false),
+      _rank(0)
+{
+    _initTime = time(nullptr);
 }
 
 void
@@ -89,8 +95,8 @@ SimpleLogger::Init(
 
     // Iterate through config.json looking for any keys with logLevel prefix.
     for( json::Object::Members::const_iterator it = (*configJson)["parameters"].As<json::Object>().Begin();
-                                       it != (*configJson)["parameters"].As<json::Object>().End();
-                                       it++ )
+                                               it != (*configJson)["parameters"].As<json::Object>().End();
+                                             ++it )
     {
         const std::string& key = it->name;
         if( key.substr(0,9) == "logLevel_" ) // 9 is the length of "logLevel_"
@@ -123,9 +129,9 @@ SimpleLogger::Init(
             else
             {
                 std::string msg = "Unknown log level ("+value+") for " + key + ".  Acceptable values are: " ;
-                for( tLogLevel::iterator it = logLevelFullStrMap.begin() ; it != logLevelFullStrMap.end() ; it++ )
+                for( tLogLevel::iterator jt = logLevelFullStrMap.begin() ; jt != logLevelFullStrMap.end() ; ++jt )
                 {
-                    msg += it->second + ", " ;
+                    msg += jt->second + ", " ;
                 }
                 msg = msg.substr(0, msg.size()-2) ; //remove trailing comma and space
                 throw Kernel::InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, msg.c_str() );
@@ -214,11 +220,11 @@ SimpleLogger::Log(
         LogTimeInfo tInfo;
         GetLogInfo(tInfo);
 
-        fprintf( stdout, "%02d:%02d:%02d [%d] [%s] [%s] %s",  tInfo.hours,  tInfo.mins,  tInfo.secs, _rank, logLevelStrMap[log_level].c_str(), module, msg );
+        fprintf( stdout, "%02d:%02d:%02d [%d] [%s] [%s] %s",  static_cast<int>(tInfo.hours),  static_cast<int>(tInfo.mins),  static_cast<int>(tInfo.secs), _rank, logLevelStrMap[log_level].c_str(), module, msg );
         if( log_level == Logger::_ERROR || log_level == Logger::WARNING )
         {
             // Yes, this line is mostly copy-pasted from above. Yes, I'm comfortable with that. :)
-            fprintf( stderr, "%02d:%02d:%02d [%d] [%s] [%s] %s",  tInfo.hours,  tInfo.mins,  tInfo.secs, _rank, logLevelStrMap[log_level].c_str(), module, msg );
+            fprintf( stderr, "%02d:%02d:%02d [%d] [%s] [%s] %s",  static_cast<int>(tInfo.hours),  static_cast<int>(tInfo.mins),  static_cast<int>(tInfo.secs), _rank, logLevelStrMap[log_level].c_str(), module, msg );
         }
     }
     else
@@ -255,7 +261,7 @@ SimpleLogger::LogF(
         LogTimeInfo tInfo;
         GetLogInfo(tInfo);
 
-        fprintf(stdout, "%02d:%02d:%02d [%d] [%s] [%s] ", tInfo.hours, tInfo.mins, tInfo.secs, _rank, logLevelStrMap[log_level].c_str(), module);
+        fprintf(stdout, "%02d:%02d:%02d [%d] [%s] [%s] ", static_cast<int>(tInfo.hours), static_cast<int>(tInfo.mins), static_cast<int>(tInfo.secs), _rank, logLevelStrMap[log_level].c_str(), module);
     }
 
     va_list args;
@@ -283,7 +289,7 @@ void
 SimpleLogger::GetLogInfo( LogTimeInfo &tInfo )
 {
     // Need timestamp
-    time_t now = time(NULL);
+    time_t now = time(nullptr);
     time_t sim_time = now - _initTime;
     tInfo.hours = sim_time/3600;
     tInfo.mins = (sim_time - (tInfo.hours*3600))/60;

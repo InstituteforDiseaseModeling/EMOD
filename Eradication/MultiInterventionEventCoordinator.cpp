@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -35,6 +35,30 @@ namespace Kernel
     {
         InterventionValidator::ValidateInterventionArray( intervention_config._json );
     }
+
+    bool MultiInterventionEventCoordinator::HasNodeLevelIntervention() const
+    {
+        bool has_node_level_intervention = false;
+
+        const json::Array & interventions_array = json::QuickInterpreter( intervention_config._json ).As<json::Array>();
+        LOG_DEBUG_F("interventions array size = %d\n", interventions_array.Size());
+        for( int idx = 0; !has_node_level_intervention && (idx < interventions_array.Size()); idx++ )
+        {
+            const json::Object& actualIntervention = json_cast<const json::Object&>(interventions_array[idx]);
+            auto qi_as_config = Configuration::CopyFromElement( actualIntervention );
+            INodeDistributableIntervention *ndi = InterventionFactory::getInstance()->CreateNDIIntervention(qi_as_config);
+            if( ndi != nullptr )
+            {
+                has_node_level_intervention = true;
+                ndi->Release();
+            }
+            delete qi_as_config;
+            qi_as_config = nullptr;
+        }
+
+        return has_node_level_intervention;
+    }
+
 
     // copy/paste to remove single-intervention-specific logging
     // TODO: could be handled more gracefully
@@ -85,7 +109,7 @@ namespace Kernel
     {
         // Less of this would need to be copied from the base class with a more thoughtful encapsulation of functions
         // In particular, only the give-intervention(s)-to-individual stuff inside the try statement is different.
-        if( target_demographic != TargetDemographicType::Everyone )
+        if( !demographic_restrictions.HasDefaultRestrictions() ) // don't waste any more time with checks if we're giving to everyone
         {
             if( qualifiesDemographically( ihec ) == false )
             {
@@ -118,6 +142,8 @@ namespace Kernel
                     LOG_DEBUG_F( "Attempting to instantiate intervention of class %s\n", std::string((*tmpConfig)["class"].As<json::String>()).c_str() );
                     IDistributableIntervention *di = InterventionFactory::getInstance()->CreateIntervention(tmpConfig);
                     assert(di);
+                    delete tmpConfig;
+                    tmpConfig = nullptr;
                     if (di)
                     {
                         if (!di->Distribute( ihec->GetInterventionsContext(), pICCO ) )

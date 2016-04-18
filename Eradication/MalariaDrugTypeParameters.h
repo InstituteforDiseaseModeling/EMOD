@@ -1,18 +1,29 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #pragma once
 
 #include "Configure.h"
-#include "InterventionEnums.h"
 
-namespace Kernel {
+namespace Kernel 
+{
+    ENUM_DEFINE(MalariaDrugType,
+        ENUM_VALUE_SPEC(Artemisinin             , 1)
+        ENUM_VALUE_SPEC(Chloroquine             , 2)
+        ENUM_VALUE_SPEC(Quinine                 , 3)
+        ENUM_VALUE_SPEC(SP                      , 4)
+        ENUM_VALUE_SPEC(Primaquine              , 5)
+        ENUM_VALUE_SPEC(Artemether_Lumefantrine , 6)
+        ENUM_VALUE_SPEC(GenTransBlocking        , 7)
+        ENUM_VALUE_SPEC(GenPreerythrocytic      , 8)
+        ENUM_VALUE_SPEC(Tafenoquine             , 9))
+
     class SimulationConfig;
     class DoseMap : public JsonConfigurable
     {
@@ -44,7 +55,6 @@ namespace Kernel {
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
 
         typedef map< std::string, MalariaDrugTypeParameters* > tMDTPMap;
-        static tMDTPMap _mdtMap;
 
     protected:
         void Initialize(const std::string& drugType);

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -87,13 +87,12 @@ namespace Kernel
 
     Kernel::StrainIdentity* Outbreak::GetNewStrainIdentity(INodeEventContext *context)
     {
-        StrainIdentity *outbreak_strainID = NULL;
-        
-        
+        StrainIdentity *outbreak_strainID = nullptr;
+
         // Important: Use the instance method to obtain the intervention factory obj instead of static method to cross the DLL boundary
         // NO usage of GET_CONFIGURABLE(SimulationConfig)->number_substrains in DLL
-        IGlobalContext *pGC = NULL;
-        const SimulationConfig* simConfigObj = NULL;
+        IGlobalContext *pGC = nullptr;
+        const SimulationConfig* simConfigObj = nullptr;
         if (s_OK == context->QueryInterface(GET_IID(IGlobalContext), (void**)&pGC))
         {
             simConfigObj = pGC->GetSimulationConfigObj();
@@ -101,6 +100,11 @@ namespace Kernel
         if (!simConfigObj)
         {
             throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "The pointer to IInterventionFactory object is not valid (could be DLL specific)" );
+        }
+
+        if (( antigen < 0 ) || ( antigen >= simConfigObj->number_basestrains ))
+        {
+            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "antigen", antigen, "number_basestrains", simConfigObj->number_basestrains );
         }
 
         if ( genome < 0 )
@@ -117,7 +121,7 @@ namespace Kernel
             outbreak_strainID = _new_ StrainIdentity(antigen, genome);
             LOG_DEBUG_F("random genome generation... antigen: %d\t genome: %d\n", antigen, genome);
         }
-        else if (genome >= 0 && genome < simConfigObj->number_substrains )
+        else if (genome >= 0 && genome <= simConfigObj->number_substrains )
         {
             outbreak_strainID = _new_ StrainIdentity(antigen, genome);
         }
@@ -130,13 +134,11 @@ namespace Kernel
     }
 }
 
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(Kernel::Outbreak)
+#if 0
 namespace Kernel {
     template<class Archive>
     void serialize(Archive &ar, Outbreak &ob, const unsigned int v)
     {
-        boost::serialization::void_cast_register<Outbreak, INodeDistributableIntervention>();
         ar & ob.antigen;
         ar & ob.genome;
         ar & ob.import_age;

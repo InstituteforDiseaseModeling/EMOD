@@ -1,20 +1,65 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 #include "VectorProbabilities.h"
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
 #include "Common.h"
 
 namespace Kernel
 {
+    void VectorProbabilities::serialize(IArchive& ar, VectorProbabilities*& probabilities)
+    {
+        probabilities = ar.IsWriter() ? probabilities : new VectorProbabilities();
+
+        ar.startObject();
+            ar.labelElement("effective_host_population") & probabilities->effective_host_population;
+
+            ar.labelElement("outdoorareakilling") & probabilities->outdoorareakilling;
+            ar.labelElement("outdoorareakilling_male") & probabilities->outdoorareakilling_male;
+            ar.labelElement("diebeforeattempttohumanfeed") & probabilities->diebeforeattempttohumanfeed;
+            ar.labelElement("diewithoutattemptingfeed") & probabilities->diewithoutattemptingfeed;
+            ar.labelElement("survivewithoutsuccessfulfeed") & probabilities->survivewithoutsuccessfulfeed;
+            ar.labelElement("successfulfeed_animal") & probabilities->successfulfeed_animal;
+            ar.labelElement("successfulfeed_AD") & probabilities->successfulfeed_AD;
+            ar.labelElement("indoorattempttohumanfeed") & probabilities->indoorattempttohumanfeed;
+            ar.labelElement("outdoorattempttohumanfeed") & probabilities->outdoorattempttohumanfeed;
+
+            ar.labelElement("ADbiocontrol_additional_mortality") & probabilities->ADbiocontrol_additional_mortality;
+
+            ar.labelElement("outdoor_returningmortality") & probabilities->outdoor_returningmortality;
+
+            ar.labelElement("indoor_diebeforefeeding") & probabilities->indoor_diebeforefeeding;
+            ar.labelElement("indoor_hostnotavailable") & probabilities->indoor_hostnotavailable;
+            ar.labelElement("indoor_dieduringfeeding") & probabilities->indoor_dieduringfeeding;
+            ar.labelElement("indoor_diepostfeeding") & probabilities->indoor_diepostfeeding;
+            ar.labelElement("indoor_successfulfeed_human") & probabilities->indoor_successfulfeed_human;
+            ar.labelElement("indoor_successfulfeed_AD") & probabilities->indoor_successfulfeed_AD;
+
+            ar.labelElement("outdoor_diebeforefeeding") & probabilities->outdoor_diebeforefeeding;
+            ar.labelElement("outdoor_hostnotavailable") & probabilities->outdoor_hostnotavailable;
+            ar.labelElement("outdoor_dieduringfeeding") & probabilities->outdoor_dieduringfeeding;
+            ar.labelElement("outdoor_diepostfeeding") & probabilities->outdoor_diepostfeeding;
+            ar.labelElement("outdoor_successfulfeed_human") & probabilities->outdoor_successfulfeed_human;
+
+            ar.labelElement("sugarTrapKilling") & probabilities->sugarTrapKilling;
+            ar.labelElement("individualRepellentBlock") & probabilities->individualRepellentBlock;
+
+            ar.labelElement("attraction_ADOV") & probabilities->attraction_ADOV;
+            ar.labelElement("attraction_ADIV") & probabilities->attraction_ADIV;
+            ar.labelElement("kill_livestockfeed") & probabilities->kill_livestockfeed;
+            ar.labelElement("kill_PFV") & probabilities->kill_PFV;
+            ar.labelElement("spatial_repellent") & probabilities->spatial_repellent;
+            ar.labelElement("nooutdoorhumanfound") & probabilities->nooutdoorhumanfound;
+            ar.labelElement("outdoorRestKilling") & probabilities->outdoorRestKilling;
+        ar.endObject();
+    }
+
     VectorProbabilities::VectorProbabilities() : 
         effective_host_population(0.0f),
         outdoorareakilling(0.0f),
@@ -178,60 +223,3 @@ namespace Kernel
         }
     }
 }
-
-#if USE_BOOST_SERIALIZATION
-namespace Kernel
-{
-    template< typename Archive >
-    void serialize(Archive & ar, VectorProbabilities& probs, const unsigned int file_version)
-    {
-        // Register derived types - N/A
-
-        // Serialize fields
-        // do we need any of these fields to be persistent?  they seem to mostly be recalculated every timestep
-        ar  & probs.effective_host_population
-            & probs.outdoorareakilling
-            & probs.outdoorareakilling_male
-            & probs.diebeforeattempttohumanfeed
-            & probs.diewithoutattemptingfeed
-            & probs.survivewithoutsuccessfulfeed
-            & probs.successfulfeed_animal
-            & probs.successfulfeed_AD
-            & probs.indoorattempttohumanfeed
-            & probs.outdoorattempttohumanfeed
-            & probs.ADbiocontrol_additional_mortality
-            & probs.outdoor_returningmortality
-            & probs.indoor_diebeforefeeding
-            & probs.indoor_hostnotavailable
-            & probs.indoor_dieduringfeeding
-            & probs.indoor_diepostfeeding
-            & probs.indoor_successfulfeed_human
-            & probs.indoor_successfulfeed_AD
-            & probs.outdoor_diebeforefeeding
-            & probs.outdoor_hostnotavailable
-            & probs.outdoor_dieduringfeeding
-            & probs.outdoor_diepostfeeding
-            & probs.outdoor_successfulfeed_human
-            & probs.sugarTrapKilling
-            & probs.individualRepellentBlock
-            & probs.attraction_ADOV
-            & probs.attraction_ADIV
-            & probs.kill_livestockfeed
-            & probs.kill_PFV
-            & probs.spatial_repellent
-            & probs.nooutdoorhumanfound
-            & probs.outdoorRestKilling;
-
-        // Serialize base class - N/A
-    }
-
-    template void serialize(boost::archive::binary_iarchive & ar, VectorProbabilities&, const unsigned int file_version);
-    template void serialize(boost::archive::binary_oarchive & ar, VectorProbabilities&, const unsigned int file_version);
-    template void serialize(boost::mpi::packed_skeleton_iarchive& ar, VectorProbabilities&, const unsigned int file_version);
-    template void serialize(boost::mpi::packed_skeleton_oarchive& ar, VectorProbabilities&, const unsigned int file_version);
-    template void serialize(boost::mpi::packed_oarchive& ar, VectorProbabilities&, const unsigned int file_version);
-    template void serialize(boost::mpi::packed_iarchive& ar, VectorProbabilities&, const unsigned int file_version);
-    template void serialize(boost::mpi::detail::content_oarchive& ar, VectorProbabilities&, const unsigned int file_version);
-    template void serialize(boost::mpi::detail::mpi_datatype_oarchive& ar, VectorProbabilities&, const unsigned int file_version);
-}
-#endif

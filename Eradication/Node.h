@@ -1,48 +1,31 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #pragma once
-
-#include <stdafx.h>
-
-
-#ifdef __GNUC__
-#include <ext/hash_map>
-namespace std
-{
-     using namespace __gnu_cxx;
-}
-#else
-#include <hash_map>
-#endif
 
 #include <map>
 #include <vector>
 
 #include "IdmApi.h"
 #include "BoostLibWrapper.h"
-#include "CajunIncludes.h"
 #include "Configure.h"
 #include "Climate.h"
-#include "ClimateKoppen.h"
-#include "ClimateByData.h"
-#include "ClimateConstant.h"
 #include "Common.h"
 #include "Contexts.h"
 #include "Environment.h"
-//#include "NodeEventContext.h"
-#include "Migration.h"
+
 #include "NodeDemographics.h"
 #include "ITransmissionGroups.h"
 #include "suids.hpp"
-#include "InterventionFactory.h"
 #include "IInfectable.h"
+#include "MathFunctions.h"
+#include "Serialization.h"
 
 class RANDOMBASE;
 
@@ -57,6 +40,7 @@ namespace Kernel
     //typedef 
     class  NodeEventContextHost;
     class  Simulation;
+    struct IMigrationInfoFactory;
 
     class IDMAPI Node : public INodeContext, public JsonConfigurable
     {
@@ -71,37 +55,44 @@ namespace Kernel
         friend class ::DemographicsReport;
 
     public:
+        static Node *CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid); 
+        static void VerifyPropertyDefinedInDemographics( const std::string& rKey, const std::string& rVal );
+        static std::vector<std::string> GetIndividualPropertyKeyList();
+        static std::vector<std::string> GetIndividualPropertyValuesList( const std::string& rKey );
 
         Node(ISimulationContext *_parent_sim, suids::suid _suid);
         Node(); // constructor for serialization use
-        static Node *CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid); 
-        static void VerifyPropertyDefinedInDemographics( const std::string& rKey, const std::string& rVal );
-        static std::vector<std::string> GetIndividualPropertyValuesList( const std::string& rKey );
         virtual ~Node();
 
-        virtual void Update(float dt);
 
         // INodeContext
-        virtual suids::suid   GetSuid() const;
-        virtual suids::suid   GetNextInfectionSuid();
-        virtual ::RANDOMBASE* GetRng();
-        virtual const INodeContext::tDistrib& GetIndividualPropertyDistributions() const;
+        virtual void Update(float dt) override;
+        virtual ISimulationContext* GetParent() override;
+        virtual suids::suid   GetSuid() const override;
+        virtual suids::suid   GetNextInfectionSuid() override;
+        virtual ::RANDOMBASE* GetRng() override;
+        virtual const INodeContext::tDistrib& GetIndividualPropertyDistributions() const override;
+        virtual void AddEventsFromOtherNodes( const std::vector<std::string>& rEventNameList ) override;
 
-        virtual const MigrationInfo*    GetMigrationInfo() const;
-        virtual const NodeDemographics* GetDemographics()  const;
-        virtual const NodeDemographicsDistribution* GetDemographicsDistribution(std::string key) const;
 
-        virtual INodeEventContext* GetEventContext();
+        virtual IMigrationInfo*   GetMigrationInfo() override;
+        virtual const NodeDemographics* GetDemographics()  const override;
+        virtual const NodeDemographicsDistribution* GetDemographicsDistribution(std::string key) const override;
+        virtual std::vector<bool> GetMigrationTypeEnabledFromDemographics() const override;
+
+        virtual INodeEventContext* GetEventContext() override;
 
         // Migration
-        void SetupMigration(MigrationInfoFactory * migration_factory);
-        virtual IndividualHuman* processImmigratingIndividual( IndividualHuman *immigrant );
+        virtual void SetupMigration( IMigrationInfoFactory * migration_factory, 
+                                     MigrationStructure::Enum ms,
+                                     const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) override;
+        virtual IIndividualHuman* processImmigratingIndividual( IIndividualHuman* ) override;
 
         // Initialization
-        virtual void PopulateFromDemographics();
-        virtual void SetContextTo(ISimulationContext* context);
-        virtual void SetMonteCarloParameters(float indsamplerate =.05, int nummininf = 0);
-        virtual void SetParameters(NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory);
+        virtual void SetContextTo(ISimulationContext* context) override;
+        virtual void SetMonteCarloParameters(float indsamplerate =.05, int nummininf = 0) override;
+        virtual void SetParameters(NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory) override;
+        virtual void PopulateFromDemographics() override;
 
         // Campaign event-related
         bool IsInPolygon(float* vertex_coords, int numcoords); // might want to create a real polygon object at some point
@@ -111,42 +102,55 @@ namespace Kernel
 
         // Reporting to higher levels (intermediate form)
         // Possible TODO: refactor into common interfaces if there is demand
-        virtual IdmDateTime GetTime()                  const;
-        virtual float GetInfected()              const;
-        virtual float GetStatPop()               const;
-        virtual float GetBirths()                const;
-        virtual float GetCampaignCost()          const;
-        virtual float GetInfectivity()           const;
-        virtual float GetInfectionRate()         const;
-        virtual float GetSusceptDynamicScaling() const;
-        virtual const Climate* GetLocalWeather() const;
-        virtual long int GetPossibleMothers()    const;
+        virtual IdmDateTime GetTime()            const override;
+        virtual float GetInfected()              const override;
+        virtual float GetStatPop()               const override;
+        virtual float GetBirths()                const override;
+        virtual float GetCampaignCost()          const override;
+        virtual float GetInfectivity()           const override;
+        virtual float GetInfectionRate()         const override;
+        virtual float GetSusceptDynamicScaling() const override;
+        virtual const Climate* GetLocalWeather() const override;
+        virtual long int GetPossibleMothers()    const override;
 
-        virtual void RegisterNewInfectionObserver(void* id, INodeContext::callback_t observer);
-        virtual void UnregisterNewInfectionObserver(void* id);
+        virtual float GetMeanAgeInfection()      const override;
+        virtual void RegisterNewInfectionObserver(void* id, INodeContext::callback_t observer) override;
+        virtual void UnregisterNewInfectionObserver(void* id) override;
 
         // This method will ONLY be used for spatial reporting by input node ID, don't use it elsewhere!
-        virtual int GetExternalID() const;
+        virtual ExternalNodeId_t GetExternalID() const;
 
         // Heterogeneous intra-node transmission
-        virtual void ExposeIndividual(IInfectable* candidate, const TransmissionGroupMembership_t* individual, float dt);
-        virtual void DepositFromIndividual(StrainIdentity* strain_IDs, float contagion_quantity, const TransmissionGroupMembership_t* individual);
-        virtual void GetGroupMembershipForIndividual(RouteList_t& route, tProperties* properties, TransmissionGroupMembership_t* membershipOut);
-        virtual void UpdateTransmissionGroupPopulation(const TransmissionGroupMembership_t* membership, float size_changes,float mc_weight);
+        virtual void ExposeIndividual(IInfectable* candidate, const TransmissionGroupMembership_t* individual, float dt) override;
+        virtual void DepositFromIndividual(StrainIdentity* strain_IDs, float contagion_quantity, const TransmissionGroupMembership_t* individual) override;
+        virtual void GetGroupMembershipForIndividual(const RouteList_t& route, tProperties* properties, TransmissionGroupMembership_t* membershipOut) override;
+        virtual void UpdateTransmissionGroupPopulation(const TransmissionGroupMembership_t* membership, float size_changes,float mc_weight) override;
         virtual void SetupIntranodeTransmission();
 
-        virtual act_prob_vec_t DiscreteGetTotalContagion(const TransmissionGroupMembership_t* membership);
+        virtual act_prob_vec_t DiscreteGetTotalContagion(const TransmissionGroupMembership_t* membership) override;
 
         virtual void ValidateIntranodeTransmissionConfiguration();
         virtual bool IsValidTransmissionRoute( string& transmissionRoute );
 
-        virtual float GetTotalContagion(const TransmissionGroupMembership_t* membership);
-        virtual RouteList_t& GetTransmissionRoutes();
+        virtual float GetTotalContagion(const TransmissionGroupMembership_t* membership) override;
+        virtual const RouteList_t& GetTransmissionRoutes() const override;
+        //Methods for implementing time dependence in various quantities; infectivity, birth rate, migration rate
+        virtual float getSinusoidalCorrection(float sinusoidal_amplitude, float sinusoidal_phase) const override;
+        virtual float getBoxcarCorrection(float boxcar_amplitude, float boxcar_start_time, float boxcar_end_time) const override;
 
         // These methods are not const because they will extract the value from the demographics
         // if it has not been done yet.
-        float GetLatitudeDegrees();
-        float GetLongitudeDegrees();
+        virtual float GetLatitudeDegrees()override;
+        virtual float GetLongitudeDegrees() override;
+
+        virtual bool IsEveryoneHome() const override;
+        virtual void SetWaitingForFamilyTrip( suids::suid migrationDestination,
+                                              MigrationType::Enum migrationType,
+                                              float timeUntilTrip,
+                                              float timeAtDestination,
+                                              bool isDestinationNewHome ) override;
+
+        virtual void ManageFamilyTrip( float currentTime, float dt );
 
         static void TestOnly_ClearProperties();
         static void TestOnly_AddPropertyKeyValue( const char* key, const char* value );
@@ -154,6 +158,8 @@ namespace Kernel
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
         static INodeContext::tDistrib base_distribs;
+
+        SerializationFlags serializationMask;
 
         // Do not access these directly but use the access methods above.
         float _latitude;
@@ -179,7 +185,15 @@ namespace Kernel
         // --- Please the IDM Wiki for more details.
         // --- http://ivlabsdvapp50:8090/pages/viewpage.action?pageId=30015603
         // ----------------------------------------------------------------------------------------
-        std::vector<IndividualHuman*> individualHumans ;
+        std::vector<IIndividualHuman*> individualHumans;
+        std::map<int,suids::suid> home_individual_ids; // people who call this node home
+
+        bool                family_waiting_to_migrate;
+        suids::suid         family_migration_destination;
+        MigrationType::Enum family_migration_type;
+        float               family_time_until_trip;
+        float               family_time_at_destination;
+        bool                family_is_destination_new_home;
 
         float Ind_Sample_Rate;   // adapted sampling parameter
 
@@ -190,15 +204,16 @@ namespace Kernel
         
         // Climate and demographics
         Climate *localWeather;
-        MigrationInfo *migration_info;
+        IMigrationInfo *migration_info;
         NodeDemographics demographics;
         std::map<std::string, NodeDemographicsDistribution*> demographic_distributions;
-        uint32_t externalId; // DON'T USE THIS EXCEPT FOR INPUT/OUTPUT PURPOSES!
+        ExternalNodeId_t externalId; // DON'T USE THIS EXCEPT FOR INPUT/OUTPUT PURPOSES!
 
         // Event handling
         friend class NodeEventContextHost;
         friend class Simulation; // so migration can call configureAndAdd?????
         NodeEventContextHost *event_context_host;
+        std::vector<std::string> events_from_other_nodes ;
 
         //  Counters (some for reporting, others also for internal calculations)
         float statPop;
@@ -211,6 +226,12 @@ namespace Kernel
         float Cumulative_Reported_Infections;
         float Campaign_Cost;
         long int Possible_Mothers;
+
+        float mean_age_infection;      // (years)
+        float newInfectedPeopleAgeProduct;
+        static const int infection_averaging_window = 1;   // = 30 time steps
+        std::list<float> infected_people_prior; // [infection_averaging_window];
+        std::list<float> infected_age_people_prior; // [infection_averaging_window];
 
         float infectionrate; // TODO: this looks like its only a reporting counter now and possibly not accurately updated in all cases
         float mInfectivity;
@@ -229,10 +250,15 @@ namespace Kernel
         float sample_rate_10_14;
         float sample_rate_15_19;
         float sample_rate_20_plus;
+        float sample_rate_immune;
+        float immune_threshold_for_downsampling;
+        float prob_maternal_transmission;
         float population_density_c50;
         float population_scaling_factor;
         bool maternal_transmission;
         bool vital_birth;
+        VitalBirthDependence::Enum                           vital_birth_dependence;                           // Vital_Birth_Dependence
+        VitalBirthTimeDependence::Enum                       vital_birth_time_dependence;                      //Time dependence in Birth Rate
         float x_birth;
 
         // Cached values to be used when initializing new individuals
@@ -248,35 +274,38 @@ namespace Kernel
 
         map<void*, INodeContext::callback_t> new_infection_observers;
         AnimalReservoir::Enum      animal_reservoir_type;
-        InfectivityScaling::Enum   infectivity_scaling;                              // Infectivity_Scale_Type
+        InfectivityScaling::Enum                             infectivity_scaling;                              // Infectivity_Scale_Type
         float                      zoonosis_rate;
 
         RouteList_t routes;
 
-        void Initialize();
+        /* clorton virtual */ void Initialize() /* clorton override */;
         virtual void setupEventContextHost();
-        virtual bool Configure( const Configuration* config );
+        virtual bool Configure( const Configuration* config ) override;
         void ExtractDataFromDemographics();
+        virtual void LoadImmunityDemographicsDistribution();
 
         // Updates
         virtual void updateInfectivity(float dt = 0.0f);
         virtual void updatePopulationStatistics(float=1.0);     // called by updateinfectivity to gather population statistics
-        virtual void accumulateIndividualPopulationStatistics(float dt, IndividualHuman* individual);
+        virtual void accumulateIndividualPopulationStatistics(float dt, IIndividualHuman* individual);
         virtual float getDensityContactScaling(); // calculate correction to infectivity due to lower population density
         virtual float getClimateInfectivityCorrection()  const;
         virtual float getSeasonalInfectivityCorrection();
+ 
         void  updateVitalDynamics(float dt = 1.0f);             // handles births and non-disease mortality
 
         // Population Initialization
         virtual void populateNewIndividualsFromDemographics(int count_new_individuals = 100);
         virtual void populateNewIndividualsByBirth(int count_new_individuals = 100);
-        virtual void populateNewIndividualFromPregnancy(IndividualHuman* temp_mother);
-        void  conditionallyInitializePregnancy(IndividualHuman*);
+        virtual void populateNewIndividualFromPregnancy(IIndividualHuman* temp_mother);
+        void  conditionallyInitializePregnancy(IIndividualHuman*);
         float getPrevalenceInPossibleMothers();
+        virtual float drawInitialImmunity(float ind_init_age);
 
-        virtual IndividualHuman *createHuman( suids::suid id, float MCweight, float init_age, int gender, float init_poverty);
-        IndividualHuman* configureAndAddNewIndividual(float=1.0, float=(20*DAYSPERYEAR), float= 0, float = 0.5);
-        virtual IndividualHuman* addNewIndividual(
+        virtual IIndividualHuman *createHuman( suids::suid id, float MCweight, float init_age, int gender, float init_poverty);
+        IIndividualHuman* configureAndAddNewIndividual(float=1.0, float=(20*DAYSPERYEAR), float= 0, float = 0.5);
+        virtual IIndividualHuman* addNewIndividual(
             float monte_carlo_weight = 1.0,
             float initial_age = 0,
             int gender = 0,
@@ -288,57 +317,58 @@ namespace Kernel
 
         virtual void RemoveHuman( int index );
 
-        virtual IndividualHuman* addNewIndividualFromSerialization();
+        virtual IIndividualHuman* addNewIndividualFromSerialization();
 
         double calculateInitialAge( double temp_age );
-        float  adjustSamplingRateByAge( float sampling_rate, double age );
+        Fraction adjustSamplingRateByImmuneState( Fraction sampling_rate, bool is_immune ) const;
+        Fraction adjustSamplingRateByAge( Fraction sampling_rate, double age ) const;
         virtual void EraseAndDeleteDemographicsDistribution(std::string key); // for removing distributions used only in initialization
 
         // Reporting
         virtual void resetNodeStateCounters(void);
-        virtual void updateNodeStateCounters(IndividualHuman *ih);
+        virtual void updateNodeStateCounters(IIndividualHuman *ih);
         virtual void finalizeNodeStateCounters(void);
-        virtual void reportNewInfection(IndividualHuman *ih);
-        virtual void reportDetectedInfection(IndividualHuman *ih);
+        virtual void reportNewInfection(IIndividualHuman *ih);
+        virtual void reportDetectedInfection(IIndividualHuman *ih);
 
         // Migration
-        virtual void processEmigratingIndividual(IndividualHuman *i); // not a public method since decision to emigrate is an internal one;
-        virtual void postIndividualMigration(IndividualHuman* ind);
-        void resolveEmigration(IndividualHuman *tempind);
+        virtual void processEmigratingIndividual(IIndividualHuman* i); // not a public method since decision to emigrate is an internal one;
+        virtual void postIndividualMigration(IIndividualHuman* ind);
+        void resolveEmigration(IIndividualHuman *tempind);
 
         // Fix up child object pointers after deserializing
         virtual INodeContext *getContextPointer();
         virtual void propagateContextToDependents();
 
+
         const SimulationConfig* params() const;
         void checkIpKeyInWhitelist(const std::string& key, size_t numValues );
         void convertTransitions( const NodeDemographics &trans, json::Object& tx_camp, const std::string& key );
         std::string getAgeBinPropertyNameFromIndex( const NodeDemographics& demo, unsigned int idx );
-        virtual void checkValidIPValue( const std::string& key, const std::string& to_value );
+        virtual void checkValidIPValue( const std::string& key, const std::string& to_value ) override;
 
         //Verify that the user entered in set of property key/value pairs which are included in the demographics file
-        virtual void VerifyPropertyDefined( const std::string& rKey, const std::string& rVal ) const;
+        virtual void VerifyPropertyDefined( const std::string& rKey, const std::string& rVal ) const override;
 
         bool whitelist_enabled;
         std::set< std::string > ipkeys_whitelist;
         static const char* _age_bins_key;
         static const char* transitions_dot_json_filename;
+
+        float infectivity_sinusoidal_forcing_amplitude; // Only for Infectivity_Scale_Type = SINUSOIDAL_FUNCTION_OF_TIME
+        float infectivity_sinusoidal_forcing_phase;     // Only for Infectivity_Scale_Type = SINUSOIDAL_FUNCTION_OF_TIME
+        float infectivity_boxcar_forcing_amplitude;     // Only for Infectivity_Scale_Type = ANNUAL_BOXCAR_FUNCTION
+        float infectivity_boxcar_start_time;            // Only for Infectivity_Scale_Type = ANNUAL_BOXCAR_FUNCTION
+        float infectivity_boxcar_end_time;              // Only for Infectivity_Scale_Type = ANNUAL_BOXCAR_FUNCTION
+
+        float birth_rate_sinusoidal_forcing_amplitude;  // Only for Birth_Rate_Time_Dependence = SINUSOIDAL_FUNCTION_OF_TIME
+        float birth_rate_sinusoidal_forcing_phase;      // Only for Birth_Rate_Time_Dependence = SINUSOIDAL_FUNCTION_OF_TIME
+        float birth_rate_boxcar_forcing_amplitude;      // Only for Birth_Rate_Time_Dependence = ANNUAL_BOXCAR_FUNCTION
+        float birth_rate_boxcar_start_time;             // Only for Birth_Rate_Time_Dependence = ANNUAL_BOXCAR_FUNCTION
+        float birth_rate_boxcar_end_time;               // Only for Birth_Rate_Time_Dependence = ANNUAL_BOXCAR_FUNCTION
+
+        DECLARE_SERIALIZABLE(Node);
+
 #pragma warning( pop )
-
-#if USE_JSON_SERIALIZATION
-     public:
-
-         // IJsonSerializable Interfaces
-         virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-         virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
-
-    private:
-
-#if USE_BOOST_SERIALIZATION
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive &ar, Node&, const unsigned int v);
-#endif
     };
 }

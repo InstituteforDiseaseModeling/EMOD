@@ -3,11 +3,11 @@
     "2_Comment": "This scenario takes Scenarios/Generic/04_SEIR_VitalDyamics and uses a",
     "3_Comment": "demographics overlay to override the MoralityDistribution in the base file.",
     "4_Comment": "---------------------------------------------------------------------------",
-    "Default_Config_Path": "defaults\\generic_default_config.json", 
+    "Default_Config_Path": "defaults/generic_default_config.json", 
     "parameters": {
         "DEMOGRAPHICS": {
             "Birth_Rate_Dependence": "POPULATION_DEP_RATE", 
-            "Demographics_Filename": "generic_scenarios_demographics.json;demog/generic_scenarios_demographics_overlay.json", 
+            "Demographics_Filenames": [ "generic_scenarios_demographics.json", "demog/generic_scenarios_demographics_overlay.json" ], 
             "MORTALITY": {
                 "Mortality_Time_Course": "MORTALITY_AFTER_INFECTIOUS", 
                 "Mortality_Blocking_Immunity_Duration_Before_Decay": 90

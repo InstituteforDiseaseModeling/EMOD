@@ -1,29 +1,18 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #pragma once
 
 #include "stdafx.h"
-#include <fstream>
-#include <iostream>
-#include <math.h>
 #include <vector>
 #include <string>
-#include <map>
-
-#include "BoostLibWrapper.h"
-
-#include "RANDOM.h"
-#include "Contexts.h"
-#include "Sugar.h"
-#include "CajunIncludes.h"
-#include "Configure.h"
+#include <fstream>
 
 #ifdef __GNUC__
 #include <ext/hash_map>
@@ -35,144 +24,321 @@ namespace std
 #include <hash_map>
 #endif
 
-class Configuration;
+#include "IMigrationInfo.h"
+#include "InterpolatedValueMap.h"
+
+#define MAX_LOCAL_MIGRATION_DESTINATIONS    (8)
+#define MAX_AIR_MIGRATION_DESTINATIONS      (60)
+#define MAX_REGIONAL_MIGRATION_DESTINATIONS (30)
+#define MAX_SEA_MIGRATION_DESTINATIONS      (5)
+
+
 
 namespace Kernel
 {
-    // TODO: tried to change various <int> template types to <MigrationType> and got a bunch of compile errors, at least
-    //       some related to serialization/Persist stuff... go back and fix that later
-    enum MigrationType 
+    ENUM_DEFINE(GenderDataType,
+        ENUM_VALUE_SPEC(SAME_FOR_BOTH_GENDERS , 0)  // The one set of the data is used for both genders
+        ENUM_VALUE_SPEC(ONE_FOR_EACH_GENDER   , 1)) // There are two sets of data - one for each gender
+
+    ENUM_DEFINE(InterpolationType,
+        ENUM_VALUE_SPEC(LINEAR_INTERPOLATION , 0)  // Interpolate between ages - no extrapolation
+        ENUM_VALUE_SPEC(PIECEWISE_CONSTANT   , 1)) // Use the value if the age is greater than the current and less than the next
+
+    // ---------------------------
+    // --- MigrationRateData
+    // ---------------------------
+
+    // MigrationRateData contains data about migrating to a particular node.
+    // The rates can be age dependent.
+    class IDMAPI MigrationRateData
     {
-        LOCAL_MIGRATION     = 1,
-        AIR_MIGRATION       = 2,
-        REGIONAL_MIGRATION  = 3,
-        SEA_MIGRATION       = 4
+    public:
+        MigrationRateData();
+        MigrationRateData( suids::suid to_node_suid, MigrationType::Enum migType, InterpolationType::Enum interpType );
+
+        const suids::suid       GetToNodeSuid()           const;
+        MigrationType::Enum     GetMigrationType()        const;
+        InterpolationType::Enum GetInterpolationType()    const;
+        int                     GetNumRates()             const;
+        float                   GetRate( float ageYears ) const;
+
+        void AddRate( float ageYears, float rate );
+    private:
+        suids::suid             m_ToNodeSuid ;
+        MigrationType::Enum     m_MigType ;
+        InterpolationType::Enum m_InterpType ;
+        InterpolatedValueMap    m_InterpMap;
     };
 
-    class MigrationInfo : public JsonConfigurable
+    // ---------------------------
+    // --- MigrationInfoNull
+    // ---------------------------
+
+    // MigrationInfoNull is the null object in the Null Object Pattern.
+    // Essentially, this object implements the IMigrationInfo interface
+    // but doesn't do anything.  This object is given to nodes when migration
+    // is on but the node does not have any migration away from it.
+    class IDMAPI MigrationInfoNull : virtual public IMigrationInfo
     {
-        // for JsonConfigurable stuff...
-        GET_SCHEMA_STATIC_WRAPPER(MigrationInfo)
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
         DECLARE_QUERY_INTERFACE()
-
     public:
-        void PickMigrationStep(IIndividualHumanContext * traveler, float migration_rate_modifier, suids::suid &destination, int /*MigrationType*/ &migration_type, float &time) const;
+        virtual ~MigrationInfoNull();
 
-        virtual ~MigrationInfo();
-        void SetContextTo(INodeContext* _parent);
-
-        const std::vector<suids::suid>& GetAdjacentNodes() const;
-        const std::vector<int /*MigrationType*/>& GetMigrationTypes() const;
-        bool IsHeterogeneityEnabled() const { return is_heterogeneity_enabled; }
+        // IMigrationInfo methods
+        virtual void PickMigrationStep( IIndividualHumanContext * traveler, 
+                                        float migration_rate_modifier, 
+                                        suids::suid &destination, 
+                                        MigrationType::Enum &migration_type,
+                                        float &time ) override;
+        virtual void SetContextTo(INodeContext* _parent) override;
+        virtual const std::vector<suids::suid>& GetReachableNodes() const override;
+        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes() const override;
+        virtual bool IsHeterogeneityEnabled() const override;
 
     protected:
-        INodeContext * parent;
+        friend class MigrationInfoFactoryFile;
 
-        // would it make sense to split these up by migration-type?
-        std::vector<suids::suid> adjacent_nodes;
-        std::vector<float> migration_rate_cdf;
-        std::vector<int /*MigrationType*/> migration_types;
+        MigrationInfoNull();
 
-        float migration_totalrate;
-
-        float x_airmigration;
-        float x_regionmigration;
-        float x_seamigration;
-        float x_localmigration;
-        bool is_heterogeneity_enabled;
-
-        friend class MigrationInfoFactory;
-
-        MigrationInfo( INodeContext * _parent = nullptr );
-
-        bool Initialize(std::istream *local_migration_data,
-                        std::istream *air_migration_data,
-                        std::istream *regional_migration_data,
-                        std::istream *sea_migration_data,
-                        boost::bimap<uint32_t, suids::suid> *nodeid_suid_map);
-
-    private:
-
-        bool Configure( const Configuration * config );
-
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-    public:
-        // IJsonSerializable Interfaces
-        virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-        virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
-
-#if USE_BOOST_SERIALIZATION
-        friend class ::boost::serialization::access;
-
-        template<class Archive>
-        friend void serialize(Archive & ar, MigrationInfo& info, const unsigned int file_version);
-        FORCE_POLYMORPHIC()
-#endif
+#pragma warning( push )
+#pragma warning( disable: 4251 ) // See IdmApi.h for details
+        // We need these member variables so that GetReachableNodes() and GetMigrationTypes()
+        // can retrun references to objects that exist.
+        std::vector<suids::suid>         m_EmptyListNodes;
+        std::vector<MigrationType::Enum> m_EmptyListTypes;
+#pragma warning( pop )
     };
 
-    class MigrationInfoFactory : public JsonConfigurable
+    // ---------------------------
+    // --- MigrationInfoFixedRate
+    // ---------------------------
+
+    // MigrationInfoFixedRate is an IMigrationInfo object that has fixed/constant rates.
+    class IDMAPI MigrationInfoFixedRate : virtual public IMigrationInfo
+    {
+        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
+        DECLARE_QUERY_INTERFACE()
+    public:
+        virtual ~MigrationInfoFixedRate();
+
+        // IMigrationInfo methods
+        virtual void PickMigrationStep( IIndividualHumanContext * traveler, 
+                                        float migration_rate_modifier, 
+                                        suids::suid &destination, 
+                                        MigrationType::Enum &migration_type,
+                                        float &time ) override;
+        virtual void SetContextTo(INodeContext* _parent) override;
+        virtual const std::vector<suids::suid>& GetReachableNodes() const override;
+        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes() const override;
+        virtual bool IsHeterogeneityEnabled() const override;
+
+    protected:
+        friend class MigrationInfoFactoryFile;
+        friend class MigrationInfoFactoryDefault;
+
+        MigrationInfoFixedRate( INodeContext* _parent,
+                                bool isHeterogeneityEnabled );
+
+        virtual void Initialize( const std::vector<std::vector<MigrationRateData>>& rRateData );
+        virtual void CalculateRates( Gender::Enum gender, float ageYears );
+        virtual const std::vector<float>& GetRates() const;
+        virtual float GetTotalRate() const;
+        virtual void NormalizeRates( std::vector<float>& r_rate_cdf, float& r_total_rate );
+        virtual void SaveRawRates( std::vector<float>& r_rate_cdf ) {}
+
+        virtual const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender ) const;
+        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender ) const;
+
+#pragma warning( push )
+#pragma warning( disable: 4251 ) // See IdmApi.h for details
+        INodeContext * m_Parent;
+        bool m_IsHeterogeneityEnabled;
+        std::vector<suids::suid>         m_ReachableNodes;
+        std::vector<MigrationType::Enum> m_MigrationTypes;
+        std::vector<float>               m_RateCDF;
+        float                            m_TotalRate;
+#pragma warning( pop )
+    };
+
+    // -----------------------------
+    // --- MigrationInfoAgeAndGender
+    // -----------------------------
+
+    // MigrationInfoAgeAndGender is an IMigrationInfo object that is used when the rates
+    // between nodes is dependent on gender and age.  The reachable/"to nodes" can be different
+    // for each gender.
+    class IDMAPI MigrationInfoAgeAndGender : public MigrationInfoFixedRate
+    {
+        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
+        DECLARE_QUERY_INTERFACE()
+    public:
+        virtual ~MigrationInfoAgeAndGender();
+
+    protected:
+        friend class MigrationInfoFactoryFile;
+
+        MigrationInfoAgeAndGender( INodeContext* _parent,
+                                   bool isHeterogeneityEnabled );
+
+        virtual void Initialize( const std::vector<std::vector<MigrationRateData>>& rRateData );
+        virtual void CalculateRates( Gender::Enum gender, float ageYears );
+
+        virtual const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender ) const override;
+        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender ) const override;
+
+
+#pragma warning( push )
+#pragma warning( disable: 4251 ) // See IdmApi.h for details
+        std::vector<std::vector<MigrationRateData>> m_RateData;
+        std::vector<suids::suid>         m_ReachableNodesFemale;
+        std::vector<MigrationType::Enum> m_MigrationTypesFemale;
+#pragma warning( pop )
+    };
+
+    // ----------------------
+    // --- MigrationInfoFile
+    // ----------------------
+
+    // MigrationInfoFile is responsible for reading the migration data from files.
+    // This object assumes that for one file name there is one binary file containing the
+    // "to-node" and rate data while json-formatted metadata file contains extra information
+    // about the data in the binary file.  The factory uses this object to create
+    // the IMigrationInfo objects.
+    class IDMAPI MigrationInfoFile
+    {
+    public:
+#pragma warning( push )
+#pragma warning( disable: 4251 ) // See IdmApi.h for details
+        // These are public so that the factory can put these variables into initConfig() statements
+        std::string m_Filename ;
+        bool m_IsEnabled ;
+        float m_xModifier ;
+#pragma warning( pop )
+
+        MigrationInfoFile( MigrationType::Enum migType, 
+                           int defaultDestinationsPerNode );
+        virtual ~MigrationInfoFile();
+
+        virtual void Initialize( const std::string& idreference );
+
+        virtual void SetEnableParameterName( const std::string& rName );
+        virtual void SetFilenameParameterName( const std::string& rName );
+
+        virtual bool ReadData( ExternalNodeId_t fromNodeID, 
+                               const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeidSuidMap,
+                               std::vector<std::vector<MigrationRateData>>& rRateData );
+
+        MigrationType::Enum GetMigrationType() const { return m_MigrationType; }
+
+    protected:
+        // Returns the expected size of the binary file
+        virtual uint32_t ParseMetadataForFile( const std::string& data_filepath, const std::string& idreference );
+        virtual void OpenMigrationFile( const std::string& filepath, uint32_t expected_binary_file_size );
+        virtual uint32_t GetNumGenderDataChunks() const;
+
+#pragma warning( push )
+#pragma warning( disable: 4251 ) // See IdmApi.h for details
+        std::string             m_ParameterNameEnable ;
+        std::string             m_ParameterNameFilename ;
+        int                     m_DestinationsPerNode ;
+        MigrationType::Enum     m_MigrationType ;
+        GenderDataType::Enum    m_GenderDataType;
+        InterpolationType::Enum m_InterpolationType;
+        std::vector<float>      m_AgesYears;
+        uint32_t                m_GenderDataSize;
+        uint32_t                m_AgeDataSize;
+        std::ifstream           m_FileStream;
+
+        std::hash_map< ExternalNodeId_t, uint32_t > m_Offsets;
+#pragma warning( pop )
+    };
+
+    // ----------------------------------
+    // --- MigrationInfoFactoryFile
+    // ----------------------------------
+
+    // MigrationInfoFactoryFile is an IMigrationInfoFactory that creates IMigrationInfo objects based
+    // on data found in migration input files.  It can create one IMigrationInfo object for each node
+    // in the simulation.
+    class IDMAPI MigrationInfoFactoryFile : public JsonConfigurable, virtual public IMigrationInfoFactory
     {
     public:
         // for JsonConfigurable stuff...
-        GET_SCHEMA_STATIC_WRAPPER(MigrationInfoFactory)
+        GET_SCHEMA_STATIC_WRAPPER(MigrationInfoFactoryFile)
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
         DECLARE_QUERY_INTERFACE()
 
-        std::string airmig_filename;
-        std::string localmig_filename;
-        std::string regionmig_filename;
-        std::string seamig_filename;
+        MigrationInfoFactoryFile( bool enableHumanMigration );
+        MigrationInfoFactoryFile();
+        virtual ~MigrationInfoFactoryFile();
 
-        static MigrationInfoFactory* CreateMigrationInfoFactory(boost::bimap<uint32_t, suids::suid> *nodeid_suid_map, const ::Configuration *config, const std::string idreference);
-        ~MigrationInfoFactory();
+        // JsonConfigurable methods
+        virtual bool Configure( const Configuration* config ) override;
 
-        MigrationInfo* CreateMigrationInfo(INodeContext *parent_node);
+        // IMigrationInfoFactory methods
+        virtual void Initialize( const ::Configuration *config, const std::string& idreference ) override;
+        virtual bool IsAtLeastOneTypeConfiguredForIndividuals() const override;
+        virtual bool IsEnabled( MigrationType::Enum mt ) const override;
 
-        bool Configure( const Configuration * config );
+        virtual IMigrationInfo* CreateMigrationInfo( INodeContext *parent_node, 
+                                                     const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) override;
+    protected:
+        virtual void CreateInfoFileList();
+        virtual void InitializeInfoFileList( bool enableHumanMigration, const Configuration* config );
+        static std::vector<std::vector<MigrationRateData>> GetRateData( INodeContext *parent_node, 
+                                                                        const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap,
+                                                                        std::vector<MigrationInfoFile*>& infoFileList,
+                                                                        bool* pIsFixedRate );
 
+#pragma warning( push )
+#pragma warning( disable: 4251 ) // See IdmApi.h for details
+        std::vector<MigrationInfoFile*> m_InfoFileList ;
+        bool m_IsHeterogeneityEnabled;
+        bool m_EnableHumanMigration;
+#pragma warning( pop )
     private:
-        boost::bimap<uint32_t, suids::suid> *nodeid_suid_map;
+    };
 
-        bool airplane_migration;
-        bool regional_migration;
-        bool sea_migration;
-        bool local_migration;
+    // ----------------------------------
+    // --- MigrationInfoFactoryDefault
+    // ----------------------------------
 
-        // data file stream handles for migration files
-        std::ifstream *local_migration_file;
-        std::ifstream *air_migration_file;
-        std::ifstream *regional_migration_file;
-        std::ifstream *sea_migration_file;
+    // MigrationInfoFactoryDefault is used when the user is running the default/internal scenario.
+    // This assumes that there are at least 3-rows and 3-columns of nodes and that the set of nodes is square.
+    class IDMAPI MigrationInfoFactoryDefault : public JsonConfigurable, virtual public IMigrationInfoFactory
+    {
+    public:
+        // for JsonConfigurable stuff...
+        GET_SCHEMA_STATIC_WRAPPER(MigrationInfoFactoryDefault)
+        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
+        DECLARE_QUERY_INTERFACE()
 
-        // node offsets in migration files
-        std::hash_map<uint32_t, uint32_t> local_migration_offsets;
-        std::hash_map<uint32_t, uint32_t> air_migration_offsets;
-        std::hash_map<uint32_t, uint32_t> regional_migration_offsets;
-        std::hash_map<uint32_t, uint32_t> sea_migration_offsets;
+        MigrationInfoFactoryDefault( bool enableHumanMigration, int torusSize );
+        MigrationInfoFactoryDefault();
+        virtual ~MigrationInfoFactoryDefault();
 
-        // TODO: might be nice to do something here to store offsets in a "map" sorted by value and then just pass a string/data-stream
-        //      of the migration-data to the MigrationInfo that's being created, but none of the STL types seem to fulfill the requirements
-        //      of being able to sort by value but search by key.
+        // JsonConfigurable methods
+        virtual bool Configure( const Configuration* config ) override;
 
-        //template<class _Ty>
-        //struct offsets_less : public binary_function<_Ty, _Ty, bool>
-        //{
-        //    bool operator()(const _Ty& _Left, const _Ty& _Right) const
-        //    {
-        //        return (_Left < _Right);
-        //    }
-        //};
+        // IMigrationInfoFactory methods
+        virtual void Initialize( const ::Configuration *config, const std::string& idreference ) override;
+        virtual IMigrationInfo* CreateMigrationInfo( INodeContext *parent_node, 
+                                                     const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) override;
+        virtual bool IsAtLeastOneTypeConfiguredForIndividuals() const override;
+        virtual bool IsEnabled( MigrationType::Enum mt ) const override;
+    protected:
+        std::vector<std::vector<MigrationRateData>> GetRateData( INodeContext *parent_node, 
+                                                                 const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap,
+                                                                 float modifier );
 
-        //std::set<std::pair<uint32_t, uint32_t>, offsets_less<std::pair<uint32_t, uint32_t> > > localmigoffsets;
-
-        bool use_default_migration;
-
-        MigrationInfoFactory(boost::bimap<uint32_t, suids::suid> *nodeid_suid_map);
-        MigrationInfoFactory();
-        bool Initialize(const ::Configuration *config, const std::string idreference);
-        bool ParseMetadataForFile(std::string data_filepath, std::string idreference, std::hash_map<uint32_t, uint32_t> &node_offsets);
-        bool OpenMigrationFile(std::string filepath, size_t expected_size, std::ifstream * &file);
+#pragma warning( push )
+#pragma warning( disable: 4251 ) // See IdmApi.h for details
+        bool  m_IsHeterogeneityEnabled;
+        float m_xLocalModifier;
+        int   m_TorusSize;
+#pragma warning( pop )
+    private:
+        void InitializeParameters( bool enableHumanMigration ); // just used in multiple constructors
     };
 }

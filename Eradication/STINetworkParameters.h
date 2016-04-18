@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,6 +13,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "HIVEnums.h"
 #include "IRelationship.h"
 #include "SimulationEnums.h"        // For Gender
+#include "ISerializable.h"
+#include "IArchive.h"
 
 namespace Kernel
 {
@@ -30,7 +32,9 @@ namespace Kernel
         virtual bool Configure( const ::Configuration *json );
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
 
+        static void serialize( Kernel::IArchive& ar, STINetworkParameters& params );
     protected:
+        STINetworkParameters();
 
         std::string key_colon_val;
 
@@ -43,7 +47,6 @@ namespace Kernel
 
     class STINetworkParametersMap : public JsonConfigurable
     {
-        friend class ::boost::serialization::access;
     public:
         STINetworkParametersMap();
         ~STINetworkParametersMap();

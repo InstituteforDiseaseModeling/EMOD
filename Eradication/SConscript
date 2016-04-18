@@ -1,0 +1,552 @@
+# -*- mode: python; -*-
+# This Python script, SConscript, invoked by the SConscript in the upper directory,
+#
+# 1. builds main DTK core files and generate Eradication program
+import pdb
+import os
+import re
+import xml.etree.ElementTree as et
+
+Import('env')
+
+if os.sys.platform == 'win32':
+    env.Append( LINKFLAGS=[ "/DELAYLOAD:\"python27.dll\""] )
+    env.Append( LIBS=["delayimp.lib"] )
+
+if env['AllDlls'] or ( 'DiseaseDll' in env and env[ 'DiseaseDll' ] !="" ):
+    print( "We are doing an EMODule build of Eradication, not a monolithic. Just compile a few files and link to libgeneric_static (and all other libs)." )
+
+    eradenv = env.Clone()
+    eradenv.Append( CPPDEFINES=["_DLLS_" ] )
+    eradenv.Append(LIBS=['libgeneric_static'])
+    eradenv.Append(LIBPATH=['$BUILD_DIR/libgeneric_static'])
+    eradenv.Append( CPPDEFINES=["BOOST_ALL_NO_LIB"] )
+    eradenv.Append( CPPDEFINES=["ENABLE_PYTHON" ] )
+    #env.Append( CPPDEFINES=["ENABLE_TB" ] )
+    #env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )
+    #env.Append( CPPDEFINES=["ENABLE_POLIO" ] )
+    if env['DiseaseDll'] != "Vector" and env['DiseaseDll'] != "Malaria" and env['DiseaseDll'] != "Environmental":
+        eradenv.Append( CPPDEFINES=["DISABLE_VECTOR"] )
+    elif env['DiseaseDll'] != "Generic":
+        eradenv.Append( CPPDEFINES=["DISABLE_CLIMATE"] )
+    if env['DiseaseDll'] != "Malaria":
+        eradenv.Append( CPPDEFINES=["DISABLE_MALARIA"] )
+    if env['DiseaseDll'] == "Environmental" or env['DiseaseDll'] == "Polio":
+        eradenv.Append( CPPDEFINES=["ENABLE_POLIO"] )
+    if env['DiseaseDll'] != "HIV" and env['DiseaseDll'] != "STI":
+        eradenv.Append( CPPDEFINES=["DISABLE_HIV"] )
+    if env['DiseaseDll'] == "TB":
+        eradenv.Append( CPPDEFINES=["ENABLE_TB"] )
+
+    #eradenv.Append(LIBS=['libvector_static'])
+    #eradenv.Append(LIBS=['libmalaria_static'])
+
+    eradenv.Append(LIBPATH=['$BUILD_DIR/libgeneric'])
+
+    eradicationSrcFiles = [  "Eradication.cpp",
+                             "SimulationFactory.cpp",
+                             "stdafx.cpp",
+                             "Controller.cpp",
+                             "ControllerFactory.cpp"]
+
+    # Dllversion of Eradication.exe
+    eradicationExe = eradenv.Program('Eradication', eradicationSrcFiles)
+    eradicationIncFiles = ['SimulationFactory.h',
+                           'Contexts.h']
+
+else:
+
+    print( env["Disease"] )
+    env.Append( CPPDEFINES=["ENABLE_PYTHON" ] )
+
+    eradicationSrcFiles = [
+                            # Common
+                            "NodeDemographics.cpp",
+                            "Eradication.cpp",
+                            "Controller.cpp",
+                            "ControllerFactory.cpp", 
+                            "DllLoader.cpp",
+                            "EventsForOtherNodes.cpp",
+                            "Instrumentation.cpp",
+                            "JsonObjectDemog.cpp",
+                            "LoadBalanceScheme.cpp",
+                            "Migration.cpp",
+                            "NodeRankMap.cpp",
+                            "MpiDataExchanger.cpp",
+                            "NodeInfo.cpp",
+                            "PythonSupport.cpp",
+                            "Properties.cpp",
+                            "SimulationConfig.cpp",
+                            "SimulationFactory.cpp",
+                            "StrainIdentity.cpp",
+                            
+                            # Campaign
+                            "CalendarEventCoordinator.cpp",
+                            "CampaignEvent.cpp",
+                            "EventTrigger.cpp",
+                            "InterventionsContainer.cpp",
+                            "NodeEventContext.cpp",
+                            "SimpleEventCoordinator.cpp",
+                            "SimulationEventContext.cpp",
+                            "StandardEventCoordinator.cpp",
+                            "CoverageByNodeEventCoordinator.cpp",
+                            "DemographicRestrictions.cpp",
+                            
+                            # Reporting
+                            "../baseReportLib/ChannelDataMap.cpp",
+                            "../baseReportLib/BaseEventReport.cpp",
+                            "../baseReportLib/BaseEventReportIntervalOutput.cpp",
+                            "../baseReportLib/BaseChannelReport.cpp",
+                            "../baseReportLib/BinnedReport.cpp",
+                            "../baseReportLib/BaseTextReport.cpp",
+                            "../baseReportLib/BaseTextReportEvents.cpp",
+                            "DemographicsReport.cpp",
+                            "PropertyReport.cpp",
+                            "Report.cpp",
+                            "ReportEventRecorder.cpp",
+                            
+                            # HINT
+                            "MultiRouteTransmissionGroups.cpp",
+                            "SimpleTransmissionGroups.cpp",
+                            "StrainAwareTransmissionGroups.cpp",
+                            "TransmissionGroupsBase.cpp",
+                            "TransmissionGroupsFactory.cpp",
+                            "VectorTransmissionGroups.cpp",
+
+                            # Generic
+                            "GroupEventCoordinator.cpp",
+                            "MultiInterventionEventCoordinator.cpp",
+                            "NodeEventCoordinator.cpp",
+                            "IMigrationInfo.cpp",
+                            "Individual.cpp",
+                            "Infection.cpp",
+                            "Node.cpp",
+                            "Simulation.cpp",
+                            "SpatialReport.cpp",
+                            "Susceptibility.cpp",
+
+                            "Climate.cpp",
+                            "ClimateByData.cpp",
+                            "ClimateConstant.cpp",
+                            "ClimateKoppen.cpp",
+
+                            "../interventions/BirthTriggeredIV.cpp",
+                            "../interventions/CalendarIV.cpp",
+                            "../interventions/DelayedIntervention.cpp",
+                            "../interventions/Diagnostics.cpp",
+                            "../interventions/BroadcastEvent.cpp",
+                            "../interventions/BroadcastEventToOtherNodes.cpp",
+                            "../interventions/Drugs.cpp",
+                            "../interventions/HealthSeekingBehavior.cpp",
+                            "../interventions/MigrateIndividuals.cpp",
+                            "../interventions/MigrateFamily.cpp",
+                            "../interventions/MultiInterventionDistributor.cpp",
+                            "../interventions/NodeLevelHealthTriggeredIV.cpp",
+                            "../interventions/PropertyValueChanger.cpp",
+                            "../interventions/Outbreak.cpp",
+                            "../interventions/OutbreakIndividual.cpp",
+                            "../interventions/SimpleVaccine.cpp",
+                            "../interventions/MultiEffectVaccine.cpp",
+                            "../interventions/WaningEffectBox.cpp",
+                            "../interventions/WaningEffectBoxExponential.cpp",
+                            "../interventions/WaningEffectConstant.cpp",
+                            "../interventions/WaningEffectExponential.cpp",
+                            "../interventions/WaningEffectFactory.cpp",
+    ]
+
+    vectorSrcFiles = [
+                            # Vector
+
+                            "IndividualVector.cpp",
+                            "InfectionVector.cpp",
+                            "MigrationInfoVector.cpp",
+                            "NodeInfoVector.cpp",
+                            "NodeVector.cpp",
+                            "NodeVectorEventContext.cpp",
+                            "ReportVector.cpp",
+                            "SimulationVector.cpp",
+                            "SpatialReportVector.cpp",
+                            "SusceptibilityVector.cpp",
+                            "VectorCohort.cpp",
+                            "VectorCohortAging.cpp",
+                            "VectorCohortIndividual.cpp",
+                            "VectorCohortWithHabitat.cpp",
+                            "VectorHabitat.cpp",
+                            "VectorInterventionsContainer.cpp",
+                            "VectorMatingStructure.cpp",
+                            "VectorPopulation.cpp",
+                            "VectorPopulationAging.cpp",
+                            "VectorPopulationIndividual.cpp",
+                            "VectorProbabilities.cpp",
+                            "VectorSpeciesParameters.cpp",
+                            "VectorSpeciesReport.cpp",
+                            "../interventions/Bednet.cpp",
+                            "../interventions/HousingModification.cpp", 
+                            "../interventions/HumanHostSeekingTrap.cpp", 
+                            "../interventions/IndividualRepellent.cpp",
+                            "../interventions/Ivermectin.cpp",
+                            "../interventions/MosquitoRelease.cpp",
+                            "../interventions/VectorControlNodeTargeted.cpp",
+                            "../interventions/ScaleLarvalHabitat.cpp",
+                        ]
+
+    malariaSrcFiles = vectorSrcFiles + [
+                            # Malaria
+                            "BinnedReportMalaria.cpp",
+                            "IndividualMalaria.cpp",
+                            "InfectionMalaria.cpp",
+                            "MalariaAntibody.cpp",
+                            "MalariaBarcode.cpp",
+                            "MalariaDrugTypeParameters.cpp",
+                            "MalariaInterventionsContainer.cpp",
+                            "NodeMalaria.cpp",
+                            "NodeMalariaEventContext.cpp",
+                            "ReportMalaria.cpp",
+                            "SimulationMalaria.cpp",
+                            "SpatialReportMalaria.cpp",
+                            "SusceptibilityMalaria.cpp",
+                            "../interventions/AntiMalarialDrug.cpp",
+                            "../interventions/InputEIR.cpp",
+                            "../interventions/MalariaChallenge.cpp",
+                            "../interventions/MalariaDiagnostic.cpp",
+                            "../interventions/RTSSVaccine.cpp",
+                        ]
+
+    environmentalSrcFiles = [
+                            # Environmental
+                            "IndividualEnvironmental.cpp",
+                            "InfectionEnvironmental.cpp",
+                            "NodeEnvironmental.cpp",
+                            "ReportEnvironmental.cpp",
+                            "SimulationEnvironmental.cpp",
+                            "SusceptibilityEnvironmental.cpp",
+                        ]
+
+    polioSrcFiles = environmentalSrcFiles + [
+                            # Polio
+                            "BinnedReportPolio.cpp",
+                            "IndividualPolio.cpp",
+                            "InfectionPolio.cpp",
+                            "NodePolio.cpp",
+                            "PolioInterventionsContainer.cpp",
+                            "ReportPolio.cpp",
+                            "SimulationPolio.cpp",
+                            "SpatialReportPolio.cpp",
+                            "SusceptibilityPolio.cpp",
+                            "../interventions/PolioVaccine.cpp",
+                        ]
+                        
+    airborneSrcFiles = [
+                            # Airborne
+                            "IndividualAirborne.cpp",
+                            "InfectionAirborne.cpp",
+                            "NodeAirborne.cpp",
+                            "ReportAirborne.cpp",
+                            "SimulationAirborne.cpp",
+                            "SusceptibilityAirborne.cpp",
+    ]
+
+    tbSrcFiles = airborneSrcFiles + [
+                            # Tuberculosis
+                            "BinnedReportTB.cpp",
+                            "IndividualTB.cpp",
+                            "InfectionTB.cpp",
+                            "NodeTB.cpp",
+                            "PropertyReportTB.cpp",
+                            "ReportTB.cpp",
+                            "SimulationTB.cpp",
+                            "SpatialReportTB.cpp",
+                            "SusceptibilityTB.cpp",
+                            "TBInterventionsContainer.cpp",
+                            "TBDrugTypeParameters.cpp",
+                            "../interventions/AntiTBDrug.cpp",
+                            "../interventions/AntiTBPropertyDependentDrug.cpp",
+                            "../interventions/BCGVaccine.cpp",
+                            "../interventions/ActiveDiagnostics.cpp",
+                            "../interventions/DiagnosticsTreatNeg.cpp",
+                            "../interventions/HealthSeekingBehaviorUpdate.cpp",
+                            "../interventions/HealthSeekingBehaviorUpdateable.cpp",
+                            "../interventions/ResistanceDiagnostics.cpp",
+                            "../interventions/SmearDiagnostics.cpp",
+                            "../interventions/NodeLevelHealthTriggeredIVScaleUpSwitch.cpp"
+                        ]
+
+    # TBHIV
+    tbhivSrcFiles = [       "IndividualCoinfection.cpp",
+                            #"GroupEventCoordinatorHIV.cpp",
+                            "MasterInterventionsContainer.cpp",
+                            "NodeTBHIV.cpp",
+                            "ReportTBHIV.cpp",
+                            "SimulationTBHIV.cpp"
+    ]
+
+    # STI
+    stiSrcFiles = [
+                            "Assortivity.cpp",
+                            "AssortivityHIV.cpp",
+                            "AssortivityFactory.cpp",
+                            "CampaignEventByYear.cpp",
+                            "IndividualSTI.cpp",
+                            "InfectionSTI.cpp",
+                            "NodeInfoSTI.cpp",
+                            "NodeSTI.cpp",
+                            "ReportSTI.cpp",
+                            "STIEventCoordinator.cpp",
+                            "STIInterventionsContainer.cpp",
+                            "SusceptibilitySTI.cpp",
+                            "SimulationSTI.cpp",
+                            "BehaviorPfa.cpp",
+                            "PairFormationParametersImpl.cpp",
+                            "PairFormationParamsFactory.cpp",
+                            "PairFormationStatsFactory.cpp",
+                            "PairFormationStatsImpl.cpp",
+                            "PfaFactory.cpp",
+                            "RateTableFactory.cpp",
+                            "RateTableImpl.cpp",
+                            "ReferenceTrackingEventCoordinator.cpp",
+                            "Relationship.cpp",
+                            "RelationshipGroups.cpp",
+                            "RelationshipManager.cpp",
+                            "RelationshipManagerFactory.cpp",
+                            "RelationshipParameters.cpp",
+                            "RelationshipReporting.cpp",
+                            "SocietyFactory.cpp",
+                            "SocietyImpl.cpp",
+                            "StiObjectFactory.cpp",
+                            "StiTransmissionReporter.cpp",
+                            "STINetworkParameters.cpp",
+                            "StiRelationshipEndReporter.cpp",
+                            "StiRelationshipStartReporter.cpp",
+                            "StiRelationshipConsummatedReporter.cpp",
+                            "FlowControllerFactory.cpp",
+                            "FlowControllerImpl.cpp",
+                            "../interventions/MaleCircumcision.cpp",
+                            "../interventions/ModifyStiCoInfectionStatus.cpp",
+                            "../interventions/StiCoInfectionDiagnostic.cpp",
+                            "../interventions/STIBarrier.cpp",
+                            "../interventions/STIIsPostDebut.cpp"
+    ]
+
+    # HIV
+    hivSrcFiles = stiSrcFiles + [
+                            "IndividualHIV.cpp",
+                            "InfectionHIV.cpp",
+                            "FerrandAgeDependentDistribution.cpp",
+                            "NodeHIV.cpp",
+                            "ReportHIV.cpp",
+                            "HIVInterventionsContainer.cpp",
+                            "SusceptibilityHIV.cpp",
+                            "SimulationHIV.cpp",
+                            "HivObjectFactory.cpp",
+                            "HIVRelationshipStartReporter.cpp",
+                            "HIVReportEventRecorder.cpp",
+                            "HIVTransmissionReporter.cpp",
+                            "ReportHIVInfection.cpp",
+                            "ReportHIVByAgeAndGender.cpp",
+                            "ReportHIVMortalityEvents.cpp",
+                            "ReportHIVART.cpp",
+                            "../interventions/ARTBasic.cpp",
+                            "../interventions/ARTDropout.cpp",
+                            "../interventions/CD4Diagnostic.cpp",
+                            "../interventions/AgeDiagnostic.cpp",
+                            "../interventions/HIVARTStagingAbstract.cpp",
+                            "../interventions/HIVARTStagingByCD4Diagnostic.cpp",
+                            "../interventions/HIVARTStagingCD4AgnosticDiagnostic.cpp",
+                            "../interventions/HIVDelayedIntervention.cpp",
+                            "../interventions/HIVDrawBlood.cpp",
+                            "../interventions/HIVPiecewiseByYearAndSexDiagnostic.cpp",
+                            "../interventions/HIVPreARTNotification.cpp",
+                            "../interventions/HIVRandomChoice.cpp",
+                            "../interventions/HIVRapidHIVDiagnostic.cpp", 
+                            "../interventions/HIVSetCascadeState.cpp",
+                            "../interventions/HIVSigmoidByYearAndSexDiagnostic.cpp",
+                            "../interventions/HIVSimpleDiagnostic.cpp",
+                            "../interventions/HIVMuxer.cpp",
+                            "../interventions/PMTCT.cpp"
+    ]
+
+    pyDemoSrcFiles = [
+        "BinnedReportPy.cpp",
+        "IndividualPy.cpp",
+        "InfectionPy.cpp",
+        "NodePy.cpp",
+        "PyInterventionsContainer.cpp",
+        "ReportPy.cpp",
+        "SimulationPy.cpp",
+        "SpatialReportPy.cpp",
+        "SusceptibilityPy.cpp"
+    ]
+
+    if 'Disease' in env and len(env['Disease']) > 0:
+        if env["Disease"] == "Generic":
+            #env.Append( CPPDEFINES=["DISABLE_CLIMATE" ] )
+            env.Append( CPPDEFINES=["DISABLE_AIRBORNE" ] )
+            env.Append( CPPDEFINES=["DISABLE_HIV" ] )
+            env.Append( CPPDEFINES=["DISABLE_STI" ] )
+            env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
+            env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
+
+        if env["Disease"] == "Vector":
+            eradicationSrcFiles.extend( vectorSrcFiles )
+            env.Append( CPPDEFINES=["DISABLE_AIRBORNE" ] )
+            env.Append( CPPDEFINES=["DISABLE_STI" ] )
+            env.Append( CPPDEFINES=["DISABLE_HIV" ] )
+            env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
+
+        if env["Disease"] ==  "Malaria":
+            eradicationSrcFiles.extend( malariaSrcFiles )
+            env.Append( CPPDEFINES=["DISABLE_AIRBORNE" ] )
+            env.Append( CPPDEFINES=["DISABLE_STI" ] )
+            env.Append( CPPDEFINES=["DISABLE_HIV" ] )
+
+        if env["Disease"] == "STI":
+            env.Append( CPPDEFINES=["DISABLE_AIRBORNE" ] )
+            env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
+            env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
+            env.Append( CPPDEFINES=["DISABLE_CLIMATE" ] )
+            env.Append( CPPDEFINES=["DISABLE_HIV" ] )
+            eradicationSrcFiles.extend( stiSrcFiles )
+
+        if env["Disease"] == "HIV":
+            env.Append( CPPDEFINES=["DISABLE_AIRBORNE" ] )
+            env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
+            env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
+            env.Append( CPPDEFINES=["DISABLE_CLIMATE" ] )
+            eradicationSrcFiles.extend( hivSrcFiles )
+
+        if env["Disease"] == "Polio":
+            eradicationSrcFiles.extend( polioSrcFiles )
+            env.Append( CPPDEFINES=["DISABLE_AIRBORNE" ] )
+            env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
+            env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
+            env.Append( CPPDEFINES=["ENABLE_POLIO" ] )
+            env.Append( CPPDEFINES=["DISABLE_STI" ] )
+            env.Append( CPPDEFINES=["DISABLE_HIV" ] )
+            env.Append( CPPDEFINES=["DISABLE_CLIMATE" ] )
+
+        if env["Disease"] == "Environmental":
+            eradicationSrcFiles.extend( environmentalSrcFiles )
+            env.Append( CPPDEFINES=["DISABLE_AIRBORNE" ] )
+            env.Append( CPPDEFINES=["DISABLE_STI" ] )
+            env.Append( CPPDEFINES=["DISABLE_HIV" ] )
+            env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
+            env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
+
+        if env["Disease"] == "TB":
+            eradicationSrcFiles.extend( tbSrcFiles )
+            env.Append( CPPDEFINES=["ENABLE_TB" ] )
+            env.Append( CPPDEFINES=["DISABLE_STI" ] )
+            env.Append( CPPDEFINES=["DISABLE_HIV" ] )
+            env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
+            env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
+            env.Append( CPPDEFINES=["DISABLE_CLIMATE" ] )
+
+        if env["Disease"] == "TBHIV":
+            eradicationSrcFiles.extend( tbhivSrcFiles )
+            env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )
+            env.Append( CPPDEFINES=["DISABLE_STI" ] )
+            env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
+            env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
+            env.Append( CPPDEFINES=["DISABLE_CLIMATE" ] )
+
+        if env["Disease"] == "Py":
+            eradicationSrcFiles.extend( pyDemoSrcFiles )
+            env.Append( CPPDEFINES=["ENABLE_PYTHON_FEVER" ] )
+            env.Append( CPPDEFINES=["DISABLE_CLIMATE" ] )
+            env.Append( CPPDEFINES=["DISABLE_AIRBORNE" ] )
+            env.Append( CPPDEFINES=["DISABLE_HIV" ] )
+            env.Append( CPPDEFINES=["DISABLE_STI" ] )
+            env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
+            env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
+    else:
+        print( "Monolithic all-disease build." )
+        # env.Append( CPPDEFINES=["ENABLE_POLIO" ] )
+        env.Append( CPPDEFINES=["ENABLE_PYTHON_FEVER" ] )
+        env.Append( CPPDEFINES=["ENABLE_TB" ] )
+        # env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )
+        eradicationSrcFiles.extend( malariaSrcFiles )
+        eradicationSrcFiles.extend( hivSrcFiles )
+        eradicationSrcFiles.extend( tbSrcFiles )
+        eradicationSrcFiles.extend( tbhivSrcFiles )
+        eradicationSrcFiles.extend( polioSrcFiles )
+        eradicationSrcFiles.extend( pyDemoSrcFiles )
+        
+        def extract_sources(project_file):
+            sources = []
+            includes = []
+
+            et.register_namespace('',"http://schemas.microsoft.com/developer/msbuild/2003") # this is the default namespace in Msft project files
+            project = et.parse(project_file)
+            project_root = project.getroot()
+            namespace = get_namespace(project_root)
+            for type in [ 'ClCompile', 'ClInclude', 'None', 'ResourceCompile' ]:
+                for element in project_root.findall('.//{0}{1}[@Include]'.format(namespace, type)):
+                    file = element.attrib['Include']
+                    file = file.replace('\\', os.sep)
+                    root, ext = os.path.splitext(file)
+                    if ext.lower() == '.cpp':
+                        sources.append(file)
+                    elif ext.lower() == '.h':
+                        includes.append(file)
+            
+            return sources, includes
+
+        def get_namespace(element):
+            m = re.match('\{.*\}', element.tag)
+            namespace = m.group(0) if m else ''
+            return namespace
+
+        project_file = os.path.join(Dir('#').abspath, 'Eradication', 'Eradication.vcxproj')
+        source_files, include_files = extract_sources(project_file)
+        print(source_files)
+        eradicationSrcFiles = source_files
+
+    # Monolithic
+    eradicationExe = env.Program('Eradication', eradicationSrcFiles)
+
+    eradicationIncFiles = ['ContagionPopulation.h',
+                           'Contexts.h',
+                           'Individual.h',
+                           'Infection.h',
+                           'ISimulation.h',
+                           'Migration.h',
+                           'Node.h',
+                           'NodeDemographics.h',
+                           'Simulation.h',
+                           'NodeRankMap.h',
+                           'SimulationConfig.h',
+                           'SimulationFactory.h',
+                           'StrainIdentity.h',
+                           'Susceptibility.h',
+                           'Controller.h',
+                           'ControllerFactory.h',
+                           'IController.h',
+                           'Common.h',
+                           'PolioDefs.h',
+                           'KernelTypes.h',
+                           'Climate.h',
+                           'ClimateByData.h',
+                           'ClimateConstant.h',
+                           'ClimateKoppen.h']
+
+eradicationResource = ['Eradication.rc']
+eradicationLocalInc = ['StdAfx.h']
+
+msvc = GetOption( "MSVC" )
+if msvc is not None and msvc != False and msvc != "":
+
+    bvar = env['BUILD_VARIANT'] + '|x64'
+    print "Eradication: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar
+    
+    env.MSVSProject(target = 'EradicationScons' + env['MSVSPROJECTSUFFIX'],
+                    srcs = eradicationSrcFiles,
+                    incs = eradicationIncFiles,
+                    localincs = eradicationLocalInc,
+                    resources = eradicationResource,
+                    buildtarget = eradicationExe,
+                    auto_build_solution = 0,
+                    variant = bvar)
+
+else:
+    print "CC is:", env['CC']
+    print "CXX is:", env['CXX']

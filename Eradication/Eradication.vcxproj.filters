@@ -178,6 +178,15 @@
     <Filter Include="Source Files\Campaign\EventCoordinator\STI">
       <UniqueIdentifier>{961c1cb3-7a74-4bf2-9b05-8c66a210a44d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Py">
+      <UniqueIdentifier>{520fc0ac-b503-466a-a617-6eafc1ec24cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Reporting\Py">
+      <UniqueIdentifier>{be74a929-4abb-405b-ae7c-435f9dc10bd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Campaign\InterventionContainers\Py">
+      <UniqueIdentifier>{7146defc-43a0-4968-9aa1-29480c975dfe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VectorPopulation.cpp">
@@ -334,9 +343,6 @@
       <Filter>Source Files\Campaign\IndividualTargeted</Filter>
     </ClCompile>
     <ClCompile Include="..\interventions\SimpleVaccine.cpp">
-      <Filter>Source Files\Campaign\IndividualTargeted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\interventions\SimpleImmunoglobulin.cpp">
       <Filter>Source Files\Campaign\IndividualTargeted</Filter>
     </ClCompile>
     <ClCompile Include="Migration.cpp">
@@ -804,12 +810,6 @@
     <ClCompile Include="..\interventions\AgeDiagnostic.cpp">
       <Filter>Source Files\Campaign\IndividualTargeted\STI\HIV</Filter>
     </ClCompile>
-    <ClCompile Include="..\interventions\StiCoInfectionDiagnostic.cpp">
-      <Filter>Source Files\Campaign\IndividualTargeted\STI\HIV</Filter>
-    </ClCompile>
-    <ClCompile Include="..\interventions\ModifyStiCoInfectionStatus.cpp">
-      <Filter>Source Files\Campaign\IndividualTargeted\STI\HIV</Filter>
-    </ClCompile>
     <ClCompile Include="..\interventions\CD4Diagnostic.cpp">
       <Filter>Source Files\Campaign\IndividualTargeted\STI\HIV</Filter>
     </ClCompile>
@@ -825,6 +825,12 @@
     <ClCompile Include="STINetworkParameters.cpp">
       <Filter>Source Files\STI</Filter>
     </ClCompile>
+    <ClCompile Include="NodeInfo.cpp">
+      <Filter>Source Files\Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interventions\BroadcastEventToOtherNodes.cpp">
+      <Filter>Source Files\Campaign\IndividualTargeted</Filter>
+    </ClCompile>
     <ClCompile Include="HIVTransmissionReporter.cpp">
       <Filter>Source Files\Reporting\STI\HIV</Filter>
     </ClCompile>
@@ -833,9 +839,6 @@
     </ClCompile>
     <ClCompile Include="HIVReportEventRecorder.cpp">
       <Filter>Source Files\Reporting\STI\HIV</Filter>
-    </ClCompile>
-    <ClCompile Include="..\interventions\STIIsPostDebut.cpp">
-      <Filter>Source Files\Campaign\IndividualTargeted\STI\HIV</Filter>
     </ClCompile>
     <ClCompile Include="..\interventions\HIVARTStagingAbstract.cpp">
       <Filter>Source Files\Campaign\IndividualTargeted\STI\HIV</Filter>
@@ -848,6 +851,105 @@
     </ClCompile>
     <ClCompile Include="..\interventions\MaleCircumcision.cpp">
       <Filter>Source Files\Campaign\IndividualTargeted\STI</Filter>
+    </ClCompile>
+    <ClCompile Include="CalendarEventCoordinator.cpp">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeInfoVector.cpp">
+      <Filter>Source Files\Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="IIndividualHuman.cpp">
+      <Filter>Source Files\Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="ISusceptibilityContext.cpp">
+      <Filter>Source Files\Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="IInfection.cpp">
+      <Filter>Source Files\Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="EventsForOtherNodes.cpp">
+      <Filter>Source Files\Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="EventTrigger.cpp">
+      <Filter>Source Files\Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadBalanceScheme.cpp">
+      <Filter>Source Files\Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="DemographicRestrictions.cpp">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClCompile>
+    <ClCompile Include="RelationshipParameters.cpp">
+      <Filter>Source Files\STI</Filter>
+    </ClCompile>
+    <ClCompile Include="IMigrationInfo.cpp">
+      <Filter>Source Files\Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interventions\StiCoInfectionDiagnostic.cpp">
+      <Filter>Source Files\Campaign\IndividualTargeted\STI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interventions\STIIsPostDebut.cpp">
+      <Filter>Source Files\Campaign\IndividualTargeted\STI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interventions\ModifyStiCoInfectionStatus.cpp">
+      <Filter>Source Files\Campaign\IndividualTargeted\STI</Filter>
+    </ClCompile>
+    <ClCompile Include="MpiDataExchanger.cpp">
+      <Filter>Source Files\Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interventions\MalariaDiagnostic.cpp">
+      <Filter>Source Files\Campaign\IndividualTargeted\Vector\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="MigrationInfoVector.cpp">
+      <Filter>Source Files\Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interventions\MigrateIndividuals.cpp">
+      <Filter>Source Files\Campaign\IndividualTargeted</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interventions\MigrateFamily.cpp">
+      <Filter>Source Files\Campaign\NodeTargeted</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeInfoSTI.cpp">
+      <Filter>Source Files\STI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interventions\MultiEffectVaccine.cpp">
+      <Filter>Source Files\Campaign\IndividualTargeted</Filter>
+    </ClCompile>
+    <ClCompile Include="PythonSupport.cpp">
+      <Filter>Source Files\Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="CampaignEventByYear.cpp">
+      <Filter>Source Files\Campaign\EventCoordinator\STI</Filter>
+    </ClCompile>
+    <ClCompile Include="ReferenceTrackingEventCoordinator.cpp">
+      <Filter>Source Files\Campaign\EventCoordinator\STI</Filter>
+    </ClCompile>
+    <ClCompile Include="SusceptibilityPy.cpp">
+      <Filter>Source Files\Py</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulationPy.cpp">
+      <Filter>Source Files\Py</Filter>
+    </ClCompile>
+    <ClCompile Include="NodePy.cpp">
+      <Filter>Source Files\Py</Filter>
+    </ClCompile>
+    <ClCompile Include="InfectionPy.cpp">
+      <Filter>Source Files\Py</Filter>
+    </ClCompile>
+    <ClCompile Include="IndividualPy.cpp">
+      <Filter>Source Files\Py</Filter>
+    </ClCompile>
+    <ClCompile Include="SpatialReportPy.cpp">
+      <Filter>Source Files\Reporting\Py</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportPy.cpp">
+      <Filter>Source Files\Reporting\Py</Filter>
+    </ClCompile>
+    <ClCompile Include="BinnedReportPy.cpp">
+      <Filter>Source Files\Reporting\Py</Filter>
+    </ClCompile>
+    <ClCompile Include="PyInterventionsContainer.cpp">
+      <Filter>Source Files\Campaign\InterventionContainers\Py</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1097,9 +1199,6 @@
     <ClInclude Include="VectorCohortWithHabitat.h">
       <Filter>Source Files\Vector</Filter>
     </ClInclude>
-    <ClInclude Include="..\interventions\SimpleImmunoglobulin.h">
-      <Filter>Source Files\Campaign\IndividualTargeted</Filter>
-    </ClInclude>
     <ClInclude Include="..\interventions\OutbreakIndividual.h">
       <Filter>Source Files\Campaign\IndividualTargeted</Filter>
     </ClInclude>
@@ -1236,9 +1335,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\utils\Serializer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\utils\SimpleTypemapRegistration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\utils\StatusReporter.h">
@@ -1454,6 +1550,7 @@
     <ClInclude Include="MalariaDrugTypeParameters.h" />
     <ClInclude Include="MultiInterventionEventCoordinator.h" />
     <ClInclude Include="MultiRouteTransmissionGroups.h" />
+    <ClInclude Include="PolioDefs.h" />
     <ClInclude Include="PropertyReport.h" />
     <ClInclude Include="SimpleTransmissionGroups.h" />
     <ClInclude Include="TransmissionGroupMembership.h" />
@@ -1745,12 +1842,6 @@
     <ClInclude Include="..\interventions\AgeDiagnostic.h">
       <Filter>Source Files\Campaign\IndividualTargeted\STI\HIV</Filter>
     </ClInclude>
-    <ClInclude Include="..\interventions\ModifyStiCoInfectionStatus.h">
-      <Filter>Source Files\Campaign\IndividualTargeted\STI\HIV</Filter>
-    </ClInclude>
-    <ClInclude Include="..\interventions\StiCoInfectionDiagnostic.h">
-      <Filter>Source Files\Campaign\IndividualTargeted\STI\HIV</Filter>
-    </ClInclude>
     <ClInclude Include="..\interventions\CD4Diagnostic.h">
       <Filter>Source Files\Campaign\IndividualTargeted\STI\HIV</Filter>
     </ClInclude>
@@ -1769,6 +1860,12 @@
     <ClInclude Include="ISTIInterventionsContainer.h">
       <Filter>Source Files\Campaign\InterventionContainers\STI</Filter>
     </ClInclude>
+    <ClInclude Include="NodeInfo.h">
+      <Filter>Source Files\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interventions\BroadcastEventToOtherNodes.h">
+      <Filter>Source Files\Campaign\IndividualTargeted</Filter>
+    </ClInclude>
     <ClInclude Include="HIVTransmissionReporter.h">
       <Filter>Source Files\Reporting\STI\HIV</Filter>
     </ClInclude>
@@ -1777,9 +1874,6 @@
     </ClInclude>
     <ClInclude Include="HIVReportEventRecorder.h">
       <Filter>Source Files\Reporting\STI\HIV</Filter>
-    </ClInclude>
-    <ClInclude Include="..\interventions\STIIsPostDebut.h">
-      <Filter>Source Files\Campaign\IndividualTargeted\STI\HIV</Filter>
     </ClInclude>
     <ClInclude Include="..\interventions\HIVARTStagingAbstract.h">
       <Filter>Source Files\Campaign\IndividualTargeted\STI\HIV</Filter>
@@ -1793,15 +1887,6 @@
     <ClInclude Include="..\interventions\MaleCircumcision.h">
       <Filter>Source Files\Campaign\IndividualTargeted\STI</Filter>
     </ClInclude>
-    <ClInclude Include="..\utils\Common.h" />
-    <ClInclude Include="..\utils\IdmDateTime.h" />
-    <ClInclude Include="..\utils\IdmString.h" />
-    <ClInclude Include="..\utils\InterpolatedValueMap.h" />
-    <ClInclude Include="..\campaign\InterventionValidator.h" />
-    <ClInclude Include="NoCrtWarnings.h" />
-    <ClInclude Include="..\campaign\NodeSet.h" />
-    <ClInclude Include="..\utils\RANDOM.h" />
-    <ClInclude Include="..\utils\ProgramOptions.h" />
     <ClInclude Include="..\baseReportLib\BaseChannelReport.h">
       <Filter>Source Files\Reporting</Filter>
     </ClInclude>
@@ -1832,7 +1917,172 @@
     <ClInclude Include="..\baseReportLib\IReport.h">
       <Filter>Source Files\Reporting</Filter>
     </ClInclude>
-    </ItemGroup>
+    <ClInclude Include="NodeTBHIV.h">
+      <Filter>Source Files\TBHIV</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationTBHIV.h">
+      <Filter>Source Files\TBHIV</Filter>
+    </ClInclude>
+    <ClInclude Include="CalendarEventCoordinator.h">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\Common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\IdmDateTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\IdmString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\InterpolatedValueMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\campaign\InterventionValidator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NoCrtWarnings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\campaign\NodeSet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\ProgramOptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\RANDOM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeInfoVector.h">
+      <Filter>Source Files\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="EventsForOtherNodes.h">
+      <Filter>Source Files\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="IInfection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ISusceptibilityContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EventsForOtherNodes.h">
+      <Filter>Source Files\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="EventTrigger.h">
+      <Filter>Source Files\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadBalanceScheme.h">
+      <Filter>Source Files\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interventions\StiCoInfectionDiagnostic.h">
+      <Filter>Source Files\Campaign\IndividualTargeted\STI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interventions\STIIsPostDebut.h">
+      <Filter>Source Files\Campaign\IndividualTargeted\STI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interventions\ModifyStiCoInfectionStatus.h">
+      <Filter>Source Files\Campaign\IndividualTargeted\STI</Filter>
+    </ClInclude>
+    <ClInclude Include="DemographicRestrictions.h">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClInclude>
+    <ClInclude Include="IRelationshipParameters.h">
+      <Filter>Source Files\STI</Filter>
+    </ClInclude>
+    <ClInclude Include="RelationshipParameters.h">
+      <Filter>Source Files\STI</Filter>
+    </ClInclude>
+    <ClInclude Include="IIdGeneratorSTI.h">
+      <Filter>Source Files\STI</Filter>
+    </ClInclude>
+    <ClInclude Include="IMigrationInfo.h">
+      <Filter>Source Files\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="MpiDataExchanger.h">
+      <Filter>Source Files\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="INodeInfo.h">
+      <Filter>Source Files\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interventions\MalariaDiagnostic.h">
+      <Filter>Source Files\Campaign\IndividualTargeted\Vector\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="IMigrationInfoVector.h">
+      <Filter>Source Files\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="MigrationInfoVector.h">
+      <Filter>Source Files\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interventions\MigrateIndividuals.h">
+      <Filter>Source Files\Campaign\IndividualTargeted</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interventions\MigrateFamily.h">
+      <Filter>Source Files\Campaign\NodeTargeted</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeInfoSTI.h">
+      <Filter>Source Files\STI</Filter>
+    </ClInclude>
+    <ClInclude Include="ISTISimulationContext.h">
+      <Filter>Source Files\STI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interventions\MultiEffectVaccine.h">
+      <Filter>Source Files\Campaign\IndividualTargeted</Filter>
+    </ClInclude>
+    <ClInclude Include="PythonSupport.h">
+      <Filter>Source Files\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="CampaignEventByYear.h">
+      <Filter>Source Files\Campaign\EventCoordinator\STI</Filter>
+    </ClInclude>
+    <ClInclude Include="ReferenceTrackingEventCoordinator.h">
+      <Filter>Source Files\Campaign\EventCoordinator\STI</Filter>
+    </ClInclude>
+    <ClInclude Include="SusceptibilityPy.h">
+      <Filter>Source Files\Py</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationPy.h">
+      <Filter>Source Files\Py</Filter>
+    </ClInclude>
+    <ClInclude Include="NodePy.h">
+      <Filter>Source Files\Py</Filter>
+    </ClInclude>
+    <ClInclude Include="InfectionPy.h">
+      <Filter>Source Files\Py</Filter>
+    </ClInclude>
+    <ClInclude Include="IndividualPy.h">
+      <Filter>Source Files\Py</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialReportPy.h">
+      <Filter>Source Files\Reporting\Py</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportPy.h">
+      <Filter>Source Files\Reporting\Py</Filter>
+    </ClInclude>
+    <ClInclude Include="BinnedReportPy.h">
+      <Filter>Source Files\Reporting\Py</Filter>
+    </ClInclude>
+    <ClInclude Include="PyInterventionsContainer.h">
+      <Filter>Source Files\Campaign\InterventionContainers\Py</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interventions\IWaningEffect.h">
+      <Filter>Source Files\Campaign\WaningEffects</Filter>
+    </ClInclude>
+    <ClInclude Include="IVectorMigrationReporting.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\BinaryArchiveReader.h" />
+    <ClInclude Include="..\utils\BinaryArchiveWriter.h" />
+    <ClInclude Include="..\utils\DurationDistribution.h" />
+    <ClInclude Include="..\utils\FileSystem.h" />
+    <ClInclude Include="..\utils\IArchive.h" />
+    <ClInclude Include="..\utils\ISerializable.h" />
+    <ClInclude Include="..\utils\JsonFullReader.h" />
+    <ClInclude Include="..\utils\JsonFullWriter.h" />
+    <ClInclude Include="..\utils\JsonRawReader.h" />
+    <ClInclude Include="..\utils\JsonRawWriter.h" />
+    <ClInclude Include="..\rapidjson\include\rapidjson\rapidjson.h" />
+    <ClInclude Include="..\utils\Serialization.h" />
+  </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Eradication.rc" />
   </ItemGroup>

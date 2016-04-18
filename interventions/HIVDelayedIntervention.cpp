@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,8 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IndividualEventContext.h"
 #include "NodeEventContext.h"
 #include "RANDOM.h"
-#include "HIVInterventionsContainer.h" // for time-date util function and access into IHIVCascadeOfCare
-#include "SimulationConfig.h" // for listed events
+#include "IHIVInterventionsContainer.h" // for time-date util function and access into IHIVCascadeOfCare
 
 static const char * _module = "HIVDelayedIntervention";
 
@@ -33,10 +32,12 @@ namespace Kernel
     , cascadeState("")
     , days_remaining(-1)
     , firstUpdate(true)
-    , broadcast_event(NO_TRIGGER_STR)
-    , broadcast_on_expiration_event(NO_TRIGGER_STR)
+    , broadcast_event()
+    , broadcast_on_expiration_event()
     {
         initSimTypes(1, "HIV_SIM");
+        delay_distribution.AddSupportedType( DistributionFunction::PIECEWISE_CONSTANT, "", "", "", "" );
+        delay_distribution.AddSupportedType( DistributionFunction::PIECEWISE_LINEAR,   "", "", "", "" );
     }
 
     HIVDelayedIntervention::HIVDelayedIntervention( const HIVDelayedIntervention& master )
@@ -64,31 +65,21 @@ namespace Kernel
         DelayedIntervention::DistributionConfigure(inputJson);
 
         // HIVDelayedIntervention specific
-        if( delay_distribution == DistributionFunction::PIECEWISE_CONSTANT 
-            || delay_distribution == DistributionFunction::PIECEWISE_LINEAR
+        if( delay_distribution.GetType() == DistributionFunction::PIECEWISE_CONSTANT 
+            || delay_distribution.GetType() == DistributionFunction::PIECEWISE_LINEAR
             || JsonConfigurable::_dryrun )
         {
-            initConfigComplexType( "Time_Varying_Constants", 
-                                   &year2DelayMap, 
-                                   HIV_Delayed_Intervention_TVC_DESC_TEXT, 
-                                   "Delay_Distribution", 
+            initConfigComplexType( "Time_Varying_Constants",
+                                   &year2DelayMap,
+                                   HIV_Delayed_Intervention_TVC_DESC_TEXT,
+                                   "Delay_Distribution",
                                    "PIECEWISE_CONSTANT || PIECEWISE_LINEAR" );
         }
 
         //DelayedIntervention::InterventionConfigure(inputJson);
-        initConfigTypeMap( "Broadcast_Event",
-                           &broadcast_event,
-                           HIV_Delayed_Intervention_Broadcast_Event_DESC_TEXT,
-                           NO_TRIGGER_STR );
-        broadcast_event.constraints = "<configuration>:Listed_Events.*";
-        broadcast_event.constraint_param = &GET_CONFIGURABLE(SimulationConfig)->listed_events;
+        initConfigTypeMap( "Broadcast_Event", &broadcast_event, HIV_Delayed_Intervention_Broadcast_Event_DESC_TEXT );
 
-        initConfigTypeMap( "Broadcast_On_Expiration_Event",
-                           &broadcast_on_expiration_event, 
-                           HIV_Delayed_Intervention_Broadcast_On_Expiration_Event_DESC_TEXT, 
-                           NO_TRIGGER_STR );
-        broadcast_on_expiration_event.constraints = "<configuration>:Listed_Events.*";
-        broadcast_on_expiration_event.constraint_param = &GET_CONFIGURABLE(SimulationConfig)->listed_events;
+        initConfigTypeMap( "Broadcast_On_Expiration_Event", &broadcast_on_expiration_event, HIV_Delayed_Intervention_Broadcast_On_Expiration_Event_DESC_TEXT );
 
         bool ret = JsonConfigurable::Configure(inputJson);
         if( ret )
@@ -114,9 +105,9 @@ namespace Kernel
             {
                 abort_state_list = abort_state_list.substr( 0, abort_state_list.length() - 2 );
             }
-            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, 
-                                                    "Cascade_State", cascadeState.c_str(), 
-                                                    "Abort_States", abort_state_list.c_str(), 
+            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                                                    "Cascade_State", cascadeState.c_str(),
+                                                    "Abort_States", abort_state_list.c_str(),
                                                     "The Cascade_State cannot be one of the Abort_States." );
         }
     }
@@ -124,7 +115,7 @@ namespace Kernel
     void
     HIVDelayedIntervention::CalculateDelay()
     {
-        switch (delay_distribution)
+        switch( delay_distribution.GetType() )
         {
             case DistributionFunction::PIECEWISE_CONSTANT:
             {
@@ -148,7 +139,7 @@ namespace Kernel
                 DelayedIntervention::CalculateDelay();
             break;
         }
-        LOG_DEBUG_F("Drew %0.2f remaining delay days in %s.\n", remaining_delay_days, DistributionFunction::pairs::lookup_key(delay_distribution));
+        LOG_DEBUG_F("Drew %0.2f remaining delay days in %s.\n", remaining_delay_days, DistributionFunction::pairs::lookup_key(delay_distribution.GetType()));
     }
 
     // todo: lift to HIVIntervention or helper function (repeated in HIVSimpleDiagnostic)
@@ -180,9 +171,9 @@ namespace Kernel
         IHIVCascadeOfCare *ihcc = nullptr;
         if ( s_OK != parent->GetInterventionsContext()->QueryInterface(GET_IID(IHIVCascadeOfCare), (void **)&ihcc) )
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, 
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
                                            "parent->GetInterventionsContext()",
-                                           "IHIVCascadeOfCare", 
+                                           "IHIVCascadeOfCare",
                                            "IIndividualHumanInterventionsContext" );
         }
 
@@ -242,7 +233,7 @@ namespace Kernel
         }
 
         days_remaining -= dt;
-        if( days_remaining < 0 ) 
+        if( days_remaining < 0 )
         {
             expired = true;
 
@@ -251,7 +242,7 @@ namespace Kernel
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
             }
-            if( broadcast_on_expiration_event != NO_TRIGGER_STR )
+            if( (broadcast_on_expiration_event != NO_TRIGGER_STR) && !broadcast_on_expiration_event.IsUninitialized() )
             {
                 broadcaster->TriggerNodeEventObserversByString( parent->GetEventContext(), broadcast_on_expiration_event );
             }
@@ -268,7 +259,7 @@ namespace Kernel
             return;
         }
 
-        if (expired || broadcast_event == NO_TRIGGER_STR)
+        if( expired || (broadcast_event == NO_TRIGGER_STR) || broadcast_event.IsUninitialized() )
         {
             LOG_DEBUG_F("expired or event == NoTrigger\n");
             return;
@@ -295,26 +286,24 @@ namespace Kernel
         return cascadeState;
     }
 
-    const JsonConfigurable::tDynamicStringSet& HIVDelayedIntervention::GetAbortStates()
+    const jsonConfigurable::tDynamicStringSet& HIVDelayedIntervention::GetAbortStates()
     {
         return abortStates;
     }
 
-}
+    REGISTER_SERIALIZABLE(HIVDelayedIntervention);
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::HIVDelayedIntervention)
-
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, HIVDelayedIntervention& obj, const unsigned int v)
+    void HIVDelayedIntervention::serialize(IArchive& ar, HIVDelayedIntervention* obj)
     {
-        boost::serialization::void_cast_register<HIVDelayedIntervention, IDistributableIntervention>();
-        //ar & obj.year2DelayMap;     // todo: serialize this!
-        //ar & obj.abortStates;
-        ar & obj.cascadeState;
-        ar & obj.firstUpdate;
-        ar & boost::serialization::base_object<Kernel::DelayedIntervention>(obj);
+        DelayedIntervention::serialize( ar, obj );
+        HIVDelayedIntervention& delayed = *obj;
+
+        ar.labelElement("year2DelayMap"                 ) & delayed.year2DelayMap;
+        ar.labelElement("abortStates"                   ) & delayed.abortStates;
+        ar.labelElement("cascadeState"                  ) & delayed.cascadeState;
+        ar.labelElement("days_remaining"                ) & delayed.days_remaining;
+        ar.labelElement("firstUpdate"                   ) & delayed.firstUpdate;
+        ar.labelElement("broadcast_event"               ) & delayed.broadcast_event;
+        ar.labelElement("broadcast_on_expiration_event" ) & delayed.broadcast_on_expiration_event;
     }
 }
-#endif

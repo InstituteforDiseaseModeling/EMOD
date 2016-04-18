@@ -8,7 +8,7 @@
             "Relative_Humidity_Filename": "Garki_single_humidity.bin"
         },
         "DEMOGRAPHICS": {
-            "Demographics_Filename": "Garki_single_demographics.json",
+            "Demographics_Filenames": ["Garki_single_demographics.json"],
             "Enable_Birth": 1,
             "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER",
             "Population_Scale_Type": "FIXED_SCALING"
@@ -52,7 +52,7 @@
              }
         }, 
         "PRIMARY": {
-            "Config_Name": "PrimaryScenarios_8_Garki_IRSMDA",
+            "Config_Name": "VectorAndMalaria_8_Garki_IRSMDA",
             "Geography": "Garki_Single",
             "Run_Number": 1,
             "Simulation_Duration": 3650,

@@ -1,8 +1,9 @@
 {
-    "Default_Config_Path":"defaults\\tb_scenario_default_config.json",
+    "Default_Config_Path":"defaults/tb_scenario_default_config.json",
     "parameters":{
         "Config_Name":"01_BasicModel_A_SEIR",
-        "Demographics_Filename":"TB_01_BasicModel_demographics.json",
+        "Custom_Reports_Filename" : "custom_reports.json",
+        "Demographics_Filenames":["TB_01_BasicModel_demographics.json"],
         "Simulation_Duration": 1000
     }
 }

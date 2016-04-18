@@ -1,13 +1,14 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
+#include "Contexts.h"
 #include "MultiInterventionDistributor.h"
 
 static const char * _module = "MultiInterventionDistributor";
@@ -36,7 +37,7 @@ namespace Kernel
     }
 
     MultiInterventionDistributor::MultiInterventionDistributor()
-    : parent(NULL)
+    : parent(nullptr)
     {
     }
 
@@ -56,6 +57,19 @@ namespace Kernel
 
     bool MultiInterventionDistributor::Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO )
     {
+        // Important: Use the instance method to obtain the intervention factory obj instead of static method to cross the DLL boundary
+        IGlobalContext *pGC = nullptr;
+        const IInterventionFactory* ifobj = nullptr;
+        release_assert(context->GetParent());
+        if (s_OK == context->GetParent()->QueryInterface(GET_IID(IGlobalContext), (void**)&pGC))
+        {
+            ifobj = pGC->GetInterventionFactory();
+        }
+        if (!ifobj)
+        {
+            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "The pointer to IInterventionFactory object is not valid (could be DLL specific)" );
+        } 
+
         try
         {
             // Parse intervention_list
@@ -69,8 +83,11 @@ namespace Kernel
 
                 // Instantiate and distribute interventions
                 LOG_DEBUG_F( "Attempting to instantiate intervention of class %s\n", std::string((*tmpConfig)["class"].As<json::String>()).c_str() );
-                IDistributableIntervention *di = InterventionFactory::getInstance()->CreateIntervention(tmpConfig);
+                IDistributableIntervention *di = const_cast<IInterventionFactory*>(ifobj)->CreateIntervention(tmpConfig);
                 assert(di);
+                delete tmpConfig;
+                tmpConfig = nullptr;
+
                 if (di)
                 {
                     if (!di->Distribute( context, pICCO ) )
@@ -99,14 +116,11 @@ namespace Kernel
     }
 }
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::MultiInterventionDistributor)
-
+#if 0
 namespace Kernel {
     template<class Archive>
     void serialize(Archive &ar, MultiInterventionDistributor& obj, const unsigned int v)
     {
-        boost::serialization::void_cast_register<MultiInterventionDistributor, IDistributableIntervention>();
         ar & obj.intervention_list;
         ar & boost::serialization::base_object<Kernel::BaseIntervention>(obj);
     }

@@ -62634,7 +62634,7 @@
                 0
             ]
         },
-        "Probability of New Infection": {
+        "Daily (Human) Infection Rate": {
             "Units": "Infection Rate",
             "Data": [
                 2.499999936845e-005,

@@ -22,7 +22,8 @@
                     "Trigger_Condition_List": ["HIVNeedsMaleCircumcision", "HCTTestingLoop8", "ARTStaging9"],
                     "Actual_IndividualIntervention_Config":
                     {
-                        "class": "MaleCircumcision"
+                        "class": "MaleCircumcision",
+                        "Circumcision_Reduced_Acquire": 0.6
                     }
                 }
             },
@@ -98,14 +99,14 @@
             "Event_Coordinator_Config":
             {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Property_Restrictions_Within_Node": 
-                [
-                    { "Accessibility": "Yes" }
-                ],
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
                     "Trigger_Condition": "HCTTestingLoop7",
+                    "Property_Restrictions_Within_Node": 
+                    [
+                        { "Accessibility": "Yes" }
+                    ],
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "HIVPiecewiseByYearAndSexDiagnostic",
@@ -165,14 +166,14 @@
             "Event_Coordinator_Config":
             {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Property_Restrictions_Within_Node": 
-                [
-                    { "Accessibility": "Yes" }
-                ],
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
                     "Trigger_Condition": "ARTStaging8",
+                    "Property_Restrictions_Within_Node": 
+                    [
+                        { "Accessibility": "Yes" }
+                    ],
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "HIVPiecewiseByYearAndSexDiagnostic",

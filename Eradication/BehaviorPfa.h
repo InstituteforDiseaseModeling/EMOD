@@ -1,16 +1,15 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #pragma once
 
 #include "IPairFormationAgent.h"
-#include <queue>
 #include <list>
 #include <vector>
 #include <map>
@@ -23,26 +22,26 @@ namespace Kernel {
 
     class IDMAPI BehaviorPfa : public IPairFormationAgent 
     {
+        IMPLEMENT_DEFAULT_REFERENCE_COUNTING();
+        DECLARE_QUERY_INTERFACE();
     public:
         static IPairFormationAgent* CreatePfa( const Configuration* pConfig,
                                                const IPairFormationParameters* params,
-                                               float updatePeriod,
                                                float selectionThreshold,
                                                RANDOMBASE* prng, 
                                                RelationshipCreator rc );
 
-        virtual void SetUpdatePeriod(float);
-        virtual void AddIndividual(IIndividualHumanSTI*);
+        virtual void AddIndividual(IIndividualHumanSTI*) override;
 
-        virtual void RemoveIndividual(IIndividualHumanSTI*);
+        virtual void RemoveIndividual(IIndividualHumanSTI*) override;
 
-        virtual void Update( const IdmDateTime& rCurrentTime, float dt );
-        virtual const map<int, vector<float>>& GetAgeBins();
-        virtual const map<int, vector<float>>& GetDesiredFlow();
-        virtual const map<int, vector<int>>& GetQueueLengthsBefore();
-        virtual const map<int, vector<int>>& GetQueueLengthsAfter();
+        virtual void Update( const IdmDateTime& rCurrentTime, float dt ) override;
+        virtual const map<int, vector<float>>& GetAgeBins() override;
+        virtual const map<int, vector<float>>& GetDesiredFlow() override;
+        virtual const map<int, vector<int>>& GetQueueLengthsBefore() override;
+        virtual const map<int, vector<int>>& GetQueueLengthsAfter() override;
 
-        virtual void Print(const char *rel_type) const;
+        virtual void Print(const char *rel_type) const override;
 
         int GetNumPopulationTotal() const { return m_population_map.size() ; }
 
@@ -56,23 +55,11 @@ namespace Kernel {
         // ---------------------------
         // --- JsonConfiurable Methods
         // ---------------------------
-        virtual bool Configure(const Configuration *config);
+        virtual bool Configure(const Configuration *config) override;
 
-#if USE_JSON_SERIALIZATION
-        // For JSON serialization
-        virtual void JSerialize( Kernel::IJsonObjectAdapter* root, Kernel::JSerializer* helper ) const {}
-        virtual void JDeserialize( Kernel::IJsonObjectAdapter* root, Kernel::JSerializer* helper ) {}
-#endif
-
-        // ---------------------
-        // --- ISupport Methods
-        // ---------------------
-        virtual Kernel::QueryResult QueryInterface(Kernel::iid_t iid, void **ppvObject) { return Kernel::e_NOINTERFACE; }
-        virtual int32_t AddRef()  { return -1 ; }
-        virtual int32_t Release() { return -1 ; }
     protected:
+		BehaviorPfa();
         BehaviorPfa( const IPairFormationParameters*, 
-                     float updatePeriod, 
                      float selectionThreshold,
                      RANDOMBASE*, 
                      RelationshipCreator );
@@ -80,7 +67,6 @@ namespace Kernel {
         virtual ~BehaviorPfa();
         bool areInRelationship( IIndividualHumanSTI * person1, const IIndividualHumanSTI* person2 ) const;
 
-        float m_update_period;
         float m_cum_prob_threshold ;
         float m_time_since_last_update;
 
@@ -117,6 +103,8 @@ namespace Kernel {
         // DEBUGGING/VALIDATION
         vector<int> new_males;
         vector<int> new_females;
+
+        DECLARE_SERIALIZABLE(BehaviorPfa);
 #pragma warning( pop )
     };
 }

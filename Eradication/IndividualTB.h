@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,8 +13,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 // These includes are only used for serialization
 #include "InfectionTB.h"
-#include "SusceptibilityTB.h"
-#include "TBInterventionsContainer.h"
 #include "TBContexts.h"
 
 namespace Kernel
@@ -30,31 +28,31 @@ namespace Kernel
     public:
         virtual ~IndividualHumanTB(void) { }
         static   IndividualHumanTB *CreateHuman(INodeContext *context, suids::suid _suid, float monte_carlo_weight = 1.0f, float initial_age = 0.0f, int gender = 0, float initial_poverty = 0.5f);
-        virtual void InitializeHuman();
-        virtual bool Configure( const Configuration* config );
+        virtual void InitializeHuman() override;
+        virtual bool Configure( const Configuration* config ) override;
 
         // Infections and Susceptibility
-        virtual void CreateSusceptibility(float=1.0, float=1.0);
-        virtual void UpdateInfectiousness(float dt);
+        virtual void CreateSusceptibility(float=1.0, float=1.0) override;
+        virtual void UpdateInfectiousness(float dt) override;
 
         // These functions in IIndividualHumanTB
-        virtual bool HasActiveInfection() const;
-        virtual bool HasLatentInfection() const;
-        virtual bool HasPendingRelapseInfection() const;
-        virtual bool IsImmune() const;
-        virtual bool IsMDR() const; 
-        virtual bool IsSmearPositive() const;
-        virtual bool IsOnTreatment() const; 
-        virtual bool IsEvolvedMDR() const;
-        virtual bool IsTreatmentNaive() const;
-        virtual bool HasFailedTreatment() const;
-        virtual bool HasEverRelapsedAfterTreatment() const;
-        virtual bool IsFastProgressor() const;
-        virtual bool IsExtrapulmonary() const;
-        virtual bool HasActivePresymptomaticInfection() const;
-        virtual float GetDurationSinceInitInfection() const;
+        virtual bool HasActiveInfection() const override;
+        virtual bool HasLatentInfection() const override;
+        virtual bool HasPendingRelapseInfection() const override;
+        virtual bool IsImmune() const override;
+        virtual bool IsMDR() const override;
+        virtual bool IsSmearPositive() const override;
+        virtual bool IsOnTreatment() const override;
+        virtual bool IsEvolvedMDR() const override;
+        virtual bool IsTreatmentNaive() const override;
+        virtual bool HasFailedTreatment() const override;
+        virtual bool HasEverRelapsedAfterTreatment() const override;
+        virtual bool IsFastProgressor() const override;
+        virtual bool IsExtrapulmonary() const override;
+        virtual bool HasActivePresymptomaticInfection() const override;
+        virtual float GetDurationSinceInitInfection() const override;
 
-        virtual int GetTime() const;
+        virtual int GetTime() const override;
 
         //event observers for reporting
         virtual void RegisterInfectionIncidenceObserver( IInfectionIncidenceObserver*);
@@ -64,20 +62,15 @@ namespace Kernel
         IndividualHumanTB(suids::suid id = suids::nil_suid(), float monte_carlo_weight = 1.0f, float initial_age = 0.0f, int gender = 0, float initial_poverty = 0.5f);
 
         // Factory methods
-        virtual Infection* createInfection(suids::suid _suid);
-        virtual void setupInterventionsContainer();
-        virtual bool SetNewInfectionState(InfectionStateChange::_enum inf_state_change);
+        virtual IInfection* createInfection(suids::suid _suid) override;
+        virtual void setupInterventionsContainer() override;
+        virtual bool SetNewInfectionState(InfectionStateChange::_enum inf_state_change) override;
 
         //event observers for reporting
         std::set < IInfectionIncidenceObserver * > infectionIncidenceObservers;
-        virtual void onInfectionIncidence();
-        virtual void onInfectionMDRIncidence();
-    private:
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        // Serialization
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, IndividualHumanTB& human, const unsigned int  file_version );
-#endif
+        virtual void onInfectionIncidence() override;
+        virtual void onInfectionMDRIncidence() override;
+
+        DECLARE_SERIALIZABLE(IndividualHumanTB);
     };
 }

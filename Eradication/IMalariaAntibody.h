@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -12,18 +12,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <stdint.h>       // for int64_t
 #include "MalariaEnums.h" // for MalariaAntibodyType enum
 #include "Configuration.h"
-#include "Serializer.h"
+#include "ISerializable.h"
 
 namespace Kernel
 {
     class SusceptibilityMalariaConfig;
 
-    struct IMalariaAntibody
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-        : public IJsonSerializable
-#else
-        : public ISupports
-#endif
+    struct IMalariaAntibody : ISerializable
     {
         // EAW: inv_uL_blood arguments can be removed when we switch to m_antigen_concentration from m_antigen_count
         virtual void  Decay( float dt, SusceptibilityMalariaConfig* params ) = 0;
@@ -48,9 +43,11 @@ namespace Kernel
         virtual int GetAntibodyVariant() const = 0;
     };
 
-    typedef struct 
-    { 
-        IMalariaAntibody* minor; 
-        IMalariaAntibody* major; 
+    typedef struct
+    {
+        IMalariaAntibody* minor;
+        IMalariaAntibody* major;
     } pfemp1_antibody_t;
+
+    void serialize(IArchive&, pfemp1_antibody_t&);
 }

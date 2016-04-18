@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -15,6 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ConfigurationImpl.h"  // for MetadataDescriptor namespace
 #include "Exceptions.h"
 #include "Debug.h"
+#include "Types.h"
 
 // 'resource' files with description texts for schema
 #include "config_params.rc"
@@ -23,6 +24,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #endif
 #include "iv_params.rc"
 
+#include <stdarg.h>
 #include <stdexcept>
 #include <sstream>
 #include <fstream>
@@ -35,7 +37,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <values.h>
 #endif
 
-namespace Kernel 
+#include "Environment.h"
+#include "Log.h"
+
+namespace Kernel
 {
     // TBD: Don't inherint from IConfigurable if we don't want to have to implement AddRef/Release/QI and Serialiation
     class IDMAPI IJsonConfigurable //: public IConfigurable
@@ -76,48 +81,11 @@ namespace Kernel
         std::map< std::string, T * > _labelToVariableMap;
     };
 
-
-    class IDMAPI JsonConfigurable : public IConfigurable
-    {
 #define FIXED_STRING_SET_LABEL "Fixed String Set"
 #define DYNAMIC_STRING_SET_LABEL "Dynamic String Set"
-        friend class InterventionFactory;
-    public:
-        typedef std::map< float, float > tFloatFloatMapConfigType;
-        typedef std::map< std::string, float > tStringFloatMapConfigType;
 
-    private:
-        typedef std::map< std::string, bool * > tBoolConfigTypeMapType;
-        typedef std::map< std::string, int * > tIntConfigTypeMapType;
-        typedef std::map< std::string, float * > tFloatConfigTypeMapType;
-        typedef std::map< std::string, double * > tDoubleConfigTypeMapType;
-        typedef std::map< std::string, std::string * > tStringConfigTypeMapType;
-        typedef std::map< std::string, void * > tEnumConfigTypeMapType;
-        typedef std::map< std::string, std::set< std::string > * > tStringSetConfigTypeMapType;
-        typedef std::map< std::string, std::vector< std::string > * > tVectorStringConfigTypeMapType;
-        typedef std::map< std::string, const std::set< std::string > * > tVectorStringConstraintsTypeMapType;
-        typedef std::map< std::string, std::vector< float > * > tVectorFloatConfigTypeMapType;
-        typedef std::map< std::string, std::vector< std::vector< float > > * > tVector2dFloatConfigTypeMapType;
-        typedef std::map< std::string, tFloatFloatMapConfigType * > tFloatFloatMapConfigTypeMapType;
-        typedef std::map< std::string, tStringFloatMapConfigType * > tStringFloatMapConfigTypeMapType;
-
-    public:
-
-        // IJsonSerializable Interfaces
-        virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-        virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-
-        json::QuickBuilder GetSchema() { return json::QuickBuilder( jsonSchemaBase ); }
-
-        static bool _dryrun;
-        static bool _useDefaults;
-        static bool _track_missing;
-        static bool _possibleNonflatConfig;
-        typedef json::QuickBuilder (*get_schema_funcptr_t)(void);
-        typedef std::map< std::string, get_schema_funcptr_t > name2CreatorMapType;
-        static name2CreatorMapType &get_registration_map();
-
-
+    namespace jsonConfigurable
+    {
         typedef std::set< std::string > tStringSet;
         class tStringSetBase : public tStringSet
         {
@@ -135,6 +103,7 @@ namespace Kernel
                 }
                 tStringSet possible_values;
         };
+
         class tDynamicStringSet : public tStringSetBase
         {
             public:
@@ -144,11 +113,39 @@ namespace Kernel
                     return std::string( DYNAMIC_STRING_SET_LABEL );
                 }
                 std::string value_source;
+
+                static void serialize( IArchive& ar, tDynamicStringSet& dyn )
+                {
+                    ar.startObject();
+                    ar.labelElement("values");
+                    size_t count = ar.IsWriter() ? dyn.size() : -1;
+
+                    ar.startArray(count);
+                    if( ar.IsWriter() )
+                    {
+                        for (auto& entry : dyn)
+                        {
+                            std::string str = entry;
+                            ar & str;
+                        }
+                    }
+                    else
+                    {
+                        for (size_t i = 0; i < count; ++i)
+                        {
+                            std::string entry;
+                            ar & entry;
+                            dyn.insert( entry );
+                        }
+                    }
+                    ar.endArray();
+                    ar.labelElement("value_source") & dyn.value_source;
+                    ar.endObject();
+                }
         };
 
         class ConstrainedString : public std::string
         {
-            friend class ::boost::serialization::access;
             public:
                 ConstrainedString()
                 :constraint_param(nullptr)
@@ -157,13 +154,57 @@ namespace Kernel
                 ConstrainedString( std::string &init_str );
                 ConstrainedString( const char *init_str );
 
-                const ConstrainedString& operator=( const std::string& new_value );
+                virtual const ConstrainedString& operator=( const std::string& new_value );
+
                 std::string constraints;
                 tStringSet * constraint_param;
-                std::string parameter_name ;
-
+                std::string parameter_name;
         };
+
         typedef std::map< std::string, ConstrainedString * > tConStringConfigTypeMapType;
+    }
+
+    class IDMAPI JsonConfigurable : public IConfigurable
+    {
+        friend class InterventionFactory;
+        friend class DemographicRestrictions;
+        friend class DurationDistribution;
+    public:
+        typedef std::map< float, float > tFloatFloatMapConfigType;
+        typedef std::map< std::string, float > tStringFloatMapConfigType;
+        static const char * default_string;
+
+    private:
+        typedef std::map< std::string, bool * > tBoolConfigTypeMapType;
+        typedef std::map< std::string, int * > tIntConfigTypeMapType;
+        typedef std::map< std::string, float * > tFloatConfigTypeMapType;
+        typedef std::map< std::string, double * > tDoubleConfigTypeMapType;
+        typedef std::map< std::string, std::string * > tStringConfigTypeMapType;
+        typedef std::map< std::string, void * > tEnumConfigTypeMapType;
+        typedef std::map< std::string, std::set< std::string > * > tStringSetConfigTypeMapType;
+        typedef std::map< std::string, std::vector< std::string > * > tVectorStringConfigTypeMapType;
+        typedef std::map< std::string, const std::set< std::string > * > tVectorStringConstraintsTypeMapType;
+        typedef std::map< std::string, std::vector< float > * > tVectorFloatConfigTypeMapType;
+        typedef std::map< std::string, std::vector< int > * > tVectorIntConfigTypeMapType;
+        typedef std::map< std::string, std::vector< std::vector< float > > * > tVector2dFloatConfigTypeMapType;
+        typedef std::map< std::string, std::vector< std::vector< int > > * > tVector2dIntConfigTypeMapType;
+        typedef std::map< std::string, tFloatFloatMapConfigType * > tFloatFloatMapConfigTypeMapType;
+        typedef std::map< std::string, tStringFloatMapConfigType * > tStringFloatMapConfigTypeMapType;
+        typedef std::map< std::string, RangedFloat * > tRangedFloatConfigTypeMapType;
+        typedef std::map< std::string, NaturalNumber * > tNNConfigTypeMapType;
+        typedef std::map< std::string, JsonConfigurable * > tJsonConfigurableMapType;
+
+    public:
+
+        json::QuickBuilder GetSchema() { return json::QuickBuilder( jsonSchemaBase ); }
+
+        static bool _dryrun;
+        static bool _useDefaults;
+        static bool _track_missing;
+        static bool _possibleNonflatConfig;
+        typedef json::QuickBuilder (*get_schema_funcptr_t)(void);
+        typedef std::map< std::string, get_schema_funcptr_t > name2CreatorMapType;
+        static name2CreatorMapType &get_registration_map();
 
         struct IDMAPI Registrator
         {
@@ -172,7 +213,7 @@ namespace Kernel
 
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
-        static tStringSet missing_parameters_set;
+        static jsonConfigurable::tStringSet missing_parameters_set;
 
         // TEST ONLY - componentTests needs to clear this so that other tests don't fail
         static void ClearMissingParameters() { missing_parameters_set.clear() ; IJsonConfigurable::generic_container.clear(); }
@@ -185,13 +226,18 @@ namespace Kernel
         tEnumConfigTypeMapType enumConfigTypeMap;
         tStringConfigTypeMapType stringConfigTypeMap;
         tStringSetConfigTypeMapType stringSetConfigTypeMap;
-        tConStringConfigTypeMapType conStringConfigTypeMap;
+        jsonConfigurable::tConStringConfigTypeMapType conStringConfigTypeMap;
         tVectorStringConfigTypeMapType vectorStringConfigTypeMap;
         tVectorStringConstraintsTypeMapType vectorStringConstraintsTypeMap;
         tVectorFloatConfigTypeMapType vectorFloatConfigTypeMap;
+        tVectorIntConfigTypeMapType vectorIntConfigTypeMap;
         tVector2dFloatConfigTypeMapType vector2dFloatConfigTypeMap;
+        tVector2dIntConfigTypeMapType vector2dIntConfigTypeMap;
         tFloatFloatMapConfigTypeMapType ffMapConfigTypeMap;
         tStringFloatMapConfigTypeMapType sfMapConfigTypeMap;
+        tRangedFloatConfigTypeMapType rangedFloatConfigTypeMap;
+        tNNConfigTypeMapType naturalNumberConfigTypeMap;
+        tJsonConfigurableMapType jcTypeMap;
 
         json::Object jsonSchemaBase;
         static std::set< std::string > empty_set;
@@ -200,7 +246,6 @@ namespace Kernel
         JsonConfigurable() {}
 
         static const char * default_description;
-        static const char * default_string;
 
         void initSimTypes( unsigned int count, ... )
         {
@@ -227,7 +272,7 @@ namespace Kernel
             int * pVariable,
             const char* description = default_description,
             int min = INT_MIN, int max = INT_MAX, int defaultvalue = 0,
-            const char* condition_key = NULL, const char* condition_value = NULL
+            const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
         void initConfigTypeMap(
@@ -235,7 +280,7 @@ namespace Kernel
             float * pVariable,
             const char* description = default_description,
             float min = -FLT_MAX, float max = FLT_MAX, float defaultvalue = 1.0,
-            const char* condition_key = NULL, const char* condition_value = NULL
+            const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
         void initConfigTypeMap(
@@ -254,16 +299,16 @@ namespace Kernel
 
         void initConfigTypeMap(
             const char* paramName,
-            ConstrainedString * pVariable,
+            jsonConfigurable::ConstrainedString * pVariable,
             const char* description = default_description,
             const std::string& default_str = default_string
         );
 
         void initConfigTypeMap(
             const char* paramName,
-            tStringSetBase * pVariable,
+            jsonConfigurable::tStringSetBase * pVariable,
             const char* description = default_description,
-            const char* condition_key = NULL, const char* condition_value = NULL
+            const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
         void initConfigTypeMap(
@@ -283,9 +328,23 @@ namespace Kernel
 
         void initConfigTypeMap(
             const char* paramName,
+            std::vector< int > * pVariable,
+            const char* description = default_description,
+            int min = -INT_MAX, int max = INT_MAX, int defaultvalue = 1.0
+        );
+
+        void initConfigTypeMap(
+            const char* paramName,
             std::vector< std::vector< float > > * pVariable,
             const char* description = default_description,
             float min = -FLT_MAX, float max = FLT_MAX, float defaultvalue = 1.0
+        );
+
+        void initConfigTypeMap(
+            const char* paramName,
+            std::vector< std::vector< int > > * pVariable,
+            const char* description = default_description,
+            int min = -INT_MAX, int max = INT_MAX, int defaultvalue = 1
         );
 
         void
@@ -309,7 +368,41 @@ namespace Kernel
             tStringFloatMapConfigType * pVariable,
             const char* defaultDesc
        );
-        
+
+       void initConfigTypeMap(
+           const char* paramName,
+           RangedFloat * pVariable,
+           const char* description = default_description,
+           float defaultvalue = 1.0,
+           const char* condition_key = nullptr, const char* condition_value = nullptr
+       );
+
+       void initConfigTypeMap(
+           const char* paramName,
+           NonNegativeFloat * pVariable,
+           const char* description = default_description,
+           float max = 1.0,
+           float defaultvalue = 1.0,
+           const char* condition_key = nullptr, const char* condition_value = nullptr
+       );
+
+       void initConfigTypeMap(
+           const char* paramName,
+           NaturalNumber * pVariable,
+           const char* description = default_description,
+           unsigned int max = INT_MAX,
+           NaturalNumber defaultvalue = 1,
+           const char* condition_key = nullptr, const char* condition_value = nullptr
+       );
+
+       void
+       initConfigTypeMap(
+            const char* paramName,
+            JsonConfigurable * pVariable,
+            const char* defaultDesc,
+            const char* condition_key=nullptr, const char* condition_value=nullptr
+       );
+
         template< typename T >
         void EnforceParameterRange( const std::string& key, T value, json::QuickInterpreter& jsonObj )
         {
@@ -342,7 +435,7 @@ namespace Kernel
             myclass &thevar,
             const json::QuickInterpreter * pJson,
             const MetadataDescriptor::Enum &enum_md,
-            const char* condition_key = NULL, const char* condition_value = NULL
+            const char* condition_key = nullptr, const char* condition_value = nullptr
         )
         {
             if( JsonConfigurable::_dryrun )
@@ -397,7 +490,7 @@ namespace Kernel
                 }
                 else
                 {
-                    std::ostringstream errorMsgFullList; 
+                    std::ostringstream errorMsgFullList;
                     errorMsgFullList << "Failed to find enum match for value "
                                      << GET_CONFIG_STRING(pJson, key)
                                      << " and key "
@@ -484,15 +577,15 @@ namespace Kernel
         }
 
         // OK, so here's the story with initConfigComplexType. The JsonConfigurable base
-        // class is for any class that has member variables that need to be initialized 
+        // class is for any class that has member variables that need to be initialized
         // from parameters in config.json or campaign.json. Up to now that has been done
         // by the class doing 1 of the following 3 things:
         // 1) initConfig. This is for enums only and does an immediate initialization of
-        // the variable from the json (via the Configuration class, which is a 
+        // the variable from the json (via the Configuration class, which is a
         // json::QuickInterpreter.)
-        // 2) initConfigTypeMap. This stores a map of param names to variable pointers, 
-        // and is used for all types for which an overload of that function has been 
-        // created in JsonConfigurable. That includes plain-old-datatypes, plus a few 
+        // 2) initConfigTypeMap. This stores a map of param names to variable pointers,
+        // and is used for all types for which an overload of that function has been
+        // created in JsonConfigurable. That includes plain-old-datatypes, plus a few
         // others.
         // 3) Custom JSON Parsing. More complex, customized structures -- especially
         // those initialized by nested json objects (or arrays) had been read in through
@@ -500,36 +593,36 @@ namespace Kernel
         //
         // initConfigComplexType replaces #3, and could ultimately replace some of #2.
         // In order to avoid adding one-off typemaps and initConfigTypeMap overloads,
-        // the templated method here handles unknown classes. 
+        // the templated method here handles unknown classes.
         //
         // Each unique type that comes through initConfigComplexType gets a corresponding
         // Wrapper<type> instantiated that implements the IJsonConfigurable interface.
-        // There is a static map (called IJsonConfigurable::generic_container) that holds 
-        // all Wrapper<> instances (1 per type). (The map uses the typename as the key.) 
-        // New instances of Wrapper are created in initConfigComplexType and registered 
+        // There is a static map (called IJsonConfigurable::generic_container) that holds
+        // all Wrapper<> instances (1 per type). (The map uses the typename as the key.)
+        // New instances of Wrapper are created in initConfigComplexType and registered
         // with generic_container. (Obviously existing instances are accessed from there.)
         //
         // The type-specific Wrapper<type> instance has a second (non-static) map, called
         // _labelToVariableMap that stores the actual variables of that type, mapped from
         // parameter_name (aka label) to the variable pointer.
-        // 
+        //
         // In order to access all these compile-time-created typemaps at Configure time,
-        // generic_container is iterated over to access each registered Wrapper<type> 
-        // instance and each of these then iterates over its own map of registered variables. 
+        // generic_container is iterated over to access each registered Wrapper<type>
+        // instance and each of these then iterates over its own map of registered variables.
         // The generic_container accesses the actual Wrapper<type> via the pure virtual
         // Configure method which is implemented at the concrete class level for each type.
         //
-        // This accessing and invoking of Configure is done at the end of the Configure 
+        // This accessing and invoking of Configure is done at the end of the Configure
         // method in Configure.cpp. This templated subclass (Wrapper<type>)
         // contains the templated param_name->variable_pointer map. So, in the
-        // concrete (templated) incarnation of that class, the Configure function can 
+        // concrete (templated) incarnation of that class, the Configure function can
         // access the specific templated subclass version of the parameter_name->
-        // variable_pointer map ConfigureFromJsonAndKey. From that map it can iterate 
-        // over all those variable pointers and invoke the ConfigureFromJsonAndKey function 
+        // variable_pointer map ConfigureFromJsonAndKey. From that map it can iterate
+        // over all those variable pointers and invoke the ConfigureFromJsonAndKey function
         // that actually initializes variables of the complex custom class.
         //
         // initConfigComplexType< useful_type_T >( "param1", useful_type_T* put_value_here, <json> ):
-        //     wrapper = IJsonConfigurable::generic_container[ "useful_type_T" ]; 
+        //     wrapper = IJsonConfigurable::generic_container[ "useful_type_T" ];
         //     wrapper->_labelToVariableMap[ "param1" ] = put_value_here;
         //
         // Configure:
@@ -546,24 +639,34 @@ namespace Kernel
             const char* paramName,
             complexclass * pVariable,
             const char* description = default_description,
-            const char* condition_key = NULL, const char* condition_value = NULL
+            const char* condition_key = nullptr, const char* condition_value = nullptr
         )
         {
-            json::QuickBuilder custom_schema = pVariable->GetSchema();
+            if( JsonConfigurable::_dryrun )
+            {
+                json::QuickBuilder custom_schema = pVariable->GetSchema();
 
-            // going to get something back like : {
-            //  "type_name" : "idmType:VectorAlleleEnumPair",
-            //  "type_schema" : {
-            //      "first" : ...,
-            //      "second" : ...
-            //      }
-            //  }
-            std::string custom_type_label = (std::string) custom_schema[ _typename_label() ].As<json::String>();
-            json::String custom_type_label_as_json_string = json::String( custom_type_label );
-            jsonSchemaBase[ custom_type_label ] = custom_schema[ _typeschema_label() ];
-            json::Object newComplexTypeSchemaEntry;
-            newComplexTypeSchemaEntry["description"] = json::String( description );
-            newComplexTypeSchemaEntry["type"] = json::String( custom_type_label_as_json_string );
+                // going to get something back like : {
+                //  "type_name" : "idmType:VectorAlleleEnumPair",
+                //  "type_schema" : {
+                //      "first" : ...,
+                //      "second" : ...
+                //      }
+                //  }
+                std::string custom_type_label = (std::string) custom_schema[ _typename_label() ].As<json::String>();
+                json::String custom_type_label_as_json_string = json::String( custom_type_label );
+                jsonSchemaBase[ custom_type_label ] = custom_schema[ _typeschema_label() ];
+                json::Object newComplexTypeSchemaEntry;
+                newComplexTypeSchemaEntry["description"] = json::String( description );
+                newComplexTypeSchemaEntry["type"] = json::String( custom_type_label_as_json_string );
+                if( condition_key && condition_value )
+                {
+                    json::Object condition;
+                    condition[ condition_key ] = json::String( condition_value );
+                    newComplexTypeSchemaEntry["depends-on"] = condition;
+                }
+                jsonSchemaBase[ paramName ] = newComplexTypeSchemaEntry;
+            }
 
             //std::cout << "type = " << typeid( *pVariable ).name() << std::endl;
             //std::cout << "Storing param name to variable mapping in templated static map." << std::endl;
@@ -577,26 +680,19 @@ namespace Kernel
             release_assert( wrapper );
             wrapper->_labelToVariableMap[ std::string( paramName ) ] = pVariable;
 
-            if( condition_key && condition_value )
-            {
-                json::Object condition;
-                condition[ condition_key ] = json::String( condition_value );
-                newComplexTypeSchemaEntry["depends-on"] = condition;
-            }
-            jsonSchemaBase[ paramName ] = newComplexTypeSchemaEntry;
         }
 
         virtual bool Configure( const Configuration* inputJson );
 
         static const char * _typename_label() { return "type_name"; }
         static const char * _typeschema_label()  { return "type_schema"; }
+        void handleMissingParam( const std::string& key );
     };
 
     // No, we don't need everything from JsonConfigurable. No, this is not the final solution.
     // Yes, there is an opportunity to doing something cleverer with base classes.
     class InterventionConfig : public JsonConfigurable
     {
-        friend class ::boost::serialization::access;
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
 
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
@@ -607,6 +703,8 @@ namespace Kernel
             virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key );
             json::Element _json;
             //json::QuickInterpreter _qi;
+
+            static void serialize(IArchive&, InterventionConfig&);
     };
 
     class IndividualInterventionConfig : public InterventionConfig
@@ -663,7 +761,7 @@ namespace Kernel
     { \
         _dryrun = true; \
         x * newInst = new x(); \
-        newInst->Configure(NULL); \
+        newInst->Configure(nullptr); \
         return newInst->GetSchema(); \
     } \
     private: \
@@ -671,5 +769,4 @@ namespace Kernel
 
     #define GET_SCHEMA_STATIC_WRAPPER_IMPL(x,y) \
     JsonConfigurable::Registrator y::registrator( #x, &y::GetSchemaImpl );
-
 }

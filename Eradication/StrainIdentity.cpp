@@ -1,16 +1,15 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 #include "StrainIdentity.h"
-
-#include "RapidJsonImpl.h" // render unnecessary when the deserializing wrapper is done
+#include "Log.h"
 
 Kernel::StrainIdentity::StrainIdentity(void)
 {
@@ -50,48 +49,20 @@ void Kernel::StrainIdentity::SetGeneticID(int in_geneticID)
 
 namespace Kernel
 {
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-
-    void StrainIdentity::JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const
+    IArchive& serialize(IArchive& ar, StrainIdentity*& ptr)
     {
-        root->BeginObject();
-        root->Insert("antigenID", antigenID);
-        root->Insert("geneticID", geneticID);
-        root->EndObject();
+        if (!ar.IsWriter())
+        {
+            ptr = new StrainIdentity();
+        }
+
+        StrainIdentity& strain = *ptr;
+
+        ar.startObject();
+            ar.labelElement("antigenID") & strain.antigenID;
+            ar.labelElement("geneticID") & strain.geneticID;
+        ar.endObject();
+
+        return ar;
     }
-
-    void StrainIdentity::JDeserialize( IJsonObjectAdapter* root, JSerializer* helper )
-    {
-        rapidjson::Document * doc = (rapidjson::Document*) root; 
-
-        antigenID = (*doc)["antigenID"].GetInt();
-        geneticID = (*doc)["geneticID"].GetInt();
-    }
-
-#endif
 }
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::StrainIdentity)
-namespace Kernel
-{
-    template<class Archive>
-    void serialize(Archive & ar, StrainIdentity& strain, unsigned int  file_version )
-    {
-        static const char * _module = "StrainIdentity";
-        LOG_DEBUG("(De)serializing StrainIdentity\n");
-
-        ar & strain.antigenID;
-        ar & strain.geneticID;
-    }
-    template void serialize( boost::mpi::packed_oarchive&, Kernel::StrainIdentity&, unsigned int);
-    template void serialize( boost::archive::binary_oarchive&, Kernel::StrainIdentity&, unsigned int);
-    template void serialize( boost::mpi::detail::content_oarchive&, Kernel::StrainIdentity&, unsigned int);
-    template void serialize( boost::mpi::detail::mpi_datatype_oarchive&, Kernel::StrainIdentity&, unsigned int);
-    template void serialize( boost::mpi::packed_skeleton_oarchive&, Kernel::StrainIdentity&, unsigned int);
-    template void serialize( boost::mpi::packed_iarchive&, Kernel::StrainIdentity&, unsigned int);
-    template void serialize( boost::archive::binary_iarchive&, Kernel::StrainIdentity&, unsigned int);
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, Kernel::StrainIdentity&, unsigned int);
-
-}
-#endif

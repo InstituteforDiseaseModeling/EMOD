@@ -1,15 +1,14 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #pragma once
 #include "SusceptibilitySTI.h"
-#include "HIVEnums.h"
 
 #include "Types.h"
 
@@ -25,7 +24,7 @@ namespace Kernel
         virtual void         Generate_forward_CD4() = 0;
         virtual void         FastForward( const IInfectionHIV * const, float dt ) = 0;
         virtual void         ApplyARTOnset() = 0;
-        virtual const        ProbabilityNumber GetPrognosisCompletedFraction() const = 0;
+        virtual ProbabilityNumber GetPrognosisCompletedFraction() const = 0;
         virtual void         TerminateSuppression(float days_till_death) = 0;
     };
 
@@ -37,7 +36,7 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
 
     public:
-        virtual bool Configure( const Configuration* config );
+        virtual bool Configure( const Configuration* config ) override;
 
     protected:
         //these are the config params
@@ -60,16 +59,17 @@ namespace Kernel
         virtual ~SusceptibilityHIV(void);
         static Susceptibility *CreateSusceptibility(IIndividualHumanContext *context, float age, float immmod, float riskmod);
 
-        virtual void Update(float dt = 0.0);
-        virtual void UpdateInfectionCleared();
+        void SetContextTo(IIndividualHumanContext* context) override;
+        virtual void Update(float dt = 0.0) override;
+        virtual void UpdateInfectionCleared() override;
 
         // disease specific functions 
-        virtual float GetCD4count() const;
-        virtual void  Generate_forward_CD4();
-        virtual void  FastForward( const IInfectionHIV * const, float dt );
-        virtual void  ApplyARTOnset();
-        virtual const ProbabilityNumber GetPrognosisCompletedFraction() const;
-        virtual void  TerminateSuppression(float days_till_death);
+        virtual float GetCD4count() const override;
+        virtual void  Generate_forward_CD4() override;
+        virtual void  FastForward( const IInfectionHIV * const, float dt ) override;
+        virtual void  ApplyARTOnset() override;
+        virtual ProbabilityNumber GetPrognosisCompletedFraction() const override;
+        virtual void  TerminateSuppression(float days_till_death) override;
 
     protected:
         //disease specific params 
@@ -79,7 +79,7 @@ namespace Kernel
         void setCD4Rate(const IInfectionHIV * const pInf);
         IIndividualHumanHIV * hiv_parent;
 
-        void Initialize(float age, float immmod, float riskmod);
+        /* clorton virtual */ void Initialize(float age, float immmod, float riskmod) /* clorton override */;
         void UpdateSymptomaticPresentationTime();
 
         // additional members of SusceptibilityHIV (params)
@@ -92,13 +92,6 @@ namespace Kernel
 
         float CD4count_at_ART_start;    // CD4 count at start of ART, if any
 
-    private:
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        // Serialization
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, SusceptibilityHIV& sus, const unsigned int  file_version );
-#endif
+        DECLARE_SERIALIZABLE(SusceptibilityHIV);
     };
 }

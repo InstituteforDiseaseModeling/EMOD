@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -15,11 +15,16 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <vector>
 
 #include "Exceptions.h"
+#include "IArchive.h"
 
-typedef struct {
+struct act_prob_t
+{
+    act_prob_t();
+    static void serialize( Kernel::IArchive& ar, act_prob_t& ap );
+
     unsigned int num_acts;
     float prob_per_act;
-} act_prob_t;
+};
 
 typedef std::vector<act_prob_t> act_prob_vec_t;
 
@@ -79,21 +84,19 @@ class IDMAPI RangedFloat
             return *this;
         }
 
-        RangedFloat& operator=( float assignThis );
-            /*
+        RangedFloat& operator=( float assignThis )
         {
             if( assignThis < _min_value )
             {
-                msg << "RangedFloat can't be less than 0. Attempt to assign to " << assignThis << std::endl;
-                throw std::runtime_error( msg.str() );
+                throw Kernel::OutOfRangeException( __FILE__, __LINE__, __FUNCTION__, "RangedFloat::value", assignThis, _min_value );
             }
             else if( assignThis > _max_value )
             {
-                msg << "RangedFloat can't be greater than 1.0. Attempt to assign to " << assignThis << std::endl;
-                throw std::runtime_error( msg.str() );
+                throw Kernel::OutOfRangeException( __FILE__, __LINE__, __FUNCTION__, "RangedFloat::value", assignThis, _max_value );
             }
             _value = assignThis;
-        }*/
+            return *this;
+        }
 
         inline RangedFloat& operator+=( float assignThis )
         {
@@ -153,12 +156,32 @@ class IDMAPI RangedFloat
         }
 
         operator float() const { return _value; }
+        virtual float getMin() const { return _min_value; }
+        virtual float getMax() const { return _max_value; }
 
+        void serialize( Kernel::IArchive& ar )
+        {
+            ar.startObject();
+                ar.labelElement("_value"    ) & _value;
+                ar.labelElement("_min_value") & _min_value;
+                ar.labelElement("_max_value") & _max_value;
+            ar.endObject();
+        }
+
+        // TODO - I dont understand why I need both
+        static void serialize( Kernel::IArchive& ar, RangedFloat& rf )
+        {
+            ar.startObject();
+                ar.labelElement("_value"    ) & rf._value;
+                ar.labelElement("_min_value") & rf._min_value;
+                ar.labelElement("_max_value") & rf._max_value;
+            ar.endObject();
+        }
     private:
     protected:
         float _value;
-        const float _min_value;
-        const float _max_value;
+        /* const */ float _min_value;
+        /* const */ float _max_value;
 };
 
 class IDMAPI NonNegativeFloat : public RangedFloat
@@ -271,6 +294,17 @@ class IDMAPI NaturalNumber
         }
 
         operator int() const { return _value; }
+
+        void serialize( Kernel::IArchive& ar )
+        {
+            ar & _value;
+        }
+
+        static void serialize( Kernel::IArchive& ar, NaturalNumber& nn )
+        {
+            //ar.labelElement("_value") & nn._value;
+            ar & nn._value;
+        }
 
     private:
         int _value;

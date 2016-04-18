@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -16,7 +16,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IndividualEventContext.h" // for Die() interface
 #include "InterventionsContainer.h"
 #include "MalariaAntibody.h" // for CreateAntibody etc.
-#include "MathFunctions.h"   // for Sigmoid::basic_sigmoid
+#include "Sigmoid.h"   // for Sigmoid::basic_sigmoid
 #include "NodeDemographics.h" // for static strings e.g. MSP_mean_antibody_distribution
 #include "SimulationConfig.h"
 
@@ -193,14 +193,14 @@ namespace Kernel
 
             // This equation tracks the blood volume separately from the equilibrium number of RBCs, allowing for non-constant RBC concentration.
             // m_inv_microliters_blood is 1/(microliters of blood in body)--this allows easy calculation of pathogen densities from pathogen numbers
-            m_inv_microliters_blood = (float)( 1 / ( (0.225 * (7300/DAYSPERYEAR) + 0.5) * 1e6 ) ); // 5 liters
+            m_inv_microliters_blood = float(1 / ( (0.225 * (7300/DAYSPERYEAR) + 0.5) * 1e6 )); // 5 liters
         }
         else
         {
             // Initializes daily production of red blood cells for children to grow linearly from INFANT_RBC_PRODUCTION to ADULT_RBC_PRODUCTION by age 20
             // Only approximate due to linear increase in blood volume from 0.5 to 5 liters from birth to age 20 years.  Non-linear growth model might be better...
-            m_RBCproduction = (int64_t)(INFANT_RBC_PRODUCTION + (_age * 0.000137) * (ADULT_RBC_PRODUCTION - INFANT_RBC_PRODUCTION)); //*.000137==/7300 (linear growth to age 20)
-            m_inv_microliters_blood = (float) (1 / ( (0.225 * (_age/DAYSPERYEAR) + 0.5 ) * 1e6) ); // linear growth from 0.5 liters at birth to 5 liters at age 20
+            m_RBCproduction = int64_t(INFANT_RBC_PRODUCTION + (_age * 0.000137) * (ADULT_RBC_PRODUCTION - INFANT_RBC_PRODUCTION)); //*.000137==/7300 (linear growth to age 20)
+            m_inv_microliters_blood = float(1 / ( (0.225 * (_age/DAYSPERYEAR) + 0.5 ) * 1e6)); // linear growth from 0.5 liters at birth to 5 liters at age 20
         }
 
         m_RBCcapacity = m_RBCproduction * AVERAGE_RBC_LIFESPAN;  // Health equilibrium of RBC is production*lifetime.  This is the total number of RBC per human
@@ -250,7 +250,7 @@ namespace Kernel
         // New births during the simulation can stop here.
         if (_age == 0) return;
 
-        if( params()->enable_immunity_initialization_distribution )
+        if( params()->immunity_initialization_distribution_type == DistributionType::DISTRIBUTION_COMPLEX )
         {
             float rand = randgen->eGauss();
             // -- MSP --
@@ -312,11 +312,11 @@ namespace Kernel
             // This is the amount of "erythropoietin", assume absolute amounts of erythropoietin correlate linearly with absolute increases in hemoglobin
             float anemia_erythropoiesis_multiplier = exp( erythropoiesis_anemia_effect * (1 - get_RBC_availability()) );
             LOG_VALID_F( "Anemia erythropoiesis multiplier = %f at RBC availability of %f.\n", anemia_erythropoiesis_multiplier, get_RBC_availability() );
-            m_RBC = (int64_t)(m_RBC - (m_RBC * .00833 - m_RBCproduction * anemia_erythropoiesis_multiplier) * dt); // *.00833 ==/120 (AVERAGE_RBC_LIFESPAN)
+            m_RBC = int64_t(m_RBC - (m_RBC * .00833 - m_RBCproduction * anemia_erythropoiesis_multiplier) * dt); // *.00833 ==/120 (AVERAGE_RBC_LIFESPAN)
         }
         else
         {
-            m_RBC = (int64_t)(m_RBC - (m_RBC * .00833 - m_RBCproduction) * dt); // *.00833 ==/120 (AVERAGE_RBC_LIFESPAN)
+            m_RBC = int64_t(m_RBC - (m_RBC * .00833 - m_RBCproduction) * dt); // *.00833 ==/120 (AVERAGE_RBC_LIFESPAN)
         }
         LOG_VALID_F( "I have %lld red blood cells\n", m_RBC );
 
@@ -363,8 +363,8 @@ namespace Kernel
             // inflammatory immune response--Stevenson, M. M. and E. M. Riley (2004). "Innate immunity to malaria." Nat Rev Immunol 4(3): 169-180.
             // now let cytokine be increased in response to IRBCs and ruptured schizonts, if any
             // pyrogenic threshold similar to previous models--(Molineaux, Diebner et al. 2001; Paget-McNicol, Gatton et al. 2002; Maire, Smith et al. 2006)
-            m_cytokines = (float)(m_cytokines + CYTOKINE_STIMULATION_SCALE * Sigmoid::basic_sigmoid(m_ind_pyrogenic_threshold, m_cytokine_stimulation) * dt * 2);//12-hour time constant
-            m_cytokines = (float)(m_cytokines + CYTOKINE_STIMULATION_SCALE * Sigmoid::basic_sigmoid(m_ind_pyrogenic_threshold, temp_cytokine_stimulation));//one time spike for rupturing schizonts
+            m_cytokines = float(m_cytokines + CYTOKINE_STIMULATION_SCALE * Sigmoid::basic_sigmoid(m_ind_pyrogenic_threshold, m_cytokine_stimulation) * dt * 2);//12-hour time constant
+            m_cytokines = float(m_cytokines + CYTOKINE_STIMULATION_SCALE * Sigmoid::basic_sigmoid(m_ind_pyrogenic_threshold, temp_cytokine_stimulation));//one time spike for rupturing schizonts
             m_cytokine_stimulation = 0; // and reset for next time step
 
             LOG_VALID_F( "m_cytokines: %0.9f\n", m_cytokines );
@@ -532,7 +532,7 @@ namespace Kernel
             {
                 // 2.0*10^11 (RBCs/day)*(120 days)=2.4x10^13 RBCs ~= 5 liters * 5x10^6 RBCs/microliter
                 m_RBCproduction         = ADULT_RBC_PRODUCTION;
-                m_inv_microliters_blood = (float)( 1 / ( (0.225 * (7300/DAYSPERYEAR) + 0.5) * 1e6 ) ); 
+                m_inv_microliters_blood = float(1 / ( (0.225 * (7300/DAYSPERYEAR) + 0.5) * 1e6 )); 
                 m_RBCcapacity           = m_RBCproduction * AVERAGE_RBC_LIFESPAN; // Health equilibrium of RBC is production*lifetime
             }
         }
@@ -541,8 +541,8 @@ namespace Kernel
             // Update children every day.
             // Sets daily production of red blood cells for children to set their equilibrium RBC concentrations and blood volume given an RBC lifetime
             // Only approximate due to linear increase in blood volume from 0.5 to 5 liters with age, a better growth model would be nonlinear
-            m_RBCproduction         = (int64_t)(INFANT_RBC_PRODUCTION + (_age * .000137) * (ADULT_RBC_PRODUCTION - INFANT_RBC_PRODUCTION)); //*.000137==/(20*DAYSPERYEAR)
-            m_inv_microliters_blood = (float)( 1 / ( (0.225 * (_age/DAYSPERYEAR) + 0.5 ) * 1e6 ) ); 
+            m_RBCproduction         = int64_t(INFANT_RBC_PRODUCTION + (_age * .000137) * (ADULT_RBC_PRODUCTION - INFANT_RBC_PRODUCTION)); //*.000137==/(20*DAYSPERYEAR)
+            m_inv_microliters_blood = float(1 / ( (0.225 * (_age/DAYSPERYEAR) + 0.5 ) * 1e6 )); 
             m_RBCcapacity           = m_RBCproduction * AVERAGE_RBC_LIFESPAN; // Health equilibrium of RBC is production*lifetime
         }
     }
@@ -583,7 +583,7 @@ namespace Kernel
         if ( current_fever > clinicalFeverThreshold_low ) 
         {
             // reset unique-incident counter
-            days_between_incidents = (float) minDaysBetweenClinicalIncidents;
+            days_between_incidents = float(minDaysBetweenClinicalIncidents);
 
             // TODO: this function is getting big enough that we might break out the three inner bits (i.e. UpdateSymptomaticCases, UpdateSevereCases, UpdateFatalCases)
             // check for new symptomatic case and accumulate days with fever
@@ -623,7 +623,7 @@ namespace Kernel
             }
 
             // check for severe anemia case
-            if ( GetHemoglobin() < 5 )
+            if ( GetHemoglobin() < 5 ) 
             {
                 if ( cumulative_days_of_severe_anemia_incident == 0 ) 
                 { 
@@ -634,7 +634,7 @@ namespace Kernel
 
             // check for fatal case (even if disease mortality is off just for logging purposes)
             // To query for mortality-reducing effects of drugs or vaccines
-            IDrugVaccineInterventionEffects* idvie = NULL;
+            IDrugVaccineInterventionEffects* idvie = nullptr;
             if ( s_OK != parent->GetInterventionsContext()->QueryInterface(GET_IID(IDrugVaccineInterventionEffects), (void**)&idvie) )
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetInterventionsContext()", "IDrugVaccineInterventionEffects", "IIndividualHumanInterventionsContext" );
@@ -674,7 +674,7 @@ namespace Kernel
     void  SusceptibilityMalaria::ReportClinicalCase( ClinicalSymptomsEnum::Enum symptom )
     {
         // for reporting symptoms (clinical, severe, anemia, etc.)
-        IMalariaHumanContext *imhc = NULL;
+        IMalariaHumanContext *imhc = nullptr;
         if ( s_OK != parent->QueryInterface(GET_IID(IMalariaHumanContext), (void**)&imhc) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IMalariaHumanContext", "IIndividualHumanContext" );
@@ -698,9 +698,9 @@ namespace Kernel
     float SusceptibilityMalaria::get_fatal_disease_probability( float dt, float& anemiaFatalFraction, float& parasiteFatalFraction, float& feverFatalFraction )
     {
         float total_fatal_prob = get_combined_probability(
-            dt, (float)anemiaMortalityLevel, anemiaMortalityInvWidth, 
-            (float)parasiteMortalityLevel, parasiteMortalityInvWidth, 
-            (float)feverMortalityLevel, feverMortalityInvWidth,
+            dt, float(anemiaMortalityLevel), anemiaMortalityInvWidth, 
+            float(parasiteMortalityLevel), parasiteMortalityInvWidth, 
+            float(feverMortalityLevel), feverMortalityInvWidth,
             anemiaFatalFraction, parasiteFatalFraction, feverFatalFraction);
 
         return total_fatal_prob;
@@ -732,20 +732,16 @@ namespace Kernel
 
     float SusceptibilityMalaria::CheckParasiteCountWithTest(int test_type) const
     {
-        float measured_count = 0;
-
         if (test_type == MALARIA_TEST_BLOOD_SMEAR)
         {
+            float measured_count = 0;
+
             // perform a typical blood smear (default
             // take .1 microliters of blood and count parasites
             // 10xPoisson distributed with mean .1xparasite_density
             if (params()->parasiteSmearSensitivity > 0)
             {
-                measured_count = (float)(1.0 / params()->parasiteSmearSensitivity * randgen->Poisson(params()->parasiteSmearSensitivity * m_parasite_density));
-            }
-            else
-            {
-                measured_count = 0;
+                measured_count = float(1.0 / params()->parasiteSmearSensitivity * randgen->Poisson(params()->parasiteSmearSensitivity * m_parasite_density));
             }
 
             return measured_count;
@@ -781,7 +777,7 @@ namespace Kernel
             //throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "type", (int)type, MalariaAntibodyType::pairs::lookup_key(type) );
         }
 
-        variants = InitialVariants( (int)(n_total*frac_variants), n_total );
+        variants = InitialVariants( int(n_total*frac_variants), n_total );
         for (int variant : variants)
         {
             RegisterAntibody(type, variant, memory_level);
@@ -858,17 +854,20 @@ namespace Kernel
 
         default:
             //throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Only implemented IMalariaAntibody query for CSP, MSP1, PfEMP1 major/minor so far" );
-            throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "type", (int)type, MalariaAntibodyType::pairs::lookup_key(type) );
+            throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "type", int(type), MalariaAntibodyType::pairs::lookup_key(type) );
         }
         
-        IMalariaAntibody* antibody = NULL;
+        IMalariaAntibody* antibody = nullptr;
         for (auto tmp_antibody : *variant_vector)
         {
-            if(tmp_antibody->GetAntibodyVariant() == variant)
+            if ( tmp_antibody->GetAntibodyVariant() == variant )
+            {
                 antibody = tmp_antibody;
+                break;
+            }
         }
 
-        if (antibody == NULL) // make a new antibody if it hasn't been created yet
+        if (antibody == nullptr) // make a new antibody if it hasn't been created yet
         {
             antibody = typed_create_antibody(variant, capacity);
             variant_vector->push_back(antibody);
@@ -879,12 +878,12 @@ namespace Kernel
 
     void SusceptibilityMalaria::UpdateActiveAntibody( pfemp1_antibody_t &pfemp1_variant, int minor_variant, int major_variant )
     {
-        if(pfemp1_variant.minor == NULL)
+        if(pfemp1_variant.minor == nullptr)
         {
             pfemp1_variant.minor = RegisterAntibody(MalariaAntibodyType::PfEMP1_minor, minor_variant);
         }
 
-        if(pfemp1_variant.major == NULL)
+        if(pfemp1_variant.major == nullptr)
         {
             pfemp1_variant.major = RegisterAntibody(MalariaAntibodyType::PfEMP1_major, major_variant);
         }
@@ -893,22 +892,22 @@ namespace Kernel
     float SusceptibilityMalaria::get_fraction_of_variants_with_antibodies(MalariaAntibodyType::Enum type) const
     {
         float fraction = 0.0f;
-        switch( (int)type )
+        switch( int(type) )
         {
         case MalariaAntibodyType::CSP:
-            fraction = (float) m_antibodies_to_n_variations[MalariaAntibodyType::CSP];
+            fraction = float(m_antibodies_to_n_variations[MalariaAntibodyType::CSP]);
             break;
             
         case MalariaAntibodyType::MSP1:
-            fraction = (float) m_antibodies_to_n_variations[MalariaAntibodyType::MSP1] / params()->falciparumMSPVars;
+            fraction = float(m_antibodies_to_n_variations[MalariaAntibodyType::MSP1]) / params()->falciparumMSPVars;
             break;
 
         case MalariaAntibodyType::PfEMP1_minor:
-            fraction = (float) m_antibodies_to_n_variations[MalariaAntibodyType::PfEMP1_minor] / (MINOR_EPITOPE_VARS_PER_SET*params()->falciparumNonSpecTypes); // five minor epitopes for each non-spec type
+            fraction = float(m_antibodies_to_n_variations[MalariaAntibodyType::PfEMP1_minor]) / (MINOR_EPITOPE_VARS_PER_SET*params()->falciparumNonSpecTypes); // five minor epitopes for each non-spec type
             break;
 
         case MalariaAntibodyType::PfEMP1_major:
-            fraction = (float) m_antibodies_to_n_variations[MalariaAntibodyType::PfEMP1_major] / params()->falciparumPfEMP1Vars;
+            fraction = float(m_antibodies_to_n_variations[MalariaAntibodyType::PfEMP1_major]) / params()->falciparumPfEMP1Vars;
             break;
 
         default:
@@ -1038,124 +1037,40 @@ namespace Kernel
     // TODO: use this to calculate parasite density?  trigger end of asexual cycle update timing?
     void SusceptibilityMalaria::remove_RBCs(int64_t infectedAsexual, int64_t infectedGametocytes, double RBC_destruction_multiplier)
     { 
-        m_RBC -= ( (int64_t)(infectedAsexual*RBC_destruction_multiplier) + infectedGametocytes );
+        m_RBC -= ( int64_t(infectedAsexual*RBC_destruction_multiplier) + infectedGametocytes );
     } 
 
-    double SusceptibilityMalaria::get_RBC_availability() const      { return (m_RBCcapacity > 0) ? ((double)m_RBC / m_RBCcapacity) : 0.0; }
+    double SusceptibilityMalaria::get_RBC_availability() const      { return (m_RBCcapacity > 0) ? (double(m_RBC) / m_RBCcapacity) : 0.0; }
     float SusceptibilityMalaria::get_inv_microliters_blood() const  { return m_inv_microliters_blood; }
-}
 
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-namespace Kernel {
+    REGISTER_SERIALIZABLE(SusceptibilityMalaria);
 
-    // IJsonSerializable Interfaces
-    void SusceptibilityMalaria::JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const
+    void SusceptibilityMalaria::serialize(IArchive& ar, SusceptibilityMalaria* obj)
     {
-        root->BeginObject();
-
-        // Delegate
-        root->Insert("m_CSP_antibody");
-        m_CSP_antibody->JSerialize(root, helper);
-
-        // Vector of IMalriaAntibody* as json array of object
-        root->Insert("m_active_MSP_antibodies");
-        root->BeginArray();
-        for (auto amsp : m_active_MSP_antibodies)
-        {
-            amsp->JSerialize(root, helper);
-        }
-        root->EndArray();
-
-        root->Insert("m_active_PfEMP1_minor_antibodies");
-        root->BeginArray();
-        for (auto minor : m_active_PfEMP1_minor_antibodies)
-        {
-            minor->JSerialize(root, helper);
-        }
-        root->EndArray();
-
-        root->Insert("m_active_PfEMP1_major_antibodies");
-        root->BeginArray();
-        for (auto major : m_active_PfEMP1_major_antibodies)
-        {
-            major->JSerialize(root, helper);
-        }
-        root->EndArray();
-
-        root->Insert("m_RBC", m_RBC);
-        root->Insert("m_RBCcapacity", m_RBCcapacity);
-        root->Insert("m_RBCproduction", m_RBCproduction);
-        root->Insert("m_inv_microliters_blood", m_inv_microliters_blood);
-        root->Insert("m_cytokines", m_cytokines);
-        root->Insert("m_ind_pyrogenic_threshold", m_ind_pyrogenic_threshold);
-        root->Insert("m_ind_fever_kill_rate", m_ind_fever_kill_rate);
-        root->Insert("m_cytokine_stimulation", m_cytokine_stimulation);
-        root->Insert("m_parasite_density", m_parasite_density);
-
-        root->Insert("m_antibodies_to_n_variations");
-        helper->JSerialize(m_antibodies_to_n_variations, root);
-        
-        root->Insert("m_max_fever_in_tstep", m_max_fever_in_tstep);
-        root->Insert("m_max_parasite_density_in_tstep", m_max_parasite_density_in_tstep);
-        root->Insert("severetype", (int) severetype);
-
-        root->Insert("cumulative_days_of_clinical_incident", cumulative_days_of_clinical_incident);
-        root->Insert("cumulative_days_of_severe_incident", cumulative_days_of_severe_incident);
-        root->Insert("cumulative_days_of_severe_anemia_incident", cumulative_days_of_severe_anemia_incident);
-        root->Insert("days_between_incidents", days_between_incidents);
-
-        root->Insert("SusceptibilityVector");
-        SusceptibilityVector::JSerialize(root, helper);
-
-        root->EndObject();
-    }
-
-    void SusceptibilityMalaria::JDeserialize( IJsonObjectAdapter* root, JSerializer* helper )
-    {
+        SusceptibilityVector::serialize(ar, obj);
+        SusceptibilityMalaria& susceptibility = *obj;
+// Boost serialiation didn't include this member.            ar.labelElement("m_antigenic_flag") & susceptibility.m_antigenic_flag;
+        ar.labelElement("m_maternal_antibody_strength") & susceptibility.m_maternal_antibody_strength;
+        ar.labelElement("m_CSP_antibody") & susceptibility.m_CSP_antibody;
+        ar.labelElement("m_active_MSP_antibodies") & susceptibility.m_active_MSP_antibodies;
+        ar.labelElement("m_active_PfEMP1_minor_antibodies") & susceptibility.m_active_PfEMP1_minor_antibodies;
+        ar.labelElement("m_active_PfEMP1_major_antibodies") & susceptibility.m_active_PfEMP1_major_antibodies;
+        ar.labelElement("m_RBC") & susceptibility.m_RBC;
+        ar.labelElement("m_RBCcapacity") & susceptibility.m_RBCcapacity;
+        ar.labelElement("m_RBCproduction") & susceptibility.m_RBCproduction;
+        ar.labelElement("m_inv_microliters_blood") & susceptibility.m_inv_microliters_blood;
+        ar.labelElement("m_cytokines") & susceptibility.m_cytokines;
+        ar.labelElement("m_ind_pyrogenic_threshold") & susceptibility.m_ind_pyrogenic_threshold;
+        ar.labelElement("m_ind_fever_kill_rate") & susceptibility.m_ind_fever_kill_rate;
+        ar.labelElement("m_cytokine_stimulation") & susceptibility.m_cytokine_stimulation;
+        ar.labelElement("m_parasite_density") & susceptibility.m_parasite_density;
+        ar.labelElement("m_antibodies_to_n_variations") & susceptibility.m_antibodies_to_n_variations;
+        ar.labelElement("m_max_fever_in_tstep") & susceptibility.m_max_fever_in_tstep;
+        ar.labelElement("m_max_parasite_density_in_tstep") & susceptibility.m_max_parasite_density_in_tstep;
+        ar.labelElement("severetype") & (uint32_t&)susceptibility.severetype;
+        ar.labelElement("cumulative_days_of_clinical_incident") & susceptibility.cumulative_days_of_clinical_incident;
+        ar.labelElement("cumulative_days_of_severe_incident") & susceptibility.cumulative_days_of_severe_incident;
+        ar.labelElement("cumulative_days_of_severe_anemia_incident") & susceptibility.cumulative_days_of_severe_anemia_incident;
+        ar.labelElement("days_between_incidents") & susceptibility.days_between_incidents;
     }
 }
-#endif
-
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::SusceptibilityMalaria)
-namespace Kernel {
-
-
-    template<class Archive>
-    void serialize(Archive & ar, SusceptibilityMalaria& sus, const unsigned int file_version )
-    {
-        static const char * _module = "SusceptibilityMalaria";
-        LOG_DEBUG("(De)serializing SusceptibilityMalaria\n");
-        //ar & sus.m_antigenic_flag;
-
-        ar & sus.m_maternal_antibody_strength;
-        ar & sus.m_CSP_antibody;
-        ar & sus.m_active_MSP_antibodies;
-        ar & sus.m_active_PfEMP1_minor_antibodies;
-        ar & sus.m_active_PfEMP1_major_antibodies;
-
-        ar & sus.m_RBC;
-        ar & sus.m_RBCcapacity;
-        ar & sus.m_RBCproduction;   // how many RBC's a person should have /120 (AVERAGE_RBC_LIFESPAN)
-        ar & sus.m_inv_microliters_blood; // ==/(age dependent estimate of blood volume)
-
-        ar & sus.m_cytokines;
-        ar & sus.m_ind_pyrogenic_threshold;
-        ar & sus.m_ind_fever_kill_rate;
-        ar & sus.m_cytokine_stimulation;
-        ar & sus.m_parasite_density;
-        ar & sus.m_antibodies_to_n_variations; // how many variations of each antigen type does an individual have antibodies to
-        ar & sus.m_max_fever_in_tstep; 
-        ar & sus.m_max_parasite_density_in_tstep;
-        ar & sus.severetype;
-
-        // state variables for whether the individual is in clinical disease, severe disease, or dead
-        ar & sus.cumulative_days_of_clinical_incident;
-        ar & sus.cumulative_days_of_severe_incident;
-        ar & sus.cumulative_days_of_severe_anemia_incident;
-        ar & sus.days_between_incidents;
-        ar & boost::serialization::base_object<SusceptibilityVector>(sus);
-    }
-}
-#endif

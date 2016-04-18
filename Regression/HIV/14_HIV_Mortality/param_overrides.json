@@ -1,5 +1,5 @@
 {
-    "Default_Config_Path": "defaults\\hiv_default_config.json", 
+    "Default_Config_Path": "defaults/hiv_default_config.json", 
     "parameters": {
         "alpha_____________SIMULATION___________": "",
         "Run_Number": 54,
@@ -58,6 +58,11 @@
 
         "alpha_____________DEMOGRAPHICS___________": "",
         "Base_Population_Scale_Factor": 0.002,
+        "Demographics_Filenames": [
+            "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json",
+            "../input/PFA_overlay.json",
+            "PFA_overlay_rates.json"
+        ], 
         "Enable_Nondisease_Mortality": 1,
 
         "alpha_____________INTRAHOST___________": "",
@@ -66,24 +71,9 @@
         "Male_To_Female_Relative_Infectivity_Multipliers": [ 5, 1.5 ],
 
         "alpha_____________TRANSMISSION___________": "",
-        "Condom_Usage_Probability_in_Transitory_Relationships_Early": 0.0125,
-        "Condom_Usage_Probability_in_Transitory_Relationships_Late": 0.40,
-        "Condom_Usage_Probability_in_Transitory_Relationships_Midyear": 2000,
-        "Condom_Usage_Probability_in_Transitory_Relationships_Rate": 1.5,
-        "Condom_Usage_Probability_in_Informal_Relationships_Early": 0.0125,
-        "Condom_Usage_Probability_in_Informal_Relationships_Late": 0.20,
-        "Condom_Usage_Probability_in_Informal_Relationships_Midyear": 2000,
-        "Condom_Usage_Probability_in_Informal_Relationships_Rate": 1.5,
-        "Condom_Usage_Probability_in_Marital_Relationships_Early": 0.000625,
-        "Condom_Usage_Probability_in_Marital_Relationships_Late": 0.10,
-        "Condom_Usage_Probability_in_Marital_Relationships_Midyear": 2003,
-        "Condom_Usage_Probability_in_Marital_Relationships_Rate": 1.5,
         "Maternal_Transmission_ART_Multiplier": 0.03,
 
         "alpha_____________NETWORK___________": "",
-        "Transitory_Formation_Rate_Heterosexual": 0.00108612763613653,
-        "Informal_Formation_Rate_Heterosexual": 0.000542348303960202,
-        "Marriage_Formation_Rate_Heterosexual": 0.000078272996166437,
 
         "STI_Network_Params_By_Property" :
         {
@@ -99,7 +89,6 @@
         },
 
         "alpha_____________REPORTING___________": "",
-        "Enable_Demographics_Reporting": 1,
         "Report_HIV_ART": 1,
         "Report_HIV_Mortality": 1,
         "Enable_Default_Reporting": 1,

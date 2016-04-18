@@ -5,15 +5,11 @@
         "Simulation_Duration": 14600,
         "Simulation_Timestep": 7,
         "Base_Population_Scale_Factor": 5e-4,
-        "Demographics_Filenames": ["SSA_Demographics_With_Risk_Group.json","pfa_overlay.json","pfa_overlay_risk_assortivity.json"],
+        "Demographics_Filenames": ["SSA_Demographics_With_Risk_Group.json","pfa_overlay.json","pfa_overlay_risk_assortivity.json","PFA_Add_Informal_Marital.json"],
         "Birth_Rate_Dependence": "INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR",
         "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER",
 
         "Report_Relationship_Start": 1,
-
-        "Transitory_Formation_Rate_Heterosexual": 0.0027397260,
-        "Informal_Formation_Rate_Heterosexual": 0.001369863,
-        "Marriage_Formation_Rate_Heterosexual": 0.0001826484,
 
         "Extra_Relational_Rate_Ratio_Male": 4,
         "Extra_Relational_Rate_Ratio_Female": 2,

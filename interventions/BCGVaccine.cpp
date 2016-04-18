@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -34,7 +34,9 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        return SimpleVaccine::Configure( inputJson );
+        bool ret = SimpleVaccine::Configure( inputJson );
+        vaccine_type = SimpleVaccineType::AcquisitionBlocking;
+        return ret;
     }
 
     BCGVaccine::BCGVaccine()
@@ -61,24 +63,20 @@ namespace Kernel
         {
             current_reducedacquire = 0.0;
             current_reducedtransmit = 0.0;
+            expired = true;
+            LOG_DEBUG("Vaccine did not take.\n");
         }
     }
-#endif
-}
 
-// Boo-hoo, would rather have in main serialization block.
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::BCGVaccine)
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, BCGVaccine& vacc, const unsigned int v)
+    REGISTER_SERIALIZABLE(BCGVaccine);
+
+    void BCGVaccine::serialize(IArchive& ar, BCGVaccine* obj)
     {
-        boost::serialization::void_cast_register<BCGVaccine, IDistributableIntervention>();
-        ar & vacc.vaccine_take_age_decay_rate;
-        ar & boost::serialization::base_object<SimpleVaccine>(vacc);
+        SimpleVaccine::serialize(ar, obj);
+        BCGVaccine& vaccine = *obj;
+        ar.labelElement("vaccine_take_age_decay_rate") & vaccine.vaccine_take_age_decay_rate;
     }
-}
-
 #endif
+}
 
 #endif // ENABLE_TB

@@ -1,5 +1,5 @@
 {
-    "Default_Config_Path":"defaults\\tb_default_config.json",
+    "Default_Config_Path":"defaults/tb_default_config.json",
     "parameters":{
         "CLIMATE":{
             "Climate_Model":"CLIMATE_OFF",
@@ -7,7 +7,7 @@
         },
         "DEMOGRAPHICS":{
             "Birth_Rate_Dependence":"FIXED_BIRTH_RATE",
-            "Demographics_Filename":"Namawala_2_nodes_demographics.compiled.json",
+            "Demographics_Filenames":["Namawala_2_nodes_demographics.compiled.json"],
             "Enable_Demographics_Reporting":0,
             "IMMUNITY":{
                 "Acquisition_Blocking_Immunity_Decay_Rate":0,
@@ -41,7 +41,7 @@
             },
             "Max_Individual_Infections":3
         },
-        "Default_Config_Path":"defaults\\tb_default_config.json",
+        "Default_Config_Path":"defaults/tb_default_config.json",
         "Enable_Mixing_Pools":0,
         "Individual_Mixing_Pool_Link_Update_Frequency":0,
         "MIGRATION":{

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,7 +11,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "HealthSeekingBehaviorUpdate.h"
 #include "Contexts.h"
 #include "Common.h"             // for INFINITE_TIME
-#include "InterventionEnums.h"  // for InterventionDurabilityProfile, ImmunoglobulinType, etc.
 #include "TBInterventionsContainer.h"  // for IHealthSeekingBehaviorEffectsUpdate
 
 
@@ -29,7 +28,7 @@ namespace Kernel
 
     HealthSeekingBehaviorUpdate::HealthSeekingBehaviorUpdate()
     :new_probability_of_seeking(0.0f)
-    , ihsbuea(NULL)
+    , ihsbuea(nullptr)
     {
         initSimTypes( 1, "TB_SIM" );
     }
@@ -55,7 +54,7 @@ namespace Kernel
         }
 
         // this intervention only works with TB Interventions Container, throw an error if you are not using that
-        ITBInterventionsContainer * itbivc = NULL;    
+        ITBInterventionsContainer * itbivc = nullptr;
         if (s_OK != context->QueryInterface(GET_IID(ITBInterventionsContainer), (void**)&itbivc)  )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "ITBInterventionsContainer", "IIndividualHumanInterventionsContext" );
@@ -67,7 +66,7 @@ namespace Kernel
     void HealthSeekingBehaviorUpdate::Update( float dt )
     {
         ihsbuea->UpdateHealthSeekingBehaviors( new_probability_of_seeking );
-        LOG_DEBUG("Update the HSB tendency\n");
+        LOG_DEBUG_F( "Update the HSB tendency with value %f\n", new_probability_of_seeking );
         expired = true;
     }
 
@@ -80,19 +79,13 @@ namespace Kernel
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHealthSeekingBehaviorUpdateEffectsApply", "IIndividualHumanContext" );
         }
     }
-
-
 }
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::HealthSeekingBehaviorUpdate)
-    namespace Kernel {
+#if 0
+namespace Kernel {
     template<class Archive>
     void serialize(Archive &ar, HealthSeekingBehaviorUpdate& bn, const unsigned int v)
     {
-        static const char * _module = "HealthSeekingBehaviorUpdate";
-        LOG_DEBUG("(De)serializing HealthSeekingBehaviorUpdate\n");
-
         ar & bn.new_probability_of_seeking;
         ar & boost::serialization::base_object<Kernel::BaseIntervention>(bn);
     }

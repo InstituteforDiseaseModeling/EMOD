@@ -16,7 +16,6 @@
                }
           }, 
           "DEMOGRAPHICS": {
-               "Demographics_Filename": "",
                "Demographics_Filenames": ["Namawala_single_node_demographics.compiled.json","Namawala_single_node_larval_habitat.json"]
           }, 
           "PRIMARY": {

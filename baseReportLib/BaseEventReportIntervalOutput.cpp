@@ -1,10 +1,10 @@
 
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -59,7 +59,11 @@ namespace Kernel
                 m_report_count++;
 
                 LOG_DEBUG("Timer has reached reporting interval.  Writing report...\n");
-                WriteOutput( currentTime );
+                Reduce();
+                if( EnvPtr->MPI.Rank == 0 )
+                {
+                    WriteOutput( currentTime );
+                }
 
                 LOG_DEBUG_F("Resetting %s reporting interval timer...\n", GetReportName().c_str());
                 m_interval_timer = 0 ;

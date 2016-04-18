@@ -5,6 +5,10 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="QuickStart|x64">
+      <Configuration>QuickStart</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
@@ -22,6 +26,12 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='QuickStart|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
@@ -31,6 +41,9 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='QuickStart|x64'" Label="PropertySheets">
     <Import Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
@@ -46,10 +59,14 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <PostBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</PostBuildEventUseInBuild>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='QuickStart|x64'">$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='QuickStart|x64'">$(Platform)\$(Configuration)\</IntDir>
     <PreBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     </PreBuildEventUseInBuild>
+    <PreBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='QuickStart|x64'" />
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='QuickStart|x64'" />
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PreBuildEvent>
@@ -74,8 +91,8 @@
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..\Dependencies\ComputeClusterPack\Include;c:\boost\boost_1_51_0;%(AdditionalIncludeDirectories);..\cajun\include;..\baseReportLib;..\utils\;..\campaign\;..\Eradication\;..\interventions\;..\rapidjson\include;..\rapidjson\modp;C:\python27\include;</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ENABLE_TB;WIN32;IDM_EXPORT;_DEBUG;_CONSOLE;_SCL_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions);_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Dependencies\ComputeClusterPack\Include;c:\boost\boost_1_51_0;%(AdditionalIncludeDirectories);..\cajun\include;..\baseReportLib;..\utils\;..\campaign\;..\Eradication\;..\interventions\;..\rapidjson\include;..\rapidjson\modp;..\snappy;C:\python27\include;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;ENABLE_PYTHON;ENABLE_PYTHON_FEVER;ENABLE_TB;WIN32;IDM_EXPORT;_DEBUG;_CONSOLE;_SCL_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions);_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -87,8 +104,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Dbghelp.lib;python27.lib;msmpi.lib;psapi.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Dependencies\ComputeClusterPack\Lib\amd64;c:\boost\boost_1_51_0\lib\x64;..\x64\Debug\;c:\python27\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Dbghelp.lib;python27.lib;msmpi.lib;psapi.lib;Ws2_32.lib;snappy.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Dependencies\ComputeClusterPack\Lib\amd64;..\x64\Debug\;c:\python27\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
@@ -105,6 +122,7 @@
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <AdditionalOptions>baseReportLib.lib campaign.lib cajun.lib utils.lib %(AdditionalOptions)</AdditionalOptions>
       <IgnoreSpecificDefaultLibraries>python27_d.lib</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>python27.dll</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
       <Command>copy /y $(SolutionDir)Eradication\$(Platform)\$(Configuration)\Eradication.exe  $(SolutionDir)$(Platform)\$(Configuration)
@@ -123,8 +141,8 @@
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\Dependencies\ComputeClusterPack\Include;c:\boost\boost_1_51_0;%(AdditionalIncludeDirectories);..\cajun\include;..\baseReportLib;..\campaign\;..\utils\;..\Eradication\;..\interventions\;..\rapidjson\include;..\rapidjson\modp;C:\Python27\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ENABLE_TB;WIN32;IDM_EXPORT;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Dependencies\ComputeClusterPack\Include;c:\boost\boost_1_51_0;%(AdditionalIncludeDirectories);..\cajun\include;..\baseReportLib;..\campaign\;..\utils\;..\Eradication\;..\interventions\;..\rapidjson\include;..\rapidjson\modp;..\snappy;C:\Python27\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;ENABLE_PYTHON;ENABLE_PYTHON_FEVER;ENABLE_TB;WIN32;IDM_EXPORT;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FloatingPointModel>Strict</FloatingPointModel>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -140,8 +158,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Dbghelp.lib;python27.lib;msmpi.lib;psapi.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Dependencies\ComputeClusterPack\Lib\amd64;c:\boost\boost_1_51_0\lib\x64;..\x64\Release\;c:\python27\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Dbghelp.lib;python27.lib;msmpi.lib;psapi.lib;ws2_32.lib;snappy.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Dependencies\ComputeClusterPack\Lib\amd64;..\x64\Release\;c:\python27\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <HeapReserveSize>100000000</HeapReserveSize>
@@ -157,6 +175,58 @@
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <AdditionalOptions>baseReportLib.lib campaign.lib cajun.lib utils.lib %(AdditionalOptions)</AdditionalOptions>
       <ShowProgress>LinkVerboseLib</ShowProgress>
+      <DelayLoadDLLs>python27.dll</DelayLoadDLLs>
+    </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>..\utils</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='QuickStart|x64'">
+    <PreBuildEvent>
+      <Message>
+      </Message>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>c:\boost\boost_1_51_0;%(AdditionalIncludeDirectories);..\cajun\include;..\baseReportLib;..\campaign\;..\utils\;..\Eradication\;..\interventions\;..\rapidjson\include;..\rapidjson\modp;..\snappy;C:\Python27\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DISABLE_MPI;BOOST_ALL_NO_LIB;ENABLE_PYTHON;ENABLE_PYTHON_FEVER;ENABLE_TB;WIN32;IDM_EXPORT;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FloatingPointModel>Strict</FloatingPointModel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <MinimalRebuild>false</MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>Dbghelp.lib;python27.lib;psapi.lib;ws2_32.lib;snappy.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\x64\QuickStart;c:\python27\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <HeapReserveSize>100000000</HeapReserveSize>
+      <HeapCommitSize>100000000</HeapCommitSize>
+      <StackReserveSize>100000000</StackReserveSize>
+      <StackCommitSize>100000000</StackCommitSize>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX64</TargetMachine>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <AdditionalOptions>baseReportLib.lib campaign.lib cajun.lib utils.lib %(AdditionalOptions)</AdditionalOptions>
+      <ShowProgress>LinkVerboseLib</ShowProgress>
+      <DelayLoadDLLs>python27.dll</DelayLoadDLLs>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..\utils</AdditionalIncludeDirectories>
@@ -169,19 +239,23 @@
     <ClCompile Include="..\interventions\AntiMalarialDrug.cpp" />
     <ClCompile Include="..\interventions\AntiTBDrug.cpp" />
     <ClCompile Include="..\interventions\AntiTBPropertyDependentDrug.cpp" />
-    <ClCompile Include="..\interventions\ArtBasic.cpp" />
+    <ClCompile Include="..\interventions\ARTBasic.cpp" />
     <ClCompile Include="..\interventions\ARTDropout.cpp" />
     <ClCompile Include="..\interventions\Bednet.cpp" />
     <ClCompile Include="..\interventions\BCGVaccine.cpp" />
     <ClCompile Include="..\interventions\BirthTriggeredIV.cpp" />
     <ClCompile Include="..\interventions\BroadcastEvent.cpp" />
+    <ClCompile Include="..\interventions\BroadcastEventToOtherNodes.cpp" />
     <ClCompile Include="..\interventions\CalendarIV.cpp" />
     <ClCompile Include="..\interventions\CD4Diagnostic.cpp" />
     <ClCompile Include="..\interventions\HIVARTStagingAbstract.cpp" />
+    <ClCompile Include="..\interventions\MalariaDiagnostic.cpp" />
+    <ClCompile Include="..\interventions\MigrateFamily.cpp" />
     <ClCompile Include="..\interventions\STIIsPostDebut.cpp" />
     <ClCompile Include="..\interventions\HIVMuxer.cpp" />
     <ClCompile Include="..\interventions\HIVPreARTNotification.cpp" />
     <ClCompile Include="..\interventions\HIVSetCascadeState.cpp" />
+    <ClCompile Include="..\interventions\MigrateIndividuals.cpp" />
     <ClCompile Include="..\interventions\WaningEffectBox.cpp" />
     <ClCompile Include="..\interventions\WaningEffectBoxExponential.cpp" />
     <ClCompile Include="..\interventions\WaningEffectExponential.cpp" />
@@ -212,6 +286,7 @@
     <ClCompile Include="..\interventions\MaleCircumcision.cpp" />
     <ClCompile Include="..\interventions\MosquitoRelease.cpp" />
     <ClCompile Include="..\interventions\ModifyStiCoInfectionStatus.cpp" />
+    <ClCompile Include="..\interventions\MultiEffectVaccine.cpp" />
     <ClCompile Include="..\interventions\MultiInterventionDistributor.cpp" />
     <ClCompile Include="..\interventions\NodeLevelHealthTriggeredIV.cpp" />
     <ClCompile Include="..\interventions\NodeLevelHealthTriggeredIVScaleUpSwitch.cpp" />
@@ -222,7 +297,6 @@
     <ClCompile Include="..\interventions\RTSSVaccine.cpp" />
     <ClCompile Include="..\interventions\ScaleLarvalHabitat.cpp" />
     <ClCompile Include="..\interventions\SimpleVaccine.cpp" />
-    <ClCompile Include="..\interventions\SimpleImmunoglobulin.cpp" />
     <ClCompile Include="..\interventions\SmearDiagnostics.cpp" />
     <ClCompile Include="..\interventions\STIBarrier.cpp" />
     <ClCompile Include="..\interventions\StiCoInfectionDiagnostic.cpp" />
@@ -233,19 +307,37 @@
     <ClCompile Include="AssortivityHIV.cpp" />
     <ClCompile Include="BehaviorPfa.cpp" />
     <ClCompile Include="BinnedReportMalaria.cpp" />
+    <ClCompile Include="BinnedReportPy.cpp" />
     <ClCompile Include="BinnedReportTB.cpp" />
+    <ClCompile Include="CalendarEventCoordinator.cpp" />
     <ClCompile Include="CoverageByNodeEventCoordinator.cpp" />
+    <ClCompile Include="DemographicRestrictions.cpp" />
+    <ClCompile Include="EventsForOtherNodes.cpp" />
+    <ClCompile Include="EventTrigger.cpp" />
     <ClCompile Include="GroupEventCoordinator.cpp" />
     <ClCompile Include="HIVRelationshipStartReporter.cpp" />
     <ClCompile Include="HIVReportEventRecorder.cpp" />
     <ClCompile Include="HIVTransmissionReporter.cpp" />
     <ClCompile Include="IdmInitialize.cpp" />
+    <ClCompile Include="IIndividualHuman.cpp" />
+    <ClCompile Include="IInfection.cpp" />
+    <ClCompile Include="IMigrationInfo.cpp" />
+    <ClCompile Include="ISusceptibilityContext.cpp" />
     <ClCompile Include="JsonObjectDemog.cpp" />
+    <ClCompile Include="LoadBalanceScheme.cpp" />
     <ClCompile Include="MalariaBarcode.cpp" />
+    <ClCompile Include="MigrationInfoVector.cpp" />
+    <ClCompile Include="MpiDataExchanger.cpp" />
     <ClCompile Include="MultiInterventionEventCoordinator.cpp" />
     <ClCompile Include="MultiRouteTransmissionGroups.cpp" />
     <ClCompile Include="NodeEventCoordinator.cpp" />
+    <ClCompile Include="NodeInfo.cpp" />
+    <ClCompile Include="NodeInfoSTI.cpp" />
+    <ClCompile Include="NodeInfoVector.cpp" />
     <ClCompile Include="PropertyReportTB.cpp" />
+    <ClCompile Include="PythonSupport.cpp" />
+    <ClCompile Include="ReferenceTrackingEventCoordinator.cpp" />
+    <ClCompile Include="RelationshipParameters.cpp" />
     <ClCompile Include="ReportEventRecorder.cpp" />
     <ClCompile Include="ReportHIVART.cpp" />
     <ClCompile Include="ReportHIVByAgeAndGender.cpp" />
@@ -254,6 +346,7 @@
     <ClCompile Include="Properties.cpp" />
     <ClCompile Include="PropertyReport.cpp" />
     <ClCompile Include="CampaignEvent.cpp" />
+    <ClCompile Include="CampaignEventByYear.cpp" />
     <ClCompile Include="Climate.cpp" />
     <ClCompile Include="ClimateByData.cpp" />
     <ClCompile Include="ClimateConstant.cpp" />
@@ -266,6 +359,7 @@
     <ClCompile Include="FerrandAgeDependentDistribution.cpp" />
     <ClCompile Include="FlowControllerFactory.cpp" />
     <ClCompile Include="FlowControllerImpl.cpp" />
+    
     <ClCompile Include="HIVInterventionsContainer.cpp" />
     <ClCompile Include="STINetworkParameters.cpp" />
     <ClCompile Include="StiObjectFactory.cpp" />
@@ -278,6 +372,7 @@
     <ClCompile Include="IndividualAirborne.cpp" />
     <ClCompile Include="IndividualHIV.cpp" />
     <ClCompile Include="IndividualMalaria.cpp" />
+    <ClCompile Include="IndividualPy.cpp" />
     <ClCompile Include="IndividualSTI.cpp" />
     <ClCompile Include="IndividualTB.cpp" />
     <ClCompile Include="IndividualVector.cpp" />
@@ -285,6 +380,7 @@
     <ClCompile Include="InfectionAirborne.cpp" />
     <ClCompile Include="InfectionHIV.cpp" />
     <ClCompile Include="InfectionMalaria.cpp" />
+    <ClCompile Include="InfectionPy.cpp" />
     <ClCompile Include="InfectionSTI.cpp" />
     <ClCompile Include="InfectionTB.cpp" />
     <ClCompile Include="InfectionVector.cpp" />
@@ -301,6 +397,7 @@
     <ClCompile Include="NodeHIV.cpp" />
     <ClCompile Include="NodeMalaria.cpp" />
     <ClCompile Include="NodeMalariaEventContext.cpp" />
+    <ClCompile Include="NodePy.cpp" />
     <ClCompile Include="NodeRankMap.cpp" />
     <ClCompile Include="NodeSTI.cpp" />
     <ClCompile Include="NodeTB.cpp" />
@@ -311,6 +408,7 @@
     <ClCompile Include="PairFormationStatsFactory.cpp" />
     <ClCompile Include="PairFormationStatsImpl.cpp" />
     <ClCompile Include="PfaFactory.cpp" />
+    <ClCompile Include="PyInterventionsContainer.cpp" />
     <ClCompile Include="RateTableFactory.cpp" />
     <ClCompile Include="RateTableImpl.cpp" />
     <ClCompile Include="Relationship.cpp" />
@@ -323,6 +421,7 @@
     <ClCompile Include="ReportHIV.cpp" />
     <ClCompile Include="ReportHIVMortalityEvents.cpp" />
     <ClCompile Include="ReportMalaria.cpp" />
+    <ClCompile Include="ReportPy.cpp" />
     <ClCompile Include="ReportSTI.cpp" />
     <ClCompile Include="ReportTB.cpp" />
     <ClCompile Include="ReportVector.cpp" />
@@ -334,6 +433,7 @@
     <ClCompile Include="SimulationFactory.cpp" />
     <ClCompile Include="SimulationHIV.cpp" />
     <ClCompile Include="SimulationMalaria.cpp" />
+    <ClCompile Include="SimulationPy.cpp" />
     <ClCompile Include="SimulationSTI.cpp" />
     <ClCompile Include="SimulationTB.cpp" />
     <ClCompile Include="SimulationVector.cpp" />
@@ -341,6 +441,7 @@
     <ClCompile Include="SocietyImpl.cpp" />
     <ClCompile Include="SpatialReport.cpp" />
     <ClCompile Include="SpatialReportMalaria.cpp" />
+    <ClCompile Include="SpatialReportPy.cpp" />
     <ClCompile Include="SpatialReportTB.cpp" />
     <ClCompile Include="SpatialReportVector.cpp" />
     <ClCompile Include="StandardEventCoordinator.cpp" />
@@ -352,12 +453,14 @@
     <ClCompile Include="SusceptibilityAirborne.cpp" />
     <ClCompile Include="SusceptibilityHIV.cpp" />
     <ClCompile Include="SusceptibilityMalaria.cpp" />
+    <ClCompile Include="SusceptibilityPy.cpp" />
     <ClCompile Include="SusceptibilitySTI.cpp" />
     <ClCompile Include="SusceptibilityTB.cpp" />
     <ClCompile Include="SusceptibilityVector.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='QuickStart|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TBDrugTypeParameters.cpp" />
     <ClCompile Include="TBInterventionsContainer.cpp" />
@@ -407,12 +510,16 @@
     <ClInclude Include="..\interventions\Bednet.h" />
     <ClInclude Include="..\interventions\BirthTriggeredIV.h" />
     <ClInclude Include="..\interventions\BroadcastEvent.h" />
+    <ClInclude Include="..\interventions\BroadcastEventToOtherNodes.h" />
     <ClInclude Include="..\interventions\CalendarIV.h" />
     <ClInclude Include="..\interventions\CD4Diagnostic.h" />
     <ClInclude Include="..\interventions\DelayedIntervention.h" />
     <ClInclude Include="..\interventions\HIVARTStagingAbstract.h" />
     <ClInclude Include="..\interventions\HIVARTStagingByCD4Diagnostic.h" />
     <ClInclude Include="..\interventions\HIVARTStagingCD4AgnosticDiagnostic.h" />
+    <ClInclude Include="..\interventions\IWaningEffect.h" />
+    <ClInclude Include="..\interventions\MalariaDiagnostic.h" />
+    <ClInclude Include="..\interventions\MigrateFamily.h" />
     <ClInclude Include="..\interventions\STIIsPostDebut.h" />
     <ClInclude Include="..\interventions\HIVDelayedIntervention.h" />
     <ClInclude Include="..\interventions\Diagnostics.h" />
@@ -440,8 +547,10 @@
     <ClInclude Include="..\interventions\Ivermectin.h" />
     <ClInclude Include="..\interventions\MalariaChallenge.h" />
     <ClInclude Include="..\interventions\MaleCircumcision.h" />
+    <ClInclude Include="..\interventions\MigrateIndividuals.h" />
     <ClInclude Include="..\interventions\ModifyStiCoInfectionStatus.h" />
     <ClInclude Include="..\interventions\MosquitoRelease.h" />
+    <ClInclude Include="..\interventions\MultiEffectVaccine.h" />
     <ClInclude Include="..\interventions\MultiInterventionDistributor.h" />
     <ClInclude Include="..\interventions\NodeLevelHealthTriggeredIV.h" />
     <ClInclude Include="..\interventions\NodeLevelHealthTriggeredIVScaleUpSwitch.h" />
@@ -452,7 +561,6 @@
     <ClInclude Include="..\interventions\ResistanceDiagnostics.h" />
     <ClInclude Include="..\interventions\RTSSVaccine.h" />
     <ClInclude Include="..\interventions\ScaleLarvalHabitat.h" />
-    <ClInclude Include="..\interventions\SimpleImmunoglobulin.h" />
     <ClInclude Include="..\interventions\stdafx.h" />
     <ClInclude Include="..\interventions\SmearDiagnostics.h" />
     <ClInclude Include="..\interventions\StiCoInfectionDiagnostic.h" />
@@ -460,20 +568,31 @@
     <ClInclude Include="..\interventions\VectorControlNodeTargeted.h" />
     <ClInclude Include="..\interventions\WaningEffect.h" />
     <ClInclude Include="..\rapidjson\include\rapidjson\internal\pow10.h" />
+    <ClInclude Include="..\rapidjson\include\rapidjson\rapidjson.h" />
+    <ClInclude Include="..\utils\BinaryArchiveReader.h" />
+    <ClInclude Include="..\utils\BinaryArchiveWriter.h" />
     <ClInclude Include="..\utils\Common.h" />
     <ClInclude Include="..\utils\Configuration.h" />
     <ClInclude Include="..\utils\ConfigurationImpl.h" />
     <ClInclude Include="..\utils\Configure.h" />
     <ClInclude Include="..\utils\Debug.h" />
+    <ClInclude Include="..\utils\DurationDistribution.h" />
     <ClInclude Include="..\utils\EnumSupport.h" />
     <ClInclude Include="..\utils\Environment.h" />
     <ClInclude Include="..\utils\Exceptions.h" />
     <ClInclude Include="..\utils\FactorySupport.h" />
+    <ClInclude Include="..\utils\FileSystem.h" />
+    <ClInclude Include="..\utils\IArchive.h" />
     <ClInclude Include="..\utils\IdmDateTime.h" />
     <ClInclude Include="..\utils\IdmString.h" />
     <ClInclude Include="..\utils\InterpolatedValueMap.h" />
+    <ClInclude Include="..\utils\ISerializable.h" />
     <ClInclude Include="..\utils\ISupports.h" />
+    <ClInclude Include="..\utils\JsonFullReader.h" />
+    <ClInclude Include="..\utils\JsonFullWriter.h" />
     <ClInclude Include="..\utils\JsonObject.h" />
+    <ClInclude Include="..\utils\JsonRawReader.h" />
+    <ClInclude Include="..\utils\JsonRawWriter.h" />
     <ClInclude Include="..\utils\Log.h" />
     <ClInclude Include="..\utils\MathFunctions.h" />
     <ClInclude Include="..\utils\Profile.h" />
@@ -481,8 +600,8 @@
     <ClInclude Include="..\utils\ProgVersion.h" />
     <ClInclude Include="..\utils\RANDOM.h" />
     <ClInclude Include="..\utils\RapidJsonImpl.h" />
+    <ClInclude Include="..\utils\Serialization.h" />
     <ClInclude Include="..\utils\Serializer.h" />
-    <ClInclude Include="..\utils\SimpleTypemapRegistration.h" />
     <ClInclude Include="..\utils\StatusReporter.h" />
     <ClInclude Include="..\utils\stdafx.h" />
     <ClInclude Include="..\utils\Sugar.h" />
@@ -493,6 +612,10 @@
     <ClInclude Include="AssortivityHIV.h" />
     <ClInclude Include="BinnedReportTB.h" />
     <ClInclude Include="..\utils\BoostLibWrapper.h" />
+    <ClInclude Include="CalendarEventCoordinator.h" />
+    <ClInclude Include="DemographicRestrictions.h" />
+    <ClInclude Include="EventsForOtherNodes.h" />
+    <ClInclude Include="EventTrigger.h" />
     <ClInclude Include="FerrandAgeDependentDistribution.h" />
     <ClInclude Include="HIVEnums.h" />
     <ClInclude Include="HivObjectFactory.h" />
@@ -502,19 +625,37 @@
     <ClInclude Include="IAssortivity.h" />
     <ClInclude Include="IHIVInterventionsContainer.h" />
     <ClInclude Include="IIndividualHumanHIV.h" />
+    <ClInclude Include="IInfection.h" />
     <ClInclude Include="IInfectionHIV.h" />
+    <ClInclude Include="IMigrationInfo.h" />
+    <ClInclude Include="IMigrationInfoVector.h" />
     <ClInclude Include="INodeContext.h" />
     <ClInclude Include="INodeHIV.h" />
+    <ClInclude Include="INodeInfo.h" />
     <ClInclude Include="INodeSTI.h" />
     <ClInclude Include="IntranodeTransmissionTypes.h" />
     <ClInclude Include="IRelationshipManager.h" />
+    <ClInclude Include="IRelationshipParameters.h" />
+    <ClInclude Include="IIdGeneratorSTI.h" />
     <ClInclude Include="ISTIInterventionsContainer.h" />
+    <ClInclude Include="ISTISimulationContext.h" />
+    <ClInclude Include="ISusceptibilityContext.h" />
+    <ClInclude Include="IVectorMigrationReporting.h" />
     <ClInclude Include="JsonObjectDemog.h" />
+    <ClInclude Include="LoadBalanceScheme.h" />
     <ClInclude Include="MalariaBarcode.h" />
+    <ClInclude Include="MigrationInfoVector.h" />
+    <ClInclude Include="MpiDataExchanger.h" />
     <ClInclude Include="NoCrtWarnings.h" />
+    <ClInclude Include="NodeInfo.h" />
+    <ClInclude Include="NodeInfoSTI.h" />
+    <ClInclude Include="NodeInfoVector.h" />
     <ClInclude Include="PropertyReportTB.h" />
+    <ClInclude Include="PythonSupport.h" />
+    <ClInclude Include="ReferenceTrackingEventCoordinator.h" />
     <ClInclude Include="RelationshipManager.h" />
     <ClInclude Include="RelationshipManagerFactory.h" />
+    <ClInclude Include="RelationshipParameters.h" />
     <ClInclude Include="RelationshipReporting.h" />
     <ClInclude Include="ReportEventRecorder.h" />
     <ClInclude Include="ReportHIVART.h" />
@@ -524,7 +665,9 @@
     <ClInclude Include="STIEventCoordinator.h" />
     <ClInclude Include="BehaviorPfa.h" />
     <ClInclude Include="BinnedReportMalaria.h" />
+    <ClInclude Include="BinnedReportPy.h" />
     <ClInclude Include="CampaignEvent.h" />
+    <ClInclude Include="CampaignEventByYear.h" />
     <ClInclude Include="Climate.h" />
     <ClInclude Include="ClimateByData.h" />
     <ClInclude Include="ClimateConstant.h" />
@@ -538,6 +681,7 @@
     <ClInclude Include="DllLoader.h" />
     <ClInclude Include="FlowControllerFactory.h" />
     <ClInclude Include="FlowControllerImpl.h" />
+    
     <ClInclude Include="GroupEventCoordinator.h" />
     <ClInclude Include="HIVInterventionsContainer.h" />
     <ClInclude Include="IdmInitialize.h" />
@@ -562,12 +706,14 @@
     <ClInclude Include="IndividualEventContext.h" />
     <ClInclude Include="IndividualHIV.h" />
     <ClInclude Include="IndividualMalaria.h" />
+    <ClInclude Include="IndividualPy.h" />
     <ClInclude Include="IndividualSTI.h" />
     <ClInclude Include="IndividualTB.h" />
     <ClInclude Include="IndividualVector.h" />
     <ClInclude Include="Infection.h" />
     <ClInclude Include="InfectionAirborne.h" />
     <ClInclude Include="InfectionMalaria.h" />
+    <ClInclude Include="InfectionPy.h" />
     <ClInclude Include="InfectionSTI.h" />
     <ClInclude Include="InfectionTB.h" />
     <ClInclude Include="InfectionVector.h" />
@@ -594,6 +740,7 @@
     <ClInclude Include="NodeHIV.h" />
     <ClInclude Include="NodeMalaria.h" />
     <ClInclude Include="NodeMalariaEventContext.h" />
+    <ClInclude Include="NodePy.h" />
     <ClInclude Include="NodeRankMap.h" />
     <ClInclude Include="NodeSTI.h" />
     <ClInclude Include="NodeTB.h" />
@@ -604,6 +751,7 @@
     <ClInclude Include="PairFormationStatsFactory.h" />
     <ClInclude Include="PairFormationStatsImpl.h" />
     <ClInclude Include="PfaFactory.h" />
+    <ClInclude Include="PyInterventionsContainer.h" />
     <ClInclude Include="Properties.h" />
     <ClInclude Include="RateTableFactory.h" />
     <ClInclude Include="RateTableImpl.h" />
@@ -614,6 +762,7 @@
     <ClInclude Include="ReportHIV.h" />
     <ClInclude Include="ReportHIVMortalityEvents.h" />
     <ClInclude Include="ReportMalaria.h" />
+    <ClInclude Include="ReportPy.h" />
     <ClInclude Include="ReportSTI.h" />
     <ClInclude Include="ReportTB.h" />
     <ClInclude Include="ReportVector.h" />
@@ -626,6 +775,7 @@
     <ClInclude Include="SimulationFactory.h" />
     <ClInclude Include="SimulationHIV.h" />
     <ClInclude Include="SimulationMalaria.h" />
+    <ClInclude Include="SimulationPy.h" />
     <ClInclude Include="SimulationSTI.h" />
     <ClInclude Include="SimulationTB.h" />
     <ClInclude Include="SimulationVector.h" />
@@ -633,6 +783,7 @@
     <ClInclude Include="SocietyImpl.h" />
     <ClInclude Include="SpatialReport.h" />
     <ClInclude Include="SpatialReportMalaria.h" />
+    <ClInclude Include="SpatialReportPy.h" />
     <ClInclude Include="SpatialReportTB.h" />
     <ClInclude Include="SpatialReportVector.h" />
     <ClInclude Include="StandardEventCoordinator.h" />
@@ -650,6 +801,7 @@
     <ClInclude Include="SusceptibilityAirborne.h" />
     <ClInclude Include="SusceptibilityHIV.h" />
     <ClInclude Include="SusceptibilityMalaria.h" />
+    <ClInclude Include="SusceptibilityPy.h" />
     <ClInclude Include="SusceptibilitySTI.h" />
     <ClInclude Include="SusceptibilityTB.h" />
     <ClInclude Include="SusceptibilityVector.h" />

@@ -4,7 +4,7 @@
         "Config_Name": "01I_Coital_Dilution",
 
         "Simulation_Duration": 730,
-        "Demographics_Filenames": ["uniform_demographics.json","pfa_simple.json"],
+        "Demographics_Filenames": ["uniform_demographics.json","pfa_simple.json","PFA_overlay_rates.json"],
         "Base_Population_Scale_Factor": 0.002, 
         "Enable_Vital_Dynamics": 0,
 
@@ -14,13 +14,6 @@
         "Coital_Dilution_Factor_4_Plus_Partners": 0.25, 
 
         "Report_Coital_Acts": 1, 
-
-        "Transitory_Formation_Rate_Heterosexual": 1,
-        "Informal_Formation_Rate_Heterosexual": 0,
-        "Marriage_Formation_Rate_Heterosexual": 0,
-
-        "Relationships_Transitory_Weibull_Heterogeneity": 0,
-        "Relationships_Transitory_Weibull_Scale": 100,
 
         "Sexual_Debut_Age_Female_Weibull_Heterogeneity": 0,
         "Sexual_Debut_Age_Female_Weibull_Scale": 0,

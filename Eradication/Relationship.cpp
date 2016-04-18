@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -14,10 +14,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Types.h"
 #include "SimulationConfig.h"
 #include "MathFunctions.h"
-#include "Node.h"
-#include "Individual.h"
+#include "RANDOM.h"
+#include "INodeContext.h"
 #include "STIInterventionsContainer.h" // for ISTIBarrierConsumer (which should be in ISTIBarrierConsumer.h) TODO
 #include "IndividualSTI.h"
+#include "ISociety.h"
 
 #include <map>
 #include <ctime>
@@ -40,8 +41,6 @@ howlong(
 
 namespace Kernel {
 
-    unsigned long int Relationship::counter = 1;
-
     // static
     bool alreadyInRelationship(
         IIndividualHumanSTI * pGuy,
@@ -60,72 +59,198 @@ namespace Kernel {
         return false;
     }
 
-#define MALE_PARTNER_ID()             ( male_partner ? male_partner->GetSuid() : absent_male_partner_id )
-#define FEMALE_PARTNER_ID()                ( female_partner    ? female_partner->GetSuid()    : absent_female_partner_id )
-#define PARTNERID( individual)  ( GetPartner( individual ) ? GetPartner( individual )->GetSuid() : suids::nil_suid() )
+#define MALE_PARTNER_ID()       ( male_partner             ? male_partner->GetSuid()             : absent_male_partner_id   )
+#define FEMALE_PARTNER_ID()     ( female_partner           ? female_partner->GetSuid()           : absent_female_partner_id )
+#define PARTNERID( individual)  ( GetPartner( individual ) ? GetPartner( individual )->GetSuid() : suids::nil_suid()        )
 
-    Relationship::Relationship( IIndividualHumanSTI * male_partnerIn, IIndividualHumanSTI * female_partnerIn, RelationshipType::Enum type )
-        : male_partner(male_partnerIn)
+    BEGIN_QUERY_INTERFACE_BODY(Relationship)
+        HANDLE_INTERFACE(IRelationship)
+        HANDLE_ISUPPORTS_VIA(IRelationship)
+    END_QUERY_INTERFACE_BODY(Relationship)
+
+
+    Relationship::Relationship()
+        : IRelationship()
+        , _suid(suids::nil_suid())
+        , state( RelationshipState::NORMAL )
+        , previous_state( RelationshipState::NORMAL )
+        , relationship_type( RelationshipType::TRANSITORY )
+        , termination_reason( RelationshipTerminationReason::NOT_TERMINATING )
+        , p_rel_params( nullptr )
+        , male_partner(nullptr)
+        , female_partner(nullptr)
+        , absent_male_partner_id(suids::nil_suid())
+        , absent_female_partner_id(suids::nil_suid())
+        , rel_timer(0)
+        , rel_duration(0)
+        , start_time(0)
+        , scheduled_end_time(0)
+        , propertyKey()
+        , propertyName()
+        , original_node_id(0)
+        , act_prob_vec()
+        , using_condom(false)
+        , relMan(nullptr)
+        , total_coital_acts(0)
+        , has_migrated(false)
+    {
+    }
+
+    Relationship::Relationship( const suids::suid& rRelId,
+                                IRelationshipManager* pRelMan,
+                                IRelationshipParameters* pParams,
+                                IIndividualHumanSTI * male_partnerIn, 
+                                IIndividualHumanSTI * female_partnerIn )
+        : IRelationship()
+        , _suid(rRelId)
+        , state( RelationshipState::NORMAL )
+        , previous_state( RelationshipState::NORMAL )
+        , relationship_type( pParams->GetType() )
+        , termination_reason( RelationshipTerminationReason::NOT_TERMINATING )
+        , p_rel_params( pParams )
+        , male_partner(male_partnerIn)
         , female_partner(female_partnerIn)
         , absent_male_partner_id(suids::nil_suid())
         , absent_female_partner_id(suids::nil_suid())
-        , _suid(suids::nil_suid())
-        , relationship_type(type)
-        , original_node_id(suids::nil_suid())
-        , rel_duration(0)
         , rel_timer(0)
+        , rel_duration(0)
         , start_time(0)
         , scheduled_end_time(0)
+        , propertyKey()
+        , propertyName()
+        , original_node_id(0)
+        , act_prob_vec()
         , using_condom(false)
+        , relMan(pRelMan)
+        , total_coital_acts(0)
+        , has_migrated(false)
     {
-        original_node_id = dynamic_cast<IIndividualHuman*>(male_partner)->GetParent()->GetSuid();
-        _id = counter++;
-        LOG_DEBUG_F( "%s: Creating relationship %d between %d and %d\n", __FUNCTION__, _id, MALE_PARTNER_ID().data, FEMALE_PARTNER_ID().data );
-        //LogRelationship( _id, MALE_PARTNER_ID(), FEMALE_PARTNER_ID(), relationship_type );
+        release_assert( male_partner   );
+        release_assert( female_partner );
+
+        LOG_DEBUG_F( "%s: Creating relationship %d between %d and %d\n", __FUNCTION__, _suid.data, MALE_PARTNER_ID().data, FEMALE_PARTNER_ID().data );
+        //LogRelationship( _id, MALE_PARTNER_ID(), FEMALE_PARTNER_ID(), p_rel_params->GetType() );
+
+        rel_timer = DAYSPERYEAR * Environment::getInstance()->RNG->Weibull2( pParams->GetDurationWeibullScale(),
+                                                                             pParams->GetDurationWeibullHeterogeneity() );
+
+        IIndividualHuman* individual = nullptr;
+        if( male_partnerIn->QueryInterface(GET_IID(IIndividualHuman), (void**)&individual) != s_OK )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "male_partnerIn", "IIndividualHuman", "IIndividualHumanSTI" );
+        }
+
+        start_time = float(individual->GetParent()->GetTime().time);
+        scheduled_end_time = start_time + rel_timer;
+
+        original_node_id = individual->GetParent()->GetExternalID();
+
+        clock_t init = clock();
+        // TBD: Get dynamic prop name from SetSpouse, for now duplicate.
+        std::ostringstream dynamicPropertyName;
+        dynamicPropertyName << _suid.data;
+        propertyName = dynamicPropertyName.str();
+
+        LOG_DEBUG_F( "%s: adding property [%s]:%s\n", __FUNCTION__, "Relationship", propertyName.c_str() );
+
+        male_partner->AddRelationship( this );
+        female_partner->AddRelationship( this );
+
+        howlong( init, "R::Init" );
     }
 
     Relationship::~Relationship()
     {
-        LOG_INFO_F( "(EEL) relationship %d between %d and %d just ended.\n", GetId(), MALE_PARTNER_ID().data, FEMALE_PARTNER_ID().data );
-        // Might be interesting to track how often discordant relationships end discordantly, but 
-        // not obvious how best to measure and report that.
-        /*bool bPart1Infected = ( male_partner && male_partner->IsInfected() );
-        bool bPart2Infected = ( female_partner && female_partner->IsInfected() );
-        if( bPart1Infected != bPart2Infected )
-        {
-            std::cout << "Discordant relationship ended!" << std::endl;
-        }*/
+        LOG_INFO_F( "(EEL) relationship %d between %d and %d just ended.\n", GetSuid().data, MALE_PARTNER_ID().data, FEMALE_PARTNER_ID().data );
         // ----------------------------------------------------------------------------------
         // --- 5-20-2015 DMB I commented this out because I'm also not null'ing the pointers
         // --- to the partners.  If the partner is being deleted and we try to access their
         // --- id, bad things happen.
         // ----------------------------------------------------------------------------------
-        //LogRelationship( _id | 0x80000000, MALE_PARTNER_ID(), FEMALE_PARTNER_ID(), relationship_type );
+        //LogRelationship( _id | 0x80000000, MALE_PARTNER_ID(), FEMALE_PARTNER_ID(), p_rel_params->GetType() );
+
+        // ------------------------------------------------------
+        // --- Do not own p_rel_params or relMan so don't delete
+        // ------------------------------------------------------
     }
 
-    void
-    Relationship::Initialize( IRelationshipManager* manager )
+    RelationshipState::Enum Relationship::GetState() const
     {
-        LOG_DEBUG_F( "%s()\n", __FUNCTION__);
-        // TBD: Get dynamic prop name from SetSpouse, for now duplicate.
-        relMan = manager;
-        clock_t init = clock();
-        std::ostringstream dynamicPropertyName;
-        dynamicPropertyName << _id;
-        propertyName = dynamicPropertyName.str();
-
-        LOG_DEBUG_F( "%s: adding property [%s]:%s\n", __FUNCTION__, "Relationship", propertyName.c_str() );
-
-        notifyIndividuals();
-
-        howlong( init, "R::Init" );
+        return state;
     }
 
-    void
-    Relationship::notifyIndividuals()
+    RelationshipState::Enum Relationship::GetPreviousState() const
     {
-        male_partner->AddRelationship( this );
-        female_partner->AddRelationship( this );
+        return previous_state;
+    }
+
+    RelationshipMigrationAction::Enum Relationship::GetMigrationAction( RANDOMBASE* prng ) const
+    {
+        if( state == RelationshipState::PAUSED )
+        {
+            return RelationshipMigrationAction::PAUSE;
+        }
+        else if( state == RelationshipState::MIGRATING )
+        {
+            return RelationshipMigrationAction::MIGRATE;
+        }
+        else if( state == RelationshipState::TERMINATED )
+        {
+            std::ostringstream msg;
+            msg << "Should not be trying to get a migration action when the relationship has been terminated. rel_id=" << GetSuid().data ;
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+        }
+        else
+        {
+            release_assert( state == RelationshipState::NORMAL );
+
+            const std::vector<RelationshipMigrationAction::Enum>& r_actions = p_rel_params->GetMigrationActions();
+
+            if( r_actions.size() == 1 )
+            {
+                return r_actions[0];
+            }
+            else
+            {
+                const std::vector<float>& r_cdf = p_rel_params->GetMigrationActionsCDF();
+                release_assert( r_actions.size() == r_cdf.size() );
+
+                float ran = prng->e();
+                for( int i = 0 ; i < r_cdf.size() ; i++)
+                {
+                    if( r_cdf[i] >= ran )
+                    {
+                        return r_actions[i];
+                    }
+                }
+                std::ostringstream msg;
+                msg << "Should have selected an action.  Is the last value not 1.0? ran=" << ran << " last_value=" << r_cdf[ r_cdf.size()-1 ] ;
+                throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            }
+        }
+    }
+
+    RelationshipTerminationReason::Enum Relationship::GetTerminationReason() const
+    {
+        return termination_reason;
+    }
+
+    void Relationship::SetManager( IRelationshipManager* pRelManager, ISociety* pSociety )
+    {
+        if( relMan != pRelManager )
+        {
+            has_migrated = true;
+        }
+        relMan = pRelManager;
+
+        if( pSociety == nullptr )
+        {
+            p_rel_params = nullptr ;
+        }
+        else
+        {
+            p_rel_params = pSociety->GetRelationshipParameters( relationship_type );
+        }
     }
 
     bool
@@ -137,18 +262,15 @@ namespace Kernel {
         rel_timer -= dt;
         if( rel_timer <= 0 )
         {
-            LOG_DEBUG_F( "%s: relationship %d between %d and %d is over, timer = %f...\n", __FUNCTION__, GetId(), MALE_PARTNER_ID().data, FEMALE_PARTNER_ID().data, rel_timer );
+            LOG_DEBUG_F( "%s: relationship %d between %d and %d is over, timer = %f...\n", __FUNCTION__, GetSuid().data, MALE_PARTNER_ID().data, FEMALE_PARTNER_ID().data, rel_timer );
             return false;
         }
         return true;
     }
 
-#define MALE_IS_ABSENT() ( absent_male_partner_id.data != suids::nil_suid().data )
-#define FEMALE_IS_ABSENT() ( absent_female_partner_id.data != suids::nil_suid().data )
-
     void Relationship::Consummate( float dt )
     {
-        if( MALE_IS_ABSENT() || FEMALE_IS_ABSENT() )
+        if( state != RelationshipState::NORMAL )
         {
             return;
         }
@@ -175,7 +297,7 @@ namespace Kernel {
         release_assert( coital_rate_attenuation_factor > 0 );
 
         /*LOG_INFO_F( "(EEL) Coital Act: rel = %d, insertive = %d, relationships = %d, receptive = %d, relationships = %d, time till next act = %f.\n",
-                    GetId(),
+                    GetSuid().data,
                     male_partner->GetSuid().data,
                     male_partner->GetRelationships().size(),
                     female_partner->GetSuid().data,
@@ -185,6 +307,7 @@ namespace Kernel {
 
         double ratetime = dt * coital_rate_attenuation_factor * GetCoitalRate();
         unsigned int acts_this_dt = Environment::getInstance()->RNG->Poisson( ratetime );
+        total_coital_acts += acts_this_dt;
 
         if( acts_this_dt > 0 ) {
             ProbabilityNumber p_condom = (float) getProbabilityUsingCondomThisAct(); 
@@ -227,7 +350,7 @@ namespace Kernel {
             IIndividualHumanSTI *uninfected_individual = male_partner->IsInfected() ? female_partner : male_partner;
             uninfected_individual->NotifyPotentialExposure();
             IIndividualHumanSTI *infected_individual = male_partner->IsInfected() ? male_partner : female_partner;
-            infected_individual->UpdateInfectiousnessSTI( act_prob_vec, GetId() );
+            infected_individual->UpdateInfectiousnessSTI( act_prob_vec, GetSuid().data );
         }
     }
 
@@ -247,7 +370,7 @@ namespace Kernel {
     )
     const
     {
-        if ( individual == NULL )
+        if ( individual == nullptr )
         {
             throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "GetPartner called with null pointer.\n" );
         }
@@ -263,31 +386,23 @@ namespace Kernel {
         }
         else
         {
-            LOG_ERR_F( "%s: individual %lu is not in relationship %d!\n", __FUNCTION__, individual->GetSuid().data, GetId() );
-            release_assert( false );
+            std::ostringstream msg;
+            msg << "Individual "<< individual->GetSuid().data << " is not in relationship " << GetSuid().data << "!\n";
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
         }
+
+        // MULTI-CORE: We need to support nullptr for the partners
+        release_assert( partner );
 
         if (!partner)
         {
-            LOG_WARN_F( "%s: partner of individual %lu in relationship %d is absent or deceased.\n", __FUNCTION__, individual->GetSuid().data, GetId() );
+            LOG_WARN_F( "%s: partner of individual %lu in relationship %d is absent or deceased.\n", __FUNCTION__, individual->GetSuid().data, GetSuid().data );
         }
 
         return partner;
     }
 
-    unsigned long int
-    Relationship::GetId()
-    const
-    {
-        return _id;
-    }
-
-    void Relationship::SetSuid(suids::suid id)
-    {
-        _suid = id;
-    }
-
-    suids::suid Relationship::GetSuid()
+    const suids::suid& Relationship::GetSuid() const
     {
         return _suid;
     }
@@ -319,72 +434,211 @@ namespace Kernel {
         return returnSet;
     }
 
-    void Relationship::pause(
-        IIndividualHumanSTI* departee
-        )
+    void Relationship::Pause( IIndividualHumanSTI* departee )
     {
-        LOG_INFO_F( "%s: individual %d vacating relationship %d leaving individual %d alone.\n", __FUNCTION__, departee->GetSuid().data, GetId(), PARTNERID( departee ).data );
-        if( male_partner == departee )
+        LOG_INFO_F( "%s: individual %d vacating relationship %d leaving individual %d alone.\n", __FUNCTION__, departee->GetSuid().data, GetSuid().data, PARTNERID( departee ).data );
+
+        previous_state = state;
+        state = RelationshipState::PAUSED;
+
+        if( relMan != nullptr )
         {
-            LOG_DEBUG_F( "%s: departee was male_partner, clearing male_partner from relationship %d\n", __FUNCTION__, GetId() );
-            male_partner = nullptr;
-            absent_male_partner_id = departee->GetSuid();
+            relMan->RemoveRelationship( this, (previous_state == RelationshipState::PAUSED) );
         }
-        else if( female_partner == departee )
+
+        // -------------------------------------------------------------------------------
+        // --- When Pausing, we need to create two instances of the relationship: 
+        // --- one for the current node and one for the node the person is going to.
+        // --- One reason for this is that Relationship::Update() is called by RelationshipManager::Update()
+        // --- so that it is called once for the relationship.  Since we need two instances
+        // --- for multi-core, it makes sense to use this solution for single core as well.
+        // -------------------------------------------------------------------------------
+        Relationship* p_staying_rel = this;
+        Relationship* p_leaving_rel = nullptr;
+        if( previous_state == RelationshipState::NORMAL )
         {
-            LOG_DEBUG_F( "%s: departee was female_partner, clearing female_partner from relationship %d\n", __FUNCTION__, GetId() );
-            female_partner = nullptr;
-            absent_female_partner_id = departee->GetSuid();
+            p_leaving_rel = this->Clone();
+            departee->GetRelationships().erase( p_staying_rel );
+            departee->GetRelationships().insert( p_leaving_rel );
+        }
+
+        // -------------------------------------------------------------------------
+        // --- When Pausing a relationship, each partner will have their own instance
+        // --- of the relationship object.  This implies that we need these objects setup
+        // --- so that the relationship object for Partner A (male) has himself still in
+        // --- the relationship and his partner absent.  Partner B needs the opposite.
+        // ---
+        // --- We don't set both partners to absent since we want the actions of one
+        // --- partner to reset the relationship.  For example, if one partner pauses
+        // --- relationship due to migration, and then returns.  That individual's call
+        // --- to Resume() should get the relationship back to normal.
+        // -------------------------------------------------------------------------
+        if( p_staying_rel->male_partner == departee )
+        {
+            LOG_DEBUG_F( "%s: departee was male_partner, clearing male_partner from relationship %d\n", __FUNCTION__, p_staying_rel->GetSuid().data );
+
+            p_staying_rel->male_partner = nullptr;
+            p_staying_rel->absent_male_partner_id = departee->GetSuid();
+
+            if( p_leaving_rel != nullptr )
+            {
+                release_assert( p_staying_rel->female_partner );
+                p_leaving_rel->absent_female_partner_id = p_staying_rel->female_partner->GetSuid();
+                p_leaving_rel->female_partner = nullptr;
+            }
+        }
+        else if( p_staying_rel->female_partner == departee )
+        {
+            LOG_DEBUG_F( "%s: departee was female_partner, clearing female_partner from relationship %d\n", __FUNCTION__, GetSuid().data );
+
+            p_staying_rel->female_partner = nullptr;
+            p_staying_rel->absent_female_partner_id = departee->GetSuid();
+
+            if( p_leaving_rel != nullptr )
+            {
+                release_assert( p_staying_rel->male_partner );
+                p_leaving_rel->absent_male_partner_id = p_staying_rel->male_partner->GetSuid();
+                p_leaving_rel->male_partner = nullptr;
+            }
         }
         else
         {
-            release_assert(false);
+            std::ostringstream msg;
+            msg << "Individual "<< departee->GetSuid().data << " is not in relationship " << GetSuid().data << "!\n";
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
         }
     }
 
-    void Relationship::resume(
-        IIndividualHumanSTI* returnee
-        )
+    void Relationship::Resume( IRelationshipManager* pRelMan, 
+                               ISociety* pSociety, 
+                               IIndividualHumanSTI* returnee )
     {
+        release_assert( pRelMan  != nullptr );
+        release_assert( pSociety != nullptr );
+        release_assert( returnee != nullptr );
+
+        if( state == RelationshipState::TERMINATED )
+        {
+            std::ostringstream msg;
+            msg << "RelationshipId=" << GetSuid().data << " has already been terminated.  It cannot be resumed." ;
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+        }
+
         auto returneeId = returnee->GetSuid();
-        if( absent_male_partner_id == returneeId )
+        if( (absent_male_partner_id == returneeId) || (male_partner == returnee) )
         {
             absent_male_partner_id = suids::nil_suid();
             male_partner = returnee;
-            LOG_INFO_F( "%s: individual %d returning to relationship %d with individual %d \n", __FUNCTION__, returnee->GetSuid().data, GetId(), PARTNERID( returnee ).data );
-            LOG_DEBUG_F( "%s: returnee is male_partner, restoring male_partner to relationship %d\n", __FUNCTION__, GetId() );
+            LOG_INFO_F( "%s: individual %d returning to relationship %d with individual %d \n", __FUNCTION__, returnee->GetSuid().data, GetSuid().data, PARTNERID( returnee ).data );
+            LOG_DEBUG_F( "%s: returnee is male_partner, restoring male_partner to relationship %d\n", __FUNCTION__, GetSuid().data );
         }
-        else if( absent_female_partner_id == returneeId )
+        else if( (absent_female_partner_id == returneeId) || (female_partner == returnee) )
         {
             absent_female_partner_id = suids::nil_suid();
             female_partner = returnee;
-            LOG_INFO_F( "%s: individual %d returning to relationship %d with individual %d \n", __FUNCTION__, returnee->GetSuid().data, GetId(), PARTNERID( returnee ).data );
-            LOG_DEBUG_F( "%s: returnee is female_partner, restoring female_partner to relationship %d\n", __FUNCTION__, GetId() );
+            LOG_INFO_F( "%s: individual %d returning to relationship %d with individual %d \n", __FUNCTION__, returnee->GetSuid().data, GetSuid().data, PARTNERID( returnee ).data );
+            LOG_DEBUG_F( "%s: returnee is female_partner, restoring female_partner to relationship %d\n", __FUNCTION__, GetSuid().data );
         }
         else
         {
-            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "I don't remember you! :(\n" );
+            std::ostringstream msg;
+            msg << "Unknown partner:  rel_id=" << GetSuid().data << " male_id=" << absent_male_partner_id.data << "  female_id=" << absent_female_partner_id.data << " returnee_id=" << returneeId.data ;
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
         }
+
+        if( (absent_male_partner_id == suids::nil_suid()) && (absent_female_partner_id == suids::nil_suid()) )
+        {
+            release_assert( male_partner );
+            release_assert( female_partner );
+            if( male_partner->GetNodeSuid() == female_partner->GetNodeSuid() )
+            {
+                previous_state = state;
+                state = RelationshipState::NORMAL;
+            }
+        }
+        SetManager( pRelMan, pSociety );
+        relMan->AddRelationship( this, false );
     }
 
-    void Relationship::terminate(
-        IRelationshipManager* manager
-        )
+    void Relationship::Terminate( RelationshipTerminationReason::Enum reason )
     {
-        LOG_INFO_F( "%s: terminating relationship %d between individual %d and individual %d.\n", __FUNCTION__, GetId(), MALE_PARTNER_ID().data, FEMALE_PARTNER_ID().data );
+        LOG_DEBUG_F( "%s: terminating relationship %d:%x with state=%s between individual %d and individual %d because %s.\n",
+            __FUNCTION__,
+            GetSuid().data,
+            this, 
+            RelationshipState::pairs::lookup_key( state ),
+            MALE_PARTNER_ID().data, 
+            FEMALE_PARTNER_ID().data,
+            RelationshipTerminationReason::pairs::lookup_key( reason ));
 
-        manager->RemoveRelationship( this );
+        // -----------------------------------------------------------------------
+        // --- Migrating would have set these values so we want to clear them to
+        // --- make sure it is clear that the relationship has been terminated.
+        // -----------------------------------------------------------------------
+        if( state == RelationshipState::MIGRATING )
+        {
+            absent_male_partner_id   = suids::nil_suid();
+            absent_female_partner_id = suids::nil_suid();
+        }
 
-        if( male_partner )
+        previous_state = state;
+        state = RelationshipState::TERMINATED;
+        termination_reason = reason;
+
+        if( relMan != nullptr )
+        {
+            relMan->RemoveRelationship( this, true );
+        }
+        SetManager( nullptr, nullptr );
+
+        if( (male_partner != nullptr) && (absent_male_partner_id == suids::nil_suid()) )
         { 
             male_partner->RemoveRelationship( this );
+            // ----------------------------------------------------------
+            // --- We don't set this to nullptr so that the relationship
+            // --- can be used later to collect data at death
+            // ----------------------------------------------------------
             //male_partner = nullptr;
         }
 
-        if( female_partner )
+        if( (female_partner != nullptr) && (absent_female_partner_id == suids::nil_suid()) )
         {
             female_partner->RemoveRelationship( this );
+            // ----------------------------------------------------------
+            // --- We don't set this to nullptr so that the relationship
+            // --- can be used later to collect data at death
+            // ----------------------------------------------------------
             //female_partner = nullptr;
+        }
+    }
+
+    void Relationship::Migrate()
+    {
+        if( state == RelationshipState::NORMAL )
+        {
+            previous_state = state;
+            state = RelationshipState::MIGRATING;
+            relMan->RemoveRelationship( this, true );
+
+            absent_male_partner_id   = male_partner->GetSuid();
+            absent_female_partner_id = female_partner->GetSuid();
+
+            // -------------------------------------------------------------------
+            // --- Don't set these to nullptr because if one of the partners dies
+            // --- before they migrate, then we need the pointers so we can remove
+            // --- the relationship.
+            // -------------------------------------------------------------------
+            //male_partner = nullptr;
+            //female_partner = nullptr;
+            // -------------------------------------------------------------------
+
+            SetManager( nullptr, nullptr );
+        }
+        else if( state != RelationshipState::MIGRATING )
+        {
+            std::ostringstream msg;
+            msg << "Trying to migrate relationship id=" << GetSuid().data << " when current state=" << state ;
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
         }
     }
 
@@ -467,14 +721,14 @@ namespace Kernel {
         return FEMALE_PARTNER_ID();
     }
 
-    suids::suid Relationship::GetOriginalNodeId() const
+    ExternalNodeId_t Relationship::GetOriginalNodeId() const
     {
         return original_node_id;
     }
 
     float Relationship::GetCoitalRate() const
     {
-        return GET_CONFIGURABLE(SimulationConfig)->coital_act_rate[relationship_type];
+        return p_rel_params->GetCoitalActRate();
     }
 
     ProbabilityNumber Relationship::getProbabilityUsingCondomThisAct() const
@@ -485,113 +739,212 @@ namespace Kernel {
         //auto male_prob = male_partner->getProbabilityUsingCondomThisAct( GetType() );
         //auto female_prob = female_partner->getProbabilityUsingCondomThisAct( GetType() );
         //ProbabilityNumber prob = DECISION_WEIGHT * male_prob + (1.0f-DECISION_WEIGHT)*female_prob;
-        ProbabilityNumber prob = male_partner->getProbabilityUsingCondomThisAct( GetType() );
+        ProbabilityNumber prob = male_partner->getProbabilityUsingCondomThisAct( p_rel_params );
 
         //LOG_DEBUG_F( "%s: returning %f from Sigmoid::vWAHS( %f, %f, %f, %f, %f )\n", __FUNCTION__, (float) prob, year, midyear, rate, early, late );
         return prob;
+    }
+
+    unsigned int Relationship::GetNumCoitalActs() const
+    {
+        return total_coital_acts;
+    }
+
+    bool Relationship::HasMigrated() const
+    {
+        return has_migrated;
+    }
+
+    void Relationship::serialize(IArchive& ar, Relationship* obj)
+    {
+        Relationship& rel = *obj;
+
+        if( ar.IsWriter() )
+        {
+            if( rel.male_partner != nullptr )
+            {
+                rel.absent_male_partner_id = rel.male_partner->GetSuid();
+            }
+            if( rel.female_partner != nullptr )
+            {
+                rel.absent_female_partner_id = rel.female_partner->GetSuid();
+            }
+        }
+
+        ar.labelElement("_suid"                   ) & rel._suid.data;
+        ar.labelElement("state"                   ) & (uint32_t&)rel.state;
+        ar.labelElement("previous_state"          ) & (uint32_t&)rel.previous_state;
+        ar.labelElement("relationship_type"       ) & (uint32_t&)rel.relationship_type;
+        ar.labelElement("termination_reason"      ) & (uint32_t&)rel.termination_reason;
+        //p_rel_params don't serialize this
+        //male_partner don't serialize this
+        //female_partner don't serialize this
+        ar.labelElement("absent_male_partner_id"  ) & rel.absent_male_partner_id.data;
+        ar.labelElement("absent_female_partner_id") & rel.absent_female_partner_id.data;
+        ar.labelElement("rel_timer"               ) & rel.rel_timer;
+        ar.labelElement("rel_duration"            ) & rel.rel_duration;
+        ar.labelElement("start_time"              ) & rel.start_time;
+        ar.labelElement("scheduled_end_time"      ) & rel.scheduled_end_time;
+        ar.labelElement("propertyKey"             ) & rel.propertyKey;
+        ar.labelElement("propertyName"            ) & rel.propertyName;
+        ar.labelElement("original_node_id"        ) & (uint32_t&)rel.original_node_id;
+        ar.labelElement("act_prob_vec"            ) & rel.act_prob_vec;
+        ar.labelElement("using_condom"            ) & rel.using_condom;
+        //relMan don't serialize this
+        ar.labelElement("total_coital_acts"       ) & rel.total_coital_acts;
+        ar.labelElement("has_migrated"            ) & rel.has_migrated;
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // SPECIFIC TYPES OF RELATIONSHIPS HERE //
     ///////////////////////////////////////////////////////////////////////////
 
-    IRelationship* RelationshipFactory::CreateRelationship( RelationshipType::Enum relType, 
+    IRelationship* RelationshipFactory::CreateRelationship( const suids::suid& rRelId,
+                                                            IRelationshipManager* pRelMan,
+                                                            IRelationshipParameters* pParams, 
                                                             IIndividualHumanSTI* male_partner, 
                                                             IIndividualHumanSTI* female_partner )
     {
         IRelationship* p_rel = nullptr ;
-        switch( relType )
+        switch( pParams->GetType() )
         {
             case RelationshipType::TRANSITORY:
-                p_rel = new TransitoryRelationship( male_partner, female_partner );
+                p_rel = new TransitoryRelationship( rRelId, pRelMan, pParams, male_partner, female_partner );
                 break;
 
             case RelationshipType::INFORMAL:
-                p_rel = new InformalRelationship( male_partner, female_partner );
+                p_rel = new InformalRelationship( rRelId, pRelMan, pParams, male_partner, female_partner );
                 break;
 
             case RelationshipType::MARITAL:
-                p_rel = new MarriageRelationship( male_partner, female_partner );
+                p_rel = new MarriageRelationship( rRelId, pRelMan, pParams, male_partner, female_partner );
                 break;
 
             default:
-                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "relType", relType, RelationshipType::pairs::lookup_key( relType ) );
+                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, 
+                                                         "pParams->GetType()", 
+                                                         pParams->GetType(), 
+                                                         RelationshipType::pairs::lookup_key( pParams->GetType() ) );
 
         }
         return p_rel ;
     }
 
+    // ------------------------------------------------------------------------
+    // --- TransitoryRelationship
+    // ------------------------------------------------------------------------
+    BEGIN_QUERY_INTERFACE_DERIVED(TransitoryRelationship, Relationship)
+    END_QUERY_INTERFACE_DERIVED(TransitoryRelationship, Relationship)
 
-    TransitoryRelationship::TransitoryRelationship( IIndividualHumanSTI * male_partnerIn, IIndividualHumanSTI * female_partnerIn )
-        : Relationship( male_partnerIn, female_partnerIn, RelationshipType::TRANSITORY )
+    TransitoryRelationship::TransitoryRelationship()
+    : Relationship()
     {
-        rel_timer = DAYSPERYEAR * Environment::getInstance()->RNG->Weibull2( GET_CONFIGURABLE(SimulationConfig)->transitoryRel_lambda, 
-                                                                             GET_CONFIGURABLE(SimulationConfig)->transitoryRel_inv_kappa );
+    }
 
-        IIndividualHuman* individual = NULL;
-        if( male_partnerIn->QueryInterface(GET_IID(IIndividualHuman), (void**)&individual) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "male_partnerIn", "IIndividualHuman", "IIndividualHumanSTI" );
-        }
-
-        start_time = (float) individual->GetParent()->GetTime().time;
-        scheduled_end_time = start_time + rel_timer;
-
+    TransitoryRelationship::TransitoryRelationship( const suids::suid& rRelId,
+                                                    IRelationshipManager* pRelMan,
+                                                    IRelationshipParameters* pParams,
+                                                    IIndividualHumanSTI * male_partnerIn, 
+                                                    IIndividualHumanSTI * female_partnerIn )
+        : Relationship( rRelId, pRelMan, pParams, male_partnerIn, female_partnerIn )
+    {
         LOG_INFO_F( "(EEL) Creating TransitoryRelationship %d between %s and %s of length %f.\n",
-                    GetId(),
+                    GetSuid().data,
                     male_partnerIn->toString().c_str(),
                     female_partnerIn->toString().c_str(),
                     rel_timer
                 );
     }
 
-
-    InformalRelationship::InformalRelationship( IIndividualHumanSTI * male_partnerIn, IIndividualHumanSTI * female_partnerIn )
-        : Relationship( male_partnerIn, female_partnerIn, RelationshipType::INFORMAL )
+    Relationship* TransitoryRelationship::Clone()
     {
-        rel_timer = DAYSPERYEAR * Environment::getInstance()->RNG->Weibull2( GET_CONFIGURABLE(SimulationConfig)->informalRel_lambda, 
-                                                                             GET_CONFIGURABLE(SimulationConfig)->informalRel_inv_kappa );
+        return new TransitoryRelationship( *this );
+    }
 
-        IIndividualHuman* individual = NULL;
-        if( male_partnerIn->QueryInterface(GET_IID(IIndividualHuman), (void**)&individual) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "male_partnerIn", "IIndividualHuman", "IIndividualHumanSTI" );
-        }
+    REGISTER_SERIALIZABLE(TransitoryRelationship);
 
-        start_time = (float) individual->GetParent()->GetTime().time;
-        scheduled_end_time = start_time + rel_timer;
+    void TransitoryRelationship::serialize(IArchive& ar, TransitoryRelationship* obj)
+    {
+        Relationship::serialize( ar, obj );
+        TransitoryRelationship& rel = *obj;
+    }
 
+    // ------------------------------------------------------------------------
+    // --- InformalRelationship
+    // ------------------------------------------------------------------------
+    BEGIN_QUERY_INTERFACE_DERIVED(InformalRelationship, Relationship)
+    END_QUERY_INTERFACE_DERIVED(InformalRelationship, Relationship)
+
+    InformalRelationship::InformalRelationship()
+    : Relationship()
+    {
+    }
+
+    InformalRelationship::InformalRelationship( const suids::suid& rRelId,
+                                                IRelationshipManager* pRelMan,
+                                                IRelationshipParameters* pParams,
+                                                IIndividualHumanSTI * male_partnerIn, 
+                                                IIndividualHumanSTI * female_partnerIn )
+        : Relationship( rRelId, pRelMan, pParams, male_partnerIn, female_partnerIn )
+    {
         LOG_INFO_F( "(EEL) Creating InformalRelationship %d between %s and %s of length %f.\n",
-                    GetId(),
+                    GetSuid().data,
                     male_partnerIn->toString().c_str(),
                     female_partnerIn->toString().c_str(),
                     rel_timer
                   );
     }
 
-
-
-    MarriageRelationship::MarriageRelationship( IIndividualHumanSTI * male_partnerIn, IIndividualHumanSTI * female_partnerIn )
-        : Relationship( male_partnerIn, female_partnerIn, RelationshipType::MARITAL )
+    Relationship* InformalRelationship::Clone()
     {
-        rel_timer = DAYSPERYEAR * Environment::getInstance()->RNG->Weibull2( GET_CONFIGURABLE(SimulationConfig)->maritalRel_lambda, 
-                                                                             GET_CONFIGURABLE(SimulationConfig)->maritalRel_inv_kappa );
+        return new InformalRelationship( *this );
+    }
 
-        IIndividualHuman* individual = NULL;
-        if( male_partnerIn->QueryInterface(GET_IID(IIndividualHuman), (void**)&individual) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "male_partnerIn", "IIndividualHuman", "IIndividualHumanSTI" );
-        }
+    REGISTER_SERIALIZABLE(InformalRelationship);
 
-        start_time = (float) individual->GetParent()->GetTime().time;
-        scheduled_end_time = start_time + rel_timer;
+    void InformalRelationship::serialize(IArchive& ar, InformalRelationship* obj)
+    {
+        Relationship::serialize( ar, obj );
+        InformalRelationship& rel = *obj;
+    }
 
+    // ------------------------------------------------------------------------
+    // --- MarriageRelationship
+    // ------------------------------------------------------------------------
+    BEGIN_QUERY_INTERFACE_DERIVED(MarriageRelationship, Relationship)
+    END_QUERY_INTERFACE_DERIVED(MarriageRelationship, Relationship)
+
+    MarriageRelationship::MarriageRelationship()
+    : Relationship()
+    {
+    }
+
+    MarriageRelationship::MarriageRelationship( const suids::suid& rRelId,
+                                                IRelationshipManager* pRelMan,
+                                                IRelationshipParameters* pParams,
+                                                IIndividualHumanSTI * male_partnerIn, 
+                                                IIndividualHumanSTI * female_partnerIn )
+        : Relationship( rRelId, pRelMan, pParams, male_partnerIn, female_partnerIn )
+    {
         LOG_INFO_F( "(EEL) Creating MaritalRelationship %d between %s and %s of length %f.\n",
-                    GetId(),
+                    GetSuid().data,
                     male_partnerIn->toString().c_str(),
                     female_partnerIn->toString().c_str(),
                     rel_timer
                   );
+    }
+
+    Relationship* MarriageRelationship::Clone()
+    {
+        return new MarriageRelationship( *this );
+    }
+
+    REGISTER_SERIALIZABLE(MarriageRelationship);
+
+    void MarriageRelationship::serialize(IArchive& ar, MarriageRelationship* obj)
+    {
+        Relationship::serialize( ar, obj );
+        MarriageRelationship& rel = *obj;
     }
 }
 

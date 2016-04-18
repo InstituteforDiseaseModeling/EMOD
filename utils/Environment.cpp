@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -18,6 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Configure.h"
 #include "Log.h"
 #include "ValidationLog.h"
+#include "IdmMpi.h"
 
 #include <iso646.h>
 
@@ -27,30 +28,42 @@ static const char * _module = "Environment";
 
 #pragma warning(disable: 4996) // for suppressing strcpy caused security warnings
 
-Environment* Environment::localEnv = NULL;
+Environment* Environment::localEnv = nullptr;
 
 Environment::Environment()
-: Config(NULL)
-, SimConfig(NULL)
+: MPI()
+, Log( nullptr )
+, Config(nullptr)
+, SimConfig(nullptr)
+, pPythonSupport(nullptr)
+, Status_Reporter(nullptr)
 , InputPath()
 , OutputPath()
 , StatePath()
 , DllPath()
+, RNG( nullptr )
 {
-    Report.Validation = NULL;
+    MPI.NumTasks  = 1;
+    MPI.Rank      = 0;
+    MPI.p_idm_mpi = nullptr;
+
+    Report.Validation = nullptr;
 }
 
 bool Environment::Initialize(
-    boost::mpi::environment *mpienv, boost::mpi::communicator *world, 
+    IdmMpi::MessageInterface* pMpi,
+    void* p_python_support,
     string configFileName, 
     string inputPath, string outputPath, /* 2.5 string statePath, */ string dllPath,
     bool get_schema)
 {
-    localEnv->MPI.NumTasks = world->size();
-    localEnv->MPI.Rank = world->rank();
-    localEnv->MPI.World = world;
-    localEnv->MPI.Environment = mpienv;
+    release_assert( pMpi );
 
+    localEnv->MPI.p_idm_mpi = pMpi;
+    localEnv->MPI.NumTasks  = pMpi->GetNumTasks();
+    localEnv->MPI.Rank      = pMpi->GetRank();
+
+    localEnv->pPythonSupport = p_python_support;
 
     inputPath = FileSystem::RemoveTrailingChars( inputPath );
     if( !FileSystem::DirectoryExists(inputPath) )
@@ -70,21 +83,31 @@ bool Environment::Initialize(
 
         if( localEnv->MPI.Rank != 0 )
         {
-            MPI_Barrier( MPI_COMM_WORLD );
+            // -------------------------------------------------------
+            // --- Wait for Rank=0 process to create output directory
+            // -------------------------------------------------------
+            localEnv->MPI.p_idm_mpi->Barrier();
         }
         else
         {
+            // ------------------------------------------------------------------------------
+            // --- The Process with Rank=0 is responsible for creating the output directory
+            // ------------------------------------------------------------------------------
             if( !FileSystem::DirectoryExists(outputPath) )
             {
                 FileSystem::MakeDirectory( outputPath ) ;
             }
-            MPI_Barrier( MPI_COMM_WORLD );
-        }
 
-        if( !FileSystem::DirectoryExists(outputPath) )
-        {
-            LOG_ERR_F( "Failed to create new output directory %s with error %s\n", localEnv->OutputPath.c_str(), strerror(errno) );
-            throw Kernel::FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, localEnv->OutputPath.c_str() );
+            // ----------------------------------------------------------------------
+            // --- Synchronize with other process after creating output directory
+            // ----------------------------------------------------------------------
+            localEnv->MPI.p_idm_mpi->Barrier();
+
+            if( !FileSystem::DirectoryExists(outputPath) )
+            {
+                LOG_ERR_F( "Rank=%d: Failed to create new output directory '%s' with error %s\n", localEnv->MPI.Rank, outputPath.c_str(), strerror(errno) );
+                throw Kernel::FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, outputPath.c_str() );
+            }
         }
     }
 
@@ -103,7 +126,7 @@ bool Environment::Initialize(
     if (!config) 
     {
         delete localEnv;
-        localEnv = NULL;
+        localEnv = nullptr;
         throw Kernel::InitializationException( __FILE__, __LINE__, __FUNCTION__, configFileName.c_str() );
     }
 
@@ -132,8 +155,8 @@ Environment::~Environment()
 
 void Environment::Finalize()
 {
-    if (localEnv)
-        delete localEnv;
+    delete localEnv;
+    localEnv = nullptr;
 }
 
 std::string Environment::FindFileOnPath( const std::string& rFilename )

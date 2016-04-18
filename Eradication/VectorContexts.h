@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -24,7 +24,9 @@ namespace Kernel
 
     struct IVectorSimulationContext : public ISupports
     {
-        virtual void  PostMigratingVector(VectorCohort* ind) = 0;
+        virtual void  PostMigratingVector( const suids::suid& nodeSuid, VectorCohort* ind ) = 0;
+        virtual float GetNodePopulation( const suids::suid& nodeSuid ) = 0;
+        virtual float GetAvailableLarvalHabitat( const suids::suid& nodeSuid, const std::string& rSpeciesID ) = 0 ;
     };
 
     struct IVectorNodeContext : public ISupports
@@ -39,6 +41,7 @@ namespace Kernel
     class INodeVector : public ISupports
     {
     public:
+        virtual const std::list<VectorHabitat *>& GetHabitats() const = 0 ;
         virtual const VectorPopulationList_t& GetVectorPopulations() = 0;
         virtual void AddVectors(std::string releasedSpecies, VectorMatingStructure _vector_genetics, unsigned long int releasedNumber) = 0;
         virtual void processImmigratingVector( VectorCohort* immigrant ) = 0;
@@ -52,5 +55,41 @@ namespace Kernel
     struct IVectorSusceptibilityContext : public ISupports
     {
         virtual float GetRelativeBitingRate(void) const = 0;
+    };
+
+    struct IVectorInterventionsEffects : ISupports
+    {
+        virtual float GetDieBeforeFeeding() = 0;
+        virtual float GetHostNotAvailable() = 0;
+        virtual float GetDieDuringFeeding() = 0;
+        virtual float GetDiePostFeeding() = 0;
+        virtual float GetSuccessfulFeedHuman() = 0;
+        virtual float GetSuccessfulFeedAD() = 0;
+        virtual float GetOutdoorDieBeforeFeeding() = 0;
+        virtual float GetOutdoorHostNotAvailable() = 0;
+        virtual float GetOutdoorDieDuringFeeding() = 0;
+        virtual float GetOutdoorDiePostFeeding() = 0;
+        virtual float GetOutdoorSuccessfulFeedHuman() = 0;
+        virtual float GetblockIndoorVectorAcquire() = 0;
+        virtual float GetblockIndoorVectorTransmit() = 0;
+        virtual float GetblockOutdoorVectorAcquire() = 0;
+        virtual float GetblockOutdoorVectorTransmit() = 0;
+        virtual ~IVectorInterventionsEffects() { }
+    };
+
+    struct INodeVectorInterventionEffects : ISupports
+    {
+        virtual float GetLarvalKilling(VectorHabitatType::Enum) = 0;
+        virtual float GetLarvalHabitatReduction(VectorHabitatType::Enum) = 0;
+        virtual float GetVillageSpatialRepellent() = 0;
+        virtual float GetADIVAttraction() = 0;
+        virtual float GetADOVAttraction() = 0;
+        virtual float GetPFVKill() = 0;
+        virtual float GetOutdoorKilling() = 0;
+        virtual float GetOutdoorKillingMale() = 0;
+        virtual float GetSugarFeedKilling() = 0;
+        virtual float GetOviTrapKilling(VectorHabitatType::Enum) = 0;
+        virtual float GetAnimalFeedKilling() = 0;
+        virtual float GetOutdoorRestKilling() = 0;
     };
 }

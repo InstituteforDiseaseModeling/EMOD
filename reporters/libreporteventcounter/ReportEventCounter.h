@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -23,12 +23,12 @@ namespace Kernel
         virtual ~ReportEventCounter();
 
         // BaseEventReport
-        virtual bool Configure( const Configuration* );
-        virtual void BeginTimestep() ;
-        virtual void Reduce();
-        virtual void Finalize();
+        virtual bool Configure( const Configuration* ) override;
+        virtual void BeginTimestep() override;
+        virtual void Reduce() override;
+        virtual void Finalize() override;
         virtual bool notifyOnEvent( IIndividualHumanEventContext *context, 
-                                    const std::string& StateChange );
+                                    const std::string& StateChange ) override;
     private:
         ChannelDataMap channelDataMap ;
         std::map<std::string, std::string> unitsMap;

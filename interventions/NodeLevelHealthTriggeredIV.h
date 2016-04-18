@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -16,12 +16,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "BoostLibWrapper.h"
 
 #include "Interventions.h"
-#include "SimpleTypemapRegistration.h"
 #include "Configuration.h"
 #include "InterventionFactory.h"
 #include "InterventionEnums.h"
 #include "NodeEventContext.h"
 #include "Configure.h"
+#include "DemographicRestrictions.h"
+#include "EventTrigger.h"
 
 namespace Kernel
 {
@@ -29,70 +30,41 @@ namespace Kernel
     {
         DECLARE_FACTORY_REGISTERED(InterventionFactory, NodeLevelHealthTriggeredIV, INodeDistributableIntervention)
 
-        class tPropertyRestrictions : public JsonConfigurable
-        {
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
-        public:
-            tPropertyRestrictions() {}
-            virtual void ConfigureFromJsonAndKey( const Configuration *, const std::string &key );
-            virtual json::QuickBuilder GetSchema();
-
-            std::list< std::map< std::string, std::string > > _restrictions;
-        };
-
     public:        
         NodeLevelHealthTriggeredIV();
         virtual ~NodeLevelHealthTriggeredIV();
-        virtual int AddRef();
-        virtual int Release();
-        virtual bool Configure( const Configuration* config );
+        virtual int AddRef() override;
+        virtual int Release() override;
+        virtual bool Configure( const Configuration* config ) override;
         virtual bool ConfigureTriggers( const Configuration* config );
 
         // INodeDistributableIntervention
-        virtual bool Distribute( INodeEventContext *pNodeEventContext, IEventCoordinator2 *pEC );
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
-        virtual void SetContextTo(INodeEventContext *context);
-        virtual void Update(float dt);
+        virtual bool Distribute( INodeEventContext *pNodeEventContext, IEventCoordinator2 *pEC ) override;
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+        virtual void SetContextTo(INodeEventContext *context) override;
+        virtual void Update(float dt) override;
 
         // IIndividualEventObserver
-        virtual bool notifyOnEvent( IIndividualHumanEventContext *context, const std::string& StateChange );
+        virtual bool notifyOnEvent( IIndividualHumanEventContext *context, const std::string& StateChange ) override;
 
     protected:
         INodeEventContext* parent;
-
-        //std::string   m_trigger_condition; // TODO: is this obsolete now?
         std::vector<std::string>   m_trigger_conditions;
         float max_duration;
         float duration;
-        float demographic_coverage;
-
-        float target_age_min;
-        float target_age_max;
-
+        DemographicRestrictions demographic_restrictions;
+        bool m_disqualified_by_coverage_only;
+        float blackout_period ;
+        float blackout_time_remaining ;
+        EventTrigger blackout_event_trigger ;
+        bool notification_occured ;
+        std::map<std::string,std::set<int>> event_occured_map ;
+        std::map<suids::suid,bool> event_occurred_while_resident_away;
         IndividualInterventionConfig actual_intervention_config;
         IDistributableIntervention *_di;
-
-        tPropertyRestrictions property_restrictions;
-        bool property_restrictions_verified;
 
         virtual bool qualifiesToGetIntervention( const IIndividualHumanEventContext * pIndividual );
         virtual float getDemographicCoverage() const;
         virtual void onDisqualifiedByCoverage( IIndividualHumanEventContext *pIndiv );
-
-        bool m_disqualified_by_coverage_only;
-
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-    public:
-        // IJsonSerializable Interfaces
-        virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-        virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif
-
-#if USE_BOOST_SERIALIZATION
-    private:
-        template<class Archive>
-        friend void serialize(Archive &ar, NodeLevelHealthTriggeredIV& iv, const unsigned int v);
-#endif
     };
 }

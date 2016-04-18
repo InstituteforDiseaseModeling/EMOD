@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -33,23 +33,23 @@ class DllLoader
 
 public:
 
-    DllLoader(const char* sSimType = NULL);
+    DllLoader(const char* sSimType = nullptr);
 
     virtual ~DllLoader ();
 
-    bool LoadDiseaseDlls(std::map< std::string, createSim>& createSimFuncPtrMap, const char* dllName=NULL);
+    bool LoadDiseaseDlls(std::map< std::string, createSim>& createSimFuncPtrMap, const char* dllName=nullptr);
     json::Object GetDiseaseDllSchemas();
     bool LoadReportDlls( std::unordered_map< std::string, Kernel::report_instantiator_function_t >& reportInstantiators,
                          const char* dllName = nullptr );
-    bool LoadInterventionDlls(const char* dllName=NULL);
+    bool LoadInterventionDlls(const char* dllName=nullptr);
 
 #if defined(WIN32)
     bool StringEquals(const std::wstring& wStr, const char* cStr);
     bool StringEquals(const TCHAR* tStr, const char* cStr);
-    wstring GetFullDllPath(std::wstring& pluginDir, const char* dllPath = NULL);
+    wstring GetFullDllPath(std::wstring& pluginDir, const char* dllPath = nullptr);
     bool GetDllsVersion(const char* dllPath, std::wstring& wsPluginDir,list<string>& dllNames, list<string>& dllVersions);
 
-    bool CheckEModuleVersion(HMODULE hEMod, char* emodVer=NULL);
+    bool CheckEModuleVersion(HMODULE hEMod, char* emodVer=nullptr);
 #endif
 
     string GetEModulePath(const char* emoduleDir);

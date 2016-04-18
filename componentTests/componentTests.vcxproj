@@ -51,8 +51,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>ENABLE_HIV;ENABLE_TB;WIN32;_DEBUG;_CONSOLE;_SCL_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions);_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\UnitTest++\src;$(SolutionDir)baseReportLib;$(SolutionDir)Eradication;$(SolutionDir)interventions;$(SolutionDir)utils;$(SolutionDir)campaign;$(SolutionDir)Dependencies\ComputeClusterPack\Include;C:\Boost\Boost_1_51_0;$(SolutionDir)cajun\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;ENABLE_HIV;ENABLE_PYTHON;ENABLE_TB;WIN32;_DEBUG;_CONSOLE;_SCL_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions);_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\UnitTest++\src;$(SolutionDir)baseReportLib;$(SolutionDir)Eradication;$(SolutionDir)interventions;$(SolutionDir)utils;$(SolutionDir)campaign;$(SolutionDir)Dependencies\ComputeClusterPack\Include;C:\Boost\Boost_1_51_0;$(SolutionDir)cajun\include;$(SolutionDir)rapidjson\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FloatingPointModel>Strict</FloatingPointModel>
       <MinimalRebuild>false</MinimalRebuild>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -79,8 +79,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>ENABLE_HIV;ENABLE_TB;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\UnitTest++\src;$(SolutionDir)baseReportLib;$(SolutionDir)Eradication;$(SolutionDir)interventions;$(SolutionDir)utils;$(SolutionDir)campaign;$(SolutionDir)Dependencies\ComputeClusterPack\Include;C:\Boost\Boost_1_51_0;$(SolutionDir)cajun\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;ENABLE_HIV;ENABLE_PYTHON;ENABLE_TB;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\UnitTest++\src;$(SolutionDir)baseReportLib;$(SolutionDir)Eradication;$(SolutionDir)interventions;$(SolutionDir)utils;$(SolutionDir)campaign;$(SolutionDir)Dependencies\ComputeClusterPack\Include;C:\Boost\Boost_1_51_0;$(SolutionDir)cajun\include;$(SolutionDir)rapidjson\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FloatingPointModel>Strict</FloatingPointModel>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -123,9 +123,14 @@
     <ClCompile Include="HIVARTStagingCD4AgnosticDiagnosticTest.cpp" />
     <ClCompile Include="HIVDrawBloodTest.cpp" />
     <ClCompile Include="InterpolatedValueMapTest.cpp" />
+    <ClCompile Include="LoadBalanceSchemeTest.cpp" />
+    <ClCompile Include="MigrateIndividualsTest.cpp" />
+    <ClCompile Include="MigrationTest.cpp" />
+    <ClCompile Include="SerializationTest.cpp" />
     <ClCompile Include="STIIsPostDebutTest.cpp" />
     <ClCompile Include="HIVSimpleDiagnosticTest.cpp" />
     <ClCompile Include="JsonObjectDemogTest.cpp" />
+    <ClCompile Include="MathFunctionsTest.cpp" />
     <ClCompile Include="NodeDemographicsTest.cpp" />
     <ClCompile Include="PairFormationParametersImplTest.cpp" />
     <ClCompile Include="PairFormationStatsImplTest.cpp" />

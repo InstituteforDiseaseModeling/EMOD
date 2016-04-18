@@ -1,0 +1,23 @@
+{
+    "parameters": {
+        "Default_Config_Path": "defaults/generic_default_config.json",
+        "Campaign_Filename": "campaign.json", 
+        "Climate_Model": "CLIMATE_OFF", 
+        "Config_Name": "105_Generic_PythonMultiConfigs", 
+        "Enable_Interventions": 1, 
+        "Geography": "Namawala", 
+        "Listed_Events": [], 
+        "Load_Balance_Filename": "", 
+        "Load_Balance_Scheme": "STATIC", 
+        "Node_Grid_Size": 0.042, 
+        "Number_Basestrains": 1, 
+        "Number_Substrains": 1, 
+        "Python_Script_Path": "",
+        "Run_Number": 1, 
+        "Serialization_Test_Cycles": 0,
+        "Simulation_Duration": 90, 
+        "Simulation_Timestep": 1, 
+        "Simulation_Type": "GENERIC_SIM", 
+        "Start_Time": 0
+    }
+}

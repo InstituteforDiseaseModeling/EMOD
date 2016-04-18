@@ -1,21 +1,16 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 #include "Simulation.h"
 
-#include <ctime>
 #include <iomanip>      // std::setprecision
-
-#ifdef WIN32
-#include "windows.h"
-#endif
 
 #include "FileSystem.h"
 #include "Debug.h"
@@ -25,22 +20,30 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SpatialReport.h"
 #include "PropertyReport.h"
 #include "Exceptions.h"
-#include "IndividualEventContext.h"
 #include "Instrumentation.h"
 #include "InterventionEnums.h"
-#include "Migration.h"
+#include "IMigrationInfo.h"
 #include "Node.h"
 #include "NodeDemographics.h"
-#include "ProgVersion.h" // Version info extraction for both program and dlls
 #include "RANDOM.h"
 #include "SimulationConfig.h"
 #include "SimulationEventContext.h"
-#include "StatusReporter.h"
+#include "NodeInfo.h"
 #include "ReportEventRecorder.h"
+#include "Individual.h"
+#include "LoadBalanceScheme.h"
 
 #include "DllLoader.h"
 
-#include "RapidJsonImpl.h"
+#include "BinaryArchiveWriter.h"
+#include "BinaryArchiveReader.h"
+#include "JsonRawWriter.h"
+#include "JsonRawReader.h"
+#include "MpiDataExchanger.h"
+#include "IdmMpi.h"
+
+#include <chrono>
+typedef std::chrono::high_resolution_clock _clock;
 
 using namespace std;
 
@@ -62,29 +65,49 @@ namespace Kernel
     //------------------------------------------------------------------
 
     Simulation::Simulation()
-        : demographicsContext(nullptr)
-        , nodeSuidGenerator(EnvPtr->MPI.Rank, EnvPtr->MPI.NumTasks)
-        , individualHumanSuidGenerator(EnvPtr->MPI.Rank, EnvPtr->MPI.NumTasks)
+        : serializationMask(SerializationFlags(uint32_t(SerializationFlags::Population) | uint32_t(SerializationFlags::Parameters)))
+        , nodes()
+        , nodeRankMap()
+        , node_events_added()
+        , node_events_to_be_processed()
+        , node_event_context_list()
+        , nodeid_suid_map()
+        , migratingIndividualQueues()
+        , m_simConfigObj(nullptr)
+        , m_interventionFactoryObj(nullptr)
+        , demographicsContext(nullptr)
         , infectionSuidGenerator(EnvPtr->MPI.Rank, EnvPtr->MPI.NumTasks)
+        , individualHumanSuidGenerator(EnvPtr->MPI.Rank, EnvPtr->MPI.NumTasks)
+        , nodeSuidGenerator(EnvPtr->MPI.Rank, EnvPtr->MPI.NumTasks)
+        , campaignFilename()
+        , loadBalanceFilename()
         , rng(nullptr)
-        , event_context_host(nullptr)
+        , reports()
+        , individual_data_reports()
         , reportClassCreator(nullptr)
+        , binnedReportClassCreator(nullptr)
+        , spatialReportClassCreator(nullptr)
         , propertiesReportClassCreator(nullptr)
         , demographicsReportClassCreator(nullptr)
         , eventReportClassCreator(nullptr)
-        , m_simConfigObj(nullptr)
-        , m_interventionFactoryObj(nullptr)
-        , new_node_observers()
+        , event_coordinators()
+        , campaign_events()
+        , event_context_host(nullptr)
+        , Ind_Sample_Rate(1.0f)
+        , currentTime()
         , random_type(RandomType::USE_PSEUDO_DES)
+        , sim_type(SimType::GENERIC_SIM)
         , demographic_tracking(false)
-        , enable_event_report(false)
         , enable_spatial_output(false)
         , enable_property_output(false)
         , enable_default_report(false)
+        , enable_event_report(false)
         , campaign_filename()
         , loadbalance_filename()
         , Run_Number(0)
+        , can_support_family_trips( false )
         , demographics_factory(nullptr)
+        , new_node_observers()
     {
         LOG_DEBUG( "CTOR\n" );
 
@@ -94,6 +117,8 @@ namespace Kernel
         propertiesReportClassCreator    = PropertyReport::CreateReport;
         demographicsReportClassCreator  = DemographicsReport::CreateReport;
         eventReportClassCreator         = ReportEventRecorder::CreateReport;
+
+        nodeRankMap.SetNodeInfoFactory( this );
 
         initConfigTypeMap( "Enable_Default_Reporting", &enable_default_report, Enable_Default_Reporting_DESC_TEXT, true );
         initConfigTypeMap( "Enable_Demographics_Reporting", &demographic_tracking, Enable_Demographics_Reporting_DESC_TEXT, true );
@@ -121,7 +146,7 @@ namespace Kernel
         if (rng) delete rng;
 
         delete event_context_host;
-        event_context_host = NULL;
+        event_context_host = nullptr;
 
         for (auto report : reports)
         {
@@ -151,9 +176,7 @@ namespace Kernel
 
     Simulation *Simulation::CreateSimulation(const ::Configuration *config)
     {
-        Simulation *newsimulation = NULL;
-
-        newsimulation = _new_ Simulation();
+        Simulation *newsimulation = _new_ Simulation();
         if (newsimulation)
         {
             // This sequence is important: first
@@ -162,7 +185,7 @@ namespace Kernel
             if(!ValidateConfiguration(config))
             {
                 delete newsimulation;
-                newsimulation = NULL;
+                newsimulation = nullptr;
             }
         }
 
@@ -219,6 +242,18 @@ namespace Kernel
         Reports_FindReportsCollectingIndividualData( 0.0, 0.0 );
     }
 
+    INodeInfo* Simulation::CreateNodeInfo()
+    {
+        INodeInfo* pin = new NodeInfo();
+        return pin ;
+    }
+
+    INodeInfo* Simulation::CreateNodeInfo( int rank, INodeContext* pNC )
+    {
+        INodeInfo* pin = new NodeInfo( rank, pNC );
+        return pin ;
+    }
+
     void Simulation::setupMigrationQueues()
     {
         migratingIndividualQueues.resize(EnvPtr->MPI.NumTasks); // elements are instances not pointers
@@ -235,9 +270,9 @@ namespace Kernel
         if (random_type == RandomType::USE_PSEUDO_DES)
         { 
             uint16_t randomseed[2];
-            randomseed[0] = (uint16_t) Run_Number;
-            randomseed[1] = (uint16_t) EnvPtr->MPI.Rank;
-            rng = _new_ PSEUDO_DES(*((uint32_t*) randomseed));
+            randomseed[0] = uint16_t(Run_Number);
+            randomseed[1] = uint16_t(EnvPtr->MPI.Rank);
+            rng = _new_ PSEUDO_DES(*reinterpret_cast<uint32_t*>(randomseed));
             const_cast<Environment*>(Environment::getInstance())->RNG = rng;
             
 
@@ -337,6 +372,75 @@ namespace Kernel
         }
     }
 
+    void Simulation::DistributeEventToOtherNodes( const std::string& rEventName, INodeQualifier* pQualifier )
+    {
+        release_assert( pQualifier );
+
+        for( auto entry : nodeRankMap.GetRankMap() )
+        {
+            INodeInfo* pni = entry.second ;
+            if( pQualifier->Qualifies( *pni ) )
+            {
+                // -------------------------------------------------------------------------------------
+                // --- One could use a map to keep a node from getting more than one event per timestep
+                // --- but I think the logic for that belongs in the object processing the event
+                // -------------------------------------------------------------------------------------
+                node_events_added[ nodeRankMap.GetRankFromNodeSuid( pni->GetSuid() ) ].Add( pni->GetSuid(), rEventName ) ;
+            }
+        }
+    }
+
+
+    void Simulation::UpdateNodeEvents()
+    {
+        WithSelfFunc to_self_func = [this](int myRank) 
+        { 
+            //do nothing
+        }; 
+
+        // -------------------------------------------------------------
+        // --- Send Event Triggers destined for nodes not on this processor
+        // -------------------------------------------------------------
+        SendToOthersFunc to_others_func = [this](IArchive* writer, int toRank)
+        {
+            *writer & node_events_added[toRank];
+        };
+
+        // -----------------------------------------------------------------
+        // --- Receive the Event Triggers destined for the nodes on this processor
+        // -----------------------------------------------------------------
+        ReceiveFromOthersFunc from_others_func = [this](IArchive* reader, int fromRank)
+        {
+            EventsForOtherNodes efon ;
+            *reader & efon;
+            node_events_added[ EnvPtr->MPI.Rank ].Update( efon );
+        };
+
+        ClearDataFunc clear_data_func = [this](int rank)
+        {
+        };
+
+        MpiDataExchanger exchanger( "EventsForOtherNodes", to_self_func, to_others_func, from_others_func, clear_data_func );
+        exchanger.ExchangeData( this->currentTime );
+
+        // ---------------------------------------------------
+        // --- Update the events to be processed during the 
+        // --- next time step for the nodes on this processor
+        // ---------------------------------------------------
+        node_events_to_be_processed.clear();
+        for( auto entry : node_events_added[ EnvPtr->MPI.Rank ].GetMap() )
+        {
+            suids::suid node_id = entry.first;
+            auto& event_name_list = entry.second;
+            for( auto event_name : event_name_list )
+            {
+                node_events_to_be_processed[ node_id ].push_back( event_name );
+            }
+        }
+        node_events_added.clear();
+
+    }
+
     void Simulation::Reports_ConfigureBuiltIn()
     {
         for( auto report : reports )
@@ -419,9 +523,9 @@ namespace Kernel
 
         bool load_all_reports = (p_cr_config == nullptr) ||
                                 !p_cr_config->Exist( "Use_Explicit_Dlls" ) ||
-                                ((int)(p_cr_config->operator[]( "Use_Explicit_Dlls" ).As<json::Number>()) != 1) ;
+                                (int(p_cr_config->operator[]( "Use_Explicit_Dlls" ).As<json::Number>()) != 1) ;
 
-        LOG_INFO_F("Found %d Custom Report DLL's to consider loading\n", rReportInstantiatorMap.size() );
+        LOG_INFO_F("Found %d Custom Report DLL's to consider loading, load_all_reports=%d\n", rReportInstantiatorMap.size(), load_all_reports );
         for( auto ri_entry : rReportInstantiatorMap )
         {
             std::string class_name = ri_entry.first ;
@@ -431,7 +535,7 @@ namespace Kernel
                 {
                     LOG_INFO_F("Found custom report data for %s\n", class_name.c_str());
                     json::QuickInterpreter dll_data = p_cr_config->operator[]( class_name ).As<json::Object>() ;
-                    if( (int)(dll_data["Enabled"].As<json::Number>()) != 0 )
+                    if( int(dll_data["Enabled"].As<json::Number>()) != 0 )
                     {
                         json::Array report_data = dll_data["Reports"].As<json::Array>() ;
                         for( int i = 0 ; i < report_data.Size() ; i++ )
@@ -442,6 +546,7 @@ namespace Kernel
                             p_cr->Configure( p_cfg );
                             reports.push_back( p_cr );
                             delete p_cfg ;
+                            p_cfg = nullptr;
                         }
                     }
                 }
@@ -456,6 +561,7 @@ namespace Kernel
                     p_cr->Configure( p_cfg );
                     reports.push_back( p_cr );
                     delete p_cfg ;
+                    p_cfg = nullptr;
                 }
             }
             catch( json::Exception& e )
@@ -465,6 +571,8 @@ namespace Kernel
                 throw InitializationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
             }
         }
+        delete p_cr_config;
+        p_cr_config = nullptr;
     }
 
     void Simulation::Reports_UpdateEventRegistration( float _currentTime, float dt )
@@ -493,7 +601,7 @@ namespace Kernel
         }
     }
 
-    void Simulation::Reports_LogNodeData( Node* n )
+    void Simulation::Reports_LogNodeData( INodeContext* n )
     {
         for (auto report : reports)
         {
@@ -507,14 +615,14 @@ namespace Kernel
         int stat_pop = 0, infected = 0;
         for (auto& entry : nodes)
         {
-            Node *n = entry.second;
+            INodeContext* n = entry.second;
             stat_pop += n->GetStatPop();
             infected += n->GetInfected();
         }
 
         std::ostringstream oss;
-        oss << std::fixed << std::setprecision(1) << "Update(): Time: " << (float)currentTime.time;
-        if( currentTime._base_year > 0 )
+        oss << std::fixed << std::setprecision(1) << "Update(): Time: " << float(currentTime.time);
+        if( currentTime.getBaseYear() > 0 )
         {
             oss << std::fixed << " Year: " << currentTime.Year();
         }
@@ -542,6 +650,27 @@ namespace Kernel
     //   Every timestep Update() method
     //------------------------------------------------------------------
 
+// Use with __try {} __except(filter(GetExceptionCode(), GetExceptionInformation())) { MPI_Abort(EnvPtr->world, -1); }
+//
+//    static char* section;
+//
+//    static int filter(unsigned int code, struct _EXCEPTION_POINTERS* ep)
+//    {
+//        cout << '[' << EnvPtr->MPI.Rank << "] " << "Section: " << section << endl; cout.flush();
+//        cout << '[' << EnvPtr->MPI.Rank << "] " << "Exception code      = " << code << endl; cout.flush();
+//        cout << '[' << EnvPtr->MPI.Rank << "] " << "EP.ExceptionCode    = " << ep->ExceptionRecord->ExceptionCode << endl; cout.flush();
+//        cout << '[' << EnvPtr->MPI.Rank << "] " << "EP.ExceptionAddress = " << ep->ExceptionRecord->ExceptionAddress << endl; cout.flush();
+//
+//        void* callers[32];
+//        auto frames = CaptureStackBackTrace( 0, 32, callers, nullptr);
+//        for (size_t i = 0; i < frames; i++) {
+//            cout << '[' << i << "] " << callers[i] << endl;
+//        }
+//        cout.flush();
+//
+//        return EXCEPTION_EXECUTE_HANDLER;
+//    }
+
     void Simulation::Update(float dt)
     {
         Reports_UpdateEventRegistration( currentTime.time, dt );
@@ -558,10 +687,11 @@ namespace Kernel
         // -----------------
         // --- Update Nodes
         // -----------------
-        for (auto iterator = nodes.rbegin(); iterator != nodes.rend(); iterator++)
+        for (auto iterator = nodes.rbegin(); iterator != nodes.rend(); ++iterator)
         {
-            Node *n = iterator->second;
+            INodeContext* n = iterator->second;
             release_assert(n);
+            n->AddEventsFromOtherNodes( node_events_to_be_processed[ n->GetSuid() ] );
             n->Update(dt);
 
             Reports_LogNodeData( n );
@@ -571,6 +701,15 @@ namespace Kernel
         // --- Resolve Migration
         // -----------------------
         REPORT_TIME( ENABLE_DEBUG_MPI_TIMING, "resolveMigration", resolveMigration() );
+
+        for (auto iterator = nodes.rbegin(); iterator != nodes.rend(); ++iterator)
+        {
+            INodeContext *n = iterator->second;
+            nodeRankMap.Update( n );
+        }
+        nodeRankMap.Sync( currentTime );
+
+        UpdateNodeEvents();
 
         // -------------------
         // --- Increment Time
@@ -636,34 +775,81 @@ namespace Kernel
         return true;
     }
 
-    struct Simulation::map_merge : public std::binary_function<nodeid_suid_map_t, nodeid_suid_map_t, nodeid_suid_map_t>
+    void Simulation::MergeNodeIdSuidBimaps(nodeid_suid_map_t& local_map, nodeid_suid_map_t& merged_map)
     {
-        struct merge_duplicate_key_exception : public std::exception
-        {
-            virtual const char* what() const throw() { return "Duplicate key in map merge\n"; }
-        };
+        merged_map = local_map;
 
-        nodeid_suid_map_t operator()(const nodeid_suid_map_t& x, const nodeid_suid_map_t& y) const
+        if (EnvPtr->MPI.NumTasks > 1)
         {
-            nodeid_suid_map_t mergedMap;
-
-            for (auto& pair : x)
+            auto json_writer = new JsonRawWriter();
+            IArchive& writer_archive = *static_cast<IArchive*>(json_writer);
+            size_t count = local_map.size();
+            writer_archive.startArray( count );
+            LOG_VALID_F( "Serializing %d id-suid bimap entries.\n", count );
+            for (auto& entry : local_map)
             {
-                if(!(mergedMap.insert(pair).second))
-                    throw(merge_duplicate_key_exception());
+#if defined(WIN32)
+                writer_archive.startObject();
+                    writer_archive.labelElement( "id" ) & uint32_t(entry.left);
+                    uint32_t suid = entry.right.data;
+                    writer_archive.labelElement( "suid") & suid;
+                writer_archive.endObject();
+#endif
+            }
+            writer_archive.endArray();
+
+            for (int rank = 0; rank < EnvPtr->MPI.NumTasks; ++rank)
+            {
+                if (rank == EnvPtr->MPI.Rank)
+                {
+                    const char* buffer = writer_archive.GetBuffer();
+                    uint32_t byte_count = writer_archive.GetBufferSize();
+                    LOG_VALID_F( "Broadcasting serialized bimap (%d bytes)\n", byte_count );
+                    EnvPtr->MPI.p_idm_mpi->PostChars( const_cast<char*>(buffer), byte_count, rank );
+                }
+                else
+                {
+                    std::vector<char> received;
+                    EnvPtr->MPI.p_idm_mpi->GetChars( received, rank );
+                    auto json_reader = new JsonRawReader( received.data() );
+                    IArchive& reader_archive = *static_cast<IArchive*>(json_reader);
+                    size_t entry_count;
+                    reader_archive.startArray( entry_count );
+                        LOG_VALID_F( "Merging %d id-suid bimap entries from rank %d\n", entry_count, rank );
+                        for (size_t i = 0; i < entry_count; ++i)
+                        {
+                            uint32_t id;
+                            suids::suid suid;
+                            reader_archive.startObject();
+                                reader_archive.labelElement( "id" ) & id;
+                                reader_archive.labelElement( "suid_data" ) & suid.data;
+                            reader_archive.endObject();
+                            merged_map.insert(nodeid_suid_pair(id, suid));
+                        }
+                    reader_archive.endArray();
+                    delete json_reader;
+                    //delete [] buffer;
+                }
             }
 
-            for (auto& pair : y)
-            {
-                if(!(mergedMap.insert(pair).second)) // .second is false if the key already existed
-                    throw(merge_duplicate_key_exception());
-            }
-
-            return mergedMap;
+            delete json_writer;
         }
-    };
+    }
 
-    int Simulation::populateFromDemographics(const char* campaignfilename, const char* loadbalancefilename)
+    IMigrationInfoFactory* Simulation::CreateMigrationInfoFactory ( const std::string& idreference,
+                                                                    MigrationStructure::Enum ms,
+                                                                    int torusSize )
+    {
+        IMigrationInfoFactory* pmf = MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config, 
+                                                                                      idreference,
+                                                                                      m_simConfigObj->sim_type,
+                                                                                      ms,
+                                                                                      !(m_simConfigObj->demographics_initial),
+                                                                                      torusSize );
+        return pmf ;
+    }
+
+    void Simulation::LoadInterventions( const char* campaignfilename )
     {
         JsonConfigurable::_track_missing = false;
         // Set up campaign interventions from file
@@ -693,12 +879,25 @@ namespace Kernel
 #endif
 
             loadCampaignFromFile(campaignfilename);
+
+            std::string transitions_file_path = FileSystem::Concat( Environment::getInstance()->OutputPath, std::string(Node::transitions_dot_json_filename) );
+            if( FileSystem::FileExists( transitions_file_path ) )
+            {
+                loadCampaignFromFile(transitions_file_path);
+            }
         }
 
         JsonConfigurable::_track_missing = true;
+    }
 
+    int Simulation::populateFromDemographics(const char* campaignfilename, const char* loadbalancefilename)
+    {
         // Initialize node demographics from file
-        demographics_factory = NodeDemographicsFactory::CreateNodeDemographicsFactory(&nodeid_suid_map, EnvPtr->Config);
+        demographics_factory = NodeDemographicsFactory::CreateNodeDemographicsFactory( &nodeid_suid_map, 
+                                                                                       EnvPtr->Config,
+                                                                                       m_simConfigObj->demographics_initial,
+                                                                                       m_simConfigObj->default_torus_size,
+                                                                                       m_simConfigObj->default_node_population );
         if (demographics_factory == nullptr)
         {
             throw InitializationException( __FILE__, __LINE__, __FUNCTION__, "Failed to create NodeDemographicsFactory" );
@@ -707,11 +906,11 @@ namespace Kernel
         demographicsContext = demographics_factory->CreateDemographicsContext();
         string idreference  = demographics_factory->GetIdReference();
         vector<uint32_t> nodeIDs = demographics_factory->GetNodeIDs();
-        ClimateFactory * climate_factory = NULL;
+        ClimateFactory * climate_factory = nullptr;
 #ifndef DISABLE_CLIMATE
         // Initialize climate from file
         climate_factory = ClimateFactory::CreateClimateFactory(&nodeid_suid_map, EnvPtr->Config, idreference);
-        if (climate_factory == NULL)
+        if (climate_factory == nullptr)
         {
             throw InitializationException( __FILE__, __LINE__, __FUNCTION__, "Failed to create ClimateFactory" );
         }
@@ -719,18 +918,8 @@ namespace Kernel
         // We can validate climate structure against sim_type now.
 
         // Initialize load-balancing scheme from file
-        boost::scoped_ptr<LegacyFileInitialLoadBalanceScheme> filescheme(_new_ LegacyFileInitialLoadBalanceScheme());
-        boost::scoped_ptr<CheckerboardInitialLoadBalanceScheme> checkerboardscheme(_new_ CheckerboardInitialLoadBalanceScheme());
-        if (filescheme->Initialize(loadbalancefilename, nodeIDs.size()))
-        {
-            LOG_INFO("Loaded load balancing file.\n");
-            nodeRankMap.SetInitialLoadBalanceScheme((IInitialLoadBalanceScheme*)filescheme.get());
-        }
-        else 
-        {
-            LOG_WARN("Failed to use legacy loadbalance file. Defaulting to checkerboard.\n");
-            nodeRankMap.SetInitialLoadBalanceScheme((IInitialLoadBalanceScheme*)checkerboardscheme.get());
-        }
+        IInitialLoadBalanceScheme* p_lbs = LoadBalanceSchemeFactory::Create( loadbalancefilename, nodeIDs.size(), EnvPtr->MPI.NumTasks );
+        nodeRankMap.SetInitialLoadBalanceScheme( p_lbs );
 
         // Delete any existing transitions.json file
         // TODO: only remove the transitions.json file if running on a single computer and single node 
@@ -743,7 +932,7 @@ namespace Kernel
             LOG_DEBUG_F( "Deleting any existing %s file.\n", transitions_file_path.c_str() );
             FileSystem::RemoveFile( transitions_file_path );
         }
-        MPI_Barrier( MPI_COMM_WORLD );
+        EnvPtr->MPI.p_idm_mpi->Barrier();
 
         // Add nodes according to demographics-and climate file specifications
         for (auto node_id : nodeIDs)
@@ -765,52 +954,48 @@ namespace Kernel
 
         // Merge nodeid<->suid bimaps
         nodeid_suid_map_t merged_map;
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        merged_map = all_reduce(*(EnvPtr->MPI.World), nodeid_suid_map, map_merge());
-#else
-        merged_map = nodeid_suid_map;
-#endif
+        MergeNodeIdSuidBimaps( nodeid_suid_map, merged_map );
 
         // Initialize migration structure from file
-        MigrationInfoFactory * migration_factory = NULL;
-        release_assert( m_simConfigObj );
-        if (m_simConfigObj->migration_structure != MigrationStructure::NO_MIGRATION)
+        IMigrationInfoFactory * migration_factory = CreateMigrationInfoFactory( idreference, 
+                                                                                m_simConfigObj->migration_structure, 
+                                                                                m_simConfigObj->default_torus_size );
+
+        if (migration_factory == nullptr)
         {
-            migration_factory = MigrationInfoFactory::CreateMigrationInfoFactory(&merged_map, EnvPtr->Config, idreference);
-
-            if (migration_factory == NULL)
-            {
-                throw InitializationException( __FILE__, __LINE__, __FUNCTION__, "MigrationInfoFactory" );
-            }
-
-            if (m_simConfigObj->demographics_initial          &&
-                migration_factory->airmig_filename.empty()    &&
-                migration_factory->localmig_filename.empty()  &&
-                migration_factory->regionmig_filename.empty() &&
-                migration_factory->seamig_filename.empty())
-            {
-                throw IncoherentConfigurationException(__FILE__, __LINE__, __FUNCTION__, "Enable_Demographics_Initial and Migration_Model", "true and not NO_MIGRATION (respectively)", "(all of air, local, regional, and sea migration filenames)", "(empty)");
-            }
-
-            for (auto& entry : nodes)
-            {
-                release_assert(entry.second);
-                (entry.second)->SetupMigration(migration_factory);
-            }
+            throw InitializationException( __FILE__, __LINE__, __FUNCTION__, "IMigrationInfoFactory" );
         }
+
+        can_support_family_trips = IndividualHumanConfig::CanSupportFamilyTrips( migration_factory );
+
+        release_assert( m_simConfigObj );
+        if( (m_simConfigObj->migration_structure != MigrationStructure::NO_MIGRATION) &&
+            m_simConfigObj->demographics_initial &&
+            !migration_factory->IsAtLeastOneTypeConfiguredForIndividuals() )
+        {
+            LOG_WARN("Enable_Demographics_Initial is set to true,  Migration_Model != NO_MIGRATION, and no migration file names have been defined and enabled.  No file-based migration will occur.\n");
+        }
+
+        for (auto& entry : nodes)
+        {
+            release_assert(entry.second);
+            (entry.second)->SetupMigration( migration_factory, m_simConfigObj->migration_structure, merged_map );
+        }
+
+        LoadInterventions( campaignfilename );
 
 #ifndef DISABLE_CLIMATE
         // Clean up
         delete climate_factory; 
-        climate_factory = NULL;
+        climate_factory = nullptr;
 #endif
 
         delete migration_factory;
-        migration_factory = NULL;
+        migration_factory = nullptr;
 
 
         LOG_INFO_F( "populateFromDemographics() created %d nodes\n", nodes.size() );
-        return (int)nodes.size();
+        return int(nodes.size());
     }
 
     void Kernel::Simulation::addNewNodeFromDemographics(suids::suid node_suid, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory)
@@ -819,18 +1004,13 @@ namespace Kernel
         addNode_internal(node, nodedemographics_factory, climate_factory);
     }
 
-    void Kernel::Simulation::addNode_internal(Node *node, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory)
+    void Kernel::Simulation::addNode_internal( INodeContext *node, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory)
     {
         release_assert(node);
         release_assert(nodedemographics_factory);
 #ifndef DISABLE_CLIMATE
         release_assert(climate_factory);
 #endif
-
-        // Add node to the map
-        nodes.insert(std::pair<suids::suid, Node*>(node->GetSuid(), (Node*)node));
-        node_event_context_list.push_back( node->GetEventContext() );
-        nodeRankMap.Add(node->GetSuid(), EnvPtr->MPI.Rank);
 
         // Node initialization
         node->SetParameters(nodedemographics_factory, climate_factory);
@@ -839,8 +1019,13 @@ namespace Kernel
         // Populate node
         node->PopulateFromDemographics();
 
+        // Add node to the map
+        nodes.insert( std::pair<suids::suid, INodeContext*>(node->GetSuid(), node) );
+        node_event_context_list.push_back( node->GetEventContext() );
+        nodeRankMap.Add( EnvPtr->MPI.Rank, node );
+
         notifyNewNodeObservers(node);
-    }
+    } 
 
     void Simulation::loadCampaignFromFile( const std::string& campaignfilename )
     {
@@ -868,36 +1053,87 @@ namespace Kernel
     {
         LOG_DEBUG("resolveMigration\n");
 
-        // Entire implementation of "resolveMigrationInternal" moved to header file
-        // as a (necessary?) step towards disease-specific DLLs (because of the template)
-        resolveMigrationInternal(typed_migration_queue_storage, migratingIndividualQueues);
+        WithSelfFunc to_self_func = [this](int myRank) 
+        { 
+#ifndef CLORTON
+            // Don't bother to serialize locally
+            // for (auto individual : migratingIndividualQueues[destination_rank]) // Note the direction of iteration below!
+            for (auto iterator = migratingIndividualQueues[myRank].rbegin(); iterator != migratingIndividualQueues[myRank].rend(); ++iterator)
+            {
+                auto individual = *iterator;
+                auto* emigre = dynamic_cast<IMigrate*>(individual);
+                emigre->ImmigrateTo( nodes[emigre->GetMigrationDestination()] );
+                if( individual->IsDead() )
+                {
+                    // we want the individual to migrate home and then finish dieing
+                    delete individual;
+                }
+            }
+#else
+            if ( migratingIndividualQueues[myRank].size() > 0 )
+            {
+                auto writer = make_shared<BinaryArchiveWriter>();
+                (*static_cast<IArchive*>(writer.get())) & migratingIndividualQueues[myRank];
+
+                for (auto& individual : migratingIndividualQueues[myRank])
+                    delete individual; // individual->Recycle();
+
+                migratingIndividualQueues[myRank].clear();
+
+                //if ( EnvPtr->Log->CheckLogLevel(Logger::VALIDATION, _module) ) {
+                //    _write_json( int(currentTime.time), EnvPtr->MPI.Rank, myRank, "self", static_cast<IArchive*>(writer.get())->GetBuffer(), static_cast<IArchive*>(writer.get())->GetBufferSize() );
+                //}
+
+                auto reader = make_shared<BinaryArchiveReader>(static_cast<IArchive*>(writer.get())->GetBuffer(), static_cast<IArchive*>(writer.get())->GetBufferSize());
+                (*static_cast<IArchive*>(reader.get())) & migratingIndividualQueues[myRank];
+                for (auto individual : migratingIndividualQueues[myRank])
+                {
+                    auto* immigrant = dynamic_cast<IMigrate*>(individual);
+                    immigrant->ImmigrateTo( nodes[immigrant->GetMigrationDestination()] );
+                }
+            }
+#endif
+        }; 
+
+        SendToOthersFunc to_others_func = [this](IArchive* writer, int toRank)
+        {
+            *writer & migratingIndividualQueues[toRank];
+            for (auto& individual : migratingIndividualQueues[toRank])
+                individual->Recycle();  // delete individual
+        };
+
+        ClearDataFunc clear_data_func = [this](int rank)
+        {
+            migratingIndividualQueues[rank].clear();
+        };
+
+        ReceiveFromOthersFunc from_others_func = [this](IArchive* reader, int fromRank)
+        {
+            *reader & migratingIndividualQueues[fromRank];
+            for (auto individual : migratingIndividualQueues[fromRank])
+            {
+                IMigrate* immigrant = dynamic_cast<IMigrate*>(individual);
+                immigrant->ImmigrateTo( nodes[immigrant->GetMigrationDestination()] );
+                if( individual->IsDead() )
+                {
+                    // we want the individual to migrate home and then finish dieing
+                    delete individual;
+                }
+            }
+        };
+
+        MpiDataExchanger exchanger( "HumanMigration", to_self_func, to_others_func, from_others_func, clear_data_func );
+        exchanger.ExchangeData( this->currentTime );
     }
 
-    void Simulation::PostMigratingIndividualHuman(IndividualHuman *i)
+    void Simulation::PostMigratingIndividualHuman(IIndividualHuman *i)
     {
         migratingIndividualQueues[nodeRankMap.GetRankFromNodeSuid(i->GetMigrationDestination())].push_back(i);
     }
 
-    boost::mpi::request Simulation::sendHuman(IndividualHuman *ind_human, int dest_rank)
+    bool Simulation::CanSupportFamilyTrips() const
     {
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        boost::mpi::request request = EnvPtr->MPI.World->isend(dest_rank, 0, *ind_human);
-#else
-        boost::mpi::request request;
-#endif
-        return request;
-    }
-
-    IndividualHuman* Simulation::receiveHuman(int src_rank)
-    {
-        IndividualHuman* newHuman = IndividualHuman::CreateHuman();
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        boost::mpi::request request   = EnvPtr->MPI.World->irecv(src_rank, 0, *newHuman); 
-        request.wait();
-#endif
-
-        // TODO: handle errors by returning NULL
-        return newHuman;
+        return can_support_family_trips;
     }
 
     //------------------------------------------------------------------
@@ -934,6 +1170,21 @@ namespace Kernel
         return infectionSuidGenerator();
     }
 
+    suids::suid Simulation::GetNodeSuid( uint32_t external_node_id )
+    {
+        return nodeRankMap.GetSuidFromExternalID( external_node_id );
+    }
+
+    ExternalNodeId_t Simulation::GetNodeExternalID( const suids::suid& rNodeSuid )
+    {
+        return nodeRankMap.GetNodeInfo( rNodeSuid ).GetExternalID();
+    }
+
+    uint32_t Simulation::GetNodeRank( const suids::suid& rNodeSuid )
+    {
+        return nodeRankMap.GetRankFromNodeSuid( rNodeSuid );
+    }
+
     RANDOMBASE* Simulation::GetRng()
     {
         return rng;
@@ -954,7 +1205,7 @@ namespace Kernel
         return individual_data_reports ;
     }
 
-    int Simulation::getInitialRankFromNodeId(node_id_t node_id)
+    int Simulation::getInitialRankFromNodeId( ExternalNodeId_t node_id )
     {
         return nodeRankMap.GetInitialRankFromNodeId(node_id); // R: leave as a wrapper call to nodeRankMap.GetInitialRankFromNodeId()
     }
@@ -984,7 +1235,96 @@ namespace Kernel
         return m_interventionFactoryObj;
     }
 
-#if USE_BOOST_SERIALIZATION
+    REGISTER_SERIALIZABLE(Simulation);
+
+    void Simulation::serialize(IArchive& ar, Simulation* obj)
+    {
+        Simulation& sim = *obj;
+        ar.labelElement("serializationMask") & (uint32_t&)sim.serializationMask;
+
+        if ((sim.serializationMask & SerializationFlags::Population) != 0) {
+            ar.labelElement("nodes"); serialize(ar, sim.nodes);
+        }
+
+        if ((sim.serializationMask & SerializationFlags::Parameters) != 0) {
+            ar.labelElement("campaignFilename") & sim.campaignFilename;
+
+            ar.labelElement("Ind_Sample_Rate") & sim.Ind_Sample_Rate;
+
+            ar.labelElement("sim_type") & (uint32_t&)sim.sim_type;
+            ar.labelElement("demographic_tracking") & sim.demographic_tracking;
+            ar.labelElement("enable_spatial_output") & sim.enable_spatial_output;
+            ar.labelElement("enable_property_output") & sim.enable_property_output;
+            ar.labelElement("enable_default_report") & sim.enable_default_report;
+            ar.labelElement("enable_event_report") & sim.enable_event_report;
+
+            ar.labelElement("loadbalance_filename") & sim.loadbalance_filename;
+            ar.labelElement("Run_Number") & sim.Run_Number;
+        }
+
+        if ((sim.serializationMask & SerializationFlags::Properties) != 0) {
+// clorton          ar.labelElement("nodeRankMap") & sim.nodeRankMap;
+// clorton          ar.labelElement("node_event_context_list") & sim.node_event_context_list;
+// clorton          ar.labelElement("nodeid_suid_map") & sim.nodeid_suid_map;
+// clorton          ar.labelElement("migratingIndividualQueues") & sim.migratingIndividualQueues;
+// clorton          ar.labelElement("m_simConfigObj") & sim.m_simConfigObj;
+// clorton          ar.labelElement("m_interventionFactoryObj") & sim.m_interventionFactoryObj;
+// clorton          ar.labelElement("demographicsContext") & sim.demographicsContext;
+// clorton          ar.labelElement("infectionSuidGenerator") & sim.infectionSuidGenerator;
+// clorton          ar.labelElement("individualHumanSuidGenerator") & sim.individualHumanSuidGenerator;
+// clorton          ar.labelElement("nodeSuidGenerator") & sim.nodeSuidGenerator;
+            ar.labelElement("loadBalanceFilename") & sim.loadBalanceFilename;
+// clorton          ar.labelElement("rng") & sim.rng;
+// clorton          ar.labelElement("reports") & sim.reports;
+// clorton          ar.labelElement("individual_data_reports") & sim.individual_data_reports;
+// clorton          ar.labelElement("reportClassCreator") & sim.reportClassCreator;
+// clorton          ar.labelElement("binnedReportClassCreator") & sim.binnedReportClassCreator;
+// clorton          ar.labelElement("spatialReportClassCreator") & sim.spatialReportClassCreator;
+// clorton          ar.labelElement("propertiesReportClassCreator") & sim.propertiesReportClassCreator;
+// clorton          ar.labelElement("demographicsReportClassCreator") & sim.demographicsReportClassCreator;
+// clorton          ar.labelElement("eventReportClassCreator") & sim.eventReportClassCreator;
+// clorton          ar.labelElement("event_coordinators") & sim.event_coordinators;
+// clorton          ar.labelElement("campaign_events") & sim.campaign_events;
+// clorton          ar.labelElement("event_context_host") & sim.event_context_host;
+// clorton          ar.labelElement("currentTime") & sim.currentTime;
+            ar.labelElement("random_type") & (uint32_t&)sim.random_type;
+            ar.labelElement("campaign_filename") & sim.campaign_filename;
+// clorton          ar.labelElement("demographics_factory") & sim.demographics_factory;
+// clorton          ar.labelElement("new_node_observers") & sim.new_node_observers;
+        }
+    }
+
+    void Simulation::serialize(IArchive& ar, NodeMap_t& node_map)
+    {
+        size_t count = (ar.IsWriter() ? node_map.size() : -1);
+        ar.startArray(count);
+        if (ar.IsWriter())
+        {
+            for (auto& entry : node_map)
+            {
+                ar.startObject();
+                ar.labelElement("suid_data") & (uint32_t&)(entry.first.data);
+                ar.labelElement("node") & entry.second;
+                ar.endObject();
+            }
+        }
+        else
+        {
+            for (size_t i = 0; i < count; ++i)
+            {
+                ar.startObject();
+                suids::suid suid;
+                ISerializable* obj;
+                ar.labelElement("suid_data") & suid.data;
+                ar.labelElement("node") & obj;
+                ar.endObject();
+                node_map[suid] = static_cast<Node*>(obj);
+            }
+        }
+        ar.endArray();
+    }
+
+#if 0
     template<class Archive>
     void serialize(Archive & ar, Simulation &sim, const unsigned int  file_version )
     {
@@ -1007,7 +1347,7 @@ namespace Kernel
 
         ar  & sim.campaignFilename
         ar & sim.event_context_host;
-        ar.register_type(static_cast<PSEUDO_DES*>(NULL));
+        ar.register_type(static_cast<PSEUDO_DES*>(nullptr));
         ar & sim.rng;
 
         if (typename Archive::is_loading())
@@ -1017,122 +1357,4 @@ namespace Kernel
     }
 #endif
 
-
-    void
-    Simulation::doJsonDeserializeReceive()
-    {
-
-        for (int src_rank = 0; src_rank < EnvPtr->MPI.NumTasks; src_rank++)
-        {
-            if (src_rank == EnvPtr->MPI.Rank) continue; // we'll never receive a message from our own process
-
-            int receiving_humans;
-            MPI_Status status;
-            MPI_Request mpi_request;
-            MPI_Irecv(&receiving_humans, 1, MPI_INT, src_rank, 0, MPI_COMM_WORLD, &mpi_request); // receive number of humans I need to receive
-            MPI_Wait(&mpi_request, &status);
-            LOG_DEBUG_F( "mpi receiving %d humans from src_rank=%d\n", receiving_humans, src_rank );
-            if (receiving_humans > 0) 
-            {
-                //if (ENABLE_DEBUG_MPI_TIMING)
-                //    LOG_INFO_F("syncDistributedState(): Rank %d receiving %d individuals from %d.\n", EnvPtr->MPI.Rank, receiving_humans, src_rank);
-
-                // receive the whole list structure
-                //typed_migration_queue_storage.receive_queue.resize(receiving_humans);
-
-                LOG_DEBUG( "rapidjson receiving!\n" );
-                std::string receive_buffer;
-                boost::mpi::request request = EnvPtr->MPI.World->irecv(src_rank, 0, receive_buffer);                 
-
-                request.wait();
-                
-                LOG_DEBUG( "rapidjson Parsing!\n" );
-                std::list< IndividualHuman* > immigrants;
-                try
-                {
-                    //json::Reader::Read( serialPplJsonArray, serialPpl );
-                    rapidjson::Document document;
-                    document.Parse<0>( receive_buffer.c_str() );
-                    LOG_DEBUG( "rapidjson Parsed!\n" );
-                    LOG_DEBUG_F( "Creating & deserializing %d humans.\n", document.Size() );
-                    //for( unsigned int idx = 0; idx < ppl_array.Size(); idx ++ )
-                    bool infected_migrant = false;
-                    for( unsigned int idx = 0; idx < document.Size(); idx ++ )
-                    {
-
-                        // Check if this is base class IndividualHuman, or the derived one
-                        int mig_dest_data = -1;
-                        if (document[ idx ]["IndividualHuman"].IsObject())
-                        {
-                            // derived class
-                            mig_dest_data = (int) document[ idx ]["IndividualHuman"][ "migration_destination" ][ "data" ].GetInt();
-                        }
-                        else
-                        {
-                            // it is base class
-                            mig_dest_data = (int) document[ idx ][ "migration_destination" ][ "data" ].GetInt();
-                        }
-                       
-                        suids::suid node_id;
-                        //LOG_DEBUG( "Getting migration_destination\n" );
-                        node_id.data = mig_dest_data;
-                        Node * targetNode = nodes[ node_id ];
-                        if( targetNode == NULL )
-                        {
-                            LOG_WARN( "Weird, node pointer is null. We get sent to the wrong place????\n" );
-                            continue;
-                        }
-                        //IndividualHuman * new_individual = targetNode->addNewIndividual(0.0/*mc weight*/, 0.0 /*age*/, 0, 0 /*(int)(rand()%20)/18.0*//*infs*/, (float)0.0 /*imm*/, (float)0.0/*risk*/, (float)0.0f/*mighet*/, (float)0.0f /*poverty*/);
-                        IndividualHuman * new_individual = targetNode->addNewIndividualFromSerialization();
-
-#if USE_JSON_SERIALIZATION || USE_JSON_MPI
-                        new_individual->JDeserialize( (IJsonObjectAdapter*) &document[ idx ], NULL );
-                        //new_individual->JDeserialize( json::json_cast< const json::Object& > ( ppl_array[ idx ] ) );
-#endif
-
-                        LOG_DEBUG_F( "new_individual ImmigrateTo to targetNode: %d\n", node_id.data );
-                        new_individual->ImmigrateTo( targetNode ); // this causes crashes for some inexplicable reason: memory corruption???
-
-
-                        //infected_migrant |= ( document[ idx ][ "infections" ].Size() > 0 ? true : false );
-                    }
-
-                    //LOG_INFO_F("Receive from src rank %d humans %d for %d bytes\n", src_rank, receiving_humans, receive_buffer.size()); 
-#if 0
-                    if( infected_migrant )
-                    {
-                        std::ostringstream msgFileName;
-                        msgFileName << "message_received" << EnvPtr->MPI.Rank << ".json";
-
-                        std::ofstream msgReceived( msgFileName.str(), std::ios::out );
-                        msgReceived << receive_buffer;
-                        msgReceived.close();
-                    }
-#endif
-
-                }
-                catch( json::Exception &e )
-                {
-                    throw Kernel::GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, e.what() );
-                }
-
-                //typed_migration_queue_storage.receive_queue.clear();
-
-            } // if (receiving_humans > 0) 
-
-        } // for (int src_rank = 0; src_rank < EnvPtr->MPI.NumTasks; src_rank++)
-        LOG_DEBUG( "Done receiving.\n" );
-
-    } 
 }
-
-
-#if USE_BOOST_SERIALIZATION
-template void Kernel::serialize( boost::archive::binary_oarchive & ar, Simulation& sim, const unsigned int file_version);
-template void Kernel::serialize( boost::archive::binary_iarchive & ar, Simulation& sim, const unsigned int file_version);
-#endif
-
-#ifdef _DLLS_
-// hack because of weird build error on dll, just seeing if this works, will use as data to solve problem
-//Environment* EnvPtr = NULL;
-#endif

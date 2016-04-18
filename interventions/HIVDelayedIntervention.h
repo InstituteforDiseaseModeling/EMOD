@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Configure.h"
 #include "InterpolatedValueMap.h"
 #include "IHIVCascadeStateIntervention.h"
-#include <string>
+#include "EventTrigger.h"
 
 namespace Kernel
 {
@@ -22,8 +22,8 @@ namespace Kernel
     {
         DECLARE_FACTORY_REGISTERED(InterventionFactory, HIVDelayedIntervention, IDistributableIntervention)
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
-    
-    public: 
+
+    public:
         HIVDelayedIntervention();
         HIVDelayedIntervention( const HIVDelayedIntervention& );
 
@@ -37,7 +37,7 @@ namespace Kernel
 
         // IHIVCascadeStateIntervention
         virtual const std::string& GetCascadeState();
-        virtual const JsonConfigurable::tDynamicStringSet& GetAbortStates();
+        virtual const jsonConfigurable::tDynamicStringSet& GetAbortStates();
 
     protected:
         virtual void CalculateDelay();
@@ -51,19 +51,14 @@ namespace Kernel
         bool qualifiesToGetIntervention( IIndividualHumanContext* pIndivid );
 
         InterpolatedValueMap year2DelayMap;
-        JsonConfigurable::tDynamicStringSet abortStates;
+        jsonConfigurable::tDynamicStringSet abortStates;
         std::string cascadeState;
         float days_remaining;
         bool firstUpdate;
 
-        ConstrainedString broadcast_event;
-        ConstrainedString broadcast_on_expiration_event;
+        EventTrigger broadcast_event;
+        EventTrigger broadcast_on_expiration_event;
 
-    private:
-        // Serialization
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        template<class Archive>
-        friend void serialize(Archive &ar, HIVDelayedIntervention &obj, const unsigned int v);
-#endif
+        DECLARE_SERIALIZABLE(HIVDelayedIntervention);
     };
 }

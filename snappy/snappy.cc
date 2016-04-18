@@ -236,7 +236,7 @@ static inline char* EmitCopy(char* op, size_t offset, int len) {
 bool GetUncompressedLength(const char* start, size_t n, size_t* result) {
   uint32 v = 0;
   const char* limit = start + n;
-  if (Varint::Parse32WithLimit(start, limit, &v) != NULL) {
+  if (Varint::Parse32WithLimit(start, limit, &v) != nullptr) {
     *result = v;
     return true;
   } else {
@@ -262,7 +262,7 @@ uint16* WorkingMemory::GetHashTable(size_t input_size, int* table_size) {
   if (htsize <= ARRAYSIZE(small_table_)) {
     table = small_table_;
   } else {
-    if (large_table_ == NULL) {
+    if (large_table_ == nullptr) {
       large_table_ = new uint16[kMaxHashTableSize];
     }
     table = large_table_;
@@ -658,8 +658,8 @@ class SnappyDecompressor {
  public:
   explicit SnappyDecompressor(Source* reader)
       : reader_(reader),
-        ip_(NULL),
-        ip_limit_(NULL),
+        ip_(nullptr),
+        ip_limit_(nullptr),
         peeked_(0),
         eof_(false) {
   }
@@ -678,7 +678,7 @@ class SnappyDecompressor {
   // On succcess, stores the length in *result and returns true.
   // On failure, returns false.
   bool ReadUncompressedLength(uint32* result) {
-    DCHECK(ip_ == NULL);       // Must not have read anything yet
+    DCHECK(ip_ == nullptr);       // Must not have read anything yet
     // Length is encoded in 1..5 bytes
     *result = 0;
     uint32 shift = 0;
@@ -875,8 +875,8 @@ size_t Compress(Source* reader, Sink* writer) {
   written += (p - ulength);
 
   internal::WorkingMemory wmem;
-  char* scratch = NULL;
-  char* scratch_output = NULL;
+  char* scratch = nullptr;
+  char* scratch_output = nullptr;
 
   while (N > 0) {
     // Get next block to compress (without copying if possible)
@@ -893,7 +893,7 @@ size_t Compress(Source* reader, Sink* writer) {
       fragment_size = num_to_read;
     } else {
       // Read into scratch buffer
-      if (scratch == NULL) {
+      if (scratch == nullptr) {
         // If this is the last iteration, we want to allocate N bytes
         // of space, otherwise the max possible kBlockSize space.
         // num_to_read contains exactly the correct value
@@ -924,7 +924,7 @@ size_t Compress(Source* reader, Sink* writer) {
 
     // Need a scratch buffer for the output, in case the byte sink doesn't
     // have room for us directly.
-    if (scratch_output == NULL) {
+    if (scratch_output == nullptr) {
       scratch_output = new char[max_output];
     } else {
       // Since we encode kBlockSize regions followed by a region

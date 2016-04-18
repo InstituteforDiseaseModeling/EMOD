@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,7 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "IIndividualHumanSTI.h"
 #include "IRelationship.h"
-#include "Infection.h"
+#include "IInfection.h"
 
 static const char* _module = "StiTransmissionReporter";
 
@@ -145,6 +145,13 @@ namespace Kernel
         info.time = individual->GetParent()->GetTime().time;
         info.year = individual->GetParent()->GetTime().Year();
 
+        // --------------------------------------------------------
+        // --- Assuming that the individuals in a relationship
+        // --- must be in the same node.
+        //release_assert( false );
+        // --------------------------------------------------------
+        info.node_id = individual->GetParent()->GetExternalID();
+
         // DESTINATION
         info.destination_id                             = individual->GetSuid().data;
         info.destination_is_infected                    = individual->IsInfected();
@@ -171,6 +178,7 @@ namespace Kernel
         header 
             << "SIM_TIME" << ','
             << "YEAR" << ','
+            << "NODE_ID" << ','
             << "SRC_ID" << ','
             << "SRC_INFECTED" << ','
             << "SRC_GENDER" << ','
@@ -212,6 +220,7 @@ namespace Kernel
             GetOutputStream() 
                 << entry.time << ','
                 << entry.year << ','
+                << entry.node_id << ','
                 << entry.source_id << ','
                 << entry.source_is_infected << ','
                 << entry.source_gender << ','

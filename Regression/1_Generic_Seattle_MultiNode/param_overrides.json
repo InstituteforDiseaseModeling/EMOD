@@ -3,7 +3,7 @@
      "parameters": {
           "DEMOGRAPHICS": {
                "Birth_Rate_Dependence": "POPULATION_DEP_RATE", 
-               "Demographics_Filename": "Seattle_30arcsec_demographics.compiled.json", 
+               "Demographics_Filenames": ["Seattle_30arcsec_demographics.compiled.json"], 
                "IMMUNITY": {
                     "Acquisition_Blocking_Immunity_Duration_Before_Decay": 270, 
                     "Transmission_Blocking_Immunity_Duration_Before_Decay": 270
@@ -35,6 +35,9 @@
                     "Air_Migration_Filename": ""
                },
                "Enable_Migration_Heterogeneity": 1, 
+               "Enable_Family_Migration": 0, 
+               "Family_Migration_Filename": "", 
+               "x_Family_Migration": 1,
                "LOCAL": {
                     "Enable_Local_Migration": 1,
                     "Local_Migration_Filename": "Seattle_30arcsec_local_migration.bin"

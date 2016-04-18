@@ -1,7 +1,7 @@
 {
     "Header": {
-        "DateTime": "Fri Jun 19 16:38:02 2015",
-        "DTK_Version": "5389 v2.0Release 2015/06/19 12:30:09",
+        "DateTime": "Fri Jul 31 12:02:19 2015",
+        "DTK_Version": "5526 trunk 2015/07/28 13:55:52",
         "Report_Type": "InsetChart",
         "Report_Version": "3.2",
         "Start_Time": 0,
@@ -110,10 +110,10 @@
                 0,
                 0,
                 0,
-                2,
-                2,
-                2,
-                2
+                0,
+                0,
+                0,
+                0
             ]
         },
         "Births": {
@@ -635,10 +635,10 @@
                 0,
                 0,
                 0,
-                2,
-                2,
-                2,
-                2
+                0,
+                0,
+                0,
+                0
             ]
         },
         "Number of Individuals HIV+ w/ CD4 < 200 (non-ART)": {
@@ -845,10 +845,10 @@
                 0,
                 0,
                 0,
-                2,
-                2,
-                2,
-                2
+                0,
+                0,
+                0,
+                0
             ]
         },
         "Post-Debut Population": {
@@ -1055,10 +1055,10 @@
                 48,
                 48,
                 48,
-                47,
-                47,
-                47,
-                47
+                48,
+                48,
+                48,
+                48
             ]
         },
         "Single Post-Debut Women": {
@@ -1090,10 +1090,10 @@
                 49,
                 49,
                 49,
-                48,
-                48,
-                48,
-                48
+                49,
+                49,
+                49,
+                49
             ]
         },
         "Statistical Population": {

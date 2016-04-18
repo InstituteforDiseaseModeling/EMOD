@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -11,6 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "VectorEnums.h"
 #include "BoostLibWrapper.h"
+#include "IArchive.h"
 
 namespace Kernel
 {
@@ -63,6 +64,8 @@ namespace Kernel
             return lhs.GetIndex() == GetIndex();
         }
 
+        static void serialize(IArchive&, VectorMatingStructure&);
+
     protected:
         // Helper function to take a single parent's alleles (e.g. HALF)
         // and return the fraction of each gene (e.g. 0.5,0.5)
@@ -88,11 +91,5 @@ namespace Kernel
                 unsigned int              : 4; // pad to 16 bits
             };
         } vector_mating;
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, VectorMatingStructure &obj, const unsigned int  file_version );
-#endif
     };
 }

@@ -50,13 +50,12 @@
             "Event_Coordinator_Config":
             {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "ExplicitAgeRangesAndGender",
-                "Target_Gender": "Male",
-                "Demographic_Coverage": 1,
                 "Intervention_Config":
                 {
-                    "Demographic_Coverage": 1,
                     "class": "BirthTriggeredIV",
+                    "Demographic_Coverage": 1,
+                    "Target_Demographic": "ExplicitGender",
+                    "Target_Gender": "Male",
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "DelayedIntervention",

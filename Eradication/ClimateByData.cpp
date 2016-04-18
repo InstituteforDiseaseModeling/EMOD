@@ -1,21 +1,24 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
-#include <cstdlib>
 #include "ClimateByData.h"
 #include "Contexts.h"
 #include "Environment.h"
 #include "Common.h"
 #include "Exceptions.h"
 
-#include "SimulationConfig.h"
+#ifdef WIN32
+#include <float.h>
+#else
+#include <cmath>
+#endif
 
 const char * _module = "ClimateByData";
 
@@ -58,8 +61,8 @@ namespace Kernel {
 
         // check to see whether fewer than 2.5% of the values will exceed the upper- and lower-bounds
 
-        int low_index = (int) (num_datapoints * 0.025);
-        int high_index = (int) (num_datapoints * 0.975);
+        int low_index = int(num_datapoints * 0.025);
+        int high_index = int(num_datapoints * 0.975);
 
         std::vector<float> sorted = airtemperature_data;
         sort(sorted.begin(), sorted.end());
@@ -100,6 +103,39 @@ namespace Kernel {
         return true;
     }
 
+#ifdef WIN32
+#define _ISNAN_(_f) _isnan(_f)
+#define _ISINF_(_f) !_finite(_f)
+#else
+#define _ISNAN_(_f) std::isnan(_f)
+#define _ISINF_(_f) std::isinf(_f)
+#endif
+
+    void CheckForNanOrInf( std::vector<float>& data, const char* source )
+    {
+        uint32_t index = 0;
+        for (float value : data)
+        {
+            if ( _ISNAN_( value ) )
+            {
+                // Consider OutOfRangeException( const char * file_name, int line_num, const char* func_name, const char* var_name = nullptr, float value = 0.0f, float value_violated = 0.0f );
+                std::ostringstream msg;
+                msg << "Found NaN value in " << source << " for current node at offset " << index << '.' << std::endl;
+                throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            }
+
+            if ( _ISINF_( value ) )
+            {
+                // Consider OutOfRangeException( const char * file_name, int line_num, const char* func_name, const char* var_name = nullptr, float value = 0.0f, float value_violated = 0.0f );
+                std::ostringstream msg;
+                msg << "Found infinite value in " << source << " for current node at offset " << index << '.' << std::endl;
+                throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            }
+
+            ++index;
+        }
+    }
+
     void ClimateByData::ReadDataFromFiles(int datapoints, std::ifstream& airtemperature_file, std::ifstream& landtemperature_file, std::ifstream& rainfall_file, std::ifstream& humidity_file)
     {
         LOG_DEBUG( "ReadDataFromFiles\n" );
@@ -111,14 +147,20 @@ namespace Kernel {
         num_datapoints = datapoints;
         num_years = int((float(num_datapoints) / (resolution_correction * DAYSPERYEAR)) + 0.01 /* compensate for rounding errors */);
 
-        airtemperature_file.read((char*) &airtemperature_data[0], datapoints*sizeof(float));
-        landtemperature_file.read((char*) &landtemperature_data[0], datapoints*sizeof(float));
-        rainfall_file.read((char*) &rainfall_data[0], datapoints*sizeof(float));
-        humidity_file.read((char*) &humidity_data[0], datapoints*sizeof(float));
+        airtemperature_file.read(  (char*)airtemperature_data.data(),  datapoints*sizeof(float) );
+        landtemperature_file.read( (char*)landtemperature_data.data(), datapoints*sizeof(float) );
+        rainfall_file.read(        (char*)rainfall_data.data(),        datapoints*sizeof(float) );
+        humidity_file.read(        (char*)humidity_data.data(),        datapoints*sizeof(float) );
 
         // TODO: in the future, we may want to do this scaling in a separate function and have 
         //       some sort of bool that checks whether the array has been initialized; that way
         //       if we do multiple runs with different scale values, things work as expected
+
+        // NaN's are very bad and, unfortunately, sometimes creep into climate files.
+        CheckForNanOrInf( airtemperature_data, "air temperature data" );
+        CheckForNanOrInf( landtemperature_data, "land temperature data" );
+        CheckForNanOrInf( rainfall_data, "rainfall data" );
+        CheckForNanOrInf( humidity_data, "relative humidity data" );
 
         // apply scaling factors to data
 
@@ -148,10 +190,9 @@ namespace Kernel {
     {
         LOG_DEBUG_F("UpdateWeather: time = %f", time);
         int index = 0;
-        float adjusted_time = 0;
 
         // Figure out index based on time and number of years of data
-        adjusted_time = time - (DAYSPERYEAR * num_years * int(time / (DAYSPERYEAR * num_years))); // adjust into n-year window
+        float adjusted_time = time - (DAYSPERYEAR * num_years * int(time / (DAYSPERYEAR * num_years))); // adjust into n-year window
 
         // now adjust based on number of data points spread over n years, unless monthly, in which case use old way with specific months (28-day February, etc...)
         if(resolution_correction == 1.0f / 30) // monthly
@@ -172,7 +213,7 @@ namespace Kernel {
         }
         else // everything except monthly
         {
-            index = (int) (adjusted_time * resolution_correction);
+            index = int(adjusted_time * resolution_correction);
         }
 
         // verify the index is not out of range
@@ -197,15 +238,11 @@ namespace Kernel {
     }
 }
 
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(Kernel::ClimateByData)
+#if 0
 namespace Kernel {
     template<class Archive>
     void serialize(Archive &ar, ClimateByData &climate, const unsigned int v)
     {
-        static const char * _module = "ClimateByData";
-        LOG_DEBUG("(De)serializing ClimateByData\n");
-
         ar & climate.num_datapoints;
         ar & climate.num_years
            & climate.airtemperature_data
@@ -217,4 +254,3 @@ namespace Kernel {
     }
 }
 #endif
-

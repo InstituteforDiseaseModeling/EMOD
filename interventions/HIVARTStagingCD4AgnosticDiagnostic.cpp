@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -15,8 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionEnums.h"
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
-#include "HIVInterventionsContainer.h" // for time-date util function and access into IHIVCascadeOfCare
-#include "Relationship.h"   // for discordant checking
+#include "IHIVInterventionsContainer.h" // for time-date util function and access into IHIVCascadeOfCare
 
 static const char * _module = "HIVARTStagingCD4AgnosticDiagnostic";
 
@@ -124,25 +123,20 @@ namespace Kernel
 
         return result;
     }
-}
 
+    REGISTER_SERIALIZABLE(HIVARTStagingCD4AgnosticDiagnostic);
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::HIVARTStagingCD4AgnosticDiagnostic)
-
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, HIVARTStagingCD4AgnosticDiagnostic& obj, const unsigned int v)
+    void HIVARTStagingCD4AgnosticDiagnostic::serialize(IArchive& ar, HIVARTStagingCD4AgnosticDiagnostic* obj)
     {
-        static const char * _module = "HIVARTStagingCD4AgnosticDiagnostic";
-        LOG_DEBUG("(De)serializing HIVARTStagingCD4AgnosticDiagnostic\n");
+        HIVARTStagingAbstract::serialize( ar, obj );
+        HIVARTStagingCD4AgnosticDiagnostic& diag = *obj;
 
-        boost::serialization::void_cast_register<HIVARTStagingCD4AgnosticDiagnostic, IDistributableIntervention>();
-        //ar & obj.abortStates;     // todo: serialize this!
-        ar & obj.cascadeState;
-        ar & obj.firstUpdate;
-        ar & boost::serialization::base_object<Kernel::HIVSimpleDiagnostic>(obj);
+        ar.labelElement("adultAge"                    ) & diag.adultAge;
+        ar.labelElement("adultByWHOStage"             ) & diag.adultByWHOStage;
+        ar.labelElement("childByWHOStage"             ) & diag.childByWHOStage;
+        ar.labelElement("adultByTB"                   ) & diag.adultByTB;
+        ar.labelElement("childByTB"                   ) & diag.childByTB;
+        ar.labelElement("adultByPregnant"             ) & diag.adultByPregnant;
+        ar.labelElement("childTreatUnderAgeThreshold" ) & diag.childTreatUnderAgeThreshold;
     }
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, Kernel::HIVARTStagingCD4AgnosticDiagnostic&, unsigned int);
 }
-#endif

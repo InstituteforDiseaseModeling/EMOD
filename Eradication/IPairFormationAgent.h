@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -13,16 +13,16 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IdmDateTime.h"
 #include "IIndividualHumanSTI.h"
 #include "Configure.h"
+#include "ISerializable.h"
 #include <map>
 #include <vector>
 
 using namespace std;
 
-namespace Kernel {
-
-    struct IDMAPI IPairFormationAgent : public JsonConfigurable
+namespace Kernel
+{
+    struct IDMAPI IPairFormationAgent : virtual ISerializable, JsonConfigurable
     {
-        virtual void SetUpdatePeriod(float) = 0;
         virtual void AddIndividual(IIndividualHumanSTI*) = 0;
         virtual void RemoveIndividual(IIndividualHumanSTI*) = 0;
         virtual void Update( const IdmDateTime& rCurrentTime, float dt ) = 0;

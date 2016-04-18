@@ -7,64 +7,121 @@
         "DateCreated": "2015-4-11"
     },
     "Defaults": {
-
         "Society" : {
-            "Pair_Formation_Parameters_TRANSITORY" :
+            "TRANSITORY" :
             {
-                "Number_Age_Bins_Male"   : 1,
-                "Number_Age_Bins_Female" : 1,
-                "Age_of_First_Bin_Edge_Male"   : 100,
-                "Age_of_First_Bin_Edge_Female" : 100,
-                "Years_Between_Bin_Edges_Male"   : 85,
-                "Years_Between_Bin_Edges_Female" : 85,
-                "Assortivity" :
+                "Relationship_Parameters" :
                 {
-                    "Group" : "NO_GROUP"
+                    "Coital_Act_Rate" : 0.33,
+                    "Condom_Usage_Probability" :
+                    {
+                        "Min": 0.0,
+                        "Max": 0.0,
+                        "Mid": 2000,
+                        "Rate": 1
+                    },
+                    "Duration_Weibull_Heterogeneity": 0.833333333,
+                    "Duration_Weibull_Scale": 0.956774771214,
+                    "Migration_Actions" : [ "TERMINATE" ],
+                    "Migration_Actions_Distribution" : [ 1.0 ]
                 },
-                "Joint_Probabilities" :
-                [
-                    [ 1 ]
-                ]
+                "Pair_Formation_Parameters" :
+                {
+                    "Formation_Rate_Type" : "CONSTANT",
+                    "Formation_Rate_Constant": 0.0027397260,
+                    "Update_Period" : 7,
+                    "Number_Age_Bins_Male"   : 1,
+                    "Number_Age_Bins_Female" : 1,
+                    "Age_of_First_Bin_Edge_Male"   : 100,
+                    "Age_of_First_Bin_Edge_Female" : 100,
+                    "Years_Between_Bin_Edges_Male"   : 85,
+                    "Years_Between_Bin_Edges_Female" : 85,
+                    "Joint_Probabilities" :
+                    [
+                        [ 1 ]
+                    ],
+                    "Assortivity" :
+                    {
+                        "Group" : "NO_GROUP"
+                    }
+                }
             },
-            "Pair_Formation_Parameters_INFORMAL" :
+            "INFORMAL" :
             {
-                "Number_Age_Bins_Male"   : 1,
-                "Number_Age_Bins_Female" : 1,
-                "Age_of_First_Bin_Edge_Male"   : 100,
-                "Age_of_First_Bin_Edge_Female" : 100,
-                "Years_Between_Bin_Edges_Male"   : 85,
-                "Years_Between_Bin_Edges_Female" : 85,
-                "Assortivity" :
+                "Relationship_Parameters" :
                 {
-                    "Group" : "NO_GROUP"
+                    "Coital_Act_Rate" : 0.33,
+                    "Condom_Usage_Probability" :
+                    {
+                        "Min": 0.0,
+                        "Max": 0.0,
+                        "Mid": 2000,
+                        "Rate": 1
+                    },
+                    "Duration_Weibull_Heterogeneity": 0.5,
+                    "Duration_Weibull_Scale": 2.03104913138,
+                    "Migration_Actions" : [ "TERMINATE" ],
+                    "Migration_Actions_Distribution" : [ 1.0 ]
                 },
-                "Joint_Probabilities" :
-                [
-                    [ 1 ]
-                ]
+                "Pair_Formation_Parameters" :
+                {
+                    "Formation_Rate_Type" : "CONSTANT",
+                    "Formation_Rate_Constant": 0,
+                    "Update_Period"   : 7,
+                    "Number_Age_Bins_Male"   : 1,
+                    "Number_Age_Bins_Female" : 1,
+                    "Age_of_First_Bin_Edge_Male"   : 100,
+                    "Age_of_First_Bin_Edge_Female" : 100,
+                    "Years_Between_Bin_Edges_Male"   : 85,
+                    "Years_Between_Bin_Edges_Female" : 85,
+                    "Joint_Probabilities" :
+                    [
+                        [ 1 ]
+                    ],
+                    "Assortivity" :
+                    {
+                        "Group" : "NO_GROUP"
+                    }
+                }
             },
-            "Pair_Formation_Parameters_MARITAL" :
+            "MARITAL" :
             {
-                "Number_Age_Bins_Male"   : 1,
-                "Number_Age_Bins_Female" : 1,
-                "Age_of_First_Bin_Edge_Male"   : 100,
-                "Age_of_First_Bin_Edge_Female" : 100,
-                "Years_Between_Bin_Edges_Male"   : 85,
-                "Years_Between_Bin_Edges_Female" : 85,
-                "Assortivity" :
+                "Relationship_Parameters" :
                 {
-                    "Group" : "NO_GROUP"
+                    "Coital_Act_Rate" : 0.33,
+                    "Condom_Usage_Probability" :
+                    {
+                        "Min": 0.0,
+                        "Max": 0.0,
+                        "Mid": 2000,
+                        "Rate": 1
+                    },
+                    "Duration_Weibull_Heterogeneity": 0.666666667,
+                    "Duration_Weibull_Scale": 22.154455184937,
+                    "Migration_Actions" : [ "TERMINATE" ],
+                    "Migration_Actions_Distribution" : [ 1.0 ]
                 },
-                "Joint_Probabilities" :
-                [
-                    [ 1 ]
-                ]
+                "Pair_Formation_Parameters" :
+                {
+                    "Formation_Rate_Type" : "CONSTANT",
+                    "Formation_Rate_Constant": 0,
+                    "Update_Period"    : 14,
+                    "Number_Age_Bins_Male"   : 1,
+                    "Number_Age_Bins_Female" : 1,
+                    "Age_of_First_Bin_Edge_Male"   : 100,
+                    "Age_of_First_Bin_Edge_Female" : 100,
+                    "Years_Between_Bin_Edges_Male"   : 85,
+                    "Years_Between_Bin_Edges_Female" : 85,
+                    "Joint_Probabilities" :
+                    [
+                        [ 1 ]
+                    ],
+                    "Assortivity" :
+                    {
+                        "Group" : "NO_GROUP"
+                    }
+                }
             }
         }
-    }, 
-    "Nodes": [
-        {
-            "NodeID": 1
-        }
-    ]
+    }
 }

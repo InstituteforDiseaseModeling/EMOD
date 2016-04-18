@@ -7,7 +7,9 @@
             "Base_Population_Scale_Factor": 2, 
             "Demographics_Filenames": [
                 "uniform_demographics.json", 
-                "pfa_simple.json"
+                "pfa_simple.json",
+                "PFA_overlay_rates_03.json",
+                "long_transitory.json"
             ], 
             "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE"
         }, 
@@ -30,12 +32,7 @@
             "Report_HIV_ByAgeAndGender_Start_Year": 2022
         }, 
         "____________NETWORK___________": {
-            "Min_Days_Between_Adding_Relationships": 0, 
-            "Relationships_Transitory_Weibull_Heterogeneity": 0.1, 
-            "Relationships_Transitory_Weibull_Scale": 1051025.709, 
-            "Informal_Formation_Rate_Heterosexual": 0, 
-            "Transitory_Formation_Rate_Heterosexual": 1, 
-            "Marriage_Formation_Rate_Heterosexual": 0
+            "Min_Days_Between_Adding_Relationships": 0
         }, 
         "____________RARELY_CHANGED___________": {
             "Config_Name": "03F_PrEP_and_Vaccines"

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -16,7 +16,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IndividualEventContext.h"
 #include "TBContexts.h"
 #include "Debug.h"                        // for release-assert
-#include "TBInterventionsContainer.h"
+#include "SimulationConfig.h"
 
 static const char* _module = "AntiTBPropDepDrug";
 
@@ -33,19 +33,38 @@ namespace Kernel
     )
     {
         // read array of json objects into string-to-string map.
-        json::QuickInterpreter s2sarray = (*inputJson)[key].As<json::Array>();
-        for( int idx=0; idx < (*inputJson)[key].As<json::Array>().Size(); idx++ )
-        {
-            auto json_map = s2sarray[idx].As<json::Object>();
-            for( auto data = json_map.Begin();
-                      data != json_map.End();
-                      ++data )
+        try {
+            json::QuickInterpreter s2sarray = (*inputJson)[key].As<json::Array>();
+            for( int idx=0; idx < (*inputJson)[key].As<json::Array>().Size(); idx++ )
             {
-                std::string key = data->name;
-                std::string value = (std::string)s2sarray[idx][key].As< json::String >(); // (json::QuickInterpreter( tvcs ))[ data->name ].As<json::String>();
-                prop2drugMap.insert( std::make_pair( key, value ) );
+                try {
+                    auto json_map = s2sarray[idx].As<json::Object>();
+                    for( auto data = json_map.Begin();
+                            data != json_map.End();
+                            ++data )
+                    {
+                        std::string drug_key = data->name;
+                        try {
+                            std::string value = (std::string)s2sarray[idx][drug_key].As< json::String >();
+                            prop2drugMap.insert( std::make_pair( drug_key, value ) );
+                        }
+                        catch( const json::Exception & )
+                        {
+                            throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, drug_key.c_str(), s2sarray[idx], "Expected STRING" );
+                        }
+                    }
+                }
+                catch( const json::Exception & )
+                {
+                    throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, key.c_str(), s2sarray[idx], "Expected OBJECT" );
+                }
             }
         }
+        catch( const json::Exception & )
+        {
+            throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, key.c_str(), (*inputJson), "Expected ARRAY" );
+        }
+        
     }
 
     json::QuickBuilder
@@ -89,7 +108,7 @@ namespace Kernel
 
     void AntiTBPropDepDrug::ConfigureDrugTreatment( IIndividualHumanInterventionsContext * ivc )  
     {
-        IIndividualHumanTB2* tb_patient = NULL;
+        IIndividualHumanTB2* tb_patient = nullptr;
         if ( ivc->GetParent()->QueryInterface( GET_IID(IIndividualHumanTB2), (void**) &tb_patient ) != s_OK )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndvidualHumanTB2", "IndividualHuman" );
@@ -97,12 +116,7 @@ namespace Kernel
         
         tProperties* pProp = ivc->GetParent()->GetEventContext()->GetProperties();
 
-        ITBDrugEffects * tbivc = NULL;
-        if( ivc->QueryInterface( GET_IID(ITBDrugEffects), (void**)&tbivc ) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "ivc", "ITBDrugEffects", "IIndividualHumanInterventionsContext" );
-        };
-        auto tbdtMap = tbivc->GetTBdtParams();
+        auto tbdtMap = GET_CONFIGURABLE(SimulationConfig)->TBDrugMap;
         for (auto& pair : (*pProp))
         {
             const std::string& propkey = pair.first;
@@ -124,13 +138,12 @@ namespace Kernel
                 
                 current_reducedtransmit = 1.0;
 
-
                 std::string all_cond_drug_type = conditional_drug_type;
                 //Auto-adjust drug parameters ONLY at configure for MDR evolution OR for Retx (drug sensitive only), read in the configured params
                 if (enable_state_specific_tx == true)
                 {    
                     LOG_DEBUG("Inside enable_state_specific_tx \n");
-                    release_assert(tb_patient != NULL);
+                    release_assert(tb_patient != nullptr);
                     if (tb_patient->IsMDR())
                     {
                         all_cond_drug_type = all_cond_drug_type + "MDR";
@@ -146,10 +159,8 @@ namespace Kernel
                     }
                 }
 
-
-
                 LOG_DEBUG_F("Read in the tbdt map, the drug type is %s \n", all_cond_drug_type.c_str());
-                if (tbdtMap[all_cond_drug_type] == NULL)
+                if (tbdtMap[all_cond_drug_type] == nullptr)
                 {
                     throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "You used a drug which is not in the TB_Drug_Types_For_This_Sim." );
                 }
@@ -171,20 +182,16 @@ namespace Kernel
             }
         }
     }
-}
 
+    REGISTER_SERIALIZABLE(AntiTBPropDepDrug);
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::AntiTBPropDepDrug)
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, AntiTBPropDepDrug& drug, const unsigned int v)
+    void AntiTBPropDepDrug::serialize(IArchive& ar, AntiTBPropDepDrug* obj)
     {
-        boost::serialization::void_cast_register<AntiTBPropDepDrug, IDrug>();
-        ar & drug.enable_state_specific_tx;
-        ar & boost::serialization::base_object<AntiTBDrug>(drug);
+        AntiTBDrug::serialize(ar, obj);
+        AntiTBPropDepDrug& drug = *obj;
+        ar.labelElement("drug_type_by_property") & drug.drug_type_by_property.prop2drugMap;
+        ar.labelElement("enable_state_specific_tx") & drug.enable_state_specific_tx;
     }
 }
-#endif
 
 #endif

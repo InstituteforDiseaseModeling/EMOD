@@ -21,7 +21,7 @@
           }, 
           "DEMOGRAPHICS": {
                "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE", 
-               "Demographics_Filename": "Madagascar_2_5arcmin_demographics.compiled.json", 
+               "Demographics_Filenames": ["Madagascar_2_5arcmin_demographics.compiled.json"], 
                "SAMPLING": {
                     "Individual_Sampling_Type": "ADAPTED_SAMPLING_BY_POPULATION_SIZE", 
                     "Max_Node_Population_Samples": 30, 
@@ -47,6 +47,9 @@
                "Migration_Model": "FIXED_RATE_MIGRATION", 
                "Migration_Pattern": "WAYPOINTS_HOME", 
                "Enable_Migration_Heterogeneity" : 0,
+               "Enable_Family_Migration": 0, 
+               "Family_Migration_Filename": "", 
+               "x_Family_Migration": 1,
                "Roundtrip_Waypoints": 5,
                "AIR" : {
                     "Enable_Air_Migration" : 0,

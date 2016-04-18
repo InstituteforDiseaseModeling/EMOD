@@ -1,19 +1,18 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 
-#ifdef ENABLE_TB
+#ifndef DISABLE_AIRBORNE
 
 #include "IndividualAirborne.h"
 
-#include "IndividualEventContext.h"
 #include "InfectionAirborne.h"
 #include "SusceptibilityAirborne.h"
 
@@ -50,40 +49,18 @@ namespace Kernel
     {
     }
 
-    Infection* IndividualHumanAirborne::createInfection( suids::suid _suid )
+    IInfection* IndividualHumanAirborne::createInfection( suids::suid _suid )
     {
         return InfectionAirborne::CreateInfection(this, _suid);
     }
 
-}
+    REGISTER_SERIALIZABLE(IndividualHumanAirborne);
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-#include "InfectionAirborne.h"
-#include "SusceptibilityAirborne.h"
-BOOST_CLASS_EXPORT(Kernel::IndividualHumanAirborne)
-namespace Kernel
-{
-    template<class Archive>
-    void serialize(Archive & ar, IndividualHumanAirborne& human, const unsigned int  file_version )
+    void IndividualHumanAirborne::serialize(IArchive& ar, IndividualHumanAirborne* obj)
     {
-        // Register derived types
-        ar.template register_type<InfectionAirborne>();
-        ar.template register_type<SusceptibilityAirborne>();
-            
-        // Serialize fields - N/A
-
-        // Serialize base class
-        ar & boost::serialization::base_object<Kernel::IndividualHuman>(human);
+        IndividualHuman::serialize(ar, obj);
+        // IndividualHumanAirborne doesn't have any additional fields.
     }
-    template void serialize(boost::mpi::packed_skeleton_oarchive&, Kernel::IndividualHumanAirborne&, unsigned int);
-    template void serialize(boost::mpi::detail::content_oarchive&, Kernel::IndividualHumanAirborne&, unsigned int);
-    template void serialize(boost::archive::binary_oarchive&, Kernel::IndividualHumanAirborne&, unsigned int);
-    template void serialize(boost::mpi::packed_oarchive&, Kernel::IndividualHumanAirborne&, unsigned int);
-    template void serialize(boost::mpi::detail::mpi_datatype_oarchive&, Kernel::IndividualHumanAirborne&, unsigned int);
-    template void serialize(boost::mpi::packed_iarchive&, Kernel::IndividualHumanAirborne&, unsigned int);
-    template void serialize(boost::mpi::packed_skeleton_iarchive&, Kernel::IndividualHumanAirborne&, unsigned int);
-    template void serialize(boost::archive::binary_iarchive&, Kernel::IndividualHumanAirborne&, unsigned int);
 }
-#endif
 
 #endif // ENABLE_TB

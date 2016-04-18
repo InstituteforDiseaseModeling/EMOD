@@ -1,0 +1,33 @@
+# -*- mode: python; -*-
+# This Python script, SConscript, invoked by the SConscript in the upper directory,
+#
+# 1. builds utils static library
+
+Import("env")
+
+snappySrcFiles = ["snappy-c.cc",
+                  "snappy-sinksource.cc",
+                    "snappy-stubs-internal.cc",
+                    "snappy.cc"]
+
+snappyIncFiles = ['snappy-c.h',
+                  'snappy-internal.h',
+                  'snappy-stubs-internal.h',
+                  'snappy-sinksource.h',
+                  'snappy.h']
+
+snappyLib = env.StaticLibrary('snappy', snappySrcFiles)
+
+msvc = GetOption( "MSVC" )
+if msvc is not None and msvc != False and msvc != "":
+
+    bvar = env['BUILD_VARIANT'] + '|x64'
+    print "snappy: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar
+    
+    env.MSVSProject(target = 'SnappyScons' + env['MSVSPROJECTSUFFIX'],
+		srcs = snappySrcFiles,
+		incs = snappyIncFiles,
+		localincs = "",
+		buildtarget = snappyLib,
+                auto_build_solution = 0,
+                variant = bvar)

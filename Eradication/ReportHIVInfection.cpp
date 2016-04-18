@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -14,9 +14,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ReportHIVInfection.h"
 #include "NodeHIV.h"
 #include "SusceptibilityHIV.h"
-#include "InfectionHIV.h"
-#include "HIVInterventionsContainer.h"
 #include "ISimulation.h"
+#include "IIndividualHumanHIV.h"
+#include "IInfectionHIV.h"
+#include "IHIVInterventionsContainer.h"
 
 static const char* _module = "ReportHIVInfection";
 
@@ -36,8 +37,8 @@ namespace Kernel
 
     bool ReportHIVInfection::Configure( const Configuration* inputJson )
     {
-        initConfigTypeMap( "Report_HIV_Infection_Start_Year", &startYear, Report_HIV_Infection_Start_Year_DESC_TEXT, 0.0f, FLT_MAX, 0.0f    );
-        initConfigTypeMap( "Report_HIV_Infection_Stop_Year",  &stopYear,  Report_HIV_Infection_Stop_Year_DESC_TEXT,  0.0f, FLT_MAX, FLT_MAX );
+        initConfigTypeMap( "Report_HIV_Infection_Start_Year", &startYear, Report_HIV_Infection_Start_Year_DESC_TEXT, MIN_YEAR, MAX_YEAR, MIN_YEAR );
+        initConfigTypeMap( "Report_HIV_Infection_Stop_Year",  &stopYear,  Report_HIV_Infection_Stop_Year_DESC_TEXT,  MIN_YEAR, MAX_YEAR, MAX_YEAR );
 
         bool ret = JsonConfigurable::Configure( inputJson );
 
@@ -66,6 +67,7 @@ namespace Kernel
     {
         std::stringstream header ;
         header << "Year,"
+               << "Node_ID,"
                << "Id,"
                << "MCWeight,"
                << "Age,"
@@ -104,10 +106,10 @@ namespace Kernel
 
     void
     ReportHIVInfection::LogIndividualData(
-        IndividualHuman* individual
+        IIndividualHuman* individual
     )
     {
-        IIndividualHumanHIV* hiv_individual = NULL;
+        IIndividualHumanHIV* hiv_individual = nullptr;
         if( individual->QueryInterface( GET_IID( IIndividualHumanHIV ), (void**)&hiv_individual ) != s_OK )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndividualHIV", "IndividualHuman" );
@@ -118,13 +120,13 @@ namespace Kernel
         if( !isInfected )
             return;
 
-        IIndividualHumanSTI* sti_individual = NULL;
+        IIndividualHumanSTI* sti_individual = nullptr;
         if( individual->QueryInterface( GET_IID( IIndividualHumanSTI ), (void**)&sti_individual ) != s_OK )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndividualSTI", "IndividualHuman" );
         }
 
-        IDrugVaccineInterventionEffects *idvie = NULL;
+        IDrugVaccineInterventionEffects *idvie = nullptr;
         if( s_OK != individual->GetInterventionsContext()->QueryInterface( GET_IID(IDrugVaccineInterventionEffects), (void**)&idvie ) ) {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, 
                                            "individual->GetInterventionsContext()", 
@@ -140,6 +142,7 @@ namespace Kernel
         GetOutputStream() 
             << std::setprecision(10)
             << _parent->GetSimulationTime().Year()
+            << "," << individual->GetParent()->GetExternalID()
             << "," << individual->GetSuid().data
             << "," << individual->GetMonteCarloWeight()
             << "," << individual->GetAge() / DAYSPERYEAR

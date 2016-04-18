@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -66,7 +66,7 @@ namespace Kernel
         {
             if( !ignore_events_in_list && tmp_event_trigger_list.empty() )
             {
-                LOG_WARN( "No data will be recorded.  The Report_Event_Recorder_Events list is empty and Report_Event_Recorder_Ignore_Events_In_List is false." );
+                LOG_WARN( "No data will be recorded.  The Report_Event_Recorder_Events list is empty and Report_Event_Recorder_Ignore_Events_In_List is false.\n" );
             }
             else
             {
@@ -97,6 +97,7 @@ namespace Kernel
     {
         std::stringstream header ;
         header << "Year"                    << ","
+               << "Node_ID"                 << ","
                << "Event_Name"              << ","
                << "Individual_ID"           << ","
                << "Age"                     << ","
@@ -117,15 +118,17 @@ namespace Kernel
         const std::string& StateChange
     )
     {
-        int         id         = context->GetSuid().data;
-        IdmDateTime sim_time   = context->GetNodeEventContext()->GetTime();
-        const char* event_name = StateChange.c_str();
-        float       age        = context->GetAge();
-        const char  gender     = (context->GetGender() == Gender::MALE) ? 'M' : 'F' ;
-        float       infectious = context->GetInfectiousness() ;
+        int         id           = context->GetSuid().data;
+        ExternalNodeId_t node_id = context->GetNodeEventContext()->GetExternalId();
+        IdmDateTime sim_time     = context->GetNodeEventContext()->GetTime();
+        const char* event_name   = StateChange.c_str();
+        float       age          = context->GetAge();
+        const char  gender       = (context->GetGender() == Gender::MALE) ? 'M' : 'F' ;
+        float       infectious   = context->GetInfectiousness() ;
 
 
         GetOutputStream() << sim_time.Year() << ","
+                          << node_id         << ","
                           << event_name      << ","
                           << id              << ","
                           << age             << ","

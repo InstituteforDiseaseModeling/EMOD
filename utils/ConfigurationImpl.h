@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -15,7 +15,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <functional>
 #include "ISupports.h"
 #include "EnumSupport.h"
-#include "SimpleTypemapRegistration.h"
 #include <boost/type_traits/is_base_of.hpp>
 
 namespace Kernel
@@ -345,7 +344,7 @@ namespace Kernel
     bool classname::Configure(const Configuration *config) \
     {\
         base_class_configure_call_block; \
-        common_configured_dispatch<ModeConfigure>(config, NULL);\
+        common_configured_dispatch<ModeConfigure>(config, nullptr);\
         return true; \
     }\
     QuickBuilder classname::GetSchema()\
@@ -355,7 +354,7 @@ namespace Kernel
         (*schema)["class"] = String(#classname);\
         (*schema)["members"] = Array();\
         base_class_get_schema_call_block; /* substitute the members list of the base class before the members of the derived class are added*/\
-        common_configured_dispatch<ModeGetSchema>(NULL, schema);\
+        common_configured_dispatch<ModeGetSchema>(nullptr, schema);\
         return *schema;\
     }\
     template<class Mode>\

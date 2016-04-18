@@ -9,7 +9,10 @@
 
         "_____________DEMOGRAPHICS___________": "",
         "Base_Population_Scale_Factor": 0.0001,
-        "Demographics_Filename": "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed_with_RiskGroup.json;../input/PFA_overlay.json",
+        "Demographics_Filenames": [
+            "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed_with_RiskGroup.json",
+            "../input/PFA_overlay.json"
+        ],
 
         "_____________INTRAHOST___________": "",
 

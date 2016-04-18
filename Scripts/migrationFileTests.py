@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 
 __author__ = 'clorton'
 
@@ -100,6 +100,21 @@ class TestLoadMigrationRates(unittest.TestCase):
     def test_multiply_defined_link(self):
         with self.assertRaises(bmf.BuildException):
             links = self.network.loadMigrationRates('unittests/multiply_defined_link.txt')
+
+    def test_header_comment(self):
+        self.network.loadMigrationRates('unittests/header.txt')
+
+    def test_trailing_comments(self):
+        self.network.loadMigrationRates('unittests/trailing.txt')
+
+    def test_footer_comment(self):
+        self.network.loadMigrationRates('unittests/footer.txt')
+
+    def test_comma_separated_values(self):
+        self.network.loadMigrationRates('unittests/simple.csv', ',')
+
+    def test_percent_comment_delimiter(self):
+        self.network.loadMigrationRates('unittests/percent.txt', ' ', '%')
 
 
 class TestValidateNetwork(unittest.TestCase):

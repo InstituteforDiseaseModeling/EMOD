@@ -2,24 +2,24 @@
     "Events": [
         {
             "Event_Coordinator_Config": {
-                "Demographic_Coverage": 0.5,
                 "Intervention_Config": {
-                    "Cost_To_Consumer": 1.0,
-                    "Durability_Time_Profile": "BOXDECAYDURABILITY",
-                    "Killing": 0.75,
-                    "Primary_Decay_Time_Constant": 100,
-                    "Secondary_Decay_Time_Constant": 150,
+                    "Cost_To_Consumer": 1.0, 
+                    "Killing_Config": {
+                        "Box_Duration": 100, 
+                        "Decay_Time_Constant": 150, 
+                        "Initial_Effect": 0.75, 
+                        "class": "WaningEffectBoxExponential"
+                    }, 
                     "class": "OutdoorRestKill"
-                },
-                "Target_Demographic": "Everyone",
+                }, 
                 "class": "StandardInterventionDistributionEventCoordinator"
-            },
+            }, 
             "Nodeset_Config": {
                 "class": "NodeSetAll"
-            },
-            "Start_Day": 120,
+            }, 
+            "Start_Day": 120, 
             "class": "CampaignEvent"
         }
-    ],
+    ], 
     "Use_Defaults": 1
 }

@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -26,7 +26,7 @@ namespace Kernel
     END_QUERY_INTERFACE_BODY(RTSSVaccine)
 
     IMPLEMENT_FACTORY_REGISTERED(RTSSVaccine)
-    
+
     RTSSVaccine::RTSSVaccine()
     {
         initSimTypes( 1, "MALARIA_SIM" );
@@ -50,7 +50,7 @@ namespace Kernel
         ICampaignCostObserver * const pCCO
     )
     {
-        IMalariaHumanContext * imhc = NULL;
+        IMalariaHumanContext * imhc = nullptr;
         if (s_OK != context->GetParent()->QueryInterface(GET_IID(IMalariaHumanContext), (void**)&imhc) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "imhc", "IMalariaHumanContext", "IIndividualHumanContext" );
@@ -72,20 +72,15 @@ namespace Kernel
     {
         // Nothing to do for this intervention, which doesn't have ongoing effects after an initial boosting
     }
-}
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::RTSSVaccine)
+    REGISTER_SERIALIZABLE(RTSSVaccine);
 
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, RTSSVaccine& obj, const unsigned int v)
+    void RTSSVaccine::serialize(IArchive& ar, RTSSVaccine* obj)
     {
-        boost::serialization::void_cast_register<RTSSVaccine, IDistributableIntervention>();
-        ar & obj.antibody_type;
-        ar & obj.antibody_variant;
-        ar & obj.boosted_antibody_concentration;
-        ar & boost::serialization::base_object<Kernel::BaseIntervention>(obj);
+        BaseIntervention::serialize( ar, obj );
+        RTSSVaccine& vaccine = *obj;
+        ar.labelElement("antibody_type") & (uint32_t&)vaccine.antibody_type;
+        ar.labelElement("antibody_variant") & vaccine.antibody_variant;
+        ar.labelElement("boosted_antibody_concentration") & vaccine.boosted_antibody_concentration;
     }
 }
-#endif

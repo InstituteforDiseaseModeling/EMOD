@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -34,8 +34,8 @@ namespace Kernel
     , TB_drug_resistance_rate(0)
     , TB_drug_relapse_rate(0)
     , TB_drug_mortality_rate(0)
-    , itbda(NULL)
-    , m_pCCO(NULL)
+    , itbda(nullptr)
+    , m_pCCO(nullptr)
     {
         initSimTypes( 1, "TB_SIM" );
     }
@@ -63,7 +63,7 @@ namespace Kernel
         LOG_DEBUG_F( "TB_drug_relapse_rate = %f \n", current_efficacy * TB_drug_relapse_rate ); //TODO: is it right to multiply by current_efficacy?
         return current_efficacy * TB_drug_relapse_rate;
     }
-    
+
     float AntiTBDrug::GetDrugMortalityRate() const
     {
         LOG_DEBUG_F( "TB_drug_mortality_rate = %f \n", current_efficacy * TB_drug_mortality_rate ); //TODO: is it right to multiply by current_efficacy?
@@ -90,9 +90,9 @@ namespace Kernel
         initConfig( "Drug_Type", drug_type, inputJson, MetadataDescriptor::Enum("Drug_Type", TB_Drug_Type_DESC_TEXT, MDD_ENUM_ARGS(TBDrugType)));
         initConfigTypeMap("TB_Drug_Inactivation_Rate", &TB_drug_inactivation_rate, TB_Drug_Inactivation_Rate_DESC_TEXT, 0.0, 1.0, 0.0);
         initConfigTypeMap("TB_Drug_Clearance_Rate", &TB_drug_clearance_rate, TB_Drug_Clearance_Rate_DESC_TEXT, 0.0, 1.0, 0.0);
-        initConfigTypeMap("TB_Drug_Resistance_Rate", &TB_drug_resistance_rate, TB_Drug_Resistance_Rate_DESC_TEXT, 0.0, 1.0, 0.0); // 0.0 means no resistance 
-        initConfigTypeMap("TB_Drug_Relapse_Rate", &TB_drug_relapse_rate, TB_Drug_Relapse_Rate_DESC_TEXT, 0.0, 1.0, 0.0); // 0.0 means no relapse 
-        initConfigTypeMap("TB_Drug_Mortality_Rate", &TB_drug_mortality_rate, TB_Drug_Mortality_Rate_DESC_TEXT, 0.0, 1.0, 0.0); // 0.0 means no death 
+        initConfigTypeMap("TB_Drug_Resistance_Rate", &TB_drug_resistance_rate, TB_Drug_Resistance_Rate_DESC_TEXT, 0.0, 1.0, 0.0); // 0.0 means no resistance
+        initConfigTypeMap("TB_Drug_Relapse_Rate", &TB_drug_relapse_rate, TB_Drug_Relapse_Rate_DESC_TEXT, 0.0, 1.0, 0.0); // 0.0 means no relapse
+        initConfigTypeMap("TB_Drug_Mortality_Rate", &TB_drug_mortality_rate, TB_Drug_Mortality_Rate_DESC_TEXT, 0.0, 1.0, 0.0); // 0.0 means no death
 
         initConfigTypeMap("Reduced_Transmit", &current_reducedtransmit, TB_Drug_Reduced_Transmit_DESC_TEXT, 0.0, 1.0, 1.0 ); //1.0 means it is 100% reduced
 
@@ -108,8 +108,7 @@ namespace Kernel
         if (s_OK != context->QueryInterface(GET_IID(ITBDrugEffectsApply), (void**)&itbda) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "ITBDrugEffectsApply", "IIndividualHumanInterventionsContext" );
-        } 
-//        pCCO->notifyCampaignEventOccurred( (IBaseIntervention*)this, NULL, context->GetParent() );
+        }
         m_pCCO = pCCO;
         return GenericDrug::Distribute( context, pCCO );
     }
@@ -122,8 +121,8 @@ namespace Kernel
         if (s_OK != context->GetInterventionsContext()->QueryInterface(GET_IID(ITBDrugEffectsApply), (void**)&itbda) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "ITBDrugEffectsApply", "IIndividualHumanContext" );
-        } 
-        
+        }
+
         if (s_OK != context->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(ICampaignCostObserver), (void**)&m_pCCO) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "ICampaignCostObserver", "INodeEventContext");
@@ -132,13 +131,13 @@ namespace Kernel
         return GenericDrug::SetContextTo( context );
     }
 
-    void AntiTBDrug::ConfigureDrugTreatment( IIndividualHumanInterventionsContext * ivc )  // set current_efficacy = 1 
+    void AntiTBDrug::ConfigureDrugTreatment( IIndividualHumanInterventionsContext * ivc )  // set current_efficacy = 1
     {
         current_efficacy = 1.0;
         LOG_DEBUG_F( "Individual %d starting the drug, set current_efficacy to 1 \n", parent->GetSuid().data );
 
         //Update the person's tx naive flag to false and broadcast that they started the drugregimen in the TBInterventionsContainer
-        release_assert(itbda);      
+        release_assert(itbda);
         itbda->UpdateTreatmentStatus(IndividualEventTriggerType::TBStartDrugRegimen );
     }
 
@@ -163,25 +162,37 @@ namespace Kernel
         LOG_DEBUG_F( "Individual %d finished the drug \n", parent->GetSuid().data );
 
         //Update the person's failed flag to false in the TBInterventionsContainer
-        release_assert(itbda);      
+        release_assert(itbda);
         itbda->UpdateTreatmentStatus( IndividualEventTriggerType::TBStopDrugRegimen );
 
         // notify campaign event observer
-        //m_pCCO->notifyCampaignEventOccurred( (IBaseIntervention*)this, NULL, parent );
-        if (m_pCCO != NULL)
+        if (m_pCCO != nullptr)
         {
-            m_pCCO->notifyCampaignEventOccurred( (IBaseIntervention*)this, NULL, parent );
-        }   
+            m_pCCO->notifyCampaignEventOccurred( (IBaseIntervention*)this, nullptr, parent );
+        }
+    }
+
+    REGISTER_SERIALIZABLE(AntiTBDrug);
+
+    void AntiTBDrug::serialize(IArchive& ar, AntiTBDrug* obj)
+    {
+        GenericDrug::serialize(ar, obj);
+        AntiTBDrug& drug = *obj;
+        ar.labelElement("TB_drug_inactivation_rate") & drug.TB_drug_inactivation_rate;
+        ar.labelElement("TB_drug_clearance_rate") & drug.TB_drug_clearance_rate;
+        ar.labelElement("TB_drug_resistance_rate") & drug.TB_drug_resistance_rate;
+        ar.labelElement("TB_drug_relapse_rate") & drug.TB_drug_relapse_rate;
+        ar.labelElement("TB_drug_mortality_rate") & drug.TB_drug_mortality_rate;
     }
 }
 
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
+#if 0
+// clorton TODO - these fields don't match fields above.
 BOOST_CLASS_EXPORT(Kernel::AntiTBDrug)
 namespace Kernel {
     template<class Archive>
     void serialize(Archive &ar, AntiTBDrug& drug, const unsigned int v)
     {
-        boost::serialization::void_cast_register<AntiTBDrug, IDrug>();
         ar & drug.TB_drug_inactivation_rate;
         ar & drug.TB_drug_clearance_rate;
         ar & drug.drug_type;

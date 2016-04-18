@@ -1,5 +1,5 @@
 {
-	"Default_Config_Path": "defaults\\hiv_default_config.json", 
+	"Default_Config_Path": "defaults/hiv_default_config.json", 
 	"parameters": {
 
 		"____________SIMULATION___________": "",
@@ -9,6 +9,11 @@
 
 		"____________DEMOGRAPHICS___________": "",
 		"Base_Population_Scale_Factor": 1e-4,
+		"Demographics_Filenames": [
+			"../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json",
+			"../input/PFA_overlay.json",
+			"PFA_overlay_rates.json"
+		], 
 
 		"____________INTRAHOST___________": "",
 		".Base_Infectivity": 1e-3, 
@@ -20,22 +25,10 @@
 		"Male_To_Female_Relative_Infectivity_Multipliers": [ 1 ],
 
         "____________TRANSMISSION___________": "",
-		".Coital_Act_Rate_Transitory": 1,
 		"Condom_Transmission_Blocking_Probability": 0.60,
-		"Condom_Usage_Probability_in_Transitory_Relationships_Early": 0,
-		"Condom_Usage_Probability_in_Transitory_Relationships_Late": 0,
-		"Condom_Usage_Probability_in_Transitory_Relationships_Midyear": 1961.5,
-		"Condom_Usage_Probability_in_Transitory_Relationships_Rate": 10,
 
 		"____________NETWORK___________": "",
-		"Transitory_Formation_Rate_Heterosexual": 1,
-		"Informal_Formation_Rate_Heterosexual": 0,
-		"Marriage_Formation_Rate_Heterosexual": 0,
-
 		"Min_Days_Between_Adding_Relationships": 0,
-
-		"Relationships_Transitory_Weibull_Heterogeneity" : 0.1,
-		"Relationships_Transitory_Weibull_Scale" : 1051025.709,
 
 		"Sexual_Debut_Age_Female_Weibull_Heterogeneity": 0.020408162847,
 		"Sexual_Debut_Age_Female_Weibull_Scale": 1.011341333389,
@@ -57,6 +50,13 @@
 		"Report_HIV_Period": 365,
 		"Report_Transmission": 1,
 		"Report_Coital_Acts": 1,
+		"Report_HIV_ByAgeAndGender": 1,
+		"Report_HIV_ByAgeAndGender_Start_Year" : 1962,
+		"Report_HIV_ByAgeAndGender_Stop_Year" : 1978,
+		"Report_HIV_ByAgeAndGender_Collect_Circumcision_Data" : 1,
+		"Report_HIV_ByAgeAndGender_Collect_IP_Data" : 0,
+		"Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4": 0,
+		"Report_HIV_ByAgeAndGender_Event_Counter_List" : [],
 		
 		"____________REPLICATION_AND_DRUGS___________": "",
 

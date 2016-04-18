@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -18,22 +18,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Debug.h"
 static const char * _module = "BehaviorPfa";
 
-namespace Kernel {
-
-    void BehaviorPfa::SetUpdatePeriod( float update_period )
-    {
-        LOG_DEBUG_F("%s( %f )\n", __FUNCTION__, update_period);
-        if (update_period < 0.0f)
-        {
-            throw OutOfRangeException(__FILE__, __LINE__, __FUNCTION__, "update_period", update_period, 0.0f);
-        }
-
-        m_update_period = update_period;
-    }
+namespace Kernel 
+{
+    BEGIN_QUERY_INTERFACE_BODY(BehaviorPfa)
+    END_QUERY_INTERFACE_BODY(BehaviorPfa)
 
     void BehaviorPfa::AddIndividual( IIndividualHumanSTI* sti_person )
     {
-        IIndividualHuman* person = NULL;
+        IIndividualHuman* person = nullptr;
         if (sti_person->QueryInterface(GET_IID(IIndividualHuman), (void**)&person) != s_OK)
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "sti_person", "IIndividualHuman*", "IIndividualHumanSTI*");
@@ -61,7 +53,7 @@ namespace Kernel {
 
     void BehaviorPfa::RemoveIndividual( IIndividualHumanSTI* sti_person )
     {
-        IIndividualHuman* person = NULL;
+        IIndividualHuman* person = nullptr;
         if (sti_person->QueryInterface(GET_IID(IIndividualHuman), (void**)&person) != s_OK)
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "sti_person", "IIndividualHuman*", "IIndividualHumanSTI*");
@@ -87,7 +79,7 @@ namespace Kernel {
         m_pAssortivity->Update( rCurrentTime, dt );
 
         m_time_since_last_update += dt;
-        if (m_time_since_last_update >= m_update_period)
+        if( m_time_since_last_update >= parameters->UpdatePeriod() )
         {
             if (LOG_LEVEL(INFO))
             {
@@ -112,7 +104,7 @@ namespace Kernel {
             for (human_list_t::iterator it = m_all_males.begin(); it != m_all_males.end(); /*it++*/)
             {
                 IIndividualHumanSTI* sti_male = *it;
-                IIndividualHuman* male = NULL;
+                IIndividualHuman* male = nullptr;
                 if (sti_male->QueryInterface(GET_IID(IIndividualHuman), (void**)&male))
                 {
                     throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "sti_male", "IIndividualHuman", "IIndividualHumanSTI" );
@@ -250,23 +242,40 @@ namespace Kernel {
 
     IPairFormationAgent* BehaviorPfa::CreatePfa( const Configuration* pConfig, 
                                                  const IPairFormationParameters* params, 
-                                                 float updatePeriod, 
                                                  float selectionThreshold,
                                                  RANDOMBASE *prng, 
                                                  RelationshipCreator relationship_fn )
     {
-        BehaviorPfa* pfa =  _new_ BehaviorPfa( params, updatePeriod, selectionThreshold, prng, relationship_fn );
+        BehaviorPfa* pfa =  _new_ BehaviorPfa( params, selectionThreshold, prng, relationship_fn );
         pfa->Configure( pConfig );
         return pfa ;
     }
 
+    BehaviorPfa::BehaviorPfa()
+        : m_cum_prob_threshold(0.0f)
+        , m_time_since_last_update(0.0f)
+        , m_all_males()
+        , m_male_population()
+        , m_female_population()
+        , m_population_map()
+        , preference()
+        , desired_flow()
+        , parameters(nullptr)
+        , m_rng(nullptr)
+        , relationship_fn(nullptr)
+        , m_pAssortivity( nullptr )
+        , m_QueueLengthsBefore()
+        , m_QueueLengthsAfter()
+        , new_males()
+        , new_females()
+    {
+    }
+
     BehaviorPfa::BehaviorPfa( const IPairFormationParameters* params, 
-                              float updatePeriod, 
                               float selectionThreshold, 
                               RANDOMBASE *prng, 
                               RelationshipCreator creator )
-        : m_update_period(0.0f)
-        , m_cum_prob_threshold(selectionThreshold)
+        : m_cum_prob_threshold(selectionThreshold)
         , m_time_since_last_update(0.0f)
         , m_all_males()
         , m_male_population(params->GetMaleAgeBinCount())
@@ -284,8 +293,6 @@ namespace Kernel {
         , new_females()
     {
         release_assert( m_pAssortivity != nullptr );
-
-        SetUpdatePeriod( updatePeriod );  // performs checks on value before setting
 
         auto& agebins = parameters->GetAgeBins();
         for (int sex = Gender::MALE; sex <= Gender::FEMALE; sex++)
@@ -356,7 +363,7 @@ namespace Kernel {
         auto male_rels = person1->GetRelationships();
         for( auto rel: male_rels )
         {
-            if( rel->FemalePartner()->GetSuid().data == person2->GetSuid().data )
+            if( rel->GetFemalePartnerId().data == person2->GetSuid().data )
             {
                 LOG_WARN_F( "PFA attempted to create duplicate relationship between male individual %d and female individual %d\n", person1->GetSuid().data, person2->GetSuid().data );
                 existing_relationship = true;
@@ -377,5 +384,42 @@ namespace Kernel {
         {
             rQueueLengths[ Gender::FEMALE ][age_bin_index] = m_female_population.at( age_bin_index ).size() ;
         }
+    }
+
+    REGISTER_SERIALIZABLE(BehaviorPfa);
+
+    void BehaviorPfa::serialize(IArchive& ar, BehaviorPfa* obj)
+    {
+        BehaviorPfa& pfa = *obj;
+        ar.labelElement("m_cum_prob_threshold"    ) & pfa.m_cum_prob_threshold;
+        ar.labelElement("m_time_since_last_update") & pfa.m_time_since_last_update;
+
+        // preference is a member variable only so we don't allocate the lenght of the vector every time.
+        //ar.labelElement("preference"              ) & pfa.preference;
+
+        ar.labelElement("desired_flow"            ) & pfa.desired_flow;
+        ar.labelElement("m_QueueLengthsBefore"    ) & pfa.m_QueueLengthsBefore;
+        ar.labelElement("m_QueueLengthsAfter"     ) & pfa.m_QueueLengthsAfter;
+        ar.labelElement("new_males"               ) & pfa.new_males;
+        ar.labelElement("new_females"             ) & pfa.new_females;
+
+        //typedef list<IIndividualHumanSTI*> human_list_t;
+        //typedef vector<human_list_t> population_t;
+        //typedef pair<int, human_list_t::iterator> map_entry_t;
+        //typedef map<IIndividualHumanSTI*, map_entry_t> population_map_t;
+
+        //human_list_t m_all_males;
+        //population_t m_male_population;
+        //population_t m_female_population;
+        //population_map_t m_population_map;
+
+
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!! Needs to be set during serialization
+        //const IPairFormationParameters* parameters;
+        //RANDOMBASE* m_rng;
+        //RelationshipCreator relationship_fn;
+        //IAssortivity* m_pAssortivity ;
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
 }

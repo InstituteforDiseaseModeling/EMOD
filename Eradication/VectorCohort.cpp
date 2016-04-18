@@ -1,19 +1,17 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
 #include "stdafx.h"
 
 #include "VectorCohort.h"
-#include "Environment.h"
 #include "Exceptions.h"
-#include "Log.h"
-#include "Node.h"
+#include "INodeContext.h"
 #include "StrainIdentity.h"
 
 static const char * _module = "VectorCohort";
@@ -27,14 +25,17 @@ namespace Kernel
         HANDLE_ISUPPORTS_VIA(IVectorCohort)
     END_QUERY_INTERFACE_BODY(VectorCohort)
 
-    VectorCohort::VectorCohort() : progress(0.0), population(DEFAULT_VECTOR_COHORT_SIZE), vector_genetics( VectorMatingStructure() )
+    VectorCohort::VectorCohort() 
+        : vector_genetics( VectorMatingStructure() )
+        , progress(0.0)
+        , population(DEFAULT_VECTOR_COHORT_SIZE)
     {
     }
 
-    VectorCohort::VectorCohort(float _progress, uint32_t _population, VectorMatingStructure _vector_genetics) :
-        progress(_progress),
-        population(_population),
-        vector_genetics(_vector_genetics)
+    VectorCohort::VectorCohort(float _progress, uint32_t _population, VectorMatingStructure _vector_genetics)
+        : vector_genetics(_vector_genetics)
+        , progress(_progress)
+        , population(_population)
     {
     }
 
@@ -58,17 +59,26 @@ namespace Kernel
         return _new_ StrainIdentity();
     }
 
-    void VectorCohort::ImmigrateTo(Node* destination_node)
+    void VectorCohort::ImmigrateTo(INodeContext* destination_node)
     {
         throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Vector migration only currently supported for individual (not cohort) model." );
     }
 
-    void VectorCohort::SetMigrationDestination(suids::suid destination)
+    void VectorCohort::SetMigrating( suids::suid destination, 
+                                     MigrationType::Enum type, 
+                                     float timeUntilTrip, 
+                                     float timeAtDestination,
+                                     bool isDestinationNewHome )
     {
         throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Vector migration only currently supported for individual (not cohort) model." );
     }
 
     const suids::suid& VectorCohort::GetMigrationDestination()
+    {
+        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Vector migration only currently supported for individual (not cohort) model." );
+    }
+
+    MigrationType::Enum VectorCohort::GetMigrationType() const
     {
         throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Vector migration only currently supported for individual (not cohort) model." );
     }
@@ -131,41 +141,14 @@ namespace Kernel
         //throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "VectorCohort::GetMortality" );
     }
 
-#if 0
-    template<class Archive>
-    void VectorCohort::serialize_inner( Archive & ar, const unsigned int file_version )
+    REGISTER_SERIALIZABLE(VectorCohort);
+
+    void VectorCohort::serialize(IArchive& ar, VectorCohort* obj)
     {
-        // Register derived types - N/A
-
-        // Serialize fields
-        typemap.serialize(this, ar, file_version);
-
-        // Serialize base class - N/A
+        VectorCohort& cohort = *obj;
+        ar.labelElement("vector_genetics");
+        VectorMatingStructure::serialize(ar, cohort.vector_genetics);
+        ar.labelElement("progress") & cohort.progress;
+        ar.labelElement("population") & cohort.population;
     }
-
-    template void VectorCohort::serialize_inner( boost::archive::binary_iarchive & ar, const unsigned int file_version );
-    template void VectorCohort::serialize_inner( boost::archive::binary_oarchive & ar, const unsigned int file_version );
-#endif
 }
-
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::VectorCohort)
-namespace Kernel {
-    template< typename Archive >
-    void serialize( Archive& ar, VectorCohort &obj, unsigned int file_version )
-    {
-        ar & obj.progress;
-        ar & obj.population;
-        ar & obj.vector_genetics;
-    }
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, VectorCohort &obj, unsigned int file_version );
-    template void serialize( boost::archive::binary_iarchive&, VectorCohort &obj, unsigned int file_version );
-    template void serialize( boost::mpi::packed_iarchive&, VectorCohort &obj, unsigned int file_version );
-    template void serialize( boost::mpi::packed_skeleton_oarchive&, VectorCohort &obj, unsigned int file_version );
-    template void serialize( boost::archive::binary_oarchive&, VectorCohort &obj, unsigned int file_version );
-    template void serialize( boost::mpi::packed_oarchive&, VectorCohort &obj, unsigned int file_version );
-    template void serialize( boost::mpi::detail::content_oarchive&, VectorCohort &obj, unsigned int file_version );
-    template void serialize( boost::mpi::detail::mpi_datatype_oarchive&, VectorCohort &obj, unsigned int file_version );
-}
-#endif

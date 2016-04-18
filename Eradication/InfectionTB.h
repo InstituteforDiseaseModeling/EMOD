@@ -1,9 +1,9 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
 
@@ -12,10 +12,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InfectionAirborne.h"
 
 #include "TBInterventionsContainer.h"
-#include "InterventionEnums.h"
 #include "SusceptibilityTB.h"
 #include "Infection.h"
-#include "Interventions.h"
 
 namespace Kernel
 {
@@ -37,9 +35,7 @@ namespace Kernel
         virtual bool IsSymptomatic() const = 0;
         virtual bool IsActive() const = 0;
         virtual bool IsExtrapulmonary() const = 0; 
-
     };
-
 
     class InfectionTBConfig : public JsonConfigurable
     {
@@ -49,7 +45,7 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
 
     public:
-        bool Configure( const Configuration* config );
+        virtual bool Configure( const Configuration* config ) override;
         std::map <float,float> GetCD4Map();
         InfectionStateChange::_enum TB_event_type_associated_with_infectious_timer;
         
@@ -92,25 +88,25 @@ namespace Kernel
         virtual ~InfectionTB(void);
         static InfectionTB *CreateInfection(IIndividualHumanContext *context, suids::suid _suid);
 
-        virtual void SetParameters(StrainIdentity* infstrain=NULL, int incubation_period_override = -1);
-        virtual void Update(float dt, Susceptibility* immunity = NULL);
-        virtual void InitInfectionImmunology(Susceptibility* _immunity);
+        virtual void SetParameters(StrainIdentity* infstrain=nullptr, int incubation_period_override = -1) override;
+        virtual void Update(float dt, ISusceptibilityContext* immunity = nullptr) override;
+        virtual void InitInfectionImmunology(ISusceptibilityContext* _immunity) override;
 
         // Inherited from base class
-        virtual bool IsActive() const;
+        virtual bool IsActive() const override;
 
         //TB-specific
-        virtual bool IsSmearPositive() const;
-        virtual bool IsExtrapulmonary() const;
+        virtual bool IsSmearPositive() const override;
+        virtual bool IsExtrapulmonary() const override;
         bool IsFastProgressor() const;
-        virtual bool IsMDR() const; 
+        virtual bool IsMDR() const override;
         bool EvolvedResistance() const;
         bool IsPendingRelapse() const;
-        virtual bool IsSymptomatic() const;
-        virtual void SetIncubationTimer (float new_timer);
-        virtual float GetLatentCureRate() const ;
-        virtual void ResetRecoverFraction(float new_fraction);
-        virtual void ResetDuration();
+        virtual bool IsSymptomatic() const override;
+        virtual void SetIncubationTimer (float new_timer) override;
+        virtual float GetLatentCureRate() const override;
+        virtual void ResetRecoverFraction(float new_fraction) override;
+        virtual void ResetDuration() override;
         float GetDurationSinceInitialInfection() const; 
 
     protected:
@@ -118,20 +114,20 @@ namespace Kernel
         InfectionTB(IIndividualHumanContext *context);
 
         // For disease progression and MDR evolution, virtual functions are inherited from base class Infection
-        virtual void  Initialize(suids::suid _suid);
-        void  InitializeLatentInfection(Susceptibility* immunity);
-        void  InitializeActivePresymptomaticInfection(Susceptibility* immunity);
-        void  InitializeActiveInfection(Susceptibility* immunity);
-        void  InitializePendingRelapse(Susceptibility* immunity);
+        /* clorton */ virtual void Initialize(suids::suid _suid);
+        void  InitializeLatentInfection(ISusceptibilityContext* immunity);
+        void  InitializeActivePresymptomaticInfection(ISusceptibilityContext* immunity);
+        void  InitializeActiveInfection(ISusceptibilityContext* immunity);
+        void  InitializePendingRelapse(ISusceptibilityContext* immunity);
         //const SimulationConfig* params();
-        bool  ApplyDrugEffects(float dt, Susceptibility* immunity = NULL);
-        virtual void EvolveStrain(Susceptibility* _immunity, float dt);
+        bool  ApplyDrugEffects(float dt, ISusceptibilityContext* immunity = nullptr);
+        virtual void EvolveStrain(ISusceptibilityContext* _immunity, float dt) override;
         TBDrugEffects_t GetTotalDrugEffectsForThisInfection();
-        float CalculateTimerAgeDepSlowProgression(Susceptibility* immunity);
+        float CalculateTimerAgeDepSlowProgression(ISusceptibilityContext* immunity);
 
         // additional TB infection members
         // This chunk gets serialized.
-        IIndividualHumanCoinfection* human_coinf; //  = NULL;
+        IIndividualHumanCoinfection* human_coinf; //  = nullptr;
         bool  m_is_active;
         float m_recover_fraction;
         float m_death_fraction;
@@ -143,12 +139,8 @@ namespace Kernel
         bool  m_shows_symptoms;
         float m_duration_since_init_infection; //for reporting only
 
-    private:
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive & ar, InfectionTB& inf, const unsigned int file_version );
-#endif
+        DECLARE_SERIALIZABLE(InfectionTB);
     };
 }
+
 #endif
