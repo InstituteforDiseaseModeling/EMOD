@@ -59,7 +59,7 @@
                }
         },         
         "OUTPUT": {
-            "Enable_Property_Output": 1
+            "Enable_Property_Output": 0
         },
         "PRIMARY": {
             "Config_Name": "HINT_SeattleCommuting -- multicore -- Madagascar_Nosibe",

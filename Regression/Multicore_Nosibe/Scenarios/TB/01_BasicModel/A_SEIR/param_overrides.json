@@ -2,7 +2,6 @@
     "Default_Config_Path":"defaults/tb_scenario_default_config.json",
     "parameters":{
         "Config_Name":"01_BasicModel_A_SEIR -- multicore -- Madagascar_Nosibe",
-        "Custom_Reports_Filename" : "custom_reports.json",
         "Demographics_Filenames": [ "Madagascar_Nosibe_2.5arcmin_demographics.json", "../TB_01_BasicModel_demographics_overlay.json" ],
         "Geography": "Madagascar_Nosibe",
         "Simulation_Duration": 1000,

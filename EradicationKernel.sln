@@ -18,28 +18,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "utils", "utils\utils.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "campaign", "campaign\campaign.vcxproj", "{FAB434AD-C0FC-490D-8F18-E05C99B2FD52}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "intervention emodules", "intervention emodules", "{24F5E1B1-F61A-4DA4-995B-421A9E18F995}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "disease emodules", "disease emodules", "{0F1B34B4-6AD2-49A8-9759-200427297588}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "rapidjson", "rapidjson", "{3CA6C23F-2BEE-4E03-AD7A-AD12E90C6043}"
-	ProjectSection(SolutionItems) = preProject
-		rapidjson\include\rapidjson\document.h = rapidjson\include\rapidjson\document.h
-		rapidjson\include\rapidjson\filestream.h = rapidjson\include\rapidjson\filestream.h
-		rapidjson\include\rapidjson\prettywriter.h = rapidjson\include\rapidjson\prettywriter.h
-		rapidjson\include\rapidjson\rapidjson.h = rapidjson\include\rapidjson\rapidjson.h
-		rapidjson\include\rapidjson\reader.h = rapidjson\include\rapidjson\reader.h
-		rapidjson\include\rapidjson\stringbuffer.h = rapidjson\include\rapidjson\stringbuffer.h
-		rapidjson\include\rapidjson\writer.h = rapidjson\include\rapidjson\writer.h
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "internal", "internal", "{640883B0-F6A0-433B-8255-9E307509D5C8}"
-	ProjectSection(SolutionItems) = preProject
-		rapidjson\include\rapidjson\internal\pow10.h = rapidjson\include\rapidjson\internal\pow10.h
-		rapidjson\include\rapidjson\internal\stack.h = rapidjson\include\rapidjson\internal\stack.h
-		rapidjson\include\rapidjson\internal\strfunc.h = rapidjson\include\rapidjson\internal\strfunc.h
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "snappy", "snappy\snappy.vcxproj", "{E672EB5A-934B-4B47-834B-ABDD133D6B63}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTestLib", "UnitTest++\UnitTestLib.vcxproj", "{64A4FEFE-0461-4E95-8CC1-91EF5F57DBC6}"
@@ -111,6 +89,5 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{640883B0-F6A0-433B-8255-9E307509D5C8} = {3CA6C23F-2BEE-4E03-AD7A-AD12E90C6043}
 	EndGlobalSection
 EndGlobal

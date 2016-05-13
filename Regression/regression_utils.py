@@ -74,8 +74,6 @@ def flattenConfig( configjson_path ):
     # any last minute modifications
     # print( "Running with serialization OFF!" )
     # configjson["parameters"]["Serialization_Test_Cycles"] = 0
-    if os.name == "posix":
-        configjson["parameters"]["Local_Simulation"] = 1
 
     # let's write out a flat version in case someone wants
     # to use regression examples as configs for debug mode

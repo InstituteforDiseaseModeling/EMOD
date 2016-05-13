@@ -8,21 +8,33 @@ from subprocess import Popen, PIPE
 Import("env")
 if os.sys.platform != 'win32':
     git_rev_handle = Popen( "git rev-list HEAD --count".split(), stdout=PIPE )
-    rev = git_rev_handle.stdout.read().rstrip()
+    rev = git_rev_handle.stdout.read().rstrip() 
+    if rev == "":
+        rev = 0
+        #rev = '"Unknown"'
+
     REV_STR = "-DREVISION_NUMBER='" + str(rev) + "'"
     env.Append( CCFLAGS=[ REV_STR ] )
 
     git_branch_handle = Popen( "git rev-parse --abbrev-ref HEAD".split(), stdout=PIPE )
     branch = git_branch_handle.stdout.read().rstrip()
+    if branch == "":
+        branch = "unknownbranch"
     git_sha_handle = Popen( "git log --pretty=format:'%h' -n 1".split(), stdout=PIPE )
     sha1 = git_sha_handle.stdout.read().rstrip().strip("'")
+    if sha1 == "":
+        sha1 = "unknownsha1"
     BR_STR = '-DSCCS_BRANCH=\'"' + branch + '(' + sha1 + ')"\''
     env.Append( CCFLAGS=[ BR_STR ] )
 
     git_date_handle = Popen( "git log -1 --pretty=%ai".split(), stdout=PIPE )
     git_date = git_date_handle.stdout.read().rstrip().replace( ' ', '_' )
+    if git_date == "":
+        git_date = "unknown_date_time"
     GIT_DATE_STR = '-DSCCS_DATE=\'"' + git_date + '"\''
     env.Append( CCFLAGS=[ GIT_DATE_STR ] )
+    USER_STR = '-DBUILDER_NAME=\'"{0}"\''.format(os.environ['USER'])
+    env.Append( CCFLAGS=[ USER_STR ] )
 else:
     root = Dir('#').abspath
     version_info = '{0}\\scripts\\gitversion.cmd {0}\\utils'.format(root)

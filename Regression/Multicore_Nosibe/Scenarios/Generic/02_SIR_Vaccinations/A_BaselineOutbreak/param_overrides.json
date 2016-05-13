@@ -61,7 +61,7 @@
             "Geography": "Madagascar_Nosibe"
         }, 
         "OUTPUT": {
-            "Enable_Property_Output": 1
+            "Enable_Property_Output": 0
         }
     }
 }

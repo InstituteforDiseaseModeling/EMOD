@@ -27,33 +27,33 @@ PROGRESS = 25
 globals = {}
 # the entries in 'directory_whitelist' should all be lower case (regardless of the directory name casing on disk)
 globals['directory_whitelist'] = [ 'basereportlib', 'cajun', 'campaign', 'componenttests', 'dependencies', 'eradication', 'interventions', 'jsonspirit', 'quickstart', 'rapidjson', 'regression', 'reporters', 'scripts', 'snappy', 'unittest++', 'utils' ]
-globals['directory_blacklist'] = [ '.svn', 'cajun/test', 'Regression/reports', 'Regression/Polio', 'Regression/NotreDame' ]
-# the entries in 'reporter_whitelist' should be tuples of solution files, the associated directory, and the project file
+globals['directory_blacklist'] = [ '.svn', 'cajun/test', 'quickstart', 'Regression/reports', 'Regression/Polio', 'Regression/NotreDame', 'Regression/Serious_Gaming' ]
+# the entries in 'reporter_whitelist' should be tuples of solution files, the associated directory, the project file, and the SConscript file
 globals['reporter_whitelist'] = [
-    ('TBCustomReporterRelease.sln', 'lib_custom_tb_reporter_Scenarios',     'lib_custom_tb_reporter_Scenarios.vcxproj'),
-    ('BasicReportPlugin.sln',       'libreportpluginbasic',                 'BaseReportLib.vcxproj'),
-    ('BasicReportPlugin.sln',       'libreportpluginbasic',                 'libreportpluginbasic.vcxproj'),
-    ('BasicReportPlugin.sln',       'libreporteventcounter',                'libreporteventcounter.vcxproj'),
-    ('AllCustomReporters.sln',      'libReportMalariaFiltered',             'libReportMalariaFiltered.vcxproj'),
-    ('AllCustomReporters.sln',      'libReportNodeDemographics',            'libReportNodeDemographics.vcxproj'),
-    ('AllCustomReporters.sln',      'libvectorstats',                       'libvectorstats.vcxproj'),
-    ('MalariaCustomReporters.sln',  'libmalariaimmunity_report_plugin',     'libmalariaimmunity_report_plugin.vcxproj'),        # AllCustomReporters.sln
-    ('MalariaCustomReporters.sln',  'libmalariapatientJSON_report_plugin',  'libmalariapatientJSON_report_plugin.vcxproj'),     # AllCustomReporters.sln
-    ('MalariaCustomReporters.sln',  'libmalariasummary_report_plugin',      'libmalariasummary_report_plugin.vcxproj'),         # AllCustomReporters.sln
-    ('MalariaCustomReporters.sln',  'libmalariasurveyJSON_analyzer_plugin', 'libmalariasurveyJSON_analyzer_plugin.vcxproj'),    # AllCustomReporters.sln
-    ('AllCustomReporters.sln',      'libhumanmigrationtracking',            'libhumanmigrationtracking.vcxproj'),
-    ('VectorCustomReporters.sln',   'libvectorhabitat_report_plugin',       'libvectorhabitat_report_plugin.vcxproj'),          # AllCustomReporters.sln
-    ('AllCustomReporters.sln',      'libvectormigration',                   'libvectormigration.vcxproj' ) ]
+    ('TBCustomReporterRelease.sln', 'lib_custom_tb_reporter_Scenarios',     'lib_custom_tb_reporter_Scenarios.vcxproj',     'SConscript_TB_ReportScenarios'),
+    ('BasicReportPlugin.sln',       'libreportpluginbasic',                 'BaseReportLib.vcxproj',                        'SConscript_Generic_Basic'),
+    ('BasicReportPlugin.sln',       'libreportpluginbasic',                 'libreportpluginbasic.vcxproj',                 'SConscript_Generic_Basic'),
+    ('BasicReportPlugin.sln',       'libreporteventcounter',                'libreporteventcounter.vcxproj',                'SConscript_Generic_EventCounter'),
+    ('AllCustomReporters.sln',      'libReportMalariaFiltered',             'libReportMalariaFiltered.vcxproj',             'SConscript_Malaria_Filtered'),
+    ('AllCustomReporters.sln',      'libReportNodeDemographics',            'libReportNodeDemographics.vcxproj',            'SConscript_Generic_NodeDemographics'),
+    ('AllCustomReporters.sln',      'libvectorstats',                       'libvectorstats.vcxproj',                       'SConscript_Vector_VectorStats'),
+    ('MalariaCustomReporters.sln',  'libmalariaimmunity_report_plugin',     'libmalariaimmunity_report_plugin.vcxproj',     'SConscript_Malaria_Immunity'),     # AllCustomReporters.sln
+    ('MalariaCustomReporters.sln',  'libmalariapatientJSON_report_plugin',  'libmalariapatientJSON_report_plugin.vcxproj',  'SConscript_Malaria_Patient'),      # AllCustomReporters.sln
+    ('MalariaCustomReporters.sln',  'libmalariasummary_report_plugin',      'libmalariasummary_report_plugin.vcxproj',      'SConscript_Malaria_Summary'),      # AllCustomReporters.sln
+    ('MalariaCustomReporters.sln',  'libmalariasurveyJSON_analyzer_plugin', 'libmalariasurveyJSON_analyzer_plugin.vcxproj', 'SConscript_Malaria_Survey'),       # AllCustomReporters.sln
+    ('AllCustomReporters.sln',      'libhumanmigrationtracking',            'libhumanmigrationtracking.vcxproj',            'SConscript_Generic_HumanMigrationTracking'),
+    ('VectorCustomReporters.sln',   'libvectorhabitat_report_plugin',       'libvectorhabitat_report_plugin.vcxproj',       'SConscript_Vector_VectorHabitat'), # AllCustomReporters.sln
+    ('AllCustomReporters.sln',      'libvectormigration',                   'libvectormigration.vcxproj',                   'SConscript_Vector_VectorMigration')]
 # the entries in 'file_whitelist' and 'file_blacklist' should all be lower case (regardless of the file name casing on disk)
 globals['file_whitelist'] = [ '.git', '.gitattributes', '.gitignore', 'eradicationkernel.sln', 'license.txt', 'notices.txt', 'readme.md', 'sconscript', 'sconstruct' ]
-globals['file_blacklist'] = [ 'status.txt', 'time.txt', 'transitions.json' ]
+globals['file_blacklist'] = [ '.git', 'status.txt', 'time.txt', 'transitions.json' ]    # Sometimes .git is a file instead of a directory
 globals['project_filter_exclude'] = set(['environmental', 'polio', 'tbhiv', 'hivtb'])
 globals['excluded_preprocessor_defines'] = set(['ENABLE_POLIO', 'ENABLE_TBHIV'])
-globals['regression_directory_file_whitelist'] = [ 'generic.json', 'hiv.json', 'households.json', 'lin_v25.json', 'malaria.json', 'multicore.json', 'multicore_nosibe_all.json', 'param_sweep.json', 'plotallcharts.py',
+globals['regression_directory_file_whitelist'] = [ 'generic.json', 'hiv.json', 'households.json', 'linux_release.json', 'malaria.json', 'multicore.json', 'multicore_nosibe_all.json', 'param_sweep.json', 'plotallcharts.py',
    'plotnewinfectionsbypool.py', 'plotsirchannels.py', 'prettyprintjson.py',
    'primaryscenarios.json', 'py.json', 'regression_test.cfg', 'regression_test.py',
    'regression_utils.py', 'samples.json', 'sanity.json', 'sti.json', 'sti_hiv_samples.json', 'tb_all.json', 'tb_samples.json', 'update_baselines.py',
-   'vector.json', 'warning.txt', 'win_v2_5.json' ]
+   'vector.json', 'warning.txt', 'win_release.json' ]
 globals['allowed_sim_types'] = [ 'GENERIC_SIM', 'VECTOR_SIM', 'MALARIA_SIM', 'AIRBORNE_SIM', 'TB_SIM', 'STI_SIM', 'HIV_SIM', 'PY_SIM' ]
 
 
@@ -83,6 +83,7 @@ def filter_files(path, whitelist):
 def filter_reporters(root_directory):
     reporter_directory = os.path.join(root_directory, 'reporters')
     file_whitelist = [ entry[0].lower() for entry in globals['reporter_whitelist'] ]
+    file_whitelist.extend([ entry[3].lower() for entry in globals['reporter_whitelist'] ])
     filter_files(reporter_directory, file_whitelist)
     directory_whitelist = [ entry[1].lower() for entry in globals['reporter_whitelist'] ]
     filter_directories(reporter_directory, directory_whitelist)
@@ -115,7 +116,7 @@ def clean_directories(root_directory):
     for root, directories, files in os.walk(root_directory):
         for directory in directories:
             full_path = os.path.join(root, directory)
-            if directory.lower() == 'x64':
+            if directory.lower() in ('x64', 'debug', 'release'):
                 logging.getLogger(__name__).info("Cleaning build directory '{0}'".format(full_path))
                 shutil.rmtree(full_path)
             else:

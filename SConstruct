@@ -171,6 +171,7 @@ pa = platform.architecture()
 pi = os.sys.platform
 if pa[0].find("64") != -1:
     pi = 'x64'     
+path = os.environ['PATH']
 env = Environment( BUILD_DIR=buildDir,
                    DIST_ARCHIVE_SUFFIX='.tgz',
                    MSVS_ARCH=msarch ,
@@ -214,16 +215,16 @@ if os.sys.platform == 'win32':
                           "#/snappy",
                           "#/unittest/UnitTest++/src"])
 else:
+    env['ENV']['PATH'] = path
     env['OS_FAMILY'] = 'posix'
     env['CC'] = "mpicxx"
-    env['CXX'] = "/usr/lib64/mpich/bin/mpicxx"
-    #env['CXX'] = "/usr/lib64/mpi/gcc/openmpi/bin/mpicxx"
+    env['CXX'] = "mpicxx"
     env.Append( CCFLAGS=["-fpermissive"] )
     env.Append( CCFLAGS=["--std=c++0x"] )
     env.Append( CCFLAGS=["-w"] )
     env.Append( CCFLAGS=["-ffloat-store"] )
     env.Append( CCFLAGS=["-Wno-unknown-pragmas"] )
-    env.Append( CCFLAGS=["-save-temps"] )
+    #env.Append( CCFLAGS=["-save-temps"] )
     env.Append( EXTRACPPPATH=[
                           "#/Eradication",
                           "#/interventions",

@@ -13,7 +13,6 @@ import glob
 import httplib
 import json
 import os # e.g., mkdir
-import plotAllCharts
 import re
 import shutil # copyfile
 import subprocess
@@ -133,7 +132,7 @@ class RuntimeParameters:
         
     @property
     def input_path(self):
-        return self.config.get(self.os_type, 'local_input_root')
+        return self.config.get(self.os_type, 'home_input')
         
     @property
     def local_bin_root(self):
@@ -141,11 +140,17 @@ class RuntimeParameters:
 
     @property
     def sim_root(self):
-        return self.config.get('ENVIRONMENT', 'sim_root')
+        if params.local_execution or os.name=="posix":
+            return self.config.get(self.os_type, 'local_sim_root')
+        else:
+            return self.config.get('ENVIRONMENT', 'sim_root')
         
     @property
     def shared_input(self):
-        return self.config.get('ENVIRONMENT', 'input_root')
+        if params.local_execution or os.name=="posix":
+            return self.config.get(self.os_type, 'local_input_root')
+        else:
+            return self.config.get('ENVIRONMENT', 'input_root')
         
     @property
     def bin_root(self):
@@ -153,7 +158,10 @@ class RuntimeParameters:
         
     @property
     def user_input(self):
-        return self.config.get('ENVIRONMENT', 'home_input')
+        if params.local_execution or os.name=="posix":
+            return self.config.get(self.os_type, 'home_input')
+        else:
+            return self.config.get('ENVIRONMENT', 'home_input')
         
     @property
     def py_input(self):
@@ -214,7 +222,11 @@ class RuntimeParameters:
             nvp = raw_nvp.split(":")
             constraints_dict[ nvp[0] ] = nvp[1]
         return constraints_dict
-        
+    
+    @property
+    def local_execution(self):
+        return self.args.local
+
 class Monitor(threading.Thread):
     def __init__(self, sim_id, config_id, report, config_json=None, compare_results_to_baseline=True):
         threading.Thread.__init__( self )
@@ -879,7 +891,7 @@ class MyRegressionRunner():
                 do_copy = False # do my own copy here, since
                 remote_path = os.path.join(sim_dir,os.path.basename(filename))
                 if os.path.exists(remote_path):
-                    raise Exception('Overlay of same basename has already been copied to remote simulation directory.')
+                    raise Exception('Overlay with same basename has already been copied to remote simulation directory.')
                 shutil.copy(local_source, remote_path)
 
             # Cases:
@@ -979,14 +991,11 @@ class MyRegressionRunner():
         # now we have the config_json, find out if we're commissioning locally or on HPC
 
         def is_local_simulation( some_json, id ):
-            is_local = False
-            if ('parameters' in reply_json) and ('Local_Simulation' in reply_json['parameters']):
-                if (reply_json['parameters']['Local_Simulation'] == 1):
-                    is_local = True
-            else:
-                print( "Didn't find key 'parameters/Local_Simulation' in json '{0}'.".format( id ) )
+            if os.name == "posix":
+                return True
 
-            return is_local
+            global params
+            return params.local_execution 
 
         sim_dir = os.path.join( self.params.sim_root, sim_id )
         bin_dir = os.path.join( self.params.bin_root, self.dtk_hash ) # may not exist yet
@@ -1370,6 +1379,7 @@ def main():
                 all_data_prop.append( prj_json )
         plot_title = "Sweep over " + reglistjson["sweep"]["param_name"] + " (" + str(len(reglistjson["sweep"]["param_values"])) + " values)"
         os.chdir( cache_cwd )
+        import plotAllCharts
         plotAllCharts.plotBunch( all_data, plot_title, ref_json )
         if os.path.exists( ref_path_prop ) == True:
             plotAllCharts.plotBunch( all_data_prop, plot_title, ref_json_prop )
@@ -1397,6 +1407,8 @@ def setup():
     parser.add_argument("--skip-emodule-check", action="store_true", default=False, help="Use this to skip sometimes slow check that EMODules on cluster are up-to-date.")
     parser.add_argument("--config-constraints", default=[], action="append", help="Use this to skip sometimes slow check that EMODules on cluster are up-to-date.")
     parser.add_argument("--scons", action="store_true", default=False, help="Indicates scons build so look for custom DLLs in the build/64/Release directory.")
+    parser.add_argument('--local', default=False, action='store_true', help='Run all simulations locally.')
+
     args = parser.parse_args()
 
     global params

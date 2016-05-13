@@ -3,21 +3,26 @@
 
 @ECHO OFF
 
-IF "%1"=="" ECHO Missing required path to utils project directory. & GOTO EXIT
+IF [%1]==[] ECHO %0: Missing required path to utils project directory. & GOTO NOPATH
 
-SET TEMPLATE_FILENAME="%1\version_info.tmpl"
-SET HEADER_FILENAME="%1\version_info.h"
-SET BUILD_DATE_FILENAME="%1\build_date.h"
+SET TEMPLATE_FILENAME=%1\version_info.tmpl
+SET HEADER_FILENAME=%1\version_info.h
 
-IF NOT EXIST %TEMPLATE_FILENAME% ECHO Didn't find template file at '%TEMPLATE_FILENAME%' & GOTO EXIT
+ECHO Looking for template file at '%TEMPLATE_FILENAME%'
+
+IF NOT EXIST %TEMPLATE_FILENAME% ECHO %0: Didn't find template file at '%TEMPLATE_FILENAME%' & GOTO NOTEMPLATE
 
 SET TEMP_SCRATCH_FILE="%TEMP%\version.%RANDOM%.txt"
 
 CALL where git.exe > NUL: 2> NUL:
 IF %ERRORLEVEL% NEQ 0 ECHO Didn't find git.exe to gather commit information. & GOTO NOGIT
 
+CALL git status > NUL: 2> NUL:
+IF %ERRORLEVEL% NEQ 0 ECHO Doesn't appear to be a Git repository. & GOTO NOGIT
+
+ECHO %USERNAME%> %TEMP_SCRATCH_FILE%
 :: Seed temp version info file with branch name
-git rev-parse --abbrev-ref HEAD > %TEMP_SCRATCH_FILE%
+git rev-parse --abbrev-ref HEAD >> %TEMP_SCRATCH_FILE%
 :: Append short commit hash and date to version info file (use --pretty=format to prevent extra newline)
 git show --no-patch --pretty="format:%%h%%n%%ai%%n" HEAD >> %TEMP_SCRATCH_FILE%
 :: Append length (count) of commit chain to version info file for revision number
@@ -28,7 +33,8 @@ GOTO TEMPLATE
 :NOGIT
 
 :: butt redirects up against text to prevent extraneous spacing
-ECHO unknown-branch> %TEMP_SCRATCH_FILE%
+ECHO %USERNAME%> %TEMP_SCRATCH_FILE%
+ECHO unknown-branch>> %TEMP_SCRATCH_FILE%
 ECHO unknown>> %TEMP_SCRATCH_FILE%
 ECHO date time unknown>> %TEMP_SCRATCH_FILE%
 ECHO 00>> %TEMP_SCRATCH_FILE%
@@ -52,4 +58,13 @@ IF %ERRORLEVEL% NEQ 0 (
     DEL %TEMP_HEADER_FILE%
 )
 
-:EXIT
+GOTO EXITOK
+
+:EXITOK
+EXIT 0
+
+:NOPATH
+EXIT 1
+
+:NOTEMPLATE
+EXIT 2

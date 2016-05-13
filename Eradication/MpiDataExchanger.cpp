@@ -66,6 +66,7 @@ namespace Kernel
                 uint32_t buffer_size = message_size_by_rank[destination_rank] = writer->GetBufferSize();
                 IdmMpi::Request size_request;
                 EnvPtr->MPI.p_idm_mpi->SendIntegers( &message_size_by_rank[destination_rank], 1, destination_rank, &size_request );
+                outbound_requests.Add( size_request );
 
                 if (buffer_size > 0)
                 {

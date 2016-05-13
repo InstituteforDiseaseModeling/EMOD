@@ -130,7 +130,10 @@ int main(int argc, char* argv[])
     auto sims = getSimTypeList();
     std::stringstream output;
     output << "Intellectual Ventures(R)/EMOD Disease Transmission Kernel " << pv->getVersion() << std::endl
-           << "Built on " << pv->getBuildDate() << " from " << pv->getSccsBranch() << " checked in on " << pv->getSccsDate() << std::endl;
+           << "Built on " << pv->getBuildDate() <<
+           " by " << pv->getBuilderName() <<
+           " from " << pv->getSccsBranch() <<
+           " checked in on " << pv->getSccsDate() << std::endl;
     
     std::string sim_types_str = "Supports sim_types: ";
     for( auto sim_type: sims  )

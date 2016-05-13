@@ -30,6 +30,7 @@ ProgDllVersion::ProgDllVersion()
     m_nRevision = REVISION_NUMBER; 
 
     m_nBuild = BUILD_NUMBER;
+    strncpy( m_builderName, BUILDER_NAME, VER_LEN );
     strncpy( m_sSccsBranch, SCCS_BRANCH, VER_LEN );
     strncpy( m_sSccsDate, SCCS_DATE, VER_LEN );
     for( int i=0; i<VER_LEN; i++ )
@@ -67,9 +68,9 @@ int ProgDllVersion::checkProgVersion(const char* sVersion)
     int ret = -2;
     uint8_t maj, min;
     uint16_t rev;
-    if (parseProgVersion(sVersion,maj, min, rev))
+    if (parseProgVersion(sVersion, maj, min, rev))
     {
-        ret = checkProgVersion(maj, min,rev);
+        ret = checkProgVersion(maj, min, rev);
     }
     return ret;
 }

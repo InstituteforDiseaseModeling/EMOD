@@ -38,7 +38,7 @@
         "Demographics_Filenames": [
             "newborn_cohort_demographics.json", 
             "pfa_overlay.json", 
-            "pfa_overlay_rates_02.json"
+            "PFA_overlay_rates_02.json"
         ], 
         "Enable_Aging": 1, 
         "Enable_Birth": 0, 

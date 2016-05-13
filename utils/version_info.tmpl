@@ -12,7 +12,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #ifdef WIN32
 static const char* BUILD_DATE = __DATE__ " " __TIME__;
-static const char *SCCS_URL   = "https://github.com/InstituteforDiseaseModeling/DtkTrunk/commit/$HASH$";
 #else
 #define BUILD_DATE __DATE__
 #endif
@@ -25,12 +24,15 @@ static const char *SCCS_URL   = "https://github.com/InstituteforDiseaseModeling/
 #endif
 
 #define    MAJOR_VERSION    2
-#define    MINOR_VERSION    5
+#define    MINOR_VERSION    6
 #ifndef REVISION_NUMBER
-#define    REVISION_NUMBER  $REV$
+#define    REVISION_NUMBER  $REVISION$
 #endif
 #define    BUILD_NUMBER     0
 
+#ifndef BUILDER_NAME
+#define    BUILDER_NAME     "$BUILDER$"
+#endif
 
-#define FULL_VERSION_WITH_SVN      XSTRINGIFY(MAJOR_VERSION) "." XSTRINGIFY(MINOR_VERSION) "." XSTRINGIFY(REVISION_NUMBER)
-#define FULL_VERSION_WITH_SVN_NQ   MAJOR_VERSION,MINOR_VERSION,REVISION_NUMBER,BUILD_NUMBER
+#define FULL_VERSION_WITH_SVN       XSTRINGIFY(MAJOR_VERSION) "." XSTRINGIFY(MINOR_VERSION) "." XSTRINGIFY(REVISION_NUMBER)
+#define FULL_VERSION_WITH_SVN_NQ    MAJOR_VERSION,MINOR_VERSION,REVISION_NUMBER,BUILD_NUMBER

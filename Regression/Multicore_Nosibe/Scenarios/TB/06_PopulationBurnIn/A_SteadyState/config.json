@@ -18,7 +18,7 @@
         "Campaign_Filename": "campaign.json", 
         "Climate_Model": "CLIMATE_OFF", 
         "Config_Name": "06_PopulationBurnIn_A_SteadyState -- multicore -- Madagascar_Nosibe", 
-        "Custom_Reports_Filename": "custom_reports.json", 
+        "Custom_Reports_Filename": "NoCustomReports", 
         "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER", 
         "Default_Geography_Initial_Node_Population": 1000, 
         "Default_Geography_Torus_Size": 10, 

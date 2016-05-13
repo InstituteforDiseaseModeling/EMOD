@@ -3,7 +3,6 @@
     "parameters":{
         "Age_Initialization_Distribution_Type":"DISTRIBUTION_COMPLEX",
         "Config_Name":"02_AgeDependentImmunity_A_Lifelong -- multicore -- Madagascar_Nosibe",
-        "Custom_Reports_Filename" : "custom_reports.json",
         "Demographics_Filenames": [ "Madagascar_Nosibe_2.5arcmin_demographics.json", "../TB_02_AgeDependentImmunity_demographics_overlay.json" ],
         "Geography": "Madagascar_Nosibe",
         "Simulation_Duration":7000,

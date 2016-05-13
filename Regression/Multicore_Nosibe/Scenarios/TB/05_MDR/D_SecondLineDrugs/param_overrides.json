@@ -3,7 +3,6 @@
     "parameters":{
         "Base_Infectivity":0.05,
         "Config_Name":"05_MDR_D_SecondLineDrugs -- multicore -- Madagascar_Nosibe",
-        "Custom_Reports_Filename" : "custom_reports.json",
         "Demographics_Filenames": [ "Madagascar_Nosibe_2.5arcmin_demographics.json", "../TB_05_MDR_demographics_overlay.json" ],
         "Geography": "Madagascar_Nosibe",
         "Simulation_Duration":300,
