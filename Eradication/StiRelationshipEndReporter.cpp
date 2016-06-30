@@ -60,7 +60,7 @@ namespace Kernel
         IIndividualHuman* p_partner = nullptr;
 
         float male_age_years = -1.0;
-        if( relationship->MalePartner() != nullptr )
+        if( !relationship->IsMalePartnerAbsent() &&  (relationship->MalePartner() != nullptr) )
         {
             p_partner = dynamic_cast <IndividualHuman*>(relationship->MalePartner());
             male_age_years = p_partner->GetAge() / DAYSPERYEAR;
@@ -68,7 +68,7 @@ namespace Kernel
         suids::suid male_id = relationship->GetMalePartnerId();
 
         float female_age_years = -1.0;
-        if( relationship->FemalePartner() != nullptr )
+        if( !relationship->IsFemalePartnerAbsent() &&  (relationship->FemalePartner() != nullptr) )
         {
             p_partner = dynamic_cast <IndividualHuman*>(relationship->FemalePartner());
             female_age_years = p_partner->GetAge() / DAYSPERYEAR;
@@ -122,8 +122,20 @@ namespace Kernel
                << "Node_ID,"
                << "Rel_start_time,"
                << "Rel_scheduled_end_time,"
-               << "Rel_actual_end_time,"
-               << "Rel_type (0 = transitory 1 = informal 2 = marital),"
+               << "Rel_actual_end_time,";
+
+        header << "Rel_type (";
+        for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
+        {
+            header << i << " = " << RelationshipType::pairs::get_keys()[i];
+            if( (i+1) < RelationshipType::COUNT )
+            {
+                header << "; ";
+            }
+        }
+        header << "),";
+
+        header 
                << "male_ID,"
                << "female_ID,"
                << "male_age,"

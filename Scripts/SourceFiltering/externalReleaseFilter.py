@@ -26,7 +26,7 @@ PROGRESS = 25
 
 globals = {}
 # the entries in 'directory_whitelist' should all be lower case (regardless of the directory name casing on disk)
-globals['directory_whitelist'] = [ 'basereportlib', 'cajun', 'campaign', 'componenttests', 'dependencies', 'eradication', 'interventions', 'jsonspirit', 'quickstart', 'rapidjson', 'regression', 'reporters', 'scripts', 'snappy', 'unittest++', 'utils' ]
+globals['directory_whitelist'] = [ '.git', 'basereportlib', 'cajun', 'campaign', 'componenttests', 'dependencies', 'eradication', 'interventions', 'jsonspirit', 'quickstart', 'rapidjson', 'regression', 'reporters', 'scripts', 'snappy', 'unittest++', 'utils' ]
 globals['directory_blacklist'] = [ '.svn', 'cajun/test', 'quickstart', 'Regression/reports', 'Regression/Polio', 'Regression/NotreDame', 'Regression/Serious_Gaming' ]
 # the entries in 'reporter_whitelist' should be tuples of solution files, the associated directory, the project file, and the SConscript file
 globals['reporter_whitelist'] = [
@@ -45,8 +45,8 @@ globals['reporter_whitelist'] = [
     ('VectorCustomReporters.sln',   'libvectorhabitat_report_plugin',       'libvectorhabitat_report_plugin.vcxproj',       'SConscript_Vector_VectorHabitat'), # AllCustomReporters.sln
     ('AllCustomReporters.sln',      'libvectormigration',                   'libvectormigration.vcxproj',                   'SConscript_Vector_VectorMigration')]
 # the entries in 'file_whitelist' and 'file_blacklist' should all be lower case (regardless of the file name casing on disk)
-globals['file_whitelist'] = [ '.git', '.gitattributes', '.gitignore', 'eradicationkernel.sln', 'license.txt', 'notices.txt', 'readme.md', 'sconscript', 'sconstruct' ]
-globals['file_blacklist'] = [ '.git', 'status.txt', 'time.txt', 'transitions.json' ]    # Sometimes .git is a file instead of a directory
+globals['file_whitelist'] = [ '.git', '.gitattributes', '.gitignore', 'eradicationkernel.sln', 'license.txt', 'notices.txt', 'readme.md', 'sconscript', 'sconstruct' ]  # Sometimes .git is a file instead of a directory
+globals['file_blacklist'] = [ 'status.txt', 'time.txt', 'transitions.json' ]
 globals['project_filter_exclude'] = set(['environmental', 'polio', 'tbhiv', 'hivtb'])
 globals['excluded_preprocessor_defines'] = set(['ENABLE_POLIO', 'ENABLE_TBHIV'])
 globals['regression_directory_file_whitelist'] = [ 'generic.json', 'hiv.json', 'households.json', 'linux_release.json', 'malaria.json', 'multicore.json', 'multicore_nosibe_all.json', 'param_sweep.json', 'plotallcharts.py',

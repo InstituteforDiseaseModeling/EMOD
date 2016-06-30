@@ -464,4 +464,11 @@ EXPONENTIAL_DURATION"
 #define Male_Circumcision_Distributed_Event_Trigger_DESC_TEXT "TBD"
 #define Male_Circumcision_Apply_If_Higher_Reduced_Acquire_DESC_TEXT "TBD"
 
+#define RV_Distributed_Event_Trigger_DESC_TEXT "TBD"
+#define RV_Expired_Event_Trigger_DESC_TEXT "TBD"
+#define RV_Duration_To_Wait_Before_Revaccination_DESC_TEXT "TBD"
 
+#define Intervention_Name_DESC_TEXT "TBD"
+
+#define WEM_Expire_At_Durability_Map_End_DESC_TEXT "TBD-If true, the intervention will expire when the end of the map is reached."
+#define WEM_Durability_Map_End_DESC_TEXT           "TBD-Time since the intervention was distributed to a multiplier times the Initial_Effect"

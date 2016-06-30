@@ -2,6 +2,7 @@
     "Default_Config_Path": "defaults/sti_scenario_default_config.json", 
     "parameters": {
         "Config_Name": "01D_Relationship_Types_and_Durations",
+        "Run_Number" : 210,
         "Simulation_Duration": 14600,
         "Demographics_Filenames": ["uniform_demographics.json", "pfa_simple.json", "PFA_overlay_rates.json"],
         "Base_Population_Scale_Factor": 0.2,

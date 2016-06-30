@@ -14,11 +14,17 @@
             "Simulation_Duration": 14600
         }, 
         "____________REPORTING___________": {
+            "Run_Number" : 210,
             "Report_Relationship_Start": 1, 
             "Report_Relationship_End": 1
         }, 
         "____________RARELY_CHANGED___________": {
-            "Config_Name": "01E_Concurrency_Independent_Small_Network_without_Concurrency"
+            "Config_Name": "01E_Concurrency_Independent_Small_Network_without_Concurrency",
+            "logLevel_FlowControllerImpl" : "ERROR",
+            "logLevel_BehaviorPfa" : "ERROR",
+            "logLevel_SocietyImpl" : "ERROR",
+            "logLevel_RelationshipMgr" : "ERROR",
+            "logLevel_Relationship" : "ERROR"
         }
     }
 }

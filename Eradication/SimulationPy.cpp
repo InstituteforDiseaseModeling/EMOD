@@ -112,9 +112,7 @@ namespace Kernel
     void SimulationPy::Initialize(const ::Configuration *config)
     {
         Simulation::Initialize(config);
-        IndividualHumanPy fakeHuman;
-        LOG_INFO( "Calling Configure on fakeHuman\n" );
-        fakeHuman.Configure( config );
+        IndividualHumanPy::InitializeStaticsPy( config );
     }
 
     SimulationPy *SimulationPy::CreateSimulation()

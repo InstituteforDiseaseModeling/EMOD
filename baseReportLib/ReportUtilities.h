@@ -22,6 +22,5 @@ namespace Kernel
 
 namespace ReportUtilities
 {
-    std::list<Kernel::IDrug*> GetDrugList( const Kernel::IIndividualHuman* individual, const std::string& rDrugClassName );
     int GetAgeBin( float age, std::vector<float>& rAges );
 }

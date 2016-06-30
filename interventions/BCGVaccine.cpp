@@ -47,25 +47,24 @@ namespace Kernel
         initConfigTypeMap("Vaccine_Take_Age_Decay_Rate", &vaccine_take_age_decay_rate, BCG_Vaccine_Take_Age_Decay_Rate_DESC_TEXT );
     }
 
-    void BCGVaccine::ApplyVaccineTake()
+    bool BCGVaccine::ApplyVaccineTake( IIndividualHumanContext* pihc )
     {
-        if (!parent)
+        bool vaccine_took = true;
+        if (!pihc)
         {
             // Trying to do BCGVaccine::ApplyVaccine with a NULL IndividualHumanContext (needed for age information).
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "parent", "IndividualHumanContext" );
+            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "pihc", "IndividualHumanContext" );
         }
 
         // Decay vaccine take with the age of the individual according to specified rate
-        double age_in_years = parent->GetEventContext()->GetAge() / DAYSPERYEAR;
+        double age_in_years = pihc->GetEventContext()->GetAge() / DAYSPERYEAR;
         double fraction_of_take = exp( -1.0 * vaccine_take_age_decay_rate * age_in_years );
-        double rand = parent->GetRng()->e();
+        double rand = pihc->GetRng()->e();
         if ( rand  > vaccine_take * fraction_of_take )
         {
-            current_reducedacquire = 0.0;
-            current_reducedtransmit = 0.0;
-            expired = true;
-            LOG_DEBUG("Vaccine did not take.\n");
+            vaccine_took = false;
         }
+        return vaccine_took;
     }
 
     REGISTER_SERIALIZABLE(BCGVaccine);

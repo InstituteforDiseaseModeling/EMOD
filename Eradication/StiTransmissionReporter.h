@@ -8,7 +8,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 ***************************************************************************************************/
 
 #pragma once
-#include "BaseTextReport.h"
+#include "BaseTextReportEvents.h"
 #include "ISimulation.h"
 #include "IIndividualHuman.h"
 #include "INodeContext.h"
@@ -49,7 +49,7 @@ namespace Kernel
 
     struct IIndividualHumanSTI;
 
-    class StiTransmissionReporter : public BaseTextReport
+    class StiTransmissionReporter : public BaseTextReportEvents
     {
     public:
         static IReport* Create(ISimulation* simulation);
@@ -59,14 +59,13 @@ namespace Kernel
         virtual void EndTimestep( float currentTime, float dt );
 
     protected:
-        StiTransmissionReporter(ISimulation* simulation);
+        StiTransmissionReporter();
         virtual ~StiTransmissionReporter();
 
         // BaseTextReport
-        virtual std::string GetHeader() const ;
+        virtual std::string GetHeader() const override;
 
-        void onNewNode(Kernel::INodeContext* node);
-        void onTransmission(IIndividualHuman* individual);
+        virtual bool notifyOnEvent( IIndividualHumanEventContext *context, const std::string& StateChange ) override;
 
         // Methods for subclasses to override so that they can add data
         virtual void ClearData();
@@ -76,7 +75,6 @@ namespace Kernel
         virtual std::string GetOtherData( unsigned int relationshipID ) { return ""; };
 
         // member variables
-        ISimulation* simulation;
         std::vector<StiTransmissionInfo> report_data;
     };
 }

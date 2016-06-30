@@ -85,7 +85,7 @@ SUITE(PairFormationParametersImplTest)
     {
         unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/PairFormationParametersTest/TransitoryParameters.json" ) );
 
-        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get(), 1.0f, 1.0f ) );
+        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get() ) );
 
         IdmDateTime current_time;
         CHECK_EQUAL( 0.0013699f, from_data->FormationRate( current_time, 1.0 ) );
@@ -123,7 +123,7 @@ SUITE(PairFormationParametersImplTest)
     {
         unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/PairFormationParametersTest/MaritalParameters.json" ) );
 
-        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::MARITAL, p_config.get(), 1.0f, 1.0f ) );
+        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::MARITAL, p_config.get() ) );
 
         IdmDateTime current_time;
         CHECK_EQUAL( 0.0000914427f, from_data->FormationRate( current_time, 1.0 ) );
@@ -161,7 +161,7 @@ SUITE(PairFormationParametersImplTest)
     {
         unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/PairFormationParametersTest/TestSigmoid.json" ) );
 
-        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::MARITAL, p_config.get(), 1.0f, 1.0f ) );
+        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::MARITAL, p_config.get() ) );
 
         IdmDateTime current_time;
         current_time.time = 1990.0 * DAYSPERYEAR;
@@ -176,7 +176,7 @@ SUITE(PairFormationParametersImplTest)
     {
         unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/PairFormationParametersTest/TestInterpolatedValueMap.json" ) );
 
-        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::MARITAL, p_config.get(), 1.0f, 1.0f ) );
+        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::MARITAL, p_config.get() ) );
 
         IdmDateTime current_time;
         current_time.time = 1990.0 * DAYSPERYEAR;
@@ -191,7 +191,7 @@ SUITE(PairFormationParametersImplTest)
     {
         unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/PairFormationParametersTest/TransitoryParameters.json" ) );
 
-        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get(), 1.0f, 1.0f ) );
+        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get() ) );
 
         CHECK_EQUAL(    20, from_data->GetMaleAgeBinCount()    );
         CHECK_EQUAL(    20, from_data->GetFemaleAgeBinCount()  );
@@ -234,7 +234,7 @@ SUITE(PairFormationParametersImplTest)
         {
             unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( rFilename ) );
 
-            unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get(), 1.0f, 1.0f ) );
+            unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get() ) );
 
             CHECK_LN( false, lineNumber ); // should not get here
         }

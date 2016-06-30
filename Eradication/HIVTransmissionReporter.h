@@ -19,7 +19,7 @@ namespace Kernel
         static IReport* Create(ISimulation* simulation);
 
     protected:
-        HIVTransmissionReporter(ISimulation* simulation);
+        HIVTransmissionReporter();
         virtual ~HIVTransmissionReporter();
 
         // BaseTextReport

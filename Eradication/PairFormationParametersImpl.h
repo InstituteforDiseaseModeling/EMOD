@@ -31,9 +31,7 @@ namespace Kernel {
         DECLARE_QUERY_INTERFACE();
     public:
         static IPairFormationParameters* CreateParameters( RelationshipType::Enum relType,
-                                                           const Configuration* pConfig,
-                                                           float rate_ratio_male,
-                                                           float rate_ratio_female );
+                                                           const Configuration* pConfig );
 
         virtual RelationshipType::Enum GetRelationshipType() const override;
 
@@ -69,7 +67,7 @@ namespace Kernel {
 
     protected:
         PairFormationParametersImpl();
-        PairFormationParametersImpl( RelationshipType::Enum relType, float rate_ratio_male, float rate_ratio_female );
+        PairFormationParametersImpl( RelationshipType::Enum relType );
 
         virtual ~PairFormationParametersImpl();
         void Initialize(const string& filename);

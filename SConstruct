@@ -170,7 +170,7 @@ printLocalInfo()
 pa = platform.architecture()
 pi = os.sys.platform
 if pa[0].find("64") != -1:
-    pi = 'x64'     
+    pi = 'x64'
 path = os.environ['PATH']
 env = Environment( BUILD_DIR=buildDir,
                    DIST_ARCHIVE_SUFFIX='.tgz',
@@ -191,13 +191,20 @@ else:
 
 print "Rel=" + str(Rel) + " Dbg=" + str(Dbg)
 
-print "BUILD_DIR=" + env['BUILD_DIR'] + " pi=" + pi
+#print "BUILD_DIR=" + env['BUILD_DIR'] + " pi=" + pi
 env['BUILD_VARIANT'] = bvar
 
 #libdeps.setup_environment( env )
 
 env['EXTRACPPPATH'] = []
 if os.sys.platform == 'win32':
+    if Dbg:
+        print( "----------------------------------------------------" )
+        print( "Visual Studio debug build not supported using SCONS." )
+        print( "Please use the IDE for debugging." )
+        print( "----------------------------------------------------" )
+        Exit(-1)
+
     env['OS_FAMILY'] = 'win'
     env.Append( EXTRACPPPATH=[
                           "#/Eradication",
@@ -342,7 +349,8 @@ elif "win32" == os.sys.platform:
     env.Append(CCFLAGS=["/EHsc","/W3"])
 
     # /bigobj for an object file bigger than 64K
-    env.Append(CCFLAGS=["/bigobj"])
+    # DMB It is in the VS build parameters but it doesn't show up in the Command Line view
+    #env.Append(CCFLAGS=["/bigobj"])
 
     # some warnings we don't like:
     # c4355
@@ -367,51 +375,49 @@ elif "win32" == os.sys.platform:
     # docs say don't use /FD from command line (minimal rebuild)
     # /Gy function level linking (implicit when using /Z7)
     # /Z7 debug info goes into each individual .obj file -- no .pdb created 
+    # /Zi debug info goes into a PDB file
     env.Append( CCFLAGS= ["/errorReport:none"] )
 
-    #env.Append( CCFLAGS=["/fp:strict", "/GS-", "/Oi", "/Ot", "/Zc:forScope", "/Zc:wchar_t", "/Zi"])
-    env.Append( CCFLAGS=["/fp:strict", "/GS-", "/Oi", "/Ot", "/Zc:forScope", "/Zc:wchar_t", "/Z7"])
+    # Not including debug information for SCONS builds
+    env.Append( CCFLAGS=["/fp:strict", "/GS-", "/Oi", "/Ot", "/Zc:forScope", "/Zc:wchar_t" ])
 
     env.Append( CCFLAGS=["/DIDM_EXPORT"] )
     env.Append( LIBS=["python27.lib"] )
 
-    if Rel:
-        # /MD: Causes your application to use the multithread, dll version of the run-time library (LIBCMT.lib)
-        # /MT: use static lib
-        # /O2: optimize for speed (as opposed to size)
-        env.Append( CCFLAGS= ["/O2", "/MD"] )
-        env.Append( CPPDEFINES= ["NDEBUG"] )
+    # /MD  : Causes your application to use the multithread, dll version of the run-time library (LIBCMT.lib)
+    # /MT  : use static lib
+    # /O2  : optimize for speed (as opposed to size)
+    # /MP  : build with multiple processes
+    # /Gm- : No minimal build
+    # /WX- : Do NOT treat warnings as errors
+    # /Gd  : the default setting, specifies the __cdecl calling convention for all functions
+    env.Append( CCFLAGS= ["/O2", "/MD", "/MP", "/Gm-", "/WX-", "/Gd" ] )
+    env.Append( CPPDEFINES= ["NDEBUG"] )
 
-        # Disable these two for faster generation of codes
-        #env.Append( CCFLAGS= ["/GL"] ) # /GL whole program optimization
-        #env.Append( LINKFLAGS=" /LTCG " )         # /LTCG link time code generation
-        #env.Append( ARFLAGS=" /LTCG " ) # for the Library Manager
-        # /DEBUG will tell the linker to create a .pdb file
-        # which WinDbg and Visual Studio will use to resolve
-        # symbols if you want to debug a release-mode image.
-        # Note that this means we can't do parallel links in the build.
-        # NOTE: /DEBUG and Dbghelp.lib go together with changes in Exception.cpp which adds
-        #       the ability to print a stack trace.
-        env.Append( LINKFLAGS=" /DEBUG " )
-        # For MSVC <= 10.0
-        #env.Append( LINKFLAGS=[ "/NODEFAULTLIB:LIBCPMT", "/NODEFAULTLIB:LIBCMT", "/MACHINE:X64"] )
+    # Disable these two for faster generation of codes
+    #env.Append( CCFLAGS= ["/GL"] ) # /GL whole program optimization
+    #env.Append( LINKFLAGS=" /LTCG " )         # /LTCG link time code generation
+    #env.Append( ARFLAGS=" /LTCG " ) # for the Library Manager
+    # /DEBUG will tell the linker to create a .pdb file
+    # which WinDbg and Visual Studio will use to resolve
+    # symbols if you want to debug a release-mode image.
+    # Note that this means we can't do parallel links in the build.
+    # NOTE: /DEBUG and Dbghelp.lib go together with changes in Exception.cpp which adds
+    #       the ability to print a stack trace.
+    env.Append( LINKFLAGS=" /DEBUG " )
+    # For MSVC <= 10.0
+    #env.Append( LINKFLAGS=[ "/NODEFAULTLIB:LIBCPMT", "/NODEFAULTLIB:LIBCMT", "/MACHINE:X64"] )
         
-        # For MSVC >= 11.0
-        env.Append( LINKFLAGS=[ "/MACHINE:X64"] )
+    # For MSVC >= 11.0
+    # /OPT:REF : eliminates functions and data that are never referenced
+    # /OPT:ICF : to perform identical COMDAT folding
+    # /DYNAMICBASE:NO : Don't Use address space layout randomization
+    # /SUBSYSTEM:CONSOLE : Win32 character-mode application.
+    env.Append( LINKFLAGS=[ "/MACHINE:X64", "/MANIFEST", "/HEAP:\"100000000\"\",100000000\" ", "/OPT:REF", "/OPT:ICF ", "/DYNAMICBASE:NO", "/SUBSYSTEM:CONSOLE"] )
 
-    else: 
-        # /RTC1: - Enable Stack Frame Run-Time Error Checking; Reports when a variable is used without having been initialized
-        #        (implies /Od: no optimizations)
-        # /MTd: Defines _DEBUG, _MT, and causes your application to use the
-        #       debug multithread version of the run-time library (LIBCMTD.lib)
-        env.Append( CCFLAGS=["/RTC1", "/Od", "/MDd", "/Zc:forScope"] )  # use [M]ultithreaded [D]ebug [d]ll
-
-        # If you build without --d, no debug PDB will be generated, and 
-        # linking will be faster. However, you won't be able to debug your code with the debugger.
-        env.Append( LINKFLAGS=" /DEBUG " )
-        env.Append( LINKFLAGS=["/MACHINE:X64"] )
-
-
+    # This causes problems with the report DLLs.  Don't have time right now to figure out
+    # how to remove flags from the DLL build.
+    #env.Append( LINKFLAGS=[ "/STACK:\"100000000\"\",100000000\"" ] )
 
     winLibString = "Dbghelp.lib psapi.lib ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib"
 
@@ -432,8 +438,6 @@ env.Append( LIBPATH=['$EXTRALIBPATH'] )
 #print env['EXTRACPPPATH']
 
 # --- check system ---
-boostCompiler = "-vc110"
-boostVersion = "-1_51"
 
 def doConfigure(myenv):
     conf = Configure(myenv)
@@ -444,21 +448,13 @@ def doConfigure(myenv):
             print( "This sometimes happens even though the compiler is fine and can be resolved by performing a 'scons -c' followed by manually removing the .sconf_temp folder and .sconsign.dblite. It can also be because mpich_devel is not installed." )
             Exit(1)
             
-    """
-    for b in boostLibs:
-        l = "boost_" + b
-
-        if not conf.CheckLib([ l + boostCompiler + "-mt" + boostVersion,
-                               l + boostCompiler + boostVersion ], language='C++' ):
-            Exit(1)
-    """
     return conf.Finish()
 
 
 def setEnvAttrs(myenv):
 
     diseasedlls = ['Generic', 'Vector', 'Malaria', 'Environmental', 'TB', "STI", "HIV" ]
-    diseases = ['Generic', 'Vector', 'Malaria', 'Polio', 'TB', 'STI', 'HIV', 'Py' ]
+    diseases = ['Generic', 'Vector', 'Malaria', 'TB', 'STI', 'HIV', 'Py' ]
     reportdlls = ['Spatial', 'Binned']
     campaigndlls = ['Bednet', 'IRSHousing']
 
@@ -531,13 +527,11 @@ setEnvAttrs( env )
 # Export the following symbols for them to be used in subordinate SConscript files.
 Export("env")
 
-# pre-processing to generate some header files like version files
-env.SConscript( 'utils/PRESConscript', duplicate=False )
 
 # pass the build_dir as the variant directory
 env.SConscript( 'SConscript', variant_dir='$BUILD_DIR', duplicate=False )
 
-env.SConscript( 'MSVCSConscript', duplicate=False )
+#env.SConscript( 'MSVCSConscript', duplicate=False )
 
 #env.SConscript( 'unittest/SConscript', variant_dir='$BUILD_DIR/unittest', duplicate=False )
 

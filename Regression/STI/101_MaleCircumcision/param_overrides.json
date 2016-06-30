@@ -6,7 +6,7 @@
         "Simulation_Duration": 7300, 
         "Simulation_Timestep": 30,
         "Num_Cores": 1, 
-        "Run_Number": 1, 
+        "Run_Number": 34, 
         "logLevel_default": "WARNING", 
         "Listed_Events": ["Reduced_Acquire_Lowest", "Reduced_Acquire_Medium", "Reduced_Acquire_Low", "Reduced_Acquire_Highest_Not_Duplicated"], 
         

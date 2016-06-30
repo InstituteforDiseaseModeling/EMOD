@@ -61,7 +61,8 @@
         "Demographics_Filenames": [
             "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json",
             "../input/PFA_overlay.json",
-            "PFA_overlay_rates.json"
+            "PFA_overlay_rates.json",
+            "PFA_Concurrency.json"
         ], 
         "Enable_Nondisease_Mortality": 1,
 
@@ -74,19 +75,6 @@
         "Maternal_Transmission_ART_Multiplier": 0.03,
 
         "alpha_____________NETWORK___________": "",
-
-        "STI_Network_Params_By_Property" :
-        {
-            "NONE" :
-            {
-                "Prob_Extra_Transitory_Relationship_Female": 0.80,
-                "Prob_Extra_Transitory_Relationship_Male": 0.80,
-                "Prob_Extra_Informal_Relationship_Female": 0.30,
-                "Prob_Extra_Informal_Relationship_Male": 0.30,
-                "Prob_Extra_Marital_Relationship_Female": 0.10,
-                "Prob_Extra_Marital_Relationship_Male": 0.10
-            }
-        },
 
         "alpha_____________REPORTING___________": "",
         "Report_HIV_ART": 1,

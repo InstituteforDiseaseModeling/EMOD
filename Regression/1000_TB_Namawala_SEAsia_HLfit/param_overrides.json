@@ -3,7 +3,7 @@
     "parameters":{
         "DEMOGRAPHICS":{
             "Birth_Rate_Dependence":"FIXED_BIRTH_RATE",
-            "Demographics_Filenames":["1000_TB_Namawala_single_node_demographics.compiled.json"],
+            "Demographics_Filenames":["1000_TB_Namawala_single_node_demographics.json"],
             "Enable_Demographics_Reporting":0,
             "IMMUNITY":{
                 "Acquisition_Blocking_Immunity_Decay_Rate":0,

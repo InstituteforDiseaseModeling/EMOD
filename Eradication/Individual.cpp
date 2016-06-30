@@ -323,6 +323,12 @@ namespace Kernel
         delete interventions;
     }
 
+    void IndividualHuman::InitializeStatics( const Configuration* config )
+    {
+        IndividualHumanConfig human_config;
+        human_config.Configure( config );
+    }
+
 
     QueryResult IndividualHuman::QueryInterface( iid_t iid, void** ppinstance )
     {
@@ -385,7 +391,7 @@ namespace Kernel
     bool IndividualHuman::IsAdult() const
     {
         float age_years = GetAge() / DAYSPERYEAR ;
-        return age_years >= min_adult_age_years ;
+        return age_years >= IndividualHumanConfig::min_adult_age_years ;
     }
 
     bool IndividualHuman::IsDead() const
@@ -493,7 +499,7 @@ namespace Kernel
         migration_mod   = migration_modifier;
 
         // set maximum number of waypoints for this individual--how far will they wander?
-        max_waypoints = roundtrip_waypoints;
+        max_waypoints = IndividualHumanConfig::roundtrip_waypoints;
 
         CreateSusceptibility(immunity_modifier, risk_modifier);
 
@@ -589,18 +595,18 @@ namespace Kernel
         StateChange = HumanStateChange::None;
 
         //  Aging
-        if (aging)
+        if (IndividualHumanConfig::aging)
         {
             m_age += dt;
         }
 
         // Adjust time step for infections as specified by infection_updates_per_tstep.  A value of 0 reverts to a single update per time step for backward compatibility.
         // There is no special meaning of 1 being hourly.  For hourly infection updates with a tstep of one day, one must now specify 24.
-        if ( infection_updates_per_tstep > 1 )
+        if ( IndividualHumanConfig::infection_updates_per_tstep > 1 )
         {
             // infection_updates_per_tstep is now an integer > 1, so set numsteps equal to it,
             // allowing the subdivision dt into smaller infection_timestep
-            numsteps = infection_updates_per_tstep;
+            numsteps = IndividualHumanConfig::infection_updates_per_tstep;
             infection_timestep = dt / numsteps;
         }
 
@@ -635,7 +641,7 @@ namespace Kernel
                             // --------------------------------------------
                             //ClearNewInfectionState(); // Seems to break things
                             // --------------------------------------------
-                            if (immunity)
+                            if ( IndividualHumanConfig::immunity )
                             {
                                 susceptibility->UpdateInfectionCleared();
                             } //Immunity update: survived infection
@@ -655,7 +661,7 @@ namespace Kernel
                     ++it;
                 }
 
-                if (immunity)
+                if ( IndividualHumanConfig::immunity )
                 {
                     susceptibility->Update(infection_timestep);      // Immunity update: mainly decay of immunity
                 }
@@ -710,7 +716,7 @@ namespace Kernel
                 }
             }
 
-            if(randgen->e() < x_othermortality * m_daily_mortality_rate * dt)
+            if(randgen->e() < IndividualHumanConfig::x_othermortality * m_daily_mortality_rate * dt)
             {
                 LOG_DEBUG_F("%s died of natural causes at age %f with daily_mortality_rate = %f\n", (GetGender() == Gender::FEMALE ? "Female" : "Male"), GetAge() / DAYSPERYEAR, m_daily_mortality_rate);
                 Die( HumanStateChange::DiedFromNaturalCauses );
@@ -907,11 +913,11 @@ namespace Kernel
                     float return_prob = 0.0f;
                     switch(migration_type)
                     {
-                        case MigrationType::LOCAL_MIGRATION:    return_prob = local_roundtrip_prob;  break;
-                        case MigrationType::AIR_MIGRATION:      return_prob = air_roundtrip_prob;    break;
-                        case MigrationType::REGIONAL_MIGRATION: return_prob = region_roundtrip_prob; break;
-                        case MigrationType::SEA_MIGRATION:      return_prob = sea_roundtrip_prob;    break;
-                        case MigrationType::FAMILY_MIGRATION:   return_prob = family_roundtrip_prob; break;
+                        case MigrationType::LOCAL_MIGRATION:    return_prob = IndividualHumanConfig::local_roundtrip_prob;  break;
+                        case MigrationType::AIR_MIGRATION:      return_prob = IndividualHumanConfig::air_roundtrip_prob;    break;
+                        case MigrationType::REGIONAL_MIGRATION: return_prob = IndividualHumanConfig::region_roundtrip_prob; break;
+                        case MigrationType::SEA_MIGRATION:      return_prob = IndividualHumanConfig::sea_roundtrip_prob;    break;
+                        case MigrationType::FAMILY_MIGRATION:   return_prob = IndividualHumanConfig::family_roundtrip_prob; break;
                         case MigrationType::INTERVENTION_MIGRATION:
                         default:
                             throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "migration_type", migration_type, "MigrationType" );
@@ -951,11 +957,11 @@ namespace Kernel
         float return_duration_rate = 0.0f;
         switch(trip_type)
         {
-            case MigrationType::LOCAL_MIGRATION:    return_duration_rate = local_roundtrip_duration_rate;  break;
-            case MigrationType::AIR_MIGRATION:      return_duration_rate = air_roundtrip_duration_rate;    break;
-            case MigrationType::REGIONAL_MIGRATION: return_duration_rate = region_roundtrip_duration_rate; break;
-            case MigrationType::SEA_MIGRATION:      return_duration_rate = sea_roundtrip_duration_rate;    break;
-            case MigrationType::FAMILY_MIGRATION:   return_duration_rate = family_roundtrip_duration_rate; break;
+            case MigrationType::LOCAL_MIGRATION:    return_duration_rate = IndividualHumanConfig::local_roundtrip_duration_rate;  break;
+            case MigrationType::AIR_MIGRATION:      return_duration_rate = IndividualHumanConfig::air_roundtrip_duration_rate;    break;
+            case MigrationType::REGIONAL_MIGRATION: return_duration_rate = IndividualHumanConfig::region_roundtrip_duration_rate; break;
+            case MigrationType::SEA_MIGRATION:      return_duration_rate = IndividualHumanConfig::sea_roundtrip_duration_rate;    break;
+            case MigrationType::FAMILY_MIGRATION:   return_duration_rate = IndividualHumanConfig::family_roundtrip_duration_rate; break;
             case MigrationType::INTERVENTION_MIGRATION:
             default:
                 throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "trip_type", trip_type, "MigrationType" );
@@ -1106,7 +1112,7 @@ namespace Kernel
     {
         //LOG_DEBUG_F( "AcquireNewInfection: id=%lu, group_id=%d\n", GetSuid().data, ( transmissionGroupMembership.size() ? transmissionGroupMembership.at(0) : nullptr ) );
         int numInfs = int(infections.size());
-        if ((superinfection && (numInfs < max_ind_inf)) || numInfs == 0)
+        if ( (IndividualHumanConfig::superinfection && (numInfs < IndividualHumanConfig::max_ind_inf)) || (numInfs == 0) )
         {
             cumulativeInfs++;
             m_is_infected = true;

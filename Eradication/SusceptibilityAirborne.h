@@ -12,6 +12,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
+    class SusceptibilityAirborneConfig : public SusceptibilityConfig
+    {
+    protected:
+        friend class SusceptibilityAirborne;
+    };
+    
     class SusceptibilityAirborne : public Susceptibility
     {
     public:

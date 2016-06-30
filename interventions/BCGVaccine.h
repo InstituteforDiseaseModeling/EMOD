@@ -23,7 +23,7 @@ namespace Kernel
         virtual ~BCGVaccine() { }
 
         // IVaccine
-        virtual void  ApplyVaccineTake(); 
+        virtual bool  ApplyVaccineTake( IIndividualHumanContext* pihc ); 
 
     protected:
         float vaccine_take_age_decay_rate;

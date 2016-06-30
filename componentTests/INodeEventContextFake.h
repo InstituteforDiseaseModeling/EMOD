@@ -11,6 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Contexts.h"
 #include "NodeEventContext.h"
+#include "IIndividualHuman.h"
 
 using namespace Kernel;
 
@@ -23,6 +24,20 @@ public:
         , m_TriggeredEvent( IndividualEventTriggerType::NoTrigger )
         , m_IdmDateTime()
     {
+    }
+
+    ~INodeEventContextFake()
+    {
+        for( auto human : m_HumanList )
+        {
+            delete human;
+        }
+        m_HumanList.clear();
+    }
+
+    void Add( IIndividualHumanContext* human )
+    {
+        m_HumanList.push_back( human );
     }
 
     // ---------------------
@@ -73,7 +88,14 @@ public:
         return m_IdmDateTime ;
     }
 
-    virtual void VisitIndividuals(individual_visit_function_t func)                      { throw std::exception("The method or operation is not implemented."); }
+    virtual void VisitIndividuals(individual_visit_function_t func)
+    {
+        for( auto human : m_HumanList)
+        {
+            func(human->GetEventContext());
+        }
+    }
+
     virtual int VisitIndividuals(IVisitIndividual* pIndividualVisitImpl, int limit = -1) { throw std::exception("The method or operation is not implemented."); }
 
     virtual const NodeDemographics& GetDemographics() { throw std::exception("The method or operation is not implemented."); }
@@ -92,7 +114,7 @@ public:
     virtual void SetContextTo(INodeContext* context)         { throw std::exception("The method or operation is not implemented."); }
     virtual void PurgeExisting( const std::string& iv_name ) { throw std::exception("The method or operation is not implemented."); }
 
-    virtual std::list<INodeDistributableIntervention*> GetInterventionsByType(const std::string& type_name) { throw std::exception("The method or operation is not implemented."); }
+    virtual std::list<INodeDistributableIntervention*> GetInterventionsByType(const std::string& type_name)         { throw std::exception("The method or operation is not implemented."); }
        
     virtual bool IsInPolygon(float* vertex_coords, int numcoords) { throw std::exception("The method or operation is not implemented."); }
     virtual bool IsInPolygon( const json::Array &poly )           { throw std::exception("The method or operation is not implemented."); }
@@ -101,7 +123,7 @@ public:
     virtual ::RANDOMBASE* GetRng()         { throw std::exception("The method or operation is not implemented."); }
     virtual INodeContext* GetNodeContext() { throw std::exception("The method or operation is not implemented."); }
 
-    virtual int GetIndividualHumanCount() const { throw std::exception("The method or operation is not implemented."); }
+    virtual int GetIndividualHumanCount() const { return m_HumanList.size(); }
     virtual ExternalNodeId_t GetExternalId()  const { throw std::exception("The method or operation is not implemented."); }
 
     // -----------------
@@ -117,4 +139,5 @@ public:
 private:
     IndividualEventTriggerType::Enum m_TriggeredEvent ;
     IdmDateTime m_IdmDateTime ;
+    std::vector<IIndividualHumanContext*> m_HumanList;
 };

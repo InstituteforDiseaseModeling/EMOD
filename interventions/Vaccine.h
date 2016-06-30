@@ -30,7 +30,7 @@ namespace Kernel
 
     struct IVaccine : public ISupports
     {
-        virtual void  ApplyVaccineTake()                = 0;
+        virtual bool ApplyVaccineTake( IIndividualHumanContext* pihc ) = 0;
         virtual ~IVaccine() { } // needed for cleanup via interface pointer
     };
 
@@ -55,17 +55,14 @@ namespace Kernel
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
 
         // IVaccine
-        virtual void  ApplyVaccineTake() override;
+        virtual bool  ApplyVaccineTake( IIndividualHumanContext* pihc ); 
 
     protected:
         // context for this intervention--does not need to be reset upon migration, it is just for GiveVaccine()
         IIndividualHumanContext *parent;
-
         int   vaccine_type;
         float vaccine_take;
-        float current_reducedacquire;
-        float current_reducedtransmit;
-        float current_reducedmortality;
+        bool  vaccine_took;
         WaningConfig   waning_config;
         IWaningEffect* waning_effect;
         IVaccineConsumer * ivc; // interventions container

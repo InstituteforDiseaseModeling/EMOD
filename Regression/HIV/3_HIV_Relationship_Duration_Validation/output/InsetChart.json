@@ -1,74 +1,89 @@
 {
     "Header": {
-        "DateTime": "Fri Jun 19 16:36:26 2015",
-        "DTK_Version": "5389 v2.0Release 2015/06/19 12:30:09",
+        "DateTime": "Thu Apr 28 15:20:32 2016",
+        "DTK_Version": "1036 SimpleCSW (10b3a46) Apr 27 2016 15:38:50",
         "Report_Type": "InsetChart",
         "Report_Version": "3.2",
         "Start_Time": 0,
         "Simulation_Timestep": 1,
         "Timesteps": 10,
-        "Channels": 34,
+        "Channels": 35,
         "Base_Year": 1960.5
     },
     "Channels": {
-        "Active Informal Relationships": {
+        "Active INFORMAL Relationships": {
             "Units": "Relationships",
             "Data": [
-                2588,
-                2672,
+                2572,
                 2674,
                 2678,
+                2684,
                 2686,
                 2688,
                 2690,
-                2690,
-                2692,
-                2700
+                2704,
+                2710,
+                2714
             ]
         },
-        "Active Marital Relationships": {
+        "Active MARITAL Relationships": {
             "Units": "Relationships",
             "Data": [
-                3010,
-                3174,
-                3198,
-                3210,
-                3234,
-                3256,
-                3270,
-                3288,
-                3304,
-                3324
+                2892,
+                3050,
+                3072,
+                3088,
+                3109,
+                3116,
+                3140,
+                3158,
+                3170,
+                3183
             ]
         },
-        "Active Transitory Relationships": {
+        "Active COMMERCIAL Relationships": {
             "Units": "Relationships",
             "Data": [
-                2464,
-                2516,
-                2528,
-                2530,
-                2532,
-                2534,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "Active TRANSITORY Relationships": {
+            "Units": "Relationships",
+            "Data": [
                 2536,
-                2540,
-                2538,
-                2534
+                2632,
+                2632,
+                2634,
+                2636,
+                2644,
+                2642,
+                2644,
+                2646,
+                2640
             ]
         },
         "Births": {
             "Units": "Births",
             "Data": [
                 2,
+                3,
                 4,
-                7,
+                4,
+                5,
                 9,
-                12,
-                15,
-                17,
+                10,
                 17,
                 20,
-                23
+                28
             ]
         },
         "Campaign Cost": {
@@ -254,31 +269,31 @@
         "Number of Events": {
             "Units": "",
             "Data": [
-                15,
-                15,
-                13,
-                10,
-                15,
+                14,
                 12,
-                17,
-                10,
-                16,
-                17
+                8,
+                18,
+                11,
+                11,
+                9,
+                21,
+                19,
+                29
             ]
         },
         "Number of Individuals Ever in a Relationship": {
             "Units": "",
             "Data": [
-                8062,
-                8364,
-                8403,
-                8421,
-                8457,
-                8485,
-                8505,
-                8527,
-                8545,
-                8572
+                8000,
+                8359,
+                8387,
+                8412,
+                8439,
+                8455,
+                8481,
+                8515,
+                8537,
+                8557
             ]
         },
         "Number of Individuals HIV+ w/ CD4 < 200 (non-ART)": {
@@ -359,31 +374,31 @@
         "Paired People": {
             "Units": "People",
             "Data": [
-                8062,
-                8362,
-                8400,
-                8418,
-                8452,
-                8478,
-                8496,
-                8518,
-                8534,
-                8558
+                8000,
+                8356,
+                8382,
+                8406,
+                8431,
+                8448,
+                8472,
+                8506,
+                8526,
+                8537
             ]
         },
         "Post-Debut Population": {
             "Units": "",
             "Data": [
-                9971,
-                9971,
-                9971,
-                9973,
-                9973,
-                9974,
-                9975,
-                9975,
-                9977,
-                9977
+                9897,
+                9897,
+                9899,
+                9900,
+                9901,
+                9900,
+                9901,
+                9902,
+                9904,
+                9903
             ]
         },
         "Prevalence (Females, 15-49)": {
@@ -449,31 +464,31 @@
         "Single Post-Debut Men": {
             "Units": "People",
             "Data": [
-                878,
-                728,
-                709,
-                700,
-                683,
-                670,
-                661,
-                650,
-                643,
-                631
+                691,
+                513,
+                501,
+                490,
+                479,
+                469,
+                457,
+                441,
+                433,
+                426
             ]
         },
         "Single Post-Debut Women": {
             "Units": "People",
             "Data": [
-                1031,
-                881,
-                862,
-                855,
-                838,
-                826,
-                818,
-                807,
-                800,
-                788
+                1206,
+                1028,
+                1016,
+                1004,
+                991,
+                983,
+                972,
+                955,
+                945,
+                940
             ]
         },
         "Statistical Population": {
@@ -481,14 +496,14 @@
             "Data": [
                 17396,
                 17398,
+                17399,
                 17400,
-                17403,
+                17400,
+                17400,
+                17404,
                 17405,
-                17408,
                 17411,
-                17412,
-                17412,
-                17414
+                17411
             ]
         },
         "Susceptible Population": {

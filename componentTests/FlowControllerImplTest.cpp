@@ -49,7 +49,7 @@ SUITE(FlowControllerImplTest)
 
         unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/FlowControllerImplTest.json" ) );
 
-        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get(), 1.0f, 1.0f ) );
+        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get() ) );
 
         unique_ptr<IPairFormationRateTable> rate_table( RateTableImpl::CreateRateTable( from_data.get() ) );
         unique_ptr<IPairFormationStats> stats( PairFormationStatsImpl::CreateStats( from_data.get() ) );

@@ -207,10 +207,10 @@ namespace Kernel
         m_RBC         = m_RBCcapacity;
 
         // Set up variable pyrogenic thresholds + fever killing rates
-        m_ind_pyrogenic_threshold = pyrogenic_threshold;
-        m_ind_fever_kill_rate = fever_IRBC_killrate;
+        m_ind_pyrogenic_threshold = SusceptibilityMalariaConfig::pyrogenic_threshold;
+        m_ind_fever_kill_rate = SusceptibilityMalariaConfig::fever_IRBC_killrate;
 
-        switch(innate_immune_variation_type)
+        switch(SusceptibilityMalariaConfig::innate_immune_variation_type)
         {
             case InnateImmuneVariationType::NONE:
                 // no additional variation
@@ -238,7 +238,7 @@ namespace Kernel
                 break;
 
             default:
-                throw BadEnumInSwitchStatementException(__FILE__, __LINE__, __FUNCTION__, "innate_immune_variation_type", innate_immune_variation_type, InnateImmuneVariationType::pairs::lookup_key(innate_immune_variation_type));
+                throw BadEnumInSwitchStatementException(__FILE__, __LINE__, __FUNCTION__, "innate_immune_variation_type", SusceptibilityMalariaConfig::innate_immune_variation_type, InnateImmuneVariationType::pairs::lookup_key(SusceptibilityMalariaConfig::innate_immune_variation_type));
          }
  
         LOG_DEBUG_F("Individual pyrogenic threshold = %0.2f\n", m_ind_pyrogenic_threshold);
@@ -307,10 +307,10 @@ namespace Kernel
         recalculateBloodCapacity(age);
 
         // Red blood cell dynamics
-        if (erythropoiesis_anemia_effect > 0)
+        if (SusceptibilityMalariaConfig::erythropoiesis_anemia_effect > 0)
         {
             // This is the amount of "erythropoietin", assume absolute amounts of erythropoietin correlate linearly with absolute increases in hemoglobin
-            float anemia_erythropoiesis_multiplier = exp( erythropoiesis_anemia_effect * (1 - get_RBC_availability()) );
+            float anemia_erythropoiesis_multiplier = exp( SusceptibilityMalariaConfig::erythropoiesis_anemia_effect * (1 - get_RBC_availability()) );
             LOG_VALID_F( "Anemia erythropoiesis multiplier = %f at RBC availability of %f.\n", anemia_erythropoiesis_multiplier, get_RBC_availability() );
             m_RBC = int64_t(m_RBC - (m_RBC * .00833 - m_RBCproduction * anemia_erythropoiesis_multiplier) * dt); // *.00833 ==/120 (AVERAGE_RBC_LIFESPAN)
         }
@@ -330,7 +330,7 @@ namespace Kernel
         m_parasite_density = 0; // this is accumulated in updateImmunityPfEMP1Minor
 
         // decay maternal antibodies
-        m_maternal_antibody_strength -= dt * m_maternal_antibody_strength * maternal_antibody_decay_rate;
+        m_maternal_antibody_strength -= dt * m_maternal_antibody_strength * SusceptibilityMalariaConfig::maternal_antibody_decay_rate;
         if ( m_maternal_antibody_strength < 0 ) { m_maternal_antibody_strength = 0; }
 
         // antibody capacities increase and antibodies released if antigen present, only process if antigens are present at all
@@ -402,17 +402,17 @@ namespace Kernel
     {
         if ( !m_CSP_antibody->GetAntigenicPresence() )
         {
-            m_CSP_antibody->Decay( dt, this );
+            m_CSP_antibody->Decay( dt );
             return;
         }
 
         // Hyper-immune response (could potentially keep this as part of the update in ExposeToInfectivity)
         if (m_CSP_antibody->GetAntibodyCapacity() > 0.4)
         { 
-            m_CSP_antibody->UpdateAntibodyCapacity( dt, 0.33f );
+            m_CSP_antibody->UpdateAntibodyCapacityByRate( dt, 0.33f );
         }
 
-        m_CSP_antibody->UpdateAntibodyConcentration(dt, this);
+        m_CSP_antibody->UpdateAntibodyConcentration( dt );
     }
 
     void SusceptibilityMalaria::updateImmunityMSP( float dt, float& temp_cytokine_stimulation )
@@ -427,7 +427,7 @@ namespace Kernel
         {
             if ( !antibody->GetAntigenicPresence() )
             {
-                antibody->Decay( dt, this );
+                antibody->Decay( dt );
                 continue;
             }
 
@@ -436,8 +436,8 @@ namespace Kernel
             // Temporary cytokines stimulated by spikes in MSP antigenic presence after schizont bursts
             temp_cytokine_stimulation += antibody->StimulateCytokines( dt, m_inv_microliters_blood );
 
-            antibody->UpdateAntibodyCapacity( dt, this, m_inv_microliters_blood );
-            antibody->UpdateAntibodyConcentration(dt, this);
+            antibody->UpdateAntibodyCapacity( dt, m_inv_microliters_blood );
+            antibody->UpdateAntibodyConcentration( dt );
 
             LOG_VALID_F( "\t    (after): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", antibody->GetAntibodyCapacity(), antibody->GetAntibodyConcentration(), antibody->GetAntigenCount() );
         }
@@ -454,14 +454,14 @@ namespace Kernel
         {
             if ( !antibody->GetAntigenicPresence() )
             {
-                antibody->Decay( dt, this );
+                antibody->Decay( dt );
                 continue;
             }
 
             LOG_VALID_F( "\tPfEMP1 minor (before): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", antibody->GetAntibodyCapacity(), antibody->GetAntibodyConcentration(), antibody->GetAntigenCount() );
 
-            antibody->UpdateAntibodyCapacity( dt, this, m_inv_microliters_blood );
-            antibody->UpdateAntibodyConcentration(dt, this);
+            antibody->UpdateAntibodyCapacity( dt, m_inv_microliters_blood );
+            antibody->UpdateAntibodyConcentration( dt );
 
             // Accumulate parasite density
             m_parasite_density += float(antibody->GetAntigenCount()) * m_inv_microliters_blood;
@@ -476,7 +476,7 @@ namespace Kernel
         {
             if ( !antibody->GetAntigenicPresence() )
             {
-                antibody->Decay( dt, this );
+                antibody->Decay( dt );
                 continue;
             }
 
@@ -488,8 +488,8 @@ namespace Kernel
                 m_cytokine_stimulation += antibody->StimulateCytokines( dt, m_inv_microliters_blood );
             }
 
-            antibody->UpdateAntibodyCapacity( dt, this, m_inv_microliters_blood );
-            antibody->UpdateAntibodyConcentration(dt, this);
+            antibody->UpdateAntibodyCapacity( dt, m_inv_microliters_blood );
+            antibody->UpdateAntibodyConcentration( dt );
 
             LOG_VALID_F( "\t    (after): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", antibody->GetAntibodyCapacity(), antibody->GetAntibodyConcentration(), antibody->GetAntigenCount() );
         }
@@ -501,17 +501,17 @@ namespace Kernel
 
         for (auto antibody : m_active_MSP_antibodies)
         {
-            antibody->Decay( dt, this );
+            antibody->Decay( dt );
         }
 
         for (auto antibody : m_active_PfEMP1_minor_antibodies)
         {
-            antibody->Decay( dt, this );
+            antibody->Decay( dt );
         }
 
         for (auto antibody : m_active_PfEMP1_major_antibodies)
         {
-            antibody->Decay( dt, this );
+            antibody->Decay( dt );
         }
     }
 
@@ -580,14 +580,14 @@ namespace Kernel
             LOG_WARN_F( "Probability of mortality (%f) exceeds probability of severe disease (%f)!\n", prob_fatal, prob_fatal );
         }
 
-        if ( current_fever > clinicalFeverThreshold_low ) 
+        if ( current_fever > SusceptibilityMalariaConfig::clinicalFeverThreshold_low ) 
         {
             // reset unique-incident counter
-            days_between_incidents = float(minDaysBetweenClinicalIncidents);
+            days_between_incidents = float(SusceptibilityMalariaConfig::minDaysBetweenClinicalIncidents);
 
             // TODO: this function is getting big enough that we might break out the three inner bits (i.e. UpdateSymptomaticCases, UpdateSevereCases, UpdateFatalCases)
             // check for new symptomatic case and accumulate days with fever
-            if ( current_fever > clinicalFeverThreshold_high )
+            if ( current_fever > SusceptibilityMalariaConfig::clinicalFeverThreshold_high )
             {
                 if ( cumulative_days_of_clinical_incident == 0 ) 
                 { 
@@ -687,9 +687,9 @@ namespace Kernel
         // The severe sigmoids should not be narrower than the fatal sigmoids 
         // or else the severe probability may be lower than fatal in the tail of the distribution!
         float total_severe_prob = get_combined_probability(
-            dt, anemiaSevereLevel, anemiaSevereInvWidth, 
-            parasiteSevereLevel, parasiteSevereInvWidth, 
-            feverSevereLevel, feverSevereInvWidth,
+            dt, SusceptibilityMalariaConfig::anemiaSevereLevel, SusceptibilityMalariaConfig::anemiaSevereInvWidth, 
+            SusceptibilityMalariaConfig::parasiteSevereLevel, SusceptibilityMalariaConfig::parasiteSevereInvWidth, 
+            SusceptibilityMalariaConfig::feverSevereLevel, SusceptibilityMalariaConfig::feverSevereInvWidth,
             anemiaSevereFraction, parasiteSevereFraction, feverSevereFraction);
 
         return total_severe_prob;
@@ -698,9 +698,9 @@ namespace Kernel
     float SusceptibilityMalaria::get_fatal_disease_probability( float dt, float& anemiaFatalFraction, float& parasiteFatalFraction, float& feverFatalFraction )
     {
         float total_fatal_prob = get_combined_probability(
-            dt, float(anemiaMortalityLevel), anemiaMortalityInvWidth, 
-            float(parasiteMortalityLevel), parasiteMortalityInvWidth, 
-            float(feverMortalityLevel), feverMortalityInvWidth,
+            dt, float(SusceptibilityMalariaConfig::anemiaMortalityLevel), SusceptibilityMalariaConfig::anemiaMortalityInvWidth, 
+            float(SusceptibilityMalariaConfig::parasiteMortalityLevel), SusceptibilityMalariaConfig::parasiteMortalityInvWidth, 
+            float(SusceptibilityMalariaConfig::feverMortalityLevel), SusceptibilityMalariaConfig::feverMortalityInvWidth,
             anemiaFatalFraction, parasiteFatalFraction, feverFatalFraction);
 
         return total_fatal_prob;
@@ -780,7 +780,7 @@ namespace Kernel
         variants = InitialVariants( int(n_total*frac_variants), n_total );
         for (int variant : variants)
         {
-            RegisterAntibody(type, variant, memory_level);
+            RegisterAntibody(type, variant, SusceptibilityMalariaConfig::memory_level);
         }
     }
 
@@ -972,24 +972,24 @@ namespace Kernel
 
     void SusceptibilityMalaria::init_maternal_antibodies(float mother_factor)
     {
-        switch(maternal_antibodies_type)
+        switch(SusceptibilityMalariaConfig::maternal_antibodies_type)
         {
         case MaternalAntibodiesType::OFF:
             m_maternal_antibody_strength = 0.0f;
             break;
 
         case MaternalAntibodiesType::CONSTANT_INITIAL_IMMUNITY:
-            m_maternal_antibody_strength = maternal_antibody_protection;
+            m_maternal_antibody_strength = SusceptibilityMalariaConfig::maternal_antibody_protection;
             break;
 
         case MaternalAntibodiesType::SIMPLE_WANING:
             // Initialize newborn antibody protection proportional to 
             // possible mother's antibody history and configurable protection factor
-            m_maternal_antibody_strength = maternal_antibody_protection * mother_factor;
+            m_maternal_antibody_strength = SusceptibilityMalariaConfig::maternal_antibody_protection * mother_factor;
             break;
 
         default:
-            throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "maternal_antibodies_type", maternal_antibodies_type, MaternalAntibodiesType::pairs::lookup_key(maternal_antibodies_type) );
+            throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "maternal_antibodies_type", SusceptibilityMalariaConfig::maternal_antibodies_type, MaternalAntibodiesType::pairs::lookup_key(SusceptibilityMalariaConfig::maternal_antibodies_type) );
         }
 
         LOG_DEBUG_F("Initialized individual with m_maternal_antibody_strength = %f based on mother factor of %f\n", m_maternal_antibody_strength, mother_factor);

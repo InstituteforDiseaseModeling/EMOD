@@ -99,56 +99,15 @@ namespace Kernel
             info.participant_a.active_relationship_count         = male_partner->GetRelationships().size();
             info.participant_a.props                             = GetPropertyString( individual ) ;
 
-            info.participant_a.transitory_relationship_count     = 0;
-            info.participant_a.informal_relationship_count       = 0;
-            info.participant_a.marital_relationship_count        = 0;
+            for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
+            {
+                info.participant_a.relationship_count[ i ] = 0 ;
+            }
 
             for (auto relationship : his_relationships)
             {
-                switch (relationship->GetType())
-                {
-                case RelationshipType::TRANSITORY:
-                    info.participant_a.transitory_relationship_count++;
-                    break;
-
-                case RelationshipType::INFORMAL:
-                    info.participant_a.informal_relationship_count++;
-                    break;
-
-                case RelationshipType::MARITAL:
-                    info.participant_a.marital_relationship_count++;
-                    break;
-
-                default:
-                    //warning if it's none of these types?
-                    break;
-                }
+                info.participant_a.relationship_count[ int(relationship->GetType()) ]++;
             }
-
-            /*for (std::set<IRelationship*, RelationshipSetSorter>::iterator rel_iter = his_relationships.begin();
-                rel_iter != his_relationships.end();
-                rel_iter = rel_iter++) {
-                    switch (rel_iter->GetType())						
-                    {
-                    case RelationshipType::TRANSITORY:
-            info.participant_a.transitory_relationship_count++
-                        break;
-
-                    case RelationshipType::INFORMAL:
-            info.participant_a.informal_relationship_count++;
-                        break;
-
-                    case RelationshipType::MARITAL:
-            info.participant_a.marital_relationship_count++;
-                        break;
-
-                    default:
-                        // warning?
-                        break;
-                    }
-
-            }; */
-
 
             info.participant_a.cumulative_lifetime_relationships = male_partner->GetLifetimeRelationshipCount();
             info.participant_a.relationships_in_last_six_months  = male_partner->GetLast6MonthRels();
@@ -170,30 +129,14 @@ namespace Kernel
             info.participant_b.active_relationship_count         = female_partner->GetRelationships().size();
             info.participant_b.props                             = GetPropertyString( individual ) ;
 
-            info.participant_b.transitory_relationship_count     = 0;
-            info.participant_b.informal_relationship_count       = 0;
-            info.participant_b.marital_relationship_count        = 0;
+            for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
+            {
+                info.participant_b.relationship_count[ i ] = 0 ;
+            }
 
             for (auto relationship : her_relationships)
             {
-                switch (relationship->GetType())
-                {
-                case RelationshipType::TRANSITORY:
-                    info.participant_b.transitory_relationship_count++;
-                    break;
-
-                case RelationshipType::INFORMAL:
-                    info.participant_b.informal_relationship_count++;
-                    break;
-
-                case RelationshipType::MARITAL:
-                    info.participant_b.marital_relationship_count++;
-                    break;
-
-                default:
-                    //warning if it's none of these types?
-                    break;
-                }
+                info.participant_b.relationship_count[ int(relationship->GetType()) ]++;
             }
 
             info.participant_b.cumulative_lifetime_relationships = female_partner->GetLifetimeRelationshipCount();
@@ -219,18 +162,34 @@ namespace Kernel
         header 
             << "Rel_ID,"
             << "Rel_start_time,"
-            << "Rel_scheduled_end_time,"
-            << "Rel_type (0 = transitory 1 = informal 2 = marital),"
+            << "Rel_scheduled_end_time,";
+
+        header << "Rel_type (";
+        for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
+        {
+            header << i << " = " << RelationshipType::pairs::get_keys()[i];
+            if( (i+1) < RelationshipType::COUNT )
+            {
+                header << "; ";
+            }
+        }
+        header << "),";
+
+        header 
             << "Original_node_ID,"
             << "Current_node_ID,"
             << "A_ID,"
             << "A_is_infected,"
             << "A_gender,"
             << "A_age,"
-            << "A_total_num_active_rels,"
-            << "A_num_active_transitory_rels,"
-            << "A_num_active_informal_rels,"
-            << "A_num_active_marital_rels,"
+            << "A_total_num_active_rels,";
+
+        for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
+        {
+            header << "A_num_active_" << RelationshipType::pairs::get_keys()[i] << "_rels,";
+        }
+
+        header
             << "A_num_lifetime_rels,"
             << "A_num_rels_last_6_mo,"
             << "A_extra_relational_bitmask,"
@@ -241,10 +200,14 @@ namespace Kernel
             << "B_is_infected,"
             << "B_gender,"
             << "B_age,"
-            << "B_total_num_active_rels,"
-            << "B_num_active_transitory_rels,"
-            << "B_num_active_informal_rels,"
-            << "B_num_active_marital_rels,"
+            << "B_total_num_active_rels,";
+
+        for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
+        {
+            header << "B_num_active_" << RelationshipType::pairs::get_keys()[i] << "_rels,";
+        }
+
+        header
             << "B_num_lifetime_rels,"
             << "B_num_rels_last_6_mo,"
             << "B_extra_relational_bitmask,"
@@ -278,11 +241,14 @@ namespace Kernel
                               << entry.participant_a.is_infected << ','
                               << entry.participant_a.gender << ','
                               << entry.participant_a.age << ','
-                              << entry.participant_a.active_relationship_count << ','
-                              << entry.participant_a.transitory_relationship_count << ','
-                              << entry.participant_a.informal_relationship_count << ','
-                              << entry.participant_a.marital_relationship_count << ','
-                              << entry.participant_a.cumulative_lifetime_relationships << ','
+                              << entry.participant_a.active_relationship_count << ',';
+
+            for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
+            {
+                GetOutputStream() << entry.participant_a.relationship_count[i] << ',';
+            }
+
+            GetOutputStream() << entry.participant_a.cumulative_lifetime_relationships << ','
                               << entry.participant_a.relationships_in_last_six_months << ','
                               << entry.participant_a.extrarelational_flags << ','
                               << entry.participant_a.is_circumcised << ','
@@ -292,11 +258,14 @@ namespace Kernel
                               << entry.participant_b.is_infected << ','
                               << entry.participant_b.gender << ','
                               << entry.participant_b.age << ','
-                              << entry.participant_b.active_relationship_count << ','
-                              << entry.participant_b.transitory_relationship_count << ','
-                              << entry.participant_b.informal_relationship_count << ','
-                              << entry.participant_b.marital_relationship_count << ','
-                              << entry.participant_b.cumulative_lifetime_relationships << ','
+                              << entry.participant_b.active_relationship_count << ',';
+
+            for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
+            {
+                GetOutputStream() << entry.participant_b.relationship_count[i] << ',';
+            }
+
+            GetOutputStream() << entry.participant_b.cumulative_lifetime_relationships << ','
                               << entry.participant_b.relationships_in_last_six_months << ','
                               << entry.participant_b.extrarelational_flags << ','
                               << entry.participant_b.is_circumcised << ','

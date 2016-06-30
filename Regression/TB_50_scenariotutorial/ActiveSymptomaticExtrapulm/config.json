@@ -28,7 +28,7 @@
         "Climate_Model": "CLIMATE_OFF", 
         "Climate_Update_Resolution": "CLIMATE_UPDATE_MONTH", 
         "Config_Name": "TB_50_scenariotutorial", 
-        "Demographics_Filenames": ["Single_node_demographics_10000.compiled.json"], 
+        "Demographics_Filenames": ["Single_node_demographics_10000.json"], 
         "Disable_IP_Whitelist": 1, 
         "Enable_Aging": 1, 
         "Enable_Air_Migration": 0, 

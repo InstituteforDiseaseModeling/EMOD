@@ -21,13 +21,28 @@ namespace Kernel
     struct IIndividualHumanInterventionsContext;
     struct IIndividualHumanEventContext;
 
+    class IndividualHumanMalariaConfig : public JsonConfigurable 
+    {
+        GET_SCHEMA_STATIC_WRAPPER(IndividualHumanMalariaConfig)
+        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
+        DECLARE_QUERY_INTERFACE()
+
+    public:
+        virtual bool Configure( const Configuration* config );
+
+        static float mean_sporozoites_per_bite;
+        static float base_sporozoite_survival_fraction;
+        static float antibody_csp_killing_threshold;
+        static float antibody_csp_killing_invwidth;
+        static MalariaModel::Enum malaria_model;
+    };
+
     // TBD: Make separate IndividualHumanMalariaConfig class!?!?!?!
     class IndividualHumanMalaria : public IndividualHumanVector, public IMalariaHumanContext, public IMalariaHumanInfectable
     {
         friend class SimulationMalaria;
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING();
-        DECLARE_QUERY_INTERFACE()
-        GET_SCHEMA_STATIC_WRAPPER(IndividualHumanMalaria);
+        DECLARE_QUERY_INTERFACE();
 
     public:
         static IndividualHumanMalaria *CreateHuman(INodeContext *context, suids::suid _suid, double monte_carlo_weight = 1.0f, double initial_age = 0.0f, int gender = 0, double initial_poverty = 0.5f);
@@ -99,11 +114,7 @@ namespace Kernel
         friend void serialize(IArchive&, gametocytes_strain_map_t&);
 
     private:
-        static float mean_sporozoites_per_bite;
-        static float base_sporozoite_survival_fraction;
-        static float antibody_csp_killing_threshold;
-        static float antibody_csp_killing_invwidth;
-        static MalariaModel::Enum malaria_model;
+        static void InitializeStaticsMalaria( const Configuration* config );
 
         IndividualHumanMalaria(suids::suid id = suids::nil_suid(), double monte_carlo_weight = 1.0, double initial_age = 0.0, int gender = 0, double initial_poverty = 0.5);
         IndividualHumanMalaria(INodeContext *context);
@@ -112,7 +123,5 @@ namespace Kernel
         void UpdateGametocyteCounts(float dt);
         void DepositInfectiousnessFromGametocytes();
         void DepositFractionalContagionByStrain(float weight, IVectorInterventionsEffects* ivie, float antigenID, float geneticID);
-
-        virtual bool Configure( const Configuration* config ) override;
     };
 }

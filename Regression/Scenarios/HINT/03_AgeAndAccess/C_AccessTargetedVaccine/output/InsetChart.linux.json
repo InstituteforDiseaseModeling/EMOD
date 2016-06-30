@@ -1,7 +1,7 @@
 {
     "Header": {
-        "DateTime": "Thu Mar 24 10:13:08 2016",
-        "DTK_Version": "0 unknown branch (unknown) Mar 24 2016",
+        "DateTime": "Mon Jun 13 21:34:40 2016",
+        "DTK_Version": "1130 HIV-Ongoing(c3de0fe) Jun 13 2016",
         "Report_Type": "InsetChart",
         "Report_Version": "3.2",
         "Start_Time": 0,
@@ -4824,7 +4824,7 @@
             "Units": "Recovered (Immune) Fraction",
             "Data": [
                 0,
-                0.4650000035763,
+                0.4469999969006,
                 0.4469999969006,
                 0.4469999969006,
                 0.4469999969006,
@@ -5564,7 +5564,7 @@
             "Units": "Susceptible Fraction",
             "Data": [
                 1,
-                0.535000026226,
+                0.5529999732971,
                 0.5519999861717,
                 0.5519999861717,
                 0.5519999861717,

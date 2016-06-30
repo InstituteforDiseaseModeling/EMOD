@@ -29,9 +29,6 @@ namespace Kernel
     HIVARTStagingByCD4Diagnostic::HIVARTStagingByCD4Diagnostic()
     : HIVARTStagingAbstract()
     {
-        initConfigComplexType("Threshold", &threshold, HIV_ASBCD_Threshold_DESC_TEXT);
-        initConfigComplexType("If_Active_TB", &ifActiveTB, HIV_ASBCD_If_Active_TB_DESC_TEXT);
-        initConfigComplexType("If_Pregnant", &ifPregnant, HIV_ASBCD_If_Pregnant_DESC_TEXT );
     }
 
     HIVARTStagingByCD4Diagnostic::HIVARTStagingByCD4Diagnostic( const HIVARTStagingByCD4Diagnostic& master )
@@ -40,6 +37,15 @@ namespace Kernel
         threshold = master.threshold;
         ifActiveTB = master.ifActiveTB;
         ifPregnant = master.ifPregnant;
+    }
+
+    bool HIVARTStagingByCD4Diagnostic::Configure( const Configuration* inputJson )
+    {
+        initConfigComplexType("Threshold",    &threshold,  HIV_ASBCD_Threshold_DESC_TEXT    );
+        initConfigComplexType("If_Active_TB", &ifActiveTB, HIV_ASBCD_If_Active_TB_DESC_TEXT );
+        initConfigComplexType("If_Pregnant",  &ifPregnant, HIV_ASBCD_If_Pregnant_DESC_TEXT  );
+
+        return HIVARTStagingAbstract::Configure( inputJson );
     }
 
     bool HIVARTStagingByCD4Diagnostic::positiveTestResult( IIndividualHumanHIV *pHIV, 

@@ -7,7 +7,7 @@
         },
         "DEMOGRAPHICS":{
             "Birth_Rate_Dependence":"FIXED_BIRTH_RATE",
-            "Demographics_Filenames":["Namawala_2_nodes_demographics.compiled.json"],
+            "Demographics_Filenames":["Namawala_2_nodes_demographics.json"],
             "Enable_Demographics_Reporting":0,
             "IMMUNITY":{
                 "Acquisition_Blocking_Immunity_Decay_Rate":0,

@@ -26,9 +26,9 @@ parse_json = function(dir, Scenario) {
     data = rbind( data, data.frame(colname='Paired People', Count = insetJ$Channels[['Paired People']]$Data ) )
     data = rbind( data, data.frame(colname='Single Post-Debut Men', Count = insetJ$Channels[['Single Post-Debut Men']]$Data ) )
     data = rbind( data, data.frame(colname='Single Post-Debut Women', Count = insetJ$Channels[['Single Post-Debut Women']]$Data ) )
-    data = rbind( data, data.frame(colname='Active Transitory Relationships', Count = insetJ$Channels[['Active Transitory Relationships']]$Data ) )
-    data = rbind( data, data.frame(colname='Active Informal Relationships', Count = insetJ$Channels[['Active Informal Relationships']]$Data ) )
-    data = rbind( data, data.frame(colname='Active Marital Relationships', Count = insetJ$Channels[['Active Marital Relationships']]$Data ) )
+    data = rbind( data, data.frame(colname='Active TRANSITORY Relationships', Count = insetJ$Channels[['Active TRANSITORY Relationships']]$Data ) )
+    data = rbind( data, data.frame(colname='Active INFORMAL Relationships', Count = insetJ$Channels[['Active INFORMAL Relationships']]$Data ) )
+    data = rbind( data, data.frame(colname='Active MARITAL Relationships', Count = insetJ$Channels[['Active MARITAL Relationships']]$Data ) )
 
 
     timesteps = insetJ$Header$Timesteps

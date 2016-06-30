@@ -14,15 +14,15 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IndividualCoinfection.h"
 #endif
 #include "IIndividualHumanHIV.h"
-#include "IIndividualHuman.h"
+// clorton #include "IIndividualHuman.h"
 #include "InfectionHIV.h"
 #include "IHIVInterventionsContainer.h"
 #include "Common.h"
 #include "Debug.h"
 #include "RANDOM.h"
-#include "MathFunctions.h"
+// clorton #include "MathFunctions.h"
 #include "math.h"
-#include "NodeEventContext.h"
+#include "NodeEventContext.h"   // Needed for parent->GetEventContext()->GetNodeEventContext()
 #include "SimulationConfig.h"
 
 static const char * _module = "SusceptibilityHIV";
@@ -275,14 +275,14 @@ namespace Kernel
         }
 
         // Calculate CD4 post-infection and at HIV-cause death
-        float CD4_PostInfection = Environment::getInstance()->RNG->Weibull2( post_infection_CD4_lambda, post_infection_CD4_inverse_kappa );
+        float CD4_PostInfection = Environment::getInstance()->RNG->Weibull2(SusceptibilityHIVConfig::post_infection_CD4_lambda, SusceptibilityHIVConfig::post_infection_CD4_inverse_kappa );
         CD4_PostInfection = (std::min)(CD4_PostInfection, MAX_CD4);
         sqrtCD4_PostInfection = sqrt(CD4_PostInfection);
 
-        float CD4_AtDiseaseDeath = disease_death_CD4_alpha;
-        if( disease_death_CD4_inverse_beta != 0.0f )
+        float CD4_AtDiseaseDeath = SusceptibilityHIVConfig::disease_death_CD4_alpha;
+        if( SusceptibilityHIVConfig::disease_death_CD4_inverse_beta != 0.0f )
         {
-            CD4_AtDiseaseDeath = Environment::getInstance()->RNG->LogLogistic( disease_death_CD4_alpha, 1.0f/disease_death_CD4_inverse_beta );
+            CD4_AtDiseaseDeath = Environment::getInstance()->RNG->LogLogistic( SusceptibilityHIVConfig::disease_death_CD4_alpha, 1.0f/SusceptibilityHIVConfig::disease_death_CD4_inverse_beta );
         }
         CD4_AtDiseaseDeath = (std::min)(CD4_AtDiseaseDeath, MAX_CD4);
         sqrtCD4_AtDiseaseDeath = sqrt( CD4_AtDiseaseDeath );

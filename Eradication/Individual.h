@@ -52,6 +52,8 @@ namespace Kernel
         static bool CanSupportFamilyTrips( IMigrationInfoFactory* pmi );
 
     protected:
+        friend class IndividualHuman;
+
         static bool aging;
         static float min_adult_age_years ;
 
@@ -92,8 +94,7 @@ namespace Kernel
                             public IIndividualHumanEventContext,
                             public IInfectable,
                             public IInfectionAcquirable,
-                            public IMigrate,
-                            protected IndividualHumanConfig
+                            public IMigrate
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
@@ -202,6 +203,8 @@ namespace Kernel
                                            bool isDestinationNewHome ) override;
         virtual void SetWaitingToGoOnFamilyTrip() override;
         virtual void GoHome() override;
+
+        static void InitializeStatics( const Configuration* config );
 
     protected:
 

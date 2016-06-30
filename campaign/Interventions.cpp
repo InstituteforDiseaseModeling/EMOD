@@ -8,6 +8,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 ***************************************************************************************************/
 
 #include <stdafx.h>
+#ifndef WIN32
+#include <cxxabi.h>
+#endif
+
 #include "Interventions.h"
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"
@@ -57,18 +61,25 @@ namespace Kernel
     }
 
     BaseIntervention::BaseIntervention()
-        : cost_per_unit(0.0f)
+        : name( typeid(*this).name() )
+        , cost_per_unit(0.0f)
         , expired(false)
         , dont_allow_duplicates(false)
     {
+#ifndef WIN32
+        name = abi::__cxa_demangle(name.c_str(), 0, 0, nullptr );
+#endif
+
         //total_intervention_counter++;
         initSimTypes( 1, "*" );
         initConfigTypeMap( "Dont_Allow_Duplicates", &dont_allow_duplicates, Dont_Allow_Duplicates_DESC_TEXT, false );
+        initConfigTypeMap( "Intervention_Name", &name, Intervention_Name_DESC_TEXT, typeid(*this).name() );
         //LOG_DEBUG_F("New intervention, total_intervention_counter = %d\n", total_intervention_counter);
     }
 
     BaseIntervention::BaseIntervention( const BaseIntervention& master )
     {
+        name                  = master.name;
         cost_per_unit         = master.cost_per_unit;
         expired               = master.expired;
         dont_allow_duplicates = master.dont_allow_duplicates ;
@@ -132,10 +143,15 @@ namespace Kernel
 
     // BaseNodeIntervention
     BaseNodeIntervention::BaseNodeIntervention()
-        : cost_per_unit(0.0f)
+        : name( typeid(*this).name() )
+        , cost_per_unit(0.0f)
         , expired(false)
     {
+#ifndef WIN32
+        name = abi::__cxa_demangle(name.c_str(), 0, 0, nullptr );
+#endif
         initSimTypes( 1, "*" );
+        initConfigTypeMap( "Intervention_Name", &name, Intervention_Name_DESC_TEXT, typeid(*this).name() );
         LOG_DEBUG_F("New intervention, cost_per_unit = %f\n", cost_per_unit);
     }
 
@@ -181,6 +197,7 @@ namespace Kernel
     void BaseIntervention::serialize(IArchive& ar, BaseIntervention* obj)
     {
         BaseIntervention& intervention = *obj;
+        ar.labelElement("name"                 ) & intervention.name;
         ar.labelElement("cost_per_unit"        ) & intervention.cost_per_unit;
         ar.labelElement("expired"              ) & intervention.expired;
         ar.labelElement("dont_allow_duplicates") & intervention.dont_allow_duplicates;

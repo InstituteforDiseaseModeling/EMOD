@@ -43,7 +43,6 @@ namespace Kernel
         return (exp((m)+randgen->eGauss()*s));
     }
 
-    GET_SCHEMA_STATIC_WRAPPER_IMPL(Py.Individual,IndividualHumanPy)
     BEGIN_QUERY_INTERFACE_DERIVED(IndividualHumanPy, IndividualHuman)
         HANDLE_INTERFACE(IIndividualHumanPy)
     END_QUERY_INTERFACE_DERIVED(IndividualHumanPy, IndividualHuman)
@@ -102,18 +101,12 @@ namespace Kernel
 #endif
     }
 
-    bool
-    IndividualHumanPy::Configure( const Configuration* config ) // just called once!
+    void IndividualHumanPy::InitializeStaticsPy( const Configuration* config ) // just called once!
     {
-        LOG_DEBUG( "Configure\n" );
-        // pydemo
-        SusceptibilityPyConfig fakeImmunity;
-        fakeImmunity.Configure( config );
-        InfectionPyConfig fakeInfection;
-        fakeInfection.Configure( config );
-
-        //do we need to call initConfigTypeMap? DLC 
-        return IndividualHuman::Configure( config );
+        SusceptibilityPyConfig immunity_config;
+        immunity_config.Configure( config );
+        InfectionPyConfig infection_config;
+        infection_config.Configure( config );
     }
 
     IndividualHumanPy *IndividualHumanPy::CreateHuman(INodeContext *context, suids::suid id, float monte_carlo_weight, float initial_age, int gender, float initial_poverty)

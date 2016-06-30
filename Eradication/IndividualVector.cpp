@@ -71,14 +71,10 @@ namespace Kernel
         // deletion of susceptibility handled by parent destructor
     }
 
-    bool IndividualHumanVector::Configure( const Configuration * config )
+    void IndividualHumanVector::InitializeStaticsVector( const Configuration * config )
     {
-        LOG_DEBUG( "Configure\n" );
-
-        SusceptibilityVectorConfig fakeImmunity;
-        fakeImmunity.Configure( config );
-
-        return JsonConfigurable::Configure( config );
+        SusceptibilityVectorConfig immunity_config;
+        immunity_config.Configure( config );
     }
 
     void IndividualHumanVector::PropagateContextToDependents()

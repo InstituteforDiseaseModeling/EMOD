@@ -71,6 +71,12 @@ inline std::vector< std::string > GET_CONFIG_VECTOR_STRING(const json::QuickInte
     return GET_CONFIG_VECTOR_STRING(parameter_source, name.c_str());
 }
 
+std::vector< std::vector< std::string > > GET_CONFIG_VECTOR2D_STRING(const json::QuickInterpreter* parameter_source, const char *name);
+inline std::vector< std::vector< std::string > > GET_CONFIG_VECTOR2D_STRING(const json::QuickInterpreter* parameter_source, const std::string& name)
+{
+    return GET_CONFIG_VECTOR2D_STRING(parameter_source, name.c_str());
+}
+
 std::vector< float > GET_CONFIG_VECTOR_FLOAT(const json::QuickInterpreter* parameter_source, const char *name);
 inline std::vector< float > GET_CONFIG_VECTOR_FLOAT(const json::QuickInterpreter* parameter_source, const std::string& name)
 {

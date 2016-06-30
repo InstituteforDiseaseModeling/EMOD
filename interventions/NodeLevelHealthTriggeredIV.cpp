@@ -47,11 +47,6 @@ namespace Kernel
     , actual_intervention_config()
     , _di(nullptr)
     {
-        initConfigComplexType("Actual_IndividualIntervention_Config", &actual_intervention_config, BT_Actual_Intervention_Config_DESC_TEXT);
-        initConfigTypeMap("Duration", &max_duration, BT_Duration_DESC_TEXT, -1.0f, FLT_MAX, -1.0f ); // -1 is a convention for indefinite duration
-
-        initConfigTypeMap( "Blackout_Period", &blackout_period, Blackout_Period_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
-        initConfigTypeMap( "Blackout_Event_Trigger", &blackout_event_trigger, Blackout_Event_Trigger_DESC_TEXT );
     }
 
     NodeLevelHealthTriggeredIV::~NodeLevelHealthTriggeredIV() { }
@@ -162,6 +157,12 @@ namespace Kernel
     )
     {
         JsonConfigurable::_useDefaults = InterventionFactory::useDefaults;
+
+        initConfigComplexType("Actual_IndividualIntervention_Config", &actual_intervention_config, BT_Actual_Intervention_Config_DESC_TEXT);
+        initConfigTypeMap("Duration", &max_duration, BT_Duration_DESC_TEXT, -1.0f, FLT_MAX, -1.0f ); // -1 is a convention for indefinite duration
+
+        initConfigTypeMap( "Blackout_Period", &blackout_period, Blackout_Period_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
+        initConfigTypeMap( "Blackout_Event_Trigger", &blackout_event_trigger, Blackout_Event_Trigger_DESC_TEXT );
 
         demographic_restrictions.ConfigureRestrictions( this, inputJson );
 

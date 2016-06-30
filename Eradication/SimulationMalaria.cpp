@@ -109,9 +109,7 @@ namespace Kernel
     void SimulationMalaria::Initialize(const ::Configuration *config)
     {
         SimulationVector::Initialize(config);
-        IndividualHumanMalaria fakeHuman;
-        LOG_INFO( "Calling Configure on fakeHumanMalaria\n" );
-        fakeHuman.Configure( config );
+        IndividualHumanMalaria::InitializeStaticsMalaria( config );
     }
 
     SimulationMalaria *SimulationMalaria::CreateSimulation()

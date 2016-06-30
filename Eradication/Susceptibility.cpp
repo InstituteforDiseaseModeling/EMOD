@@ -156,33 +156,33 @@ namespace Kernel
         age += dt; // tracks age for immune purposes
 
         if (mod_acquire < 1) { acqdecayoffset -= dt; }
-        if (immune_decay && acqdecayoffset < 0)
+        if (SusceptibilityConfig::immune_decay && acqdecayoffset < 0)
         {
-            mod_acquire += (1.0f - mod_acquire) * acqdecayrate * dt;
+            mod_acquire += (1.0f - mod_acquire) * SusceptibilityConfig::acqdecayrate * dt;
         }
 
         if (mod_transmit < 1) {trandecayoffset -= dt;}
-        if (immune_decay && trandecayoffset < 0)
+        if (SusceptibilityConfig::immune_decay && trandecayoffset < 0)
         {
-            mod_transmit += (1.0f - mod_transmit) * trandecayrate * dt;
+            mod_transmit += (1.0f - mod_transmit) * SusceptibilityConfig::trandecayrate * dt;
         }
 
         if (mod_mortality < 1) {mortdecayoffset -= dt;}
-        if (immune_decay && mortdecayoffset < 0)
+        if (SusceptibilityConfig::immune_decay && mortdecayoffset < 0)
         {
-            mod_mortality += (1.0f - mod_mortality) * mortdecayrate * dt;
+            mod_mortality += (1.0f - mod_mortality) * SusceptibilityConfig::mortdecayrate * dt;
         }
     }
 
     void Susceptibility::UpdateInfectionCleared()
     {
-        mod_acquire   *= baseacqupdate;
-        mod_transmit  *= basetranupdate;
-        mod_mortality *= basemortupdate;
+        mod_acquire   *= SusceptibilityConfig::baseacqupdate;
+        mod_transmit  *= SusceptibilityConfig::basetranupdate;
+        mod_mortality *= SusceptibilityConfig::basemortupdate;
 
-        acqdecayoffset  = baseacqoffset;
-        trandecayoffset = basetranoffset;
-        mortdecayoffset = basemortoffset;
+        acqdecayoffset  = SusceptibilityConfig::baseacqoffset;
+        trandecayoffset = SusceptibilityConfig::basetranoffset;
+        mortdecayoffset = SusceptibilityConfig::basemortoffset;
     }
 
     bool Susceptibility::IsImmune() const

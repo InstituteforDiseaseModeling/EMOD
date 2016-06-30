@@ -17,7 +17,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #ifdef randgen
 #undef randgen
 #endif
-#include "RANDOM.h"
+// clorton #include "RANDOM.h"
 #define randgen (parent->GetRng())
 
 static const char * _module = "SusceptibilityVector";
@@ -94,7 +94,7 @@ namespace Kernel
     float SusceptibilityVector::BitingRiskAgeFactor(float _age)
     {
         float risk = 1.0f;
-        switch(age_dependent_biting_risk_type)
+        switch(SusceptibilityVectorConfig::age_dependent_biting_risk_type)
         {
             case AgeDependentBitingRisk::OFF:
                 // risk is independent by age
@@ -110,8 +110,8 @@ namespace Kernel
 
             default:
                 throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, 
-                    "age_dependent_biting_risk_type", age_dependent_biting_risk_type, 
-                    AgeDependentBitingRisk::pairs::lookup_key(age_dependent_biting_risk_type) );
+                    "age_dependent_biting_risk_type", SusceptibilityVectorConfig::age_dependent_biting_risk_type, 
+                    AgeDependentBitingRisk::pairs::lookup_key(SusceptibilityVectorConfig::age_dependent_biting_risk_type) );
         }
 
         LOG_DEBUG_F("Age-dependent biting-risk = %f for %0.2f-year-old individual.\n", risk, _age/DAYSPERYEAR);
@@ -123,7 +123,7 @@ namespace Kernel
         if ( _age < 20 * DAYSPERYEAR )
         {
             // linear from birth to age 20 years
-            float newborn_risk = m_newborn_biting_risk;
+            float newborn_risk = SusceptibilityVectorConfig::m_newborn_biting_risk;
             return newborn_risk + _age * (1 - newborn_risk) / (20 * DAYSPERYEAR);
         }
 

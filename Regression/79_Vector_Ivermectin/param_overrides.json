@@ -6,7 +6,7 @@
             "Enable_Climate_Stochasticity": 0
         },
         "DEMOGRAPHICS": {
-            "Demographics_Filenames": ["Namawala_single_node_demographics.compiled.json"]
+            "Demographics_Filenames": ["Namawala_single_node_demographics.json"]
         },
         "PRIMARY": {
             "Config_Name": "79_Vector_Ivermectin",

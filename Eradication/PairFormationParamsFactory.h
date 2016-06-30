@@ -19,8 +19,6 @@ namespace Kernel {
     class IDMAPI PairFormationParamsFactory {
     public:
         static const IPairFormationParameters* Create( RelationshipType::Enum relType,
-                                                       const Configuration* pConfig, 
-                                                       float rate_ratio_male, 
-                                                       float rate_ratio_female );
+                                                       const Configuration* pConfig );
     };
 }

@@ -65,6 +65,8 @@
 		"Report_HIV_ByAgeAndGender_Stop_Year" : 2100,
 		"Report_HIV_ByAgeAndGender_Collect_Circumcision_Data" : 0,
 		"Report_HIV_ByAgeAndGender_Collect_IP_Data" : 1,
+		"Report_HIV_ByAgeAndGender_Collect_HIV_Data" : 0,
+		"Report_HIV_ByAgeAndGender_Has_Intervention_With_Name" : "",
 		"Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4": 0,
 		"Report_HIV_ByAgeAndGender_Event_Counter_List" : [],
 

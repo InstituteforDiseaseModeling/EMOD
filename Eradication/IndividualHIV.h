@@ -17,6 +17,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
+    class IndividualHumanHIVConfig : public IndividualHumanSTIConfig
+    {
+    protected:
+        friend class IndividualHumanHIV;
+    };
+
     class IHIVInfection;
     class IHIVSusceptibility;
     class IndividualHumanHIV : public IndividualHumanSTI, public IIndividualHumanHIV
@@ -34,7 +40,6 @@ namespace Kernel
                                                   int gender = int(Gender::MALE), 
                                                   float initial_poverty = 0.5f );
         virtual void InitializeHuman() override;
-        virtual bool Configure( const Configuration* config ) override;
         virtual void Update( float currenttime, float dt ) override;
 
         // Infections and Susceptibility
@@ -52,6 +57,8 @@ namespace Kernel
         virtual std::string toString() const override;
 
     protected:
+        static void InitializeStaticsHIV( const Configuration* config );
+
         IndividualHumanHIV( suids::suid id = suids::nil_suid(), 
                             float monte_carlo_weight = 1.0f, 
                             float initial_age = 0.0f, 

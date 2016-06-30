@@ -23,6 +23,7 @@ namespace Kernel
     {
         virtual void  Update(float dt) = 0;
         virtual float Current() const  = 0;
+        virtual bool  Expired() const  = 0;
     };
 
     typedef std::map<std::string, IWaningEffect*> waning_effects_t;

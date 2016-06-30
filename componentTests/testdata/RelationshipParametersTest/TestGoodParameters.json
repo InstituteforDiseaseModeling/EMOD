@@ -1,0 +1,14 @@
+{
+    "Coital_Act_Rate" : 0.33,
+    "Condom_Usage_Probability" :
+    {
+        "Min": 0.10,
+        "Max": 0.90,
+        "Mid": 2000,
+        "Rate": 1
+    },
+    "Duration_Weibull_Heterogeneity": 0.833333333,
+    "Duration_Weibull_Scale": 0.956774771214,
+    "Migration_Actions" : [ "MIGRATE", "TERMINATE", "PAUSE" ],
+    "Migration_Actions_Distribution" : [ 0.3, 0.5, 0.2 ]
+}

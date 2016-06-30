@@ -43,11 +43,12 @@ namespace Kernel
     struct IIndividualHumanInterventionsContext;
 
 #pragma warning(push)
-#pragma warning(disable: 4251)
+#pragma warning(disable: 4251) // See IdmApi.h for details
     struct IDMAPI IDistributableIntervention : ISerializable
     {
         // Distribute transfers ownership of this object to the context if it succeeds, the context becomes responsible for freeing it
         // returns false if cannot distribute to the individual represented by this context, for whatever reason
+        virtual const std::string& GetName() const = 0;
         virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO ) = 0;
         virtual void SetContextTo(IIndividualHumanContext *context) = 0;
         virtual void Update(float dt) = 0;
@@ -65,6 +66,8 @@ namespace Kernel
         virtual void SetContextTo(IIndividualHumanContext *context) = 0;
         virtual IIndividualHumanContext* GetParent() = 0;
         virtual std::list<IDistributableIntervention*> GetInterventionsByType(const std::string &type_name) = 0;
+        virtual std::list<IDistributableIntervention*> GetInterventionsByName(const std::string &intervention_name) = 0;
+        virtual std::list<void*>                       GetInterventionsByInterface( iid_t iid ) = 0;
         virtual void PurgeExisting( const std::string &iv_name ) = 0;
         virtual bool ContainsExisting( const std::string &iv_name ) = 0;
 
@@ -78,6 +81,7 @@ namespace Kernel
     {
         // Distribute transfers ownership of this object to the context if it succeeds, the context becomes responsible for freeing it
         // returns false if cannot distribute to the individual represented by this context, for whatever reason
+        virtual const std::string& GetName() const = 0;
         virtual bool Distribute(INodeEventContext *context, IEventCoordinator2* pEC = nullptr ) = 0;
         virtual void SetContextTo(INodeEventContext *context) = 0;
         virtual void Update(float dt) = 0;
@@ -108,6 +112,7 @@ namespace Kernel
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
 
+        virtual const std::string& GetName() const override { return name; };
         virtual float GetCostPerUnit() const override { return cost_per_unit; }
         virtual bool Expired() override ;
         virtual void ValidateSimType( const std::string& simTypeStr ) override;
@@ -120,9 +125,13 @@ namespace Kernel
 
         static void serialize( IArchive& ar, BaseIntervention* obj );
 
+#pragma warning( push )
+#pragma warning( disable: 4251 ) // See IdmApi.h for details
+        std::string name;
         float cost_per_unit;
         bool expired;
         bool dont_allow_duplicates ;
+#pragma warning( pop )
     };
 
     struct BaseNodeIntervention : IBaseIntervention, JsonConfigurable, INodeDistributableIntervention
@@ -130,6 +139,7 @@ namespace Kernel
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
 
     public:
+        virtual const std::string& GetName() const override { return name; };
         virtual float GetCostPerUnit() const override { return cost_per_unit; }
         virtual bool Expired();
         virtual void ValidateSimType( const std::string& simTypeStr ) override;
@@ -138,6 +148,7 @@ namespace Kernel
         BaseNodeIntervention();
         virtual bool Distribute(INodeEventContext *context, IEventCoordinator2* pEC = nullptr ) override;
 
+        std::string name;
         float cost_per_unit;
         bool expired;
     };

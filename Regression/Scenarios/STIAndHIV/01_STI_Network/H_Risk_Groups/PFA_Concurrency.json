@@ -1,0 +1,106 @@
+{
+    "Metadata": {
+        "Author": "dbridenbecker", 
+        "NodeCount": 1, 
+        "Tool": "notepad", 
+        "IdReference": "0", 
+        "DateCreated": "2016-6-11"
+    },
+    "Defaults": {
+        "Society" : {
+            "Concurrency_Configuration" : 
+            {
+                "Individual_Property_Name": "Risk", 
+                "LOW": 
+                {
+                    "Extra_Relational_Flag_Type": "Independent"
+                },
+                "HIGH": 
+                {
+                    "Extra_Relational_Flag_Type": "Correlated",
+                    "Correlated_Relationship_Type_Order" : [ "TRANSITORY", "INFORMAL", "MARITAL", "COMMERCIAL" ]
+                }
+            },
+            "TRANSITORY" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "LOW": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 2,
+                        "Max_Simultaneous_Relationships_Male"  : 2,
+                        "Prob_Extra_Relationship_Female"       : 0.15,
+                        "Prob_Extra_Relationship_Male"         : 0.25
+                    },
+                    "HIGH": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 2,
+                        "Max_Simultaneous_Relationships_Male"  : 4,
+                        "Prob_Extra_Relationship_Female"       : 0.8,
+                        "Prob_Extra_Relationship_Male"         : 0.2
+                    }
+                }
+            },
+            "INFORMAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "LOW": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 2,
+                        "Max_Simultaneous_Relationships_Male"  : 2,
+                        "Prob_Extra_Relationship_Female"       : 0.10,
+                        "Prob_Extra_Relationship_Male"         : 0.15
+                    },
+                    "HIGH": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 2,
+                        "Max_Simultaneous_Relationships_Male"  : 3,
+                        "Prob_Extra_Relationship_Female"       : 0.5,
+                        "Prob_Extra_Relationship_Male"         : 1.0
+                    }
+                }
+            },
+            "MARITAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "LOW": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 2,
+                        "Max_Simultaneous_Relationships_Male"  : 2,
+                        "Prob_Extra_Relationship_Female"       : 0.1,
+                        "Prob_Extra_Relationship_Male"         : 0.1
+                    },
+                    "HIGH": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 2,
+                        "Max_Simultaneous_Relationships_Male"  : 2,
+                        "Prob_Extra_Relationship_Female"       : 0.25,
+                        "Prob_Extra_Relationship_Male"         : 0.50
+                    }
+                }
+            },
+            "COMMERCIAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "LOW": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 0,
+                        "Max_Simultaneous_Relationships_Male"  : 0,
+                        "Prob_Extra_Relationship_Female"       : 0,
+                        "Prob_Extra_Relationship_Male"         : 0
+                    },
+                    "HIGH": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 0,
+                        "Max_Simultaneous_Relationships_Male"  : 0,
+                        "Prob_Extra_Relationship_Female"       : 0,
+                        "Prob_Extra_Relationship_Male"         : 0
+                    }
+                }
+            }
+        }
+    }
+}

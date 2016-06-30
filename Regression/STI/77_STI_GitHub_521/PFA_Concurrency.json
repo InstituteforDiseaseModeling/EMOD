@@ -1,0 +1,75 @@
+{
+    "Metadata": {
+        "Author": "dbridenbecker", 
+        "NodeCount": 1, 
+        "Tool": "notepad", 
+        "IdReference": "0", 
+        "DateCreated": "2016-6-11"
+    },
+    "Defaults": {
+        "Society" : {
+            "COMMENT": "We need this so that we test having multiple relationships to break when migrating a relationship.", 
+            "Concurrency_Configuration" : 
+            {
+                "Probability_Person_Is_Behavioral_Super_Spreader" : 0,
+                "Individual_Property_Name": "NONE", 
+                "NONE": 
+                {
+                    "Extra_Relational_Flag_Type": "Independent"
+                }
+            },
+            "TRANSITORY" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 4,
+                        "Max_Simultaneous_Relationships_Male"  : 4,
+                        "Prob_Extra_Relationship_Female"       : 1,
+                        "Prob_Extra_Relationship_Male"         : 1
+                    }
+                }
+            },
+            "INFORMAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 3,
+                        "Max_Simultaneous_Relationships_Male"  : 3,
+                        "Prob_Extra_Relationship_Female"       : 1,
+                        "Prob_Extra_Relationship_Male"         : 1
+                    }
+                }
+            },
+            "MARITAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 2,
+                        "Max_Simultaneous_Relationships_Male"  : 2,
+                        "Prob_Extra_Relationship_Female"       : 1,
+                        "Prob_Extra_Relationship_Male"         : 1
+                    }
+                }
+            },
+            "COMMERCIAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 10,
+                        "Max_Simultaneous_Relationships_Male"  : 10,
+                        "Prob_Extra_Relationship_Female"       : 1,
+                        "Prob_Extra_Relationship_Male"         : 1
+                    }
+                }
+            }
+        }
+    }
+}

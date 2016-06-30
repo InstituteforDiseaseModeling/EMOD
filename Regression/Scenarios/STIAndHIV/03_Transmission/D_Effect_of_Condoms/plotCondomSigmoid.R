@@ -1,5 +1,5 @@
 # SUMMARY: Plot condom usage probability over time for transitory relationships
-# INPUT: config.json
+# INPUT: condoms_overlay.json
 # OUTPUT: Figure on screen an figs/Simoid.png
 
 rm( list=ls( all=TRUE ) )
@@ -13,12 +13,13 @@ if( !file.exists(fig_dir) ) {
     dir.create(fig_dir)
 }
 
-P = fromJSON('config.json')$parameters
+P = fromJSON('condoms_overlay.json')
 
-early   = P$Condom_Usage_Probability_in_Transitory_Relationships_Early
-late    = P$Condom_Usage_Probability_in_Transitory_Relationships_Late
-midyear = P$Condom_Usage_Probability_in_Transitory_Relationships_Midyear
-rate    = P$Condom_Usage_Probability_in_Transitory_Relationships_Rate
+print( P$Defaults$Society$TRANSITORY$Relationship_Parameters$Condom_Usage_Probability )
+early   = P$Defaults$Society$TRANSITORY$Relationship_Parameters$Condom_Usage_Probability$Min
+late    = P$Defaults$Society$TRANSITORY$Relationship_Parameters$Condom_Usage_Probability$Max
+midyear = P$Defaults$Society$TRANSITORY$Relationship_Parameters$Condom_Usage_Probability$Mid
+rate    = P$Defaults$Society$TRANSITORY$Relationship_Parameters$Condom_Usage_Probability$Rate
 
 sigmoid = function(x) {
     return( 100*(early + (late-early) / (1+exp(-rate*(x-midyear)))) )

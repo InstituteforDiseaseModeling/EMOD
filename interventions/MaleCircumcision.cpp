@@ -87,7 +87,7 @@ namespace Kernel
         // --- same timestep.
         // !!! Added the !IsCircumcised() due to requirement to not expire!!!
         // --------------------------------------------------------------------------
-        if( (context->GetInterventionsByType(typeid(*this).name()).size() > 0) && !p_sti->IsCircumcised() )
+        if( (context->GetInterventionsByInterface( GET_IID(ICircumcision) ).size() > 0) && !p_sti->IsCircumcised() )
         {
             return false;
         }
@@ -151,6 +151,16 @@ namespace Kernel
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "ISTICircumcisionConsumer", "IIndividualHumanInterventionsContext" );
         }
+    }
+
+    bool MaleCircumcision::ApplyIfHigherReducedAcquire() const
+    {
+        return m_ApplyIfHigherReducedAcquire;
+    }
+
+    float MaleCircumcision::GetReducedAcquire() const
+    {
+        return m_ReducedAcquire;
     }
 
     REGISTER_SERIALIZABLE(MaleCircumcision);

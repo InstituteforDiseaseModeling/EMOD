@@ -12,7 +12,7 @@ graphics.off()
 library(reshape)
 library(ggplot2)
 
-rel_names <- c('Transitory', 'Informal', 'Marital')
+rel_names <- c('TRANSITORY', 'INFORMAL', 'MARITAL')
 fig_dir = 'figs'
 if( !file.exists(fig_dir) ) {
     dir.create(fig_dir)
@@ -29,7 +29,7 @@ ageBin = function(age) {
 
 dat$A_agebin = sapply(dat$A_age, ageBin)
 dat$B_agebin = sapply(dat$B_age, ageBin)
-dat$Rel_type = dat$Rel_type..0...transitory.1...informal.2...marital.
+dat$Rel_type = dat$Rel_type
 
 dat.m = melt(dat, id=c('Rel_type','A_agebin', 'B_agebin', 'A_age', 'B_age'), measure='Count')
 

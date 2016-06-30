@@ -13,7 +13,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Debug.h" // for release_assert
 #include "RANDOM.h"
 #include "Common.h"             // for INFINITE_TIME
-#include "InterventionEnums.h"  // for InterventionDurabilityProfile, ImmunoglobulinType, etc.
 #include "IIndividualHuman.h"
 #include "InterventionsContainer.h"  // for IPropertyValueChangerEffects
 #include "MathFunctions.h"  // for IPropertyValueChangerEffects

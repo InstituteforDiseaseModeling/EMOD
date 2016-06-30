@@ -11,7 +11,7 @@ library(ggplot2)
 library(plyr)
 library(scales)
 
-rel_names <- c('Transitory', 'Informal', 'Marital')
+rel_names <- c('TRANSITORY', 'INFORMAL', 'MARITAL')
 fig_dir = 'figs'
 if( !file.exists(fig_dir) ) {
     dir.create(fig_dir)
@@ -20,7 +20,7 @@ if( !file.exists(fig_dir) ) {
 output_dir = 'output'
 
 start = read.csv(file.path(output_dir, "RelationshipStart.csv"), header=TRUE)
-names(start)[names(start)=='Rel_type..0...transitory.1...informal.2...marital.'] = 'Rel_Type'
+names(start)[names(start)=='Rel_type..0...TRANSITORY..1...INFORMAL..2...MARITAL..3...COMMERCIAL.']='Rel_Type'
 binAge = function(x) min(100, 2.5*floor((x-15)/2.5)+15)
 start$A_age = sapply( start$A_age, binAge)
 start$B_age = sapply( start$B_age, binAge)
@@ -66,9 +66,8 @@ start.e$Rel_Name <- factor(start.e$Rel_Name)
 start.f <- melt(start.e[c('Rel_Name','pct_hi_with_hi','pct_low_with_hi')],id.vars="Rel_Name")
 start.f$variable <- revalue(start.f$variable, c("pct_hi_with_hi"="High Risk", "pct_low_with_hi"="Low Risk"))
 
-p <- qplot(x=Rel_Name, y=value, fill=variable,
-      data=start.f, geom="bar", stat="identity",
-      position="dodge") +
+p <- ggplot(data=start.f, aes(x=Rel_Name, y=value, fill=variable) ) +
+  geom_bar(stat="identity", position="dodge") +
   scale_y_continuous(labels = percent) +
   xlab( "Relationship Type" ) +
   ylab( "Percent Paired with a High Risk Partner" )

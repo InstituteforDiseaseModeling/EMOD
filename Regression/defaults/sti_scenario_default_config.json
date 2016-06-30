@@ -75,14 +75,10 @@
             "Enable_Coital_Dilution": 0,
             "Coital_Dilution_Factor_2_Partners": 1,
             "Coital_Dilution_Factor_3_Partners": 1,
-            "Coital_Dilution_Factor_4_Plus_Partners": 1,
-
-            "Probability_Person_Is_Behavioral_Super_Spreader": 0
+            "Coital_Dilution_Factor_4_Plus_Partners": 1
         },
 
 		"____________NETWORK___________": {
-            "Extra_Relational_Rate_Ratio_Male": 1,
-            "Extra_Relational_Rate_Ratio_Female": 1,
             "Min_Days_Between_Adding_Relationships": 0,
 
             "PFA_Burnin_Duration_In_Days": 5475,
@@ -93,30 +89,7 @@
             "Sexual_Debut_Age_Male_Weibull_Heterogeneity": 0.05,
             "Sexual_Debut_Age_Male_Weibull_Scale": 16.946729660034,
 
-            "Sexual_Debut_Age_Min": 13,
-
-            "STI_Network_Params_By_Property" :
-            {
-                "Individual_Property_Name": "NONE",
-                "NONE" :
-                {
-                    "Extra_Relational_Flag_Type": "Independent",
-
-                    "Prob_Extra_Transitory_Relationship_Female": 0,
-                    "Prob_Extra_Transitory_Relationship_Male": 0,
-                    "Prob_Extra_Informal_Relationship_Female": 0,
-                    "Prob_Extra_Informal_Relationship_Male": 0,
-                    "Prob_Extra_Marital_Relationship_Female": 0,
-                    "Prob_Extra_Marital_Relationship_Male": 0,
-
-                    "Max_Simultaneous_Transitory_Relationships_Females": 1,
-                    "Max_Simultaneous_Transitory_Relationships_Males": 1,
-                    "Max_Simultaneous_Informal_Relationships_Females": 1,
-                    "Max_Simultaneous_Informal_Relationships_Males": 1,
-                    "Max_Simultaneous_Marital_Relationships_Females": 1,
-                    "Max_Simultaneous_Marital_Relationships_Males": 1
-                }
-            }
+            "Sexual_Debut_Age_Min": 13
         },
 
 		"____________REPORTING___________": {

@@ -28,7 +28,7 @@ namespace Kernel
         HANDLE_INTERFACE(IIndividualHumanTB2)
     END_QUERY_INTERFACE_DERIVED(IndividualHumanTB, IndividualHumanAirborne)
 
-    bool IndividualHumanTB::Configure( const Configuration* config ) // just called once!
+    void IndividualHumanTB::InitializeStaticsTB( const Configuration* config ) // just called once!
     {
         LOG_DEBUG( "Configure\n" );
         SusceptibilityTBConfig fakeImmunity;
@@ -37,12 +37,10 @@ namespace Kernel
         fakeInfection.Configure( config );
 
         //Superinfection not yet supported for TB sims
-        if (superinfection )
+        if (IndividualHumanConfig::superinfection )
         {
-            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Enable_Superinfection", superinfection ? "1" : "0", "Simulation_Type", "TB_SIM" );
+            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Enable_Superinfection", IndividualHumanConfig::superinfection ? "1" : "0", "Simulation_Type", "TB_SIM" );
         }
-
-        return true;
     }
 
     IndividualHumanTB *IndividualHumanTB::CreateHuman( INodeContext *context, suids::suid id, float MCweight, float init_age, int gender, float init_poverty)

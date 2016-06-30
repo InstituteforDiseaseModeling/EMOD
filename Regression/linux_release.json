@@ -1,5 +1,5 @@
 {
-    "suite":"lin_v2_5.json",
+    "suite":"linux_release.json",
     "tests": [
         { "path" : "1_Generic_Seattle_MultiNode" },
         { "path" : "5_Vector_Namawala_SugarTrap_EveryFeedFeed" },

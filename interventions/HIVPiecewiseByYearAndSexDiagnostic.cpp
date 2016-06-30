@@ -41,11 +41,7 @@ namespace Kernel
     , default_value(0)
     , period_between_trials(0)
     {
-        initConfigTypeMap("Interpolation_Order", &interpolation_order, HIV_PBYASD_Interpolation_Order_DESC_TEXT, 0, 1, 0);
-        initConfigTypeMap("Female_Multiplier", &female_multiplier, HIV_PBYASD_Female_Multiplier_DESC_TEXT, 0, FLT_MAX, 1);
-        initConfigTypeMap("Default_Value", &default_value, HIV_PBYASD_Default_Value_DESC_TEXT, 0, 1, 0);
-        initConfigComplexType("Time_Value_Map", &year2ValueMap, HIV_PBYASD_Time_Value_Map_DESC_TEXT);
-    };
+    }
 
     HIVPiecewiseByYearAndSexDiagnostic::HIVPiecewiseByYearAndSexDiagnostic( const HIVPiecewiseByYearAndSexDiagnostic& master )
     : HIVSimpleDiagnostic( master )
@@ -62,6 +58,11 @@ namespace Kernel
     bool
     HIVPiecewiseByYearAndSexDiagnostic::Configure(const Configuration* inputJson)
     {
+        initConfigTypeMap("Interpolation_Order", &interpolation_order, HIV_PBYASD_Interpolation_Order_DESC_TEXT, 0, 1, 0);
+        initConfigTypeMap("Female_Multiplier", &female_multiplier, HIV_PBYASD_Female_Multiplier_DESC_TEXT, 0, FLT_MAX, 1);
+        initConfigTypeMap("Default_Value", &default_value, HIV_PBYASD_Default_Value_DESC_TEXT, 0, 1, 0);
+        initConfigComplexType("Time_Value_Map", &year2ValueMap, HIV_PBYASD_Time_Value_Map_DESC_TEXT);
+
         bool ret = HIVSimpleDiagnostic::Configure(inputJson);
         value_multiplier = period_between_trials/DAYSPERYEAR;   // Will use first order approximation of exponential
         return ret;

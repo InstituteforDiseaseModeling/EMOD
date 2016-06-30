@@ -109,9 +109,7 @@ namespace Kernel
     void SimulationVector::Initialize(const ::Configuration *config)
     {
         Simulation::Initialize(config);
-        IndividualHumanVector fakeHuman;
-        LOG_INFO( "Calling Configure on fakeHumanVector\n" );
-        fakeHuman.Configure( config );
+        IndividualHumanVector::InitializeStaticsVector( config );
 
         for( auto report : reports )
         {

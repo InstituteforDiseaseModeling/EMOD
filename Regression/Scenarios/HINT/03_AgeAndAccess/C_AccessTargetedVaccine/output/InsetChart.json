@@ -1,7 +1,7 @@
 {
     "Header": {
-        "DateTime": "Wed Mar 23 20:50:56 2016",
-        "DTK_Version": "5633 trunk 2015/09/23 14:04:15",
+        "DateTime": "Mon Jun 13 11:35:56 2016",
+        "DTK_Version": "1121 GitHub-488-ConcurrencyParameters (e1bd81a) Jun 13 2016 08:05:24",
         "Report_Type": "InsetChart",
         "Report_Version": "3.2",
         "Start_Time": 0,
@@ -4824,7 +4824,7 @@
             "Units": "Recovered (Immune) Fraction",
             "Data": [
                 0,
-                0.4650000035763,
+                0.4469999969006,
                 0.4469999969006,
                 0.4469999969006,
                 0.4469999969006,
@@ -5564,7 +5564,7 @@
             "Units": "Susceptible Fraction",
             "Data": [
                 1,
-                0.535000026226,
+                0.5529999732971,
                 0.5519999861717,
                 0.5519999861717,
                 0.5519999861717,

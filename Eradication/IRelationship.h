@@ -26,11 +26,14 @@ namespace Kernel
     struct IIndividualHumanSTI;
     typedef std::set< IIndividualHumanSTI* > tRelationshipMembers;
 
+#define MAX_SLOTS (63)
+
     ENUM_DEFINE(RelationshipType,
-        ENUM_VALUE_SPEC( TRANSITORY  , 0)
-        ENUM_VALUE_SPEC( INFORMAL    , 1)
-        ENUM_VALUE_SPEC( MARITAL     , 2)
-        ENUM_VALUE_SPEC( COUNT       , 3))
+        ENUM_VALUE_SPEC( TRANSITORY    , 0)
+        ENUM_VALUE_SPEC( INFORMAL      , 1)
+        ENUM_VALUE_SPEC( MARITAL       , 2)
+        ENUM_VALUE_SPEC( COMMERCIAL    , 3)
+        ENUM_VALUE_SPEC( COUNT         , 4))
 
     ENUM_DEFINE(RelationshipState,
         ENUM_VALUE_SPEC( NORMAL      , 0)
@@ -61,6 +64,7 @@ namespace Kernel
         virtual void Terminate( RelationshipTerminationReason::Enum terminationReason ) = 0;
         virtual void Migrate() = 0;
         virtual void Resume( IRelationshipManager* pRelMan, ISociety* pSociety, IIndividualHumanSTI* returnee ) = 0;
+        virtual void UpdatePaused() = 0;
 
         virtual bool Update( float dt ) = 0;
         virtual void Consummate( float dt ) = 0;
@@ -71,6 +75,7 @@ namespace Kernel
         virtual const suids::suid& GetSuid() const = 0;
         virtual const std::string& GetPropertyKey() = 0;
         virtual const std::string& GetPropertyName() const = 0;
+        virtual unsigned int GetSlotNumberForPartner( bool forPartnerB ) const = 0;
         virtual const tRelationshipMembers GetMembers() const = 0;
         virtual bool IsDiscordant() const = 0;
         virtual float GetDuration() const = 0;
@@ -78,8 +83,12 @@ namespace Kernel
         virtual float GetStartTime() const = 0;
         virtual float GetScheduledEndTime() const = 0;
         virtual bool GetUsingCondom() const = 0;
+        virtual suids::suid GetPartnerId( const suids::suid& myID ) const = 0;
         virtual suids::suid GetMalePartnerId() const = 0;
         virtual suids::suid GetFemalePartnerId() const = 0;
+        virtual bool IsMalePartnerAbsent() const = 0;
+        virtual bool IsFemalePartnerAbsent() const = 0;
+
         virtual RelationshipType::Enum GetType() const = 0;
         virtual unsigned int GetOriginalNodeId() const = 0;
         virtual float GetCoitalRate() const = 0;

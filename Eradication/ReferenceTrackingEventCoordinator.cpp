@@ -11,9 +11,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "ReferenceTrackingEventCoordinator.h"
 #include "SimulationConfig.h"
-#ifndef WIN32
-#include <cxxabi.h>
-#endif
 
 static const char * _module = "ReferenceTrackingEventCoordinator";
 
@@ -97,12 +94,9 @@ namespace Kernel
                 auto mcw = ihec->GetMonteCarloWeight();
                 totalQualifyingPop += mcw;
                 auto better_ptr = ihec->GetInterventionsContext();
-                // Check whether this individual has a non-zero quantity of this intervention, based on C++ mangled typename. 
-                std::string iv_type_name = typeid( *_di ).name();
-#ifndef WIN32
-                iv_type_name = abi::__cxa_demangle(iv_type_name.c_str(), 0, 0, nullptr );
-#endif
-                totalWithIntervention += ( better_ptr->GetInterventionsByType( iv_type_name ).size() > 0 ? mcw : 0 );
+                // Check whether this individual has a non-zero quantity of this intervention
+                std::string intervention_name = _di->GetName();
+                totalWithIntervention += ( (better_ptr->GetInterventionsByName( intervention_name ).size() > 0) ? mcw : 0 );
             }
         };
 
@@ -130,10 +124,10 @@ namespace Kernel
             }
             LOG_INFO_F( "Setting demographic_coverage to %f based on target_coverage = %f, currentCoverageForIntervention = %f, total without intervention  = %f, total with intervention = %f.\n",
                             dc,
-                            (float) target_coverage,
-                            (float) currentCoverageForIntervention,
-                            (float) totalWithoutIntervention,
-                            (float) totalWithIntervention
+                            float(target_coverage),
+                            float(currentCoverageForIntervention),
+                            float(totalWithoutIntervention),
+                            float(totalWithIntervention)
                         );
         }
         else

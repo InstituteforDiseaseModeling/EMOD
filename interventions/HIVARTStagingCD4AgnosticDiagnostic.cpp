@@ -30,17 +30,6 @@ namespace Kernel
     : HIVARTStagingAbstract()
     , adultAge(5)
     {
-        initConfigTypeMap("Adult_Treatment_Age", &adultAge, HIV_Adult_Treatment_Age_DESC_TEXT, -1, FLT_MAX, 5);
-        //initConfigTypeMap("Stable_Partner_Minimum_Duration", &stablePartnerMinimumDuration, HIV_Stable_Partner_Minimum_Duration_DESC_TEXT , -1, FLT_MAX, 365);
-        
-        initConfigComplexType("Adult_By_WHO_Stage", &adultByWHOStage, HIV_Adult_By_WHO_Stage_DESC_TEXT);
-        initConfigComplexType("Adult_By_TB", &adultByTB, HIV_Adult_By_TB_DESC_TEXT);
-        //initConfigTypeMap("Adult_By_Stable_Discordant_Partner", &adultByStableDiscodantPartner, HIV_Adult_By_Stable_Discordant_Partner_DESC_TEXT );
-        initConfigComplexType("Adult_By_Pregnant", &adultByPregnant, HIV_Adult_By_Pregnant_DESC_TEXT );
-
-        initConfigComplexType("Child_Treat_Under_Age_In_Years_Threshold", &childTreatUnderAgeThreshold, HIV_Child_Treat_Under_Age_In_Years_Threshold_DESC_TEXT );
-        initConfigComplexType("Child_By_WHO_Stage", &childByWHOStage, HIV_Child_By_WHO_Stage_DESC_TEXT );
-        initConfigComplexType("Child_By_TB", &childByTB, HIV_Child_By_TB_DESC_TEXT );
     }
 
     HIVARTStagingCD4AgnosticDiagnostic::HIVARTStagingCD4AgnosticDiagnostic( const HIVARTStagingCD4AgnosticDiagnostic& master )
@@ -53,6 +42,23 @@ namespace Kernel
         childTreatUnderAgeThreshold = master.childTreatUnderAgeThreshold;
         childByWHOStage = master.childByWHOStage;
         childByTB = master.childByTB;
+    }
+
+    bool HIVARTStagingCD4AgnosticDiagnostic::Configure( const Configuration* inputJson )
+    {
+        initConfigTypeMap("Adult_Treatment_Age", &adultAge, HIV_Adult_Treatment_Age_DESC_TEXT, -1, FLT_MAX, 5);
+        //initConfigTypeMap("Stable_Partner_Minimum_Duration", &stablePartnerMinimumDuration, HIV_Stable_Partner_Minimum_Duration_DESC_TEXT , -1, FLT_MAX, 365);
+        
+        initConfigComplexType("Adult_By_WHO_Stage", &adultByWHOStage, HIV_Adult_By_WHO_Stage_DESC_TEXT);
+        initConfigComplexType("Adult_By_TB", &adultByTB, HIV_Adult_By_TB_DESC_TEXT);
+        //initConfigTypeMap("Adult_By_Stable_Discordant_Partner", &adultByStableDiscodantPartner, HIV_Adult_By_Stable_Discordant_Partner_DESC_TEXT );
+        initConfigComplexType("Adult_By_Pregnant", &adultByPregnant, HIV_Adult_By_Pregnant_DESC_TEXT );
+
+        initConfigComplexType("Child_Treat_Under_Age_In_Years_Threshold", &childTreatUnderAgeThreshold, HIV_Child_Treat_Under_Age_In_Years_Threshold_DESC_TEXT );
+        initConfigComplexType("Child_By_WHO_Stage", &childByWHOStage, HIV_Child_By_WHO_Stage_DESC_TEXT );
+        initConfigComplexType("Child_By_TB", &childByTB, HIV_Child_By_TB_DESC_TEXT );
+
+        return HIVARTStagingAbstract::Configure( inputJson );
     }
 
     // staged for ART via CD4 agnostic testing?

@@ -183,6 +183,7 @@ namespace Kernel
         typedef std::map< std::string, void * > tEnumConfigTypeMapType;
         typedef std::map< std::string, std::set< std::string > * > tStringSetConfigTypeMapType;
         typedef std::map< std::string, std::vector< std::string > * > tVectorStringConfigTypeMapType;
+        typedef std::map< std::string, std::vector< std::vector< std::string > > * > tVector2dStringConfigTypeMapType;
         typedef std::map< std::string, const std::set< std::string > * > tVectorStringConstraintsTypeMapType;
         typedef std::map< std::string, std::vector< float > * > tVectorFloatConfigTypeMapType;
         typedef std::map< std::string, std::vector< int > * > tVectorIntConfigTypeMapType;
@@ -228,7 +229,9 @@ namespace Kernel
         tStringSetConfigTypeMapType stringSetConfigTypeMap;
         jsonConfigurable::tConStringConfigTypeMapType conStringConfigTypeMap;
         tVectorStringConfigTypeMapType vectorStringConfigTypeMap;
+        tVector2dStringConfigTypeMapType vector2dStringConfigTypeMap;
         tVectorStringConstraintsTypeMapType vectorStringConstraintsTypeMap;
+        tVectorStringConstraintsTypeMapType vector2dStringConstraintsTypeMap;
         tVectorFloatConfigTypeMapType vectorFloatConfigTypeMap;
         tVectorIntConfigTypeMapType vectorIntConfigTypeMap;
         tVector2dFloatConfigTypeMapType vector2dFloatConfigTypeMap;
@@ -314,6 +317,14 @@ namespace Kernel
         void initConfigTypeMap(
             const char* paramName,
             std::vector< std::string > * pVariable,
+            const char* description = default_description,
+            const char* constraint_schema = nullptr,
+            const std::set< std::string > &constraint_variable = empty_set
+        );
+
+        void initConfigTypeMap(
+            const char* paramName,
+            std::vector< std::vector< std::string > > * pVariable,
             const char* description = default_description,
             const char* constraint_schema = nullptr,
             const std::set< std::string > &constraint_variable = empty_set
@@ -524,7 +535,10 @@ namespace Kernel
         )
         {
             MetadataDescriptor::Enum * pEnumMd = const_cast<MetadataDescriptor::Enum *>(&enum_md);
-            jsonSchemaBase[key] = pEnumMd->GetSchemaElement();
+            if ( _dryrun )
+            {
+                jsonSchemaBase[key] = pEnumMd->GetSchemaElement();
+            }
 
             // parsing: unspecified case
             if (pJson && pJson->Exist(key) == false && _useDefaults )

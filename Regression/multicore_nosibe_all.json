@@ -1,6 +1,10 @@
 {
     "tests": [
+        { "path" : "Multicore_Nosibe/14_Polio_Bihar_Larger" },
+        { "path" : "Multicore_Nosibe/17_Polio_Bihar_Simplest" },
         { "path" : "Multicore_Nosibe/39_Vector_Namawala_HostSeekingTrap" },        
+        { "path" : "Multicore_Nosibe/42_Polio_Default_Geography" },
+        { "path" : "Multicore_Nosibe/49_Environmental_Namawala" },
         { "path" : "Multicore_Nosibe/50_Airborne_Namawala" },
         { "path" : "Multicore_Nosibe/64_Vector_ScaleLarvalHabitat" },            
         { "path" : "Multicore_Nosibe/69_Vector_IRS_Ivermectin" },

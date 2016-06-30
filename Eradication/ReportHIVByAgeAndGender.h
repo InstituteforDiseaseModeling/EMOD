@@ -71,6 +71,7 @@ namespace Kernel {
                 , tested_ever_HIVpos(0.0)
                 , tested_ever_HIVneg(0.0)
                 , tested_past_year_or_onART(0.0)
+                , has_intervention(0.0)
                 , event_counter_map()
             {
             }
@@ -94,28 +95,31 @@ namespace Kernel {
             float tested_ever_HIVpos;        // Tested ever [amongst HIV+]
             float tested_ever_HIVneg;        // Tested ever [amongst HIV-]
             float tested_past_year_or_onART; // Tested past year (or on ART)
+            float has_intervention;
 
             std::map<std::string,float> event_counter_map; // count the ocurrences of events
         };
 
         bool GetNextIP( std::vector<int>& rKeyValueIndexList );
-        uint32_t GetDataMapKey( IIndividualHumanEventContext* context );
-        uint32_t GetDataMapKey( int nodeSuidIndex, int genderIndex, int ageIndex, int circIndex, const std::vector<int>& rKeyValueIndexList );
+        uint64_t GetDataMapKey( IIndividualHumanEventContext* context );
+        uint64_t GetDataMapKey( int nodeSuidIndex, int genderIndex, int ageIndex, int circIndex, int hivIndex, const std::vector<int>& rKeyValueIndexList );
         void AddConstant();
 
-        std::map<uint32_t,ReportData> data_map ;
+        std::map<uint64_t,ReportData> data_map ;
 
         const ISimulation * _parent;
         float startYear ;                                       // Year to start collecting data
         float stopYear ;                                        // Year to stop  collecting data
         bool is_collecting_data ;
         bool is_collecting_circumcision_data;
+        bool is_collecting_hiv_data;
         bool is_collecting_ip_data;
         bool stratify_infected_by_CD4;
+        std::string name_of_intervention_to_count;
         std::vector<std::string> event_list;
         std::vector<std::string> ip_key_list ;
         std::map<std::string,std::vector<std::string>> ip_key_value_list_map ;
-        std::vector<uint32_t> map_key_constants ;
+        std::vector<uint64_t> map_key_constants ;
     };
 
 }

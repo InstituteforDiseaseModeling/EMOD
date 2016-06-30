@@ -21,11 +21,11 @@ namespace Kernel
     struct IMalariaAntibody : ISerializable
     {
         // EAW: inv_uL_blood arguments can be removed when we switch to m_antigen_concentration from m_antigen_count
-        virtual void  Decay( float dt, SusceptibilityMalariaConfig* params ) = 0;
+        virtual void  Decay( float dt ) = 0;
         virtual float StimulateCytokines( float dt, float inv_uL_blood ) = 0;
-        virtual void  UpdateAntibodyCapacity( float dt, SusceptibilityMalariaConfig* params, float inv_uL_blood ) = 0;
-        virtual void  UpdateAntibodyCapacity( float dt, float growth_rate ) = 0;
-        virtual void  UpdateAntibodyConcentration( float dt, SusceptibilityMalariaConfig* params ) = 0;
+        virtual void  UpdateAntibodyCapacity( float dt, float inv_uL_blood ) = 0;
+        virtual void  UpdateAntibodyCapacityByRate( float dt, float growth_rate ) = 0;
+        virtual void  UpdateAntibodyConcentration( float dt ) = 0;
         virtual void  ResetCounters() = 0;
 
         virtual void  IncreaseAntigenCount( int64_t antigenCount ) = 0;

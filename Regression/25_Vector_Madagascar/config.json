@@ -33,7 +33,7 @@
         "Default_Geography_Initial_Node_Population": 1000, 
         "Default_Geography_Torus_Size": 10, 
         "Demographics_Filenames": [
-            "Madagascar_2_5arcmin_demographics.compiled.json"
+            "Madagascar_2_5arcmin_demographics.json"
         ], 
         "Egg_Hatch_Delay_Distribution": "NO_DELAY", 
         "Egg_Saturation_At_Oviposition": "SATURATION_AT_OVIPOSITION", 

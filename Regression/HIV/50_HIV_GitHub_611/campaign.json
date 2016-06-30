@@ -1,0 +1,27 @@
+{
+    "Use_Defaults": 1, 
+    "Events": [
+        {
+            "class": "CampaignEvent", 
+            "Event_Name": "Epidemic seeding 0.1 of population", 
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 0.1, 
+                "Travel_Linked": 0, 
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual", 
+                    "Event_Name": "Outbreak (not used)", 
+                    "Outbreak_Source": "PrevalenceIncrease", 
+                    "Incubation_Period_Override": 1, 
+                    "Antigen": 0, 
+                    "Genome": 0
+                }
+            }
+        }
+    ]
+}

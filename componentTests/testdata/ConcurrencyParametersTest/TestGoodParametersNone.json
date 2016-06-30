@@ -1,0 +1,63 @@
+{
+    "Concurrency_Configuration" :
+    {
+        "Probability_Person_Is_Behavioral_Super_Spreader" : 0.88,
+        "Individual_Property_Name": "NONE", 
+        "NONE": 
+        {
+            "Extra_Relational_Flag_Type": "Independent"
+        }
+    },
+    "TRANSITORY" :
+    {
+        "Concurrency_Parameters" :
+        {
+            "NONE": 
+            {
+                "Max_Simultaneous_Relationships_Female": 1,
+                "Max_Simultaneous_Relationships_Male"  : 2,
+                "Prob_Extra_Relationship_Female"       : 0.1,
+                "Prob_Extra_Relationship_Male"         : 0.2
+            }
+        }
+    },
+    "INFORMAL" :
+    {
+        "Concurrency_Parameters" :
+        {
+            "NONE": 
+            {
+                "Max_Simultaneous_Relationships_Female": 3,
+                "Max_Simultaneous_Relationships_Male"  : 4,
+                "Prob_Extra_Relationship_Female"       : 0.3,
+                "Prob_Extra_Relationship_Male"         : 0.4
+            }
+        }
+    },
+    "MARITAL" :
+    {
+        "Concurrency_Parameters" :
+        {
+            "NONE": 
+            {
+                "Max_Simultaneous_Relationships_Female": 0,
+                "Max_Simultaneous_Relationships_Male"  : 1,
+                "Prob_Extra_Relationship_Female"       : 0.0,
+                "Prob_Extra_Relationship_Male"         : 0.1
+            }
+        }
+    },
+    "COMMERCIAL" :
+    {
+        "Concurrency_Parameters" :
+        {
+            "NONE": 
+            {
+                "Max_Simultaneous_Relationships_Female": 5,
+                "Max_Simultaneous_Relationships_Male"  : 6,
+                "Prob_Extra_Relationship_Female"       : 0.5,
+                "Prob_Extra_Relationship_Male"         : 0.6
+            }
+        }
+    }
+}

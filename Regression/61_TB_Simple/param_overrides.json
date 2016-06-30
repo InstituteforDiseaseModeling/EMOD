@@ -3,7 +3,7 @@
     "parameters":{
         "DEMOGRAPHICS":{
             "Birth_Rate_Dependence":"INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE",
-            "Demographics_Filenames":["Bihar_single_node_demographics.compiled.json"],
+            "Demographics_Filenames":["Bihar_single_node_demographics.json"],
             "Enable_Birth":0,
             "Enable_Demographics_Gender":0,
             "IMMUNITY":{

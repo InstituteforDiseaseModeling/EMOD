@@ -152,13 +152,19 @@ namespace Kernel
     HIVRandomChoice::HIVRandomChoice()
     : HIVSimpleDiagnostic()
     {
-        initConfigComplexType("Choices", &event2ProbabilityMap, HIV_Random_Choices_DESC_TEXT);
     }
 
     HIVRandomChoice::HIVRandomChoice( const HIVRandomChoice& master )
         : HIVSimpleDiagnostic( master )
     {
         event2ProbabilityMap = master.event2ProbabilityMap;
+    }
+
+    bool HIVRandomChoice::Configure( const Configuration* inputJson )
+    {
+        initConfigComplexType("Choices", &event2ProbabilityMap, HIV_Random_Choices_DESC_TEXT);
+
+        return HIVSimpleDiagnostic::Configure( inputJson );
     }
 
     bool HIVRandomChoice::positiveTestResult()

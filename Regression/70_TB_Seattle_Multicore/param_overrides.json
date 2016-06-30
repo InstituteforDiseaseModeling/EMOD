@@ -4,7 +4,7 @@
         "DEMOGRAPHICS":{
             "Birth_Rate_Dependence":"POPULATION_DEP_RATE",
             "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF", 
-            "Demographics_Filenames":["Seattle_30arcsec_demographics.compiled.json"],
+            "Demographics_Filenames":["Seattle_30arcsec_demographics.json"],
             "IMMUNITY":{
                 "Acquisition_Blocking_Immunity_Decay_Rate":0.005479,
                 "Acquisition_Blocking_Immunity_Duration_Before_Decay":270,

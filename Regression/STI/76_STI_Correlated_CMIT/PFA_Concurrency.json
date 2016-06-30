@@ -1,0 +1,74 @@
+{
+    "Metadata": {
+        "Author": "dbridenbecker", 
+        "NodeCount": 1, 
+        "Tool": "notepad", 
+        "IdReference": "0", 
+        "DateCreated": "2016-6-11"
+    },
+    "Defaults": {
+        "Society" : {
+            "Concurrency_Configuration" : 
+            {
+                "NONE": 
+                {
+                    "Extra_Relational_Flag_Type": "Correlated",
+
+                    "Correlated_Relationship_Type_Order" : [ "COMMERCIAL", "MARITAL", "INFORMAL", "TRANSITORY"  ]
+                }
+            },
+            "TRANSITORY" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 3,
+                        "Max_Simultaneous_Relationships_Male"  : 3,
+                        "Prob_Extra_Relationship_Female"       : 0.2,
+                        "Prob_Extra_Relationship_Male"         : 0.1
+                    }
+                }
+            },
+            "INFORMAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 3,
+                        "Max_Simultaneous_Relationships_Male"  : 3,
+                        "Prob_Extra_Relationship_Female"       : 0.1,
+                        "Prob_Extra_Relationship_Male"         : 0.2
+                    }
+                }
+            },
+            "MARITAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 3,
+                        "Max_Simultaneous_Relationships_Male"  : 3,
+                        "Prob_Extra_Relationship_Female"       : 0.4,
+                        "Prob_Extra_Relationship_Male"         : 0.3
+                    }
+                }
+            },
+            "COMMERCIAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 3,
+                        "Max_Simultaneous_Relationships_Male"  : 3,
+                        "Prob_Extra_Relationship_Female"       : 0.3,
+                        "Prob_Extra_Relationship_Male"         : 0.4
+                    }
+                }
+            }
+        }
+    }
+}

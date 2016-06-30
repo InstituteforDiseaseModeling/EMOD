@@ -16,6 +16,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "BoostLibWrapper.h"
 #include "Configure.h"
 #include "InterventionEnums.h"
+#include "PropertyRestrictions.h"
 
 namespace Kernel
 {
@@ -43,18 +44,6 @@ namespace Kernel
         std::string GetPropertyRestrictionsAsString() const;
 
     protected:
-        class tPropertyRestrictions : public JsonConfigurable
-        {
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
-        public:
-            tPropertyRestrictions() {}
-            virtual void ConfigureFromJsonAndKey( const Configuration *, const std::string &key );
-            virtual json::QuickBuilder GetSchema();
-
-            std::list< std::map< std::string, std::string > > _restrictions;
-        };
-
         bool allow_age_restrictions;
         float demographic_coverage;
         TargetDemographicType::Enum default_target_demographic;
@@ -63,8 +52,7 @@ namespace Kernel
         float target_age_max;
         TargetGender::Enum target_gender; 
         jsonConfigurable::tDynamicStringSet property_restrictions_set;
-        tPropertyRestrictions property_restrictions;
-        bool property_restrictions_verified;
+        PropertyRestrictions property_restrictions;
         bool target_residents_only;
 
 #if USE_JSON_SERIALIZATION

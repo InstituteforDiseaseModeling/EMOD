@@ -16,9 +16,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IPairFormationAgent.h"
 #include "IPairFormationFlowController.h"
 #include "IPairFormationStats.h"
+#include "IConcurrency.h"
 #include "Configure.h"
 
-namespace Kernel {
+namespace Kernel
+{
+
+    class ConcurrencyConfiguration;
 
     class SocietyImpl : public ISociety
     {
@@ -36,8 +40,10 @@ namespace Kernel {
         virtual IPairFormationAgent* GetPFA(RelationshipType::Enum) override;
         virtual IPairFormationStats* GetStats(RelationshipType::Enum) override;
 
-        virtual void SetParameters( IIdGeneratorSTI* pIdGen, const Configuration* config ) override;
+        virtual void SetParameters( IIdGeneratorSTI* pIdGen, const tPropertiesDistrib& rPropertiesDist, const Configuration* config ) override;
         virtual IRelationshipParameters* GetRelationshipParameters( RelationshipType::Enum type ) override;
+
+        virtual IConcurrency* GetConcurrency() override;
 
         // ---------------------------
         // --- JsonConfiurable Methods
@@ -57,8 +63,8 @@ namespace Kernel {
         IPairFormationAgent*            pfa[           RelationshipType::COUNT ];
         IPairFormationFlowController*   controller[    RelationshipType::COUNT ];
 
-        float extra_relational_rate_ratio_male;
-        float extra_relational_rate_ratio_female;
+        ConcurrencyConfiguration* p_concurrency;
+
         float pfa_selection_threshold ;
     };
 }

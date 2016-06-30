@@ -212,10 +212,7 @@ namespace Kernel
     void Simulation::Initialize(const ::Configuration *config)
     {
         Configure( config );
-        // Let's try generalizing this somehow!!!
-        IndividualHumanConfig fakeHuman;
-        LOG_INFO( "Calling Configure on fakeHuman\n" );
-        fakeHuman.Configure( config );
+        IndividualHuman::InitializeStatics( config );
 
         Kernel::SimulationConfig* SimConfig = Kernel::SimulationConfigFactory::CreateInstance(EnvPtr->Config);
         if (SimConfig)

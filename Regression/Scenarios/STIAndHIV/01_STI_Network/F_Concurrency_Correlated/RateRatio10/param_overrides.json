@@ -6,7 +6,9 @@
             "Demographics_Filenames": [
                 "uniform_demographics.json", 
                 "pfa_simple.json",
-                "PFA_Add_Informal_Marital.json"
+                "PFA_Add_Informal_Marital.json",
+                "PFA_Extra_Rel_Rate_10M_10F.json",
+                "PFA_Concurrency.json"
             ]
         }, 
         "____________SIMULATION___________": {
@@ -25,33 +27,7 @@
             "Report_Event_Recorder_Ignore_Events_In_List": 0
         }, 
         "____________NETWORK___________": {
-            "Extra_Relational_Rate_Ratio_Male": 10, 
-            "Extra_Relational_Rate_Ratio_Female": 10,
 
-            "STI_Network_Params_By_Property" :
-            {
-                "Individual_Property_Name": "NONE",
-                "NONE" :
-                {
-                    "Extra_Relational_Flag_Type": "Correlated",
-
-                    "Prob_Extra_Transitory_Relationship_Male": 0.2,
-                    "Prob_Extra_Transitory_Relationship_Female": 0.8,
-
-                    "Prob_Extra_Informal_Given_Extra_Transitory_Male": 1,
-                    "Prob_Extra_Informal_Given_Extra_Transitory_Female": 0.5,
-
-                    "Prob_Extra_Marital_Given_Extra_Informal_Male": 0.5,
-                    "Prob_Extra_Marital_Given_Extra_Informal_Female": 0.25,
-
-                    "Max_Simultaneous_Transitory_Relationships_Males": 4,
-                    "Max_Simultaneous_Transitory_Relationships_Females": 2,
-                    "Max_Simultaneous_Informal_Relationships_Males": 3,
-                    "Max_Simultaneous_Informal_Relationships_Females": 2,
-                    "Max_Simultaneous_Marital_Relationships_Males": 2,
-                    "Max_Simultaneous_Marital_Relationships_Females": 2
-                }
-            }
         }, 
         "____________RARELY_CHANGED___________": {
             "Config_Name": "01F_Concurrency_Correlated_Rate_Ratio_10"

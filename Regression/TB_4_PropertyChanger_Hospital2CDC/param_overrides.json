@@ -3,7 +3,7 @@
     "parameters":{
         "DEMOGRAPHICS":{
             "Birth_Rate_Dependence":"FIXED_BIRTH_RATE",
-            "Demographics_Filenames":["Single_node_demographics_100_mod.compiled.json"],
+            "Demographics_Filenames":["Single_node_demographics_100_mod.json"],
             "IMMUNITY":{
                 "Acquisition_Blocking_Immunity_Decay_Rate":0,
                 "Acquisition_Blocking_Immunity_Duration_Before_Decay":0,

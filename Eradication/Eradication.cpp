@@ -323,15 +323,6 @@ void IDMAPI writeInputSchemas(
 
     total_schema[ "config" ] = configSchemaAll;
 
-    json::Object fakeJsonRoot3;
-    json::QuickBuilder fakeECJson( fakeJsonRoot3 );
-    fakeECJson["class"] = json::String("StandardInterventionDistributionEventCoordinator");
-    auto fakeConfig = Configuration::CopyFromElement( fakeECJson );
-    Kernel::StandardInterventionDistributionEventCoordinator * pTempEC = dynamic_cast<Kernel::StandardInterventionDistributionEventCoordinator*>( Kernel::EventCoordinatorFactory::CreateInstance( fakeConfig ) );
-    delete fakeConfig;
-    fakeConfig = nullptr;
-    /* json::QuickBuilder ec_schema = */ pTempEC->GetSchema();
-
     if( !Kernel::InterventionFactory::getInstance() )
     {
         throw Kernel::InitializationException( __FILE__, __LINE__, __FUNCTION__, "Kernel::InterventionFactory::getInstance(" );

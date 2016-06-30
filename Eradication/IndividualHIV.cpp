@@ -26,8 +26,6 @@ namespace Kernel
     #define SIX_WEEKS       (6*7.0f)
     #define EIGHTEEN_MONTHS (18*30.0f)
 
-
-
     BEGIN_QUERY_INTERFACE_DERIVED(IndividualHumanHIV, IndividualHumanSTI)
         HANDLE_INTERFACE(IIndividualHumanHIV)
     END_QUERY_INTERFACE_DERIVED(IndividualHumanHIV, IndividualHumanSTI)
@@ -37,6 +35,7 @@ namespace Kernel
         IndividualHumanHIV *newindividual = _new_ IndividualHumanHIV(id, MCweight, init_age, gender, init_poverty);
 
         newindividual->SetContextTo(context);
+        newindividual->InitializeConcurrency();
         LOG_DEBUG_F( "Created human with age=%f\n", newindividual->m_age );
 
         return newindividual;
@@ -75,19 +74,17 @@ namespace Kernel
         return InfectionHIV::CreateInfection(this, _suid);
     }
 
-    bool
-    IndividualHumanHIV::Configure(
-        const Configuration* config
-    )
+    void IndividualHumanHIV::InitializeStaticsHIV( const Configuration* config )
     {
-        LOG_DEBUG( "Configure\n" );
+        InfectionHIVConfig infection_config;
+        infection_config.Configure( config );
+        SusceptibilityHIVConfig immunity_config;
+        immunity_config.Configure( config );
 
-        InfectionHIVConfig adamInfection;
-        adamInfection.Configure( config );
-        SusceptibilityHIVConfig adamImmunity;
-        adamImmunity.Configure( config );
-
-        return IndividualHumanSTI::Configure(config);
+        // We used to instantiate an individual which would make one or two calls to the PRNG.
+        // Let's emulate that here just so our results don't vary.
+        Environment::getInstance()->RNG->Weibull2(IndividualHumanSTIConfig::debutAgeYrsMale_lambda, IndividualHumanSTIConfig::debutAgeYrsMale_inv_kappa );
+        Environment::getInstance()->RNG->e();
     }
 
     void IndividualHumanHIV::setupInterventionsContainer()
@@ -156,7 +153,7 @@ namespace Kernel
     {
         IndividualHumanSTI::Update( curtime, dt );
 
-        if (aging)
+        if (IndividualHumanConfig::aging)
         {
             if( ((m_age - dt) < SIX_WEEKS) && (SIX_WEEKS <= m_age) )
             {

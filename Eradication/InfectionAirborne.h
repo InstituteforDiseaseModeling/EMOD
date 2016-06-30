@@ -12,6 +12,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
+    class InfectionAirborneConfig : public InfectionConfig
+    {
+    protected:
+        friend class InfectionAirborne;
+    };
+
     class InfectionAirborne : public Infection
     {
     public:

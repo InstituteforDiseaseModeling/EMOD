@@ -73,6 +73,9 @@ public:
         return (__USHORT) (ll >> 16);
     }
 
+    // Finds an uniformally distributed number between 0 and N
+    __ULONG uniformZeroToN( __ULONG N );
+
 
 #define FLOAT_EXP   8
 #define DOUBLE_EXP 11

@@ -17,14 +17,15 @@ namespace Kernel
 {
     class SimulationConfig;
 
-    class SusceptibilityVectorConfig : public JsonConfigurable 
+    class SusceptibilityVectorConfig : public SusceptibilityConfig
     {
         friend class IndividualHumanVector;
     public:
         virtual bool Configure( const Configuration* config ) override;
 
     protected:
-        // configurable mode of biting-risk age-dependence
+        friend class SusceptibilityVector;
+
         static AgeDependentBitingRisk::Enum age_dependent_biting_risk_type;
         static float m_newborn_biting_risk;
 
@@ -33,7 +34,7 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
     };
 
-    class SusceptibilityVector : public Susceptibility, public IVectorSusceptibilityContext, protected SusceptibilityVectorConfig
+    class SusceptibilityVector : public Susceptibility, public IVectorSusceptibilityContext
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()

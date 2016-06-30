@@ -26,6 +26,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IInfectable.h"
 #include "MathFunctions.h"
 #include "Serialization.h"
+#include "Properties.h"
 
 class RANDOMBASE;
 
@@ -71,7 +72,7 @@ namespace Kernel
         virtual suids::suid   GetSuid() const override;
         virtual suids::suid   GetNextInfectionSuid() override;
         virtual ::RANDOMBASE* GetRng() override;
-        virtual const INodeContext::tDistrib& GetIndividualPropertyDistributions() const override;
+        virtual const tPropertiesDistrib& GetIndividualPropertyDistributions() const override;
         virtual void AddEventsFromOtherNodes( const std::vector<std::string>& rEventNameList ) override;
 
 
@@ -114,8 +115,7 @@ namespace Kernel
         virtual long int GetPossibleMothers()    const override;
 
         virtual float GetMeanAgeInfection()      const override;
-        virtual void RegisterNewInfectionObserver(void* id, INodeContext::callback_t observer) override;
-        virtual void UnregisterNewInfectionObserver(void* id) override;
+        virtual float GetBasePopulationScaleFactor() const override;
 
         // This method will ONLY be used for spatial reporting by input node ID, don't use it elsewhere!
         virtual ExternalNodeId_t GetExternalID() const;
@@ -157,7 +157,7 @@ namespace Kernel
     private:
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
-        static INodeContext::tDistrib base_distribs;
+        static tPropertiesDistrib base_distribs;
 
         SerializationFlags serializationMask;
 
@@ -166,7 +166,7 @@ namespace Kernel
         float _longitude;
 
     protected:
-        INodeContext::tDistrib distribs;
+        ::tPropertiesDistrib distribs;
 
         // moved from SimulationConfig
         IndSamplingType::Enum                        ind_sampling_type;                         // Individual_Sampling_Type
@@ -272,7 +272,6 @@ namespace Kernel
         float migration_dist1 ;
         float migration_dist2 ;
 
-        map<void*, INodeContext::callback_t> new_infection_observers;
         AnimalReservoir::Enum      animal_reservoir_type;
         InfectivityScaling::Enum                             infectivity_scaling;                              // Infectivity_Scale_Type
         float                      zoonosis_rate;

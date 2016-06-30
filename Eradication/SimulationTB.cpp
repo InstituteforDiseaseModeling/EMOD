@@ -74,9 +74,7 @@ namespace Kernel
     void SimulationTB::Initialize( const ::Configuration *config )
     {
         SimulationAirborne::Initialize( config );
-        IndividualHumanTB fakeHuman;
-        LOG_INFO( "Calling Configure on fakeHuman\n" );
-        fakeHuman.Configure( config );
+        IndividualHumanTB::InitializeStaticsTB( config );
     }
 
     void SimulationTB::addNewNodeFromDemographics(suids::suid node_suid, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory)

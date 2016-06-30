@@ -10,7 +10,6 @@ library(ggplot2)
 
 DAYS_PER_YEAR = 365
 
-rel_names <- c('Transitory', 'Informal', 'Marital')
 fig_dir = 'figs'
 if( !file.exists(fig_dir) ) {
     dir.create(fig_dir)

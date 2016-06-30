@@ -3,7 +3,7 @@
     "parameters": {
         ".Base_Population_Scale_Factor": 0.0002, 
         "DEMOGRAPHICS": {
-            "Demographics_Filenames": [ "../../HIV/input/SA_UN_demographics.json", "../../HIV/input/PFA_overlay.json", "PFA_overlay_rates.json" ],
+            "Demographics_Filenames": [ "../../HIV/input/SA_UN_demographics.json", "../../HIV/input/PFA_overlay.json", "PFA_overlay_rates.json","PFA_Concurrency.json" ],
             "Enable_Vital_Dynamics": 0,
             "MORTALITY": {
                 "Base_Mortality": 0.01, 
@@ -26,16 +26,6 @@
         }, 
         "STI": {
             "STI_Coinfection_Probability": 1.0
-        },
-        "STI_Network_Params_By_Property" :
-        {
-            "NONE" :
-            {
-                "Prob_Extra_Marital_Relationship_Female": 1, 
-                "Prob_Extra_Marital_Relationship_Male": 1, 
-                "Max_Simultaneous_Marital_Relationships_Females": 3, 
-                "Max_Simultaneous_Marital_Relationships_Males": 3
-            }
         }
     }
 }

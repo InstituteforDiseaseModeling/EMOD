@@ -427,6 +427,64 @@ vector<vector<int>> GET_CONFIG_VECTOR2D_INT(const QuickInterpreter* parameter_so
     return matrix;
 }
 
+vector<vector<string>> GET_CONFIG_VECTOR2D_STRING(const QuickInterpreter* parameter_source, const char *name)
+{
+    vector<vector<string>> matrix;
+
+    if(parameter_source == NULL)
+    {
+        if( Kernel::JsonConfigurable::_dryrun )
+        {
+            return matrix;
+        }
+        else
+        {
+            throw std::runtime_error("Null pointer!  Invalid config passed for parsing");
+        }
+    }
+    try
+    {
+        unsigned int num_elements_x = (*parameter_source)[name].As<json::Array>().Size();
+
+        json::QuickInterpreter json_array_of_arrays( (*parameter_source)[name].As<json::Array>() );
+        for( unsigned int idx = 0; idx < num_elements_x; idx++ )
+        {
+            json::QuickInterpreter json_array( json_array_of_arrays[idx].As<json::Array>() );
+
+            unsigned int num_elements_y = json_array_of_arrays[idx].As<json::Array>().Size() ;
+            std::vector<string> values;
+
+            for( unsigned int idy = 0; idy < num_elements_y; idy++ )
+            {
+                string value = (string)json_array[idy].As<json::String>();
+                values.push_back(value);
+            }
+            matrix.push_back( values );
+        }
+    }
+    catch (json::Exception& e)
+    {
+        string full_description(e.what());
+        if (strcmp(e.what(), "Bad json_cast") == 0)
+        {
+            full_description += ": ";
+            full_description += name;
+            full_description += " (expected JSON array of string)";
+        }
+
+        if( Kernel::JsonConfigurable::_dryrun )
+        {
+            return matrix;
+        }
+        else
+        {
+            throw json::Exception(full_description);
+        }
+    }
+
+    return matrix;
+}
+
 vector<string> GET_CONFIG_VECTOR_STRING(const QuickInterpreter* parameter_source, const char *name)
 {
     vector<string> values;

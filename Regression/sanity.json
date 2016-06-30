@@ -2,9 +2,11 @@
     "tests": [
         { "path" : "6_Vector_Namawala_SugarTrap_EveryDayFeed" },
         { "path" : "13_Generic_Seattle_SingleCore" },
+        { "path" : "17_Polio_Bihar_Simplest" },
         { "path" : "27_Vector_Sandbox" },
         { "path" : "28_Malaria_Sandbox" },
         { "path" : "TB_10_LatentFast_SmearPos" },
+        { "path" : "49_Environmental_Namawala" },
         { "path" : "50_Airborne_Namawala" },
         { "path" : "STI/52_STI_All_Rel_Types_Assortivity_Prop_Location_Matrix" },
         { "path" : "HIV/12_HIV_CascadeOfCare"}

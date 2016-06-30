@@ -28,6 +28,7 @@ extern const char* TRANSMISSION_DATA_KEY;
 
 // property bag of key:value pairs
 typedef std::map< std::string, std::string > tProperties;
+typedef std::map< std::string, std::multimap< float, std::string > > tPropertiesDistrib;
 
 std::string PropertiesToString( const tProperties& properties );
 std::string PropertiesToStringCsvFriendly( const tProperties& properties );

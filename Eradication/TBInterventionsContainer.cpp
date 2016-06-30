@@ -55,31 +55,20 @@ namespace Kernel
         IHealthSeekingBehavior * IHSB = nullptr;
 
         //this section for counting the number of HSB interventions in the interventionslist
-        //in future clean up so that this function doesn't have hard coded intervention class names
-        std::string classname = "Kernel::HealthSeekingBehaviorUpdateable";
-#ifdef WIN32
-        classname = "class " + classname;
-#endif
-        std::list<IDistributableIntervention*> list_of_HSB = GetInterventionsByType(classname);
-        LOG_DEBUG_F("Number of HSBUpdateable in intervention list %d\n", list_of_HSB.size()); 
+        std::list<void*> list_of_HSB = GetInterventionsByInterface( GET_IID(IHealthSeekingBehavior) );
+        LOG_DEBUG_F("Number of IHealthSeekingBehavior in intervention list %d\n", list_of_HSB.size()); 
         
         if (list_of_HSB.size() == 0)
         {
-            LOG_DEBUG("no HSBUpdateable to update \n");
+            LOG_DEBUG("no IHealthSeekingBehavior to update \n");
         }
         else
         {
             //this section for counting how updatomg each of the non-expired HSB with the new_probability_of_seeking
             for (auto active_HSB : list_of_HSB)
             {
-                if (s_OK == active_HSB->QueryInterface(GET_IID(IHealthSeekingBehavior), (void **)&IHSB))
-                {
-                    IHSB->UpdateProbabilityofSeeking( new_probability_of_seeking ); 
-                }
-                else
-                {
-                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "active_HSB", "IHealthSeekingBehavior", "IIndividualHumanContext" );
-                }
+                IHealthSeekingBehavior* IHSB = static_cast<IHealthSeekingBehavior*>(active_HSB);
+                IHSB->UpdateProbabilityofSeeking( new_probability_of_seeking ); 
             }
         }
     }
@@ -87,43 +76,23 @@ namespace Kernel
 
     int TBInterventionsContainer::GetNumTBDrugsActive()
     {
-        IDrug * ITB_drug = nullptr;
-
-        //this section for counting the number of AntiTBDrug interventions in the interventionslist
-        std::list<IDistributableIntervention*> list_of_tb_drugs = GetInterventionsByType("class Kernel::AntiTBDrug");
-        LOG_DEBUG_F("Number of AntiTBDrug in intervention list %d\n",  list_of_tb_drugs.size()); 
+        //this section for counting the number of IDrug interventions in the interventionslist
+        std::list<void*> list_of_tb_drugs = GetInterventionsByInterface( GET_IID(IDrug) );
+        LOG_DEBUG_F("Number of IDrug in intervention list %d\n",  list_of_tb_drugs.size());
         
-        //this section for counting how many of the AntiTBDrug interventions have efficacy > 0 (not expired)
+        //this section for counting how many of the IDrug interventions have efficacy > 0 (not expired)
         int num_tb_drugs_active = 0;
-        for (auto tb_drug_on_board : list_of_tb_drugs)
+        for (void* tb_drug_on_board : list_of_tb_drugs)
         {
-            if (s_OK == tb_drug_on_board->QueryInterface(GET_IID(IDrug), (void **)&ITB_drug))
+            IDrug* ITB_Drug = static_cast<IDrug*>(tb_drug_on_board);
+            release_assert( ITB_Drug );
+            if (ITB_Drug->GetDrugCurrentEfficacy() > 0)
             {
-                if (ITB_drug->GetDrugCurrentEfficacy() > 0)
-                {
-                    num_tb_drugs_active +=1;
-                }
+                num_tb_drugs_active +=1;
             }
         }
-        LOG_DEBUG_F("Number of AntiTBDrug in intervention list that are active %d\n", num_tb_drugs_active);
+        LOG_DEBUG_F("Number of IDrug in intervention list that are active %d\n", num_tb_drugs_active);
 
-        //this section for counting the number of AntiTBPropDepDrug interventions in the interventionslist
-        std::list<IDistributableIntervention*> list_of_propdep_tb_drugs = GetInterventionsByType("class Kernel::AntiTBPropDepDrug");
-        LOG_DEBUG_F("Number of AntiTBPropDepDrug in intervention list %d\n", list_of_propdep_tb_drugs.size()); 
-
-        //this section for counting how many of the AntiTBPropDepDrug interventions have efficacy > 0 (not expired)
-        for (auto tb_drug_on_board : list_of_propdep_tb_drugs)
-        {
-            if (s_OK == tb_drug_on_board->QueryInterface(GET_IID(IDrug), (void **)&ITB_drug))
-            {
-                if (ITB_drug->GetDrugCurrentEfficacy() > 0)
-                {
-                    num_tb_drugs_active +=1;
-                }
-            }
-        }
-        LOG_DEBUG_F("Number of AntiTBDrug and AntiTBPropDepDrug in intervention list that are active %d\n", num_tb_drugs_active);
-        
         return num_tb_drugs_active;
     }
    

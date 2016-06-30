@@ -1,0 +1,52 @@
+{
+    "Metadata": {
+        "Author": "dbridenbecker", 
+        "NodeCount": 1, 
+        "Tool": "notepad", 
+        "IdReference": "0", 
+        "DateCreated": "2016-6-11"
+    },
+    "Defaults": {
+        "Society" : {
+            "TRANSITORY" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 63,
+                        "Max_Simultaneous_Relationships_Male"  : 63,
+                        "Prob_Extra_Relationship_Female"       : 1,
+                        "Prob_Extra_Relationship_Male"         : 1
+                    }
+                }
+            },
+            "INFORMAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 0,
+                        "Max_Simultaneous_Relationships_Male"  : 0,
+                        "Prob_Extra_Relationship_Female"       : 0,
+                        "Prob_Extra_Relationship_Male"         : 0
+                    }
+                }
+            },
+            "MARITAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 0,
+                        "Max_Simultaneous_Relationships_Male"  : 0,
+                        "Prob_Extra_Relationship_Female"       : 0,
+                        "Prob_Extra_Relationship_Male"         : 0
+                    }
+                }
+            }
+        }
+    }
+}

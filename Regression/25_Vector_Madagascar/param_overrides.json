@@ -21,7 +21,7 @@
           }, 
           "DEMOGRAPHICS": {
                "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE", 
-               "Demographics_Filenames": ["Madagascar_2_5arcmin_demographics.compiled.json"], 
+               "Demographics_Filenames": ["Madagascar_2_5arcmin_demographics.json"], 
                "SAMPLING": {
                     "Individual_Sampling_Type": "ADAPTED_SAMPLING_BY_POPULATION_SIZE", 
                     "Max_Node_Population_Samples": 30, 

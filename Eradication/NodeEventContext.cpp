@@ -160,6 +160,7 @@ namespace Kernel
         /*const*/ IIndividualHumanContext * pDistributeeIndividual
     )
     {
+        if( Environment::getInstance()->Log->CheckLogLevel(Logger::DEBUG, "EEL") )
         {
             // intervention recipient
             std::stringstream msg;

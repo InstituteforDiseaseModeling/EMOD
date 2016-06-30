@@ -20,7 +20,7 @@
           }, 
           "DEMOGRAPHICS": {
                "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE", 
-               "Demographics_Filenames": ["Namawala_single_node_demographics.compiled.json"]
+               "Demographics_Filenames": ["Namawala_single_node_demographics.json"]
           }, 
           "PRIMARY": {
                "Config_Name": "18_Vector_Namawala_Indoor_IRSOnly", 

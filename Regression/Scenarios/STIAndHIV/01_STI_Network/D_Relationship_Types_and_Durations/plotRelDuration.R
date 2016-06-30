@@ -20,19 +20,19 @@ if( !file.exists(fig_dir) ) {
 }
 
 end <- read.csv("output/RelationshipEnd.csv", header=TRUE)
-names(end)[names(end) == 'Rel_type..0...transitory.1...informal.2...marital.'] <- 'Rel_type'
+names(end)[names(end) == 'Rel_type'] <- 'Rel_type'
 end$Duration = (end$Rel_actual_end_time - end$Rel_start_time)/DAYS_PER_YEAR
 end$Count = 1
 
-C = fromJSON('config.json')$parameters
+C = fromJSON('../../../InputFiles/pfa_simple.json')
 
-transitory.shape = 1.0 / C$Relationships_Transitory_Weibull_Heterogeneity
-informal.shape = 1.0 / C$Relationships_Informal_Weibull_Heterogeneity
-marital.shape = 1.0 / C$Relationships_Marital_Weibull_Heterogeneity
+transitory.shape = 1.0 / C$Defaults$Society$TRANSITORY$Relationship_Parameters$Duration_Weibull_Heterogeneity
+informal.shape   = 1.0 / C$Defaults$Society$INFORMAL$Relationship_Parameters$Duration_Weibull_Heterogeneity
+marital.shape    = 1.0 / C$Defaults$Society$MARITAL$Relationship_Parameters$Duration_Weibull_Heterogeneity
 
-transitory.scale = C$Relationships_Transitory_Weibull_Scale
-informal.scale = C$Relationships_Informal_Weibull_Scale
-marital.scale = C$Relationships_Marital_Weibull_Scale
+transitory.scale = C$Defaults$Society$TRANSITORY$Relationship_Parameters$Duration_Weibull_Scale
+informal.scale   = C$Defaults$Society$INFORMAL$Relationship_Parameters$Duration_Weibull_Scale
+marital.scale    = C$Defaults$Society$MARITAL$Relationship_Parameters$Duration_Weibull_Scale
 
 end$Rel_type = factor(end$Rel_type)
 end.m = melt(end, id=c('Rel_type', 'Duration'), measure='Count')
@@ -44,6 +44,7 @@ p <- ggplot(data=end.m, mapping=aes(x=Duration, group=Rel_type, fill=Rel_type ))
     stat_function(fun=function(x) dweibull(x, marital.shape, marital.scale), colour="blue", linetype="dashed") +
     xlab( "Duration (years)" ) +
     ylab( "Density" ) +
+    scale_y_continuous(limits=c(0.0,0.8)) +
     ggtitle( "Relationship Duration by Type" ) + 
     scale_fill_discrete(name="Type", breaks=c(0,1,2), labels=rel_names)
 

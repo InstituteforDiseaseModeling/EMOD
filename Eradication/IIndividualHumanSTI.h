@@ -38,6 +38,7 @@ namespace Kernel {
         virtual bool IsBehavioralSuperSpreader() const = 0;
         virtual unsigned int GetExtrarelationalFlags() const = 0;
         virtual bool IsCircumcised() const = 0;
+        virtual void UpdateHistory( const IdmDateTime& rCurrentTime, float dt ) = 0;
 
         virtual float GetCoInfectiveFactor() const = 0;
         virtual bool HasSTICoInfection() const = 0;

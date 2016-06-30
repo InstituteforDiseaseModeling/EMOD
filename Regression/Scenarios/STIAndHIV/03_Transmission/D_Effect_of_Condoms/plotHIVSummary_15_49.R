@@ -11,7 +11,6 @@ library(gridExtra)
 
 STIBARRIER_YEAR = 2025
 
-rel_names <- c('Transitory', 'Informal', 'Marital')
 fig_dir = 'figs'
 if( !file.exists(fig_dir) ) {
     dir.create(fig_dir)
@@ -51,12 +50,18 @@ incident.c = cast(incident.m, Year + Gender ~ variable, sum, subset=(Age>=15 & A
 both.c = merge(prevalent.c, incident.c, by=c("Year", "Gender"))
 both.c$Prevalence = 100 * both.c$Infected / both.c$Population
 both.c$IncidenceRate = both.c$Newly.Infected / (both.c$Population - both.c$Infected)
+both.c$IncidenceRate[ is.nan(both.c$IncidenceRate) ] = 0
 both.c$HIVCauseMortalityRate = both.c$Died_from_HIV / both.c$Population
 both.c$Gender = factor(both.c$Gender, labels=c("Male", "Female"))
 
+# set female incidence rate to zero in seed year to avoid meaningless spike upon seeding infections
+both.c$IncidenceRate[is.na(both.c$IncidenceRate) & both.c$Gender=='Female'] <- 0
+both.c$IncidenceRate[both.c$Year==2020.5 & both.c$Gender=='Female'] <- NA
+
+
 p.prevalence = ggplot(both.c, aes(x=Year, y=Prevalence, colour=Gender)) +
     geom_line() +
-    geom_vline(xintercept=STIBARRIER_YEAR, colour="black", linetype="dashed", linewidth=2) + 
+    geom_vline(xintercept=STIBARRIER_YEAR, colour="black", linetype="dashed") + 
     scale_color_manual(values=c("darkblue", "darkred")) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme(legend.position=c(0.7,0.1)) +
@@ -67,7 +72,7 @@ p.prevalence = ggplot(both.c, aes(x=Year, y=Prevalence, colour=Gender)) +
 
 p.incidence = ggplot(both.c, aes(x=Year, y=IncidenceRate, colour=Gender)) +
     geom_line() +
-    geom_vline(xintercept=STIBARRIER_YEAR, colour="black", linetype="dashed", linewidth=2) + 
+    geom_vline(xintercept=STIBARRIER_YEAR, colour="black", linetype="dashed") + 
     scale_color_manual(values=c("darkblue", "darkred")) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme(legend.position="none") +
@@ -78,7 +83,7 @@ p.incidence = ggplot(both.c, aes(x=Year, y=IncidenceRate, colour=Gender)) +
 
 p.deaths = ggplot(both.c, aes(x=Year, y=HIVCauseMortalityRate, colour=Gender)) +
     geom_line() +
-    geom_vline(xintercept=STIBARRIER_YEAR, colour="black", linetype="dashed", linewidth=2) + 
+    geom_vline(xintercept=STIBARRIER_YEAR, colour="black", linetype="dashed") + 
     scale_color_manual(values=c("darkblue", "darkred")) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme(legend.position="none") +
@@ -87,10 +92,6 @@ p.deaths = ggplot(both.c, aes(x=Year, y=HIVCauseMortalityRate, colour=Gender)) +
     ylab( "HIV-Cause Mortality Rate 15-49 (Deaths/PY)" ) +
     ggtitle( "Mortality" )
 
-p = arrangeGrob(p.prevalence, p.incidence, p.deaths, ncol=3)
+q = arrangeGrob(p.prevalence, p.incidence, p.deaths, ncol=3)
 
-png( file.path(fig_dir,"HIV_Summary.png"), width=600, height=400)
-print( p )
-dev.off()
-
-print(p)
+ggsave(file.path(fig_dir,"HIV_Summary.png"), plot=q, width=6, height=4)

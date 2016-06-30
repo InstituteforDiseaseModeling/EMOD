@@ -39,7 +39,7 @@ namespace Kernel
         m_antibody_concentration = concentration;
     }
 
-    void MalariaAntibody::Decay( float dt, SusceptibilityMalariaConfig* params )
+    void MalariaAntibody::Decay( float dt )
     {
         // don't do multiplication and subtraction unless antibody levels non-trivial
         if ( m_antibody_concentration > NON_TRIVIAL_ANTIBODY_THRESHOLD )
@@ -48,24 +48,24 @@ namespace Kernel
         }
 
         // antibody capacity decays to a medium value (.3) dropping below .4 in ~120 days from 1.0
-        if ( m_antibody_capacity > params->memory_level )
+        if ( m_antibody_capacity > SusceptibilityMalariaConfig::memory_level )
         {
-            m_antibody_capacity -= ( m_antibody_capacity - params->memory_level) * params->hyperimmune_decay_rate * dt;
+            m_antibody_capacity -= ( m_antibody_capacity - SusceptibilityMalariaConfig::memory_level) * SusceptibilityMalariaConfig::hyperimmune_decay_rate * dt;
         }
     }
 
-    void MalariaAntibodyCSP::Decay( float dt, SusceptibilityMalariaConfig* params )
+    void MalariaAntibodyCSP::Decay( float dt )
     {
         // allow the decay of anti-CSP concentrations greater than unity (e.g. after boosting by vaccine)
         // TODO: this might become the default when boosting extends to other antibody types?
         if ( m_antibody_concentration > m_antibody_capacity )
         {
-            m_antibody_concentration -= m_antibody_concentration * dt / params->antibody_csp_decay_days;
+            m_antibody_concentration -= m_antibody_concentration * dt / SusceptibilityMalariaConfig::antibody_csp_decay_days;
         }
         else
         {
             // otherwise do the normal behavior of decaying antibody concentration based on capacity
-            MalariaAntibody::Decay( dt, params );
+            MalariaAntibody::Decay( dt );
         }
     }
 
@@ -76,10 +76,10 @@ namespace Kernel
     }
 
     // Let's use the MSP version of antibody growth in the base class ...
-    void MalariaAntibody::UpdateAntibodyCapacity( float dt, SusceptibilityMalariaConfig* params, float inv_uL_blood )
+    void MalariaAntibody::UpdateAntibodyCapacity( float dt, float inv_uL_blood )
     {
-        float growth_rate = params->MSP1_antibody_growthrate;
-        float threshold   = params->antibody_stimulation_c50;
+        float growth_rate = SusceptibilityMalariaConfig::MSP1_antibody_growthrate;
+        float threshold   = SusceptibilityMalariaConfig::antibody_stimulation_c50;
 
         m_antibody_capacity += growth_rate  * (1.0f - m_antibody_capacity) * float(Sigmoid::basic_sigmoid( threshold, float(m_antigen_count) * inv_uL_blood));
 
@@ -97,7 +97,7 @@ namespace Kernel
 
     // Different arguments used by CSP update called directly from IndividualHumanMalaria::ExposeToInfectivity
     // and also in SusceptibilityMalaria::updateImmunityCSP
-    void MalariaAntibody::UpdateAntibodyCapacity( float dt, float growth_rate )
+    void MalariaAntibody::UpdateAntibodyCapacityByRate( float dt, float growth_rate )
     {
         m_antibody_capacity += growth_rate * dt * (1 - m_antibody_capacity);
 
@@ -108,11 +108,11 @@ namespace Kernel
     }
 
     // The minor PfEMP1 version is similar but not exactly the same...
-    void MalariaAntibodyPfEMP1Minor::UpdateAntibodyCapacity( float dt, SusceptibilityMalariaConfig* params, float inv_uL_blood )
+    void MalariaAntibodyPfEMP1Minor::UpdateAntibodyCapacity( float dt, float inv_uL_blood )
     {
-        float min_stimulation = params->antibody_stimulation_c50 * params->minimum_adapted_response;
-        float growth_rate     = params->antibody_capacity_growthrate * params->non_specific_growth;
-        float threshold       = params->antibody_stimulation_c50;
+        float min_stimulation = SusceptibilityMalariaConfig::antibody_stimulation_c50 * SusceptibilityMalariaConfig::minimum_adapted_response;
+        float growth_rate     = SusceptibilityMalariaConfig::antibody_capacity_growthrate * SusceptibilityMalariaConfig::non_specific_growth;
+        float threshold       = SusceptibilityMalariaConfig::antibody_stimulation_c50;
 
         if (m_antibody_capacity <= B_CELL_PROLIFERATION_THRESHOLD)
         {
@@ -131,11 +131,11 @@ namespace Kernel
     }
 
     // The major PfEMP1 version is slightly different again...
-    void MalariaAntibodyPfEMP1Major::UpdateAntibodyCapacity( float dt, SusceptibilityMalariaConfig* params, float inv_uL_blood )
+    void MalariaAntibodyPfEMP1Major::UpdateAntibodyCapacity( float dt, float inv_uL_blood )
     {
-        float min_stimulation = params->antibody_stimulation_c50 * params->minimum_adapted_response;
-        float growth_rate     = params->antibody_capacity_growthrate;
-        float threshold       = params->antibody_stimulation_c50;
+        float min_stimulation = SusceptibilityMalariaConfig::antibody_stimulation_c50 * SusceptibilityMalariaConfig::minimum_adapted_response;
+        float growth_rate     = SusceptibilityMalariaConfig::antibody_capacity_growthrate;
+        float threshold       = SusceptibilityMalariaConfig::antibody_stimulation_c50;
 
         if (m_antibody_capacity <= B_CELL_PROLIFERATION_THRESHOLD)
         {
@@ -155,7 +155,7 @@ namespace Kernel
         }
     }
 
-    void MalariaAntibody::UpdateAntibodyConcentration( float dt, SusceptibilityMalariaConfig* params )
+    void MalariaAntibody::UpdateAntibodyConcentration( float dt )
     {
         // release of antibodies and effect of B cell proliferation on capacity
         // antibodies released after capacity passes 0.3
@@ -172,18 +172,18 @@ namespace Kernel
         }
     }
 
-    void MalariaAntibodyCSP::UpdateAntibodyConcentration( float dt, SusceptibilityMalariaConfig* params )
+    void MalariaAntibodyCSP::UpdateAntibodyConcentration( float dt )
     {
         // allow the decay of anti-CSP concentrations greater than unity (e.g. after boosting by vaccine)
         // TODO: this might become the default when boosting extends to other antibody types?
         if ( m_antibody_concentration > m_antibody_capacity )
         {
-            m_antibody_concentration -= m_antibody_concentration * dt / params->antibody_csp_decay_days;
+            m_antibody_concentration -= m_antibody_concentration * dt / SusceptibilityMalariaConfig::antibody_csp_decay_days;
         }
         else
         {
             // otherwise do the normal behavior of incrementing antibody concentration based on capacity
-            MalariaAntibody::UpdateAntibodyConcentration(dt, params);
+            MalariaAntibody::UpdateAntibodyConcentration( dt );
         }
     }
 

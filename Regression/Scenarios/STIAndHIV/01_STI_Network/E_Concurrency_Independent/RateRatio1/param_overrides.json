@@ -6,7 +6,8 @@
             "Demographics_Filenames": [
                 "uniform_demographics.json", 
                 "pfa_simple.json",
-                "PFA_Add_Informal_Marital.json"
+                "PFA_Add_Informal_Marital.json",
+                "PFA_Concurrency.json"
             ]
         }, 
         "____________SIMULATION___________": {
@@ -26,29 +27,7 @@
         }, 
         "____________NETWORK___________": {
 
-            "STI_Network_Params_By_Property" :
-            {
-                "Individual_Property_Name": "NONE",
-                "NONE" :
-                {
-                    "Extra_Relational_Flag_Type": "Independent",
-
-                    "Prob_Extra_Transitory_Relationship_Male": 0.2,
-                    "Prob_Extra_Transitory_Relationship_Female": 0.8,
-                    "Prob_Extra_Informal_Relationship_Male": 0.2,
-                    "Prob_Extra_Informal_Relationship_Female": 0.4,
-                    "Prob_Extra_Marital_Relationship_Male": 0.1,
-                    "Prob_Extra_Marital_Relationship_Female": 0.1,
-
-                    "Max_Simultaneous_Transitory_Relationships_Males": 4,
-                    "Max_Simultaneous_Transitory_Relationships_Females": 2,
-                    "Max_Simultaneous_Informal_Relationships_Males": 3,
-                    "Max_Simultaneous_Informal_Relationships_Females": 2,
-                    "Max_Simultaneous_Marital_Relationships_Males": 2,
-                    "Max_Simultaneous_Marital_Relationships_Females": 2
-                }
-            }
-        }, 
+        },
         "____________RARELY_CHANGED___________": {
             "Config_Name": "01E_Concurrency_Independent_RateRatio1"
         }

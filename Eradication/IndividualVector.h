@@ -62,7 +62,7 @@ namespace Kernel
 
         virtual void PropagateContextToDependents() override;
 
-        virtual bool Configure( const Configuration* config ) override;
+        static void InitializeStaticsVector( const Configuration* config );
 
         DECLARE_SERIALIZABLE(IndividualHumanVector);
     };

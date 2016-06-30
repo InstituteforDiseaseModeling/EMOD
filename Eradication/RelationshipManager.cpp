@@ -341,7 +341,7 @@ namespace Kernel
         nodePools->AddProperty( propertyKey.c_str(), relationshipListsForMP[ propertyKey ], scalingMatrix, "contact" );
     }
 
-#define MAX_DEAD_REL_QUEUE_SIZE 0 //200 // found by sweeping, might make config param
+#define MAX_DEAD_REL_QUEUE_SIZE 200 // found by sweeping, might make config param
 
     void RelationshipManager::RemoveFromPrimaryRelationships( IRelationship* relationship )
     {

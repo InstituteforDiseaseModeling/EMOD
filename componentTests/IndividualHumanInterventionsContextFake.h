@@ -56,6 +56,16 @@ public:
         throw std::exception("The method or operation is not implemented.");
     }
 
+    virtual std::list<IDistributableIntervention*> GetInterventionsByName(const std::string &intervention_name)
+    { 
+        throw std::exception("The method or operation is not implemented.");
+    }
+
+    virtual std::list<void*> GetInterventionsByInterface( iid_t iid )
+    { 
+        throw std::exception("The method or operation is not implemented."); 
+    }
+
     virtual void PurgeExisting( const std::string &iv_name )
     {
         throw std::exception("The method or operation is not implemented.");

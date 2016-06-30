@@ -35,7 +35,6 @@ namespace Kernel
     class InfectionPy
         : public Infection
         , public IInfectionPy 
-        , protected InfectionPyConfig
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()

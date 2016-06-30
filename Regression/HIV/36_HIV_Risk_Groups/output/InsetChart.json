@@ -1,7 +1,7 @@
 {
     "Header": {
-        "DateTime": "Fri Jun 19 16:38:34 2015",
-        "DTK_Version": "5389 v2.0Release 2015/06/19 12:30:09",
+        "DateTime": "Thu Apr 28 15:22:52 2016",
+        "DTK_Version": "1036 SimpleCSW (10b3a46) Apr 27 2016 15:38:50",
         "Report_Type": "InsetChart",
         "Report_Version": "3.2",
         "Start_Time": 0,
@@ -11,22 +11,22 @@
         "Base_Year": 1960.5
     },
     "Channels": {
-        "Active Informal Relationships": {
+        "Active INFORMAL Relationships": {
             "Units": "Relationships",
             "Data": [
-                0,
-                0,
                 2,
                 4,
-                4,
-                4,
-                4,
-                6,
-                6,
-                6
+                8,
+                8,
+                10,
+                12,
+                12,
+                12,
+                12,
+                12
             ]
         },
-        "Active Marital Relationships": {
+        "Active MARITAL Relationships": {
             "Units": "Relationships",
             "Data": [
                 0,
@@ -41,25 +41,40 @@
                 0
             ]
         },
-        "Active Transitory Relationships": {
+        "Active COMMERCIAL Relationships": {
             "Units": "Relationships",
             "Data": [
                 0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "Active TRANSITORY Relationships": {
+            "Units": "Relationships",
+            "Data": [
+                0,
+                2,
+                2,
+                2,
                 4,
                 4,
-                4,
-                6,
-                6,
                 6,
                 8,
-                10,
-                10
+                8,
+                14
             ]
         },
         "Births": {
             "Units": "Births",
             "Data": [
-                0,
+                1,
                 1,
                 1,
                 1,
@@ -254,31 +269,31 @@
         "Number of Events": {
             "Units": "",
             "Data": [
-                2,
                 3,
-                1,
-                2,
-                1,
-                1,
-                3,
-                1,
                 0,
-                1742
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                3,
+                1740
             ]
         },
         "Number of Individuals Ever in a Relationship": {
             "Units": "",
             "Data": [
-                0,
-                4,
+                2,
                 6,
-                8,
-                10,
                 10,
                 10,
                 14,
                 16,
-                16
+                18,
+                20,
+                20,
+                26
             ]
         },
         "Number of Individuals HIV+ w/ CD4 < 200 (non-ART)": {
@@ -359,31 +374,31 @@
         "Paired People": {
             "Units": "People",
             "Data": [
-                0,
-                4,
+                2,
                 6,
-                8,
-                10,
                 10,
                 10,
                 14,
                 16,
-                16
+                18,
+                20,
+                20,
+                26
             ]
         },
         "Post-Debut Population": {
             "Units": "",
             "Data": [
-                988,
-                988,
-                988,
-                988,
-                988,
-                988,
-                988,
                 989,
                 989,
-                991
+                989,
+                989,
+                989,
+                989,
+                989,
+                989,
+                988,
+                988
             ]
         },
         "Prevalence (Females, 15-49)": {
@@ -449,30 +464,30 @@
         "Single Post-Debut Men": {
             "Units": "People",
             "Data": [
-                517,
-                515,
-                514,
-                513,
-                512,
-                512,
-                512,
                 510,
-                509,
-                510
+                508,
+                506,
+                506,
+                504,
+                503,
+                502,
+                501,
+                500,
+                497
             ]
         },
         "Single Post-Debut Women": {
             "Units": "People",
             "Data": [
+                477,
+                475,
+                473,
+                473,
                 471,
+                470,
                 469,
                 468,
-                467,
-                466,
-                466,
-                466,
-                465,
-                464,
+                468,
                 465
             ]
         },
@@ -480,15 +495,15 @@
             "Units": "Population",
             "Data": [
                 1739,
+                1740,
+                1740,
+                1740,
+                1740,
+                1740,
+                1740,
+                1740,
                 1739,
-                1740,
-                1740,
-                1740,
-                1740,
-                1740,
-                1740,
-                1740,
-                1740
+                1739
             ]
         },
         "Susceptible Population": {

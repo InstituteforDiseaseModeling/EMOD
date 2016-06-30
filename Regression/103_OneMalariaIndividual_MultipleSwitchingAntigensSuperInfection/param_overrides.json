@@ -20,7 +20,7 @@
      }, 
      "DEMOGRAPHICS": {
           "Base_Population_Scale_Factor": 0.001, 
-          "Demographics_Filenames": ["Namawala_single_node_demographics.compiled.json"], 
+          "Demographics_Filenames": ["Namawala_single_node_demographics.json"], 
           "Population_Scale_Type": "FIXED_SCALING"
      }, 
      "Default_Config_Path": "defaults/malaria_default_config.json", 

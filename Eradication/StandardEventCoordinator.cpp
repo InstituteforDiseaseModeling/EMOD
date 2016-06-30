@@ -65,8 +65,6 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        JsonConfigurable::_useDefaults = InterventionFactory::useDefaults;
-
         initializeInterventionConfig( inputJson );
 
         //initConfigTypeMap("Number_Distributions", &num_distributions, Number_Distributions_DESC_TEXT, -1, 1e6, -1 ); // by convention, -1 means no limit
@@ -100,7 +98,7 @@ namespace Kernel
                 {
                     std::ostringstream msg ;
                     msg << "In StandardInterventionDistributionEventCoordinator, demographic restrictions such as 'Demographic_Coverage'\n";
-                    msg << "and 'Target_Gender' do not apply when distributing nodel level interventions such as ";
+                    msg << "and 'Target_Gender' do not apply when distributing node level interventions such as ";
                     msg << std::string( json::QuickInterpreter(intervention_config._json)["class"].As<json::String>() );
                     msg << ".\nThe node level intervention must handle the demographic restrictions.";
                     throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
@@ -108,7 +106,6 @@ namespace Kernel
             }
         }
 
-        JsonConfigurable::_useDefaults = false;
         return retValue;
     }
 
@@ -292,17 +289,12 @@ namespace Kernel
     )
     {
         {
-            // Add some arbitrary check on individual to determine if they get a bednet.
-            // TODO: Demographic targeting goes here.
             // Add real checks on demographics based on intervention demographic targetting. 
             // Return immediately if we hit a non-distribute condition
-            if( !demographic_restrictions.HasDefaultRestrictions() ) // don't waste any more time with checks if we're giving to everyone
+            if( qualifiesDemographically( ihec ) == false )
             {
-                if( qualifiesDemographically( ihec ) == false )
-                {
-                    LOG_DEBUG("Individual not given intervention because not in target demographic\n");
-                    return false;
-                }
+                LOG_DEBUG("Individual not given intervention because not in target demographic\n");
+                return false;
             }
             LOG_DEBUG("Individual meets demographic targeting criteria\n"); 
 

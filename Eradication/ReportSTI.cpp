@@ -28,10 +28,6 @@ static const char* _single_men_label    = "Single Post-Debut Men";
 static const char* _single_women_label  = "Single Post-Debut Women";
 static const char* _paired_people_label = "Paired People";
 
-static const char* _active_transitory = "Active Transitory Relationships";
-static const char* _active_informal   = "Active Informal Relationships";
-static const char* _active_marital    = "Active Marital Relationships";
-
 static const char* _ymi = "Prevalence (Males, 15-49)";
 static const char* _yfi = "Prevalence (Females, 15-49)";
 static const char* _pdi = "Post-Debut Population";
@@ -54,9 +50,6 @@ static NaturalNumber num_adults_not_related = 0;
         , num_single_men(0)
         , num_single_women(0)
         , num_paired(0)
-        , num_transitory(0)
-        , num_informal(0)
-        , num_marital(0)
         , num_sexually_active_prevalance(0)
         , num_post_debut_pop(0)
         , num_circumcised_males(0)
@@ -65,7 +58,11 @@ static NaturalNumber num_adults_not_related = 0;
         , youngFemaleInfected(0.0f)
         , youngFemaleCount(0.0f)
     {
-        //std::cout << "ReportSTI created." << std::endl;
+        for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
+        {
+            rel_labels[i] = std::string("Active ") + std::string(RelationshipType::pairs::get_keys()[i]) + std::string(" Relationships");
+            num_rels[i] = 0;
+        }
     }
 
     void
@@ -83,9 +80,10 @@ static NaturalNumber num_adults_not_related = 0;
         units_map[ _single_women_label  ] = "People";
         units_map[ _paired_people_label ] = "People";
 
-        units_map[ _active_transitory ] = "Relationships";
-        units_map[ _active_informal   ] = "Relationships";
-        units_map[ _active_marital    ] = "Relationships";
+        for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
+        {
+            units_map[ rel_labels[i] ] = "Relationships";
+        }
     }
 
     void
@@ -149,23 +147,7 @@ static NaturalNumber num_adults_not_related = 0;
                 num_paired++;
                 for (auto relationship : relationships)
                 {
-                    switch (relationship->GetType())
-                    {
-                    case RelationshipType::TRANSITORY:
-                        num_transitory++;
-                        break;
-
-                    case RelationshipType::INFORMAL:
-                        num_informal++;
-                        break;
-
-                    case RelationshipType::MARITAL:
-                        num_marital++;
-                        break;
-
-                    default:
-                        release_assert( false );
-                    }
+                    num_rels[ int(relationship->GetType()) ]++;
                 }
             }
             else
@@ -194,9 +176,10 @@ static NaturalNumber num_adults_not_related = 0;
         Accumulate( _single_men_label,    num_single_men );
         Accumulate( _single_women_label,  num_single_women );
         Accumulate( _paired_people_label, num_paired );
-        Accumulate( _active_transitory,   num_transitory );
-        Accumulate( _active_informal,     num_informal );
-        Accumulate( _active_marital,      num_marital );
+        for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
+        {
+            Accumulate( rel_labels[i],   num_rels[i] );
+        }
         Accumulate( _ymi, youngMaleInfected );
         Accumulate( _ymc, youngMaleCount );
         Accumulate( _yfi, youngFemaleInfected );
@@ -214,7 +197,10 @@ static NaturalNumber num_adults_not_related = 0;
         num_sexually_active_prevalance = 0 ;
         num_post_debut_pop = 0 ;
         num_predebut = num_single_men = num_single_women = num_paired = 0;
-        num_transitory = num_informal = num_marital = 0;
+        for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
+        {
+            num_rels[i] = 0;
+        }
 
         num_adults_not_related = 0;
         num_marrieds = 0;

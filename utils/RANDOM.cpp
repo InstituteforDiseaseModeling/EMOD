@@ -424,6 +424,19 @@ uint64_t RANDOMBASE::binomial_approx2(uint64_t n, double p)
     return uint64_t(tempval);
 }
 
+// Finds an uniformally distributed number between 0 and N
+__ULONG RANDOMBASE::uniformZeroToN( __ULONG N )
+{
+    __ULONGLONG ulA = __ULONGLONG(ul());
+    __ULONGLONG ulB = __ULONGLONG(ul());
+    ulB <<= 32;
+    ulA += ulB;
+    __ULONGLONG ll = (ulA & 0xFFFFFFFFL) * N;
+    ll >>= 32;
+    return ll;
+}
+
+
 __ULONG RANDOM::ul()
 {
     iSeq = 69069 * iSeq + 1;

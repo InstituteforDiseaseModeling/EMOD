@@ -22,7 +22,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"
 #include "Log.h"
 #include "IIndividualHumanSTI.h"
-#include "SimulationConfig.h"
+#include "INodeSTI.h"
+#include "ISociety.h"
+#include "IConcurrency.h"
 
 static const char * _module = "STIEventCoordinator";
 
@@ -90,6 +92,12 @@ namespace Kernel
     )
     const
     {
+        INodeSTI* p_sti_node = nullptr;
+        if( const_cast<IIndividualHumanEventContext*>(pIndividual)->GetNodeEventContext()->GetNodeContext()->QueryInterface( GET_IID(INodeSTI), (void**)&p_sti_node ) != QueryResult::s_OK )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "node context", "INodeContext", "INodeSTI" );
+        }
+
         // bss_targeting can either be TargetBss, IgnoreBss, or NeutralBss.
         // If TargetBss, then coverage is 1.0-ish for BSS individuals.
         // If IgnoreBss, then coverage is 0.0 for BSS individuals.
@@ -110,7 +118,7 @@ namespace Kernel
         // Case 1: (Ps < C) aka there are not enough BSS to achieve target coverage, so need some from regular sub-pop
         //   Pbss = 1.0
         //   Preg = ( C-Ps )/( 1-Ps )
-        float p_iss = GET_CONFIGURABLE(SimulationConfig)->prob_super_spreader;
+        float p_iss = p_sti_node->GetSociety()->GetConcurrency()->GetProbSuperSpreader();
         float base_coverage = StandardInterventionDistributionEventCoordinator::getDemographicCoverageForIndividual( pIndividual );
         float ret = 1.0f;
 

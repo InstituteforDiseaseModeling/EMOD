@@ -22,18 +22,20 @@ namespace Kernel
         HIVARTStagingCD4AgnosticDiagnostic();
         HIVARTStagingCD4AgnosticDiagnostic( const HIVARTStagingCD4AgnosticDiagnostic& );
 
+        virtual bool Configure( const Configuration * inputJson ) override;
+
         // IDistributingDistributableIntervention
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
 
     protected:
         virtual bool positiveTestResult( IIndividualHumanHIV *pHIV, 
                                          float year, 
                                          float CD4count, 
                                          bool hasActiveTB, 
-                                         bool isPregnant );
+                                         bool isPregnant ) override;
 
         virtual bool TestAdult( float WHO_Stage, float year, bool hasActiveTB, bool isPregnant );
-        virtual bool TestChild( float WHO_Stage, float year, bool hasActiveTB, float ageDays );
+        virtual bool TestChild( float WHO_Stage, float year, bool hasActiveTB, float ageDays   );
 
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details

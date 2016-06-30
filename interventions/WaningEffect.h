@@ -33,6 +33,7 @@ namespace Kernel
         virtual ~WaningEffectConstant() {};
         virtual void  Update(float dt) override;
         virtual float Current() const override;
+        virtual bool  Expired() const override { return false; };
 
     protected:
         float currentEffect;
@@ -53,6 +54,7 @@ namespace Kernel
         virtual ~WaningEffectExponential() {};
         virtual void  Update(float dt) override;
         virtual float Current() const override;
+        virtual bool  Expired() const override { return false; };
 
     protected:
         float currentEffect;
@@ -74,6 +76,7 @@ namespace Kernel
         virtual ~WaningEffectBox() {};
         virtual void  Update(float dt) override;
         virtual float Current() const override;
+        virtual bool  Expired() const override { return false; };
 
     protected:
         float currentEffect;
@@ -95,6 +98,7 @@ namespace Kernel
         virtual ~WaningEffectBoxExponential() {};
         virtual void  Update(float dt) override;
         virtual float Current() const override;
+        virtual bool  Expired() const override { return false; };
 
     protected:
         float currentEffect;

@@ -20,7 +20,7 @@ library(ggplot2)
 
 DAYS_PER_YEAR = 365
 
-rel_names <- c('Transitory', 'Informal', 'Marital')
+rel_names <- c('TRANSITORY', 'INFORMAL', 'MARITAL')
 fig_dir = 'figs'
 if( !file.exists(fig_dir) ) {
     dir.create(fig_dir)
@@ -31,8 +31,8 @@ active_rels_at_end <- function(dir, Scenario)
 {
     start= read.csv(file.path(dir, "output", "RelationshipStart.csv"), header=TRUE)
     end= read.csv(file.path(dir, "output", "RelationshipEnd.csv"), header=TRUE)
-    names(start)[names(start)=='Rel_type..0...transitory.1...informal.2...marital.']='Rel_Type'
-    names(end)[names(end)=='Rel_type..0...transitory.1...informal.2...marital.']='Rel_Type'
+    names(start)[names(start)=='Rel_type..0...TRANSITORY..1...INFORMAL..2...MARITAL..3...COMMERCIAL.']='Rel_Type'
+    names(end)[names(end)=='Rel_type..0...TRANSITORY..1...INFORMAL..2...MARITAL..3...COMMERCIAL.']='Rel_Type'
     start$Scenario = Scenario
     end$Scenario = Scenario
     Rel_IDs_Active_At_End= setdiff(start$Rel_ID, end$Rel_ID)

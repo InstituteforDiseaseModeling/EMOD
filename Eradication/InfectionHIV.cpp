@@ -93,7 +93,7 @@ namespace Kernel
         SetupNonSuppressedDiseaseTimers();
 
         // calculate individual infectivity multiplier based on Weibull draw.
-        m_hetero_infectivity_multiplier = Environment::getInstance()->RNG->Weibull2( personal_infectivity_scale, personal_infectivity_heterogeneity );
+        m_hetero_infectivity_multiplier = Environment::getInstance()->RNG->Weibull2(InfectionHIVConfig::personal_infectivity_scale, InfectionHIVConfig::personal_infectivity_heterogeneity );
 
         LOG_DEBUG_F( "Individual %d just entered (started) HIV Acute stage, heterogeneity multiplier = %f.\n", parent->GetSuid().data, m_hetero_infectivity_multiplier );
     }
@@ -121,15 +121,15 @@ namespace Kernel
         try
         {
             // These two constants will both need to be configurable in next checkin.
-            m_acute_duration    = acute_duration_in_months * DAYSPERYEAR / float(MONTHSPERYEAR);
-            m_aids_duration     = AIDS_duration_in_months * DAYSPERYEAR / float(MONTHSPERYEAR);
+            m_acute_duration    = InfectionHIVConfig::acute_duration_in_months * DAYSPERYEAR / float(MONTHSPERYEAR);
+            m_aids_duration     = InfectionHIVConfig::AIDS_duration_in_months * DAYSPERYEAR / float(MONTHSPERYEAR);
 
             IIndividualHumanEventContext* HumanEventContextWhoKnowsItsAge  = parent->GetEventContext();
             float age_at_HIV_infection = HumanEventContextWhoKnowsItsAge->GetAge();
             // |------------|----------------|--------------*
             //   (acute)         (latent)        (aids)     (death)
             // Note that these two 'timers' are apparently identical at this point. Maybe HIV-xxx is redundant?
-            HIV_duration_until_mortality_without_TB = mortality_distribution_by_age.invcdf(randgen->e(), age_at_HIV_infection);
+            HIV_duration_until_mortality_without_TB = InfectionHIVConfig::mortality_distribution_by_age.invcdf(randgen->e(), age_at_HIV_infection);
             //HIV_duration_until_mortality_without_TB /= 2; // test hack
             infectious_timer = HIV_duration_until_mortality_without_TB;
             NO_LESS_THAN( HIV_duration_until_mortality_without_TB, (float)DAYSPERWEEK ); // no less than 7 days prognosis
@@ -222,7 +222,7 @@ namespace Kernel
         }
         total_duration = HIV_duration_until_mortality_without_TB;
         // now we have 3 variables doing the same thing?
-        infectiousness = base_infectivity;
+        infectiousness = InfectionConfig::base_infectivity;
         StateChange    = InfectionStateChange::None;
     }
 
@@ -315,11 +315,11 @@ namespace Kernel
         // TBD: a STATE is not an EVENT. Split up this enum.
         if( m_infection_stage == HIVInfectionStage::ACUTE )
         {
-            retInf *= acute_stage_infectivity_multiplier; //  26.0f;
+            retInf *= InfectionHIVConfig::acute_stage_infectivity_multiplier; //  26.0f;
         }
         else if( m_infection_stage == HIVInfectionStage::AIDS )
         {
-            retInf *= AIDS_stage_infectivity_multiplier;
+            retInf *= InfectionHIVConfig::AIDS_stage_infectivity_multiplier;
         }
 
         // ART reduces infectivity, but we don't want to put ART-specific knowledge and code in the infection object.
@@ -588,7 +588,7 @@ namespace Kernel
         {
             LOG_WARN_F( "Individual %d had high CD4 at ART enrollment: %f\n", parent->GetSuid().data, cd4AtArtEnrollment );
         }
-        float multiplier = float(exp( COX_PROP_CONSTANT_1 * min(max_CD4_cox, cd4AtArtEnrollment) + COX_PROP_CONSTANT_2)); // Stop at 350
+        float multiplier = float(exp( COX_PROP_CONSTANT_1 * min(InfectionHIVConfig::max_CD4_cox, cd4AtArtEnrollment) + COX_PROP_CONSTANT_2)); // Stop at 350
         release_assert( multiplier > 0.0f );
         //release_assert( multiplier < 10.0f );
 

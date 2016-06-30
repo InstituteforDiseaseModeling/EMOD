@@ -101,9 +101,7 @@ namespace Kernel
             throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Enable_Vital_Dynamics", "0", "Simulation_Type", "HIV_SIM", "Mortality must be on for HIV." );
         }
 
-        IndividualHumanHIV fakeHumanHIV;
-        LOG_INFO( "Calling Configure on fakeHumanHIV\n" );
-        fakeHumanHIV.Configure( config );
+        IndividualHumanHIV::InitializeStaticsHIV( config );
     }
 
     bool

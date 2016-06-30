@@ -11,7 +11,8 @@
         "Base_Population_Scale_Factor": 0.0001,
         "Demographics_Filenames": [
             "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed_with_RiskGroup.json",
-            "../input/PFA_overlay.json"
+            "../input/PFA_overlay.json",
+            "PFA_Concurrency.json"
         ],
 
         "_____________INTRAHOST___________": "",
@@ -19,48 +20,6 @@
         "_____________TRANSMISSION___________": "",
 
         "_____________NETWORK___________": "",
-        "STI_Network_Params_By_Property" :
-        {
-            "Individual_Property_Name" : "Risk",
-            "HIGH" :
-            {
-                "Extra_Relational_Flag_Type": "Correlated",
-
-                "Prob_Extra_Transitory_Relationship_Female": 0.8,
-                "Prob_Extra_Transitory_Relationship_Male": 0.2,
-
-                "Prob_Extra_Informal_Given_Extra_Transitory_Male": 0.95,
-                "Prob_Extra_Marital_Given_Extra_Informal_Male": 0.45,
-                "Prob_Extra_Informal_Given_Extra_Transitory_Female": 0.4, 
-                "Prob_Extra_Marital_Given_Extra_Informal_Female": 0.2,
-
-                "Max_Simultaneous_Transitory_Relationships_Females": 2,
-                "Max_Simultaneous_Transitory_Relationships_Males": 4,
-                "Max_Simultaneous_Informal_Relationships_Females": 2,
-                "Max_Simultaneous_Informal_Relationships_Males": 2,
-                "Max_Simultaneous_Marital_Relationships_Females": 2,
-                "Max_Simultaneous_Marital_Relationships_Males": 2
-            },
-            "LOW" :
-            {
-                "Extra_Relational_Flag_Type": "Independent",
-
-                "Prob_Extra_Transitory_Relationship_Female": 0.1,
-                "Prob_Extra_Transitory_Relationship_Male": 0.2,
-                "Prob_Extra_Informal_Relationship_Female": 0.07,
-                "Prob_Extra_Informal_Relationship_Male": 0.14,
-                "Prob_Extra_Marital_Relationship_Female": 0.09,
-                "Prob_Extra_Marital_Relationship_Male": 0.12,
-
-                "Max_Simultaneous_Transitory_Relationships_Females": 2,
-                "Max_Simultaneous_Transitory_Relationships_Males": 2,
-                "Max_Simultaneous_Informal_Relationships_Females": 1,
-                "Max_Simultaneous_Informal_Relationships_Males": 1,
-                "Max_Simultaneous_Marital_Relationships_Females": 1,
-                "Max_Simultaneous_Marital_Relationships_Males": 1
-            }
-        },
-
 
         "_____________REPORTING___________": "",
 

@@ -189,6 +189,15 @@ namespace Kernel
         return map_value;
     }
 
+    bool InterpolatedValueMap::isAtEnd( float currentYear ) const
+    {
+        auto it = this->rend();
+        ++it;
+        float last_year = it->first;
+        bool at_end = (last_year <= currentYear);
+        return at_end;
+    }
+
     void InterpolatedValueMap::serialize( IArchive& ar, InterpolatedValueMap& mapping )
     {
         size_t count = ar.IsWriter() ? mapping.size() : -1;

@@ -8,6 +8,8 @@
         "Max": 0.9
     },
     "Update_Period" : 0.0,
+    "Extra_Relational_Rate_Ratio_Male": 1,
+    "Extra_Relational_Rate_Ratio_Female": 1,
     "Number_Age_Bins_Male"   : 2,
     "Number_Age_Bins_Female" : 2,
     "Age_of_First_Bin_Edge_Male"   : 15,

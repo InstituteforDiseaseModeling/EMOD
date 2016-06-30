@@ -14,25 +14,23 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "BoostLibWrapper.h"
 #include "Individual.h"
 #include "IIndividualHumanSTI.h"
-#include "STINetworkParameters.h"
 
 namespace Kernel
 {
-    class IndividualHumanSTIConfig : public JsonConfigurable
+    class INodeSTI;
+
+    class IndividualHumanSTIConfig : public IndividualHumanConfig
     {
         GET_SCHEMA_STATIC_WRAPPER( IndividualHumanSTIConfig )
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
         DECLARE_QUERY_INTERFACE()
 
     public:
-        friend class SimulationSTI;
 
     protected:
-
-        static STINetworkParametersMap net_param_map;
-
-        static float extra_relational_rate_ratio_male;
-        static float extra_relational_rate_ratio_female;
+        friend class SimulationSTI;
+        friend class IndividualHumanSTI;
+        friend class Relationship;
 
         static float debutAgeYrsMale_inv_kappa;
         static float debutAgeYrsFemale_inv_kappa;
@@ -44,20 +42,17 @@ namespace Kernel
         static float sti_coinfection_mult;
 
         static float min_days_between_adding_relationships;
-    public:
+
         static float condom_transmission_blocking_probability;
 
         static std::vector<float> maleToFemaleRelativeInfectivityAges;
         static std::vector<float> maleToFemaleRelativeInfectivityMultipliers;
 
-        friend class IndividualHumanSTI;
-        friend class Relationship;
         virtual bool Configure( const Configuration* config ) override;
     };
 
     class IndividualHumanSTI :  public IndividualHuman, 
-                                public IIndividualHumanSTI,
-                                public IndividualHumanSTIConfig
+                                public IIndividualHumanSTI
     {
     public:
         DECLARE_QUERY_INTERFACE()
@@ -71,8 +66,8 @@ namespace Kernel
                                                   int gender = 0, 
                                                   float initial_poverty = 0.5f );
         virtual void InitializeHuman() override;
-        virtual bool Configure( const Configuration* config ) override;
         virtual void Update(float currenttime, float dt) override;
+        virtual void UpdateHistory( const IdmDateTime& rCurrentTime, float dt ) override;
 
         virtual void UpdateSTINetworkParams(const char *prop = nullptr, const char* new_value = nullptr) override;
 
@@ -108,8 +103,8 @@ namespace Kernel
         virtual void  ClearStiCoInfectionState() override;
         virtual bool  HasSTICoInfection() const override;
         virtual bool IsCircumcised() const override;
-        virtual void onEmigrating();
-        virtual void onImmigrating();
+        virtual void onEmigrating() override;
+        virtual void onImmigrating() override;
 
         void disengageFromSociety();
         virtual ProbabilityNumber getProbabilityUsingCondomThisAct( const IRelationshipParameters* pRelParams ) const;
@@ -129,20 +124,19 @@ namespace Kernel
         float GetMaxNumRels(Gender::Enum gender, RelationshipType::Enum rel_type);
         virtual void NotifyPotentialExposure() override;
 
+        static void InitializeStaticsSTI( const Configuration* config );
 
     protected:
         IndividualHumanSTI( suids::suid id = suids::nil_suid(), 
                             float monte_carlo_weight = 1.0f, 
                             float initial_age = 0.0f,
                             int gender = 0,
-                            float initial_poverty = 0.5f);
+                            float initial_poverty = 0.5f );
+        virtual void InitializeConcurrency();
 
         virtual IInfection* createInfection(suids::suid _suid) override;
         virtual void setupInterventionsContainer() override;
         virtual void ReportInfectionState() override;
-
-        // Local version of individual-property-dependent parameters from STINetworkParameters
-        STINetworkParameters net_params;
 
         RelationshipSet_t relationships;
         unsigned int max_relationships[RelationshipType::Enum::COUNT];
@@ -155,23 +149,18 @@ namespace Kernel
         float co_infective_factor;
         bool  has_other_sti_co_infection;
         bool  transmissionInterventionsDisabled;
-        unsigned int relationshipSlots;
+        uint64_t relationshipSlots;
         float delay_between_adding_relationships_timer;
         bool potential_exposure_flag;
 
     private:
-        virtual void SetSTINetworkParams( const STINetworkParameters& rNewNetParams );
+        virtual void IndividualHumanSTI::SetConcurrencyParameters( const char *prop, const char* prop_value );
 
         RelationshipSet_t relationships_at_death ;
         unsigned int num_lifetime_relationships;
         std::list<int> last_6_month_relationships;
-        std::map< int, int > slot2RelationshipDebugMap; // for debug only
-        float age_for_transitory_stats;
-        float age_for_informal_stats;
-        float age_for_marital_stats;
-        int transitory_eligibility;
-        int informal_eligibility;
-        int marital_elibigility;
+        std::map< unsigned int, suids::suid_data_t > slot2RelationshipDebugMap; // for debug only
+        INodeSTI* p_sti_node;
 
         DECLARE_SERIALIZABLE(IndividualHumanSTI);
     };

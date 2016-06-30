@@ -23,7 +23,7 @@
         "Default_Geography_Initial_Node_Population": 1000, 
         "Default_Geography_Torus_Size": 10, 
         "Demographics_Filenames": [
-            "Single_node_demographics_100_births.compiled.json"
+            "Single_node_demographics_100_births.json"
         ], 
         "Enable_Absolute_Time": "NO", 
         "Enable_Aging": 1, 

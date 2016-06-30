@@ -13,8 +13,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IndividualSTI.h"
 
 #include "Debug.h"
-#include "MathFunctions.h"
-#include "IndividualEventContext.h"
 #include "IIndividualHuman.h"
 #include "InfectionSTI.h"
 #include "NodeEventContext.h"
@@ -28,27 +26,23 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IPairFormationStats.h"
 #include "IPairFormationRateTable.h"
 #include "IPairFormationAgent.h"
+#include "IConcurrency.h"
 
 static const char* _module = "IndividualSTI";
 
-#define EXTRA_RELATIONAL_ALLOWED(rel)   (1 << (unsigned int)rel)
-#define EXTRA_TRANSITORY_ALLOWED    (EXTRA_RELATIONAL_ALLOWED(Kernel::RelationshipType::TRANSITORY))
-#define EXTRA_INFORMAL_ALLOWED    (EXTRA_RELATIONAL_ALLOWED(Kernel::RelationshipType::INFORMAL))
-#define EXTRA_MARITAL_ALLOWED    (EXTRA_RELATIONAL_ALLOWED(Kernel::RelationshipType::MARITAL))
+// Assume MAX_SLOTS == 63 => 64-bits are full
+#define SLOTS_FILLED (uint64_t(0xFFFFFFFFFFFFFFFF))
+
 #define SUPER_SPREADER 0x8
 
-#define IS_SUPER_SPREADER()             ((promiscuity_flags & SUPER_SPREADER) != 0)
-#define IS_EXTRA_TRANSITORY_ALLOWED()   ((promiscuity_flags & EXTRA_TRANSITORY_ALLOWED) != 0)
-#define IS_EXTRA_INFORMAL_ALLOWED()     ((promiscuity_flags & EXTRA_INFORMAL_ALLOWED) != 0)
-#define IS_EXTRA_MARITAL_ALLOWED()      ((promiscuity_flags & EXTRA_MARITAL_ALLOWED) != 0)
-#define IS_EXTRA_ALLOWED(rel)           ((promiscuity_flags & EXTRA_RELATIONAL_ALLOWED((Kernel::RelationshipType::Enum)rel)) != 0)
-#define EXTRARELATIONAL_FLAGS()         (promiscuity_flags & (EXTRA_TRANSITORY_ALLOWED | EXTRA_INFORMAL_ALLOWED | EXTRA_MARITAL_ALLOWED))
-#define SIX_MONTHS (6*IDEALDAYSPERMONTH)
+#define IS_SUPER_SPREADER()   ((promiscuity_flags & SUPER_SPREADER) != 0)
+#define IS_EXTRA_ALLOWED(rel) ((promiscuity_flags & EXTRA_RELATIONAL_ALLOWED((Kernel::RelationshipType::Enum)rel)) != 0)
+
+#define SIX_MONTHS (6*IDEALDAYSPERMONTH)  // 60*30 is my 6 months
+#define MAX_RELATIONSHIPS_PER_INDIVIDUAL_ALL_TYPES (MAX_SLOTS)
 
 namespace Kernel
 {
-    STINetworkParametersMap IndividualHumanSTIConfig::net_param_map;
-
     float IndividualHumanSTIConfig::debutAgeYrsMale_inv_kappa = 1.0f;
     float IndividualHumanSTIConfig::debutAgeYrsMale_lambda = 1.0f;
     float IndividualHumanSTIConfig::debutAgeYrsFemale_inv_kappa = 1.0f;
@@ -87,8 +81,6 @@ namespace Kernel
         initConfigTypeMap( "Male_To_Female_Relative_Infectivity_Multipliers", &maleToFemaleRelativeInfectivityMultipliers, STI_Male_To_Female_Relative_Infectivity_Multipliers_DESC_TEXT, 0.0f, 25.0f, 1.0f );
 
         initConfigTypeMap( "Condom_Transmission_Blocking_Probability", &condom_transmission_blocking_probability, STI_Condom_Transmission_Blocking_Probability_DESC_TEXT, 0.0f, 1.0f, 0.9f );
-
-        initConfigComplexType( "STI_Network_Params_By_Property", &net_param_map, STI_Network_Params_By_Property_DESC_TEXT );
 
         bool ret = JsonConfigurable::Configure( config );
 
@@ -133,28 +125,23 @@ namespace Kernel
         return status;
     }
 
-#define MAX_RELATIONSHIPS_PER_INDIVIDUAL_ALL_TYPES (9)
-    void IndividualHumanSTI::SetSTINetworkParams( const STINetworkParameters& rNewNetParams )
+    void IndividualHumanSTI::SetConcurrencyParameters( const char *prop, const char* prop_value )
     {
-        net_params = rNewNetParams ;
-
         // Update promiscuity flags.  Begin with a reset.
         if( IS_SUPER_SPREADER() )
             promiscuity_flags = SUPER_SPREADER;
         else
             promiscuity_flags = 0;
 
-        promiscuity_flags |= GetProbExtraRelationalBitMask( Gender::Enum(GetGender()) );
+        IConcurrency* p_concurrency = p_sti_node->GetSociety()->GetConcurrency();
+
+        promiscuity_flags |= p_concurrency->GetProbExtraRelationalBitMask( prop, prop_value, Gender::Enum(GetGender()), IS_SUPER_SPREADER() );
 
         // Max allowable relationships
         NaturalNumber totalMax = 0;
         for( int rel = 0; rel < RelationshipType::COUNT; rel++)
         {
-            float max_num = GetMaxNumRels( Gender::Enum(GetGender()), RelationshipType::Enum(rel));
-            float intpart = 0.0;
-
-            float fractpart = modff(max_num , &intpart);
-            max_relationships[rel] = int(intpart) + ((randgen->e() < fractpart) ? 1 : 0);
+            max_relationships[rel] = p_concurrency->GetMaxAllowableRelationships( prop, prop_value, Gender::Enum(GetGender()), RelationshipType::Enum(rel) );
             totalMax += max_relationships[rel];
         }
         if( totalMax > MAX_RELATIONSHIPS_PER_INDIVIDUAL_ALL_TYPES )
@@ -163,18 +150,19 @@ namespace Kernel
         }
     }
 
-    void IndividualHumanSTI::UpdateSTINetworkParams(const char *prop, const char* new_value)
+    void IndividualHumanSTI::UpdateSTINetworkParams( const char *prop, const char* new_value )
     {
-        IIndividualHuman* individual = nullptr;
-        if( QueryInterface( GET_IID( IIndividualHuman ), (void**)&individual ) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "this", "IIndividualHuman", "IndividualHumanSTI" );
-        }
+        IConcurrency* p_concurrency = p_sti_node->GetSociety()->GetConcurrency();
 
-        const STINetworkParameters* p_new_params = net_param_map.GetParameters( individual, prop, new_value );
-        if( p_new_params != nullptr )
+        if( (prop == nullptr) || p_concurrency->IsConcurrencyProperty( prop ) )
         {
-            SetSTINetworkParams( *p_new_params );
+            const char* prop_key = prop;
+            if( prop == nullptr )
+            {
+                prop_key = p_concurrency->GetPropertyKey().c_str();
+            }
+            const char* prop_value = p_concurrency->GetConcurrencyPropertyValue( GetProperties(), prop_key, new_value );
+            SetConcurrencyParameters( prop_key, prop_value );
         }
     }
 
@@ -183,9 +171,44 @@ namespace Kernel
         IndividualHumanSTI *newindividual = _new_ IndividualHumanSTI(id, MCweight, init_age, gender, init_poverty);
 
         newindividual->SetContextTo(context);
+        newindividual->InitializeConcurrency();
         LOG_DEBUG_F( "Created human with age=%f\n", newindividual->m_age );
 
         return newindividual;
+    }
+
+    void IndividualHumanSTI::InitializeConcurrency()
+    {
+        // -------------------------------------------------------------------------------------------------------------
+        // --- DMB 6-11-2016  I'm not doing this in InitializeHuman() because it change the random number stream.
+        // --- This used to be called in the constructor, but I can't do that because we need p_sti_node to be defined.
+        // -------------------------------------------------------------------------------------------------------------
+
+        // Sexual debut
+        float min_age_sexual_debut_in_days = IndividualHumanSTIConfig::debutAgeYrsMin * DAYSPERYEAR;
+        float debut_lambda = 0;
+        float debut_inv_kappa = 0;
+        if( GetGender() == Gender::MALE ) 
+        {
+            debut_inv_kappa = IndividualHumanSTIConfig::debutAgeYrsMale_inv_kappa;
+            debut_lambda    = IndividualHumanSTIConfig::debutAgeYrsMale_lambda;
+        }
+        else
+        {
+            debut_inv_kappa = IndividualHumanSTIConfig::debutAgeYrsFemale_inv_kappa;
+            debut_lambda    = IndividualHumanSTIConfig::debutAgeYrsFemale_lambda;
+        }
+        float debut_draw = float(DAYSPERYEAR * Environment::getInstance()->RNG->Weibull2( debut_lambda, debut_inv_kappa ));
+        sexual_debut_age = (std::max)(min_age_sexual_debut_in_days, debut_draw );
+
+        LOG_DEBUG_F( "Individual ? will debut at age %f (yrs)f.\n", sexual_debut_age/DAYSPERYEAR );
+
+        // Promiscuity flags, including behavioral super-spreader
+        auto draw = randgen->e();
+        if( draw < p_sti_node->GetSociety()->GetConcurrency()->GetProbSuperSpreader() )
+        {
+            promiscuity_flags |= SUPER_SPREADER;
+        }
     }
 
     void IndividualHumanSTI::InitializeHuman()
@@ -202,7 +225,7 @@ namespace Kernel
 
     void IndividualHumanSTI::NotifyPotentialExposure()
     {
-        potential_exposure_flag = true;;
+        potential_exposure_flag = true;
     }
 
     void IndividualHumanSTI::ExposeToInfectivity(float dt, const TransmissionGroupMembership_t* transmissionGroupMembership)
@@ -213,7 +236,7 @@ namespace Kernel
             UpdateGroupMembership(); // we "JIT" this function (just in time)
             LOG_DEBUG_F( "Exposing individual %d\n", GetSuid().data );
             release_assert( IsInfected() == false );
-            parent->ExposeIndividual((IInfectable*)this, transmissionGroupMembership, dt);
+            parent->ExposeIndividual(this, transmissionGroupMembership, dt);
             potential_exposure_flag = false;
         }
     }
@@ -240,7 +263,7 @@ namespace Kernel
         {
             if( IsCircumcised() )
             {
-                ISTICircumcisionConsumer *ic = NULL;
+                ISTICircumcisionConsumer *ic = nullptr;
                 if (s_OK != interventions->QueryInterface(GET_IID( ISTICircumcisionConsumer ), (void**)&ic) )
                 {
                     throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "interventions", "ISTICircumcisionConsumer", "InterventionsContainer" );
@@ -248,7 +271,7 @@ namespace Kernel
                 mult *= (1.0 - ic->GetCircumcisedReducedAcquire());
             }
         }
-        else if( maleToFemaleRelativeInfectivityAges.size() > 0 )
+        else if(IndividualHumanSTIConfig::maleToFemaleRelativeInfectivityAges.size() > 0 )
         {
             // Individual is female. If user specified a male-to-female infectivity multiplier, 
             // we need to apply that to the probability of infection. The base infectivity
@@ -256,29 +279,29 @@ namespace Kernel
             NonNegativeFloat multiplier = 0.0f;
             NonNegativeFloat age_in_yrs = GetAge()/DAYSPERYEAR;
             unsigned int idx = 0;
-            while( idx < maleToFemaleRelativeInfectivityAges.size() &&
-                   age_in_yrs > maleToFemaleRelativeInfectivityAges[ idx ] )
+            while( idx < IndividualHumanSTIConfig::maleToFemaleRelativeInfectivityAges.size() &&
+                   age_in_yrs > IndividualHumanSTIConfig::maleToFemaleRelativeInfectivityAges[ idx ] )
             {
                 idx++;
             }
             // 3 possible cases
             if( idx == 0 )
             {
-                multiplier = maleToFemaleRelativeInfectivityMultipliers[0];
+                multiplier = IndividualHumanSTIConfig::maleToFemaleRelativeInfectivityMultipliers[0];
                 LOG_DEBUG_F( "Using value of %f for age-asymmetric infection multiplier for female age (in yrs) %f.\n", float(multiplier), (float) age_in_yrs );
             }
-            else if( idx == maleToFemaleRelativeInfectivityAges.size() )
+            else if( idx == IndividualHumanSTIConfig::maleToFemaleRelativeInfectivityAges.size() )
             {
-                multiplier = maleToFemaleRelativeInfectivityMultipliers.back();
+                multiplier = IndividualHumanSTIConfig::maleToFemaleRelativeInfectivityMultipliers.back();
                 LOG_DEBUG_F( "Using value of %f for age-asymmetric infection multiplier for female age (in yrs) %f.\n", float(multiplier), (float) age_in_yrs );
             }
             else 
             {
                 // do some linear interp math.
-                float left_age = maleToFemaleRelativeInfectivityAges[idx-1];
-                float right_age = maleToFemaleRelativeInfectivityAges[idx];
-                float left_mult = maleToFemaleRelativeInfectivityMultipliers[idx-1];
-                float right_mult = maleToFemaleRelativeInfectivityMultipliers[idx];
+                float left_age = IndividualHumanSTIConfig::maleToFemaleRelativeInfectivityAges[idx-1];
+                float right_age = IndividualHumanSTIConfig::maleToFemaleRelativeInfectivityAges[idx];
+                float left_mult = IndividualHumanSTIConfig::maleToFemaleRelativeInfectivityMultipliers[idx-1];
+                float right_mult = IndividualHumanSTIConfig::maleToFemaleRelativeInfectivityMultipliers[idx];
                 multiplier = left_mult + ( age_in_yrs - left_age ) / ( right_age - left_age ) * ( right_mult - left_mult );
                 LOG_DEBUG_F( "Using interpolated value of %f for age-asymmetric infection multiplier for age (in yrs) %f.\n", float(multiplier), (float) age_in_yrs );
             } 
@@ -319,9 +342,8 @@ namespace Kernel
         m_new_infection_state = NewInfectionState::NewInfection;
     }
 
-    IndividualHumanSTI::IndividualHumanSTI(suids::suid _suid, float monte_carlo_weight, float initial_age, int gender, float initial_poverty)
+    IndividualHumanSTI::IndividualHumanSTI(suids::suid _suid, float monte_carlo_weight, float initial_age, int gender, float initial_poverty )
         : IndividualHuman(_suid, monte_carlo_weight, initial_age, gender, initial_poverty)
-        , net_params( "<NONE>" )
         , relationships()
         , migrating_because_of_partner(false)
         , promiscuity_flags(0)
@@ -334,41 +356,10 @@ namespace Kernel
         , relationships_at_death()
         , num_lifetime_relationships(0)
         , last_6_month_relationships()
-        , age_for_transitory_stats(-42.0f)
-        , age_for_informal_stats(-42.0f)
-        , age_for_marital_stats(-42.0f)
-        , transitory_eligibility(0)
-        , informal_eligibility(0)
-        , marital_elibigility(0)
+        , p_sti_node(nullptr)
     {
         ZERO_ARRAY( queued_relationships );
         ZERO_ARRAY( active_relationships );
-
-        // Sexual debut
-        float min_age_sexual_debut_in_days = debutAgeYrsMin * DAYSPERYEAR;
-        float debut_lambda = 0;
-        float debut_inv_kappa = 0;
-        if( GetGender() == Gender::MALE ) 
-        {
-            debut_inv_kappa = debutAgeYrsMale_inv_kappa;
-            debut_lambda    = debutAgeYrsMale_lambda;
-        }
-        else
-        {
-            debut_inv_kappa = debutAgeYrsFemale_inv_kappa;
-            debut_lambda    = debutAgeYrsFemale_lambda;
-        }
-        float debut_draw = float(DAYSPERYEAR * Environment::getInstance()->RNG->Weibull2( debut_lambda, debut_inv_kappa ));
-        sexual_debut_age = (std::max)(min_age_sexual_debut_in_days, debut_draw );
-
-        // Promiscuity flags, including behavioral super-spreader
-        auto draw = Environment::getInstance()->RNG->e();
-        if( draw < GET_CONFIGURABLE(SimulationConfig)->prob_super_spreader )
-        {
-            promiscuity_flags |= SUPER_SPREADER;
-        }
-
-        LOG_DEBUG_F( "Individual ? will debut at age %f (yrs)f.\n", sexual_debut_age/DAYSPERYEAR );
     }
 
     suids::suid IndividualHumanSTI::GetNodeSuid() const
@@ -408,12 +399,23 @@ namespace Kernel
             broadcaster->TriggerNodeEventObservers( GetEventContext(), IndividualEventTriggerType::STIDebut );
         }
 
-        auto now = parent->GetTime().time;
-        while( last_6_month_relationships.size() && ( now - last_6_month_relationships.back() ) > SIX_MONTHS ) // 60*30 is my 6 months
+        // ---------------------------------------------------------------
+        // --- Update the individual pointers in the paused relationships.
+        // --- This is to help against using invalid pointers.
+        // ---------------------------------------------------------------
+        for( auto rel : relationships )
         {
-            last_6_month_relationships.pop_back();
+            rel->UpdatePaused();
         }
     }
+
+   void IndividualHumanSTI::UpdateHistory( const IdmDateTime& rCurrentTime, float dt )
+   {
+        while( last_6_month_relationships.size() && ( rCurrentTime.time - last_6_month_relationships.front() ) > SIX_MONTHS )
+        {
+            last_6_month_relationships.pop_front();
+        }
+   }
 
     void IndividualHumanSTI::Die(
         HumanStateChange newState
@@ -423,14 +425,6 @@ namespace Kernel
 
         // Remove self from PFAs if queued up
         disengageFromSociety();
-
-        // Remove self from relationships if active
-        INodeSTI* sti_node = nullptr;
-        if (parent->QueryInterface(GET_IID(INodeSTI), (void**)&sti_node) != s_OK)
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "INodeSTI", "Node*" );
-        }
-        auto manager = sti_node->GetRelationshipManager();
 
         for (auto iterator = relationships.begin(); iterator != relationships.end(); /**/ )
         {
@@ -445,7 +439,7 @@ namespace Kernel
 
     IndividualHumanSTI::~IndividualHumanSTI()
     {
-        LOG_DEBUG_F( "%lu (STI) destructor.\n", this->GetSuid().data );
+        LOG_DEBUG_F( "%lu (STI) destructor.\n", suid.data );
 
         for( auto p_rel : relationships_at_death )
         {
@@ -459,14 +453,10 @@ namespace Kernel
         return InfectionSTI::CreateInfection(this, _suid);
     }
 
-    bool
-    IndividualHumanSTI::Configure(
-        const Configuration* config
-    )
+    void IndividualHumanSTI::InitializeStaticsSTI( const Configuration* config )
     {
-        IndividualHumanSTIConfig adamInfection;
-        adamInfection.Configure( config );
-        return true;
+        IndividualHumanSTIConfig individual_config;
+        individual_config.Configure( config );
     }
 
     void IndividualHumanSTI::setupInterventionsContainer()
@@ -549,8 +539,8 @@ namespace Kernel
     void IndividualHumanSTI::AcquireNewInfection(StrainIdentity *infstrain, int incubation_period_override )
     {
         int numInfs = int(infections.size());
-        if( (numInfs >= max_ind_inf) ||
-            (!superinfection && numInfs > 0 )
+        if( (numInfs >= IndividualHumanConfig::max_ind_inf) ||
+            (!IndividualHumanConfig::superinfection && numInfs > 0 )
           )
         {
             return;
@@ -582,32 +572,33 @@ namespace Kernel
             }
         }
 
-        //release_assert( good == true );
-        return IndividualHuman::AcquireNewInfection( infstrain, incubation_period_override );
+        IndividualHuman::AcquireNewInfection( infstrain, incubation_period_override );
+
+        INodeTriggeredInterventionConsumer* broadcaster = nullptr;
+        if (parent->GetEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster) != s_OK)
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, 
+                                            "parent->GetEventContext()",
+                                            "INodeTriggeredInterventionConsumer",
+                                            "IIndividualHumanEventContext" );
+        }
+        broadcaster->TriggerNodeEventObservers( GetEventContext(), IndividualEventTriggerType::STINewInfection );
     }
 
     void
     IndividualHumanSTI::UpdateEligibility()
     {
         // DJK: Could return if pre-sexual-debut, related to <ERAD-1869>
+        release_assert( p_sti_node );
+        ISociety* society = p_sti_node->GetSociety();
 
-        INodeSTI* sti_parent = nullptr;
-        if (parent->QueryInterface(GET_IID(INodeSTI), (void**)&sti_parent) != s_OK)
+        for( int type=0; type<RelationshipType::COUNT; type++ )
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "INodeSTI", "INodeContext" );
-        }
-        else
-        {
-            ISociety* society = sti_parent->GetSociety();
-
-            for( int type=0; type<RelationshipType::COUNT; type++ )
+            RelationshipType::Enum rel_type = RelationshipType::Enum(type);
+            if( AvailableForRelationship( rel_type ) )
             {
-                RelationshipType::Enum rel_type = RelationshipType::Enum(type);
-                if( AvailableForRelationship( rel_type ) )
-                {
-                    RiskGroup::Enum risk_group = IS_EXTRA_ALLOWED(rel_type) ? RiskGroup::HIGH : RiskGroup::LOW;
-                    society->GetStats(rel_type)->UpdateEligible(m_age, m_gender, risk_group, 1);    // DJK: Should use MC weight <ERAD-1870>
-                }
+                RiskGroup::Enum risk_group = IS_EXTRA_ALLOWED(rel_type) ? RiskGroup::HIGH : RiskGroup::LOW;
+                society->GetStats(rel_type)->UpdateEligible(m_age, m_gender, risk_group, 1);    // DJK: Should use MC weight <ERAD-1870>
             }
         }
     }
@@ -615,17 +606,12 @@ namespace Kernel
     void
     IndividualHumanSTI::ConsiderRelationships(float dt)
     {
-        INodeSTI* sti_parent = nullptr;
-        if (parent->QueryInterface(GET_IID(INodeSTI), (void**)&sti_parent) != s_OK)
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "INodeSTI", "INodeContext" );
-        }
-
-        ISociety* society = sti_parent->GetSociety();
+        release_assert( p_sti_node );
+        ISociety* society = p_sti_node->GetSociety();
 
         bool is_any_available = false ;
         bool available[RelationshipType::COUNT];
-        float formation_rates[RelationshipType::COUNT];  // TRANSITORY, INFORMAL, MARITAL
+        float formation_rates[RelationshipType::COUNT];
         ZERO_ARRAY(formation_rates);
         float cumulative_rate = 0.0f;
         for( int type = 0; type < RelationshipType::COUNT; type++ )
@@ -644,12 +630,25 @@ namespace Kernel
 
         if( is_any_available )
         {
-            LOG_DEBUG_F( "%s: individual %d availability { %d, %d, %d }\n",
-                         __FUNCTION__, 
-                         suid.data, 
-                         available[RelationshipType::TRANSITORY], 
-                         available[RelationshipType::INFORMAL], 
-                         available[RelationshipType::MARITAL] );
+            if (LOG_LEVEL(DEBUG)) 
+            {
+                std::stringstream ss;
+                ss << __FUNCTION__ << "individual " << suid.data << " availability { ";
+                for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
+                {
+                    ss << available[i];
+                    if( (i+1) < RelationshipType::COUNT )
+                    {
+                        ss << ", ";
+                    }
+                    else
+                    {
+                        ss << " ";
+                    }
+                }
+                ss << "\n";
+                LOG_DEBUG_F( ss.str().c_str() );
+            }
 
             // At least one relationship could be formed
             if (cumulative_rate > 0.0f)
@@ -718,17 +717,17 @@ namespace Kernel
         release_assert( queued_relationships[relationship_type] == 0 );
 
         // set slot bit
-        auto slot = GetOpenRelationshipSlot();
-        int bitmask = 1 << slot;
+        uint64_t slot = GetOpenRelationshipSlot();
+        uint64_t bitmask = uint64_t(1) << slot;
         relationshipSlots |= bitmask;
-        release_assert(relationshipSlots < 0x400);
+        release_assert(relationshipSlots <= SLOTS_FILLED);
         LOG_DEBUG_F( "%s: relationshipSlots = %d, individual = %d\n", __FUNCTION__, relationshipSlots, GetSuid().data );
         slot2RelationshipDebugMap[ slot ] = pNewRelationship->GetSuid().data;
         LOG_DEBUG_F( "%s: Individual %d gave slot %d to relationship %d\n", __FUNCTION__, GetSuid().data, slot, pNewRelationship->GetSuid().data );
 
-        if( min_days_between_adding_relationships > 0)
+        if(IndividualHumanSTIConfig::min_days_between_adding_relationships > 0)
         {
-            delay_between_adding_relationships_timer = min_days_between_adding_relationships;
+            delay_between_adding_relationships_timer = IndividualHumanSTIConfig::min_days_between_adding_relationships;
         }
         // DJK: Can these counters live elsewhere?  Either reporter or something parallel to interventions container, e.g. counters container
         num_lifetime_relationships++;
@@ -751,22 +750,14 @@ namespace Kernel
         // These are unsigned quantities, so we'll loop for wrap-around.
         --active_relationships[relationship_type] ;
 
-        // DJK: We'll need more than 10! <ERAD-1874>
-        // Note: this solution assumes max of 10 relationships, i.e., exactly 1 decimal digit for relationship number
-        unsigned int slotIndex = strlen( "Relationship" );
-        if( GetGender() == Gender::FEMALE ) // yes, assumes heterosexual relationship
-        {
-            slotIndex++;
-        }
-
-        auto slotNumber = atoi( pRelationship->GetPropertyKey().substr( slotIndex, 1 ).c_str() );
-        int bitmask = 1 << slotNumber;
+        uint64_t slot = pRelationship->GetSlotNumberForPartner( GetGender() == Gender::FEMALE );
+        uint64_t bitmask = uint64_t(1) << slot;
         relationshipSlots &= (~bitmask);
-        release_assert(relationshipSlots < 0x400);
+        release_assert(relationshipSlots < SLOTS_FILLED);
         LOG_DEBUG_F( "%s: relationshipSlots = %d, individual=%d\n", __FUNCTION__, relationshipSlots, GetSuid().data );
-        LOG_DEBUG_F( "%s: individual %d freed up slot %d for relationship %d\n", __FUNCTION__, GetSuid().data, slotNumber, pRelationship->GetSuid().data );
-        release_assert( slot2RelationshipDebugMap[ slotNumber ] == pRelationship->GetSuid().data );
-        slot2RelationshipDebugMap[ slotNumber ] = -1;
+        LOG_DEBUG_F( "%s: individual %d freed up slot %d for relationship %d\n", __FUNCTION__, GetSuid().data, slot, pRelationship->GetSuid().data );
+        release_assert( slot2RelationshipDebugMap[ slot ] == pRelationship->GetSuid().data );
+        slot2RelationshipDebugMap[ slot ] = -1;
 
         delay_between_adding_relationships_timer = 0.0f;
     }
@@ -780,7 +771,13 @@ namespace Kernel
     unsigned int
     IndividualHumanSTI::GetExtrarelationalFlags() const
     {
-        return EXTRARELATIONAL_FLAGS();
+        unsigned int bitmask = 0;
+        for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
+        {
+            bitmask |= EXTRA_RELATIONAL_ALLOWED(i);
+        }
+        unsigned int flags = promiscuity_flags & bitmask;
+        return flags;
     }
 
     void
@@ -808,7 +805,7 @@ namespace Kernel
     {
         if( has_other_sti_co_infection )
         {
-            return sti_coinfection_mult;
+            return IndividualHumanSTIConfig::sti_coinfection_mult;
         }
         else
         {
@@ -818,7 +815,7 @@ namespace Kernel
 
     bool IndividualHumanSTI::IsCircumcised() const
     {
-        ISTICircumcisionConsumer *ic = NULL;
+        ISTICircumcisionConsumer *ic = nullptr;
         if (s_OK != interventions->QueryInterface(GET_IID( ISTICircumcisionConsumer ), (void**)&ic) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "interventions", "ISTICircumcisionConsumer", "interventions" );
@@ -839,13 +836,9 @@ namespace Kernel
         LOG_DEBUG_F( "%s()\n", __FUNCTION__ );
         migrating_because_of_partner = false;
 
-        INodeSTI* sti_node = nullptr;
-        if (parent->QueryInterface(GET_IID(INodeSTI), (void**)&sti_node) != s_OK)
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "INodeSTI", "INodeContext" );
-        }
-        auto society = sti_node->GetSociety();
-        auto manager = sti_node->GetRelationshipManager();
+        release_assert( p_sti_node );
+        auto society = p_sti_node->GetSociety();
+        auto manager = p_sti_node->GetRelationshipManager();
 
         // copy the set of pointers so we can iterate through one and delete from the other.
         RelationshipSet_t tmp_relationships = relationships;
@@ -896,7 +889,7 @@ namespace Kernel
                      (effective_rels[relType] < max_relationships[relType])
                    );
 
-        if( GetOpenRelationshipSlot() > 9 && ret == true )
+        if( (relationshipSlots == SLOTS_FILLED) && (ret == true) )
         {
             throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Individual reporting available when all slots filled up." );
         }
@@ -919,38 +912,26 @@ namespace Kernel
         return relationships_at_death;
     }
 
-    std::string
-    promiscuity_flags_as_string( unsigned char byteIn )
-    {
-        //std::ostringstream retThis;
-        char retThis[5];
-        //fprintf( stdout, "promiscuity_flags=%x\n", byteIn );
-        retThis[0] = ( ( byteIn & SUPER_SPREADER ) ? 'S' : '-' );
-        retThis[1] = ( ( byteIn & EXTRA_MARITAL_ALLOWED ) ? 'M' : '-' );
-        retThis[2] = ( ( byteIn & EXTRA_INFORMAL_ALLOWED ) ? 'I' : '-' );
-        retThis[3] = ( ( byteIn & EXTRA_TRANSITORY_ALLOWED ) ? 'T' : '-' );
-        retThis[4] = '\0';
-        //fprintf( stdout, "promiscuity_flags=%s\n", retThis );
-        return retThis;
-    }
-
     // This method finds the lowest 0 in the relationshipSlots bitmask
     unsigned int
     IndividualHumanSTI::GetOpenRelationshipSlot()
     const
     {
-        release_assert(relationshipSlots < 0x400);
-        int bit = 1, counter = 0;
-        for( ; bit > 0; bit <<= 1, counter++ )
+        release_assert( relationshipSlots < SLOTS_FILLED );
+        uint64_t bit = 1;
+        for( unsigned int counter = 0 ; counter <= MAX_SLOTS ; ++counter )
         {
-            if( (relationshipSlots & bit ) == 0 )
+            if( (relationshipSlots & bit) == 0 )
             {
                 LOG_DEBUG_F( "%s: Returning %d as first open slot for individual %d\n", __FUNCTION__, counter, suid.data );
                 release_assert( counter <= MAX_RELATIONSHIPS_PER_INDIVIDUAL_ALL_TYPES );
                 return counter;
             }
+            bit <<= 1;
         }
-        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Cannot be in 32 relationships." );
+        std::stringstream ss;
+        ss << "Cannot be in more than " << MAX_SLOTS << " simultaneous relationship." ;
+        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
     }
 
     NaturalNumber
@@ -1010,6 +991,18 @@ namespace Kernel
     {
         LOG_DEBUG_F( "%s: individual %d setting context to 0x%08X.\n", __FUNCTION__, suid.data, context );
         IndividualHuman::SetContextTo(context);
+        if( context == nullptr )
+        {
+            p_sti_node = nullptr;
+        }
+        else
+        {
+            if (parent->QueryInterface(GET_IID(INodeSTI), (void**)&p_sti_node) != s_OK)
+            {
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "INodeSTI", "INodeContext" );
+            }
+            release_assert( p_sti_node );
+        }
     }
 
     void
@@ -1026,12 +1019,8 @@ namespace Kernel
             IndividualHuman::CheckForMigration( currenttime, dt );
             if( StateChange == HumanStateChange::Migrating )
             {
-                INodeSTI* sti_node = nullptr;
-                if (parent->QueryInterface(GET_IID(INodeSTI), (void**)&sti_node) != s_OK)
-                {
-                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "INodeSTI", "Node*" );
-                }
-                auto manager = sti_node->GetRelationshipManager();
+                release_assert( p_sti_node );
+                auto manager = p_sti_node->GetRelationshipManager();
 
                 // NOTE: This for loop is done this way since terminate() will remove relationships
                 // from the set.  If you use range-based loops, you will get an errlr.
@@ -1100,52 +1089,10 @@ namespace Kernel
         }
     }
 
-    unsigned char IndividualHumanSTI::GetProbExtraRelationalBitMask(Gender::Enum gender)
-    {
-        unsigned char ret = 0;
-
-        if( IS_SUPER_SPREADER() ) 
-        {
-            LOG_DEBUG_F("Individual %d is a super spreader, enabling all extra-relational flags\n", int(GetSuid().data));
-            for( int rel = 0; rel < RelationshipType::COUNT; rel++ )
-            {
-                ret |= EXTRA_RELATIONAL_ALLOWED( rel );
-            }
-        }
-        else
-        {
-            for( int rel = 0; rel < RelationshipType::COUNT; rel++ )
-            {
-                float prob_extrarelational = net_params.prob_extra_relational[rel][gender];
-                float draw = Environment::getInstance()->RNG->e();
-
-                if( draw < prob_extrarelational )
-                {
-                    LOG_DEBUG_F("extra %s allowed for %d\n", RelationshipType::pairs::lookup_key(rel), (int)(GetSuid().data));
-                    ret |= EXTRA_RELATIONAL_ALLOWED(rel);
-                }
-                else if( net_params.extra_relational_flag_type != ExtraRelationalFlagType::Independent )
-                {
-                    return ret ;
-                }
-            }
-        }
-        return ret;
-    }
-
-    float IndividualHumanSTI::GetMaxNumRels(Gender::Enum gender, RelationshipType::Enum type)
-    {
-        return net_params.max_simultaneous_rels[type][gender];
-    }
-
     void IndividualHumanSTI::disengageFromSociety()
     {
-        INodeSTI* sti_node = nullptr;
-        if (parent->QueryInterface(GET_IID(INodeSTI), (void**)&sti_node) != s_OK)
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "INodeSTI", "INodeContext" );
-        }
-        ISociety* society = sti_node->GetSociety();
+        release_assert( p_sti_node );
+        ISociety* society = p_sti_node->GetSociety();
 
         for( int type = 0; type < RelationshipType::COUNT; type++ )
         {
@@ -1166,7 +1113,7 @@ namespace Kernel
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "interventions", "ISTIBarrierConsumer", "InterventionsContainer" );
         }
-        auto probs = p_barrier->GetSTIBarrierProbabilitiesByRelType( pRelParams );
+        const Sigmoid& probs = p_barrier->GetSTIBarrierProbabilitiesByRelType( pRelParams );
         float year = float(GetParent()->GetTime().Year());
         ProbabilityNumber prob = probs.variableWidthAndHeightSigmoid( year );
         //LOG_DEBUG_F( "%s: returning %f from Sigmoid::vWAHS( %f, %f, %f, %f, %f )\n", __FUNCTION__, (float) prob, year, probs.midyear, probs.rate, probs.early, probs.late );
@@ -1206,7 +1153,6 @@ namespace Kernel
         IndividualHuman::serialize( ar, obj );
         IndividualHumanSTI& human_sti = *obj;
 
-        ar.labelElement("net_params"                              ) & human_sti.net_params;
         ar.labelElement("relationships"                           ); serialize_relationships( ar, human_sti.relationships );
         ar.labelElement("max_relationships"                       ); ar.serialize( human_sti.max_relationships,    rel_count );
         ar.labelElement("queued_relationships"                    ); ar.serialize( human_sti.queued_relationships, rel_count );
@@ -1230,11 +1176,5 @@ namespace Kernel
         ar.labelElement("num_lifetime_relationships"              ) & human_sti.num_lifetime_relationships;
         ar.labelElement("last_6_month_relationships"              ) & human_sti.last_6_month_relationships;
         ar.labelElement("slot2RelationshipDebugMap"               ) & human_sti.slot2RelationshipDebugMap;
-        ar.labelElement("age_for_transitory_stats"                ) & human_sti.age_for_transitory_stats;
-        ar.labelElement("age_for_informal_stats"                  ) & human_sti.age_for_informal_stats;
-        ar.labelElement("age_for_marital_stats"                   ) & human_sti.age_for_marital_stats;
-        ar.labelElement("transitory_eligibility"                  ) & human_sti.transitory_eligibility;
-        ar.labelElement("informal_eligibility"                    ) & human_sti.informal_eligibility;
-        ar.labelElement("marital_elibigility"                     ) & human_sti.marital_elibigility;
     }
 }

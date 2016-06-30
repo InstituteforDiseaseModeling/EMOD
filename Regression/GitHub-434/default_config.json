@@ -47,7 +47,7 @@
         "Clinical_Fever_Threshold_High": 1.5, 
         "Clinical_Fever_Threshold_Low": 0.5, 
         "Config_Name": "Munyumbwe", 
-        "Custom_Reports_Filename": "custom_reports.json", 
+        "Custom_Reports_Filename": "NoCustomReports", 
         "Cytokine_Gametocyte_Inactivation": 0.01667, 
         "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER", 
         "Default_Geography_Initial_Node_Population": 100, 

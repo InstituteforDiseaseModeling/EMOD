@@ -38,7 +38,7 @@
         "Population_Scale_Type": "FIXED_SCALING", 
         "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE", 
         "Enable_Birth": 1, 
-        "Demographics_Filenames": ["Namawala_single_node_demographics.compiled.json"]
+        "Demographics_Filenames": ["Namawala_single_node_demographics.json"]
     }, 
     "PRIMARY": {
         "Run_Number": 36, 

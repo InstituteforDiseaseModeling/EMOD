@@ -167,7 +167,7 @@ public:
         throw std::exception("The method or operation is not implemented.");
     }
 
-    virtual const tDistrib& GetIndividualPropertyDistributions() const override
+    virtual const tPropertiesDistrib& GetIndividualPropertyDistributions() const override
     {
         throw std::exception("The method or operation is not implemented.");
     }
@@ -198,16 +198,6 @@ public:
     }
 
     act_prob_vec_t DiscreteGetTotalContagion(const TransmissionGroupMembership_t* membership) override
-    {
-        throw std::exception("The method or operation is not implemented.");
-    }
-
-    void RegisterNewInfectionObserver(void* id, INodeContext::callback_t observer) override
-    {
-        throw std::exception("The method or operation is not implemented.");
-    }
-
-    void UnregisterNewInfectionObserver(void* id) override
     {
         throw std::exception("The method or operation is not implemented.");
     }
@@ -278,4 +268,9 @@ public:
     virtual void PopulateFromDemographics()                                                                    override { throw std::exception("The method is not implemented."); }
     virtual void Update(float)                                                                                 override { throw std::exception("The method is not implemented."); }
     virtual IIndividualHuman* processImmigratingIndividual(IIndividualHuman*)                                  override { throw std::exception("The method is not implemented."); }
+
+    virtual float GetBasePopulationScaleFactor() const
+    {
+        return 1.0;
+    }
 };

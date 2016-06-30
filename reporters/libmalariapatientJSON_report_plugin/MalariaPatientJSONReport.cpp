@@ -15,7 +15,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "IndividualMalaria.h"
 #include "../interventions/IDrug.h"
-#include "ReportUtilities.h"
 
 #include "DllInterfaceHelper.h"
 #include "DllDefs.h"
@@ -246,7 +245,7 @@ void MalariaPatientJSONReport::LogIndividualData( IIndividualHuman* individual )
     patient->gametocyte_pos_fields_of_view.push_back(float(gam_pos_fields));
 
     // New drugs
-    std::list<IDrug*> drug_list = ReportUtilities::GetDrugList( individual, std::string("class Kernel::AntimalarialDrug") );
+    std::list<void*> drug_list = individual->GetInterventionsContext()->GetInterventionsByInterface( GET_IID(IDrug) );
     LOG_DEBUG_F( "Drug doses distributed = %d\n", drug_list.size() );
 
     int new_drugs = drug_list.size() - patient->n_drug_treatments;
@@ -255,7 +254,8 @@ void MalariaPatientJSONReport::LogIndividualData( IIndividualHuman* individual )
 
     while(new_drugs > 0)
     {
-        new_drug_names += drug_list.back()->GetDrugName();
+        IDrug* p_drug = static_cast<IDrug*>(drug_list.back());
+        new_drug_names += p_drug->GetDrugName();
         drug_list.pop_back();
         new_drugs--;
         if (new_drugs == 0) break;

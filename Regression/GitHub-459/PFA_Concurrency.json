@@ -1,0 +1,110 @@
+{
+    "Metadata": {
+        "Author": "dbridenbecker", 
+        "NodeCount": 1, 
+        "Tool": "notepad", 
+        "IdReference": "0", 
+        "DateCreated": "2016-6-11"
+    },
+    "Defaults": {
+        "Society" : {
+            "Concurrency_Configuration" : 
+            {
+                "Probability_Person_Is_Behavioral_Super_Spreader" : 0,
+                "Individual_Property_Name": "Risk", 
+                "LOW": 
+                {
+                    "Extra_Relational_Flag_Type": "Correlated", 
+                    "Correlated_Relationship_Type_Order" : [ "TRANSITORY", "INFORMAL", "MARITAL", "COMMERCIAL" ]
+                },
+                "HIGH": 
+                {
+                    "Extra_Relational_Flag_Type": "Correlated", 
+                    "Correlated_Relationship_Type_Order" : [ "TRANSITORY", "INFORMAL", "MARITAL", "COMMERCIAL" ]
+                }
+            },
+            "TRANSITORY" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "Probability_Person_Is_Behavioral_Super_Spreader" : 0,
+                    "Individual_Property_Name": "Risk", 
+                    "LOW": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 1,
+                        "Max_Simultaneous_Relationships_Male"  : 1,
+                        "Prob_Extra_Relationship_Female"       : 0,
+                        "Prob_Extra_Relationship_Male"         : 0
+                    },
+                    "HIGH": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 4,
+                        "Max_Simultaneous_Relationships_Male"  : 4,
+                        "Prob_Extra_Relationship_Female"       : 0.25,
+                        "Prob_Extra_Relationship_Male"         : 1.0
+                    }
+                }
+            },
+            "INFORMAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "LOW": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 1,
+                        "Max_Simultaneous_Relationships_Male"  : 1,
+                        "Prob_Extra_Relationship_Female"       : 0,
+                        "Prob_Extra_Relationship_Male"         : 0
+                    },
+                    "HIGH": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 3,
+                        "Max_Simultaneous_Relationships_Male"  : 3,
+                        "Prob_Extra_Relationship_Female"       : 0.65,
+                        "Prob_Extra_Relationship_Male"         : 0.50
+                    }
+                }
+            },
+            "MARITAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "LOW": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 1,
+                        "Max_Simultaneous_Relationships_Male"  : 1,
+                        "Prob_Extra_Relationship_Female"       : 0,
+                        "Prob_Extra_Relationship_Male"         : 0
+                    },
+                    "HIGH": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 2,
+                        "Max_Simultaneous_Relationships_Male"  : 2,
+                        "Prob_Extra_Relationship_Female"       : 1,
+                        "Prob_Extra_Relationship_Male"         : 1
+                    }
+                }
+            },
+            "COMMERCIAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "LOW": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 0,
+                        "Max_Simultaneous_Relationships_Male"  : 0,
+                        "Prob_Extra_Relationship_Female"       : 0,
+                        "Prob_Extra_Relationship_Male"         : 0
+                    },
+                    "HIGH": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 0,
+                        "Max_Simultaneous_Relationships_Male"  : 0,
+                        "Prob_Extra_Relationship_Female"       : 0,
+                        "Prob_Extra_Relationship_Male"         : 0
+                    }
+                }
+            }
+        }
+    }
+}

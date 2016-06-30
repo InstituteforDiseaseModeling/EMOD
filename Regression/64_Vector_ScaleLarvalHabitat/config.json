@@ -32,7 +32,7 @@
         "Default_Geography_Initial_Node_Population": 1000, 
         "Default_Geography_Torus_Size": 10, 
         "Demographics_Filenames": [
-            "Namawala_single_node_demographics.compiled.json", 
+            "Namawala_single_node_demographics.json", 
             "Namawala_single_node_larval_habitat.json"
         ], 
         "Egg_Hatch_Delay_Distribution": "NO_DELAY", 

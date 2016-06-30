@@ -30,10 +30,11 @@ namespace Kernel
 
     bool NodeEventCoordinator::Configure(const Configuration* inputJson)
     {
+        bool reset = JsonConfigurable::_useDefaults;
         JsonConfigurable::_useDefaults = InterventionFactory::useDefaults;
         initializeInterventionConfig( inputJson );
         bool configured = JsonConfigurable::Configure( inputJson );
-        JsonConfigurable::_useDefaults = false;
+        JsonConfigurable::_useDefaults = reset;
         return configured;
     }
 

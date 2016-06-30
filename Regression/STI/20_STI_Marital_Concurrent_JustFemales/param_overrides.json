@@ -2,7 +2,7 @@
     "Default_Config_Path": "./defaults/sti_default_config.json", 
     "parameters": {
         "DEMOGRAPHICS": {
-            "Demographics_Filenames": [ "../../HIV/input/SA_UN_demographics.json", "../../HIV/input/PFA_overlay.json", "../../HIV/input/PFA_overlay_marital_10_only.json" ],
+            "Demographics_Filenames": [ "../../HIV/input/SA_UN_demographics.json", "../../HIV/input/PFA_overlay.json", "../../HIV/input/PFA_overlay_marital_10_only.json","PFA_Concurrency.json" ],
             "Enable_Vital_Dynamics": 0,
             "MORTALITY": {
                 "Base_Mortality": 0.01, 
@@ -22,16 +22,6 @@
         "PRIMARY": {
             "Simulation_Duration": 1500, 
             "Config_Name": "20_STI_Marital_Concurrent_JustFemales"
-        }, 
-        "STI_Network_Params_By_Property" :
-        {
-            "NONE" :
-            {
-                "Prob_Extra_Marital_Relationship_Female": 1, 
-                "Prob_Extra_Marital_Relationship_Male": 0, 
-                "Max_Simultaneous_Marital_Relationships_Females": 2, 
-                "Max_Simultaneous_Marital_Relationships_Males": 1
-            }
         }
     }
 }

@@ -10,7 +10,7 @@
      }, 
      "DEMOGRAPHICS": {
           "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE", 
-          "Demographics_Filenames": ["Garki_30arcsec_demographics.compiled.json"]
+          "Demographics_Filenames": ["Garki_30arcsec_demographics.json"]
      }, 
      "Default_Config_Path": "defaults/malaria_default_config.json", 
      "EXECUTION": {

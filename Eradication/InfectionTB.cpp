@@ -295,11 +295,11 @@ namespace Kernel
 
         _immunity->InitNewInfection();
 
-        if ( incubation_distribution.GetType() != DistributionFunction::EXPONENTIAL_DURATION )
+        if (InfectionConfig::incubation_distribution.GetType() != DistributionFunction::EXPONENTIAL_DURATION )
         {
             LOG_DEBUG("TB incubation timers will use exponential distributions in spite of 'incubation_distribution' settings\n");
         }
-        if ( infectious_distribution.GetType() != TB_active_period_distribution)
+        if (InfectionConfig::infectious_distribution.GetType() != InfectionTBConfig::TB_active_period_distribution)
         {
             LOG_DEBUG("TB active period timers will use the TB_active_period_distribution, NOT the infectious_distribution \n");
         }
@@ -341,10 +341,10 @@ namespace Kernel
         {
             m_is_fast_progressor = true;
 
-            float total_rate = TB_fast_progressor_rate + TB_latent_cure_rate;
+            float total_rate = InfectionTBConfig::TB_fast_progressor_rate + InfectionTBConfig::TB_latent_cure_rate;
             incubation_timer = float(randgen->expdist(total_rate)); 
 
-            m_recover_fraction = (total_rate > 0 ? TB_latent_cure_rate/total_rate : 0);
+            m_recover_fraction = (total_rate > 0 ? InfectionTBConfig::TB_latent_cure_rate/total_rate : 0);
         }
 
         //Latent slow
@@ -353,12 +353,12 @@ namespace Kernel
             m_is_fast_progressor = false;
 
             //Latent slow by exponential rate
-            if (TB_slow_progressor_rate >= 0)
+            if (InfectionTBConfig::TB_slow_progressor_rate >= 0)
             {
-                float total_rate = TB_slow_progressor_rate + TB_latent_cure_rate;
+                float total_rate = InfectionTBConfig::TB_slow_progressor_rate + InfectionTBConfig::TB_latent_cure_rate;
                 incubation_timer = float(randgen->expdist(total_rate));
 
-                m_recover_fraction = (total_rate > 0 ? TB_latent_cure_rate/total_rate : 0);
+                m_recover_fraction = (total_rate > 0 ? InfectionTBConfig::TB_latent_cure_rate/total_rate : 0);
             }
 
             //Latent slow by age (set slow progressor rate to -1)
@@ -374,9 +374,9 @@ namespace Kernel
         if( human_coinf != nullptr && immunityTB->GetCD4ActFlag() )
         {
 
-            incubation_timer = randgen->time_varying_rate_dist( human_coinf->GetTBactivationvector(), human_coinf->GetCD4TimeStep(), TB_latent_cure_rate);
-            float total_rate = human_coinf->GetNextLatentActivation(incubation_timer) + TB_latent_cure_rate;
-            m_recover_fraction = (total_rate > 0 ?  TB_latent_cure_rate/total_rate : 0);
+            incubation_timer = randgen->time_varying_rate_dist( human_coinf->GetTBactivationvector(), human_coinf->GetCD4TimeStep(), InfectionTBConfig::TB_latent_cure_rate);
+            float total_rate = human_coinf->GetNextLatentActivation(incubation_timer) + InfectionTBConfig::TB_latent_cure_rate;
+            m_recover_fraction = (total_rate > 0 ? InfectionTBConfig::TB_latent_cure_rate/total_rate : 0);
         }
 #endif
 
@@ -409,7 +409,7 @@ namespace Kernel
         duration = 0.0f;
 
         // Set the timer for pending relapse
-        float relapse_rate = TB_relapsed_to_active_rate; 
+        float relapse_rate = InfectionTBConfig::TB_relapsed_to_active_rate; 
 
         incubation_timer = float(randgen->expdist(relapse_rate));
         m_is_active = false;
@@ -442,12 +442,12 @@ namespace Kernel
         duration = 0.0f;
 
         // Set infectiousness
-        infectiousness = base_infectivity * TB_active_presymptomatic_infectivity_multiplier * immunityTB->GetCoughInfectiousness();
+        infectiousness = InfectionConfig::base_infectivity * InfectionTBConfig::TB_active_presymptomatic_infectivity_multiplier * immunityTB->GetCoughInfectiousness();
 
         //fitness penalty for MDR
         if ( infection_strain->GetGeneticID() == TBInfectionDrugResistance::FirstLineResistant ) 
         {
-            infectiousness *= TB_MDR_Fitness_Multiplier;
+            infectiousness *= InfectionTBConfig::TB_MDR_Fitness_Multiplier;
             LOG_DEBUG("Infectiousness lowered because the drug is FirstLineCombo and I have a resistant strain \n");
         }
 
@@ -468,8 +468,8 @@ namespace Kernel
         //Everyone else use the pre-symptomatic rate
         else
         {
-            float total_rate = TB_presymptomatic_cure_rate + TB_presymptomatic_rate;
-            m_recover_fraction = TB_presymptomatic_cure_rate / total_rate;
+            float total_rate = InfectionTBConfig::TB_presymptomatic_cure_rate + InfectionTBConfig::TB_presymptomatic_rate;
+            m_recover_fraction = InfectionTBConfig::TB_presymptomatic_cure_rate / total_rate;
             infectious_timer = float(randgen->expdist(total_rate));
         }
 
@@ -514,14 +514,14 @@ namespace Kernel
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetInterventionsContext()", "IDrugVaccineInterventionEffects", "IIndividualHumanEventContext" );
         }
 
-        float death_rate = TB_active_mortality_rate * immunity->getModMortality() * idvie->GetInterventionReducedMortality();
+        float death_rate = InfectionTBConfig::TB_active_mortality_rate * immunity->getModMortality() * idvie->GetInterventionReducedMortality();
 
-        infectiousness = base_infectivity * immunityTB->GetCoughInfectiousness();
+        infectiousness = InfectionConfig::base_infectivity * immunityTB->GetCoughInfectiousness();
 
         //fitness penalty for MDR
         if ( infection_strain->GetGeneticID() == TBInfectionDrugResistance::FirstLineResistant ) 
         {
-            infectiousness *= TB_MDR_Fitness_Multiplier;
+            infectiousness *= InfectionTBConfig::TB_MDR_Fitness_Multiplier;
             LOG_DEBUG("Infectiousness lowered because I have a resistant strain \n");
         }
 
@@ -536,24 +536,24 @@ namespace Kernel
         } 
         else if (rand > smear_positive_fraction) //smear negative patients
         {
-            infectiousness *= TB_smear_negative_infectivity_multiplier;
+            infectiousness *= InfectionTBConfig::TB_smear_negative_infectivity_multiplier;
             m_is_smear_positive = false;
         }
 
         // Set the timer for state changes from active TB
         // i.e. inactivation, recovery, death
-        float inactivation_rate = TB_inactivation_rate;
-        float cure_rate = TB_active_cure_rate;
+        float inactivation_rate = InfectionTBConfig::TB_inactivation_rate;
+        float cure_rate = InfectionTBConfig::TB_active_cure_rate;
         float total_rate = inactivation_rate + cure_rate + death_rate;
         
-        switch( TB_active_period_distribution ) 
+        switch(InfectionTBConfig::TB_active_period_distribution ) 
         {
             case DistributionFunction::EXPONENTIAL_DURATION:
                 infectious_timer = float(randgen->expdist(total_rate));
                 break;
 
             case DistributionFunction::GAUSSIAN_DURATION:
-                infectious_timer = float(Probability::getInstance()->fromDistribution(  DistributionFunction::GAUSSIAN_DURATION, (log(2.0f)/total_rate), TB_active_period_std_dev ));
+                infectious_timer = float(Probability::getInstance()->fromDistribution(  DistributionFunction::GAUSSIAN_DURATION, (log(2.0f)/total_rate), InfectionTBConfig::TB_active_period_std_dev ));
                 break;
 
             default:
@@ -571,13 +571,13 @@ namespace Kernel
         //correct the fractional allocation by smear status, reduction in death correlates to higher recovery, inactivation fraction stays the same
         if (rand > (1-extrapulmonary_fraction)) //extra-pulmonary patients
         {
-            m_recover_fraction += ( m_death_fraction * ( 1 - TB_extrapulmonary_mortality_multiplier ) );
-            m_death_fraction *= TB_extrapulmonary_mortality_multiplier;
+            m_recover_fraction += ( m_death_fraction * ( 1 - InfectionTBConfig::TB_extrapulmonary_mortality_multiplier ) );
+            m_death_fraction *= InfectionTBConfig::TB_extrapulmonary_mortality_multiplier;
         } 
         else if (rand > smear_positive_fraction) //smear negative patients
         {
-            m_recover_fraction += ( m_death_fraction * ( 1 - TB_smear_negative_mortality_multiplier ) );
-            m_death_fraction *= TB_smear_negative_mortality_multiplier;
+            m_recover_fraction += ( m_death_fraction * ( 1 - InfectionTBConfig::TB_smear_negative_mortality_multiplier ) );
+            m_death_fraction *= InfectionTBConfig::TB_smear_negative_mortality_multiplier;
         }
     }
 
@@ -611,7 +611,7 @@ namespace Kernel
                 if (infection_strain->GetGeneticID() == TBInfectionDrugResistance::FirstLineResistant ) //could add this drug_effect.first == TBDrugType::FirstLineCombo if wanted to be specific to getting FirstLineCombo
                 {
                     LOG_DEBUG( "Received a drug (does not have to be FirstLineCombo), but have DR strain. TB drug clearance/inactivation rate adjusted\n" );
-                    drug_strain_multiplier = TB_Drug_Efficacy_Multiplier_MDR;
+                    drug_strain_multiplier = InfectionTBConfig::TB_Drug_Efficacy_Multiplier_MDR;
                 }
                 
                 //add to total drug clearance/inactivation rate here
@@ -634,8 +634,8 @@ namespace Kernel
 
         if ( tb_ind->HasFailedTreatment() )
         {
-            TB_drug_inactivation_rate *= TB_Drug_Efficacy_Multiplier_Failed;
-            TB_drug_clearance_rate *= TB_Drug_Efficacy_Multiplier_Failed; 
+            TB_drug_inactivation_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Failed;
+            TB_drug_clearance_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Failed; 
             LOG_DEBUG_F("Adjusting drug clearance rate because I have failed before, new rate is %f \n", TB_drug_clearance_rate);
             
             //TODO: Could also modulate the resistance, relapse and mortality rate if infection has ever failed (also should be specific for drug type in future)
@@ -644,8 +644,8 @@ namespace Kernel
         //Modulate drug clearance rate depending if infection has ever relapsed (also should be specific for drug type in future)
         if ( tb_ind->HasEverRelapsedAfterTreatment() )
         {
-            TB_drug_inactivation_rate *= TB_Drug_Efficacy_Multiplier_Relapsed; 
-            TB_drug_clearance_rate *= TB_Drug_Efficacy_Multiplier_Relapsed; 
+            TB_drug_inactivation_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Relapsed; 
+            TB_drug_clearance_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Relapsed; 
             LOG_DEBUG_F("Adjusting drug clearance rate because I have relapsed before, new rate is %f \n", TB_drug_clearance_rate);
 
             //TODO: Could also modulate the resistance, relapse and mortality rate if infection has ever failed (also should be specific for drug type in future)
@@ -683,7 +683,7 @@ namespace Kernel
                     dynamic_cast<IIndividualHumanTB2*>(parent)->onInfectionMDRIncidence(); //alert observer to new MDR incident case (evolved)
                     LOG_DEBUG("Evolved drug resistance strain while having active disease and on drugs \n");
 
-                    infectiousness *= TB_MDR_Fitness_Multiplier;     //fitness penalty for MDR
+                    infectiousness *= InfectionTBConfig::TB_MDR_Fitness_Multiplier;     //fitness penalty for MDR
                     
                     if(Environment::getInstance()->Log->CheckLogLevel(Logger::DEBUG, "EEL"))
                     {
@@ -874,7 +874,7 @@ namespace Kernel
     
     float InfectionTB::GetLatentCureRate() const
     {
-        return TB_latent_cure_rate;
+        return InfectionTBConfig::TB_latent_cure_rate;
     }
     
     void InfectionTB::ResetRecoverFraction(float new_fraction)

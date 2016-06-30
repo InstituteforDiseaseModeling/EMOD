@@ -20,81 +20,6 @@ static const char * _module = "DemographicRestrictions";
 
 namespace Kernel
 {
-    void DemographicRestrictions::tPropertyRestrictions::ConfigureFromJsonAndKey( const Configuration * inputJson, const std::string& key )
-    {
-        // Make this optional.
-        if( inputJson->Exist( key ) == false )
-        {
-            return;
-        }
-
-        // We have a list of json objects. The format/logic is as follows. For input:
-        // [
-        //  { "Character": "Good", "Income": "High" },
-        //  { "Character": "Bad", "Income": "Low" }
-        // ]
-        // We give the intervention if the individuals has
-        // Good Character AND High Income OR Bad Character AND Low Income.
-        // So we AND together the elements of each json object and OR together these 
-        // calculated truth values of the elements of the json array.
-        try {
-            json::QuickInterpreter s2sarray = (*inputJson)[key].As<json::Array>();
-            for( int idx=0; idx < (*inputJson)[key].As<json::Array>().Size(); idx++ )
-            {
-                std::map< std::string, std::string > kvp;
-                try {
-                    auto json_map = s2sarray[idx].As<json::Object>();
-                    for( auto data = json_map.Begin();
-                            data != json_map.End();
-                            ++data )
-                    {
-                        std::string key = data->name;
-                        std::string value = "";
-                        try { 
-                            value = (std::string)s2sarray[idx][key].As< json::String >();
-                        }
-                        catch( const json::Exception & )
-                        {
-                            throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, key.c_str(), s2sarray[idx], "Expected STRING" );
-                        }
-                        kvp.insert( std::make_pair( key, value ) );
-                    }
-                }
-                catch( const json::Exception & )
-                {
-                    throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, std::to_string( idx ).c_str(), s2sarray, "Expected OBJECT" );
-                }
-                _restrictions.push_back( kvp );
-            }
-        }
-        catch( const json::Exception & )
-        {
-            throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, key.c_str(), (*inputJson), "Expected ARRAY" );
-        }
-    }
-
-    json::QuickBuilder DemographicRestrictions::tPropertyRestrictions::GetSchema()
-    {
-        json::QuickBuilder schema( jsonSchemaBase );
-        auto tn = JsonConfigurable::_typename_label();
-        auto ts = JsonConfigurable::_typeschema_label();
-
-        schema[ tn ] = json::String( "idmType:PropertyRestrictions" );
-        schema[ ts ] = json::Array();
-        schema[ ts ][0] = json::Object();
-        schema[ ts ][0]["<key>"] = json::Object();
-        schema[ ts ][0]["<key>"][ "type" ] = json::String( "Constrained String" );
-        schema[ ts ][0]["<key>"][ "constraints" ] = json::String( "<demographics>::Defaults.Individual_Properties.*.Property.<keys>" );
-        schema[ ts ][0]["<key>"][ "description" ] = json::String( "Individual Property Key from demographics file." );
-        schema[ ts ][0]["<value>"] = json::Object();
-        schema[ ts ][0]["<value>"][ "type" ] = json::String( "String" );
-        schema[ ts ][0]["<key>"][ "constraints" ] = json::String( "<demographics>::Defaults.Individual_Properties.*.Value.<keys>" );
-        schema[ ts ][0]["<value>"][ "description" ] = json::String( "Individual Property Value from demographics file." );
-        return schema;
-    }
-
-
-
     DemographicRestrictions::DemographicRestrictions()
     : allow_age_restrictions(true)
     , demographic_coverage(0)
@@ -105,7 +30,6 @@ namespace Kernel
     , target_gender(TargetGender::All)
     , property_restrictions_set()
     , property_restrictions()
-    , property_restrictions_verified( false )
     , target_residents_only( false )
     {
     }
@@ -120,7 +44,6 @@ namespace Kernel
     , target_gender(TargetGender::All)
     , property_restrictions_set()
     , property_restrictions()
-    , property_restrictions_verified( false )
     , target_residents_only( false )
     {
     }
@@ -186,7 +109,7 @@ namespace Kernel
     {
         if( property_restrictions_set.size() > 0 )
         {
-            if( property_restrictions._restrictions.size() > 0 )
+            if( property_restrictions.Size() > 0 )
             {
                 throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Cannot have both 'Property_Restrictions' and 'Property_Restrictions_Within_Node'." );
             }
@@ -211,7 +134,7 @@ namespace Kernel
                 dupKeyHelperSet.insert( szKey );
                 restriction_map.insert( make_pair( szKey, szVal ) );
             }
-            property_restrictions._restrictions.push_back( restriction_map );
+            property_restrictions.Add( restriction_map );
         }
     }
 
@@ -220,7 +143,7 @@ namespace Kernel
         if( demographic_coverage         != DEFAULT_DEMOGRAPHIC_COVERAGE    ) return false;
         if( target_demographic           != TargetDemographicType::Everyone ) return false;
         if( target_residents_only        != false                           ) return false;
-        if( property_restrictions._restrictions.size() >  0                 ) return false;
+        if( property_restrictions.Size() >  0                               ) return false;
 
         return true;
     }
@@ -296,63 +219,9 @@ namespace Kernel
             }
         }
 
-        if( retQualifies && (property_restrictions._restrictions.size() > 0) )
-        {
-            auto * pProp = const_cast<Kernel::IIndividualHumanEventContext*>(pIndividual)->GetProperties();
-            release_assert( pProp );
-
-            if( property_restrictions_verified == false )
+        if( retQualifies && (property_restrictions.Size() > 0) )
             {
-                for (auto& prop_map : property_restrictions._restrictions)
-                {
-                    for (auto& prop : prop_map)
-                    {
-                        const std::string& szKey = prop.first;
-                        const std::string& szVal = prop.second;
-
-                        Node::VerifyPropertyDefinedInDemographics( szKey, szVal );
-                    }
-                }
-                property_restrictions_verified = true;
-            }
-
-            retQualifies = false;
-
-            // individual has to have one of these properties
-            for (auto& prop_map : property_restrictions._restrictions)
-            {
-                bool meets_property_restriction_criteria = true;
-                for (auto& prop : prop_map)
-                {
-                    const std::string& szKey = prop.first;
-                    const std::string& szVal = prop.second;
-
-                    LOG_DEBUG_F( "Applying property restrictions in event coordinator: %s/%s.\n", szKey.c_str(), szVal.c_str() );
-                    // Every individual has to have a property value for each property key
-                    if( pProp->find( szKey ) == pProp->end() )
-                    {
-                        throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, "properties", szKey.c_str() );
-                    }
-                    else if( pProp->at( szKey ) == szVal )
-                    {
-                        LOG_DEBUG_F( "Person satisfies (partial) property restriction: constraint is %s/%s and the person is %s.\n", szKey.c_str(), szVal.c_str(), pProp->at( szKey ).c_str() );
-                        continue; // we're good
-                    }
-                    else
-                    {
-                        meets_property_restriction_criteria = false;
-                        LOG_DEBUG_F( "Person does not get the intervention because the allowed property is %s/%s and the person is %s.\n", szKey.c_str(), szVal.c_str(), pProp->at( szKey ).c_str() );
-                        break;
-                    }
-                }
-                // If verified, we're done since these are OR-ed together
-                if( meets_property_restriction_criteria )
-                {
-                    retQualifies = true;
-                    LOG_DEBUG_F( "Individual meets at least 1 of the OR-ed together property restriction conditions. Not checking the rest.\n" );
-                    break;
-                }
-            }
+            retQualifies = property_restrictions.Qualifies( pIndividual );
         }
         else
         {
@@ -394,23 +263,7 @@ namespace Kernel
 
     std::string DemographicRestrictions::GetPropertyRestrictionsAsString() const
     {
-        std::string restriction_str ;
-        if( property_restrictions._restrictions.size() > 0 )
-        {
-            for( auto prop_map : property_restrictions._restrictions )
-            {
-                restriction_str += "[ ";
-                for( auto entry : prop_map )
-                {
-                    std::string prop = entry.first + ":" + entry.second;
-                    restriction_str += "'"+ prop +"', " ;
-                }
-                restriction_str = restriction_str.substr( 0, restriction_str.length()-2 );
-                restriction_str += " ], ";
-            }
-            restriction_str = restriction_str.substr( 0, restriction_str.length()-2 );
-        }
-        return restriction_str;
+        return property_restrictions.GetAsString();
     }
 
 #if USE_JSON_SERIALIZATION
@@ -425,7 +278,6 @@ namespace Kernel
         root->Insert("target_age_min", target_age_min);
         root->Insert("target_age_max", target_age_max);
         root->Insert("target_gender", target_gender);
-        root->Insert("property_restrictions_verified", property_restrictions_verified);
 
         root->Insert("property_restrictions_map");
         root->BeginArray();
@@ -457,7 +309,6 @@ namespace Kernel
         ar & ec.target_age_min;
         ar & ec.target_age_max;
         ar & ec.target_gender;
-        ar & ec.property_restrictions_verified;
     }
 }
 #endif

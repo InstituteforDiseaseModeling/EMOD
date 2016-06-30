@@ -3,7 +3,7 @@
     "parameters": {
         "DEMOGRAPHICS": {
             "Enable_Vital_Dynamics": 0,
-            "Demographics_Filenames": [ "../../HIV/input/SA_UN_demographics.json", "../../HIV/input/PFA_overlay.json", "../../HIV/input/PFA_overlay_transitory_only.json" ],
+            "Demographics_Filenames": [ "../../HIV/input/SA_UN_demographics.json", "../../HIV/input/PFA_overlay.json", "../../HIV/input/PFA_overlay_transitory_only.json","PFA_Concurrency.json" ],
             "MORTALITY": {
                 "Base_Mortality": 0.01, 
                 "Immunity_Mortality_Factor": 0.5
@@ -22,17 +22,6 @@
         "PRIMARY": {
             "Simulation_Duration": 1500, 
             "Config_Name": "11_STI_Transitory_Concurrent"
-        },
-        "STI_Network_Params_By_Property" :
-        {
-            "NONE" :
-            {
-                "Prob_Extra_Transitory_Relationship_Female": 1, 
-                "Prob_Extra_Transitory_Relationship_Male": 1, 
-                "Max_Simultaneous_Transitory_Relationships_Females": 2, 
-                "Max_Simultaneous_Transitory_Relationships_Males": 2
-            }
         }
-
     }
 }

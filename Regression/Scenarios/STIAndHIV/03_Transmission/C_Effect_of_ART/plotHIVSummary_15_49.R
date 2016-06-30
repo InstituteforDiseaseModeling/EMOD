@@ -12,7 +12,6 @@ library(gridExtra)
 
 ART_YEAR = 2025
 
-rel_names <- c('Transitory', 'Informal', 'Marital')
 fig_dir = 'figs'
 if( !file.exists(fig_dir) ) {
     dir.create(fig_dir)
@@ -52,8 +51,10 @@ incident.c = cast(incident.m, Year + Gender ~ variable, sum, subset=(Age>=15 & A
 both.c = merge(prevalent.c, incident.c, by=c("Year", "Gender"))
 both.c$Prevalence = 100 * both.c$Infected / both.c$Population
 both.c$IncidenceRate = both.c$Newly.Infected / (both.c$Population - both.c$Infected)
+both.c$IncidenceRate[ is.nan(both.c$IncidenceRate) ] = 0
 both.c$HIVCauseMortalityRate = both.c$Died_from_HIV / both.c$Population
 both.c$ARTCoverage = 100 * both.c$On_ART / both.c$Infected
+both.c$ARTCoverage[ is.nan(both.c$ARTCoverage) ] = 0
 both.c$Gender = factor(both.c$Gender, labels=c("Male", "Female"))
 
 # set female incidence rate to zero in seed year to avoid meaningless spike upon seeding infections
@@ -104,10 +105,6 @@ p.ART = ggplot(both.c, aes(x=Year, y=ARTCoverage, colour=Gender)) +
     ylab( "Antiretroviral Therapy Coverage (%)" ) +
     ggtitle( "ART" )
 
-p = arrangeGrob(p.prevalence, p.incidence, p.deaths, p.ART, ncol=4)
+q = arrangeGrob(p.prevalence, p.incidence, p.deaths, p.ART, ncol=4)
 
-png( file.path(fig_dir,"HIV_Summary.png"), width=800, height=400)
-print( p )
-dev.off()
-
-print(p)
+ggsave(file.path(fig_dir,"HIV_Summary.png"), plot=q, width=8, height=4)

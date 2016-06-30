@@ -27,7 +27,7 @@
         "Climate_Update_Resolution": "CLIMATE_UPDATE_DAY", 
         "Config_Name": "76_Vector_DelayedIntervention_SimpleVaccine_SimpleDiagnostic", 
         "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER", 
-        "Demographics_Filenames": ["Namawala_single_node_demographics.compiled.json"], 
+        "Demographics_Filenames": ["Namawala_single_node_demographics.json"], 
         "Egg_Hatch_Delay_Distribution": "NO_DELAY", 
         "Egg_Saturation_At_Oviposition": "SATURATION_AT_OVIPOSITION", 
         "Enable_Absolute_Time": "NO", 

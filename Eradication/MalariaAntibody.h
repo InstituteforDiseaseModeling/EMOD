@@ -10,7 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #pragma once
 
 #include "IMalariaAntibody.h"
-#include "BoostLibWrapper.h"
+// clorton #include "BoostLibWrapper.h"
 
 namespace Kernel
 {
@@ -27,11 +27,11 @@ namespace Kernel
 
     public:
         // IMalariaAntibody methods
-        virtual void  Decay( float dt, SusceptibilityMalariaConfig* params ) override;
+        virtual void  Decay( float dt ) override;
         virtual float StimulateCytokines( float dt, float inv_uL_blood ) override;  // TODO: inv_uL_blood arguments can be removed when we switch to m_antigen_concentration from m_antigen_count
-        virtual void  UpdateAntibodyCapacity( float dt, SusceptibilityMalariaConfig* params, float inv_uL_blood ) override;
-        virtual void  UpdateAntibodyCapacity( float dt, float growth_rate ) override;
-        virtual void  UpdateAntibodyConcentration( float dt, SusceptibilityMalariaConfig* params) override;
+        virtual void  UpdateAntibodyCapacity( float dt, float inv_uL_blood ) override;
+        virtual void  UpdateAntibodyCapacityByRate( float dt, float growth_rate ) override;
+        virtual void  UpdateAntibodyConcentration( float dt ) override;
         virtual void  ResetCounters() override;
 
         virtual void  IncreaseAntigenCount( int64_t antigenCount ) override;    // TODO: rename to IncreaseAntigenConcentration( float antigenConcentration )
@@ -69,8 +69,8 @@ namespace Kernel
     {
     public:
         static IMalariaAntibody* CreateAntibody( int variant, float capacity=0.0f );
-        virtual void UpdateAntibodyConcentration( float dt, SusceptibilityMalariaConfig* params ) override;
-        virtual void Decay( float dt, SusceptibilityMalariaConfig* params ) override;
+        virtual void UpdateAntibodyConcentration( float dt ) override;
+        virtual void Decay( float dt ) override;
 
     protected:
         DECLARE_SERIALIZABLE(MalariaAntibodyCSP);
@@ -89,7 +89,7 @@ namespace Kernel
     {
     public:
         static IMalariaAntibody* CreateAntibody( int variant, float capacity=0.0f );
-        virtual void UpdateAntibodyCapacity( float dt, SusceptibilityMalariaConfig* params, float inv_uL_blood ) override;
+        virtual void UpdateAntibodyCapacity( float dt, float inv_uL_blood ) override;
 
     protected:
         DECLARE_SERIALIZABLE(MalariaAntibodyPfEMP1Minor);
@@ -99,7 +99,7 @@ namespace Kernel
     {
     public:
         static IMalariaAntibody* CreateAntibody( int variant, float capacity=0.0f );
-        virtual void UpdateAntibodyCapacity( float dt, SusceptibilityMalariaConfig* params, float inv_uL_blood ) override;
+        virtual void UpdateAntibodyCapacity( float dt, float inv_uL_blood ) override;
 
     protected:
         DECLARE_SERIALIZABLE(MalariaAntibodyPfEMP1Major);

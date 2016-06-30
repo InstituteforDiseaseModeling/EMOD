@@ -435,7 +435,6 @@ namespace Kernel
         , migration_dist_type(DistributionFunction::NOT_INITIALIZED)
         , migration_dist1(0.0f)
         , migration_dist2(0.0f)
-        , new_infection_observers()
         , animal_reservoir_type(AnimalReservoir::NO_ZOONOSIS)
         , infectivity_scaling(InfectivityScaling::CONSTANT_INFECTIVITY)
         , zoonosis_rate(0.0f)
@@ -535,7 +534,6 @@ namespace Kernel
         , migration_dist_type(DistributionFunction::NOT_INITIALIZED)
         , migration_dist1(0.0f)
         , migration_dist2(0.0f)
-        , new_infection_observers()
         , animal_reservoir_type(AnimalReservoir::NO_ZOONOSIS)
         , infectivity_scaling(InfectivityScaling::CONSTANT_INFECTIVITY)
         , zoonosis_rate(0.0f)
@@ -805,7 +803,8 @@ namespace Kernel
     // Distrib["QoC"][0.2] = "Bad";
     // Distrib["QoC"][0.7] = "Ok";
     // Distrib["QoC"][1.0] = "Good";
-    Node::tDistrib Node::base_distribs;
+    tPropertiesDistrib Node::base_distribs;
+
     void Node::SetParameters(NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory)
     {
         // Parameters set from an input filestream
@@ -2532,13 +2531,6 @@ namespace Kernel
         Cumulative_Infections += monte_carlo_weight; 
         event_context_host->TriggerNodeEventObservers( ih->GetEventContext(), IndividualEventTriggerType::NewInfectionEvent );
 
-        if (new_infection_observers.size() > 0)
-        {
-            for (const auto& entry : new_infection_observers)
-            {
-                entry.second(ih);
-            }
-        }
         newInfectedPeopleAgeProduct += monte_carlo_weight * float(ih->GetAge());
     }
 
@@ -2838,28 +2830,20 @@ namespace Kernel
 
     INodeContext *Node::getContextPointer()    { return this; }
 
+    float Node::GetBasePopulationScaleFactor() const
+    {
+        return population_scaling_factor;
+    }
+
     const SimulationConfig* Node::params() const
     {
         return GET_CONFIGURABLE(SimulationConfig);
     }
 
-    const INodeContext::tDistrib&
+    const tPropertiesDistrib&
     Node::GetIndividualPropertyDistributions() const
     {
         return distribs;
-    }
-
-    void Node::RegisterNewInfectionObserver(void* id, INodeContext::callback_t observer)
-    {
-        new_infection_observers[id] = observer;
-    }
-
-    void Node::UnregisterNewInfectionObserver(void* id)
-    {
-        if (new_infection_observers.erase(id) == 0)
-        {
-            LOG_WARN_F("%s: Didn't find entry for id %08X in observer map.", __FUNCTION__, id);
-        }
     }
 
     bool Node::IsValidTransmissionRoute( string& transmissionRoute )
@@ -3050,7 +3034,6 @@ namespace Kernel
             ar.labelElement("migration_dist_type") & (uint32_t&)node.migration_dist_type;
             ar.labelElement("migration_dist1") & node.migration_dist1;
             ar.labelElement("migration_dist2") & node.migration_dist2;
-// clorton          ar.labelElement("new_infection_observers") & node.new_infection_observers;
             ar.labelElement("routes") & node.routes;
 // clorton          ar.labelElement("ipkeys_whitelist") & node.ipkeys_whitelist;
         }

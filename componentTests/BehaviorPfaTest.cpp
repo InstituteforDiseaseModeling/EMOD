@@ -319,7 +319,7 @@ SUITE(BehaviorPfaTest)
     {
         unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/BehaviorPfaTest.json" ) );
 
-        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get(), 1.0f, 1.0f ) );
+        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get() ) );
 
         RandomFake fake_rng ;
 
@@ -566,7 +566,7 @@ SUITE(BehaviorPfaTest)
 
         unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/BehaviorPfaTest.json" ) );
 
-        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get(), 1.0f, 1.0f ) );
+        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get() ) );
 
         RandomFake fake_rng ;
 
@@ -628,7 +628,7 @@ SUITE(BehaviorPfaTest)
     {
         unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/BehaviorPfaTest.json" ) );
 
-        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get(), 1.0f, 1.0f ) );
+        unique_ptr<IPairFormationParameters> from_data( PairFormationParametersImpl::CreateParameters( RelationshipType::TRANSITORY, p_config.get() ) );
 
         PSEUDO_DES rng ;
 

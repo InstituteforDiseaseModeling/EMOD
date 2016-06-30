@@ -12,8 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    
-    class SusceptibilityTBConfig: public JsonConfigurable
+    class SusceptibilityTBConfig: public SusceptibilityAirborneConfig
     {
         GET_SCHEMA_STATIC_WRAPPER(SusceptibilityTBConfig)
         friend class IndividualHumanTB;
@@ -23,6 +22,10 @@ namespace Kernel
         virtual bool Configure( const Configuration* config ) override;
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
         DECLARE_QUERY_INTERFACE()
+
+    protected:
+        friend class SusceptibilityTB;
+        
         static float TB_immune_loss_fraction;
         static float TB_fast_progressor_fraction_child;
         static float TB_fast_progressor_fraction_adult;
@@ -44,7 +47,7 @@ namespace Kernel
         virtual void SetCD4ActFlag( bool bin) = 0;
     };
 
-    class SusceptibilityTB : public SusceptibilityAirborne, public ISusceptibilityTB, SusceptibilityTBConfig
+    class SusceptibilityTB : public SusceptibilityAirborne, public ISusceptibilityTB
     {
     public:
         friend class IndividualHumanTB;

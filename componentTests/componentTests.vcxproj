@@ -117,6 +117,7 @@
     <ClCompile Include="BaseEventReportTest.cpp" />
     <ClCompile Include="BehaviorPfaTest.cpp" />
     <ClCompile Include="componentTests.cpp" />
+    <ClCompile Include="ConcurrencyParametersTest.cpp" />
     <ClCompile Include="FileSystemTest.cpp" />
     <ClCompile Include="FlowControllerImplTest.cpp" />
     <ClCompile Include="HIVARTStagingByCD4DiagnosticTest.cpp" />
@@ -126,6 +127,8 @@
     <ClCompile Include="LoadBalanceSchemeTest.cpp" />
     <ClCompile Include="MigrateIndividualsTest.cpp" />
     <ClCompile Include="MigrationTest.cpp" />
+    <ClCompile Include="NChooserEventCoordinatorTest.cpp" />
+    <ClCompile Include="RelationshipParametersTest.cpp" />
     <ClCompile Include="SerializationTest.cpp" />
     <ClCompile Include="STIIsPostDebutTest.cpp" />
     <ClCompile Include="HIVSimpleDiagnosticTest.cpp" />

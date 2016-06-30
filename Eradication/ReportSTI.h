@@ -11,6 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Report.h"
 #include "IIndividualHuman.h"
+#include "IRelationship.h"
 #include "Types.h"
 
 namespace Kernel {
@@ -44,9 +45,9 @@ namespace Kernel {
         unsigned int num_single_women;
         unsigned int num_paired;
 
-        unsigned int num_transitory;
-        unsigned int num_informal;
-        unsigned int num_marital;
+        std::string rel_labels[ RelationshipType::COUNT ];
+        unsigned int num_rels[ RelationshipType::COUNT ];
+
         unsigned int num_sexually_active_prevalance;
         unsigned int num_post_debut_pop;
         NaturalNumber num_circumcised_males;

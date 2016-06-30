@@ -49,17 +49,19 @@ namespace Kernel
     {
         // Keeping this simple. But bear in mind CreateInstanceFromSpecs can throw exception
         // and JC::_useDefaults will not be restored. But we won't keep running in that case.
+        bool reset = JsonConfigurable::_useDefaults;
         JsonConfigurable::_useDefaults = useDefaults;
         IDistributableIntervention* ret = CreateInstanceFromSpecs<IDistributableIntervention>(config, getRegisteredClasses(), true);
-        JsonConfigurable::_useDefaults = false;
+        JsonConfigurable::_useDefaults = reset;
         return ret;
     }
 
     INodeDistributableIntervention* InterventionFactory::CreateNDIIntervention( const Configuration *config )
     {
+        bool reset = JsonConfigurable::_useDefaults;
         JsonConfigurable::_useDefaults = useDefaults;
         INodeDistributableIntervention* ret = CreateInstanceFromSpecs<INodeDistributableIntervention>(config, getRegisteredClasses(), true);
-        JsonConfigurable::_useDefaults = false;
+        JsonConfigurable::_useDefaults = reset;
         return ret;
     }
 

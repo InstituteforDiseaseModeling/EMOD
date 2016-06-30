@@ -11,7 +11,7 @@
      "DEMOGRAPHICS": {
           "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE", 
           "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER",
-          "Demographics_Filenames": ["Namawala_single_node_demographics.compiled.json"], 
+          "Demographics_Filenames": ["Namawala_single_node_demographics.json"], 
           "Enable_Birth": 1, 
           "Population_Scale_Type": "FIXED_SCALING"
      }, 

@@ -122,7 +122,7 @@ namespace Kernel
         }
         std::istringstream iss( demographics[SOCIETY_KEY].ToString() );
         Configuration* p_config = Configuration::Load( iss, "demographics" );
-        society->SetParameters( dynamic_cast<IIdGeneratorSTI*>(parent), p_config );
+        society->SetParameters( dynamic_cast<IIdGeneratorSTI*>(parent), GetIndividualPropertyDistributions(), p_config );
         delete p_config ;
     }
 
@@ -159,6 +159,7 @@ namespace Kernel
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "person", "IIndividualHumanSTI", "IIndividualHuman" );
             }
             sti_person->UpdateEligibility();        // DJK: Could be slow to do this on every update.  Could check for relationship status changes. <ERAD-1869>
+            sti_person->UpdateHistory( GetTime(), dt );
         }
 
         if (pfa_burnin_duration > 0)

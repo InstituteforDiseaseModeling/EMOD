@@ -10,7 +10,7 @@
           }
      }, 
      "DEMOGRAPHICS": {
-          "Demographics_Filenames": ["Namawala_single_node_demographics.compiled.json"]
+          "Demographics_Filenames": ["Namawala_single_node_demographics.json"]
      }, 
      "MALARIA": {
           "Antibody_Memory_Level": 0.3, 

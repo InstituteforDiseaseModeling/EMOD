@@ -7,7 +7,7 @@
         "Simulation_Timestep": 1,
         "alpha_____________DEMOGRAPHICS___________": "",
         "Base_Population_Scale_Factor": 0.001,
-        "Demographics_Filenames": [ "../../HIV/input/SA_UN_demographics.json", "../../HIV/input/PFA_overlay.json", "PFA_overlay_coinfection.json" ],
+        "Demographics_Filenames": [ "../../HIV/input/SA_UN_demographics.json", "../../HIV/input/PFA_overlay.json", "PFA_overlay_coinfection.json","PFA_Concurrency.json" ],
         "Enable_Nondisease_Mortality": 1,
 
         "alpha_____________INTRAHOST___________": "",
@@ -19,19 +19,6 @@
         "Maternal_Transmission_ART_Multiplier": 0.03,
 
         "alpha_____________NETWORK___________": "",
-
-        "STI_Network_Params_By_Property" :
-        {
-            "NONE" :
-            {
-                "Prob_Extra_Transitory_Relationship_Female": 0.80,
-                "Prob_Extra_Transitory_Relationship_Male": 0.80,
-                "Prob_Extra_Informal_Relationship_Female": 0.30,
-                "Prob_Extra_Informal_Relationship_Male": 0.30,
-                "Prob_Extra_Marital_Relationship_Female": 0.10,
-                "Prob_Extra_Marital_Relationship_Male": 0.10
-            }
-        },
 
 
         "alpha_____________REPORTING___________": "",

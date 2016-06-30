@@ -34,12 +34,14 @@ namespace Kernel
         HIVRandomChoice();
         HIVRandomChoice( const HIVRandomChoice& );
 
+        virtual bool Configure( const Configuration * inputJson ) override;
+
         // IDistributingDistributableIntervention
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
 
         // HIVSimpleDiagnostic
-        virtual bool positiveTestResult();
-        virtual void positiveTestDistribute();
+        virtual bool positiveTestResult() override;
+        virtual void positiveTestDistribute() override;
 
     protected:
         Event2ProbabilityMapType event2ProbabilityMap;

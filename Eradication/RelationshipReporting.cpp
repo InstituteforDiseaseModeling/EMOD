@@ -32,9 +32,6 @@ namespace Kernel
         , is_circumcised( false )
         , has_sti( false )
         , is_superspreader( false )
-        , transitory_relationship_count(0)
-        , informal_relationship_count(0)
-        , marital_relationship_count(0)
         , props()
     {}
 

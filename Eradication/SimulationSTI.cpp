@@ -93,14 +93,7 @@ namespace Kernel
     )
     {
         Simulation::Initialize(config);
-        IndividualHumanSTIConfig fakeHumanSTIConfig;
-        LOG_INFO( "Calling Configure on fakeHumanSTIConfig\n" );
-        fakeHumanSTIConfig.Configure( config );
-
-        if( !JsonConfigurable::_dryrun && this->GetSimulationConfigObj()->migration_structure != MigrationStructure::NO_MIGRATION )
-        {
-            throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Migration is not yet supported in STI/HIV." );
-        }
+        IndividualHumanSTI::InitializeStaticsSTI( config );
     }
 
     bool

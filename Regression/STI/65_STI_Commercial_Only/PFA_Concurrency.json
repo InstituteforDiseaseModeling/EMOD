@@ -1,0 +1,24 @@
+{
+    "Metadata": {
+        "Author": "dbridenbecker", 
+        "NodeCount": 1, 
+        "Tool": "notepad", 
+        "IdReference": "0", 
+        "DateCreated": "2016-6-11"
+    },
+    "Defaults": {
+        "Society" : {
+            "COMMERCIAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 1,
+                        "Max_Simultaneous_Relationships_Male"  : 1
+                    }
+                }
+            }
+        }
+    }
+}

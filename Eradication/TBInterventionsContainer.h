@@ -88,7 +88,7 @@ namespace Kernel
         virtual void Update(float dt); // hook to update interventions if they need it
 
         //functions in the ITBInterventionsContainer
-        virtual int GetNumTBDrugsActive(); //this function needs to be non-const so it can call GetInterventionsByType
+        virtual int GetNumTBDrugsActive(); //this function needs to be non-const so it can call GetInterventionsByInterface
         virtual bool GetTxNaiveStatus() const;
         virtual bool GetTxFailedStatus() const;
         virtual bool GetTxEverRelapsedStatus() const; 

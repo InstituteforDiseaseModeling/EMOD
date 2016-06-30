@@ -24,11 +24,11 @@ namespace Kernel
 {
     IReport* HIVTransmissionReporter::Create(ISimulation* simulation)
     {
-        return new HIVTransmissionReporter(simulation);
+        return new HIVTransmissionReporter();
     }
 
-    HIVTransmissionReporter::HIVTransmissionReporter(ISimulation* sim)
-        : StiTransmissionReporter(sim)
+    HIVTransmissionReporter::HIVTransmissionReporter()
+        : StiTransmissionReporter()
         , hiv_report_data()
     {
     }

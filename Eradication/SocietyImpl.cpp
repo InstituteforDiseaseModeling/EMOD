@@ -18,6 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Relationship.h"
 #include "RelationshipParameters.h"
 #include "IIdGeneratorSTI.h"
+#include "ConcurrencyParameters.h"
 
 #include "Log.h"
 static const char * _module = "SocietyImpl";
@@ -37,8 +38,7 @@ namespace Kernel {
 
     SocietyImpl::SocietyImpl( IRelationshipManager* manager )
         : relationship_manager(manager)
-        , extra_relational_rate_ratio_male(1.0f)
-        , extra_relational_rate_ratio_female(1.0f)
+        , p_concurrency( new ConcurrencyConfiguration() )
         , pfa_selection_threshold(0.2f)
     {
         for( int irel = 0; irel < RelationshipType::COUNT; irel++ )
@@ -76,6 +76,9 @@ namespace Kernel {
             delete rel_params[ irel ] ;
             rel_params[ irel ] = nullptr ;
         }
+
+        delete p_concurrency;
+        p_concurrency = nullptr;
     }
 
     bool SocietyImpl::Configure(const Configuration *config)
@@ -83,28 +86,45 @@ namespace Kernel {
         // -------------------------------
         // --- Parameters from config.json
         // -------------------------------
-        initConfigTypeMap( "Extra_Relational_Rate_Ratio_Male",      &extra_relational_rate_ratio_male, PFA_Extra_Relational_Rate_Ratio_Male_DESC_TEXT, 1.0, FLT_MAX, 1.0f );
-        initConfigTypeMap( "Extra_Relational_Rate_Ratio_Female",    &extra_relational_rate_ratio_female, PFA_Extra_Relational_Rate_Ratio_Female_DESC_TEXT, 1.0, FLT_MAX, 1.0f );
-        initConfigTypeMap( "PFA_Cum_Prob_Selection_Threshold",      &pfa_selection_threshold, PFA_Cum_Prob_Selection_Threshold_DESC_TEXT, 0.0f, 1.0f, 0.2f );
+        initConfigTypeMap( "PFA_Cum_Prob_Selection_Threshold", &pfa_selection_threshold, PFA_Cum_Prob_Selection_Threshold_DESC_TEXT, 0.0f, 1.0f, 0.2f );
 
         bool ret = JsonConfigurable::Configure( config );
         return ret ;
     }
 
-    void SocietyImpl::SetParameters( IIdGeneratorSTI* pIdGen, const Configuration* config )
+    void SocietyImpl::SetParameters( IIdGeneratorSTI* pIdGen, const tPropertiesDistrib& rPropertiesDist, const Configuration* config )
     {
+        bool prev_use_defaults = JsonConfigurable::_useDefaults ;
+        bool resetTrackMissing = JsonConfigurable::_track_missing;
+        JsonConfigurable::_track_missing = false;
+        JsonConfigurable::_useDefaults = false ;
+
         // --------------------------------
         // --- Parameters from Demographics
         // --------------------------------
         release_assert( config );
 
+        Configuration* concurrency_config = Configuration::CopyFromElement( (*config)[ "Concurrency_Configuration" ] );
+
+        p_concurrency->Initialize( rPropertiesDist, concurrency_config );
+
+        delete concurrency_config;
+        concurrency_config = nullptr;
+
+        const std::string& r_con_prop_key = p_concurrency->GetPropertyKey();
+
         for( int irel = 0; irel < RelationshipType::COUNT; irel++ )
         {
             std::string main_element_name = RelationshipType::pairs::lookup_key(irel);
-            auto config_form = Configuration::CopyFromElement( (*config)[ main_element_name ][ "Pair_Formation_Parameters" ] );
-            auto config_rel  = Configuration::CopyFromElement( (*config)[ main_element_name ][ "Relationship_Parameters"   ] );
+            Configuration* config_con  = Configuration::CopyFromElement( (*config)[ main_element_name ][ "Concurrency_Parameters"    ] );
+            Configuration* config_form = Configuration::CopyFromElement( (*config)[ main_element_name ][ "Pair_Formation_Parameters" ] );
+            Configuration* config_rel  = Configuration::CopyFromElement( (*config)[ main_element_name ][ "Relationship_Parameters"   ] );
  
             RelationshipType::Enum rel_type = (RelationshipType::Enum)irel ;
+
+            ConcurrencyParameters* p_cp = new ConcurrencyParameters();
+            p_cp->Initialize( main_element_name, r_con_prop_key, rPropertiesDist, config_con );
+            p_concurrency->AddParameters( rel_type, p_cp );
 
             RelationshipParameters* p_rel_params = new RelationshipParameters( rel_type );
             p_rel_params->Configure( config_rel );
@@ -117,17 +137,21 @@ namespace Kernel {
             }; 
 
             rel_params[  irel ] = p_rel_params ;
-            form_params[ irel ] = PairFormationParamsFactory::Create( rel_type, config_form, extra_relational_rate_ratio_male, extra_relational_rate_ratio_female );
+            form_params[ irel ] = PairFormationParamsFactory::Create( rel_type, config_form );
             pfa[         irel ] = PfaFactory::CreatePfa( config_form, form_params[ irel ], pfa_selection_threshold, randgen, rc );
             rates[       irel ] = RateTableFactory::CreateRateTable( form_params[ irel ] );
             stats[       irel ] = PairFormationStatsFactory::CreateStatistician( form_params[ irel ] );
             controller[  irel ] = FlowControllerFactory::CreateController( pfa[ irel ], stats[ irel ], rates[ irel ], form_params[ irel ] );
 
+            delete config_con;
             delete config_form;
             delete config_rel;
+            config_con  = nullptr;
             config_form = nullptr;
             config_rel  = nullptr;
         }
+        JsonConfigurable::_useDefaults = prev_use_defaults ;
+        JsonConfigurable::_track_missing = resetTrackMissing;
     }
 
     IRelationshipParameters* SocietyImpl::GetRelationshipParameters( RelationshipType::Enum type )
@@ -198,5 +222,10 @@ namespace Kernel {
     IPairFormationStats* SocietyImpl::GetStats(RelationshipType::Enum type)
     { 
         return stats[ type ] ;
+    }
+
+    IConcurrency* SocietyImpl::GetConcurrency()
+    {
+        return p_concurrency;
     }
 }

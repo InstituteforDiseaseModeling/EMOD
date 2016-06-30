@@ -30,7 +30,7 @@ namespace Kernel
         class suid ;
     }
 
-    struct IEventCoordinator : public ISupports
+    struct IDMAPI IEventCoordinator : public ISupports
     {
         virtual void SetContextTo(ISimulationEventContext *isec) = 0;
         virtual void AddNode( const suids::suid& suid) = 0;

@@ -195,7 +195,16 @@ namespace Kernel
         initConfigTypeMap( ( "Infectious_Human_Feed_Mortality_Factor" ), &infectioushfmortmod, Infectious_Human_Feed_Mortality_Factor_DESC_TEXT, 0.0f, 1000.0f, 1.5f );
         initConfigTypeMap( ( "Indoor_Feeding_Fraction" ), &indoor_feeding, Indoor_Feeding_Fraction_DESC_TEXT, 0.0f, 1.0f, 1.0f );
 
-        bool ret =  JsonConfigurable::Configure( config );
+        bool ret = false;
+        try {
+            ret =  JsonConfigurable::Configure( config );
+        }
+        catch( DetailedException& exc )
+        {
+            LOG_WARN_F( "Please note that the specification of larval habitats in the config.json recently changed. Up to now you had to input matching Habitat_Type and Required_Habitat_Factor (per vector species). Now they are input together in a single Larval_Habitat_Types parameter.\n" );
+            throw exc;
+        }
+
         feedingrate    = 1.0f / daysbetweenfeeds;
         adultmortality = 1.0f / adultlifeexpectancy;
         immaturerate   = 1.0f / immatureduration;

@@ -1,7 +1,6 @@
 # SUMMARY: Plot percent of births that are HIV+ over time to show the impact of PMTCT and ART
 # INPUT: 
-#   1. config.json
-#   2. output/RelationshipStart.csv
+#   1. output/ReportEventRecorder.csv
 # OUTPUT: figs/VerticalTransmission.png
 
 rm( list=ls( all=TRUE ) )
@@ -20,7 +19,6 @@ if( !file.exists(fig_dir) ) {
     dir.create(fig_dir)
 }
 
-config <- fromJSON("config.json")$parameters
 dat <- read.csv("output/ReportEventRecorder.csv", header=TRUE)
 dat$Count = 1
 

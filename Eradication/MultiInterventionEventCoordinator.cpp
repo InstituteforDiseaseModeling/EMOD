@@ -109,13 +109,10 @@ namespace Kernel
     {
         // Less of this would need to be copied from the base class with a more thoughtful encapsulation of functions
         // In particular, only the give-intervention(s)-to-individual stuff inside the try statement is different.
-        if( !demographic_restrictions.HasDefaultRestrictions() ) // don't waste any more time with checks if we're giving to everyone
+        if( qualifiesDemographically( ihec ) == false )
         {
-            if( qualifiesDemographically( ihec ) == false )
-            {
-                LOG_DEBUG("Individual not given intervention because not in target demographic\n");
-                return false;
-            }
+            LOG_DEBUG("Individual not given intervention because not in target demographic\n");
+            return false;
         }
         LOG_DEBUG("Individual meets demographic targeting criteria\n");
 

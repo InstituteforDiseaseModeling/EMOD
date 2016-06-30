@@ -49,7 +49,7 @@
         "Config_Name": "67_Malaria_Namawala_AgeConcentrationDrugs", 
         "Cytokine_Gametocyte_Inactivation": 0.05, 
         "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF", 
-        "Demographics_Filenames": ["Namawala_single_node_demographics.compiled.json"], 
+        "Demographics_Filenames": ["Namawala_single_node_demographics.json"], 
         "Egg_Hatch_Delay_Distribution": "NO_DELAY", 
         "Egg_Saturation_At_Oviposition": "SATURATION_AT_OVIPOSITION", 
         "Enable_Absolute_Time": "NO", 

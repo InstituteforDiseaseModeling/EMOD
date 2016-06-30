@@ -38,16 +38,12 @@ namespace Kernel
         {
             m_all_males.push_back(sti_person);
             AddToPopulation(m_male_population.at(agebin_index), sti_person, agebin_index);
-#ifdef _DEBUG
-            new_males[agebin_index]++;
-#endif
+            new_males[agebin_index]++; //DEBUG
         }
         else
         {
             AddToPopulation(m_female_population.at(agebin_index), sti_person, agebin_index);
-#ifdef _DEBUG
-            new_females[agebin_index]++;
-#endif
+            new_females[agebin_index]++; //DEBUG
         }
     }
 

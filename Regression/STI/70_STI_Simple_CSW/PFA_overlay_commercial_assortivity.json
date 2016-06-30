@@ -1,0 +1,38 @@
+{
+    "Metadata": {
+        "Author": "dbridenbecker", 
+        "NodeCount": 1, 
+        "Tool": "notepad", 
+        "IdReference": "0", 
+        "DateCreated": "2015-3-21"
+    },
+    "Defaults": {
+        "IndividualProperties": [ 
+            { 
+                "Property": "Risk",
+                "Values": [ "LOW", "HIGH" ],
+                "Initial_Distribution": [ 0.9, 0.1 ],
+                "Transitions": []
+            }
+        ],
+        "Society" : {
+            "COMMERCIAL" :
+            {
+                "Pair_Formation_Parameters" :
+                {
+                    "Assortivity" :
+                    {
+                        "Group" : "INDIVIDUAL_PROPERTY",
+                        "Property_Name" : "Risk",
+                        "Axes" : [ "LOW", "HIGH" ],
+                        "Weighting_Matrix_RowMale_ColumnFemale" :
+                        [
+                            [ 0.0, 0.2 ],
+                            [ 0.2, 0.8 ]
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

@@ -48,7 +48,6 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "%s\n", __FUNCTION__ );
-        //initConfig( "Durability_Time_Profile", durability_time_profile, inputJson, MetadataDescriptor::Enum("Durability_Time_Profile", SB_Durability_Time_Profile_DESC_TEXT, MDD_ENUM_ARGS(InterventionDurabilityProfile)) );
         initConfig( "Relationship_Type", rel_type, inputJson, MetadataDescriptor::Enum("Relationship_Type", STI_Barrier_Relationship_Type_DESC_TEXT, MDD_ENUM_ARGS(RelationshipType)) );
         return JsonConfigurable::Configure( inputJson );
     }

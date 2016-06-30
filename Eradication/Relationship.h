@@ -35,6 +35,7 @@ namespace Kernel
             virtual void Terminate( RelationshipTerminationReason::Enum terminationReason ) override;
             virtual void Migrate() override;
             virtual void Resume( IRelationshipManager* pRelMan, ISociety* pSociety, IIndividualHumanSTI* returnee ) override;
+            virtual void UpdatePaused() override;
             virtual bool Update( float dt ) override;
             virtual void Consummate( float dt ) override;
 
@@ -49,6 +50,7 @@ namespace Kernel
             virtual const suids::suid& GetSuid() const override;
             virtual const std::string& GetPropertyKey() override;
             virtual const std::string& GetPropertyName() const override;
+            virtual unsigned int GetSlotNumberForPartner( bool forPartnerB ) const override;
             virtual const tRelationshipMembers GetMembers() const override;
             virtual bool IsDiscordant() const override;
             virtual float GetTimer() const override;
@@ -57,9 +59,12 @@ namespace Kernel
             virtual float GetScheduledEndTime() const override;
             virtual bool GetUsingCondom() const override;
             virtual RelationshipType::Enum GetType() const override;
+            virtual suids::suid GetPartnerId( const suids::suid& myID ) const override;
             virtual suids::suid GetMalePartnerId() const override;
             virtual suids::suid GetFemalePartnerId() const override;
             virtual ExternalNodeId_t GetOriginalNodeId() const override;
+            virtual bool IsMalePartnerAbsent() const override;
+            virtual bool IsFemalePartnerAbsent() const override;
 
             virtual float GetCoitalRate() const override;
             virtual ProbabilityNumber getProbabilityUsingCondomThisAct() const override;
@@ -193,6 +198,28 @@ namespace Kernel
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
             DECLARE_SERIALIZABLE(MarriageRelationship);
+#pragma warning( pop )
+    };
+
+    class CommercialRelationship : public Relationship
+    {
+        public:
+            friend class RelationshipFactory;
+            DECLARE_QUERY_INTERFACE()
+
+        protected:
+            CommercialRelationship();
+            CommercialRelationship( const suids::suid& rRelId,
+                                       IRelationshipManager* pRelMan,
+                                       IRelationshipParameters* pParams, 
+                                       IIndividualHumanSTI* male_partner, 
+                                       IIndividualHumanSTI* female_partner );
+
+            virtual Relationship* Clone() override;
+
+#pragma warning( push )
+#pragma warning( disable: 4251 ) // See IdmApi.h for details
+            DECLARE_SERIALIZABLE(CommercialRelationship);
 #pragma warning( pop )
     };
 }

@@ -37,15 +37,6 @@
 
 		"Sexual_Debut_Age_Min": 0,
 
-        "STI_Network_Params_By_Property" :
-        {
-            "NONE" :
-            {
-                "Prob_Extra_Transitory_Relationship_Female": 0,
-                "Prob_Extra_Transitory_Relationship_Male": 0
-            }
-        },
-
 		"____________REPORTING___________": "",
 		"Report_HIV_Period": 365,
 		"Report_Transmission": 1,
@@ -55,6 +46,8 @@
 		"Report_HIV_ByAgeAndGender_Stop_Year" : 1978,
 		"Report_HIV_ByAgeAndGender_Collect_Circumcision_Data" : 1,
 		"Report_HIV_ByAgeAndGender_Collect_IP_Data" : 0,
+		"Report_HIV_ByAgeAndGender_Collect_HIV_Data" : 0,
+		"Report_HIV_ByAgeAndGender_Has_Intervention_With_Name" : "",
 		"Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4": 0,
 		"Report_HIV_ByAgeAndGender_Event_Counter_List" : [],
 		

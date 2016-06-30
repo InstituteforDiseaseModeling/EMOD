@@ -18,11 +18,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    class SusceptibilityMalariaConfig : public JsonConfigurable 
+    class SusceptibilityMalariaConfig : public SusceptibilityVectorConfig
     {
         friend class IndividualHumanMalaria;
 
     public:
+        friend class SusceptibilityMalaria;
+        friend struct IMalariaAntibody;
+
         virtual bool Configure( const Configuration* config ) override;
 
         // These public configurable parameters are accessed by MalariaAntibody for Decay and Update functions
@@ -70,7 +73,7 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
     };
 
-    class SusceptibilityMalaria : public SusceptibilityVector, public IMalariaSusceptibility, protected SusceptibilityMalariaConfig
+    class SusceptibilityMalaria : public SusceptibilityVector, public IMalariaSusceptibility
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()

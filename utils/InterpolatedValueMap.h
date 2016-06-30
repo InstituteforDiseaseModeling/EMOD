@@ -23,6 +23,7 @@ namespace Kernel
             InterpolatedValueMap() {}
             float getValuePiecewiseConstant( float year, float default_value = 0) const;
             float getValueLinearInterpolation( float year, float default_value = 0) const;
+            bool isAtEnd( float currentYear ) const;
             virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key );
             virtual json::QuickBuilder GetSchema();
 

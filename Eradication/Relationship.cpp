@@ -19,12 +19,17 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "STIInterventionsContainer.h" // for ISTIBarrierConsumer (which should be in ISTIBarrierConsumer.h) TODO
 #include "IndividualSTI.h"
 #include "ISociety.h"
+#include "IdmString.h"
 
 #include <map>
 #include <ctime>
 #include <algorithm>
 
 static const char * _module = "Relationship";
+
+#define PROPERTY_KEY_PREFIX "Relationship:"
+#define PROPERTY_KEY_PREFIX_LENGTH (13)
+#define SLOT_SEPARATOR ('-')
 
 void 
 howlong(
@@ -59,9 +64,9 @@ namespace Kernel {
         return false;
     }
 
-#define MALE_PARTNER_ID()       ( male_partner             ? male_partner->GetSuid()             : absent_male_partner_id   )
-#define FEMALE_PARTNER_ID()     ( female_partner           ? female_partner->GetSuid()           : absent_female_partner_id )
-#define PARTNERID( individual)  ( GetPartner( individual ) ? GetPartner( individual )->GetSuid() : suids::nil_suid()        )
+#define MALE_PARTNER_ID()       ( (absent_male_partner_id   == suids::nil_suid()) ? male_partner->GetSuid()   : absent_male_partner_id   )
+#define FEMALE_PARTNER_ID()     ( (absent_female_partner_id == suids::nil_suid()) ? female_partner->GetSuid() : absent_female_partner_id )
+#define PARTNERID( individual ) ( GetPartner( individual ) ? GetPartner( individual )->GetSuid() : suids::nil_suid()        )
 
     BEGIN_QUERY_INTERFACE_BODY(Relationship)
         HANDLE_INTERFACE(IRelationship)
@@ -391,13 +396,10 @@ namespace Kernel {
             throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
         }
 
-        // MULTI-CORE: We need to support nullptr for the partners
-        release_assert( partner );
-
-        if (!partner)
-        {
-            LOG_WARN_F( "%s: partner of individual %lu in relationship %d is absent or deceased.\n", __FUNCTION__, individual->GetSuid().data, GetSuid().data );
-        }
+        // ----------------------------------------------------------------------------
+        // --- We allow the return to be null.  If the relationship is paused and the
+        // --- individual moved nodes, then the pointer could be null.
+        // ----------------------------------------------------------------------------
 
         return partner;
     }
@@ -418,11 +420,28 @@ namespace Kernel {
     {
         if( propertyKey == "" )
         {
-            propertyKey = "Relationship";
+            propertyKey = PROPERTY_KEY_PREFIX;
             propertyKey += std::to_string( male_partner->GetOpenRelationshipSlot() );
+            propertyKey += SLOT_SEPARATOR;
             propertyKey += std::to_string( female_partner->GetOpenRelationshipSlot() ); // does this work? TBD
         }
         return propertyKey;
+    }
+
+    unsigned int Relationship::GetSlotNumberForPartner( bool forPartnerB ) const
+    {
+        // Note: this solution assumes max of MAX_SLOT relationships
+        unsigned int slot_index = 0;
+        if( forPartnerB ) // B=Female
+        {
+            slot_index = 1;
+        }
+        IdmString key( propertyKey.substr( PROPERTY_KEY_PREFIX_LENGTH ) );
+        auto slot_strs = key.split( SLOT_SEPARATOR );
+
+        auto slot_number = atoi( slot_strs[ slot_index ].c_str() );
+        release_assert( slot_number <= MAX_SLOTS );
+        return slot_number;
     }
 
     const tRelationshipMembers
@@ -472,33 +491,33 @@ namespace Kernel {
         // --- partner to reset the relationship.  For example, if one partner pauses
         // --- relationship due to migration, and then returns.  That individual's call
         // --- to Resume() should get the relationship back to normal.
+        // ---
+        // --- Not setting absent partner to null so that the pointer can be used in the Transmission report.
+        // --- The couple could have consumated and then one of them decided to pause the relationship.
+        // --- The report needs the pointer.
         // -------------------------------------------------------------------------
         if( p_staying_rel->male_partner == departee )
         {
             LOG_DEBUG_F( "%s: departee was male_partner, clearing male_partner from relationship %d\n", __FUNCTION__, p_staying_rel->GetSuid().data );
 
-            p_staying_rel->male_partner = nullptr;
             p_staying_rel->absent_male_partner_id = departee->GetSuid();
 
             if( p_leaving_rel != nullptr )
             {
                 release_assert( p_staying_rel->female_partner );
                 p_leaving_rel->absent_female_partner_id = p_staying_rel->female_partner->GetSuid();
-                p_leaving_rel->female_partner = nullptr;
             }
         }
         else if( p_staying_rel->female_partner == departee )
         {
             LOG_DEBUG_F( "%s: departee was female_partner, clearing female_partner from relationship %d\n", __FUNCTION__, GetSuid().data );
 
-            p_staying_rel->female_partner = nullptr;
             p_staying_rel->absent_female_partner_id = departee->GetSuid();
 
             if( p_leaving_rel != nullptr )
             {
                 release_assert( p_staying_rel->male_partner );
                 p_leaving_rel->absent_male_partner_id = p_staying_rel->male_partner->GetSuid();
-                p_leaving_rel->male_partner = nullptr;
             }
         }
         else
@@ -506,6 +525,31 @@ namespace Kernel {
             std::ostringstream msg;
             msg << "Individual "<< departee->GetSuid().data << " is not in relationship " << GetSuid().data << "!\n";
             throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+        }
+    }
+
+    void Relationship::UpdatePaused()
+    {
+        // ----------------------------------------------------------------------------------------------
+        // --- If the relationship is paused, we want to set the partner pointers to null 
+        // --- so that they are not accidentally used later when they are not valid.
+        // --- We don't set them to null in Pause() because we need the pointers to be
+        // --- valid for the Transmission report.  Setting the pointers to null at the end
+        // --- of Individual::Update() is needed for the situation where partner A updates, 
+        // --- infects partner B, and decides to pause the relationship.  Partner B won't update 
+        // --- the Transmission report until his update.  At this point, we need the pointers in
+        // --- relationship to be available for when partner B becomes infected and updates the report.
+        // ----------------------------------------------------------------------------------------------
+        if( state == RelationshipState::PAUSED )
+        {
+            if( absent_male_partner_id != suids::nil_suid() )
+            {
+                male_partner = nullptr;
+            }
+            if( absent_female_partner_id != suids::nil_suid() )
+            {
+                female_partner = nullptr;
+            }
         }
     }
 
@@ -711,6 +755,24 @@ namespace Kernel {
         }
     }
 
+    suids::suid Relationship::GetPartnerId( const suids::suid& myID ) const
+    {
+        if( myID == GetMalePartnerId() )
+        {
+            return GetFemalePartnerId();
+        }
+        else if( myID == GetFemalePartnerId() )
+        {
+            return GetMalePartnerId();
+        }
+        else
+        {
+            std::stringstream ss;
+            ss << "Unknown partner: rel-id=" << _suid.data << " male-id=" << GetMalePartnerId().data << " female-id=" << GetFemalePartnerId().data << " unknown-id=" << myID.data;
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+    }
+
     suids::suid Relationship::GetMalePartnerId() const
     {
         return MALE_PARTNER_ID();
@@ -724,6 +786,16 @@ namespace Kernel {
     ExternalNodeId_t Relationship::GetOriginalNodeId() const
     {
         return original_node_id;
+    }
+
+    bool Relationship::IsMalePartnerAbsent() const
+    {
+        return (absent_male_partner_id != suids::nil_suid());
+    }
+
+    bool Relationship::IsFemalePartnerAbsent() const
+    {
+        return (absent_female_partner_id != suids::nil_suid());
     }
 
     float Relationship::GetCoitalRate() const
@@ -761,11 +833,11 @@ namespace Kernel {
 
         if( ar.IsWriter() )
         {
-            if( rel.male_partner != nullptr )
+            if( (rel.absent_male_partner_id == suids::nil_suid()) && (rel.male_partner != nullptr) )
             {
                 rel.absent_male_partner_id = rel.male_partner->GetSuid();
             }
-            if( rel.female_partner != nullptr )
+            if( (rel.absent_female_partner_id == suids::nil_suid()) && (rel.female_partner != nullptr) )
             {
                 rel.absent_female_partner_id = rel.female_partner->GetSuid();
             }
@@ -818,6 +890,10 @@ namespace Kernel {
 
             case RelationshipType::MARITAL:
                 p_rel = new MarriageRelationship( rRelId, pRelMan, pParams, male_partner, female_partner );
+                break;
+
+            case RelationshipType::COMMERCIAL:
+                p_rel = new CommercialRelationship( rRelId, pRelMan, pParams, male_partner, female_partner );
                 break;
 
             default:
@@ -945,6 +1021,45 @@ namespace Kernel {
     {
         Relationship::serialize( ar, obj );
         MarriageRelationship& rel = *obj;
+    }
+
+    // ------------------------------------------------------------------------
+    // --- CommercialRelationship
+    // ------------------------------------------------------------------------
+    BEGIN_QUERY_INTERFACE_DERIVED(CommercialRelationship, Relationship)
+    END_QUERY_INTERFACE_DERIVED(CommercialRelationship, Relationship)
+
+    CommercialRelationship::CommercialRelationship()
+    : Relationship()
+    {
+    }
+
+    CommercialRelationship::CommercialRelationship( const suids::suid& rRelId,
+                                                          IRelationshipManager* pRelMan,
+                                                          IRelationshipParameters* pParams,
+                                                          IIndividualHumanSTI * male_partnerIn, 
+                                                          IIndividualHumanSTI * female_partnerIn )
+        : Relationship( rRelId, pRelMan, pParams, male_partnerIn, female_partnerIn )
+    {
+        LOG_INFO_F( "(EEL) Creating CommercialRelationship %d between %s and %s of length %f.\n",
+                    GetSuid().data,
+                    male_partnerIn->toString().c_str(),
+                    female_partnerIn->toString().c_str(),
+                    rel_timer
+                  );
+    }
+
+    Relationship* CommercialRelationship::Clone()
+    {
+        return new CommercialRelationship( *this );
+    }
+
+    REGISTER_SERIALIZABLE(CommercialRelationship);
+
+    void CommercialRelationship::serialize(IArchive& ar, CommercialRelationship* obj)
+    {
+        Relationship::serialize( ar, obj );
+        CommercialRelationship& rel = *obj;
     }
 }
 

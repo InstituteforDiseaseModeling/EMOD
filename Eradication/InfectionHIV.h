@@ -21,10 +21,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-
-    class InfectionHIVConfig : public JsonConfigurable
+    class InfectionHIVConfig : public InfectionSTIConfig
     {
-        friend class IndividualHumanCoinfection;
         friend class HIVInterventionsContainer;
 
         GET_SCHEMA_STATIC_WRAPPER(InfectionHIVConfig)
@@ -35,6 +33,8 @@ namespace Kernel
         virtual bool Configure( const Configuration* config ) override;
 
     protected:
+        friend class InfectionHIV;
+        friend class IndividualHumanCoinfection;
 
         //these are the config params
         static float HIV_drug_inactivation_rate;
@@ -51,7 +51,7 @@ namespace Kernel
     };
 
     //---------------------------- InfectionHIV ----------------------------------------
-    class InfectionHIV : public InfectionSTI, public IInfectionHIV, protected InfectionHIVConfig
+    class InfectionHIV : public InfectionSTI, public IInfectionHIV
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()

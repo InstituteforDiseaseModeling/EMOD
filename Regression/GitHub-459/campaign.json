@@ -1,0 +1,4656 @@
+{
+    "Campaign_Name": "Baseline campaign for Zimbabwe", 
+    "Default_Campaign_Path": "campaign_StatusQuo_Reference_Tracking.json", 
+    "Use_Defaults": 1, 
+    "Events": [
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Consider not dropping (after 2016?)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "HCTUptakePostDebut8"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever"
+                        ], 
+                        "Cascade_State": "OnART", 
+                        "Days_To_Diagnosis": 0, 
+                        "Time_Value_Map": {
+                            "Times": [
+                                1990, 
+                                2016
+                            ], 
+                            "Values": [
+                                0, 
+                                1
+                            ]
+                        }, 
+                        "Interpolation_Order": 0, 
+                        "Female_Multiplier": 1, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "OnART1", 
+                        "Negative_Diagnosis_Event": "HCTUptakePostDebut3"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Consider not lost forever (after 2016?)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "LostForever9"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever"
+                        ], 
+                        "Cascade_State": "OnART", 
+                        "Days_To_Diagnosis": 0, 
+                        "Time_Value_Map": {
+                            "Times": [
+                                1990, 
+                                2016
+                            ], 
+                            "Values": [
+                                0, 
+                                1
+                            ]
+                        }, 
+                        "Interpolation_Order": 0, 
+                        "Female_Multiplier": 1, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "OnART1", 
+                        "Negative_Diagnosis_Event": "LostForever0"
+                    }
+                }
+            }
+        }, 
+        {
+            "Event_Name": "PrEP Reference Tracking", 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Year": 2015, 
+            "class": "CampaignEventByYear", 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "SimpleVaccine", 
+                    "Waning_Config": {
+                        "class": "WaningEffectBox", 
+                        "Initial_Effect": 0.73, 
+                        "Box_Duration": 30000
+                    }, 
+                    "Vaccine_Type": "AcquisitionBlocking", 
+                    "Reduced_Acquire_source": "Partners PrEP study efficacy for Truvada"
+                }, 
+                "Property_Restrictions": [
+                    "Risk:HIGH"
+                ], 
+                "Target_Demographic": "ExplicitAgeRanges", 
+                "Target_Age_Min": 15, 
+                "Target_Age_Max": 29, 
+                "Update_Period": 182, 
+                "End_Year": 2030, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2016, 
+                        2020, 
+                        2030
+                    ], 
+                    "Values": [
+                        0, 
+                        0.1, 
+                        0.3
+                    ]
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Consider increased testing uptake (after 2016?)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "HCTUptakePostDebut7"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging", 
+                            "HCTTestingLoop"
+                        ], 
+                        "Cascade_State": "HCTUptakePostDebut", 
+                        "Days_To_Diagnosis": 0, 
+                        "Time_Value_Map": {
+                            "Times": [
+                                1990, 
+                                2016
+                            ], 
+                            "Values": [
+                                0, 
+                                1
+                            ]
+                        }, 
+                        "Interpolation_Order": 0, 
+                        "Female_Multiplier": 1, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "HCTTestingLoop0", 
+                        "Negative_Diagnosis_Event": "HCTUptakePostDebut1"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Consider immediate ART (after 2016?)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ARTStaging9"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "HCTTestingLoop", 
+                        "Days_To_Diagnosis": 0, 
+                        "Time_Value_Map": {
+                            "Times": [
+                                1990, 
+                                2016
+                            ], 
+                            "Values": [
+                                0, 
+                                1
+                            ]
+                        }, 
+                        "Interpolation_Order": 0, 
+                        "Female_Multiplier": 1, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "OnART1", 
+                        "Negative_Diagnosis_Event": "ARTStaging1"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Consider increased symptomatic presentation (after 2016?)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "ARTStaging8", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "TestingOnSymptomatic", 
+                        "Days_To_Diagnosis": 0, 
+                        "Time_Value_Map": {
+                            "Times": [
+                                1990, 
+                                2016
+                            ], 
+                            "Values": [
+                                0, 
+                                0.5
+                            ]
+                        }, 
+                        "Interpolation_Order": 0, 
+                        "Female_Multiplier": 1, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "ARTStaging2"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Epidemic seeding for 15-24", 
+            "Start_Year__KP_Seeding_Year": "<-- MARKER", 
+            "Start_Year": 1982.8395295348785, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Property_Restrictions": [
+                    "Risk:HIGH"
+                ], 
+                "Target_Demographic": "ExplicitAgeRanges", 
+                "Target_Age_Min": 15, 
+                "Target_Age_Max": 24, 
+                "Demographic_Coverage__KP_Seeding_15_24": "<-- MARKER", 
+                "Demographic_Coverage": 0.014881102714507053, 
+                "Travel_Linked": 0, 
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual", 
+                    "Event_Name": "Outbreak (not used)", 
+                    "Outbreak_Source": "PrevalenceIncrease", 
+                    "Incubation_Period_Override": 1, 
+                    "Antigen": 0, 
+                    "Genome": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Epidemic seeding for 25-49", 
+            "Start_Year__KP_Seeding_Year": "<-- MARKER", 
+            "Start_Year": 1982.8395295348785, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Property_Restrictions": [
+                    "Risk:HIGH"
+                ], 
+                "Target_Demographic": "ExplicitAgeRanges", 
+                "Target_Age_Min": 25, 
+                "Target_Age_Max": 49, 
+                "Demographic_Coverage__KP_Seeding_25_49": "<-- MARKER", 
+                "Demographic_Coverage": 0.01843168723446763, 
+                "Travel_Linked": 0, 
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual", 
+                    "Event_Name": "Outbreak (not used)", 
+                    "Outbreak_Source": "PrevalenceIncrease", 
+                    "Incubation_Period_Override": 1, 
+                    "Antigen": 0, 
+                    "Genome": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Epidemic seeding for 50-65", 
+            "Start_Year__KP_Seeding_Year": "<-- MARKER", 
+            "Start_Year": 1982.8395295348785, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Property_Restrictions": [
+                    "Risk:HIGH"
+                ], 
+                "Target_Demographic": "ExplicitAgeRanges", 
+                "Target_Age_Min": 50, 
+                "Target_Age_Max": 65, 
+                "Demographic_Coverage__KP_Seeding_50_65": "<-- MARKER", 
+                "Demographic_Coverage": 0.01, 
+                "Travel_Linked": 0, 
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual", 
+                    "Event_Name": "Outbreak (not used)", 
+                    "Outbreak_Source": "PrevalenceIncrease", 
+                    "Incubation_Period_Override": 1, 
+                    "Antigen": 0, 
+                    "Genome": 0
+                }
+            }
+        }, 
+        {
+            "BEGIN": "STI CO-INFECTION", 
+            "class": "CampaignEvent", 
+            "Event_Name": "[HIGH risk]: STI co-infection for initial post-debut population", 
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Property_Restrictions": [
+                    "Risk:HIGH"
+                ], 
+                "Demographic_Coverage__KP_STI_Coinfection_HIGH_Risk": "<-- MARKER", 
+                "Demographic_Coverage": 0.3, 
+                "Intervention_Config": {
+                    "class": "STIIsPostDebut", 
+                    "Event_Or_Config": "Config", 
+                    "Positive_Diagnosis_Config": {
+                        "class": "ModifyStiCoInfectionStatus", 
+                        "New_STI_CoInfection_Status": 1
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEvent", 
+            "Event_Name": "[LOW risk]: STI co-infection for initial post-debut population", 
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Property_Restrictions": [
+                    "Risk:LOW"
+                ], 
+                "Demographic_Coverage__KP_STI_Coinfection_LOW_Risk": "<-- MARKER", 
+                "Demographic_Coverage": 0.1, 
+                "Intervention_Config": {
+                    "class": "STIIsPostDebut", 
+                    "Event_Or_Config": "Config", 
+                    "Positive_Diagnosis_Config": {
+                        "class": "ModifyStiCoInfectionStatus", 
+                        "New_STI_CoInfection_Status": 1
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEvent", 
+            "Event_Name": "[HIGH risk]: STI co-infection at debut", 
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "STIDebut", 
+                    "Target_Demographic": "ExplicitGender", 
+                    "Target_Gender": "Male", 
+                    "Property_Restrictions": [
+                        "Risk:HIGH"
+                    ], 
+                    "Demographic_Coverage__KP_STI_Coinfection_HIGH_Risk": "<-- MARKER", 
+                    "Demographic_Coverage": 0.3, 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "ModifyStiCoInfectionStatus", 
+                        "New_STI_CoInfection_Status": 1
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEvent", 
+            "Event_Name": "[LOW risk]: STI co-infection at debut", 
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "STIDebut", 
+                    "Target_Demographic": "ExplicitGender", 
+                    "Target_Gender": "Male", 
+                    "Property_Restrictions": [
+                        "Risk:LOW"
+                    ], 
+                    "Demographic_Coverage__KP_STI_Coinfection_LOW_Risk": "<-- MARKER", 
+                    "Demographic_Coverage": 0.1, 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "ModifyStiCoInfectionStatus", 
+                        "New_STI_CoInfection_Status": 1
+                    }
+                }
+            }
+        }, 
+        {
+            "BEGIN": "MALE CIRCUMCISION", 
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Traditional male circumcision for initial population in Nyanza", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    1
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "HIVRandomChoice", 
+                    "Choices": {
+                        "WillReceiveTraditionalMaleCircumcision": 0.482, 
+                        "WillNotReceiveTraditionalMaleCircumcisionInitialPop": 0.518
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Traditional made circumcision for initial population in Nairobi", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    2
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "HIVRandomChoice", 
+                    "Choices": {
+                        "WillReceiveTraditionalMaleCircumcision": 0.832, 
+                        "WillNotReceiveTraditionalMaleCircumcisionInitialPop": 0.168
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Traditional made circumcision for initial population in Rift Valley", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    4
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "HIVRandomChoice", 
+                    "Choices": {
+                        "WillReceiveTraditionalMaleCircumcision": 0.887, 
+                        "WillNotReceiveTraditionalMaleCircumcisionInitialPop": 0.113
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Traditional made circumcision for initial population in Western", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    5
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "HIVRandomChoice", 
+                    "Choices": {
+                        "WillReceiveTraditionalMaleCircumcision": 0.878, 
+                        "WillNotReceiveTraditionalMaleCircumcisionInitialPop": 0.122
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Traditional made circumcision for initial population in Central", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    6
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "HIVRandomChoice", 
+                    "Choices": {
+                        "WillReceiveTraditionalMaleCircumcision": 0.955, 
+                        "WillNotReceiveTraditionalMaleCircumcisionInitialPop": 0.045
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Traditional made circumcision for initial population in Coast", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    3
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "HIVRandomChoice", 
+                    "Choices": {
+                        "WillReceiveTraditionalMaleCircumcision": 0.97, 
+                        "WillNotReceiveTraditionalMaleCircumcisionInitialPop": 0.03
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Traditional made circumcision for initial population in Eastern", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    7
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "HIVRandomChoice", 
+                    "Choices": {
+                        "WillReceiveTraditionalMaleCircumcision": 0.963, 
+                        "WillNotReceiveTraditionalMaleCircumcisionInitialPop": 0.037
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Traditional made circumcision for initial population in North Eastern", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    8
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "HIVRandomChoice", 
+                    "Choices": {
+                        "WillReceiveTraditionalMaleCircumcision": 0.973, 
+                        "WillNotReceiveTraditionalMaleCircumcisionInitialPop": 0.027
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Note": "**********************************************************", 
+            "Event_Name": "WillNotReceiveTraditionalMaleCircumcisionInitialPop: Uniform random 1-year delay", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "WillNotReceiveTraditionalMaleCircumcisionInitialPop"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVDelayedIntervention", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Delay_Distribution": "UNIFORM_DURATION", 
+                        "Delay_Period_Min": 1, 
+                        "Delay_Period_Max": 365, 
+                        "Broadcast_Event": "ConsiderVMMCUptake"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: All Nodes, ages 0 - 9.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 0, 
+                    "Target_Age_Max": 9.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                1975
+                            ], 
+                            "Values": [
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Ongoing traditional male circumcision in Nyanza", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    1
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "Births", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRandomChoice", 
+                        "Choices": {
+                            "WillReceiveTraditionalMaleCircumcision": 0.482, 
+                            "WillNotReceiveTraditionalMaleCircumcisionAtBirth": 0.518
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Ongoing traditional male circumcision in Nairobi", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    2
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "Births", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRandomChoice", 
+                        "Choices": {
+                            "WillReceiveTraditionalMaleCircumcision": 0.832, 
+                            "WillNotReceiveTraditionalMaleCircumcisionAtBirth": 0.168
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Ongoing traditional male circumcision in Rift Valley", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    4
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "Births", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRandomChoice", 
+                        "Choices": {
+                            "WillReceiveTraditionalMaleCircumcision": 0.887, 
+                            "WillNotReceiveTraditionalMaleCircumcisionAtBirth": 0.113
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Ongoing traditional male circumcision in Western", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    5
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "Births", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRandomChoice", 
+                        "Choices": {
+                            "WillReceiveTraditionalMaleCircumcision": 0.878, 
+                            "WillNotReceiveTraditionalMaleCircumcisionAtBirth": 0.122
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Ongoing traditional male circumcision in Central", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    6
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "Births", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRandomChoice", 
+                        "Choices": {
+                            "WillReceiveTraditionalMaleCircumcision": 0.955, 
+                            "WillNotReceiveTraditionalMaleCircumcisionAtBirth": 0.045
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Ongoing traditional male circumcision in Coast", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    3
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "Births", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRandomChoice", 
+                        "Choices": {
+                            "WillReceiveTraditionalMaleCircumcision": 0.97, 
+                            "WillNotReceiveTraditionalMaleCircumcisionAtBirth": 0.03
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Ongoing traditional male circumcision in Eastern", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    7
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "Births", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRandomChoice", 
+                        "Choices": {
+                            "WillReceiveTraditionalMaleCircumcision": 0.963, 
+                            "WillNotReceiveTraditionalMaleCircumcisionAtBirth": 0.037
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Ongoing traditional male circumcision in North Eastern", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    8
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "Births", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRandomChoice", 
+                        "Choices": {
+                            "WillReceiveTraditionalMaleCircumcision": 0.973, 
+                            "WillNotReceiveTraditionalMaleCircumcisionAtBirth": 0.027
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Enter male circumcision uptake loop on birth", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "WillNotReceiveTraditionalMaleCircumcisionAtBirth", 
+                    "Target_Demographic": "ExplicitGender", 
+                    "Target_Gender": "Male", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "BroadcastEvent", 
+                        "Broadcast_Event": "ConsiderVMMCUptake"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "DelayToConsiderVMMCUptake: Fixed 1-year delay from NoVMMCUptakeThisYear", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "NoVMMCUptakeThisYear"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVDelayedIntervention", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Delay_Distribution": "FIXED_DURATION", 
+                        "Delay_Period": 365, 
+                        "Broadcast_Event": "ConsiderVMMCUptake"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "HIVRapidHIVDiagnostic: Rapid diagnostic to determine VMMC or ART", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "NeedsCircumcisionDiagnostic"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRapidHIVDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "ARTLinkingFromVMMC", 
+                        "Negative_Diagnosis_Event": "WillReceiveMedicalMaleCircumcision"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "ART linking probability from VMMC", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ARTLinkingFromVMMC"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRandomChoice", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Choices": {
+                            "ARTStaging2": 0.05, 
+                            "NoTrigger": 0.95
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Apply program medical male circumcision intervention", 
+            "Start_Year": 1961, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "WillReceiveMedicalMaleCircumcision"
+                    ], 
+                    "Target_Demographic": "ExplicitGender", 
+                    "Target_Gender": "Male", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "MaleCircumcision", 
+                        "Circumcision_Reduced_Acquire": 0.6, 
+                        "Distributed_Event_Trigger": "Program_VMMC", 
+                        "Apply_If_Higher_Reduced_Acquire": 0
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Apply traditional male circumcision intervention", 
+            "Start_Year": 1961, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "WillReceiveTraditionalMaleCircumcision"
+                    ], 
+                    "Target_Demographic": "ExplicitGender", 
+                    "Target_Gender": "Male", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "MaleCircumcision", 
+                        "Circumcision_Reduced_Acquire": 0.6, 
+                        "Distributed_Event_Trigger": "Non_Program_MC", 
+                        "Apply_If_Higher_Reduced_Acquire": 0
+                    }
+                }
+            }, 
+            "END": "MALE CIRCUMCISION"
+        }, 
+        {
+            "BEGIN": "HCT UPTAKE AT DEBUT", 
+            "class": "CampaignEventByYear", 
+            "Event_Name": "HCTUptakeAtDebut: state 0 (decision, sigmoid by year and sex)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "STIDebut", 
+                    "Property_Restrictions_Within_Node": [
+                        {
+                            "Accessibility": "Yes"
+                        }
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVSigmoidByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "HCTUptakeAtDebut", 
+                        "Days_To_Diagnosis": 0, 
+                        "Ramp_Min": -0.005, 
+                        "Ramp_Max": 0.05, 
+                        "Ramp_MidYear": 2005, 
+                        "Ramp_Rate": 1, 
+                        "Female_Multiplier": 1.0, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "HCTTestingLoop0", 
+                        "Negative_Diagnosis_Event": "HCTUptakePostDebut1"
+                    }
+                }
+            }, 
+            "END": "HCT UPTAKE AT DEBUT"
+        }, 
+        {
+            "BEGIN": "HCT UPTAKE AFTER DEBUT", 
+            "class": "CampaignEventByYear", 
+            "Event_Name": "HCTUptakePostDebut: HCT Uptake Initialization", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "HIVSetCascadeState", 
+                    "Abort_States": [
+                        "LostForever", 
+                        "OnART", 
+                        "LinkingToART", 
+                        "OnPreART", 
+                        "LinkingToPreART", 
+                        "ARTStaging"
+                    ], 
+                    "Cascade_State": "HCTUptakePostDebut", 
+                    "Event_Or_Config": "Event", 
+                    "Positive_Diagnosis_Event": "HCTUptakePostDebut0"
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "HCTUptakePostDebut: state 0 (Post-Debut?)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "HCTUptakePostDebut0", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "STIIsPostDebut", 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "HCTUptakePostDebut1"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "HCTUptakePostDebut1: state 1 (1-year delay, reachable)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "HCTUptakePostDebut1", 
+                    "Property_Restrictions_Within_Node": [
+                        {
+                            "Accessibility": "Yes"
+                        }
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVMuxer", 
+                        "Muxer_Name": "HCTUptakePostDebut", 
+                        "Max_Entries": 1, 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging", 
+                            "HCTTestingLoop"
+                        ], 
+                        "Cascade_State": "HCTUptakePostDebut", 
+                        "Delay_Distribution": "EXPONENTIAL_DURATION", 
+                        "Delay_Period": 365, 
+                        "Broadcast_Event": "HCTUptakePostDebut2"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "HCTUptakePostDebut: state 2 (Decision to uptake HCT)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "HCTUptakePostDebut2", 
+                    "Property_Restrictions_Within_Node": [
+                        {
+                            "Accessibility": "Yes"
+                        }
+                    ], 
+                    "Actual_IndividualIntervention_Config__KP_HCTUptakePostDebut": "<-- MARKER", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVSigmoidByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging", 
+                            "HCTTestingLoop"
+                        ], 
+                        "Cascade_State": "HCTUptakePostDebut", 
+                        "Days_To_Diagnosis": 0, 
+                        "Default_Value": 0, 
+                        "Ramp_Min": -0.01, 
+                        "Ramp_Max": 0.20142466515384347, 
+                        ".Ramp_Max": 0.0, 
+                        "Ramp_MidYear": 2004.5821285431323, 
+                        "Ramp_Rate": 1, 
+                        "Female_Multiplier": 0.5495442179366443, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "HCTTestingLoop0", 
+                        "Negative_Diagnosis_Event": "HCTUptakePostDebut7"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "HCTUptakePostDebut: state 3 (From LTFU or ART dropout back into HCT uptake loop)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "HCTUptakePostDebut3", 
+                        "HCTUptakePostDebut9"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRandomChoice", 
+                        "NOTE": "No Abort_States so we can churn from deep in the cascade", 
+                        "Abort_States": [], 
+                        "Cascade_State": "HCTUptakePostDebut", 
+                        "Choices": {
+                            "HCTUptakePostDebut0": 1
+                        }
+                    }
+                }
+            }, 
+            "END": "HCT UPTAKE AFTER DEBUT"
+        }, 
+        {
+            "BEGIN": "HCT TESTING LOOP", 
+            "class": "CampaignEventByYear", 
+            "Event_Name": "HCTTestingLoop: state 0 (delay to next HCT)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "HCTTestingLoop0", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVMuxer", 
+                        "Muxer_Name": "HCTTestingLoop", 
+                        "Max_Entries": 1, 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "HCTTestingLoop", 
+                        "Delay_Distribution": "EXPONENTIAL_DURATION", 
+                        "Delay_Period": 730, 
+                        "Broadcast_Event": "HCTTestingLoop1"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "HCTTestingLoop: state 1 (HIV rapid diagnostic)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "HCTTestingLoop1", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRapidHIVDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "HCTTestingLoop", 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "ARTStaging9", 
+                        "Negative_Diagnosis_Event": "HCTTestingLoop2"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "HCTTestingLoop: state 2 (HCT Testing Dropout)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "HCTTestingLoop2"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRandomChoice", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "HCTTestingLoop", 
+                        "Choices__KP_TestingDropout": "<-- MARKER", 
+                        "Choices": {
+                            "HCTUptakePostDebut1": 0.05, 
+                            "HCTTestingLoop0": 0.95
+                        }
+                    }
+                }
+            }, 
+            "END": "HCT TESTING LOOP"
+        }, 
+        {
+            "BEGIN": "SYMPTOMATIC TESTING", 
+            "class": "CampaignEventByYear", 
+            "Event_Name": "TestingOnSymptomatic: state 0 (Presentation probability)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "HIVSymptomatic", 
+                    "Actual_IndividualIntervention_Config__KP_Sympt_Link": "<-- MARKER", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVSigmoidByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "TestingOnSymptomatic", 
+                        "Days_To_Diagnosis": 0, 
+                        "Ramp_Min": 0.25, 
+                        "Ramp_Max": 0.6559358630293208, 
+                        "Ramp_MidYear": 2000, 
+                        "Ramp_Rate": 0.5, 
+                        "Female_Multiplier": 1, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "ARTStaging0", 
+                        "Negative_Diagnosis_Event": "ARTStaging8"
+                    }
+                }
+            }, 
+            "END": "SYMPTOMATIC TESTING"
+        }, 
+        {
+            "BEGIN": "ANC and PMTCT", 
+            "class": "CampaignEventByYear", 
+            "Event_Name": "ANC/PMTCT: Uptake of Diagnostic Testing at ANC", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TwelveWeeksPregnant", 
+                    "Property_Restrictions_Within_Node": [
+                        {
+                            "Accessibility": "Yes"
+                        }
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVSigmoidByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging", 
+                            "TestingOnSymptomatic"
+                        ], 
+                        "Cascade_State": "TestingOnANC", 
+                        "Ramp_Min": 0, 
+                        "Ramp_Max": 0.915, 
+                        "Ramp_MidYear": 2005.87, 
+                        "Ramp_Rate": 0.7136, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "Needs_PMTCT_Diagnostic_Test"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "ANC/PMTCT: Diagnostic Test (HIV rapid diagnostic)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerString", 
+                    "Trigger_Condition_String": "Needs_PMTCT_Diagnostic_Test", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRapidHIVDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging", 
+                            "TestingOnSymptomatic"
+                        ], 
+                        "Cascade_State": "TestingOnANC", 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "HIV_Positive_at_ANC"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "ANC/PMTCT: Enter ART staging from PMTCT?", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerString", 
+                    "Trigger_Condition_String": "HIV_Positive_at_ANC", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRandomChoice", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging", 
+                            "TestingOnSymptomatic"
+                        ], 
+                        "Cascade_State": "TestingOnANC", 
+                        "Choices": {
+                            "ARTStaging1": 0.67, 
+                            "NoTrigger": 0.33
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "ANC/PMTCT: Choose Single-Dose Nevirapine (sdNVP) or Combination (Option A/B)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerString", 
+                    "Trigger_Condition_String": "HIV_Positive_at_ANC", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVSigmoidByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging", 
+                            "TestingOnSymptomatic"
+                        ], 
+                        "Cascade_State": "TestingOnANC", 
+                        "Ramp_Min": 0, 
+                        "Ramp_Max": 1, 
+                        "Ramp_MidYear": 2008.4, 
+                        "Ramp_Rate": -1, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "Needs_sdNVP_PMTCT", 
+                        "Negative_Diagnosis_Event": "Needs_Combination_PMTCT"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "ANC/PMTCT: Less Effective PMTCT (sdNVP)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerString", 
+                    "Trigger_Condition_String": "Needs_sdNVP_PMTCT", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "PMTCT", 
+                        "Efficacy": 0.66
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "ANC/PMTCT: Combination Option A or B?", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerString", 
+                    "Trigger_Condition_String": "Needs_Combination_PMTCT", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging", 
+                            "TestingOnSymptomatic"
+                        ], 
+                        "Cascade_State": "TestingOnANC", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2013.249
+                            ], 
+                            "Values": [
+                                1
+                            ]
+                        }, 
+                        "Interpolation_Order": 0, 
+                        "Event_Or_Config": "Event", 
+                        "Negative_Diagnosis_Event": "Needs_Option_A", 
+                        "Positive_Diagnosis_Event": "Needs_Option_B"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "ANC/PMTCT (Option A)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerString", 
+                    "Trigger_Condition_String": "Needs_Option_A", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "PMTCT", 
+                        "Efficacy": 0.9
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "PMTCT (Option B)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "TriggerString", 
+                    "Trigger_Condition_String": "Needs_Option_B", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "PMTCT", 
+                        "Efficacy": 0.96667
+                    }
+                }
+            }, 
+            "END": "ANC and PMTCT"
+        }, 
+        {
+            "BEGIN": "CHILD 6W TESTING", 
+            "class": "CampaignEventByYear", 
+            "Event_Name": "TestingOnChild6w: state 0 (Presentation probability)", 
+            "Start_Year": 2004, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "SixWeeksOld", 
+                    "Property_Restrictions_Within_Node": [
+                        {
+                            "Accessibility": "Yes"
+                        }
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging", 
+                            "TestingOnSymptomatic"
+                        ], 
+                        "Cascade_State": "TestingOnChild6w", 
+                        "Days_To_Diagnosis": 0, 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2004, 
+                                2005, 
+                                2006, 
+                                2008, 
+                                2009
+                            ], 
+                            "Values": [
+                                0, 
+                                0.03, 
+                                0.1, 
+                                0.2, 
+                                0.3365
+                            ]
+                        }, 
+                        "Interpolation_Order": 1, 
+                        "Female_Multiplier": 1, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "ARTStaging0"
+                    }
+                }
+            }, 
+            "END": "CHILD 6W TESTING"
+        }, 
+        {
+            "BEGIN": "ART STAGING", 
+            "class": "CampaignEventByYear", 
+            "Event_Name": "ART Staging: state 0 (HIV rapid diagnostic)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "ARTStaging0", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRapidHIVDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART"
+                        ], 
+                        "Cascade_State": "ARTStagingDiagnosticTest", 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "ARTStaging1"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "ARTStaging: state 1 (random choice: linking from positive diagnostic test)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "ARTStaging1", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRandomChoice", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART"
+                        ], 
+                        "Cascade_State": "ARTStaging", 
+                        "Choices__KP_PreStagingLoss": "<-- MARKER", 
+                        "Choices": {
+                            "HCTUptakePostDebut3": 0.1, 
+                            "ARTStaging2": 0.9
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "ARTStaging: state 2 (Muxer to make sure only one entry per DT)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "ARTStaging2", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVMuxer", 
+                        "Muxer_Name": "ARTStaging", 
+                        "Max_Entries": 1, 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART"
+                        ], 
+                        "Cascade_State": "ARTStaging", 
+                        "Delay_Distribution": "FIXED_DURATION", 
+                        "Delay_Period": 1, 
+                        "Broadcast_Event": "ARTStaging3"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "ARTStaging: state 3 (draw blood)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "ARTStaging3", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVDrawBlood", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART"
+                        ], 
+                        "Cascade_State": "ARTStaging", 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "ARTStaging4"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "ARTStaging: state 4 (check eligibility for ART, CD4 agnostic)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "ARTStaging4", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVARTStagingCD4AgnosticDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART"
+                        ], 
+                        "Cascade_State": "ARTStaging", 
+                        "NOTE1": "Threshold for adult vs child guidelines", 
+                        "Adult_Treatment_Age": 5, 
+                        "Adult_By_WHO_Stage": {
+                            "Times": [
+                                2004.2, 
+                                2010.8, 
+                                2016
+                            ], 
+                            "Values": [
+                                4, 
+                                3, 
+                                0
+                            ]
+                        }, 
+                        "Adult_By_TB": {
+                            "Times": [
+                                2004.2
+                            ], 
+                            "Values": [
+                                1
+                            ]
+                        }, 
+                        "Adult_By_Pregnant": {
+                            "Times": [
+                                2004.2
+                            ], 
+                            "Values": [
+                                1
+                            ]
+                        }, 
+                        "Child_Treat_Under_Age_In_Years_Threshold": {
+                            "Times": [
+                                2010.8, 
+                                2013.8
+                            ], 
+                            "Values": [
+                                1, 
+                                5
+                            ]
+                        }, 
+                        "Child_By_WHO_Stage": {
+                            "Times": [
+                                2010.8, 
+                                2016
+                            ], 
+                            "Values": [
+                                3, 
+                                0
+                            ]
+                        }, 
+                        "Child_By_TB": {
+                            "Times": [
+                                2004
+                            ], 
+                            "Values": [
+                                0
+                            ]
+                        }, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "LinkingToART0", 
+                        "Negative_Diagnosis_Event": "ARTStaging5"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "ARTStaging: state 5 (random choice: Return for CD4 or LTFU)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "ARTStaging5", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRandomChoice", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART"
+                        ], 
+                        "Cascade_State": "ARTStaging", 
+                        "Choices": {
+                            "HCTUptakePostDebut9": 0, 
+                            "ARTStaging6": 1
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "ARTStaging: state 6 (check eligibility for ART by CD4)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "ARTStaging6", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVARTStagingByCD4Diagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART"
+                        ], 
+                        "Cascade_State": "ARTStaging", 
+                        "Threshold": {
+                            "Times": [
+                                2001.084932, 
+                                2011.835616, 
+                                2014.419178
+                            ], 
+                            "Values": [
+                                200, 
+                                350, 
+                                500
+                            ]
+                        }, 
+                        "If_Active_TB": {
+                            "Times": [
+                                2005.917808
+                            ], 
+                            "Values": [
+                                350
+                            ]
+                        }, 
+                        "If_Pregnant": {
+                            "Times": [
+                                2005.917808
+                            ], 
+                            "Values": [
+                                350
+                            ]
+                        }, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "LinkingToART0", 
+                        "Negative_Diagnosis_Event": "LinkingToPreART0"
+                    }
+                }
+            }, 
+            "END": "ART STAGING"
+        }, 
+        {
+            "BEGIN": "PRE-ART LINKING", 
+            "class": "CampaignEventByYear", 
+            "Event_Name": "LinkingToPreART: state 0 (Linking probability)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "LinkingToPreART0", 
+                    "Actual_IndividualIntervention_Config__KP_PreART_Link": "<-- MARKER", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVSigmoidByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART"
+                        ], 
+                        "Cascade_State": "LinkingToPreART", 
+                        "Days_To_Diagnosis": 0, 
+                        "Ramp_Min": 0.15774650745967195, 
+                        "Ramp_Max": 0.5370301067694264, 
+                        "Ramp_MidYear": 2001.7898412979346, 
+                        "Ramp_Rate": 1, 
+                        "Female_Multiplier": 1, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "OnPreART0", 
+                        "Negative_Diagnosis_Event": "HCTUptakePostDebut9"
+                    }
+                }
+            }, 
+            "END": "PRE-ART LINKING"
+        }, 
+        {
+            "BEGIN": "PRE-ART", 
+            "class": "CampaignEventByYear", 
+            "Event_Name": "OnPreART: state 0 (muxer, 182-day delay)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "OnPreART0", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVMuxer", 
+                        "Muxer_Name": "PreART", 
+                        "Max_Entries": 1, 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART"
+                        ], 
+                        "Cascade_State": "OnPreART", 
+                        "Delay_Distribution": "FIXED_DURATION", 
+                        "Delay_Period": 182, 
+                        "Broadcast_Event": "OnPreART1"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "OnPreART: state 1 (random choice: pre-ART or LTFU)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "OnPreART1", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRandomChoice", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART"
+                        ], 
+                        "Cascade_State": "OnPreART", 
+                        "Choices__KP_PreART_Loss": "<-- MARKER", 
+                        "Choices": {
+                            "HCTUptakePostDebut9": 0.27326023492346063, 
+                            "OnPreART2": 0.7267397650765394
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "OnPreART: state 2 (check eligibility for ART, CD4 agnostic)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "OnPreART2", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVARTStagingCD4AgnosticDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART"
+                        ], 
+                        "Cascade_State": "OnPreART", 
+                        "NOTE1": "Threshold for adult vs child guidelines", 
+                        "Adult_Treatment_Age": 5, 
+                        "Adult_By_WHO_Stage": {
+                            "Times": [
+                                2004.2, 
+                                2010.8, 
+                                2016
+                            ], 
+                            "Values": [
+                                4, 
+                                3, 
+                                0
+                            ]
+                        }, 
+                        "Adult_By_TB": {
+                            "Times": [
+                                2004.2
+                            ], 
+                            "Values": [
+                                1
+                            ]
+                        }, 
+                        "Adult_By_Pregnant": {
+                            "Times": [
+                                2004.2
+                            ], 
+                            "Values": [
+                                1
+                            ]
+                        }, 
+                        "Child_Treat_Under_Age_In_Years_Threshold": {
+                            "Times": [
+                                2010.8, 
+                                2013.8
+                            ], 
+                            "Values": [
+                                1, 
+                                5
+                            ]
+                        }, 
+                        "Child_By_WHO_Stage": {
+                            "Times": [
+                                2010.8, 
+                                2016
+                            ], 
+                            "Values": [
+                                3, 
+                                0
+                            ]
+                        }, 
+                        "Child_By_TB": {
+                            "Times": [
+                                2004
+                            ], 
+                            "Values": [
+                                0
+                            ]
+                        }, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "OnART0", 
+                        "Negative_Diagnosis_Event": "OnPreART3"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "OnPreART: state 3 (draw blood)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "OnPreART3", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVDrawBlood", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART"
+                        ], 
+                        "Cascade_State": "OnPreART", 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "OnPreART4"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "OnPreART: state 4 (check eligibility for ART by CD4)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "OnPreART4", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVARTStagingByCD4Diagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART"
+                        ], 
+                        "Cascade_State": "OnPreART", 
+                        "Threshold": {
+                            "Times": [
+                                2001.084932, 
+                                2011.835616, 
+                                2014.419178
+                            ], 
+                            "Values": [
+                                200, 
+                                350, 
+                                500
+                            ]
+                        }, 
+                        "If_Active_TB": {
+                            "Times": [
+                                2005.917808
+                            ], 
+                            "Values": [
+                                350
+                            ]
+                        }, 
+                        "If_Pregnant": {
+                            "Times": [
+                                2005.917808
+                            ], 
+                            "Values": [
+                                350
+                            ]
+                        }, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "OnART0", 
+                        "Negative_Diagnosis_Event": "OnPreART0"
+                    }
+                }
+            }, 
+            "END": "PRE-ART"
+        }, 
+        {
+            "BEGIN": "ART LINKING", 
+            "class": "CampaignEventByYear", 
+            "Event_Name": "LinkingToART: state 0 (Linking probability)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "LinkingToART0", 
+                    "Actual_IndividualIntervention_Config__KP_ART_Link": "<-- MARKER", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVSigmoidByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART"
+                        ], 
+                        "Cascade_State": "LinkingToART", 
+                        "Days_To_Diagnosis": 0, 
+                        "Ramp_Min": 0, 
+                        "Ramp_Max": 0.95, 
+                        "Ramp_MidYear": 2003.5628628402408, 
+                        "Ramp_Rate": 1, 
+                        "Female_Multiplier": 1, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "OnART0", 
+                        "Negative_Diagnosis_Event": "HCTUptakePostDebut3"
+                    }
+                }
+            }, 
+            "END": "ART LINKING"
+        }, 
+        {
+            "BEGIN": "ART", 
+            "class": "CampaignEventByYear", 
+            "Event_Name": "OnART: state 0 (muxer and delay)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "OnART0", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVMuxer", 
+                        "Muxer_Name": "OnART", 
+                        "Max_Entries": 1, 
+                        "Abort_States": [
+                            "LostForever"
+                        ], 
+                        "Cascade_State": "OnART", 
+                        "Delay_Distribution": "UNIFORM_DURATION", 
+                        "Delay_Period_Min": 1, 
+                        "Delay_Period_Max": 120, 
+                        "Broadcast_Event": "OnART1"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "OnART: state 1 (run ARTBasic)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "OnART1", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "ARTBasic"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "OnART: state 2 (delay to dropout)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "OnART1", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVMuxer", 
+                        "Muxer_Name": "ARTDropoutDelay", 
+                        "Max_Entries": 1, 
+                        "Abort_States": [
+                            "LostForever"
+                        ], 
+                        "Cascade_State": "OnART", 
+                        "Delay_Distribution": "EXPONENTIAL_DURATION", 
+                        "Delay_Period": 7300, 
+                        "Broadcast_Event": "OnART3"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "OnART: state 3 (run ARTDropout)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "OnART3", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "ARTDropout"
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "OnART: state 4 (Willing to re-enroll in ART?)", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "OnART3", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRandomChoice", 
+                        "Abort_States": [
+                            "LostForever"
+                        ], 
+                        "Cascade_State": "OnART", 
+                        "Choices": {
+                            "LostForever9": 0.25, 
+                            "HCTUptakePostDebut8": 0.75
+                        }
+                    }
+                }
+            }, 
+            "END": "ART"
+        }, 
+        {
+            "BEGIN": "LOST FOREVER", 
+            "class": "CampaignEventByYear", 
+            "Event_Name": "LostForever: state 0", 
+            "Start_Year": 1990, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Trigger_Condition": "LostForever0", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVSetCascadeState", 
+                        "Abort_States": [], 
+                        "Cascade_State": "LostForever", 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "LTFU0"
+                    }
+                }
+            }, 
+            "END": "LOST FOREVER"
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Nyanza, Ages 10-14.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    1
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 10, 
+                    "Target_Age_Max": 14.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.017078571, 
+                                0.239896824, 
+                                0.182377323, 
+                                0.111593638, 
+                                0.072834979, 
+                                0.182728896, 
+                                0.377657485, 
+                                0.515722042, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Nyanza, Ages 15-24.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    1
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 15, 
+                    "Target_Age_Max": 24.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.021915303, 
+                                0.21677363, 
+                                0.283722163, 
+                                0.433157849, 
+                                0.363288676, 
+                                0.578606175, 
+                                0.648298714, 
+                                0.998890097, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Nyanza, Ages 25-49.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    1
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 25, 
+                    "Target_Age_Max": 49.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.007019622, 
+                                0.031392768, 
+                                0.030387085, 
+                                0.041559632, 
+                                0.026237254, 
+                                0.051346591, 
+                                0.033095701, 
+                                0.02808219, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Nairobi, Ages 10-14.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    2
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 10, 
+                    "Target_Age_Max": 14.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                0.000323167, 
+                                0.030437033, 
+                                0.082916618, 
+                                0.057489316, 
+                                0.201698238, 
+                                0.373799071, 
+                                0.353156702, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Nairobi, Ages 15-24.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    2
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 15, 
+                    "Target_Age_Max": 24.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                0.005057657, 
+                                0.156451034, 
+                                0.231084302, 
+                                0.160390363, 
+                                0.131799759, 
+                                0.122487564, 
+                                0.102685425, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Nairobi, Ages 25-49.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    2
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 25, 
+                    "Target_Age_Max": 49.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                0.000437237, 
+                                0.024313252, 
+                                0.053095406, 
+                                0.044237376, 
+                                0.025999209, 
+                                0.022451608, 
+                                0.016892736, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Rift Valley, Ages 10-14.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    4
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 10, 
+                    "Target_Age_Max": 14.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                0.0, 
+                                0.013752975, 
+                                0.088072808, 
+                                0.087151844, 
+                                0.291170787, 
+                                0.237044536, 
+                                0.282759981, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Rift Valley, Ages 15-24.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    4
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 15, 
+                    "Target_Age_Max": 24.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                0.0, 
+                                0.017903918, 
+                                0.160796088, 
+                                0.169427148, 
+                                0.342006462, 
+                                0.487017987, 
+                                0.827644997, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Rift Valley, Ages 25-49.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    4
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 25, 
+                    "Target_Age_Max": 49.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                0.0, 
+                                0.003521976, 
+                                0.006645151, 
+                                0.021665472, 
+                                0.016487061, 
+                                0.023870036, 
+                                0.025789863, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Western, Ages 10-14.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    5
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 10, 
+                    "Target_Age_Max": 14.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                0.0, 
+                                0.124746082, 
+                                0.092329109, 
+                                0.051282964, 
+                                0.646945347, 
+                                0.924166885, 
+                                0.999607922, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Western, Ages 15-24.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    5
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 15, 
+                    "Target_Age_Max": 24.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                0.0, 
+                                0.052284393, 
+                                0.269172952, 
+                                0.099846729, 
+                                0.294363035, 
+                                0.222757717, 
+                                0.16427955, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Western, Ages 25-49.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    5
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 25, 
+                    "Target_Age_Max": 49.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                0.0, 
+                                0.010926213, 
+                                0.025299915, 
+                                0.013175735, 
+                                0.030444169, 
+                                0.023015024, 
+                                0.011037311, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Central, Ages 10-14.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    6
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 10, 
+                    "Target_Age_Max": 14.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                0.000169766, 
+                                0.090887618, 
+                                0.097116725, 
+                                0.209806405, 
+                                0.277971744, 
+                                0.310173012, 
+                                0.267555758, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Central, Ages 15-24.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    6
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 15, 
+                    "Target_Age_Max": 24.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                0.001644158, 
+                                0.037318586, 
+                                0.074273188, 
+                                0.242343901, 
+                                0.38014894, 
+                                0.408010604, 
+                                0.908276741, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Central, Ages 25-49.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    6
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 25, 
+                    "Target_Age_Max": 49.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                0.0, 
+                                0.009659327, 
+                                0.026928565, 
+                                0.055101421, 
+                                0.035226509, 
+                                0.03860264, 
+                                0.068950061, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Coast, Ages 10-14.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    3
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 10, 
+                    "Target_Age_Max": 14.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                0.000169766, 
+                                0.090887618, 
+                                0.097116725, 
+                                0.209806405, 
+                                0.277971744, 
+                                0.310173012, 
+                                0.267555758, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Coast, Ages 15-24.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    3
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 15, 
+                    "Target_Age_Max": 24.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                0.001644158, 
+                                0.037318586, 
+                                0.074273188, 
+                                0.242343901, 
+                                0.38014894, 
+                                0.408010604, 
+                                0.908276741, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Coast, Ages 25-49.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    3
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 25, 
+                    "Target_Age_Max": 49.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                0.0, 
+                                0.009659327, 
+                                0.026928565, 
+                                0.055101421, 
+                                0.035226509, 
+                                0.03860264, 
+                                0.068950061, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Eastern, Ages 10-14.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    7
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 10, 
+                    "Target_Age_Max": 14.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                8.06e-05, 
+                                0.042970796, 
+                                0.044138384, 
+                                0.091357927, 
+                                0.112138334, 
+                                0.115961308, 
+                                0.095517663, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Eastern, Ages 15-24.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    7
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 15, 
+                    "Target_Age_Max": 24.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                0.000764442, 
+                                0.017427388, 
+                                0.033956245, 
+                                0.10598329, 
+                                0.140754416, 
+                                0.108132149, 
+                                0.152498065, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male Circumcision: Eastern, Ages 25-49.99999999", 
+            "Start_Year": 1975, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    7
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV", 
+                    "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                    "Target_Gender": "Male", 
+                    "Target_Age_Min": 25, 
+                    "Target_Age_Max": 49.99999999, 
+                    "Trigger_Condition": "TriggerList", 
+                    "Trigger_Condition_List": [
+                        "ConsiderVMMCUptake"
+                    ], 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic", 
+                        "Abort_States": [
+                            "LostForever", 
+                            "OnART", 
+                            "LinkingToART", 
+                            "OnPreART", 
+                            "LinkingToPreART", 
+                            "ARTStaging"
+                        ], 
+                        "Cascade_State": "VMMC", 
+                        "Event_Or_Config": "Event", 
+                        "Interpolation_Order": 0, 
+                        "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear", 
+                        "Positive_Diagnosis_Event": "NeedsCircumcisionDiagnostic", 
+                        "Time_Value_Map": {
+                            "Times": [
+                                2007, 
+                                2008, 
+                                2009, 
+                                2010, 
+                                2011, 
+                                2012, 
+                                2013, 
+                                2014, 
+                                2015, 
+                                2016
+                            ], 
+                            "Values": [
+                                0.0, 
+                                0.0, 
+                                0.0, 
+                                0.004423599, 
+                                0.012259488, 
+                                0.024704056, 
+                                0.015209352, 
+                                0.016166861, 
+                                0.027756228, 
+                                0.0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 10-14 to 80% in Nyanza", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    1
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 10, 
+                "Target_Age_Max": 14.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.8
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 15-19 to 80% in Nyanza", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    1
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 15, 
+                "Target_Age_Max": 19.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.8
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 20-24 to 80% in Nyanza", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    1
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 20, 
+                "Target_Age_Max": 24.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.8
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 10-14 to 98.44% in Nairobi", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    2
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 10, 
+                "Target_Age_Max": 14.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.9844
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 15-19 to 98.44% in Nairobi", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    2
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 15, 
+                "Target_Age_Max": 19.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.9844
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 20-24 to 98.44% in Nairobi", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    2
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 20, 
+                "Target_Age_Max": 24.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.9844
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 10-14 to 99.82% in Coast", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    3
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 10, 
+                "Target_Age_Max": 14.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.9982
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 15-19 to 99.82% in Coast", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    3
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 15, 
+                "Target_Age_Max": 19.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.9982
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 20-24 to 99.82% in Coast", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    3
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 20, 
+                "Target_Age_Max": 24.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.9982
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 10-14 to 98.56% in Rift Valley", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    4
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 10, 
+                "Target_Age_Max": 14.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.9956
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 15-19 to 80% in 98.56% in Rift Valley", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    4
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 15, 
+                "Target_Age_Max": 19.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.9956
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 20-24 to 80% in 98.56% in Rift Valley", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    4
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 20, 
+                "Target_Age_Max": 24.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.9956
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 10-14 to 98.58% in Western", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    5
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 10, 
+                "Target_Age_Max": 14.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.9858
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 15-19 to 98.58% in Western", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    5
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 15, 
+                "Target_Age_Max": 19.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.9858
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 20-24 to 98.58% in Western", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    5
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 20, 
+                "Target_Age_Max": 24.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.9858
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 10-14 to 99.5% in Central", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    6
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 10, 
+                "Target_Age_Max": 14.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.995
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 15-19 to 99.5% in Central", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    6
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 15, 
+                "Target_Age_Max": 19.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.995
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 20-24 to 99.5% in Central", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    6
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 20, 
+                "Target_Age_Max": 24.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.995
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 10-14 to 99.54% in Eastern", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    7
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 10, 
+                "Target_Age_Max": 14.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.9954
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 15-19 to 99.54% in Eastern", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    7
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 15, 
+                "Target_Age_Max": 19.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.9954
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Starting in 2016, reference track male circumcision coverage in 20-24 to 80% in 99.54% in Eastern", 
+            "Start_Year": 2015, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [
+                    7
+                ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Target_Age_Min": 20, 
+                "Target_Age_Max": 24.99999999, 
+                "Update_Period": 30.4166666666667, 
+                "Time_Value_Map": {
+                    "Times": [
+                        2015.9, 
+                        2016
+                    ], 
+                    "Values": [
+                        0, 
+                        0.9954
+                    ]
+                }, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0, 
+                    "class": "MaleCircumcision", 
+                    "Circumcision_Reduced_Acquire": 0.6, 
+                    "Distributed_Event_Trigger": "Program_VMMC", 
+                    "Apply_If_Higher_Reduced_Acquire": 0
+                }
+            }
+        }
+    ]
+}

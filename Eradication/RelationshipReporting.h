@@ -29,9 +29,7 @@ namespace Kernel
         bool is_circumcised;
         bool has_sti;
         bool is_superspreader;
-        unsigned int transitory_relationship_count;
-        unsigned int informal_relationship_count;
-        unsigned int marital_relationship_count;
+        unsigned int relationship_count[RelationshipType::COUNT];
         std::string props ;
 
         ParticipantInfo();
