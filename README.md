@@ -31,3 +31,5 @@ For information on prerequisite software, building the EMOD executable, and lear
 + The STI contact network enables users to configure up to three relationship types with different durations, gender-specific levels of concurrency, age patterns of formation, and preference functions.
 + The HIV-specific implementation of the STI network model adds co-factors and interventions affecting transmission, disease progression on and off therapy, and detailed and time-variable linkage and retention along the care continuum. 
 For tutorials on these new models, as well as the other disease models, prerequisite software, and building the EMOD executable, go to the [IDM documentation](http://idmod.org/idmdoc).
+
+<a href="https://zenhub.com"><img src="https://raw.githubusercontent.com/ZenHubIO/support/master/zenhub-badge.png"></a>
