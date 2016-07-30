@@ -87,7 +87,7 @@ namespace Kernel
 
         CalculateDelay();
 
-        LOG_DEBUG_F("Drew %0.2f remaining delay days in %s.\n", remaining_delay_days, DistributionFunction::pairs::lookup_key(delay_distribution.GetType()));
+        LOG_DEBUG_F("Drew %0.2f remaining delay days in %s.\n", float(remaining_delay_days), DistributionFunction::pairs::lookup_key(delay_distribution.GetType()));
         return true;
     }
 
@@ -95,7 +95,7 @@ namespace Kernel
     DelayedIntervention::CalculateDelay()
     {
         remaining_delay_days = delay_distribution.CalculateDuration();
-        LOG_DEBUG_F("Drew %0.2f remaining delay days in %s.\n", remaining_delay_days, DistributionFunction::pairs::lookup_key(delay_distribution.GetType()));
+        LOG_DEBUG_F("Drew %0.2f remaining delay days in %s.\n", float(remaining_delay_days), DistributionFunction::pairs::lookup_key(delay_distribution.GetType()));
     }
 
     DelayedIntervention::DelayedIntervention()
@@ -111,15 +111,20 @@ namespace Kernel
         delay_distribution.AddSupportedType( DistributionFunction::UNIFORM_DURATION,     "Delay_Period_Min",  DI_Delay_Period_Min_DESC_TEXT,  "Delay_Period_Max",     DI_Delay_Period_Max_DESC_TEXT );
         delay_distribution.AddSupportedType( DistributionFunction::GAUSSIAN_DURATION,    "Delay_Period_Mean", DI_Delay_Period_Mean_DESC_TEXT, "Delay_Period_Std_Dev", DI_Delay_Period_Std_Dev_DESC_TEXT );
         delay_distribution.AddSupportedType( DistributionFunction::EXPONENTIAL_DURATION, "Delay_Period",      DI_Delay_Period_DESC_TEXT,      "", "" );
+
+        remaining_delay_days.handle = std::bind( &DelayedIntervention::Callback, this, std::placeholders::_1 );
     }
 
     DelayedIntervention::DelayedIntervention( const DelayedIntervention& master )
         : BaseIntervention( master )
+        , parent(nullptr)
         , remaining_delay_days( master.remaining_delay_days )
         , coverage( master.coverage )
         , delay_distribution( master.delay_distribution )
-        , actual_intervention_config( master.actual_intervention_config )
-    {
+        //, actual_intervention_config( master.actual_intervention_config )
+    { 
+        actual_intervention_config = master.actual_intervention_config;
+        remaining_delay_days.handle = std::bind( &DelayedIntervention::Callback, this, std::placeholders::_1 );
     }
 
     void DelayedIntervention::SetContextTo(IIndividualHumanContext *context)
@@ -128,14 +133,12 @@ namespace Kernel
     }
 
     void DelayedIntervention::Update( float dt )
+    { 
+        remaining_delay_days.Decrement( dt );
+    }
+
+    void DelayedIntervention::Callback( float dt )
     {
-
-        if( remaining_delay_days > 0 )
-        {
-            remaining_delay_days -= dt;
-            return;
-        }
-
         try
         {
             // Important: Use the instance method to obtain the intervention factory obj instead of static method to cross the DLL boundary

@@ -52,7 +52,7 @@ namespace Kernel
     MigrationPattern::Enum IndividualHumanConfig::migration_pattern = MigrationPattern::RANDOM_WALK_DIFFUSION;
     bool IndividualHumanConfig::immunity = false;
     int IndividualHumanConfig::roundtrip_waypoints = 0;
-    int IndividualHumanConfig::max_ind_inf = 0;
+    int IndividualHumanConfig::max_ind_inf = 1;
     bool IndividualHumanConfig::superinfection = 0;
     float IndividualHumanConfig::x_othermortality = 0.0f;
     float IndividualHumanConfig::min_adult_age_years = 15.0f;
@@ -100,61 +100,58 @@ namespace Kernel
     )
     {
         LOG_DEBUG( "Configure\n" );
-        initConfigTypeMap( "Enable_Aging", &aging, Enable_Aging_DESC_TEXT, true );
+        initConfigTypeMap( "Enable_Aging", &aging, Enable_Aging_DESC_TEXT, true, "Enable_Vital_Dynamics" );
         initConfigTypeMap( "Infection_Updates_Per_Timestep", &infection_updates_per_tstep, Infection_Updates_Per_Timestep_DESC_TEXT, 0, 144, 1 );
         initConfigTypeMap( "Enable_Immunity", &immunity, Enable_Immunity_DESC_TEXT, true );
-        initConfigTypeMap( "Max_Individual_Infections", &max_ind_inf, Max_Individual_Infections_DESC_TEXT, 0, 1000, 1 );
         initConfigTypeMap( "Enable_Superinfection", &superinfection, Enable_Superinfection_DESC_TEXT, false );
-        initConfigTypeMap( "x_Other_Mortality", &x_othermortality, x_Other_Mortality_DESC_TEXT, 0.0f, FLT_MAX, 1.0f );
-        initConfigTypeMap( "Minimum_Adult_Age_Years", &min_adult_age_years, Minimum_Adult_Age_Years_DESC_TEXT, 0.0f, FLT_MAX, 15.0f );
+        initConfigTypeMap( "Max_Individual_Infections", &max_ind_inf, Max_Individual_Infections_DESC_TEXT, 0, 1000, 1, "Enable_Superinfection" );
+        initConfigTypeMap( "x_Other_Mortality", &x_othermortality, x_Other_Mortality_DESC_TEXT, 0.0f, FLT_MAX, 1.0f, "Enable_Vital_Dynamics" );
+        initConfigTypeMap( "Minimum_Adult_Age_Years", &min_adult_age_years, Minimum_Adult_Age_Years_DESC_TEXT, 0.0f, FLT_MAX, 15.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP" );
 
-        MigrationStructure::Enum migration_structure; // TBD: Would be nice to get from SimulationConfig, but fakeHuman is configured first
-        initConfig( "Migration_Model", migration_structure, config, MetadataDescriptor::Enum("migration_structure", Migration_Model_DESC_TEXT, MDD_ENUM_ARGS(MigrationStructure)) );
+        //initConfig( "Migration_Model", migration_structure, config, MetadataDescriptor::Enum("migration_structure", Migration_Model_DESC_TEXT, MDD_ENUM_ARGS(MigrationStructure)) );
 
-        if( migration_structure != MigrationStructure::NO_MIGRATION || JsonConfigurable::_dryrun)
+        //if( migration_structure != MigrationStructure::NO_MIGRATION || JsonConfigurable::_dryrun)
+        initConfig( "Migration_Pattern", migration_pattern, config, MetadataDescriptor::Enum("migration_pattern", Migration_Pattern_DESC_TEXT, MDD_ENUM_ARGS(MigrationPattern)), "Migration_Model", "FIXED_RATE_MIGRATION,VARIABLE_RATE_MIGRATION,LEVY_FLIGHTS" );
+
+        if ( JsonConfigurable::_dryrun )
         {
-            initConfig( "Migration_Pattern", migration_pattern, config, MetadataDescriptor::Enum("migration_pattern", Migration_Pattern_DESC_TEXT, MDD_ENUM_ARGS(MigrationPattern)), "Migration_Structure", "Not NO_MIGRATION" );
+            RegisterRandomWalkDiffusionParameters();
+            RegisterSingleRoundTripsParameters();
+            RegisterWaypointsHomeParameters();
+        }
+        else if(migration_pattern == MigrationPattern::RANDOM_WALK_DIFFUSION)
+        {
+            LOG_DEBUG( "Following migration = RANDOM_WALK_DIFFUSION path\n" );
+            local_roundtrip_prob      = 0.0f;
+            air_roundtrip_prob        = 0.0f;
+            region_roundtrip_prob     = 0.0f;
+            sea_roundtrip_prob        = 0.0f;
 
-            if ( JsonConfigurable::_dryrun )
-            {
-                RegisterRandomWalkDiffusionParameters();
-                RegisterSingleRoundTripsParameters();
-                RegisterWaypointsHomeParameters();
-            }
-            else if(migration_pattern == MigrationPattern::RANDOM_WALK_DIFFUSION)
-            {
-                LOG_DEBUG( "Following migration = RANDOM_WALK_DIFFUSION path\n" );
-                local_roundtrip_prob      = 0.0f;
-                air_roundtrip_prob        = 0.0f;
-                region_roundtrip_prob     = 0.0f;
-                sea_roundtrip_prob        = 0.0f;
+            RegisterRandomWalkDiffusionParameters();
+        }
+        else if( migration_pattern == MigrationPattern::SINGLE_ROUND_TRIPS )
+        {
+            LOG_DEBUG( "Following migration = single_round_trip path\n" );
+            RegisterSingleRoundTripsParameters();
 
-                RegisterRandomWalkDiffusionParameters();
-            }
-            else if( migration_pattern == MigrationPattern::SINGLE_ROUND_TRIPS )
-            {
-                LOG_DEBUG( "Following migration = single_round_trip path\n" );
-                RegisterSingleRoundTripsParameters();
+            roundtrip_waypoints = 1;
+        }
+        else if( migration_pattern == MigrationPattern::WAYPOINTS_HOME )
+        {
+            LOG_DEBUG( "Following migration = WAYPOINTS_HOME path\n" );
+            local_roundtrip_prob      = 1.0f;
+            air_roundtrip_prob        = 1.0f;
+            region_roundtrip_prob     = 1.0f;
+            sea_roundtrip_prob        = 1.0f;
+            family_roundtrip_prob     = 1.0f;
 
-                roundtrip_waypoints = 1;
-            }
-            else if( migration_pattern == MigrationPattern::WAYPOINTS_HOME )
-            {
-                LOG_DEBUG( "Following migration = WAYPOINTS_HOME path\n" );
-                local_roundtrip_prob      = 1.0f;
-                air_roundtrip_prob        = 1.0f;
-                region_roundtrip_prob     = 1.0f;
-                sea_roundtrip_prob        = 1.0f;
-                family_roundtrip_prob     = 1.0f;
+            local_roundtrip_duration_rate  = 0.0f;
+            air_roundtrip_duration_rate    = 0.0f;
+            region_roundtrip_duration_rate = 0.0f;
+            sea_roundtrip_duration_rate    = 0.0f;
+            family_roundtrip_duration_rate = 0.0f;
 
-                local_roundtrip_duration_rate  = 0.0f;
-                air_roundtrip_duration_rate    = 0.0f;
-                region_roundtrip_duration_rate = 0.0f;
-                sea_roundtrip_duration_rate    = 0.0f;
-                family_roundtrip_duration_rate = 0.0f;
-
-                RegisterWaypointsHomeParameters();
-            }
+            RegisterWaypointsHomeParameters();
         }
 
         bool bRet = JsonConfigurable::Configure( config );

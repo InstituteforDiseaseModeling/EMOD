@@ -15,7 +15,7 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "class": "HIVRapidHIVDiagnostic",
-                    "Days_To_Diagnosis"        : 1,
+                    "Days_To_Diagnosis": 1,
                     "Probability_Received_Result" : 0.9,
 
                     "Abort_States": [

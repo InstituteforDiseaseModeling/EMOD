@@ -55,10 +55,11 @@ namespace Kernel
                                     Demographic_Coverage_DESC_TEXT,
                                     0.0, 
                                     1.0, 
-                                    DEFAULT_DEMOGRAPHIC_COVERAGE, 
+                                    DEFAULT_DEMOGRAPHIC_COVERAGE/*, 
                                     "Intervention_Config.*.iv_type", 
-                                    "IndividualTargeted" );
+                                    "IndividualTargeted"*/ );
 
+        release_assert( default_target_demographic == TargetDemographicType::Everyone );
         if( JsonConfigurable::_dryrun ||
             (default_target_demographic == TargetDemographicType::Everyone) || 
             inputJson->Exist("Target_Demographic") )
@@ -68,10 +69,11 @@ namespace Kernel
                                  inputJson,
                                  MetadataDescriptor::Enum( "target_demographic", 
                                                            Target_Demographic_DESC_TEXT, 
-                                                           MDD_ENUM_ARGS(TargetDemographicType)),
+                                                           MDD_ENUM_ARGS(TargetDemographicType))/*,
                                  "Intervention_Config.*.iv_type", 
-                                 "IndividualTargeted");
+                                 "IndividualTargeted"*/);
         }
+        LOG_DEBUG_F( "Target_Demographic configured as = %s\n", TargetDemographicType::pairs::lookup_key( target_demographic ) );
         
         if( (target_demographic == TargetDemographicType::ExplicitAgeRanges         ) || 
             (target_demographic == TargetDemographicType::ExplicitAgeRangesAndGender) ||
@@ -84,8 +86,8 @@ namespace Kernel
                 throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
             }
 
-            pParent->initConfigTypeMap( "Target_Age_Min", &target_age_min, Target_Age_Min_DESC_TEXT, 0.0f, FLT_MAX,    0.0f, "Target_Demographic", "ExplicitAgeRanges" );
-            pParent->initConfigTypeMap( "Target_Age_Max", &target_age_max, Target_Age_Max_DESC_TEXT, 0.0f, FLT_MAX, FLT_MAX, "Target_Demographic", "ExplicitAgeRanges" );
+            pParent->initConfigTypeMap( "Target_Age_Min", &target_age_min, Target_Age_Min_DESC_TEXT, 0.0f, FLT_MAX,    0.0f, "Target_Demographic", "ExplicitAgeRanges,ExplicitAgeRangesAndGender" );
+            pParent->initConfigTypeMap( "Target_Age_Max", &target_age_max, Target_Age_Max_DESC_TEXT, 0.0f, FLT_MAX, FLT_MAX, "Target_Demographic", "ExplicitAgeRanges,ExplicitAgeRangesAndGender" );
             if( (target_demographic == TargetDemographicType::ExplicitAgeRangesAndGender) || JsonConfigurable::_dryrun)
             {
                 pParent->initConfig( "Target_Gender", target_gender, inputJson, MetadataDescriptor::Enum("target_gender", Target_Gender_DESC_TEXT, MDD_ENUM_ARGS(TargetGender)) ); 
@@ -98,9 +100,9 @@ namespace Kernel
 
         // xpath-y way of saying that the possible values for prop restrictions comes from demographics file IP's.
         property_restrictions_set.value_source = "<demographics>::Defaults.Individual_Properties.*.Property.<keys>:<demographics>::Defaults.Individual_Properties.*.Value.<keys>"; 
-        pParent->initConfigTypeMap("Property_Restrictions", &property_restrictions_set, Property_Restriction_DESC_TEXT, "Intervention_Config.*.iv_type", "IndividualTargeted" );
+        pParent->initConfigTypeMap("Property_Restrictions", &property_restrictions_set, Property_Restriction_DESC_TEXT /*, "Intervention_Config.*.iv_type", "IndividualTargeted"*/ );
 
-        pParent->initConfigComplexType("Property_Restrictions_Within_Node", &property_restrictions, Property_Restriction_DESC_TEXT, "Intervention_Config.*.iv_type", "IndividualTargeted" );
+        pParent->initConfigComplexType("Property_Restrictions_Within_Node", &property_restrictions, Property_Restriction_DESC_TEXT /*, "Intervention_Config.*.iv_type", "IndividualTargeted"*/ );
 
         pParent->initConfigTypeMap( "Target_Residents_Only", &target_residents_only, Target_Residents_Only_DESC_TEXT, false );
     }

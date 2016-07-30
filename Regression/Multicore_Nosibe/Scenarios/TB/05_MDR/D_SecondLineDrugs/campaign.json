@@ -30,7 +30,7 @@
                     "Base_Sensitivity": 1, 
                     "Base_Specificity": 1, 
                     "Cost_To_Consumer": 1, 
-                    "Days_To_Diagnosis": 1, 
+                    "Days_To_Diagnosis": 0, 
                     "Event_Or_Config": "Config", 
                     "Positive_Diagnosis_Config": {
                         "Cost_To_Consumer": 1, 
@@ -70,7 +70,7 @@
                         "Base_Sensitivity": 1, 
                         "Base_Specificity": 1, 
                         "Cost_To_Consumer": 1, 
-                        "Days_To_Diagnosis": 50, 
+                        "Days_To_Diagnosis": 45, 
                         "Defaulters_Event": "TBMDRTestDefault", 
                         "Event_Or_Config": "Event", 
                         "Negative_Diagnosis_Event": "TBMDRTestNegative", 

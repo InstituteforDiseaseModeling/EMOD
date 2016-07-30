@@ -1,27 +1,17 @@
 {
     "Header": {
-        "DateTime": "Thu Apr 28 15:20:33 2016",
-        "DTK_Version": "1036 SimpleCSW (10b3a46) Apr 27 2016 15:38:50",
+        "DateTime": "Wed Jul 13 11:22:05 2016",
+        "DTK_Version": "1225 schema_changes (1a9b052) Jul 13 2016 08:27:48",
         "Report_Type": "InsetChart",
         "Report_Version": "3.2",
         "Start_Time": 0,
         "Simulation_Timestep": 1,
         "Timesteps": 5,
-        "Channels": 38,
+        "Channels": 39,
         "Base_Year": 1960.5
     },
     "Channels": {
-        "Active INFORMAL Relationships": {
-            "Units": "Relationships",
-            "Data": [
-                6,
-                16,
-                30,
-                36,
-                50
-            ]
-        },
-        "Active MARITAL Relationships": {
+        "Active COMMERCIAL Relationships": {
             "Units": "Relationships",
             "Data": [
                 0,
@@ -31,7 +21,17 @@
                 0
             ]
         },
-        "Active COMMERCIAL Relationships": {
+        "Active INFORMAL Relationships": {
+            "Units": "Relationships",
+            "Data": [
+                2,
+                10,
+                26,
+                44,
+                54
+            ]
+        },
+        "Active MARITAL Relationships": {
             "Units": "Relationships",
             "Data": [
                 0,
@@ -46,9 +46,9 @@
             "Data": [
                 8,
                 22,
-                40,
-                44,
-                54
+                34,
+                46,
+                66
             ]
         },
         "Births": {
@@ -77,8 +77,8 @@
                 0,
                 0,
                 0,
-                17394,
-                17394
+                17396,
+                17396
             ]
         },
         "Disease Deaths": {
@@ -127,7 +127,7 @@
                 0,
                 0,
                 0,
-                17394,
+                17396,
                 0
             ]
         },
@@ -147,8 +147,8 @@
                 0,
                 0,
                 0,
-                17394,
-                17393
+                17396,
+                17396
             ]
         },
         "Number of (untreated) Individuals with Latent HIV": {
@@ -175,20 +175,20 @@
             "Units": "",
             "Data": [
                 0,
-                4296,
-                4295,
-                4295,
-                4295
+                4281,
+                4281,
+                4281,
+                4281
             ]
         },
         "Number of Events - EighteenMonthsOld": {
             "Units": "",
             "Data": [
-                1,
+                0,
                 3,
                 2,
-                1,
-                1
+                2,
+                0
             ]
         },
         "Number of Events - NewInfectionEvent": {
@@ -197,26 +197,26 @@
                 0,
                 0,
                 0,
-                17394,
+                17396,
                 0
             ]
         },
         "Number of Events - NonDiseaseDeaths": {
             "Units": "",
             "Data": [
-                1,
-                1,
                 0,
-                1,
-                1
+                0,
+                0,
+                0,
+                0
             ]
         },
         "Number of Events - STIDebut": {
             "Units": "",
             "Data": [
                 0,
-                0,
-                2,
+                1,
+                1,
                 1,
                 1
             ]
@@ -224,21 +224,21 @@
         "Number of Events - SixWeeksOld": {
             "Units": "",
             "Data": [
-                1,
-                1,
                 0,
+                1,
+                2,
                 4,
-                3
+                2
             ]
         },
         "Number of Individuals Ever in a Relationship": {
             "Units": "",
             "Data": [
-                14,
-                38,
-                70,
-                80,
-                104
+                10,
+                32,
+                60,
+                90,
+                120
             ]
         },
         "Number of Individuals HIV+ w/ CD4 < 200 (non-ART)": {
@@ -267,8 +267,8 @@
                 0,
                 0,
                 0,
-                17394,
-                17393
+                17396,
+                17396
             ]
         },
         "Number of Individuals HIV+ w/ CD4 >= 200 (on-ART)": {
@@ -294,21 +294,21 @@
         "Paired People": {
             "Units": "People",
             "Data": [
-                14,
-                38,
-                70,
-                80,
-                104
+                10,
+                32,
+                60,
+                90,
+                120
             ]
         },
         "Post-Debut Population": {
             "Units": "",
             "Data": [
-                9897,
-                9896,
-                9897,
-                9898,
-                9899
+                9981,
+                9982,
+                9983,
+                9984,
+                9985
             ]
         },
         "Prevalence (Females, 15-49)": {
@@ -354,31 +354,31 @@
         "Single Post-Debut Men": {
             "Units": "People",
             "Data": [
-                4684,
-                4671,
-                4655,
-                4651,
-                4640
+                4804,
+                4794,
+                4780,
+                4766,
+                4751
             ]
         },
         "Single Post-Debut Women": {
             "Units": "People",
             "Data": [
-                5199,
-                5187,
-                5172,
                 5167,
-                5155
+                5156,
+                5143,
+                5128,
+                5114
             ]
         },
         "Statistical Population": {
             "Units": "Population",
             "Data": [
                 17396,
-                17395,
-                17394,
-                17394,
-                17393
+                17396,
+                17396,
+                17396,
+                17396
             ]
         },
         "Susceptible Population": {

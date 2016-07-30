@@ -72,7 +72,7 @@ namespace Kernel
         initConfigTypeMap("Number_Repetitions", &num_repetitions, Number_Repetitions_DESC_TEXT, -1, 1000, -1 );
         //if( num_repetitions > 1 ) // -1 = repeat without end, 0 is meaningless. want to think this one through more
         {
-            initConfigTypeMap("Timesteps_Between_Repetitions", &tsteps_between_reps, Timesteps_Between_Repetitions_DESC_TEXT, -1, 10000 /*undefined*/, -1 /*off*/, "Number_Repetitions", "<>0" );
+            initConfigTypeMap("Timesteps_Between_Repetitions", &tsteps_between_reps, Timesteps_Between_Repetitions_DESC_TEXT, -1, 10000 /*undefined*/, -1 /*off*/ ); // , "Number_Repetitions", "<>0" );
         }
         //initConfigTypeMap("Include_Departures", &include_emigrants, Include_Departures_DESC_TEXT, false );
         //initConfigTypeMap("Include_Arrivals", &include_immigrants, Include_Arrivals_DESC_TEXT, false );
@@ -194,7 +194,7 @@ namespace Kernel
     void StandardInterventionDistributionEventCoordinator::UpdateNodes( float dt )
     {
         // Only call VisitNodes on first call and if countdown == 0
-        if( tsteps_since_last != tsteps_between_reps )
+        if( (tsteps_since_last != tsteps_between_reps) || distribution_complete )
         {
             return;
         }

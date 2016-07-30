@@ -39,6 +39,8 @@ namespace Kernel
         virtual const std::string& GetCascadeState();
         virtual const jsonConfigurable::tDynamicStringSet& GetAbortStates();
 
+        virtual void Callback( float dt );
+
     protected:
         virtual void CalculateDelay();
 

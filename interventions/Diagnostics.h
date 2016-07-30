@@ -21,6 +21,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionEnums.h"
 #include "InterventionFactory.h"
 #include "Interventions.h"
+#include "Timers.h"
 #include "Types.h"
 #include "EventTrigger.h"
 
@@ -49,6 +50,7 @@ namespace Kernel
         virtual void onPatientDefault();
         virtual void positiveTestDistribute();
         virtual bool applySensitivityAndSpecificity( bool infected ) const;
+        virtual void Callback( float dt );
 
     protected:
 
@@ -63,7 +65,7 @@ namespace Kernel
         ProbabilityNumber base_specificity;
         ProbabilityNumber base_sensitivity;
         ProbabilityNumber treatment_fraction;
-        float days_to_diagnosis; // can go negative if dt is > 1
+        CountdownTimer days_to_diagnosis; // can go negative if dt is > 1
 
         IndividualInterventionConfig positive_diagnosis_config;
         EventTrigger positive_diagnosis_event;

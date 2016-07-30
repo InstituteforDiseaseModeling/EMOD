@@ -71,10 +71,31 @@ namespace Kernel
 
     DiagnosticTreatNeg::DiagnosticTreatNeg()
     : SimpleDiagnostic()
+    , negative_diagnosis_config()
     , negative_diagnosis_event()
+    , defaulters_config()
     , defaulters_event()
+    , m_gets_positive_test_intervention(false)
     {
         initSimTypes( 1, "TB_SIM" );
+        days_to_diagnosis.handle = std::bind( &DiagnosticTreatNeg::onDiagnosisComplete, this, 0 );
+    }
+
+    DiagnosticTreatNeg::DiagnosticTreatNeg( const DiagnosticTreatNeg& master )
+    : SimpleDiagnostic( master )
+    , negative_diagnosis_config(master.negative_diagnosis_config)
+    , negative_diagnosis_event(master.negative_diagnosis_event)
+    //, defaulters_config(master.defaulters_config)
+    , defaulters_event(master.defaulters_event)
+    , m_gets_positive_test_intervention(master.m_gets_positive_test_intervention)
+    {
+        initSimTypes( 1, "TB_SIM" );
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!! IndividualInterventionConfig - the copy constructor and assignment operator are different.
+        // !!! I needed to use the assignment operator to get this to work correctly.
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        defaulters_config = master.defaulters_config;
+        days_to_diagnosis.handle = std::bind( &DiagnosticTreatNeg::onDiagnosisComplete, this, 0 );
     }
 
     DiagnosticTreatNeg::~DiagnosticTreatNeg()
@@ -90,8 +111,8 @@ namespace Kernel
     {
         //flag for pos/neg test result so that if you are counting down days_to_diagnosis you know what to give when the time comes
         m_gets_positive_test_intervention = true;
-        return SimpleDiagnostic::Distribute( context, pICCO );
-
+        bool ret = SimpleDiagnostic::Distribute( context, pICCO );
+        return ret;
     }
 
     void DiagnosticTreatNeg::Update( float dt )
@@ -102,23 +123,23 @@ namespace Kernel
             return; // don't give expired intervention.  should be cleaned up elsewhere anyways, though.
         }
 
-        // You have already been chosen to not default, count down the time until your intervention
-        days_to_diagnosis -= dt;
+        // You have already been chosen to not default, count down the time until your intervention 
+        days_to_diagnosis.Decrement( dt );
         LOG_DEBUG_F( "Individual %d will not default and has a diagnosis but has %f more days until the intervention is distributed.\n", parent->GetSuid().data, float(days_to_diagnosis) );
+    }
 
+    void DiagnosticTreatNeg::onDiagnosisComplete( float dt )
+    {
         // Give the intervention if the test has come back
-        if( days_to_diagnosis <= 0 )
-        {
-            LOG_DEBUG_F("Individual %d finished counting down days_to_diagnosis, my treatment outcome flag is %d \n", parent->GetSuid().data, m_gets_positive_test_intervention);
+        LOG_DEBUG_F("Individual %d finished counting down days_to_diagnosis, my treatment outcome flag is %d \n", parent->GetSuid().data, m_gets_positive_test_intervention);
 
-            if (m_gets_positive_test_intervention)
-            {
-                positiveTestDistribute();
-            }
-            else
-            {
-                negativeTestDistribute();
-            }
+        if (m_gets_positive_test_intervention)
+        {
+            positiveTestDistribute();
+        }
+        else
+        {
+            negativeTestDistribute();
         }
     }
     

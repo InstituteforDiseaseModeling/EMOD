@@ -38,6 +38,7 @@ namespace Kernel
         virtual const jsonConfigurable::tDynamicStringSet& GetAbortStates();
 
     protected:
+        virtual void Callback( float dt );
         virtual bool qualifiesToGetIntervention( IIndividualHumanContext* pIndivid );
         virtual bool AbortDueToCurrentCascadeState();
         virtual bool UpdateCascade();

@@ -798,17 +798,9 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
     BEGIN_QUERY_INTERFACE_BODY(MigrationInfoFactoryFile)
     END_QUERY_INTERFACE_BODY(MigrationInfoFactoryFile)
 
-    MigrationInfoFactoryFile::MigrationInfoFactoryFile( bool enableHumanMigration )
-    : JsonConfigurable()
-    , m_InfoFileList()
-    , m_EnableHumanMigration( enableHumanMigration )
-    {
-    }
-
     MigrationInfoFactoryFile::MigrationInfoFactoryFile()
     : JsonConfigurable()
     , m_InfoFileList()
-    , m_EnableHumanMigration(true)//true for schema generation
     {
     }
 
@@ -830,32 +822,30 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
         m_InfoFileList.push_back( new MigrationInfoFile( MigrationType::FAMILY_MIGRATION,   MAX_SEA_MIGRATION_DESTINATIONS      ) );
     }
 
-    void MigrationInfoFactoryFile::InitializeInfoFileList( bool enableHumanMigration, const Configuration* config )
+    void MigrationInfoFactoryFile::InitializeInfoFileList( const Configuration* config )
     {
         CreateInfoFileList();
 
-        if( enableHumanMigration )
-        {
-            initConfigTypeMap( "Enable_Migration_Heterogeneity",  &m_IsHeterogeneityEnabled, Enable_Migration_Heterogeneity_DESC_TEXT, true );
+        initConfigTypeMap( "Enable_Migration_Heterogeneity",  &m_IsHeterogeneityEnabled, Enable_Migration_Heterogeneity_DESC_TEXT, true, "Migration_Model", "FIXED_RATE_MIGRATION,VARIABLE_RATE_MIGRATION,LEVY_FLIGHTS" );
 
-            initConfigTypeMap( "Enable_Local_Migration",      &(m_InfoFileList[0]->m_IsEnabled), Enable_Local_Migration_DESC_TEXT,    false );
-            initConfigTypeMap( "Enable_Air_Migration",        &(m_InfoFileList[1]->m_IsEnabled), Enable_Air_Migration_DESC_TEXT,      false );
-            initConfigTypeMap( "Enable_Regional_Migration",   &(m_InfoFileList[2]->m_IsEnabled), Enable_Regional_Migration_DESC_TEXT, false );
-            initConfigTypeMap( "Enable_Sea_Migration",        &(m_InfoFileList[3]->m_IsEnabled), Enable_Sea_Migration_DESC_TEXT,      false );
-            initConfigTypeMap( "Enable_Family_Migration",     &(m_InfoFileList[4]->m_IsEnabled), Enable_Family_Migration_DESC_TEXT,   false );
+        initConfigTypeMap( "Enable_Local_Migration",      &(m_InfoFileList[0]->m_IsEnabled), Enable_Local_Migration_DESC_TEXT,    false, "Migration_Model", "FIXED_RATE_MIGRATION,VARIABLE_RATE_MIGRATION,LEVY_FLIGHTS" );
+        initConfigTypeMap( "Enable_Air_Migration",        &(m_InfoFileList[1]->m_IsEnabled), Enable_Air_Migration_DESC_TEXT,      false, "Migration_Model", "FIXED_RATE_MIGRATION,VARIABLE_RATE_MIGRATION,LEVY_FLIGHTS" );
+        initConfigTypeMap( "Enable_Regional_Migration",   &(m_InfoFileList[2]->m_IsEnabled), Enable_Regional_Migration_DESC_TEXT, false, "Migration_Model", "FIXED_RATE_MIGRATION,VARIABLE_RATE_MIGRATION,LEVY_FLIGHTS" );
+        initConfigTypeMap( "Enable_Sea_Migration",        &(m_InfoFileList[3]->m_IsEnabled), Enable_Sea_Migration_DESC_TEXT,      false, "Migration_Model", "FIXED_RATE_MIGRATION,VARIABLE_RATE_MIGRATION,LEVY_FLIGHTS" );
+        initConfigTypeMap( "Enable_Family_Migration",     &(m_InfoFileList[4]->m_IsEnabled), Enable_Family_Migration_DESC_TEXT,   false, "Migration_Model", "FIXED_RATE_MIGRATION,VARIABLE_RATE_MIGRATION,LEVY_FLIGHTS" );
 
-            initConfigTypeMap( "Local_Migration_Filename",    &(m_InfoFileList[0]->m_Filename),  Local_Migration_Filename_DESC_TEXT    );
-            initConfigTypeMap( "Air_Migration_Filename",      &(m_InfoFileList[1]->m_Filename),  Air_Migration_Filename_DESC_TEXT      );
-            initConfigTypeMap( "Regional_Migration_Filename", &(m_InfoFileList[2]->m_Filename),  Regional_Migration_Filename_DESC_TEXT );
-            initConfigTypeMap( "Sea_Migration_Filename",      &(m_InfoFileList[3]->m_Filename),  Sea_Migration_Filename_DESC_TEXT      );
-            initConfigTypeMap( "Family_Migration_Filename",   &(m_InfoFileList[4]->m_Filename),  Family_Migration_Filename_DESC_TEXT   );
+        initConfigTypeMap( "Local_Migration_Filename",    &(m_InfoFileList[0]->m_Filename),  Local_Migration_Filename_DESC_TEXT,    "", "Enable_Local_Migration" );
+        initConfigTypeMap( "Air_Migration_Filename",      &(m_InfoFileList[1]->m_Filename),  Air_Migration_Filename_DESC_TEXT,      "", "Enable_Air_Migration" );
+        initConfigTypeMap( "Regional_Migration_Filename", &(m_InfoFileList[2]->m_Filename),  Regional_Migration_Filename_DESC_TEXT, "", "Enable_Regional_Migration" );
+        initConfigTypeMap( "Sea_Migration_Filename",      &(m_InfoFileList[3]->m_Filename),  Sea_Migration_Filename_DESC_TEXT,      "", "Enable_Sea_Migration" );
+        initConfigTypeMap( "Family_Migration_Filename",   &(m_InfoFileList[4]->m_Filename),  Family_Migration_Filename_DESC_TEXT,   "", "Enable_Family_Migration" );
 
-            initConfigTypeMap( "x_Local_Migration",           &(m_InfoFileList[0]->m_xModifier), x_Local_Migration_DESC_TEXT,    0.0f, FLT_MAX, 1.0f );
-            initConfigTypeMap( "x_Air_Migration",             &(m_InfoFileList[1]->m_xModifier), x_Air_Migration_DESC_TEXT,      0.0f, FLT_MAX, 1.0f );
-            initConfigTypeMap( "x_Regional_Migration",        &(m_InfoFileList[2]->m_xModifier), x_Regional_Migration_DESC_TEXT, 0.0f, FLT_MAX, 1.0f );
-            initConfigTypeMap( "x_Sea_Migration",             &(m_InfoFileList[3]->m_xModifier), x_Sea_Migration_DESC_TEXT,      0.0f, FLT_MAX, 1.0f );
-            initConfigTypeMap( "x_Family_Migration",          &(m_InfoFileList[4]->m_xModifier), x_Family_Migration_DESC_TEXT,   0.0f, FLT_MAX, 1.0f );
-        }
+        initConfigTypeMap( "x_Local_Migration",           &(m_InfoFileList[0]->m_xModifier), x_Local_Migration_DESC_TEXT,    0.0f, FLT_MAX, 1.0f, "Enable_Local_Migration" );
+        initConfigTypeMap( "x_Air_Migration",             &(m_InfoFileList[1]->m_xModifier), x_Air_Migration_DESC_TEXT,      0.0f, FLT_MAX, 1.0f, "Enable_Air_Migration" );
+        initConfigTypeMap( "x_Regional_Migration",        &(m_InfoFileList[2]->m_xModifier), x_Regional_Migration_DESC_TEXT, 0.0f, FLT_MAX, 1.0f, "Enable_Regional_Migration" );
+        initConfigTypeMap( "x_Sea_Migration",             &(m_InfoFileList[3]->m_xModifier), x_Sea_Migration_DESC_TEXT,      0.0f, FLT_MAX, 1.0f, "Enable_Sea_Migration" );
+        initConfigTypeMap( "x_Family_Migration",          &(m_InfoFileList[4]->m_xModifier), x_Family_Migration_DESC_TEXT,   0.0f, FLT_MAX, 1.0f, "Enable_Family_Migration" );
+        
 
         m_InfoFileList[0]->SetEnableParameterName( "Enable_Local_Migration"    );
         m_InfoFileList[1]->SetEnableParameterName( "Enable_Air_Migration"      );
@@ -872,7 +862,7 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
 
     bool MigrationInfoFactoryFile::Configure( const Configuration* config )
     {
-        InitializeInfoFileList( m_EnableHumanMigration, config );
+        InitializeInfoFileList( config );
 
         bool ret = JsonConfigurable::Configure( config );
 
@@ -989,13 +979,12 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
     BEGIN_QUERY_INTERFACE_BODY(MigrationInfoFactoryDefault)
     END_QUERY_INTERFACE_BODY(MigrationInfoFactoryDefault)
 
-    MigrationInfoFactoryDefault::MigrationInfoFactoryDefault( bool enableHumanMigration,
-                                                              int torusSize )
+    MigrationInfoFactoryDefault::MigrationInfoFactoryDefault( int torusSize )
     : m_IsHeterogeneityEnabled(false)
     , m_xLocalModifier(1.0)
     , m_TorusSize( torusSize )
     {
-        InitializeParameters( enableHumanMigration );
+        InitializeParameters();
     }
 
     MigrationInfoFactoryDefault::MigrationInfoFactoryDefault()
@@ -1003,20 +992,17 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
     , m_xLocalModifier(1.0)
     , m_TorusSize(0)
     {
-        InitializeParameters( true );  //true for schema generation
+        InitializeParameters(); 
     }
 
     MigrationInfoFactoryDefault::~MigrationInfoFactoryDefault()
     {
     }
 
-    void MigrationInfoFactoryDefault::InitializeParameters( bool enableHumanMigration )
+    void MigrationInfoFactoryDefault::InitializeParameters()
     {
-        if( enableHumanMigration )
-        {
-            initConfigTypeMap( "Enable_Migration_Heterogeneity",  &m_IsHeterogeneityEnabled, Enable_Migration_Heterogeneity_DESC_TEXT, true );
-            initConfigTypeMap( "x_Local_Migration", &m_xLocalModifier, x_Local_Migration_DESC_TEXT, 0.0f, FLT_MAX, 1.0f );
-        }
+        initConfigTypeMap( "Enable_Migration_Heterogeneity",  &m_IsHeterogeneityEnabled, Enable_Migration_Heterogeneity_DESC_TEXT, false, "Migration_Model", "FIXED_RATE_MIGRATION,VARIABLE_RATE_MIGRATION,LEVY_FLIGHTS" );
+        initConfigTypeMap( "x_Local_Migration", &m_xLocalModifier, x_Local_Migration_DESC_TEXT, 0.0f, FLT_MAX, 1.0f, "Enable_Local_Migration" );
     }
 
     bool MigrationInfoFactoryDefault::Configure( const Configuration* config )

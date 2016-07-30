@@ -65,7 +65,7 @@ SUITE(SchemaTest)
 
 
 
-#if 1
+#if 0
     TEST_FIXTURE(SchemaFixture, WriteSchema)
     {
         std::string exp_filename = "testdata/SchemaTest.WriteSchema.json" ;

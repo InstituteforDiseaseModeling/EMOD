@@ -54,6 +54,7 @@ namespace Kernel
 
     void HIVDrawBlood::positiveTestDistribute()
     {
+        LOG_DEBUG_F( "HIVDrawBlood: %s\n", __FUNCTION__ );
         IIndividualHumanHIV * hiv_parent = nullptr;
         if (parent->QueryInterface(GET_IID(IIndividualHumanHIV), (void**)&hiv_parent) != s_OK)
         {

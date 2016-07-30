@@ -12,6 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Interventions.h"
 #include "InterventionFactory.h"
 #include "DurationDistribution.h"
+#include "Timers.h"
 
 namespace Kernel
 {
@@ -32,6 +33,8 @@ namespace Kernel
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
         virtual void Update(float dt);
 
+        virtual void Callback( float dt );
+
     protected:
         virtual void PreConfigure( const Configuration* config );
         virtual void DistributionConfigure( const Configuration* config );
@@ -42,7 +45,7 @@ namespace Kernel
         virtual void CalculateDelay();
 
         IIndividualHumanContext *parent;
-        float remaining_delay_days;
+        CountdownTimer remaining_delay_days;
         float coverage;
 
         DurationDistribution delay_distribution;

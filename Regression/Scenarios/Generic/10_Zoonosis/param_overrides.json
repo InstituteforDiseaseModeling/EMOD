@@ -56,7 +56,6 @@
             "Node_Grid_Size": 0.009,
             "Run_Number": 1,
             "Simulation_Duration": 730,
-            "Simulation_Type": "GENERIC_SIM",
             "Start_Time": 0
         }
     }

@@ -29,8 +29,6 @@
         "Event_Coordinator_Config": {
             "class": "StandardInterventionDistributionEventCoordinator",
             "Demographic_Coverage": 1,
-            "Include_Arrivals": 0,
-            "Include_Departures": 0,
             "Number_Repetitions": -1,
             "Property_Restrictions": [],
             "Target_Demographic": "Everyone",
@@ -40,7 +38,7 @@
                 "Base_Sensitivity": 1,
                 "Base_Specificity": 1,
                 "Cost_To_Consumer": 10,
-                "Days_To_Diagnosis": 1,
+                "Days_To_Diagnosis": 0,
                 "Treatment_Fraction": 1,
                 "Event_Or_Config": "Event",
                 "Positive_Diagnosis_Event": "TestPositiveOnSmear"

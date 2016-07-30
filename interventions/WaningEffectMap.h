@@ -21,7 +21,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    class WaningEffectMapAbstract : public IWaningEffect, public JsonConfigurable
+    class IDMAPI WaningEffectMapAbstract : public IWaningEffect, public JsonConfigurable
     {
     public:
         DECLARE_CONFIGURED(WaningEffectExponential)
@@ -34,8 +34,9 @@ namespace Kernel
         virtual float Current() const override;
         virtual bool  Expired() const override;
 
-    protected:
         virtual float GetMultiplier( float timeSinceStart ) const = 0;
+
+    protected:
 
         bool  m_Expired;
         float m_EffectOriginal;
@@ -47,29 +48,37 @@ namespace Kernel
         static void serialize( IArchive&, WaningEffectMapAbstract*);
     };
 
-    class WaningEffectMapLinear : public WaningEffectMapAbstract
+    class IDMAPI WaningEffectMapLinear : public WaningEffectMapAbstract
     {
         DECLARE_FACTORY_REGISTERED_EXPORT(WaningEffectFactory, WaningEffectMapLinear, IWaningEffect)
         DECLARE_QUERY_INTERFACE()
     public:
         WaningEffectMapLinear();
         virtual ~WaningEffectMapLinear();
-    protected:
+
         virtual float GetMultiplier( float timeSinceStart ) const override;
 
+    protected:
+#pragma warning( push )
+#pragma warning( disable: 4251 ) // See IdmApi.h for details
         DECLARE_SERIALIZABLE(WaningEffectMapLinear);
+#pragma warning( pop )
     };
 
-    class WaningEffectMapPiecewise : public WaningEffectMapAbstract
+    class IDMAPI WaningEffectMapPiecewise : public WaningEffectMapAbstract
     {
         DECLARE_FACTORY_REGISTERED_EXPORT(WaningEffectFactory, WaningEffectMapPiecewise, IWaningEffect)
         DECLARE_QUERY_INTERFACE()
     public:
         WaningEffectMapPiecewise();
         virtual ~WaningEffectMapPiecewise();
-    protected:
+
         virtual float GetMultiplier( float timeSinceStart ) const override;
 
+    protected:
+#pragma warning( push )
+#pragma warning( disable: 4251 ) // See IdmApi.h for details
         DECLARE_SERIALIZABLE(WaningEffectMapPiecewise);
+#pragma warning( pop )
     };
 }

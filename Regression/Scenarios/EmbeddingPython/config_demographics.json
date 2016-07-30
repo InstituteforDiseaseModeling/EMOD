@@ -11,7 +11,7 @@
         "Enable_Birth": 1, 
         "Enable_Demographics_Birth": 0, 
         "Enable_Demographics_Gender": 1, 
-        "Enable_Demographics_Initial": 1, 
+        "Enable_Demographics_Builtin": 0, 
         "Enable_Demographics_Other": 0, 
         "Enable_Vital_Dynamics": 1,
         "Mortality_Blocking_Immunity_Decay_Rate": 0.001, 

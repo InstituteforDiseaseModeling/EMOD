@@ -25,6 +25,7 @@ namespace Kernel
 
     public:
         DiagnosticTreatNeg();
+        DiagnosticTreatNeg( const DiagnosticTreatNeg& master );
         virtual bool Configure( const Configuration* pConfig );
         virtual ~DiagnosticTreatNeg();// { }
 
@@ -33,6 +34,7 @@ namespace Kernel
 
         virtual bool positiveTestResult();
 
+        void onDiagnosisComplete( float dt );
         virtual void onNegativeTestResult();
         virtual void negativeTestDistribute();
 

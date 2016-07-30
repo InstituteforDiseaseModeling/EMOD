@@ -1,3 +1,15 @@
+## V2.8
+What's New in EMOD V2.8
+The EMOD source v2.8 release includes new and updated features as well as updates to the schema.
++ WaningEffectMapLinear and WaningEffectMapPiecewise capabilities have been added to provide more power and flexibility in defining how interventions can wane by allowing you to specify a detailed waning curve.
+    + WaningEffectMapLinear allows you to specify a detailed waning curve using linear interpolation between points.
+    + WaningEffectMapPiecewise allows you to specify a detailed waning curve using a piecewise/step function.
++ ControlledVaccine extends SimpleVaccine by adding controls to when an individual can and cannot be revaccinated.
++ ReferenceTrackingEventCoordinator allows you to define a particular coverage of an intervention that should be present in the population over time.
++ ReferenceTrackingEventCoordinatorHIV builds on the ReferenceTrackingEventCoordinator by adding an HIV specific state that individuals must have in order to get the intervention.
++ The schema for the config parameters has been updated to now only require config.json parameters if the dependent feature is enabled. For example, previous to v2.8 you had to include a parameter for Maternal_Transmission_Probability even if Enable_Maternal_Transmission was set to 0 (False/OFF). This update produces smaller config.json files making the configuration files easier to create, view, and edit.
++ For the list of breaking changes go to the [IDM documentation](http://idmod.org/idmdoc).
+
 ## V2.7.0
 The EMOD source v2.7 release enhances the STI and HIV models with new and updated features.
 + Both multi-node and multi-core capabilities have been added to support spatial simulations including relationship migration.

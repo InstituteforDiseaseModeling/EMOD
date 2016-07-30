@@ -27,30 +27,28 @@ namespace Kernel
                                                               bool useDefaultMigration,
                                                               int defaultTorusSize )
         {
-            bool enable_human_migration = (ms != MigrationStructure::NO_MIGRATION);
-
             IMigrationInfoFactory* p_mif = nullptr ;
 #ifndef DISABLE_VECTOR
             if( (sim_type == SimType::VECTOR_SIM) || (sim_type == SimType::MALARIA_SIM) )
             {
                 if( useDefaultMigration )
                 {
-                    p_mif = new MigrationInfoFactoryVectorDefault( enable_human_migration, defaultTorusSize );
+                    p_mif = new MigrationInfoFactoryVectorDefault( defaultTorusSize );
                 }
                 else
                 {
-                    p_mif = new MigrationInfoFactoryVector( enable_human_migration );
+                    p_mif = new MigrationInfoFactoryVector();
                 }
             }
             else 
 #endif
             if( useDefaultMigration )
             {
-                p_mif = new MigrationInfoFactoryDefault( enable_human_migration, defaultTorusSize );
+                p_mif = new MigrationInfoFactoryDefault( defaultTorusSize );
             }
             else
             {
-                p_mif = new MigrationInfoFactoryFile( enable_human_migration );
+                p_mif = new MigrationInfoFactoryFile();
             }
             p_mif->Initialize( config, idreference );
             return p_mif;

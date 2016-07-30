@@ -33,7 +33,7 @@
                                         "Base_Sensitivity": 0.9, 
                                         "Base_Specificity": 0.95, 
                                         "Cost_To_Consumer": 15, 
-                                        "Days_To_Diagnosis": 15, 
+                                        "Days_To_Diagnosis": 10, 
                                         "Event_Or_Config": "Config",
                                         "Positive_Diagnosis_Config": {
                                              "Cost_To_Consumer": 90, 
@@ -88,7 +88,7 @@
                          "Base_Sensitivity": 0.9, 
                          "Base_Specificity": 0.95, 
                          "Cost_To_Consumer": 15, 
-                         "Days_To_Diagnosis": 15, 
+                         "Days_To_Diagnosis": 10, 
                          "Event_Or_Config": "Config",
                          "Positive_Diagnosis_Config": {
                               "Cost_To_Consumer": 90, 

@@ -16,14 +16,14 @@ parameters:
     Config_Name: "105_Generic_PythonMultiConfigs"
     Death_Rate_Dependence: "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER"
     Default_Config_Path: "defaults/generic_default_config.json"
-    Demographics_Filename: "demographics.json"
+    Demographics_Filenames: ["demographics.json"]
     Enable_Aging: 1
     Enable_Birth: 1
     Enable_Default_Reporting: 1
     Enable_Default_Shedding_Function: 1
     Enable_Demographics_Birth: 0
     Enable_Demographics_Gender: 1
-    Enable_Demographics_Initial: 1
+    Enable_Demographics_Builtin: 0
     Enable_Demographics_Other: 0
     Enable_Demographics_Reporting: 0
     Enable_Disease_Mortality: 0

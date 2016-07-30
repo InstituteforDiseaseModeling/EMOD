@@ -62,7 +62,7 @@ namespace Kernel
         schema[ tn ] = json::String( "idmType:NodeListConfig" );
         schema[ ts ] = json::Array();
         schema[ ts ][0] = json::Object();
-        schema[ ts ][0]["Type"] = json::String( "Integer" );
+        schema[ ts ][0]["Type"] = json::String( "integer" );
         schema[ ts ][0]["Min"] = json::Number( 0 );
         schema[ ts ][0]["Description"] = json::String( "Id of Node" );
         return schema;

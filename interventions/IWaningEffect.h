@@ -19,7 +19,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    struct IWaningEffect : ISerializable
+    struct IDMAPI IWaningEffect : ISerializable
     {
         virtual void  Update(float dt) = 0;
         virtual float Current() const  = 0;

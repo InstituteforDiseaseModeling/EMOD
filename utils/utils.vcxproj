@@ -173,6 +173,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='QuickStart|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="suids.cpp" />
+    <ClCompile Include="Timers.cpp" />
     <ClCompile Include="Types.cpp" />
     <ClCompile Include="ValidationLog.cpp" />
   </ItemGroup>
@@ -241,6 +242,7 @@
     <ClInclude Include="Sugar.h" />
     <ClInclude Include="suids.hpp" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Timers.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="ValidationLog.h" />
     <ClInclude Include="version_info.h" />

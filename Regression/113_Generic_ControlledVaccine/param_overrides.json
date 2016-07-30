@@ -6,6 +6,7 @@
         "Simulation_Duration": 120, 
         "Run_Number": 1,
         "Base_Population_Scale_Factor": 0.1, 
+        "Population_Scale_Type": "FIXED_SCALING",
         "Enable_Birth": 0, 
         "Enable_Vital_Dynamics": 0, 
         "Demographics_Filenames": [ "generic_scenarios_demographics.json" ],

@@ -172,7 +172,7 @@ namespace Kernel
 
         newindividual->SetContextTo(context);
         newindividual->InitializeConcurrency();
-        LOG_DEBUG_F( "Created human with age=%f\n", newindividual->m_age );
+        LOG_DEBUG_F( "Created human with age=%f and gender=%d\n", newindividual->m_age, gender );
 
         return newindividual;
     }
@@ -199,6 +199,7 @@ namespace Kernel
             debut_lambda    = IndividualHumanSTIConfig::debutAgeYrsFemale_lambda;
         }
         float debut_draw = float(DAYSPERYEAR * Environment::getInstance()->RNG->Weibull2( debut_lambda, debut_inv_kappa ));
+        LOG_DEBUG_F( "debut_draw = %f with lamba %f and kappa %f\n", debut_draw, debut_lambda, debut_inv_kappa );
         sexual_debut_age = (std::max)(min_age_sexual_debut_in_days, debut_draw );
 
         LOG_DEBUG_F( "Individual ? will debut at age %f (yrs)f.\n", sexual_debut_age/DAYSPERYEAR );

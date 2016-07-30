@@ -571,7 +571,12 @@
                         "cost_per_unit":1,
                         "expired":false,
                         "dont_allow_duplicates" : true,
-                        "remaining_delay_days"  : 52,
+                        "remaining_delay_days"  :
+                        {
+                            "_value"     : 33,
+                            "_min_value" : 0,
+                            "_max_value" : 3.4e+038
+                        },
                         "coverage"              : 0.52,
                         "delay_distribution"    :
                         {
@@ -851,7 +856,12 @@
                     "_min_value":0,
                     "_max_value":1
                 },
-                "days_to_diagnosis":3,
+                "days_to_diagnosis"  :
+                {
+                    "_value"     : 4.4,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_9",
                 "abortStates" :
@@ -904,7 +914,12 @@
                     "_min_value":0,
                     "_max_value":1
                 },
-                "days_to_diagnosis":3,
+                "days_to_diagnosis"  :
+                {
+                    "_value"     : 4.5,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_9",
                 "abortStates" :
@@ -952,7 +967,12 @@
                     "_min_value":0,
                     "_max_value":1
                 },
-                "days_to_diagnosis":7,
+                "days_to_diagnosis"  :
+                {
+                    "_value"     : 4.9,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_7",
                 "abortStates" :
@@ -1001,7 +1021,12 @@
                     "_min_value":0,
                     "_max_value":1
                 },
-                "days_to_diagnosis":4,
+                "days_to_diagnosis"  :
+                {
+                    "_value"     : 44.4,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_7",
                 "abortStates" :
@@ -1066,7 +1091,12 @@
                     "_min_value":0,
                     "_max_value":1
                 },
-                "days_to_diagnosis":4,
+                "days_to_diagnosis"  :
+                {
+                    "_value"     : 43,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_1",
                 "abortStates" :
@@ -1106,7 +1136,12 @@
                 "cost_per_unit":5,
                 "expired":false,
                 "dont_allow_duplicates" : false,
-                "remaining_delay_days"  : 23,
+                "remaining_delay_days"  :
+                {
+                    "_value"     : 2,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
                 "coverage"              : 0.32,
                 "delay_distribution"    :
                 {
@@ -1167,7 +1202,12 @@
                     "_min_value":0,
                     "_max_value":1
                 },
-                "days_to_diagnosis":4,
+                "days_to_diagnosis"  :
+                {
+                    "_value"     : 4,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_6",
                 "abortStates" :
@@ -1196,7 +1236,12 @@
                 "cost_per_unit":1,
                 "expired":false,
                 "dont_allow_duplicates" : true,
-                "remaining_delay_days"  : 52,
+                "remaining_delay_days"  :
+                {
+                    "_value"     : 3,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
                 "coverage"              : 0.52,
                 "delay_distribution"    :
                 {
@@ -1236,7 +1281,12 @@
                 "cost_per_unit":9,
                 "expired":false,
                 "dont_allow_duplicates" : false,
-                "remaining_delay_days"  : 5,
+                "remaining_delay_days"  :
+                {
+                    "_value"     : 3,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
                 "coverage"              : 0.5,
                 "delay_distribution"    :
                 {
@@ -1274,7 +1324,12 @@
                     "_min_value":0,
                     "_max_value":1
                 },
-                "days_to_diagnosis":4,
+                "days_to_diagnosis"  :
+                {
+                    "_value"     : 4,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_2",
                 "abortStates" :
@@ -1361,7 +1416,12 @@
                     "_min_value":0,
                     "_max_value":1
                 },
-                "days_to_diagnosis":4,
+                "days_to_diagnosis"  :
+                {
+                    "_value"     : 4,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_2",
                 "abortStates" :
@@ -1429,7 +1489,12 @@
                     "_min_value":0,
                     "_max_value":1
                 },
-                "days_to_diagnosis":4,
+                "days_to_diagnosis"  :
+                {
+                    "_value"     : 4,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_1",
                 "abortStates" :
@@ -1477,7 +1542,12 @@
                     "_min_value":0,
                     "_max_value":1
                 },
-                "days_to_diagnosis":4,
+                "days_to_diagnosis"  :
+                {
+                    "_value"     : 5,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_1",
                 "cd4_thresholds" :
@@ -1584,7 +1654,12 @@
                     "_min_value":0,
                     "_max_value":1
                 },
-                "days_to_diagnosis":4,
+                "days_to_diagnosis"  :
+                {
+                    "_value"     : 4,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_1",
                 "age_thresholds" :
@@ -2381,7 +2456,12 @@
                             "_min_value":0,
                             "_max_value":1
                         },
-                        "days_to_diagnosis":4,
+                        "days_to_diagnosis"  :
+                        {
+                            "_value"     : 4,
+                            "_min_value" : 0,
+                            "_max_value" : 3.4e+038
+                        },
                         "positive_diagnosis_config":"null",
                         "positive_diagnosis_event":"Event_6",
                         "negative_diagnosis_event":"Event_7"
@@ -2451,7 +2531,12 @@
                     "_min_value":0,
                     "_max_value":1
                 },
-                "days_to_diagnosis":4,
+                "days_to_diagnosis"  :
+                {
+                    "_value"     : 4,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_1"
             }
@@ -2635,7 +2720,12 @@
                             "_min_value" : 0,
                             "_max_value" : 1
                         },
-                        "days_to_diagnosis"         : 3,
+                        "days_to_diagnosis"  :
+                        {
+                            "_value"     : 6,
+                            "_min_value" : 0,
+                            "_max_value" : 3.4e+038
+                        },
                         "positive_diagnosis_config" : "null",
                         "positive_diagnosis_event"  : "Event_2",
                         "negative_diagnosis_config" : "null",

@@ -46,7 +46,6 @@ namespace Kernel
     {
         initSimTypes( 2, "STI_SIM", "HIV_SIM" );
         initConfigTypeMap( "Negative_Diagnosis_Event", &negative_diagnosis_event, STI_IPD_Negative_Diagnosis_Event_DESC_TEXT );
-        initConfigTypeMap( "Days_To_Diagnosis", &days_to_diagnosis, SD_Days_To_Diagnosis_DESC_TEXT, 0, FLT_MAX, 0 );
     }
 
     STIIsPostDebut::STIIsPostDebut( const STIIsPostDebut& master )
@@ -70,6 +69,7 @@ namespace Kernel
         }
 
         bool qualifies = (ih_parent->GetAge() >= sti_parent->GetDebutAge());
+        LOG_DEBUG_F( "Individual %d getting tested: returning %d.\n", parent->GetSuid().data, qualifies );
         return qualifies;
     }
 
@@ -81,7 +81,7 @@ namespace Kernel
         
         if( (negative_diagnosis_event != NO_TRIGGER_STR) && !negative_diagnosis_event.IsUninitialized() )
         {
-            LOG_DEBUG_F( "Brodcasting event %s as negative diagnosis event for individual %d.", negative_diagnosis_event.c_str(), iid );
+            LOG_DEBUG_F( "Broadcasting event %s as negative diagnosis event for individual %d.\n", negative_diagnosis_event.c_str(), iid );
             broadcastEvent( negative_diagnosis_event );
         }
         else

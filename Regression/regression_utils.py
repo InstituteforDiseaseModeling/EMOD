@@ -7,6 +7,14 @@ import tempfile
 import string
 from hashlib import md5
 
+# below is list of 'global' variables that are shared across >1 modules in the regression suite of code. 
+# probably all of them could ultimately be made at least a static member of MyRegressionRunner or Monitor.
+
+cache_cwd = os.getcwd()
+final_warnings = ""
+reg_threads = []
+version_string = None
+
 def recursive_json_overrider( ref_json, flat_input_json ):
     for val in ref_json:
         #if not leaf, call recursive_json_leaf_reader

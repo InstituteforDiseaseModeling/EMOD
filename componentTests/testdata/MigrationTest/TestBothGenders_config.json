@@ -1,8 +1,9 @@
 {
     "parameters": {
-        "Enable_Demographics_Initial": 1, 
+        "Enable_Demographics_Builtin": 0, 
 
         "Enable_Migration_Heterogeneity": 1, 
+        "Migration_Model" : "FIXED_RATE_MIGRATION",
         "Family_Migration_Type" : "NO_MIGRATION",
 
         "Enable_Local_Migration": 1, 

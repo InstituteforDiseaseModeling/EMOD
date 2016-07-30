@@ -56,16 +56,16 @@ namespace Kernel
         const Configuration* config
     )
     {
-        initConfigTypeMap( "Enable_Immune_Decay", &immune_decay, Enable_Immune_Decay_DESC_TEXT, true );
-        initConfigTypeMap( "Acquisition_Blocking_Immunity_Decay_Rate", &acqdecayrate, Acquisition_Blocking_Immunity_Decay_Rate_DESC_TEXT, 0.0f, 1000.0f, 0.001f );
-        initConfigTypeMap( "Transmission_Blocking_Immunity_Decay_Rate", &trandecayrate, Transmission_Blocking_Immunity_Decay_Rate_DESC_TEXT, 0.0f, 1000.0f, 0.001f );
-        initConfigTypeMap( "Mortality_Blocking_Immunity_Decay_Rate", &mortdecayrate, Mortality_Blocking_Immunity_Decay_Rate_DESC_TEXT, 0.0f, 1000.0f, 0.001f );
-        initConfigTypeMap( "Immunity_Acquisition_Factor", &baseacqupdate, Immunity_Acquisition_Factor_DESC_TEXT, 0.0f, 1000.0f, 0.0f );
-        initConfigTypeMap( "Immunity_Transmission_Factor", &basetranupdate, Immunity_Transmission_Factor_DESC_TEXT, 0.0f, 1000.0f, 0.0f );
-        initConfigTypeMap( "Immunity_Mortality_Factor", &basemortupdate, Immunity_Mortality_Factor_DESC_TEXT, 0.0f, 1000.0f, 0.0f );
-        initConfigTypeMap( "Acquisition_Blocking_Immunity_Duration_Before_Decay", &baseacqoffset, Acquisition_Blocking_Immunity_Duration_Before_Decay_DESC_TEXT, 0.0f, MAX_HUMAN_LIFETIME, 0.0f );
-        initConfigTypeMap( "Transmission_Blocking_Immunity_Duration_Before_Decay", &basetranoffset, Transmission_Blocking_Immunity_Duration_Before_Decay_DESC_TEXT, 0.0f, MAX_HUMAN_LIFETIME, 0.0f );
-        initConfigTypeMap( "Mortality_Blocking_Immunity_Duration_Before_Decay", &basemortoffset, Mortality_Blocking_Immunity_Duration_Before_Decay_DESC_TEXT, 0.0f, MAX_HUMAN_LIFETIME, 0.0f );
+        initConfigTypeMap( "Enable_Immune_Decay", &immune_decay, Enable_Immune_Decay_DESC_TEXT, true, "Enable_Immunity" );
+        initConfigTypeMap( "Acquisition_Blocking_Immunity_Decay_Rate", &acqdecayrate, Acquisition_Blocking_Immunity_Decay_Rate_DESC_TEXT, 0.0f, 1000.0f, 0.001f, "Enable_Immune_Decay" );
+        initConfigTypeMap( "Transmission_Blocking_Immunity_Decay_Rate", &trandecayrate, Transmission_Blocking_Immunity_Decay_Rate_DESC_TEXT, 0.0f, 1000.0f, 0.001f, "Enable_Immune_Decay" );
+        initConfigTypeMap( "Mortality_Blocking_Immunity_Decay_Rate", &mortdecayrate, Mortality_Blocking_Immunity_Decay_Rate_DESC_TEXT, 0.0f, 1000.0f, 0.001f, "Enable_Immune_Decay" );
+        initConfigTypeMap( "Immunity_Acquisition_Factor", &baseacqupdate, Immunity_Acquisition_Factor_DESC_TEXT, 0.0f, 1000.0f, 0.0f, "Enable_Immunity" );
+        initConfigTypeMap( "Immunity_Transmission_Factor", &basetranupdate, Immunity_Transmission_Factor_DESC_TEXT, 0.0f, 1000.0f, 0.0f, "Enable_Immunity" );
+        initConfigTypeMap( "Immunity_Mortality_Factor", &basemortupdate, Immunity_Mortality_Factor_DESC_TEXT, 0.0f, 1000.0f, 0.0f, "Enable_Immunity" );
+        initConfigTypeMap( "Acquisition_Blocking_Immunity_Duration_Before_Decay", &baseacqoffset, Acquisition_Blocking_Immunity_Duration_Before_Decay_DESC_TEXT, 0.0f, MAX_HUMAN_LIFETIME, 0.0f, "Enable_Immune_Decay" );
+        initConfigTypeMap( "Transmission_Blocking_Immunity_Duration_Before_Decay", &basetranoffset, Transmission_Blocking_Immunity_Duration_Before_Decay_DESC_TEXT, 0.0f, MAX_HUMAN_LIFETIME, 0.0f, "Enable_Immune_Decay" );
+        initConfigTypeMap( "Mortality_Blocking_Immunity_Duration_Before_Decay", &basemortoffset, Mortality_Blocking_Immunity_Duration_Before_Decay_DESC_TEXT, 0.0f, MAX_HUMAN_LIFETIME, 0.0f, "Enable_Immune_Decay" );
         bool bRet = JsonConfigurable::Configure( config );
         return bRet;
     }

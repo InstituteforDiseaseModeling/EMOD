@@ -75,6 +75,7 @@ utilsSrcFiles = [
     "stdafx.cpp",
     "suids.cpp",
     "Types.cpp",
+    "Timers.cpp",
     "ValidationLog.cpp"
 ]
 

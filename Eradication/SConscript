@@ -4,10 +4,10 @@
 # 1. builds main DTK core files and generate Eradication program
 import pdb
 import os
+import re
+import xml.etree.ElementTree as et
 
 Import('env')
-
-
 
 if env['AllDlls'] or ( 'DiseaseDll' in env and env[ 'DiseaseDll' ] !="" ):
     print( "We are doing an EMODule build of Eradication, not a monolithic. Just compile a few files and link to libgeneric_static (and all other libs)." )
@@ -215,19 +215,20 @@ else:
                             "SusceptibilityEnvironmental.cpp",
                         ]
 
-    polioSrcFiles = environmentalSrcFiles + [
-                            # Polio
-                            "BinnedReportPolio.cpp",
-                            "IndividualPolio.cpp",
-                            "InfectionPolio.cpp",
-                            "NodePolio.cpp",
-                            "PolioInterventionsContainer.cpp",
-                            "ReportPolio.cpp",
-                            "SimulationPolio.cpp",
-                            "SpatialReportPolio.cpp",
-                            "SusceptibilityPolio.cpp",
-                            "../interventions/PolioVaccine.cpp",
-                        ]
+# polio not supported externally
+#    polioSrcFiles = environmentalSrcFiles + [
+#                            # Polio
+#                            "BinnedReportPolio.cpp",
+#                            "IndividualPolio.cpp",
+#                            "InfectionPolio.cpp",
+#                            "NodePolio.cpp",
+#                            "PolioInterventionsContainer.cpp",
+#                            "ReportPolio.cpp",
+#                            "SimulationPolio.cpp",
+#                            "SpatialReportPolio.cpp",
+#                            "SusceptibilityPolio.cpp",
+#                            "../interventions/PolioVaccine.cpp",
+#                        ]
                         
     airborneSrcFiles = [
                             # Airborne
@@ -264,14 +265,15 @@ else:
                             "../interventions/NodeLevelHealthTriggeredIVScaleUpSwitch.cpp"
                         ]
 
-    # TBHIV
-    tbhivSrcFiles = [       "IndividualCoinfection.cpp",
-                            #"GroupEventCoordinatorHIV.cpp",
-                            "MasterInterventionsContainer.cpp",
-                            "NodeTBHIV.cpp",
-                            "ReportTBHIV.cpp",
-                            "SimulationTBHIV.cpp"
-    ]
+# tbhiv not supported externally yet
+#    # TBHIV
+#    tbhivSrcFiles = [       "IndividualCoinfection.cpp",
+#                            #"GroupEventCoordinatorHIV.cpp",
+#                            "MasterInterventionsContainer.cpp",
+#                            "NodeTBHIV.cpp",
+#                            "ReportTBHIV.cpp",
+#                            "SimulationTBHIV.cpp"
+#    ]
 
     # STI
     stiSrcFiles = [
@@ -467,6 +469,36 @@ else:
 #        eradicationSrcFiles.extend( polioSrcFiles )
         eradicationSrcFiles.extend( pyDemoSrcFiles )
 
+        def extract_sources(project_file):
+            sources = []
+            includes = []
+
+            et.register_namespace('',"http://schemas.microsoft.com/developer/msbuild/2003") # this is the default namespace in Msft project files
+            project = et.parse(project_file)
+            project_root = project.getroot()
+            namespace = get_namespace(project_root)
+            for type in [ 'ClCompile', 'ClInclude', 'None', 'ResourceCompile' ]:
+                for element in project_root.findall('.//{0}{1}[@Include]'.format(namespace, type)):
+                    file = element.attrib['Include']
+                    file = file.replace('\\', os.sep)
+                    root, ext = os.path.splitext(file)
+                    if ext.lower() == '.cpp':
+                        sources.append(file)
+                    elif ext.lower() == '.h':
+                        includes.append(file)
+            
+            return sources, includes
+
+        def get_namespace(element):
+            m = re.match('\{.*\}', element.tag)
+            namespace = m.group(0) if m else ''
+            return namespace
+
+        project_file = os.path.join(Dir('#').abspath, 'Eradication', 'Eradication.vcxproj')
+        source_files, include_files = extract_sources(project_file)
+        print(source_files)
+        eradicationSrcFiles = source_files
+
     erad_env = env.Clone()
     if os.sys.platform == 'win32':
         erad_env.Append( LINKFLAGS=[ "/DELAYLOAD:\"python27.dll\""] )
@@ -493,7 +525,7 @@ else:
                            'ControllerFactory.h',
                            'IController.h',
                            'Common.h',
-                           'PolioDefs.h',
+#                           'PolioDefs.h',
                            'KernelTypes.h',
                            'Climate.h',
                            'ClimateByData.h',

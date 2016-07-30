@@ -194,6 +194,8 @@ namespace Kernel
         // values used when generating the default geography
         uint32_t torus_size;
         uint32_t default_population;
+        int default_torus_size;
+        int default_node_population;
 
         static std::vector<std::string> demographics_filenames_list;
 

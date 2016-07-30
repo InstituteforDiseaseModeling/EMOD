@@ -43,8 +43,8 @@
                 "class": "StandardInterventionDistributionEventCoordinator",
                 "Demographic_Coverage": 1,
                 "Target_Demographic": "ExplicitAgeRanges",
-                "Target_Age_Min_In_Years": 14,
-                "Target_Age_Max_In_Years": 18,
+                "Target_Age_Min_In_Years_Is_Not_A_Valid_Key": 14,
+                "Target_Age_Max_In_Years_Is_Not_A_Valid_Key": 18,
                 "Intervention_Config":
                 {
                     "class": "STIIsPostDebut", 

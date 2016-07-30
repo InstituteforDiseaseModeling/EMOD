@@ -5,7 +5,8 @@
             "Base_Incubation_Period": 0, 
             "Base_Infectious_Period": 1, 
             "Base_Infectivity": 0.001,
-            "Base_Population_Scale_Factor": 10.0
+            "Base_Population_Scale_Factor": 10.0,
+            "Population_Scale_Type": "FIXED_SCALING"
           },
           "DEMOGRAPHICS": {
                "Demographics_Filenames": [

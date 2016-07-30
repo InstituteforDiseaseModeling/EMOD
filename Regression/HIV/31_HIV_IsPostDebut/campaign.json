@@ -48,6 +48,7 @@
                 "Intervention_Config":
                 {
                     "class": "STIIsPostDebut", 
+                    "Days_To_Diagnosis": 0,
                     "Event_Or_Config": "Event",
                     "Positive_Diagnosis_Event": "Teen_Is_Post_Debut",
                     "Negative_Diagnosis_Event": "Teen_Is_Pre_Debut"
@@ -77,6 +78,8 @@
                     "Actual_IndividualIntervention_Config": 
                     {
                         "class": "STIIsPostDebut", 
+                        "Days_To_Diagnosis_NOTE": "Seems to be some kind of bug where DTD can now default to 1?",
+                        "Days_To_Diagnosis": 0,
                         "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "Post_Debut_On_Debut",
                         "Negative_Diagnosis_Event": "ERROR_Pre_Debut_On_Debut"

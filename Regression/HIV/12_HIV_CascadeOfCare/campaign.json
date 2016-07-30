@@ -544,6 +544,7 @@
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "STIIsPostDebut",
+                        "Days_To_Diagnosis": 0,
                         "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "TestingOnANC1"
                     }
@@ -1208,6 +1209,7 @@
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "STIIsPostDebut",
+                        "Days_To_Diagnosis": 0,
                         "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "OnPreART0",
                         "Negative_Diagnosis_Event": "LTFU9"
@@ -1473,6 +1475,7 @@
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "STIIsPostDebut",
+                        "Days_To_Diagnosis": 0,
                         "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "OnART0",
                         "Negative_Diagnosis_Event": "LTFU11"
@@ -1593,6 +1596,7 @@
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "STIIsPostDebut",
+                        "Days_To_Diagnosis": 0,
                         "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "OnART0",
                         "Negative_Diagnosis_Event": "LTFU12"

@@ -14,6 +14,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ReportMalaria.h"
 #include "BinnedReportMalaria.h"
 #include "SpatialReportMalaria.h"
+#include "FactorySupport.h"
+#include "ProgVersion.h"
 
 #pragma warning(disable : 4996)
 

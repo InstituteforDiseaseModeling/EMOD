@@ -8,7 +8,7 @@
                     "Base_Sensitivity": 0.8,
                     "Base_Specificity": 0.9,
                     "Cost_To_Consumer": 0,
-                    "Days_To_Diagnosis": 1.0,
+                    "Days_To_Diagnosis": 0.0,
                     "Positive_Diagnosis_Config": {
                         "class": "MultiInterventionDistributor",
                         "Intervention_List": [
@@ -96,7 +96,7 @@
                     "Base_Sensitivity": 1.0,
                     "Base_Specificity": 1.0,
                     "Cost_To_Consumer": 0.0,
-                    "Days_To_Diagnosis": 1.0,
+                    "Days_To_Diagnosis": 0.0,
                     "Event_Or_Config": "Event",
                     "Positive_Diagnosis_Event": "TestedPositive_CureMeNow",
                     "Treatment_Fraction": 1.0,
@@ -149,7 +149,7 @@
                     "Base_Sensitivity": 0.0,
                     "Base_Specificity": 0.0,
                     "Cost_To_Consumer": 0.0,
-                    "Days_To_Diagnosis": 10.0,
+                    "Days_To_Diagnosis": 9.0,
                     "Event_Or_Config": "Event",
                     "Positive_Diagnosis_Event": "TestedNegative_ProtectMeNow",
                     "Treatment_Fraction": 1.0,

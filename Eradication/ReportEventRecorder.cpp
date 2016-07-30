@@ -46,12 +46,12 @@ namespace Kernel
     {
         std::vector<std::string> tmp_event_trigger_list ;
 
-        initConfigTypeMap( "Report_Event_Recorder_Ignore_Events_In_List", &ignore_events_in_list, Report_Event_Recorder_Ignore_Events_In_List_DESC_TEXT, false );
+        initConfigTypeMap( "Report_Event_Recorder_Ignore_Events_In_List", &ignore_events_in_list, Report_Event_Recorder_Ignore_Events_In_List_DESC_TEXT, false, "Report_Event_Recorder" );
         initConfigTypeMap( "Report_Event_Recorder_Events", 
                            &tmp_event_trigger_list, 
                            Report_Event_Recorder_Events_DESC_TEXT, 
                            "<configuration>:Listed_Events.*", 
-                           GET_CONFIGURABLE(SimulationConfig)->listed_events );
+                           GET_CONFIGURABLE(SimulationConfig)->listed_events, "Report_Event_Recorder" );
 
         if( inputJson && inputJson->Exist("Report_Event_Recorder_Individual_Properties" ) || JsonConfigurable::_dryrun )
         {

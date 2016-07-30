@@ -42,6 +42,7 @@
         { "path" : "HIV/47_HIV_ProportionalAdjustmentEventCoordinator_HIVNegative_Vaccine"},
         { "path" : "HIV/48_HIV_NChooser" },
         { "path" : "HIV/49_HIV_GitHub_533_RTEC" },
-        { "path" : "HIV/50_HIV_GitHub_611" }
+        { "path" : "HIV/50_HIV_GitHub_611" },
+        { "path" : "HIV/52_HIV_GitHub_690_RTEC" }
     ]
 }

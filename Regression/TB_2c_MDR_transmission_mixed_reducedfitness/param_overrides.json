@@ -3,6 +3,7 @@
     "parameters":{
         "DEMOGRAPHICS":{
             "Base_Population_Scale_Factor":10,
+            "Population_Scale_Type": "FIXED_SCALING",
             "Birth_Rate_Dependence":"FIXED_BIRTH_RATE",
             "Demographics_Filenames":["Single_node_demographics_100.json"],
             "IMMUNITY":{

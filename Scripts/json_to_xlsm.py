@@ -101,6 +101,16 @@ for sheet in wb.sheets():
             elif param_name == "Sim Path":
                 sheet._cell_values[row_id][1] = sys.argv[2].replace( "Scenarios\\", "" )
                 print( "Using Sim Path: " + sheet._cell_values[row_id][1] )
+            elif param_name == "Enable_Demographics_Initial":
+                #pdb.set_trace()
+                # The following code is a particular example of how to do config.json migration, i.e, to batch update the xlsm's when 
+                # we have parameter/schema changes. Here we are replacing Enable_Demographics_Initial with Enable_Demographics_Builtin 
+                # and flipping the logic. Adding new params, removing old ones can be approached similarly.
+                param_name = "Enable_Demographics_Builtin"
+                sheet._cell_values[row_id][1] = cj[ param_name ]
+                sheet._cell_values[row_id][0] = param_name
+                print( "Replacing Enable_Demographics_Initial with Enable_Demographics_Builtin" )
+
 
 xlsBook = wb
 workbook = Workbook()
@@ -165,3 +175,4 @@ os.rename( outputfile + ".zip", outputfile )
 os.chdir( ".." )
 shutil.rmtree( outpath )
 shutil.rmtree( xlsx_outpath )
+

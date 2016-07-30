@@ -480,7 +480,7 @@ bool DefaultController::execute_internal()
     // populate it
     LOG_INFO("DefaultController::execute_internal() populate simulation...\n");
     // Confusing variable name (JC::useDefaults); we want to collect all defaults for reporting. It's up to us as the calling function
-    JsonConfigurable::_useDefaults = true;
+    JsonConfigurable::_track_missing = true;
     if(sim->Populate())
     {
         // Need to reset back to false; will be set as appropriate by campaign related code after this based on

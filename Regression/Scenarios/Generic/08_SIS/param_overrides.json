@@ -45,7 +45,6 @@
         },
         "PRIMARY": {
             "Config_Name": "08_SIS",
-            "Simulation_Type": "GENERIC_SIM",
             "Geography": "SamplesInput",
             "Run_Number": 0,
             "Simulation_Duration": 3650,

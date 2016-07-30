@@ -21,6 +21,7 @@
         { "path": "112_Generic_NChooser" },
         { "path": "113_Generic_ControlledVaccine" },
         { "path": "116_Generic_SimpleVaccine_LinearInterpolation" },
+        { "path": "117_Generic_SimpleVaccine_Piecewise" },
         { "path": "120_Generic_MigrationHeterogeneity" },
         { "path": "Scenarios/Generic/01_SIR" },
         { "path": "Scenarios/Generic/02_SIR_Vaccinations/A_BaselineOutbreak" },
@@ -42,8 +43,5 @@
         { "path": "Scenarios/HINT/04_WAPertussis/A_BaselineOutbreak" },
         { "path": "Scenarios/HINT/04_WAPertussis/B_TargetVaccineRefusers" },
         { "path": "Scenarios/HINT/05_SeattleCommuting" }
-    ],
-    ".tests": [
-        { "path": "48_Generic_Seattle_SingleNode_Zoonosis" }
     ]
 }

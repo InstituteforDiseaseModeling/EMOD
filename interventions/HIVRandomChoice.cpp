@@ -135,7 +135,7 @@ namespace Kernel
         schema[ts]["Event"] = json::Object();
         schema[ts]["Event"][ "type" ] = json::String( "Constrained String" );
         schema[ts]["Event"][ "description" ] = json::String( HIV_Event2ProbabilityMap_Event_DESC_TEXT );
-        schema[ts]["Event"][ "value_source" ] = json::String( "<configuration>:Listed_Events.*" );
+        schema[ts]["Event"][ "value_source" ] = json::String( "<configuration>::Listed_Events.*" );
         schema[ts]["Probability"] = json::Object();
         schema[ts]["Probability"][ "type" ] = json::String( "float" );
         schema[ts]["Probability"][ "min" ] = json::Number( MIN_PROBABILITY );

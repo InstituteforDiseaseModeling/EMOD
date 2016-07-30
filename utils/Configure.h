@@ -164,6 +164,8 @@ namespace Kernel
         typedef std::map< std::string, ConstrainedString * > tConStringConfigTypeMapType;
     }
 
+    bool check_condition( const json::QuickInterpreter * pJson, const char * condition_key, const char * condition_value = nullptr );
+
     class IDMAPI JsonConfigurable : public IConfigurable
     {
         friend class InterventionFactory;
@@ -267,7 +269,8 @@ namespace Kernel
             const char* paramName,
             bool * pVariable,
             const char* description = default_description,
-            bool defaultvalue = false
+            bool defaultvalue = false,
+            const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
         void initConfigTypeMap(
@@ -290,21 +293,24 @@ namespace Kernel
             const char* paramName,
             double * pVariable,
             const char* description = default_description,
-            double min = -DBL_MAX, double max = DBL_MAX, double defaultvalue = 1.0
+            double min = -DBL_MAX, double max = DBL_MAX, double defaultvalue = 1.0,
+            const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
         void initConfigTypeMap(
             const char* paramName,
             std::string * pVariable,
             const char* description = default_description,
-            const std::string& default_str = default_string
+            const std::string& default_str = default_string,
+            const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
         void initConfigTypeMap(
             const char* paramName,
             jsonConfigurable::ConstrainedString * pVariable,
             const char* description = default_description,
-            const std::string& default_str = default_string
+            const std::string& default_str = default_string,
+            const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
         void initConfigTypeMap(
@@ -319,7 +325,8 @@ namespace Kernel
             std::vector< std::string > * pVariable,
             const char* description = default_description,
             const char* constraint_schema = nullptr,
-            const std::set< std::string > &constraint_variable = empty_set
+            const std::set< std::string > &constraint_variable = empty_set,
+            const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
         void initConfigTypeMap(
@@ -327,35 +334,40 @@ namespace Kernel
             std::vector< std::vector< std::string > > * pVariable,
             const char* description = default_description,
             const char* constraint_schema = nullptr,
-            const std::set< std::string > &constraint_variable = empty_set
+            const std::set< std::string > &constraint_variable = empty_set,
+            const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
         void initConfigTypeMap(
             const char* paramName,
             std::vector< float > * pVariable,
             const char* description = default_description,
-            float min = -FLT_MAX, float max = FLT_MAX, float defaultvalue = 1.0
+            float min = -FLT_MAX, float max = FLT_MAX, float defaultvalue = 1.0,
+            const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
         void initConfigTypeMap(
             const char* paramName,
             std::vector< int > * pVariable,
             const char* description = default_description,
-            int min = -INT_MAX, int max = INT_MAX, int defaultvalue = 1.0
+            int min = -INT_MAX, int max = INT_MAX, int defaultvalue = 1.0,
+            const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
         void initConfigTypeMap(
             const char* paramName,
             std::vector< std::vector< float > > * pVariable,
             const char* description = default_description,
-            float min = -FLT_MAX, float max = FLT_MAX, float defaultvalue = 1.0
+            float min = -FLT_MAX, float max = FLT_MAX, float defaultvalue = 1.0,
+            const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
         void initConfigTypeMap(
             const char* paramName,
             std::vector< std::vector< int > > * pVariable,
             const char* description = default_description,
-            int min = -INT_MAX, int max = INT_MAX, int defaultvalue = 1
+            int min = -INT_MAX, int max = INT_MAX, int defaultvalue = 1,
+            const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
         void
@@ -446,7 +458,7 @@ namespace Kernel
             myclass &thevar,
             const json::QuickInterpreter * pJson,
             const MetadataDescriptor::Enum &enum_md,
-            const char* condition_key = nullptr, const char* condition_value = nullptr
+            const char* condition_key = nullptr, const char * condition_value = nullptr
         )
         {
             if( JsonConfigurable::_dryrun )
@@ -455,13 +467,25 @@ namespace Kernel
                 json::Element *elem_copy = _new_ json::Element(pEnumMd->GetSchemaElement());
                 auto enumSchema = json::QuickBuilder( *elem_copy );
 
-                if( condition_key && condition_value )
+                if( condition_key )
                 {
                     json::Object condition;
-                    condition[ condition_key ] = json::String( condition_value );
+                    if( condition_value == nullptr )
+                    {
+                        condition[ condition_key ] = json::Number( 1 );
+                    }
+                    else
+                    {
+                        condition[ condition_key ] = json::String( condition_value );
+                    }
                     enumSchema["depends-on"] = condition;
                 }
                 jsonSchemaBase[key] = enumSchema;
+            }
+
+            if( check_condition( pJson, condition_key, condition_value ) )
+            {
+                return true;
             }
 
             if (pJson && pJson->Exist(key) == false && _useDefaults )

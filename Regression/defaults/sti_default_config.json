@@ -27,7 +27,7 @@
 		"Enable_Birth": 1,
 		"Enable_Demographics_Birth": 0,
 		"Enable_Demographics_Gender": 1,
-		"Enable_Demographics_Initial": 1,
+		"Enable_Demographics_Builtin": 0,
 		"Enable_Demographics_Other": 0,
 		"Enable_Disease_Mortality": 1,
 		"Enable_Vital_Dynamics": 1,

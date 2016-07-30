@@ -40,7 +40,7 @@
                 "Base_Sensitivity": 1,
                 "Base_Specificity": 1,
                 "Cost_To_Consumer": 10,
-                "Days_To_Diagnosis": 15,
+                "Days_To_Diagnosis": 14,
                 "Treatment_Fraction": 1,
                 "Event_Or_Config": "Config",
                 "Positive_Diagnosis_Config": {

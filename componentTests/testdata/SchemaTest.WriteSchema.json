@@ -1,8 +1,8 @@
 {
 	"Version" : {
-		"DTK_Version" : "2.7.1166.0",
-		"DTK_Branch" : "GH-585 (e2381f8)",
-		"DTK_Build_Date" : "Jun 23 2016 15:36:29"
+		"DTK_Version" : "2.7.1179.0",
+		"DTK_Branch" : "2.7-merge-to-master (b03bfaf)",
+		"DTK_Build_Date" : "Jul  4 2016 13:46:53"
 	},
 	"config" : {
 		"GENERIC_SIM" : {
@@ -1507,6 +1507,911 @@
 				"value_source" : ""
 			}
 		},
+		"POLIO_SIM" : {
+			"Age_Initialization_Distribution_Type" : {
+				"type" : "enum",
+				"enum" : [
+					"DISTRIBUTION_OFF",
+					"DISTRIBUTION_SIMPLE",
+					"DISTRIBUTION_COMPLEX"
+				],
+				"description" : "Method for initializing the age distribution in the simulated population. Possible values are: DISTRIBUTION_OFF - All individuals default to age 20-years-old. DISTRIBUTION_SIMPLE - Individual ages are drawn from a distribution whose functional form and parameters are specified in the 'IndividualAttributes' demographics input layers: 'AgeDistributionFlag', 'AgeDistribution1', and 'AgeDistribution2'. DISTRIBUTION_COMPLEX - Individual ages are drawn from a piecewise linear distribution specified in the 'IndividualAttributes' demographics input layer 'AgeDistribution'.",
+				"default" : "DISTRIBUTION_OFF"
+			},
+			"Migration_Model" : {
+				"type" : "enum",
+				"enum" : [
+					"NO_MIGRATION",
+					"FIXED_RATE_MIGRATION",
+					"VARIABLE_RATE_MIGRATION",
+					"LEVY_FLIGHTS"
+				],
+				"description" : "Model to use for migration. Possible values are: NO_MIGRATION, FIXED_RATE_MIGRATION, VARIABLE_RATE_MIGRATION and  LEVY_FLIGHTS.  Note: VARIABLE_RATE_MIGRATION and LEVY FLIGHTS are currently not supported.",
+				"default" : "NO_MIGRATION"
+			},
+			"Population_Scale_Type" : {
+				"type" : "enum",
+				"enum" : [
+					"USE_INPUT_FILE",
+					"FIXED_SCALING"
+				],
+				"description" : "Either use the initial population specified in the demographics input file or a fixed scaling of this value based on the population scaling factor parameter. Possible values are: USE_INPUT_FILE and FIXED_SCALING.",
+				"default" : "USE_INPUT_FILE"
+			},
+			"Simulation_Type" : {
+				"type" : "enum",
+				"enum" : [
+					"GENERIC_SIM",
+					"VECTOR_SIM",
+					"MALARIA_SIM",
+					"ENVIRONMENTAL_SIM",
+					"POLIO_SIM",
+					"AIRBORNE_SIM",
+					"TB_SIM",
+					"TBHIV_SIM",
+					"STI_SIM",
+					"HIV_SIM",
+					"PY_SIM"
+				],
+				"description" : "Type of disease being simulated. Possible values are: GENERIC_SIM, VECTOR_SIM, MALARIA_SIM, ENVIRONMENTAL_SIM, AIRBORNE_SIM, TB_SIM, STI_SIM and HIV_SIM.",
+				"default" : "GENERIC_SIM"
+			},
+			"Death_Rate_Dependence" : {
+				"type" : "enum",
+				"enum" : [
+					"NONDISEASE_MORTALITY_OFF",
+					"NONDISEASE_MORTALITY_BY_AGE_AND_GENDER",
+					"NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER"
+				],
+				"description" : "This parameter determines how the death rate specified in the demographics file is used. Possible values are: NONDISEASE_MORTALITY_OFF, NONDISEASE_MORTALITY_BY_AGE_AND_GENDER and NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER.",
+				"default" : "NONDISEASE_MORTALITY_OFF"
+			},
+			"Susceptibility_Scale_Type" : {
+				"type" : "enum",
+				"enum" : [
+					"CONSTANT_SUSCEPTIBILITY",
+					"LOG_LINEAR_FUNCTION_OF_TIME",
+					"LINEAR_FUNCTION_OF_AGE"
+				],
+				"description" : "Alter infectivity by time or season. Possible values are: CONSTANT_SUSCEPTIBILITY, LOG_LINEAR_FUNCTION_OF_TIME",
+				"default" : "CONSTANT_SUSCEPTIBILITY"
+			},
+			"Evolution_Polio_Clock_Type" : {
+				"type" : "enum",
+				"enum" : [
+					"POLIO_EVOCLOCK_NONE",
+					"POLIO_EVOCLOCK_LINEAR",
+					"POLIO_EVOCLOCK_IMMUNITY",
+					"POLIO_EVOCLOCK_REVERSION_AND_IMMUNITY",
+					"POLIO_EVOCLOCK_REVERSION",
+					"POLIO_EVOCLOCK_POISSONSITES"
+				],
+				"description" : "Functional form of the molecular clock for evolution dynamics. Applies to vaccine-derived strains in host. Possible values are: POLIO_EVOCLOCK_NONE, POLIO_EVOCLOCK_LINEAR, POLIO_EVOCLOCK_IMMUNITY, POLIO_EVOCLOCK_REVERSION_AND_IMMUNITY, POLIO_EVOCLOCK_REVERSION",
+				"default" : "POLIO_EVOCLOCK_NONE"
+			},
+			"VDPV_Virulence_Model_Type" : {
+				"type" : "enum",
+				"enum" : [
+					"POLIO_VDPV_NONVIRULENT",
+					"POLIO_VDPV_PARALYSIS",
+					"POLIO_VDPV_PARALYSIS_AND_LOG_INFECTIVITY",
+					"POLIO_VDPV_LOG_PARALYSIS_AND_LOG_INFECTIVITY"
+				],
+				"description" : "Type of virulence model for fitness gains in reversion of attenuating sites. The selected model controls the effects of evolution or reversion. Possible values are: POLIO_VDPV_NONVIRULENT, POLIO_VDPV_PARALYSIS, POLIO_VDPV_PARALYSIS_AND_LOG_INFECTIVITY, POLIO_VDPV_LOG_PARALYSIS_AND_LOG_INFECTIVITY",
+				"default" : "POLIO_VDPV_NONVIRULENT"
+			},
+			"Susceptibility_Scaling_Rate" : {
+				"min" : 0,
+				"max" : 3.40282e+038,
+				"default" : 0,
+				"description" : "For Susceptibility_Scale_Type of any_FUNCTION_OF_TIME, Susceptbility_Scaling_Rate determines the variation in time of the susceptibility to exposed contagion",
+				"type" : "float"
+			},
+			"Serialization_Test_Cycles" : {
+				"min" : 0,
+				"max" : 100,
+				"default" : 1,
+				"description" : "Serialization_Test_Cycles",
+				"type" : "integer"
+			},
+			"Simulation_Duration" : {
+				"min" : 0,
+				"max" : 1e+006,
+				"default" : 1,
+				"description" : "Elapsed time noted in days from the start to the end of a simulation.",
+				"type" : "float"
+			},
+			"Simulation_Timestep" : {
+				"min" : 0,
+				"max" : 1e+006,
+				"default" : 1,
+				"description" : "Value indicating simulation time step in days.",
+				"type" : "float"
+			},
+			"Start_Time" : {
+				"min" : 0,
+				"max" : 1e+006,
+				"default" : 1,
+				"description" : "Time noted in days when the simulation begins. This time influences the point in the temporal input data, such as where in the climate input the DTK starts running the simulation. Note: The Start_Day of campaign events is in absolute time. So, time relative to the beginning of the simulation depends on this parameter.",
+				"type" : "float"
+			},
+			"Config_Name" : {
+				"default" : "UNINITIALIZED STRING",
+				"description" : "User-supplied title naming a configuration.",
+				"type" : "string"
+			},
+			"Enable_Demographics_Initial" : {
+				"default" : 1,
+				"description" : "Uses demographics input files to configure the initial population. Enter 0 to use a standard testing sandbox which is useful for testing and validating code pathways.",
+				"type" : "bool"
+			},
+			"Default_Geography_Torus_Size" : {
+				"min" : 3,
+				"max" : 100,
+				"default" : 10,
+				"description" : "TBD - When using the default geography (i.e. Enable_Demographis_Initial = 0), this is square root of the number of nodes in the simulation.  For migration, the nodes are assumed to be a torus.",
+				"type" : "integer"
+			},
+			"Default_Geography_Initial_Node_Population" : {
+				"min" : 0,
+				"max" : 2.14748e+009,
+				"default" : 1000,
+				"description" : "TBD - When using the default geography (i.e. Enable_Demographis_Initial = 0), this is the initial number of individuals in each node.",
+				"type" : "integer"
+			},
+			"Enable_Vital_Dynamics" : {
+				"default" : 1,
+				"description" : "Set to 1 as a master switch to enable vital dynamics (births and deaths). Set to 0 to disable vital dynamics. Even when set to 1, the individual toggles for births and deaths can still disable these.",
+				"type" : "bool"
+			},
+			"Enable_Disease_Mortality" : {
+				"default" : 1,
+				"description" : "Set to 1 to enable disease mortality. Set to 0 to disable disease mortality.",
+				"type" : "bool"
+			},
+			"Node_Grid_Size" : {
+				"min" : 0.004167,
+				"max" : 90,
+				"default" : 0.004167,
+				"description" : "Spatial resolution indicating the node grid size for a simulation in degrees.",
+				"type" : "float"
+			},
+			"Enable_Heterogeneous_Intranode_Transmission" : {
+				"default" : 0,
+				"description" : "Set to 1 to enable heterogeneous intra-node disease transmission. Requires individual property definitions and beta matrix to be specified. Set to 0 to disable.",
+				"type" : "bool"
+			},
+			"Enable_Interventions" : {
+				"default" : 1,
+				"description" : "Set to 1 to load campaign interventions from file. Set to 0 to run a baseline simulation without campaigns.",
+				"type" : "bool"
+			},
+			"Number_Basestrains" : {
+				"min" : 1,
+				"max" : 10,
+				"default" : 1,
+				"description" : "The number of base strains in the simulation, such as antigenic variants.",
+				"type" : "integer"
+			},
+			"Number_Substrains" : {
+				"min" : 1,
+				"max" : 1.67772e+007,
+				"default" : 256,
+				"description" : "The number of disease substrains for each base strain, such as genetic variants.",
+				"type" : "integer"
+			},
+			"Maternal_Transmission_Probability" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0,
+				"description" : "Probability of transmission of infection from mother to infant at birth. Relevant only if Enable_Maternal_Transmission is set to 1. Note: This parameter should be set to 0 and ignored for malaria and vector simulations.",
+				"type" : "float"
+			},
+			"Immunity_Initialization_Distribution_Type" : {
+				"type" : "enum",
+				"enum" : [
+					"DISTRIBUTION_OFF",
+					"DISTRIBUTION_SIMPLE",
+					"DISTRIBUTION_COMPLEX"
+				],
+				"description" : "Method for initializing the immunity distribution in the simulated population. Possible values are: DISTRIBUTION_OFF - All individuals default to no immunity. DISTRIBUTION_SIMPLE - Individual immunities are drawn from a distribution whose functional form and parameters are specified in the 'IndividualAttributes' demographics input layers: 'ImmunityDistributionFlag', 'ImmunityDistribution1', and 'ImmunityDistribution2'. DISTRIBUTION_COMPLEX - Individual immnunities are drawn from an age-dependent piecewise linear distribution specified in the 'IndividualAttributes' demographics input layer 'ImmunityDistribution'.",
+				"default" : "DISTRIBUTION_OFF"
+			},
+			"Max_Rand_Standard_Deviations" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 2,
+				"description" : "Limit to extents of a random normal as number of standard deviations.",
+				"type" : "float"
+			},
+			"Specific_Infectivity_WPV1" : {
+				"min" : 0,
+				"max" : 1000,
+				"default" : 0.004,
+				"description" : "Specific infectivity of WPV1.",
+				"type" : "float"
+			},
+			"Specific_Infectivity_WPV2" : {
+				"min" : 0,
+				"max" : 1000,
+				"default" : 0.004,
+				"description" : "Specific infectivity of WPV2.",
+				"type" : "float"
+			},
+			"Specific_Infectivity_WPV3" : {
+				"min" : 0,
+				"max" : 1000,
+				"default" : 0.004,
+				"description" : "Specific infectivity of WPV3.",
+				"type" : "float"
+			},
+			"Specific_Infectivity_Sabin1" : {
+				"min" : 0,
+				"max" : 1000,
+				"default" : 3.02e-005,
+				"description" : "Specific infectivity of Sabin1.",
+				"type" : "float"
+			},
+			"Specific_Infectivity_Sabin2" : {
+				"min" : 0,
+				"max" : 1000,
+				"default" : 0.00135,
+				"description" : "Specific infectivity of Sabin2.",
+				"type" : "float"
+			},
+			"Specific_Infectivity_Sabin3" : {
+				"min" : 0,
+				"max" : 1000,
+				"default" : 0.000115,
+				"description" : "Specific infectivity of Sabin3.",
+				"type" : "float"
+			},
+			"Viral_Interference_WPV1" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.0653,
+				"description" : "Probability that a WPV1 infection in an individual will block infection by any other poliovirus type.",
+				"type" : "float"
+			},
+			"Viral_Interference_WPV2" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.278,
+				"description" : "Probability that a WPV2 infection in an individual will block infection by any other poliovirus type.",
+				"type" : "float"
+			},
+			"Viral_Interference_WPV3" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.263,
+				"description" : "Probability that a WPV3 infection in an individual will block infection by any other poliovirus type.",
+				"type" : "float"
+			},
+			"Viral_Interference_Sabin1" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.0653,
+				"description" : "Probability that a Sabin1 infection in an individual will block superinfection by any other poliovirus type.",
+				"type" : "float"
+			},
+			"Viral_Interference_Sabin2" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.278,
+				"description" : "Probability that a Sabin2 infection in an individual will block superinfection by any other poliovirus type.",
+				"type" : "float"
+			},
+			"Viral_Interference_Sabin3" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.263,
+				"description" : "Probability that a Sabin3 infection in an individual will block superinfection by any other poliovirus type.",
+				"type" : "float"
+			},
+			"Vaccine_Take_Scaling_Sabin1" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 1,
+				"description" : "A multiplier to represent vaccine take of live Sabin virus for type 1.",
+				"type" : "float"
+			},
+			"Vaccine_Take_Scaling_Sabin2" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.278,
+				"description" : "A multiplier to represent vaccine take of live Sabin virus for type 2.",
+				"type" : "float"
+			},
+			"Vaccine_Take_Scaling_Sabin3" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.263,
+				"description" : "A multiplier to represent vaccine take of live Sabin virus for type 3.",
+				"type" : "float"
+			},
+			"Mucosal_Immunogenicity_IPV" : {
+				"min" : 0,
+				"max" : 100,
+				"default" : 3,
+				"description" : "The mucosal immunogenicity of IPV relative to OPV.",
+				"type" : "float"
+			},
+			"Mucosal_Immunogenicity_IPV_OPVExposed" : {
+				"min" : 0,
+				"max" : 100,
+				"default" : 3,
+				"description" : "The mucosal immunogenicity of IPV relative to OPV on OPV-exposed individuals.",
+				"type" : "float"
+			},
+			"Neutralization_Time_Tau" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.04,
+				"description" : "Virus neutralization time constant in days.",
+				"type" : "float"
+			},
+			"Paralysis_Base_Rate_WPV1" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.05,
+				"description" : "Probability of paralysis from a WPV1 poliovirus infection in a fully susceptible individual.",
+				"type" : "float"
+			},
+			"Paralysis_Base_Rate_WPV2" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.00033,
+				"description" : "Probability of paralysis from a WPV2 poliovirus infection in a fully susceptible individual.",
+				"type" : "float"
+			},
+			"Paralysis_Base_Rate_WPV3" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.001,
+				"description" : "Probability of paralysis from a WPV3 poliovirus infection in a fully susceptible individual.",
+				"type" : "float"
+			},
+			"Paralysis_Base_Rate_Sabin1" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.005,
+				"description" : "Probability of paralysis (VAPP) from a Sabin1 poliovirus infection in a fully susceptible individual.",
+				"type" : "float"
+			},
+			"Paralysis_Base_Rate_Sabin2" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.00033,
+				"description" : "Probability of paralysis (VAPP) from a Sabin2 poliovirus infection in a fully susceptible individual.",
+				"type" : "float"
+			},
+			"Paralysis_Base_Rate_Sabin3" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.001,
+				"description" : "Probability of paralysis (VAPP) from a Sabin3 poliovirus infection in a fully susceptible individual.",
+				"type" : "float"
+			},
+			"Incubation_Disease_Mu" : {
+				"min" : 0,
+				"max" : 100,
+				"default" : 2.3893,
+				"description" : "Incubation period to disease, mu parameter, in polio these are interpreted as lognormal",
+				"type" : "float"
+			},
+			"Incubation_Disease_Sigma" : {
+				"min" : 0,
+				"max" : 100,
+				"default" : 0.4558,
+				"description" : "Incubation period to disease, sigma parameter, in polio these are interpreted as lognormal",
+				"type" : "float"
+			},
+			"Boost_Log2_NAb_OPV1" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "Increase in log2 neutralizing antibody titer in response to Sabin1 infection.",
+				"type" : "float"
+			},
+			"Boost_Log2_NAb_OPV2" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "Increase in log2 neutralizing antibody titer in response to Sabin2 infection.",
+				"type" : "float"
+			},
+			"Boost_Log2_NAb_OPV3" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "Increase in log2 neutralizing antibody titer in response to Sabin3 infection.",
+				"type" : "float"
+			},
+			"Boost_Log2_NAb_IPV1" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "Increase in log2 neutralizing antibody titer in response to IPV1 antigen.",
+				"type" : "float"
+			},
+			"Boost_Log2_NAb_IPV2" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "Increase in log2 neutralizing antibody titer in response to IPV2 antigen.",
+				"type" : "float"
+			},
+			"Boost_Log2_NAb_IPV3" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "Increase in log2 neutralizing antibody titer in response to IPV3 antigen.",
+				"type" : "float"
+			},
+			"Max_Log2_NAb_OPV1" : {
+				"min" : 0,
+				"max" : 3.40282e+038,
+				"default" : 2,
+				"description" : "Multiplicative factor on the natural log of neutralizing antibody titer in response to live poliovirus challenge for OPV1.",
+				"type" : "float"
+			},
+			"Max_Log2_NAb_OPV2" : {
+				"min" : 0,
+				"max" : 3.40282e+038,
+				"default" : 2,
+				"description" : "Multiplicative factor on the natural log of neutralizing antibody titer in response to live poliovirus challenge for OPV2.",
+				"type" : "float"
+			},
+			"Max_Log2_NAb_OPV3" : {
+				"min" : 0,
+				"max" : 3.40282e+038,
+				"default" : 2,
+				"description" : "Multiplicative factor on the natural log of neutralizing antibody titer in response to live poliovirus challenge for OPV3.",
+				"type" : "float"
+			},
+			"Max_Log2_NAb_IPV1" : {
+				"min" : 0,
+				"max" : 3.40282e+038,
+				"default" : 4,
+				"description" : "Multiplicative factor on the natural log of neutralizing antibody titer in response to live poliovirus challenge for IPV1.",
+				"type" : "float"
+			},
+			"Max_Log2_NAb_IPV2" : {
+				"min" : 0,
+				"max" : 3.40282e+038,
+				"default" : 4,
+				"description" : "Multiplicative factor on the natural log of neutralizing antibody titer in response to live poliovirus challenge for IPV2.",
+				"type" : "float"
+			},
+			"Max_Log2_NAb_IPV3" : {
+				"min" : 0,
+				"max" : 3.40282e+038,
+				"default" : 4,
+				"description" : "Multiplicative factor on the natural log of neutralizing antibody titer in response to live poliovirus challenge for IPV3.",
+				"type" : "float"
+			},
+			"Boost_Log2_NAb_Stddev_OPV1" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1.5,
+				"description" : "Standard deviation in log2 antibody boost for Sabin1 infection.",
+				"type" : "float"
+			},
+			"Boost_Log2_NAb_Stddev_OPV2" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1.5,
+				"description" : "Standard deviation in log2 antibody boost for Sabin2 infection.",
+				"type" : "float"
+			},
+			"Boost_Log2_NAb_Stddev_OPV3" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1.5,
+				"description" : "Standard deviation in log2 antibody boost for Sabin3 infection.",
+				"type" : "float"
+			},
+			"Boost_Log2_NAb_Stddev_IPV1" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 1,
+				"description" : "Standard deviation in log2 antibody boost for IPV1 antigen.",
+				"type" : "float"
+			},
+			"Boost_Log2_NAb_Stddev_IPV2" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 1,
+				"description" : "Standard deviation in log2 antibody boost for IPV2 antigen.",
+				"type" : "float"
+			},
+			"Boost_Log2_NAb_Stddev_IPV3" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 1,
+				"description" : "Standard deviation in log2 antibody boost for IPV3 antigen.",
+				"type" : "float"
+			},
+			"Prime_Log2_NAb_OPV1" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 2,
+				"description" : "First Sabin1 infection log2 neutralizing antibody titer.",
+				"type" : "float"
+			},
+			"Prime_Log2_NAb_OPV2" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 2,
+				"description" : "First Sabin2 infection log2 neutralizing antibody titer.",
+				"type" : "float"
+			},
+			"Prime_Log2_NAb_OPV3" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 2,
+				"description" : "First Sabin3 infection log2 neutralizing antibody titer.",
+				"type" : "float"
+			},
+			"Prime_Log2_NAb_IPV1" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 4,
+				"description" : "First IPV1 antigen exposure log2 neutralizing antibody titer.",
+				"type" : "float"
+			},
+			"Prime_Log2_NAb_IPV2" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 4,
+				"description" : "First IPV2 antigen exposure log2 neutralizing antibody titer.",
+				"type" : "float"
+			},
+			"Prime_Log2_NAb_IPV3" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 4,
+				"description" : "First IPV3 antigen exposure log2 neutralizing antibody titer.",
+				"type" : "float"
+			},
+			"Prime_Log2_NAb_Stddev_OPV1" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "Standard deviation in Sabin1 log2 priming titer.",
+				"type" : "float"
+			},
+			"Prime_Log2_NAb_Stddev_OPV2" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "Standard deviation in Sabin2 log2 priming titer.",
+				"type" : "float"
+			},
+			"Prime_Log2_NAb_Stddev_OPV3" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "Standard deviation in Sabin3 log2 priming titer.",
+				"type" : "float"
+			},
+			"Prime_Log2_NAb_Stddev_IPV1" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "Standard deviation in IPV1 log2 priming titer.",
+				"type" : "float"
+			},
+			"Prime_Log2_NAb_Stddev_IPV2" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "Standard deviation in IPV2 log2 priming titer.",
+				"type" : "float"
+			},
+			"Prime_Log2_NAb_Stddev_IPV3" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "Standard deviation in IPV3 log2 priming titer.",
+				"type" : "float"
+			},
+			"Shed_Fecal_MaxLog10_Peak_Titer" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 5,
+				"description" : "fecal shedding maximum log10 titer for the peak of shedding profile.",
+				"type" : "float"
+			},
+			"Shed_Fecal_MaxLog10_Peak_Titer_Stddev" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "fecal shedding standatd deviation in log10 titer for the peak of shedding profile.",
+				"type" : "float"
+			},
+			"Shed_Fecal_Titer_Block_Log2NAb" : {
+				"min" : 1,
+				"max" : 100,
+				"default" : 15,
+				"description" : "mucosal log2 neutralizing antibodies to reduce fecal shedding maximum log10 titer to zero.",
+				"type" : "float"
+			},
+			"Shed_Fecal_Titer_Profile_Mu" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 3,
+				"description" : "fecal shedding shape parameter for titer profile.",
+				"type" : "float"
+			},
+			"Shed_Fecal_Titer_Profile_Sigma" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "fecal sheding shape parameter for titer profile.",
+				"type" : "float"
+			},
+			"Shed_Fecal_MaxLn_Duration" : {
+				"min" : 0,
+				"max" : 100,
+				"default" : 4,
+				"description" : "fecal shedding natural log of maximum infection duration.",
+				"type" : "float"
+			},
+			"Shed_Fecal_MaxLn_Duration_Stddev" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "fecal shedding standard deviation in natural log of infection duration.",
+				"type" : "float"
+			},
+			"Shed_Fecal_Duration_Block_Log2NAb" : {
+				"min" : 1,
+				"max" : 100,
+				"default" : 15,
+				"description" : "mucosal log2 neutralizing antibodies to reduce fecal shedding duration to zero.",
+				"type" : "float"
+			},
+			"Shed_Oral_MaxLog10_Peak_Titer" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 5,
+				"description" : "fecal shedding maximum log10 titer for the peak of shedding profile.",
+				"type" : "float"
+			},
+			"Shed_Oral_MaxLog10_Peak_Titer_Stddev" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "fecal shedding standatd deviation in log10 titer for the peak of shedding profile.",
+				"type" : "float"
+			},
+			"Shed_Oral_Titer_Block_Log2NAb" : {
+				"min" : 1,
+				"max" : 100,
+				"default" : 15,
+				"description" : "mucosal log2 neutralizing antibodies to reduce fecal shedding maximum log10 titer to zero.",
+				"type" : "float"
+			},
+			"Shed_Oral_Titer_Profile_Mu" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 3,
+				"description" : "fecal shedding shape parameter for titer profile.",
+				"type" : "float"
+			},
+			"Shed_Oral_Titer_Profile_Sigma" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "fecal sheding shape parameter for titer profile.",
+				"type" : "float"
+			},
+			"Shed_Oral_MaxLn_Duration" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 4,
+				"description" : "fecal shedding natural log of maximum infection duration.",
+				"type" : "float"
+			},
+			"Shed_Oral_MaxLn_Duration_Stddev" : {
+				"min" : 0,
+				"max" : 10,
+				"default" : 1,
+				"description" : "fecal shedding standard deviation in natural log of infection duration.",
+				"type" : "float"
+			},
+			"Shed_Oral_Duration_Block_Log2NAb" : {
+				"min" : 1,
+				"max" : 100,
+				"default" : 15,
+				"description" : "mucosal log2 neutralizing antibodies to reduce fecal shedding duration to zero.",
+				"type" : "float"
+			},
+			"Maternal_log2NAb_mean" : {
+				"min" : 0,
+				"max" : 18,
+				"default" : 6,
+				"description" : "mean of log2 neutralizing antibodies in mothers",
+				"type" : "float"
+			},
+			"Maternal_log2NAb_std" : {
+				"min" : 0,
+				"max" : 18,
+				"default" : 3,
+				"description" : "std deviation of log2 neutralizing antibodies in mothers",
+				"type" : "float"
+			},
+			"Maternal_Ab_Halflife" : {
+				"min" : 0,
+				"max" : 1000,
+				"default" : 22,
+				"description" : "half life in days for maternal neutralizing antibodies",
+				"type" : "float"
+			},
+			"Vaccine_Titer_tOPV1" : {
+				"min" : 0,
+				"max" : 1e+008,
+				"default" : 1e+006,
+				"description" : "Trivalent OPV titer in TCID50 per dose of type 1 component.",
+				"type" : "float"
+			},
+			"Vaccine_Titer_tOPV2" : {
+				"min" : 0,
+				"max" : 1e+008,
+				"default" : 100000,
+				"description" : "Trivalent OPV titer in TCID50 per dose of type 2 component.",
+				"type" : "float"
+			},
+			"Vaccine_Titer_tOPV3" : {
+				"min" : 0,
+				"max" : 1e+008,
+				"default" : 630000,
+				"description" : "Trivalent OPV titer in TCID50 per dose of type 3 component.",
+				"type" : "float"
+			},
+			"Vaccine_Titer_bOPV1" : {
+				"min" : 0,
+				"max" : 1e+008,
+				"default" : 1e+006,
+				"description" : "Bivalent OPV titer in TCID50 per dose of type 1 component.",
+				"type" : "float"
+			},
+			"Vaccine_Titer_bOPV3" : {
+				"min" : 0,
+				"max" : 1e+008,
+				"default" : 630000,
+				"description" : "Bivalent OPV titer in TCID50 per dose of type 3 component.",
+				"type" : "float"
+			},
+			"Vaccine_Titer_mOPV1" : {
+				"min" : 0,
+				"max" : 1e+008,
+				"default" : 1e+006,
+				"description" : "Monovalent OPV type 1 titer in TCID50 per dose.",
+				"type" : "float"
+			},
+			"Vaccine_Titer_mOPV2" : {
+				"min" : 0,
+				"max" : 1e+008,
+				"default" : 100000,
+				"description" : "Monovalent OPV type 2 titer in TCID50 per dose.",
+				"type" : "float"
+			},
+			"Vaccine_Titer_mOPV3" : {
+				"min" : 0,
+				"max" : 1e+008,
+				"default" : 1e+006,
+				"description" : "Monovalent OPV type 3 titer in TCID50 per dose.",
+				"type" : "float"
+			},
+			"Vaccine_Dantigen_IPV1" : {
+				"min" : 0,
+				"max" : 1000,
+				"default" : 40,
+				"description" : "Potency of inactivated polio vaccine, in D-antigen units, for serotype 1 component.",
+				"type" : "float"
+			},
+			"Vaccine_Dantigen_IPV2" : {
+				"min" : 0,
+				"max" : 1000,
+				"default" : 8,
+				"description" : "Potency of inactivated polio vaccine, in D-antigen units, for serotype 2 component.",
+				"type" : "float"
+			},
+			"Vaccine_Dantigen_IPV3" : {
+				"min" : 0,
+				"max" : 1000,
+				"default" : 32,
+				"description" : "Potency of inactivated polio vaccine, in D-antigen units, for serotype 3 component.",
+				"type" : "float"
+			},
+			"Reversion_Steps_Sabin1" : {
+				"min" : 0,
+				"max" : 8,
+				"default" : 6,
+				"description" : "Number of attenuating sites for Sabin1.",
+				"type" : "integer"
+			},
+			"Reversion_Steps_Sabin2" : {
+				"min" : 0,
+				"max" : 8,
+				"default" : 2,
+				"description" : "Number of attenuating sites for Sabin2.",
+				"type" : "integer"
+			},
+			"Reversion_Steps_Sabin3" : {
+				"min" : 0,
+				"max" : 8,
+				"default" : 3,
+				"description" : "Number of attenuating sites for Sabin3.",
+				"type" : "integer"
+			},
+			"Excrement_Load" : {
+				"min" : 0,
+				"max" : 1000,
+				"default" : 300,
+				"description" : "Feces grams per day.",
+				"type" : "float"
+			},
+			"Listed_Events" : {
+				"default" : [],
+				"description" : "The list of valid, user-defined events that will be included in the campaign. Any event used in the campaign must either be one of the built-in events or in this list.",
+				"type" : "Dynamic String Set",
+				"value_source" : ""
+			},
+			"Substrain_Relative_Infectivity_String_VDPV1" : {
+				"default" : "UNINITIALIZED STRING",
+				"description" : "Substrain_Relative_Infectivity_String_VDPV1",
+				"type" : "string"
+			},
+			"Substrain_Relative_Infectivity_String_VDPV2" : {
+				"default" : "UNINITIALIZED STRING",
+				"description" : "Substrain_Relative_Infectivity_String_VDPV2",
+				"type" : "string"
+			},
+			"Substrain_Relative_Infectivity_String_VDPV3" : {
+				"default" : "UNINITIALIZED STRING",
+				"description" : "Substrain_Relative_Infectivity_String_VDPV3",
+				"type" : "string"
+			},
+			"Sabin1_Site_Reversion_Rates" : {
+				"default" : "UNINITIALIZED STRING",
+				"description" : "Sabin1_Site_Reversion_Rates",
+				"type" : "string"
+			},
+			"Sabin2_Site_Reversion_Rates" : {
+				"default" : "UNINITIALIZED STRING",
+				"description" : "Sabin2_Site_Reversion_Rates",
+				"type" : "string"
+			},
+			"Sabin3_Site_Reversion_Rates" : {
+				"default" : "UNINITIALIZED STRING",
+				"description" : "Sabin3_Site_Reversion_Rates",
+				"type" : "string"
+			},
+			"Vaccine_Genome_OPV1" : {
+				"min" : 0,
+				"max" : 1023,
+				"default" : 1,
+				"description" : "Vaccine_Genome_OPV1",
+				"type" : "integer"
+			},
+			"Vaccine_Genome_OPV2" : {
+				"min" : 0,
+				"max" : 1023,
+				"default" : 1,
+				"description" : "Vaccine_Genome_OPV2",
+				"type" : "integer"
+			},
+			"Vaccine_Genome_OPV3" : {
+				"min" : 0,
+				"max" : 1023,
+				"default" : 1,
+				"description" : "Vaccine_Genome_OPV3",
+				"type" : "integer"
+			}
+		},
 		"TB_SIM" : {
 			"Age_Initialization_Distribution_Type" : {
 				"type" : "enum",
@@ -1743,6 +2648,202 @@
 						"type" : "float"
 					}
 				}
+			}
+		},
+		"TBHIV_SIM" : {
+			"Age_Initialization_Distribution_Type" : {
+				"type" : "enum",
+				"enum" : [
+					"DISTRIBUTION_OFF",
+					"DISTRIBUTION_SIMPLE",
+					"DISTRIBUTION_COMPLEX"
+				],
+				"description" : "Method for initializing the age distribution in the simulated population. Possible values are: DISTRIBUTION_OFF - All individuals default to age 20-years-old. DISTRIBUTION_SIMPLE - Individual ages are drawn from a distribution whose functional form and parameters are specified in the 'IndividualAttributes' demographics input layers: 'AgeDistributionFlag', 'AgeDistribution1', and 'AgeDistribution2'. DISTRIBUTION_COMPLEX - Individual ages are drawn from a piecewise linear distribution specified in the 'IndividualAttributes' demographics input layer 'AgeDistribution'.",
+				"default" : "DISTRIBUTION_OFF"
+			},
+			"Migration_Model" : {
+				"type" : "enum",
+				"enum" : [
+					"NO_MIGRATION",
+					"FIXED_RATE_MIGRATION",
+					"VARIABLE_RATE_MIGRATION",
+					"LEVY_FLIGHTS"
+				],
+				"description" : "Model to use for migration. Possible values are: NO_MIGRATION, FIXED_RATE_MIGRATION, VARIABLE_RATE_MIGRATION and  LEVY_FLIGHTS.  Note: VARIABLE_RATE_MIGRATION and LEVY FLIGHTS are currently not supported.",
+				"default" : "NO_MIGRATION"
+			},
+			"Population_Scale_Type" : {
+				"type" : "enum",
+				"enum" : [
+					"USE_INPUT_FILE",
+					"FIXED_SCALING"
+				],
+				"description" : "Either use the initial population specified in the demographics input file or a fixed scaling of this value based on the population scaling factor parameter. Possible values are: USE_INPUT_FILE and FIXED_SCALING.",
+				"default" : "USE_INPUT_FILE"
+			},
+			"Simulation_Type" : {
+				"type" : "enum",
+				"enum" : [
+					"GENERIC_SIM",
+					"VECTOR_SIM",
+					"MALARIA_SIM",
+					"ENVIRONMENTAL_SIM",
+					"POLIO_SIM",
+					"AIRBORNE_SIM",
+					"TB_SIM",
+					"TBHIV_SIM",
+					"STI_SIM",
+					"HIV_SIM",
+					"PY_SIM"
+				],
+				"description" : "Type of disease being simulated. Possible values are: GENERIC_SIM, VECTOR_SIM, MALARIA_SIM, ENVIRONMENTAL_SIM, AIRBORNE_SIM, TB_SIM, STI_SIM and HIV_SIM.",
+				"default" : "GENERIC_SIM"
+			},
+			"Death_Rate_Dependence" : {
+				"type" : "enum",
+				"enum" : [
+					"NONDISEASE_MORTALITY_OFF",
+					"NONDISEASE_MORTALITY_BY_AGE_AND_GENDER",
+					"NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER"
+				],
+				"description" : "This parameter determines how the death rate specified in the demographics file is used. Possible values are: NONDISEASE_MORTALITY_OFF, NONDISEASE_MORTALITY_BY_AGE_AND_GENDER and NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER.",
+				"default" : "NONDISEASE_MORTALITY_OFF"
+			},
+			"Susceptibility_Scale_Type" : {
+				"type" : "enum",
+				"enum" : [
+					"CONSTANT_SUSCEPTIBILITY",
+					"LOG_LINEAR_FUNCTION_OF_TIME",
+					"LINEAR_FUNCTION_OF_AGE"
+				],
+				"description" : "Alter infectivity by time or season. Possible values are: CONSTANT_SUSCEPTIBILITY, LOG_LINEAR_FUNCTION_OF_TIME",
+				"default" : "CONSTANT_SUSCEPTIBILITY"
+			},
+			"Serialization_Test_Cycles" : {
+				"min" : 0,
+				"max" : 100,
+				"default" : 1,
+				"description" : "Serialization_Test_Cycles",
+				"type" : "integer"
+			},
+			"Simulation_Duration" : {
+				"min" : 0,
+				"max" : 1e+006,
+				"default" : 1,
+				"description" : "Elapsed time noted in days from the start to the end of a simulation.",
+				"type" : "float"
+			},
+			"Simulation_Timestep" : {
+				"min" : 0,
+				"max" : 1e+006,
+				"default" : 1,
+				"description" : "Value indicating simulation time step in days.",
+				"type" : "float"
+			},
+			"Start_Time" : {
+				"min" : 0,
+				"max" : 1e+006,
+				"default" : 1,
+				"description" : "Time noted in days when the simulation begins. This time influences the point in the temporal input data, such as where in the climate input the DTK starts running the simulation. Note: The Start_Day of campaign events is in absolute time. So, time relative to the beginning of the simulation depends on this parameter.",
+				"type" : "float"
+			},
+			"Config_Name" : {
+				"default" : "UNINITIALIZED STRING",
+				"description" : "User-supplied title naming a configuration.",
+				"type" : "string"
+			},
+			"Enable_Demographics_Initial" : {
+				"default" : 1,
+				"description" : "Uses demographics input files to configure the initial population. Enter 0 to use a standard testing sandbox which is useful for testing and validating code pathways.",
+				"type" : "bool"
+			},
+			"Default_Geography_Torus_Size" : {
+				"min" : 3,
+				"max" : 100,
+				"default" : 10,
+				"description" : "TBD - When using the default geography (i.e. Enable_Demographis_Initial = 0), this is square root of the number of nodes in the simulation.  For migration, the nodes are assumed to be a torus.",
+				"type" : "integer"
+			},
+			"Default_Geography_Initial_Node_Population" : {
+				"min" : 0,
+				"max" : 2.14748e+009,
+				"default" : 1000,
+				"description" : "TBD - When using the default geography (i.e. Enable_Demographis_Initial = 0), this is the initial number of individuals in each node.",
+				"type" : "integer"
+			},
+			"Enable_Vital_Dynamics" : {
+				"default" : 1,
+				"description" : "Set to 1 as a master switch to enable vital dynamics (births and deaths). Set to 0 to disable vital dynamics. Even when set to 1, the individual toggles for births and deaths can still disable these.",
+				"type" : "bool"
+			},
+			"Enable_Disease_Mortality" : {
+				"default" : 1,
+				"description" : "Set to 1 to enable disease mortality. Set to 0 to disable disease mortality.",
+				"type" : "bool"
+			},
+			"Node_Grid_Size" : {
+				"min" : 0.004167,
+				"max" : 90,
+				"default" : 0.004167,
+				"description" : "Spatial resolution indicating the node grid size for a simulation in degrees.",
+				"type" : "float"
+			},
+			"Enable_Heterogeneous_Intranode_Transmission" : {
+				"default" : 0,
+				"description" : "Set to 1 to enable heterogeneous intra-node disease transmission. Requires individual property definitions and beta matrix to be specified. Set to 0 to disable.",
+				"type" : "bool"
+			},
+			"Enable_Interventions" : {
+				"default" : 1,
+				"description" : "Set to 1 to load campaign interventions from file. Set to 0 to run a baseline simulation without campaigns.",
+				"type" : "bool"
+			},
+			"Number_Basestrains" : {
+				"min" : 1,
+				"max" : 10,
+				"default" : 1,
+				"description" : "The number of base strains in the simulation, such as antigenic variants.",
+				"type" : "integer"
+			},
+			"Number_Substrains" : {
+				"min" : 1,
+				"max" : 1.67772e+007,
+				"default" : 256,
+				"description" : "The number of disease substrains for each base strain, such as genetic variants.",
+				"type" : "integer"
+			},
+			"Maternal_Transmission_Probability" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0,
+				"description" : "Probability of transmission of infection from mother to infant at birth. Relevant only if Enable_Maternal_Transmission is set to 1. Note: This parameter should be set to 0 and ignored for malaria and vector simulations.",
+				"type" : "float"
+			},
+			"Immunity_Initialization_Distribution_Type" : {
+				"type" : "enum",
+				"enum" : [
+					"DISTRIBUTION_OFF",
+					"DISTRIBUTION_SIMPLE",
+					"DISTRIBUTION_COMPLEX"
+				],
+				"description" : "Method for initializing the immunity distribution in the simulated population. Possible values are: DISTRIBUTION_OFF - All individuals default to no immunity. DISTRIBUTION_SIMPLE - Individual immunities are drawn from a distribution whose functional form and parameters are specified in the 'IndividualAttributes' demographics input layers: 'ImmunityDistributionFlag', 'ImmunityDistribution1', and 'ImmunityDistribution2'. DISTRIBUTION_COMPLEX - Individual immnunities are drawn from an age-dependent piecewise linear distribution specified in the 'IndividualAttributes' demographics input layer 'ImmunityDistribution'.",
+				"default" : "DISTRIBUTION_OFF"
+			},
+			"Enable_Coinfection_Incidence" : {
+				"default" : 0,
+				"description" : "Enable Coinfection Incidence",
+				"type" : "bool"
+			},
+			"Enable_Coinfection_Mortality" : {
+				"default" : 0,
+				"description" : "HIVTB specific mortality",
+				"type" : "bool"
+			},
+			"Listed_Events" : {
+				"default" : [],
+				"description" : "The list of valid, user-defined events that will be included in the campaign. Any event used in the campaign must either be one of the built-in events or in this list.",
+				"type" : "Dynamic String Set",
+				"value_source" : ""
 			}
 		},
 		"STI_SIM" : {
@@ -4398,6 +5499,190 @@
 				"type" : "float"
 			}
 		},
+		"Polio.Individual" : {
+			"Report_Sabin_Wild_Phenotype_As_Wild" : {
+				"default" : 0,
+				"description" : "Changes categorization from VDPV to WPV for reporting based on phenotype.",
+				"type" : "bool"
+			}
+		},
+		"Polio.Infection" : {
+			"Enable_Contact_Tracing" : {
+				"default" : 0,
+				"description" : "Set to false to override genomes to enumerate infections for a WPV outbreak. Infections are only traced up to the number of substrains, although disease transmission continues as normal. In this mode, the evolution algorithm increments the substrain value of any infection by 1. Warning: This parameter applies to WPV outbreaks only. Do not use for VDPV simulations.",
+				"type" : "bool"
+			},
+			"Default_Antigen" : {
+				"min" : 0,
+				"max" : 5,
+				"default" : 0,
+				"description" : "Poliovirus type for simulations with straintracking disabled.",
+				"type" : "integer"
+			},
+			"Default_Genome" : {
+				"min" : 0,
+				"max" : 1000,
+				"default" : 0,
+				"description" : "Poliovirus genome for simulations with straintracking disabled. Caution: Although this parameter currently has an upper bound of 1000 in the user interface you must not use values above 255. This parameter is used as an index into the values provided for substrainRelativeInfectivityString_VDPV1, substrainRelativeInfectivityString_VDPV2, and substrainRelativeInfectivityString_VDPV3, which are sized based on the number_substrains parameter, limited to 256.",
+				"type" : "integer"
+			},
+			"Paralytic_Case_Mortality" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.05,
+				"description" : "Probability that a paralytic case is fatal.",
+				"type" : "float"
+			},
+			"Evolution_Polio_WPV_Linear_Rate" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.0219,
+				"description" : "Rate of mutation fixation in the WPV genome, in sites per day.",
+				"type" : "float"
+			},
+			"Evolution_Polio_Sabin1_Linear_Rate" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.022,
+				"description" : "Rate of fixation of reversions for Sabin1, in sites per day.",
+				"type" : "float"
+			},
+			"Evolution_Polio_Sabin2_Linear_Rate" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.022,
+				"description" : "Rate of fixation of reversions for Sabin2, in sites per day.",
+				"type" : "float"
+			},
+			"Evolution_Polio_Sabin3_Linear_Rate" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.022,
+				"description" : "Rate of fixation of reversions for Sabin3, in sites per day.",
+				"type" : "float"
+			},
+			"Evolution_Polio_Immune_Rate" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0,
+				"description" : "Rate of mutation fixation in the VDPV genome, in sites per day.",
+				"type" : "float"
+			},
+			"Evolution_Polio_Halfmax_Reversion" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.5,
+				"description" : "Reversion level at which mutation rate declines to half of maximum by Michaelis-Menton kinetics.",
+				"type" : "float"
+			}
+		},
+		"Polio.Susceptibility" : {
+			"x_Population_Immunity" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 1,
+				"description" : "Multiplier (dimensionless) for initial population immunity. This value represents the fraction of individuals exposed to vaccination programs before the simulation begins. Note: This parameter has no effect on campaigns applied in the simulation domain.",
+				"type" : "float"
+			},
+			"Mucosal_Immunogenicity_IPV" : {
+				"min" : 0,
+				"max" : 100,
+				"default" : 3,
+				"description" : "The mucosal immunogenicity of IPV relative to OPV.",
+				"type" : "float"
+			},
+			"Mucosal_Immunogenicity_IPV_OPVExposed" : {
+				"min" : 0,
+				"max" : 100,
+				"default" : 3,
+				"description" : "The mucosal immunogenicity of IPV relative to OPV on OPV-exposed individuals.",
+				"type" : "float"
+			},
+			"Neutralization_Time_Tau" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.04,
+				"description" : "Virus neutralization time constant in days.",
+				"type" : "float"
+			},
+			"Paralytic_Immunity_Titer" : {
+				"min" : 0,
+				"max" : 3.40282e+038,
+				"default" : 8,
+				"description" : "Serum Nab protective threshold for paralysis.",
+				"type" : "float"
+			},
+			"Waning_Humoral_Rate_Fast" : {
+				"min" : 0,
+				"max" : 1000,
+				"default" : 0.005,
+				"description" : "Exponential decay rate per day of neutralizing antibody titer that applied to the waning_humoral_fast_fraction.",
+				"type" : "float"
+			},
+			"Waning_Humoral_Rate_Slow" : {
+				"min" : 0,
+				"max" : 1000,
+				"default" : 0,
+				"description" : "Exponential decay rate per day of neutralizing antibody titer that applies to the (1-waning_humoral_fast_fraction).",
+				"type" : "float"
+			},
+			"Waning_Humoral_Fast_Fraction" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.5,
+				"description" : "Fraction of weight given to the humoral fast decay rate.",
+				"type" : "float"
+			},
+			"Waning_Mucosal_Rate_Fast" : {
+				"min" : 0,
+				"max" : 1000,
+				"default" : 0.005,
+				"description" : "Exponential decay rate per day of neutralizing antibody titer that applies to the waning_mucosal_fast_fraction.",
+				"type" : "float"
+			},
+			"Waning_Mucosal_Rate_Slow" : {
+				"min" : 0,
+				"max" : 1000,
+				"default" : 0,
+				"description" : "Exponential decay rate per day of neutralizing antibody titer that applies to the (1-waning_mucosal_fast_fraction).",
+				"type" : "float"
+			},
+			"Waning_Mucosal_Fast_Fraction" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.5,
+				"description" : "Fraction of weight given to the mucosal fast decay rate.",
+				"type" : "float"
+			},
+			"Acquire_Rate_Default_Polio" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 3.7e-006,
+				"description" : "Fraction of virus acquired from the mixing pool by default, used when the mixing pool option is disabled or both transmission options are on.",
+				"type" : "float"
+			},
+			"Maternal_log2NAb_mean" : {
+				"min" : 0,
+				"max" : 18,
+				"default" : 6,
+				"description" : "mean of log2 neutralizing antibodies in mothers",
+				"type" : "float"
+			},
+			"Maternal_log2NAb_std" : {
+				"min" : 0,
+				"max" : 18,
+				"default" : 3,
+				"description" : "std deviation of log2 neutralizing antibodies in mothers",
+				"type" : "float"
+			},
+			"Maternal_Ab_Halflife" : {
+				"min" : 0,
+				"max" : 1000,
+				"default" : 22,
+				"description" : "half life in days for maternal neutralizing antibodies",
+				"type" : "float"
+			}
+		},
 		"Py.Infection" : {},
 		"Py.Susceptibility" : {},
 		"ReportEventRecorder" : {
@@ -4487,6 +5772,21 @@
 				"default" : 2200,
 				"description" : "The ending calendar year specified for the HIVInfection.csv report.",
 				"type" : "float"
+			}
+		},
+		"ReportPolio" : {
+			"Disease_Susceptible_Report_Poliovirus_Type" : {
+				"type" : "enum",
+				"enum" : [
+					"WPV1",
+					"WPV2",
+					"WPV3",
+					"VRPV1",
+					"VRPV2",
+					"VRPV3"
+				],
+				"description" : "The serotype which is used to report infected individuals who are susceptible to paralysis: 0-2: WPV1-3, 3-5:VDPV1-3.",
+				"default" : "WPV1"
 			}
 		},
 		"ReportPy" : {},
@@ -4863,6 +6163,37 @@
 				]
 			}
 		},
+		"SpatialReportPolio" : {
+			"Spatial_Output_Channels" : {
+				"default" : [],
+				"description" : "An array of channel names for spatial output by Node and time step. The data from each channel will be written to a separate binary file. For full documentation of spatial output channels, please see the online documentation.",
+				"type" : "Fixed String Set",
+				"possible_values" : [
+					"Age_Infection",
+					"Air_Temperature",
+					"Births",
+					"Campaign_Cost",
+					"Disease_Deaths",
+					"Human_Infectious_Reservoir",
+					"Infection_Rate",
+					"Land_Temperature",
+					"New_Infections",
+					"New_Paralytic_Cases",
+					"New_Reported_Infections",
+					"Population",
+					"Prevalence",
+					"Rainfall",
+					"Relative_Humidity",
+					"Total_Prevalence",
+					"VDPV1_Prevalence",
+					"VDPV2_Prevalence",
+					"VDPV3_Prevalence",
+					"WPV1_Prevalence",
+					"WPV2_Prevalence",
+					"WPV3_Prevalence"
+				]
+			}
+		},
 		"SpatialReportPy" : {
 			"Spatial_Output_Channels" : {
 				"default" : [],
@@ -5204,6 +6535,36 @@
 				"max" : 3.40282e+038,
 				"default" : 1,
 				"description" : "When TB_Active_Period_Distribution is set to GAUSSIAN_DURATION, this parameter provides the value for standard deviation.",
+				"type" : "float"
+			},
+			"TB_CD4_Activation_Vector" : {
+				"description" : "Increased risk per time step of TB activation by CD4",
+				"type" : "Vector Float",
+				"min" : 0,
+				"max" : 3.40282e+038,
+				"default" : 1
+			},
+			"CD4_Strata_Activation" : {
+				"description" : "CD4 strata",
+				"type" : "Vector Float",
+				"min" : 1,
+				"max" : 2000,
+				"default" : 1
+			}
+		},
+		"TBHIV.Individual" : {
+			"HIV_coinfection_probability" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.5,
+				"description" : "Probability of getting both HIV and TB when creating a new TB infection",
+				"type" : "float"
+			},
+			"Coinfected_mortality_rate" : {
+				"min" : 0,
+				"max" : 1,
+				"default" : 0.1,
+				"description" : "Mortality rate per timestep when coinfected (NOTE! this is the addl mortality OVER TB-only mortality",
 				"type" : "float"
 			}
 		},
@@ -5706,6 +7067,152 @@
 						"default" : "Everyone"
 					},
 					"class" : "GroupInterventionDistributionEventCoordinator"
+				},
+				"GroupInterventionDistributionEventCoordinatorHIV" : {
+					"Target_Group" : {
+						"type" : "enum",
+						"enum" : [
+							"Everyone",
+							"Infected",
+							"ActiveInfection",
+							"LatentInfection",
+							"MDR",
+							"TreatmentNaive",
+							"HasFailedTreatment",
+							"HIVNegative",
+							"ActiveHadTreatment"
+						],
+						"description" : "TBD",
+						"default" : "Everyone"
+					},
+					"Time_Offset" : {
+						"min" : 0,
+						"max" : 3.40282e+038,
+						"default" : 0,
+						"description" : "time used in demographic file for intervention is simulation time - time_offset",
+						"type" : "float"
+					},
+					"idmType:Intervention" : {
+						"base" : "interventions.idmAbstractType.Intervention"
+					},
+					"Intervention_Config" : {
+						"description" : "The nested json of the actual intervention to be distributed by this event coordinator.",
+						"type" : "idmType:Intervention"
+					},
+					"Number_Repetitions" : {
+						"min" : -1,
+						"max" : 1000,
+						"default" : -1,
+						"description" : "Number of times intervention given, used with tsteps_between_reps.",
+						"type" : "integer"
+					},
+					"Timesteps_Between_Repetitions" : {
+						"min" : -1,
+						"max" : 10000,
+						"default" : -1,
+						"description" : "Repetition interval.",
+						"type" : "integer",
+						"depends-on" : {
+							"Number_Repetitions" : "<>0"
+						}
+					},
+					"Demographic_Coverage" : {
+						"min" : 0,
+						"max" : 1,
+						"default" : 1,
+						"description" : "Fraction of individuals in the target demographic that will receive this intervention.",
+						"type" : "float",
+						"depends-on" : {
+							"Intervention_Config.*.iv_type" : "IndividualTargeted"
+						}
+					},
+					"Target_Demographic" : {
+						"type" : "enum",
+						"enum" : [
+							"Everyone",
+							"ExplicitAgeRanges",
+							"ExplicitAgeRangesAndGender",
+							"ExplicitGender",
+							"PossibleMothers",
+							"ArrivingAirTravellers",
+							"DepartingAirTravellers",
+							"ArrivingRoadTravellers",
+							"DepartingRoadTravellers",
+							"AllArrivingTravellers",
+							"AllDepartingTravellers",
+							"ExplicitDiseaseState"
+						],
+						"description" : "The demographic group (from a list of possibles) targeted by this intervention (e.g., Infants)",
+						"default" : "Everyone",
+						"depends-on" : {
+							"Intervention_Config.*.iv_type" : "IndividualTargeted"
+						}
+					},
+					"Target_Age_Min" : {
+						"min" : 0,
+						"max" : 3.40282e+038,
+						"default" : 0,
+						"description" : "Lower end of age targeted for intervention, in years.",
+						"type" : "float",
+						"depends-on" : {
+							"Target_Demographic" : "ExplicitAgeRanges"
+						}
+					},
+					"Target_Age_Max" : {
+						"min" : 0,
+						"max" : 3.40282e+038,
+						"default" : 3.40282e+038,
+						"description" : "Upper end of age targeted for intervention, in years.",
+						"type" : "float",
+						"depends-on" : {
+							"Target_Demographic" : "ExplicitAgeRanges"
+						}
+					},
+					"Target_Gender" : {
+						"type" : "enum",
+						"enum" : [
+							"All",
+							"Male",
+							"Female"
+						],
+						"description" : "Specify the gender restriction for the intervention. Defaults to All.",
+						"default" : "All"
+					},
+					"Property_Restrictions" : {
+						"default" : [],
+						"description" : "Fraction of individuals in the target demographic that will receive this intervention.",
+						"type" : "Dynamic String Set",
+						"value_source" : "<demographics>::Defaults.Individual_Properties.*.Property.<keys>:<demographics>::Defaults.Individual_Properties.*.Value.<keys>",
+						"depends-on" : {
+							"Intervention_Config.*.iv_type" : "IndividualTargeted"
+						}
+					},
+					"idmType:PropertyRestrictions" : [
+						{
+							"<key>" : {
+								"type" : "Constrained String",
+								"constraints" : "<demographics>::Defaults.Individual_Properties.*.Value.<keys>",
+								"description" : "Individual Property Key from demographics file."
+							},
+							"<value>" : {
+								"type" : "String",
+								"description" : "Individual Property Value from demographics file."
+							}
+						}
+					],
+					"Property_Restrictions_Within_Node" : {
+						"description" : "Fraction of individuals in the target demographic that will receive this intervention.",
+						"type" : "idmType:PropertyRestrictions",
+						"depends-on" : {
+							"Intervention_Config.*.iv_type" : "IndividualTargeted"
+						}
+					},
+					"Target_Residents_Only" : {
+						"default" : 0,
+						"description" : "If true, only distribute the intervention to those that claim the node as their residence - i.e. started in the node",
+						"type" : "bool"
+					},
+					"class" : "GroupInterventionDistributionEventCoordinatorHIV"
 				},
 				"MultiInterventionEventCoordinator" : {
 					"idmType:Intervention" : {
@@ -6832,7 +8339,7 @@
 					"Days_To_Diagnosis" : {
 						"min" : 0,
 						"max" : 3.40282e+038,
-						"default" : 1,
+						"default" : 0,
 						"description" : "The number of days from test until diagnosis.",
 						"type" : "float"
 					},
@@ -6909,7 +8416,7 @@
 					"Days_To_Diagnosis" : {
 						"min" : 0,
 						"max" : 3.40282e+038,
-						"default" : 1,
+						"default" : 0,
 						"description" : "The number of days from test until diagnosis.",
 						"type" : "float"
 					},
@@ -7324,6 +8831,123 @@
 					"iv_type" : "IndividualTargeted",
 					"class" : "AntimalarialDrug"
 				},
+				"AntipoliovirusDrug" : {
+					"Sim_Types" : [
+						"POLIO_SIM"
+					],
+					"Dont_Allow_Duplicates" : {
+						"default" : 0,
+						"description" : "TBD",
+						"type" : "bool"
+					},
+					"Intervention_Name" : {
+						"default" : "struct Kernel::BaseIntervention",
+						"description" : "TBD",
+						"type" : "string"
+					},
+					"Adherence_Rate" : {
+						"min" : 0,
+						"max" : 1,
+						"default" : 1,
+						"description" : "Adherence rate for doses subsequent to first dose. Per-dose adherece rate for a dropout model.",
+						"type" : "float"
+					},
+					"Titer_Efficacy" : {
+						"min" : 0,
+						"max" : 1,
+						"default" : 1,
+						"description" : "efficacy in reducing log10 tcid50 shed titer.",
+						"type" : "float"
+					},
+					"Infection_Duration_Efficacy" : {
+						"min" : 0,
+						"max" : 1,
+						"default" : 1,
+						"description" : "efficacy in reducing infection duration.",
+						"type" : "float"
+					},
+					"Responder_Rate" : {
+						"min" : 0,
+						"max" : 1,
+						"default" : 1,
+						"description" : "Probability that an individual will have any response to the drug.",
+						"type" : "float"
+					},
+					"Primary_Decay_Time_Constant" : {
+						"min" : 0,
+						"max" : 999999,
+						"default" : 1,
+						"description" : "The primary decay time constant of the decay profile.",
+						"type" : "float"
+					},
+					"Remaining_Doses" : {
+						"min" : -1,
+						"max" : 999999,
+						"default" : 0,
+						"description" : "The remaining doses in an intervention, enter a negative number for unlimited doses.",
+						"type" : "integer"
+					},
+					"Dose_Interval" : {
+						"min" : 0,
+						"max" : 99999,
+						"default" : 1,
+						"description" : "Interval between doses, in days.",
+						"type" : "float"
+					},
+					"Cost_To_Consumer" : {
+						"min" : 0,
+						"max" : 99999,
+						"default" : 1,
+						"description" : "Unit cost per drug (unamortized).",
+						"type" : "float"
+					},
+					"Fraction_Defaulters" : {
+						"min" : 0,
+						"max" : 1,
+						"default" : 0,
+						"description" : "The fraction of individuals who will not finish their drug treatment.",
+						"type" : "float"
+					},
+					"Durability_Profile" : {
+						"type" : "enum",
+						"enum" : [
+							"FIXED_DURATION_CONSTANT_EFFECT",
+							"CONCENTRATION_VERSUS_TIME"
+						],
+						"description" : "The PKPD (pharmacokinetic) model type (FIXED_DURATION_CONSTANT_EFFECT or CONCENTRATION_VERSUS_TIME).  The latter conditionally loads some parameters as follows:  Drug_Cmax - Drug maximum concentration for a dosing is 0 to 10000  Drug_Vd - Volume of distribution for the drug is 0 to 10000  Drug_PKPD_c50 - Drug PKPD c50 for killing effects is 0 to 5000",
+						"default" : "FIXED_DURATION_CONSTANT_EFFECT"
+					},
+					"Secondary_Decay_Time_Constant" : {
+						"min" : 0,
+						"max" : 999999,
+						"default" : 1,
+						"description" : "The secondary decay time constant of the decay profile.",
+						"type" : "float"
+					},
+					"Drug_CMax" : {
+						"min" : 0,
+						"max" : 10000,
+						"default" : 1,
+						"description" : "Drug maximum concentration for a dosing.",
+						"type" : "float"
+					},
+					"Drug_Vd" : {
+						"min" : 0,
+						"max" : 10000,
+						"default" : 1,
+						"description" : "Volume of distribution for the drug.",
+						"type" : "float"
+					},
+					"Drug_PKPD_C50" : {
+						"min" : 0,
+						"max" : 5000,
+						"default" : 1,
+						"description" : "Drug PKPD c50 for killing effects.",
+						"type" : "float"
+					},
+					"iv_type" : "IndividualTargeted",
+					"class" : "AntipoliovirusDrug"
+				},
 				"ArtificialDiet" : {
 					"Sim_Types" : [
 						"VECTOR_SIM",
@@ -7680,7 +9304,7 @@
 					"Days_To_Diagnosis" : {
 						"min" : 0,
 						"max" : 3.40282e+038,
-						"default" : 1,
+						"default" : 0,
 						"description" : "The number of days from test until diagnosis.",
 						"type" : "float"
 					},
@@ -7914,7 +9538,7 @@
 					"Days_To_Diagnosis" : {
 						"min" : 0,
 						"max" : 3.40282e+038,
-						"default" : 1,
+						"default" : 0,
 						"description" : "The number of days from test until diagnosis.",
 						"type" : "float"
 					},
@@ -9665,7 +11289,7 @@
 					"Days_To_Diagnosis" : {
 						"min" : 0,
 						"max" : 3.40282e+038,
-						"default" : 1,
+						"default" : 0,
 						"description" : "The number of days from test until diagnosis.",
 						"type" : "float"
 					},
@@ -9817,7 +11441,7 @@
 					"Days_To_Diagnosis" : {
 						"min" : 0,
 						"max" : 3.40282e+038,
-						"default" : 1,
+						"default" : 0,
 						"description" : "The number of days from test until diagnosis.",
 						"type" : "float"
 					},
@@ -10949,6 +12573,62 @@
 					"iv_type" : "IndividualTargeted",
 					"class" : "PMTCT"
 				},
+				"PolioNodeSurvey" : {
+					"Sim_Types" : [
+						"POLIO_SIM"
+					],
+					"Intervention_Name" : {
+						"default" : "struct Kernel::BaseNodeIntervention",
+						"description" : "TBD",
+						"type" : "string"
+					},
+					"iv_type" : "NodeTargeted",
+					"class" : "PolioNodeSurvey"
+				},
+				"PolioVaccine" : {
+					"Sim_Types" : [
+						"POLIO_SIM"
+					],
+					"Dont_Allow_Duplicates" : {
+						"default" : 0,
+						"description" : "TBD",
+						"type" : "bool"
+					},
+					"Intervention_Name" : {
+						"default" : "struct Kernel::BaseIntervention",
+						"description" : "TBD",
+						"type" : "string"
+					},
+					"Cost_To_Consumer" : {
+						"min" : 0,
+						"max" : 100,
+						"default" : 10,
+						"description" : "Cost of each polio vaccine.",
+						"type" : "float"
+					},
+					"Time_Since_Vaccination" : {
+						"min" : 0,
+						"max" : 100,
+						"default" : 0,
+						"description" : "Time since vaccination.",
+						"type" : "float"
+					},
+					"Vaccine_Type" : {
+						"type" : "enum",
+						"enum" : [
+							"tOPV",
+							"bOPV",
+							"mOPV_1",
+							"mOPV_2",
+							"mOPV_3",
+							"eIPV"
+						],
+						"description" : "Polio vaccine type.",
+						"default" : "tOPV"
+					},
+					"iv_type" : "IndividualTargeted",
+					"class" : "PolioVaccine"
+				},
 				"PropertyValueChanger" : {
 					"Sim_Types" : [
 						"*"
@@ -11352,7 +13032,7 @@
 					"Days_To_Diagnosis" : {
 						"min" : 0,
 						"max" : 3.40282e+038,
-						"default" : 1,
+						"default" : 0,
 						"description" : "The number of days from test until diagnosis.",
 						"type" : "float"
 					},
@@ -11600,7 +13280,7 @@
 					"Days_To_Diagnosis" : {
 						"min" : 0,
 						"max" : 3.40282e+038,
-						"default" : 1,
+						"default" : 0,
 						"description" : "The number of days from test until diagnosis.",
 						"type" : "float"
 					},
@@ -11795,7 +13475,7 @@
 					"Days_To_Diagnosis" : {
 						"min" : 0,
 						"max" : 3.40282e+038,
-						"default" : 1,
+						"default" : 0,
 						"description" : "The number of days from test until diagnosis.",
 						"type" : "float"
 					},

@@ -21,7 +21,7 @@
                "Enable_Birth": 1, 
                "Enable_Demographics_Birth": 0, 
                "Enable_Demographics_Gender": 1, 
-               "Enable_Demographics_Initial": 1, 
+               "Enable_Demographics_Builtin": 0, 
                "Enable_Demographics_Other": 0, 
                "Enable_Demographics_Reporting": 0, 
                "Enable_Vital_Dynamics": 1, 
@@ -48,7 +48,7 @@
                     "Mortality_Time_Course": "DAILY_MORTALITY"
                }, 
                "Population_Density_C50": 30, 
-               "Population_Scale_Type": "FIXED_SCALING", 
+               "Population_Scale_Type": "USE_INPUT_FILE", 
                "SAMPLING": {
                     "Base_Individual_Sample_Rate": 1, 
                     "Individual_Sampling_Type": "TRACK_ALL", 

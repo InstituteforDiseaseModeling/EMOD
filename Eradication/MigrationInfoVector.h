@@ -101,7 +101,6 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
 
     public:
-        MigrationInfoFactoryVector( bool enableHumanMigration );
         MigrationInfoFactoryVector();
         virtual ~MigrationInfoFactoryVector();
 
@@ -117,7 +116,7 @@ namespace Kernel
     protected:
         // MigrationInfoFactoryFile
         virtual void CreateInfoFileList() override;
-        virtual void InitializeInfoFileList( bool enableHumanMigration, const Configuration* config ) override;
+        virtual void InitializeInfoFileList( const Configuration* config ) override;
 
     private:
 #pragma warning( push )
@@ -143,7 +142,7 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
 
     public:
-        MigrationInfoFactoryVectorDefault( bool enableHumanMigration, int defaultTorusSize );
+        MigrationInfoFactoryVectorDefault( int defaultTorusSize );
         MigrationInfoFactoryVectorDefault();
         virtual ~MigrationInfoFactoryVectorDefault();
 

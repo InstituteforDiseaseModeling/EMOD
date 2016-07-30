@@ -269,7 +269,6 @@ namespace Kernel
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
         DECLARE_QUERY_INTERFACE()
 
-        MigrationInfoFactoryFile( bool enableHumanMigration );
         MigrationInfoFactoryFile();
         virtual ~MigrationInfoFactoryFile();
 
@@ -285,7 +284,7 @@ namespace Kernel
                                                      const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) override;
     protected:
         virtual void CreateInfoFileList();
-        virtual void InitializeInfoFileList( bool enableHumanMigration, const Configuration* config );
+        virtual void InitializeInfoFileList( const Configuration* config );
         static std::vector<std::vector<MigrationRateData>> GetRateData( INodeContext *parent_node, 
                                                                         const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap,
                                                                         std::vector<MigrationInfoFile*>& infoFileList,
@@ -295,7 +294,6 @@ namespace Kernel
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::vector<MigrationInfoFile*> m_InfoFileList ;
         bool m_IsHeterogeneityEnabled;
-        bool m_EnableHumanMigration;
 #pragma warning( pop )
     private:
     };
@@ -314,7 +312,7 @@ namespace Kernel
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
         DECLARE_QUERY_INTERFACE()
 
-        MigrationInfoFactoryDefault( bool enableHumanMigration, int torusSize );
+        MigrationInfoFactoryDefault( int torusSize );
         MigrationInfoFactoryDefault();
         virtual ~MigrationInfoFactoryDefault();
 
@@ -339,6 +337,6 @@ namespace Kernel
         int   m_TorusSize;
 #pragma warning( pop )
     private:
-        void InitializeParameters( bool enableHumanMigration ); // just used in multiple constructors
+        void InitializeParameters(); // just used in multiple constructors
     };
 }

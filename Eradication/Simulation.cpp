@@ -125,9 +125,9 @@ namespace Kernel
         initConfigTypeMap( "Report_Event_Recorder", &enable_event_report, Report_Event_Recorder_DESC_TEXT,   false);
         initConfigTypeMap( "Enable_Spatial_Output", &enable_spatial_output, Enable_Spatial_Output_DESC_TEXT, false );
         initConfigTypeMap( "Enable_Property_Output", &enable_property_output, Enable_Property_Output_DESC_TEXT, false );
-        initConfigTypeMap( "Campaign_Filename", &campaign_filename, Campaign_Filename_DESC_TEXT );
+        initConfigTypeMap( "Campaign_Filename", &campaign_filename, Campaign_Filename_DESC_TEXT, "", "Enable_Interventions" );
         initConfigTypeMap( "Load_Balance_Filename", &loadbalance_filename, Load_Balance_Filename_DESC_TEXT );
-        initConfigTypeMap( "Base_Individual_Sample_Rate", &Ind_Sample_Rate, Base_Individual_Sample_Rate_DESC_TEXT, 0.0f, 1.0f, 1.0f ); 
+        initConfigTypeMap( "Base_Individual_Sample_Rate", &Ind_Sample_Rate, Base_Individual_Sample_Rate_DESC_TEXT, 0.0f, 1.0f, 1.0f, "Individual_Sampling_Type", "FIXED_SAMPLING" ); 
         initConfigTypeMap( "Run_Number", &Run_Number, Run_Number_DESC_TEXT, 0, INT_MAX, 1 );
     }
 
@@ -285,15 +285,18 @@ namespace Kernel
 
     void Simulation::setParams(const ::Configuration *config)
     {
-        if( campaign_filename.empty() )
+        // Seems to me that if enable_interventions is 0, we shouldn't have this exception here.
+        if( m_simConfigObj->interventions )
         {
-            throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "'Campaign_Filename' is empty.  You must have a file." );
+            if( campaign_filename.empty() )
+            {
+                throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "'Campaign_Filename' is empty.  You must have a file." );
+            }
+            campaignFilename = campaign_filename ;
         }
 
-        loadBalanceFilename         = FileSystem::Concat( EnvPtr->InputPath, loadbalance_filename );
-        campaignFilename            = campaign_filename ;
-
-        currentTime.time      =  m_simConfigObj->starttime;
+        loadBalanceFilename = FileSystem::Concat( EnvPtr->InputPath, loadbalance_filename );
+        currentTime.time    =  m_simConfigObj->starttime;
     }
 
     void Simulation::initSimulationState()
@@ -894,7 +897,8 @@ namespace Kernel
                                                                                        EnvPtr->Config,
                                                                                        m_simConfigObj->demographics_initial,
                                                                                        m_simConfigObj->default_torus_size,
-                                                                                       m_simConfigObj->default_node_population );
+                                                                                       m_simConfigObj->default_node_population
+                                                                                       );
         if (demographics_factory == nullptr)
         {
             throw InitializationException( __FILE__, __LINE__, __FUNCTION__, "Failed to create NodeDemographicsFactory" );

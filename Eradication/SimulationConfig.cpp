@@ -113,7 +113,8 @@ bool SimulationConfig::Configure(const Configuration * inputJson)
     initConfig( "Migration_Model", migration_structure, inputJson, MetadataDescriptor::Enum(Migration_Model_DESC_TEXT, Migration_Model_DESC_TEXT, MDD_ENUM_ARGS(MigrationStructure)) ); // 'global'
     initConfig( "Population_Scale_Type", population_scaling, inputJson, MetadataDescriptor::Enum(Population_Scale_Type_DESC_TEXT, Population_Scale_Type_DESC_TEXT, MDD_ENUM_ARGS(PopulationScaling)) ); // node only (move)
     initConfig( "Simulation_Type", sim_type, inputJson, MetadataDescriptor::Enum(Simulation_Type_DESC_TEXT, Simulation_Type_DESC_TEXT, MDD_ENUM_ARGS(SimType)) ); // simulation only (???move)
-    initConfig( "Death_Rate_Dependence", vital_death_dependence, inputJson, MetadataDescriptor::Enum(Death_Rate_Dependence_DESC_TEXT, Death_Rate_Dependence_DESC_TEXT, MDD_ENUM_ARGS(VitalDeathDependence)) ); // node only (move)
+    initConfig( "Death_Rate_Dependence", vital_death_dependence, inputJson, MetadataDescriptor::Enum(Death_Rate_Dependence_DESC_TEXT, Death_Rate_Dependence_DESC_TEXT, MDD_ENUM_ARGS(VitalDeathDependence)), "Enable_Vital_Dynamics" ); // node only (move)
+    LOG_DEBUG_F( "Death_Rate_Dependence configured as %s\n", VitalDeathDependence::pairs::lookup_key( vital_death_dependence ) );
     initConfig( "Susceptibility_Scale_Type", susceptibility_scaling, inputJson, MetadataDescriptor::Enum("susceptibility_scaling", Susceptibility_Scale_Type_DESC_TEXT, MDD_ENUM_ARGS(SusceptibilityScaling)) ); // Can be node-level or individual susceptibility-level
 
     //vector enums
@@ -172,7 +173,7 @@ bool SimulationConfig::Configure(const Configuration * inputJson)
 
     // Generic parameters
     // Controller/high level stuff
-    initConfigTypeMap( "Serialization_Test_Cycles", &serialization_test_cycles, Serialization_Test_Cycles_DESC_TEXT, 0, 100, 1 ); // 'global' (sorta)
+    //initConfigTypeMap( "Serialization_Test_Cycles", &serialization_test_cycles, Serialization_Test_Cycles_DESC_TEXT, 0, 100, 1 ); // 'global' (sorta)
 
 #ifdef ENABLE_PYTHON
     //initConfigTypeMap( "Python_Script_Path", &python_script_path, Path_to_Python_Scripts_DESC_TEXT ); // nodedemographics only
@@ -182,30 +183,31 @@ bool SimulationConfig::Configure(const Configuration * inputJson)
     initConfigTypeMap( "Start_Time", &starttime, Start_Time_DESC_TEXT, 0.0f, 1000000.0f, 1.0f ); // simulation only (actually Climate also!)
     initConfigTypeMap( "Config_Name", &ConfigName, Config_Name_DESC_TEXT );
 
-
-    initConfigTypeMap( "Enable_Demographics_Initial", &demographics_initial, Enable_Demographics_Initial_DESC_TEXT, true ); // 'global' (3 files)
-    initConfigTypeMap( "Default_Geography_Torus_Size", &default_torus_size, Default_Geography_Torus_Size_DESC_TEXT, 3, 100, 10);
-    initConfigTypeMap( "Default_Geography_Initial_Node_Population", &default_node_population, Default_Geography_Initial_Node_Population_DESC_TEXT, 0, INT_MAX, 1000);
+    bool demographics_builtin = false;
+    initConfigTypeMap( "Enable_Demographics_Builtin", &demographics_builtin, Enable_Demographics_Initial_DESC_TEXT, false ); // 'global' (3 files)
+    initConfigTypeMap( "Default_Geography_Initial_Node_Population", &default_node_population, Default_Geography_Initial_Node_Population_DESC_TEXT, 0, 1e6, 1000, "Enable_Demographics_Builtin");
+    initConfigTypeMap( "Default_Geography_Torus_Size", &default_torus_size, Default_Geography_Torus_Size_DESC_TEXT, 3, 100, 10, "Enable_Demographics_Builtin");
 
     initConfigTypeMap( "Enable_Vital_Dynamics", &vital_dynamics, Enable_Vital_Dynamics_DESC_TEXT, true );
     initConfigTypeMap( "Enable_Disease_Mortality", &vital_disease_mortality, Enable_Disease_Mortality_DESC_TEXT, true );
 
-    initConfigTypeMap( "Node_Grid_Size", &node_grid_size, Node_Grid_Size_DESC_TEXT, 0.004167f, 90.0f, 0.004167f );
-
     initConfigTypeMap( "Enable_Heterogeneous_Intranode_Transmission", &heterogeneous_intranode_transmission_enabled, Enable_Heterogeneous_Intranode_Transmission_DESC_TEXT, false ); // generic
 
-    initConfigTypeMap( "Enable_Interventions", &interventions, Enable_Interventions_DESC_TEXT, true );
+    initConfigTypeMap( "Enable_Interventions", &interventions, Enable_Interventions_DESC_TEXT, false );
 
     initConfigTypeMap( "Number_Basestrains", &number_basestrains, Number_Basestrains_DESC_TEXT, 1, 10, 1);
     initConfigTypeMap( "Number_Substrains", &number_substrains, Number_Substrains_DESC_TEXT, 1, 16777216, 256 );
 
-    initConfigTypeMap( "Maternal_Transmission_Probability", &prob_maternal_transmission, Maternal_Transmission_Probability_DESC_TEXT, 0.0f, 1.0f,    0.0f  );
+    initConfigTypeMap( "Maternal_Transmission_Probability", &prob_maternal_transmission, Maternal_Transmission_Probability_DESC_TEXT, 0.0f, 1.0f,    0.0f, "Enable_Maternal_Transmission"  );
 
-    initConfig( "Immunity_Initialization_Distribution_Type", immunity_initialization_distribution_type, inputJson, MetadataDescriptor::Enum("immunity_initialization_distribution_type", Immunity_Initialization_Distribution_Type_DESC_TEXT, MDD_ENUM_ARGS(DistributionType)) ); // polio and malaria
+    initConfig( "Immunity_Initialization_Distribution_Type", immunity_initialization_distribution_type, inputJson, MetadataDescriptor::Enum("immunity_initialization_distribution_type", Immunity_Initialization_Distribution_Type_DESC_TEXT, MDD_ENUM_ARGS(DistributionType)), "Enable_Immunity" ); // polio and malaria
+
+    initConfigTypeMap( "Node_Grid_Size", &node_grid_size, Node_Grid_Size_DESC_TEXT, 0.004167f, 90.0f, 0.004167f );
 
     // Vector parameters
     if (sim_type == SimType::VECTOR_SIM || sim_type == SimType::MALARIA_SIM)
     {
+
         initConfigTypeMap( "Enable_Vector_Aging", &vector_aging, VECTOR_Enable_Aging_DESC_TEXT, false );
         //initConfigTypeMap( "Enable_Vector_Species_Habitat_Competition", &enable_vector_species_habitat_competition, VECTOR_Enable_Vector_Species_Habitat_Competition, false );
         initConfigTypeMap( "Enable_Temperature_Dependent_Feeding_Cycle", &temperature_dependent_feeding_cycle, VECTOR_Enable_Temperature_Dependent_Feeding_Cycle_DESC_TEXT, false );
@@ -476,8 +478,9 @@ bool SimulationConfig::Configure(const Configuration * inputJson)
 #endif // DISABLE_HIV
 #endif // DISABLE_STI
 
-    LOG_DEBUG( "Calling main Configure...\n" );
+    LOG_DEBUG_F( "Calling main Configure..., use_defaults = %d\n", JsonConfigurable::_useDefaults );
     bool ret = JsonConfigurable::Configure( inputJson );
+    demographics_initial = !demographics_builtin;
 
 #ifndef DISABLE_VECTOR
         for (const auto& vector_species_name : vector_species_names)
@@ -681,6 +684,7 @@ QuickBuilder SimulationConfig::GetSchema()
 
 SimulationConfig::SimulationConfig()
     : age_initialization_distribution_type(DistributionType::DISTRIBUTION_OFF)
+    , vital_death_dependence(VitalDeathDependence::NONDISEASE_MORTALITY_OFF)
     , egg_hatch_delay_dist(EggHatchDelayDist::NO_DELAY)
     , egg_saturation(EggSaturation::NO_SATURATION)
     , evolution_polio_clock_type(EvolutionPolioClockType::POLIO_EVOCLOCK_NONE)
@@ -719,14 +723,14 @@ SimulationConfig::SimulationConfig()
     , larvalDensityMortalityScalar(10.0f)
     , larvalDensityMortalityOffset(0.1f)
     , demographics_initial(false)
-    , default_torus_size(10)
-    , default_node_population(1000)
+    , default_torus_size( 10 )
+    , default_node_population( 1000 )
     , lloffset(0)
     , coinfection_incidence(false)
     , enable_coinfection_mortality(false)
     , vital_dynamics(false)
     , vital_disease_mortality(false)
-    , interventions(true)
+    , interventions(false)
     , feverDetectionThreshold(-42.0f)
     , airtemperature(-42.0f)
     , landtemperature(-42.0f)
@@ -795,7 +799,7 @@ SimulationConfig::SimulationConfig()
     , heterogeneous_intranode_transmission_enabled(false)
     , Sim_Duration(-42.0f)
     , Sim_Tstep(-42.0f)
-    , starttime(-42.0f)
+    , starttime(0.0f)
     , node_grid_size(0.0f)
     , Run_Number(-42)
     , branch_duration(-1)

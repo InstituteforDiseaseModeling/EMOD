@@ -1,0 +1,106 @@
+{
+    "Metadata": {
+        "DateCreated": "Sat Jul 16 20:02:08 2016",
+        "Tool": "Eradication.exe",
+        "Author": "DTK",
+        "IdReference": "default 3x3 torus geography",
+        "NodeCount": 9
+    },
+    "Defaults": {
+        "NodeID": -1,
+        "NodeAttributes": {
+            "Latitude": -1,
+            "Longitude": -1,
+            "Altitude": 0,
+            "Airport": 0,
+            "Region": 0,
+            "Seaport": 0,
+            "BirthRate": 8.715e-05,
+            "Urban": 0,
+            "AbovePoverty": 0.5,
+            "InitialPopulation": 100
+        },
+        "IndividualAttributes": {
+            "AgeDistributionFlag": 3,
+            "AgeDistribution1": 0.000118,
+            "AgeDistribution2": 0,
+            "PrevalenceDistributionFlag": 0,
+            "PrevalenceDistribution1": 0,
+            "PrevalenceDistribution2": 0,
+            "ImmunityDistributionFlag": 0,
+            "ImmunityDistribution1": 0,
+            "ImmunityDistribution2": 0,
+            "RiskDistributionFlag": 0,
+            "RiskDistribution1": 0,
+            "RiskDistribution2": 0,
+            "MigrationHeterogeneityDistributionFlag": 0,
+            "MigrationHeterogeneityDistribution1": 1,
+            "MigrationHeterogeneityDistribution2": 0
+        }
+    },
+    "Nodes": [
+        {
+            "NodeID": 1,
+            "NodeAttributes": {
+                "Latitude": 0.008333,
+                "Longitude": 0
+            }
+        },
+        {
+            "NodeID": 2,
+            "NodeAttributes": {
+                "Latitude": 0.016666,
+                "Longitude": 0
+            }
+        },
+        {
+            "NodeID": 3,
+            "NodeAttributes": {
+                "Latitude": 0,
+                "Longitude": 0.008333
+            }
+        },
+        {
+            "NodeID": 4,
+            "NodeAttributes": {
+                "Latitude": 0.008333,
+                "Longitude": 0.008333
+            }
+        },
+        {
+            "NodeID": 5,
+            "NodeAttributes": {
+                "Latitude": 0.016666,
+                "Longitude": 0.008333
+            }
+        },
+        {
+            "NodeID": 6,
+            "NodeAttributes": {
+                "Latitude": 0,
+                "Longitude": 0.016666
+            }
+        },
+        {
+            "NodeID": 7,
+            "NodeAttributes": {
+                "Latitude": 0.008333,
+                "Longitude": 0.016666
+            }
+        },
+        {
+            "NodeID": 8,
+            "NodeAttributes": {
+                "Latitude": 0.016666,
+                "Longitude": 0.016666
+            }
+        },
+        {
+            "NodeID": 9,
+            "NodeAttributes": {
+                "Latitude": 0,
+                "Longitude": 0.024999
+            }
+        }
+    ]
+}

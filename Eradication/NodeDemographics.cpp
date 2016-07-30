@@ -364,6 +364,7 @@ std::vector<std::string> NodeDemographicsFactory::ConvertLegacyStringToSet(const
 bool NodeDemographicsFactory::Configure(const Configuration* config)
 {
     std::string legacy_filename;
+    default_node_population = 1000;
     initConfigTypeMap( "Demographics_Filename", &legacy_filename, Demographics_Filename_DESC_TEXT );
     initConfigTypeMap( "Demographics_Filenames", &demographics_filenames_list, Demographics_Filenames_DESC_TEXT );
 
@@ -404,11 +405,6 @@ void NodeDemographicsFactory::Initialize( const ::Configuration* config,
 {
     try
     {
-        torus_size = torusSize;
-        default_population = defaultPopulation;
-
-        release_assert( torus_size >= 3 );
-
         full_string_table = new std::map<string, string>();
 
         if( isDataInFiles )
@@ -537,6 +533,10 @@ void NodeDemographicsFactory::Initialize( const ::Configuration* config,
         }
         else // default geography
         {
+            torus_size = torusSize;
+            default_population = defaultPopulation; 
+            release_assert( torus_size >= 3 );
+
             std::stringstream ss;
             ss << "default " << torus_size << "x" << torus_size << " torus geography";
             idreference = ss.str();

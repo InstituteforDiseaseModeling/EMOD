@@ -8,6 +8,8 @@
         "Num_Cores": 1, 
         "Run_Number": 1, 
         "logLevel_default": "WARNING", 
+        "Enable_Interventions": 0,
+        "Campaign_Filename": "",
         
         "____________INTRAHOST___________": "",
 

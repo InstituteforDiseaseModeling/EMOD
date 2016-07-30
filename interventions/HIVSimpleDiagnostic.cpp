@@ -38,11 +38,13 @@ namespace Kernel
         initSimTypes(1, "HIV_SIM");
 
         // in a refactor, these might be lifted to a common HIVIntervention class
-        abortStates.value_source = "Valid_Cascade_States.*";
+        abortStates.value_source = "<configuration>::Valid_Cascade_States.*";
 
         initConfigTypeMap("Abort_States", &abortStates, HIV_Abort_States_DESC_TEXT);
         initConfigTypeMap("Cascade_State", &cascadeState, HIV_Cascade_State_DESC_TEXT);
-        initConfigTypeMap("Days_To_Diagnosis", &days_to_diagnosis, SD_Days_To_Diagnosis_DESC_TEXT, 0, FLT_MAX, 0);
+        initConfigTypeMap("Days_To_Diagnosis", &days_to_diagnosis, SD_Days_To_Diagnosis_DESC_TEXT, FLT_MAX, 0);
+
+        days_to_diagnosis.handle = std::bind( &HIVSimpleDiagnostic::Callback, this, std::placeholders::_1 );
     }
 
     HIVSimpleDiagnostic::HIVSimpleDiagnostic( const HIVSimpleDiagnostic& master )
@@ -54,6 +56,8 @@ namespace Kernel
         result_of_positive_test = master.result_of_positive_test;
         original_days_to_diagnosis = master.original_days_to_diagnosis;
         negative_diagnosis_event = master.negative_diagnosis_event;
+
+        days_to_diagnosis.handle = std::bind( &HIVSimpleDiagnostic::Callback, this, std::placeholders::_1 );
     }
 
     bool HIVSimpleDiagnostic::Configure(const Configuration * inputJson)
@@ -64,7 +68,8 @@ namespace Kernel
         }
 
         ConfigurePositiveEventOrConfig( inputJson );
-        bool ret = JsonConfigurable::Configure(inputJson);
+        bool ret = JsonConfigurable::Configure(inputJson); // WE DON'T CALL INTO BASE CLASS!!! HENCE THE DUPE OF DTD 
+        LOG_DEBUG_F( "HIVSimpleDiagnostic configured with days_to_diagnosis = %f\n", float(days_to_diagnosis) );
         if( ret )
         {
             // error if the cascadeState is an abortState
@@ -114,6 +119,7 @@ namespace Kernel
 
         if( qualifiesToGetIntervention( parent ) )
         {
+            LOG_DEBUG_F( "HIVSimpleDiagnostic distributed with days_to_diagnosis = %f\n", float(days_to_diagnosis) );
             return BaseIntervention::Distribute( context, pICCO );
         }
         else
@@ -123,31 +129,33 @@ namespace Kernel
         }
     }
 
+    void HIVSimpleDiagnostic::Callback( float dt )
+    {
+        ActOnResultsIfTime();
+    }
+
     void HIVSimpleDiagnostic::ActOnResultsIfTime()
     {
         // This can happen immediately if days_to_diagnosis is initialized to zero.
-        if ( days_to_diagnosis <= 0 )
+        if( result_of_positive_test )
         {
-            if( result_of_positive_test )
+            LOG_DEBUG_F( "Individual %d tested positive.\n", parent->GetSuid().data );
+            if( SMART_DRAW( treatment_fraction ) )
             {
-                LOG_DEBUG_F( "Individual %d tested positive.\n", parent->GetSuid().data );
-                if( SMART_DRAW( treatment_fraction ) )
-                {
-                    positiveTestDistribute();
-                }
-                else
-                {
-                    // this person doesn't get the positive test result
-                    // because they defaulted / don't want treatment
-                    onPatientDefault();
-                    expired = true;
-                }
+                positiveTestDistribute();
             }
             else
             {
-                LOG_DEBUG_F( "Individual %d tested negative.\n", parent->GetSuid().data );
-                onNegativeTestResult();
+                // this person doesn't get the positive test result
+                // because they defaulted / don't want treatment
+                onPatientDefault();
+                expired = true;
             }
+        }
+        else
+        {
+            LOG_DEBUG_F( "Individual %d tested negative.\n", parent->GetSuid().data );
+            onNegativeTestResult();
         }
     }
 
@@ -239,21 +247,19 @@ namespace Kernel
             return ;
         }
 
+        // Why is this different from base class behaviour? In which Distribute can call postiiveTestResult. 
         if( firstUpdate )
         {
             result_of_positive_test = positiveTestResult() ;
         }
-        else
-        {
-            // ------------------------------------------------------------------------------
-            // --- Count down the time until a positive test result comes back
-            // ---    Update() is called the same day as Distribute() so we don't want
-            // ---    to decrement the counter until the next day.
-            // ------------------------------------------------------------------------------
-            days_to_diagnosis -= dt;
-        }
 
-        ActOnResultsIfTime();
+        // ------------------------------------------------------------------------------
+        // --- Count down the time until a positive test result comes back
+        // ---    Update() is called the same day as Distribute() so we don't want
+        // ---    to decrement the counter until the next day. 
+        // Update: NOTE TRUE ANYMORE. CountdownTimer doesn't call callback same day as going <= 0
+        // ------------------------------------------------------------------------------ 
+        days_to_diagnosis.Decrement( dt );
 
         firstUpdate = false;
     }
