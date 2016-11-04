@@ -222,7 +222,7 @@ namespace Kernel
         }
 
         if( retQualifies && (property_restrictions.Size() > 0) )
-            {
+        {
             retQualifies = property_restrictions.Qualifies( pIndividual );
         }
         else

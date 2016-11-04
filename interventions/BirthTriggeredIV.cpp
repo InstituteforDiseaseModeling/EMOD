@@ -47,7 +47,7 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        initConfigComplexType("Actual_IndividualIntervention_Config", &actual_intervention_config, BT_Actual_Intervention_Config_DESC_TEXT);
+        initConfigComplexType("Actual_IndividualIntervention_Config", &actual_intervention_config, BT_Actual_IndividualIntervention_Config_DESC_TEXT);
         initConfigTypeMap("Duration", &max_duration, BT_Duration_DESC_TEXT, -1.0f, FLT_MAX, -1.0f ); // -1 is a convention for indefinite duration
 
         demographic_restrictions.ConfigureRestrictions( this, inputJson );

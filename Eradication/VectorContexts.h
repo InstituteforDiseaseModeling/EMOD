@@ -11,10 +11,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Contexts.h"
 #include "VectorEnums.h"
+#include "IVectorHabitat.h"
 
 namespace Kernel
 {
     struct VectorCohort;
+    struct IVectorCohort;
     class  VectorHabitat;
     class  VectorMatingStructure;
     class  VectorPopulation;
@@ -24,7 +26,7 @@ namespace Kernel
 
     struct IVectorSimulationContext : public ISupports
     {
-        virtual void  PostMigratingVector( const suids::suid& nodeSuid, VectorCohort* ind ) = 0;
+        virtual void  PostMigratingVector( const suids::suid& nodeSuid, IVectorCohort* ind ) = 0;
         virtual float GetNodePopulation( const suids::suid& nodeSuid ) = 0;
         virtual float GetAvailableLarvalHabitat( const suids::suid& nodeSuid, const std::string& rSpeciesID ) = 0 ;
     };
@@ -32,18 +34,17 @@ namespace Kernel
     struct IVectorNodeContext : public ISupports
     {
         virtual VectorProbabilities* GetVectorLifecycleProbabilities() = 0;
-        virtual VectorHabitat*       GetVectorHabitatByType(VectorHabitatType::Enum type) = 0;
-        virtual void                 AddVectorHabitat(VectorHabitat* habitat) = 0;
-        virtual float                GetLarvalHabitatMultiplier(VectorHabitatType::Enum type) const = 0;
+        virtual IVectorHabitat*      GetVectorHabitatBySpeciesAndType( std::string& species, VectorHabitatType::Enum type, const Configuration* inputJson ) = 0;
+        virtual VectorHabitatList_t* GetVectorHabitatsBySpecies( std::string& species ) = 0;
+        virtual float                GetLarvalHabitatMultiplier( VectorHabitatType::Enum type, const std::string& species ) const = 0;
     };
 
     // TODO: merge the two NodeVector interfaces?  or split functionally?
     class INodeVector : public ISupports
     {
     public:
-        virtual const std::list<VectorHabitat *>& GetHabitats() const = 0 ;
         virtual const VectorPopulationList_t& GetVectorPopulations() = 0;
-        virtual void AddVectors(std::string releasedSpecies, VectorMatingStructure _vector_genetics, unsigned long int releasedNumber) = 0;
+        virtual void AddVectors(std::string releasedSpecies, VectorMatingStructure _vector_genetics, uint64_t releasedNumber) = 0;
         virtual void processImmigratingVector( VectorCohort* immigrant ) = 0;
     };
 
@@ -80,7 +81,7 @@ namespace Kernel
     struct INodeVectorInterventionEffects : ISupports
     {
         virtual float GetLarvalKilling(VectorHabitatType::Enum) = 0;
-        virtual float GetLarvalHabitatReduction(VectorHabitatType::Enum) = 0;
+        virtual float GetLarvalHabitatReduction(VectorHabitatType::Enum, const std::string& species) = 0;
         virtual float GetVillageSpatialRepellent() = 0;
         virtual float GetADIVAttraction() = 0;
         virtual float GetADOVAttraction() = 0;

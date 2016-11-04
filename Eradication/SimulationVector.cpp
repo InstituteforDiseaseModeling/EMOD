@@ -23,6 +23,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "BinaryArchiveWriter.h"
 #include "BinaryArchiveReader.h"
 #include "MpiDataExchanger.h"
+#include "VectorCohortIndividual.h"
+#include "VectorParameters.h"
 
 #include <chrono>
 typedef std::chrono::high_resolution_clock _clock;
@@ -181,8 +183,8 @@ namespace Kernel
         Simulation::Reports_CreateBuiltIn();
 
         // If we're running a simulation with actual vectors, do VectorSpeciesReport as well
-        if(!GET_CONFIGURABLE(SimulationConfig)->vector_species_names.empty())
-            reports.push_back(VectorSpeciesReport::CreateReport( GET_CONFIGURABLE(SimulationConfig)->vector_species_names ));
+        if(!GET_CONFIGURABLE(SimulationConfig)->vector_params->vector_species_names.empty())
+            reports.push_back(VectorSpeciesReport::CreateReport( GET_CONFIGURABLE(SimulationConfig)->vector_params->vector_species_names ));
         else
             LOG_INFO("Skipping VectorSpeciesReport; no vectors detected in simulation\n");
     }
@@ -206,7 +208,7 @@ namespace Kernel
             for (auto iterator = migratingVectorQueues[myRank].rbegin(); iterator != migratingVectorQueues[myRank].rend(); ++iterator)
             {
                 auto vector = *iterator;
-                IMigrate* emigre = dynamic_cast<IMigrate*>(vector);
+                IMigrate* emigre = vector->GetIMigrate();
                 emigre->ImmigrateTo( nodes[emigre->GetMigrationDestination()] );
             }
 #else
@@ -225,7 +227,7 @@ namespace Kernel
             (*static_cast<IArchive*>(reader)) & migratingVectorQueues[myRank];
             for (auto individual : migratingVectorQueues[myRank])
             {
-                IMigrate* immigrant = dynamic_cast<IMigrate*>(individual);
+                IMigrate* immigrant = individual->GetIMigrate();
                 immigrant->ImmigrateTo( nodes[immigrant->GetMigrationDestination()]);
             }
             delete reader;
@@ -250,7 +252,7 @@ namespace Kernel
             *reader & migratingVectorQueues[fromRank];
             for (auto vector : migratingVectorQueues[fromRank])
             {
-                IMigrate* immigrant = dynamic_cast<IMigrate*>(vector);
+                IMigrate* immigrant = vector->GetIMigrate();
                 immigrant->ImmigrateTo( nodes[immigrant->GetMigrationDestination()] );
             }
         };
@@ -284,7 +286,7 @@ namespace Kernel
         return num_nodes ;
     }
 
-    void SimulationVector::PostMigratingVector( const suids::suid& nodeSuid, VectorCohort* ind )
+    void SimulationVector::PostMigratingVector( const suids::suid& nodeSuid, IVectorCohort* ind )
     {
         for( auto report : vector_migration_reports )
         {
@@ -306,7 +308,7 @@ namespace Kernel
 
     float SimulationVector::GetAvailableLarvalHabitat( const suids::suid& nodeSuid, const std::string& rSpeciesID )
     {
-        return ((NodeInfoVector&)nodeRankMap.GetNodeInfo( nodeSuid )).GetAvailableLarvalHabitat( rSpeciesID ) ;
+        return ((NodeInfoVector&)nodeRankMap.GetNodeInfo( nodeSuid )).GetAvailableLarvalHabitat( rSpeciesID );
     }
 
     void SimulationVector::setupMigrationQueues()
@@ -322,21 +324,3 @@ namespace Kernel
 
 }
 
-#if 0
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive & ar, SimulationVector& sim, const unsigned int  file_version )
-    {
-        ar & sim.vaccinedefaultcost;
-        ar & sim.housingmoddefaultcost;
-        ar & sim.awarenessdefaultcost;
-        ar & sim.netdefaultcost;
-
-        // Serialize fields
-        ar & sim.migratingVectorQueues;
-
-        // Serialize base class
-        ar & boost::serialization::base_object<Kernel::Simulation>(sim);
-    }
-}
-#endif

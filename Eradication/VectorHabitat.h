@@ -13,55 +13,33 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <list>
 #include <vector>
 
-#include "VectorEnums.h"
+#include "IVectorHabitat.h"
 #include "IArchive.h"
+#include "Configure.h"
+#include "InterpolatedValueMap.h"
 
 namespace Kernel
 {
-    // Current timestep and immediately previous for total larva counts
-    enum TimeStepIndex
-    {
-        CURRENT_TIME_STEP           = 0,
-        PREVIOUS_TIME_STEP          = 1,
-    };
-
     struct INodeContext;
     class  SimulationConfig;
 
-    struct IVectorHabitat
-    {
-        virtual VectorHabitatType::Enum  GetVectorHabitatType()                   const = 0;
-        virtual float                    GetMaximumLarvalCapacity()               const = 0;
-        virtual float                    GetCurrentLarvalCapacity()               const = 0;
-        virtual int32_t                  GetTotalLarvaCount(TimeStepIndex index)  const = 0;
-
-        virtual float                    GetOvipositionTrapKilling()     const = 0;
-        virtual float                    GetArtificialLarvalMortality()  const = 0;
-        virtual float                    GetLarvicideHabitatScaling()    const = 0;
-        virtual float                    GetRainfallMortality()          const = 0;
-        virtual float                    GetEggCrowdingCorrection()      const = 0;
-
-        virtual float GetLocalLarvalGrowthModifier() const = 0;
-        virtual float GetLocalLarvalMortality(float species_aquatic_mortality, float progress) const = 0;
-
-        virtual ~IVectorHabitat() {}
-    };
-
-    class VectorHabitat : public IVectorHabitat
+    class VectorHabitat : public JsonConfigurable, public IVectorHabitat
     {
     public:
-        static VectorHabitat* CreateHabitat( VectorHabitatType::Enum type, float max_capacity );
+        static IVectorHabitat* CreateHabitat( VectorHabitatType::Enum type, const Configuration* inputJson );
         virtual ~VectorHabitat();
-        void Update(float dt, INodeContext* node);
+        virtual void Update( float dt, INodeContext* node, const std::string& species ) override;
+
+        virtual bool Configure( const Configuration* inputJson ) override;
 
         virtual VectorHabitatType::Enum  GetVectorHabitatType()                   const override;
         virtual float                    GetMaximumLarvalCapacity()               const override;
         virtual float                    GetCurrentLarvalCapacity()               const override;
         virtual int32_t                  GetTotalLarvaCount(TimeStepIndex index)  const override;
 
-        void                             AddLarva(int32_t larva, float progress);
-        void                             AddEggs(int32_t eggs);
-        void                             IncrementMaxLarvalCapacity(float);
+        virtual void                     AddLarva(int32_t larva, float progress) override;
+        virtual void                     AddEggs(int32_t eggs) override;
+        virtual void                     SetMaximumLarvalCapacity(float) override;
 
         virtual float                    GetOvipositionTrapKilling()     const override;
         virtual float                    GetArtificialLarvalMortality()  const override;
@@ -72,20 +50,22 @@ namespace Kernel
         virtual float GetLocalLarvalGrowthModifier() const override;
         virtual float GetLocalLarvalMortality(float species_aquatic_mortality, float progress) const override;
 
-        static void serialize(IArchive&, VectorHabitat*);
-        static void serialize(IArchive&, list<VectorHabitat*>&);
-
     protected:
-        explicit VectorHabitat();
-        VectorHabitat( VectorHabitatType::Enum type, float max_capacity );
+        VectorHabitat( VectorHabitatType::Enum type );
+
+        virtual QueryResult QueryInterface( iid_t, void** ) override { return e_NOINTERFACE; }
+        virtual int32_t AddRef() override { return 1; }
+        virtual int32_t Release() override { return 0; }
 
         void CalculateEggCrowdingCorrection();
-        void UpdateCurrentLarvalCapacity(float dt, INodeContext* node);
-        void UpdateLarvalProbabilities(float dt, INodeContext* node);
+        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node);
+        void UpdateLarvalProbabilities( float dt, INodeContext* node, const std::string& species );
         void UpdateRainfallMortality(float dt, float rainfall);
         void AdvanceTotalLarvaCounts();
 
         const SimulationConfig* params() const;
+
+        static void serialize(IArchive& ar, VectorHabitat* obj);
 
         VectorHabitatType::Enum  m_habitat_type;
         float                    m_max_larval_capacity;
@@ -100,7 +80,68 @@ namespace Kernel
         float                    m_egg_crowding_correction;
     };
 
-    typedef std::list<VectorHabitat *> VectorHabitatList_t;
-
     void serialize(IArchive&, map<VectorHabitatType::Enum, float>&);
+
+    /* TODO: transition some configuration parameters into these objects, e.g. decay constants, rainfall killing */
+    /* TODO: encapsulate allowed combinations of egg-crowding and density-dependent parameterization? */
+
+    class ConstantHabitat : public VectorHabitat
+    {
+    public:
+        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
+        ConstantHabitat();  //boring... inherit
+    protected:
+        DECLARE_SERIALIZABLE(ConstantHabitat);
+    };
+
+    class TemporaryRainfallHabitat : public VectorHabitat
+    {
+    public:
+        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
+        TemporaryRainfallHabitat();
+    protected:
+        DECLARE_SERIALIZABLE(TemporaryRainfallHabitat);
+    };
+
+    class WaterVegetationHabitat : public VectorHabitat
+    {
+    public:
+        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
+        WaterVegetationHabitat();
+    protected:
+        DECLARE_SERIALIZABLE(WaterVegetationHabitat);
+    };
+
+    class HumanPopulationHabitat : public VectorHabitat
+    {
+    public:
+        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
+        HumanPopulationHabitat();
+    protected:
+        DECLARE_SERIALIZABLE(HumanPopulationHabitat);
+    };
+
+    class BrackishSwampHabitat : public VectorHabitat
+    {
+    public:
+        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
+        BrackishSwampHabitat();
+    protected:
+        DECLARE_SERIALIZABLE(BrackishSwampHabitat);
+    };
+
+    class LinearSplineHabitat : public VectorHabitat
+    {
+    public:
+        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
+        LinearSplineHabitat();
+
+        virtual bool Configure( const Configuration* inputJson );
+
+    protected:
+        float day_of_year;
+        InterpolatedValueMap capacity_distribution;
+
+        DECLARE_SERIALIZABLE(LinearSplineHabitat);
+    };
 }

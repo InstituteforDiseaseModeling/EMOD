@@ -102,7 +102,7 @@ namespace Kernel
         const std::string& rSimTypeStr
     )
     {
-        CheckSimType( rSimTypeStr, jsonSchemaBase, typeid(*this).name() );
+        CheckSimType( rSimTypeStr, GetSchemaBase(), typeid(*this).name() );
     }
 
     bool
@@ -166,7 +166,7 @@ namespace Kernel
         const std::string& rSimTypeStr
     )
     {
-        CheckSimType( rSimTypeStr, jsonSchemaBase, typeid(*this).name() );
+        CheckSimType( rSimTypeStr, GetSchemaBase(), typeid(*this).name() );
     }
 
     bool

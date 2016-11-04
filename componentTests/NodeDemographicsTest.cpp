@@ -115,6 +115,7 @@ SUITE(NodeDemographicsTest)
             delete m_pMpi;
             delete pSimConfig;
             Environment::Finalize();
+            NodeDemographicsFactory::SetDemographicsFileList( std::vector<std::string>() ) ;
         }
 
         suids::suid GetNextNodeSuid()

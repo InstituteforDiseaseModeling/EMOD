@@ -21,7 +21,7 @@ namespace Kernel
 
     /*
     TODO: 
-    x leave node rank with map impl for now, hash_map to be implemented later if needed for performance
+    x leave node rank with map impl for now, unordered_map to be implemented later if needed for performance
     */
 
     // base class for node->rank maps

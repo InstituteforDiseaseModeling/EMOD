@@ -43,24 +43,8 @@ namespace Kernel
                         << " is not a valid VectorHabitatType.";
                     throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
                 }
-                try
-                {
-                    NonNegativeFloat habitat_param = 0.0f;
-                    try {
-                        habitat_param = (NonNegativeFloat) ((json::QuickInterpreter( tvcs ))[ data->name ].As<json::Number>());
-                    }
-                    catch( const json::Exception & )
-                    {
-                        throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, data->name.c_str(), json::QuickInterpreter( tvcs ), "Expected NUMBER" );
-                    }
-                    habitat_map.insert( std::make_pair( habitat_type, habitat_param ) );
-                }
-                catch( OutOfRangeException &except )
-                {
-                    LOG_WARN_F( "Out of range exception: %s(Rethrowing in more useful form.)\n", except.what() );
-                    throw ConfigurationRangeException( __FILE__, __LINE__, __FUNCTION__,
-                            habitat_type_string.c_str(), ((json::QuickInterpreter( tvcs ))[ data->name ].As<json::Number>()), 0 );
-                }
+                Configuration* json_copy = Configuration::CopyFromElement( tvcs );
+                habitat_map.insert( std::make_pair( habitat_type, json_copy ) );
             }
             LOG_DEBUG_F( "Found %d larval habitats\n", habitat_map.size() );
         }
@@ -73,7 +57,7 @@ namespace Kernel
     json::QuickBuilder
     LarvalHabitatParams::GetSchema()
     {
-        json::QuickBuilder schema( jsonSchemaBase );
+        json::QuickBuilder schema( GetSchemaBase() );
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
         schema[ tn ] = json::String( "idmType:LarvalHabitats" );
@@ -156,14 +140,14 @@ namespace Kernel
     {
     }
 
-    VectorSpeciesParameters* VectorSpeciesParameters::CreateVectorSpeciesParameters(const std::string& vector_species_name)
+    VectorSpeciesParameters* VectorSpeciesParameters::CreateVectorSpeciesParameters( const Configuration* inputJson, const std::string& vector_species_name)
     {
         LOG_DEBUG( "CreateVectorSpeciesParameters\n" );
         VectorSpeciesParameters* params = _new_ VectorSpeciesParameters();
         params->Initialize(vector_species_name);
         if( !JsonConfigurable::_dryrun )
         {
-            auto tmp_config = Configuration::CopyFromElement( (*EnvPtr->Config)["Vector_Species_Params"][vector_species_name.c_str()] );
+            auto tmp_config = Configuration::CopyFromElement( (*inputJson)["Vector_Species_Params"][vector_species_name.c_str()] );
             params->Configure( tmp_config );
             delete tmp_config;
             tmp_config = nullptr;

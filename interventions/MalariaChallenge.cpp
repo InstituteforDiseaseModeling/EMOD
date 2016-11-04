@@ -26,14 +26,21 @@ namespace Kernel
 
     IMPLEMENT_FACTORY_REGISTERED(MalariaChallenge)
 
-    QuickBuilder MalariaChallenge::GetSchema()
-    {
-        return QuickBuilder( jsonSchemaBase );
-    }
-
     MalariaChallenge::MalariaChallenge()
+    : BaseNodeIntervention()
+    , challenge_type( MalariaChallengeType::InfectiousBites )
+    , n_challenged_objects(1)
+    , coverage(1.0)
     {
         initSimTypes( 1, "MALARIA_SIM" );
+    }
+
+    MalariaChallenge::MalariaChallenge( const MalariaChallenge& master )
+    : BaseNodeIntervention( master )
+    , challenge_type( master.challenge_type )
+    , n_challenged_objects( master.n_challenged_objects )
+    , coverage( master.coverage )
+    {
     }
 
     bool MalariaChallenge::Configure( const Configuration * inputJson )

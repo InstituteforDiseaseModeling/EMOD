@@ -74,6 +74,8 @@
             ]
         },
         "PRIMARY": {
+            "logLevel_JsonConfigurable" : "WARNING",
+            "logLevel_SimpleHealthSeekingBehavior" : "WARNING",
             "Config_Name": "HINT_WAPertussis_BaselineOutbreak",
             "Geography": "SamplesInput",
             "Node_Grid_Size": 0.009,

@@ -19,6 +19,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Node.h"
 #include "SimulationConfig.h"
 #include "HIVEnums.h"
+#include "Properties.h"
 
 using namespace std; 
 using namespace Kernel; 
@@ -51,7 +52,17 @@ SUITE(AssortivityTest)
             Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
             m_pSimulationConfig->sim_type = SimType::HIV_SIM ;
             Environment::setSimulationConfig( m_pSimulationConfig );
-            Node::TestOnly_ClearProperties();
+            IPFactory::DeleteFactory();
+            IPFactory::CreateFactory();
+
+            std::map<std::string,float> ip_values ;
+            ip_values.insert( std::make_pair( "HUMAN",    0.2f ) );
+            ip_values.insert( std::make_pair( "VULCAN",   0.2f ) );
+            ip_values.insert( std::make_pair( "KLINGON",  0.2f ) );
+            ip_values.insert( std::make_pair( "ANDORIAN", 0.2f ) );
+            ip_values.insert( std::make_pair( "ROMULAN",  0.2f ) );
+
+            IPFactory::GetInstance()->AddIP( 1, "Race", ip_values );
         }
 
         ~AssortivityFixture()
@@ -67,7 +78,7 @@ SUITE(AssortivityTest)
                 delete human ;
             }
             m_human_list.clear();
-            Node::TestOnly_ClearProperties();
+            IPFactory::DeleteFactory();
             Environment::Finalize();
         }
 
@@ -95,6 +106,10 @@ SUITE(AssortivityTest)
             p_human->SetHasHIV( hasHIV );
             p_hic->OnTestForHIV( hasTestedPositiveForHIV );
             p_human->GetProperties()->operator[]( rPropertyName ) = rPropertyValue ;
+            //if( !rPropertyName.empty()  && !rPropertyValue.empty() )
+            //{
+            //    p_human->GetProperties()->Add( IPKeyValue( rPropertyName, rPropertyValue ) ) ;
+            //}
 
             if( hasCoSTI )
                 p_human->SetStiCoInfectionState();
@@ -460,12 +475,6 @@ SUITE(AssortivityTest)
         // --- Initialize test
         // --------------------
 
-        Node::TestOnly_AddPropertyKeyValue( "Race", "HUMAN"    );
-        Node::TestOnly_AddPropertyKeyValue( "Race", "VULCAN"   );
-        Node::TestOnly_AddPropertyKeyValue( "Race", "KLINGON"  );
-        Node::TestOnly_AddPropertyKeyValue( "Race", "ANDORIAN" );
-        Node::TestOnly_AddPropertyKeyValue( "Race", "ROMULAN"  );
-
         unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/AssortivityTest/IndividualProperty.json" ) );
 
         RandomFake fake_ran ;
@@ -581,12 +590,6 @@ SUITE(AssortivityTest)
     {
         try
         {
-            Node::TestOnly_AddPropertyKeyValue( "Race", "HUMAN"    );
-            Node::TestOnly_AddPropertyKeyValue( "Race", "VULCAN"   );
-            Node::TestOnly_AddPropertyKeyValue( "Race", "KLINGON"  );
-            Node::TestOnly_AddPropertyKeyValue( "Race", "ANDORIAN" );
-            Node::TestOnly_AddPropertyKeyValue( "Race", "ROMULAN"  );
-
             unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( rFilename ) );
 
             RandomFake fake_ran ;
@@ -624,25 +627,25 @@ SUITE(AssortivityTest)
     TEST_FIXTURE(AssortivityFixture, TestBadAxesNamePropertyA)
     {
         TestHelper_ConfigureException( __LINE__, "testdata/AssortivityTest/TestBadAxesNamePropertyA.json",
-            "The TRANSITORY:Group (INDIVIDUAL_PROPERTY) requires that the Axes names(='HUMAN' 'VULCAN' 'KLINGON' '' 'ROMULAN' ) match the property values(='HUMAN' 'VULCAN' 'KLINGON' 'ANDORIAN' 'ROMULAN' ) defined in the demographics for Property=Race." );
+            "The TRANSITORY:Group (INDIVIDUAL_PROPERTY) requires that the Axes names(='HUMAN' 'VULCAN' 'KLINGON' '' 'ROMULAN' ) match the property values(=ANDORIAN, HUMAN, KLINGON, ROMULAN, VULCAN) defined in the demographics for Property=Race." );
     }
 
     TEST_FIXTURE(AssortivityFixture, TestBadAxesNamePropertyB)
     {
         TestHelper_ConfigureException( __LINE__, "testdata/AssortivityTest/TestBadAxesNamePropertyB.json",
-            "The TRANSITORY:Group (INDIVIDUAL_PROPERTY) requires that the Axes names(='HUMAN' 'VULCAN' 'KLINGON' 'XXX' 'ROMULAN' ) match the property values(='HUMAN' 'VULCAN' 'KLINGON' 'ANDORIAN' 'ROMULAN' ) defined in the demographics for Property=Race." );
+            "The TRANSITORY:Group (INDIVIDUAL_PROPERTY) requires that the Axes names(='HUMAN' 'VULCAN' 'KLINGON' 'XXX' 'ROMULAN' ) match the property values(=ANDORIAN, HUMAN, KLINGON, ROMULAN, VULCAN) defined in the demographics for Property=Race." );
     }
 
     TEST_FIXTURE(AssortivityFixture, TestBadAxesNamePropertyC)
     {
         TestHelper_ConfigureException( __LINE__, "testdata/AssortivityTest/TestBadAxesNamePropertyC.json",
-            "The TRANSITORY:Group (INDIVIDUAL_PROPERTY) requires that the Axes names(='HUMAN' 'VULCAN' 'KLINGON' 'ROMULAN' ) match the property values(='HUMAN' 'VULCAN' 'KLINGON' 'ANDORIAN' 'ROMULAN' ) defined in the demographics for Property=Race." );
+            "The TRANSITORY:Group (INDIVIDUAL_PROPERTY) requires that the Axes names(='HUMAN' 'VULCAN' 'KLINGON' 'ROMULAN' ) match the property values(=ANDORIAN, HUMAN, KLINGON, ROMULAN, VULCAN) defined in the demographics for Property=Race." );
     }
 
     TEST_FIXTURE(AssortivityFixture, TestBadPropertyName)
     {
         TestHelper_ConfigureException( __LINE__, "testdata/AssortivityTest/TestBadPropertyName.json",
-            "TRANSITORY:Property_Name must be defined and cannot be empty string." );
+            "Could not find the IndividualProperty key = '' for parameter 'TRANSITORY:Property_Name'.  Known keys are: Race" );
     }
 
     TEST_FIXTURE(AssortivityFixture, TestBadMatrixBadRows)

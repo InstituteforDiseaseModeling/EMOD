@@ -29,11 +29,6 @@ namespace Kernel
 
     IMPLEMENT_FACTORY_REGISTERED(ModifyStiCoInfectionStatus)
 
-    QuickBuilder ModifyStiCoInfectionStatus::GetSchema()
-    {
-        return QuickBuilder( jsonSchemaBase );
-    }
-
     ModifyStiCoInfectionStatus::ModifyStiCoInfectionStatus()
     {
         initSimTypes( 2, "STI_SIM", "HIV_SIM" );

@@ -46,7 +46,7 @@ namespace Kernel
     };
 
     // IMigrationInfoFactory is used to create IMirationInfo objects for a node.
-    struct IDMAPI IMigrationInfoFactory : public IJsonConfigurable
+    struct IDMAPI IMigrationInfoFactory
     {
         virtual ~IMigrationInfoFactory() {};
 

@@ -64,7 +64,7 @@ namespace Kernel
     DoseMap::GetSchema()
     {
         // maybe put this type into central "complex-types" section and define variable as this type?
-        json::QuickBuilder schema( jsonSchemaBase );
+        json::QuickBuilder schema( GetSchemaBase() );
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
         schema[ tn ] = json::String( "idmType:DoseMap" );
@@ -109,6 +109,7 @@ namespace Kernel
     }
 
     MalariaDrugTypeParameters* MalariaDrugTypeParameters::CreateMalariaDrugTypeParameters(
+        const Configuration* inputJson,
         const std::string &drugType
     )
     { 
@@ -128,14 +129,14 @@ namespace Kernel
         {
             try
             {
-                Configuration* drug_config = Configuration::CopyFromElement( (*EnvPtr->Config)["Malaria_Drug_Params"][drugType] );
+                Configuration* drug_config = Configuration::CopyFromElement( (*inputJson)["Malaria_Drug_Params"][drugType] );
                 params->Configure( drug_config );
                 delete drug_config;
                 drug_config = nullptr;
 
                 // Check validity of dosing regimen
-                float sim_tstep = (*EnvPtr->Config)["Simulation_Timestep"].As<Number>();
-                float updates_per_tstep = (*EnvPtr->Config)["Infection_Updates_Per_Timestep"].As<Number>();
+                float sim_tstep = (*inputJson)["Simulation_Timestep"].As<Number>();
+                float updates_per_tstep = (*inputJson)["Infection_Updates_Per_Timestep"].As<Number>();
                 if ( params->drug_dose_interval < sim_tstep/updates_per_tstep )
                 {
                     std::ostringstream oss;

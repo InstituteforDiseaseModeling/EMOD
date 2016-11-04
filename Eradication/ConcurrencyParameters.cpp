@@ -14,6 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Environment.h"
 #include "Log.h"
 #include "RANDOM.h"
+#include "Properties.h"
 
 static const char* _module = "ConcurrencyParameters";
 
@@ -87,7 +88,6 @@ namespace Kernel
 
     void ConcurrencyParameters::Initialize( const std::string& rRelTypeName,
                                             const std::string& rConcurrencyProperty, 
-                                            const tPropertiesDistrib& rPropertiesDist,  
                                             const ::Configuration *json )
     {
         if( rConcurrencyProperty == DEFAULT_PROPERTY )
@@ -99,11 +99,11 @@ namespace Kernel
         }
         else
         {
-            release_assert( rPropertiesDist.count( rConcurrencyProperty ) > 0 );
+            IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( rConcurrencyProperty );
 
-            for( auto& entry : rPropertiesDist.at( rConcurrencyProperty ) )
+            for( IPKeyValue kv : p_ip->GetValues()  )
             {
-                const std::string& prop_value = entry.second;
+                const std::string& prop_value = kv.GetValueAsString();
 
                 //if( !json->Exist( prop_value ) )
                 //{
@@ -257,7 +257,7 @@ namespace Kernel
         }
     }
 
-    void ConcurrencyConfiguration::Initialize( const tPropertiesDistrib& rPropertiesDist, const ::Configuration *json )
+    void ConcurrencyConfiguration::Initialize( const ::Configuration *json )
     {
         initConfigTypeMap( "Probability_Person_Is_Behavioral_Super_Spreader", &m_ProbSuperSpreader, Probability_Person_Is_Behavioral_Super_Spreader_DESC_TEXT, 0.0, 1.0f, 0.001f );
         initConfigTypeMap( "Individual_Property_Name", &m_PropertyKey, "TBD", DEFAULT_PROPERTY );
@@ -285,28 +285,30 @@ namespace Kernel
         }
         else
         {
-            if( rPropertiesDist.count( m_PropertyKey ) == 0 )
+            std::set<std::string> keys = IPFactory::GetInstance()->GetKeysAsStringSet();
+            if( keys.count( m_PropertyKey ) == 0 )
             {
                 std::stringstream ss;
                 ss << "'Individual_Property_Name' (='" << m_PropertyKey << "') in 'Concurrency_Configuration' in the demograhics is not a defined Individual Property.\n";
                 ss << "Valid Individual Properties are: ";
-                if( rPropertiesDist.size() == 0 )
+                if( keys.size() == 0 )
                 {
                     ss << "(No properties are defined.)";
                 }
                 else
                 {
-                    for( auto& entry : rPropertiesDist )
+                    for( auto& k : keys )
                     {
-                        ss << "'" << entry.first << "' ";
+                        ss << "'" << k << "' ";
                     }
                 }
                 throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
             }
 
-            for( auto& entry : rPropertiesDist.at( m_PropertyKey ) )
+            IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( m_PropertyKey );
+            for( auto kv : p_ip->GetValues() )
             {
-                const std::string& prop_value = entry.second;
+                const std::string& prop_value = kv.GetValueAsString();
 
                 ConcurrencyConfigurationByProperty* p_ccbp = new ConcurrencyConfigurationByProperty( prop_value );
                 m_PropertyValueToConfig[ prop_value ] = p_ccbp ;

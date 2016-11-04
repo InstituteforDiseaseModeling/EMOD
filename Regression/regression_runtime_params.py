@@ -164,9 +164,15 @@ class RuntimeParameters:
     @property
     def dll_root(self):
         try:
-            dll_root = self.config.get('ENVIRONMENT', 'dll_root')
+            if self.local_execution:
+                dll_root = self.config.get(self.os_type, 'local_dll_root')
+            else:
+                dll_root = self.config.get('ENVIRONMENT', 'dll_root')
         except Exception as ex:
-            dll_root = self.config.get('ENVIRONMENT', 'bin_root')
+            if self.local_execution:
+                dll_root = self.config.get(self.os_type, 'local_bin_root')
+            else:
+                dll_root = self.config.get('ENVIRONMENT', 'bin_root')
         return dll_root
 
     @property

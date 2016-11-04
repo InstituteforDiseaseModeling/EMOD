@@ -10,6 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #pragma once
 
 #include "VectorControlNodeTargeted.h"
+#include "LarvalHabitatMultiplier.h"
 
 namespace Kernel
 {
@@ -18,10 +19,16 @@ namespace Kernel
         DECLARE_FACTORY_REGISTERED(InterventionFactory, ScaleLarvalHabitat, INodeDistributableIntervention) 
 
     public:
+        ScaleLarvalHabitat();
+        ScaleLarvalHabitat( const ScaleLarvalHabitat& master );
+        virtual ~ScaleLarvalHabitat() {};
+
         virtual bool Configure( const Configuration * config );
         virtual void Update(float dt);
 
     protected:
         virtual void ApplyEffects();
+
+        LarvalHabitatMultiplier m_LHM;
     };
 }

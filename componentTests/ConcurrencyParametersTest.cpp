@@ -15,6 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "common.h"
 #include "ConcurrencyParameters.h"
 #include "RANDOM.h"
+#include "Properties.h"
 
 using namespace std; 
 using namespace Kernel; 
@@ -38,6 +39,9 @@ SUITE(ConcurrencyParametersTest)
             Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
 
             const_cast<Environment*>(Environment::getInstance())->RNG = new PSEUDO_DES(0);
+
+            IPFactory::DeleteFactory();
+            IPFactory::CreateFactory();
         }
 
         ~ConcurrencyParametersFixture()
@@ -45,18 +49,19 @@ SUITE(ConcurrencyParametersTest)
             JsonConfigurable::_track_missing = track_missing;
             JsonConfigurable::_useDefaults   = use_defaults ;
             JsonConfigurable::ClearMissingParameters();
+            IPFactory::DeleteFactory();
             Environment::Finalize();
         }
     };
 
-    ConcurrencyConfiguration* ReadConcurrency( const tPropertiesDistrib& rProperties, const char* filename )
+    ConcurrencyConfiguration* ReadConcurrency( const char* filename )
     {
         unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( filename ) );
 
         ConcurrencyConfiguration* p_cc = new ConcurrencyConfiguration();
 
         unique_ptr<Configuration> p_concurrency_config( Environment::CopyFromElement( (*p_config)[ "Concurrency_Configuration" ] ) );
-        p_cc->Initialize( rProperties, p_concurrency_config.get() );
+        p_cc->Initialize( p_concurrency_config.get() );
 
         const std::string& r_con_prop_key = p_cc->GetPropertyKey();
 
@@ -68,7 +73,7 @@ SUITE(ConcurrencyParametersTest)
             RelationshipType::Enum rel_type = (RelationshipType::Enum)irel ;
 
             ConcurrencyParameters* p_cp = new ConcurrencyParameters();
-            p_cp->Initialize( main_element_name, r_con_prop_key, rProperties, p_cp_config.get() );
+            p_cp->Initialize( main_element_name, r_con_prop_key, p_cp_config.get() );
             p_cc->AddParameters( rel_type, p_cp );
         }
         return p_cc;
@@ -76,27 +81,27 @@ SUITE(ConcurrencyParametersTest)
 
     TEST_FIXTURE(ConcurrencyParametersFixture, TestGoodParametersRisk)
     {
-        std::multimap< float, std::string > risk_percent_to_value;
-        risk_percent_to_value.insert( std::make_pair( 0.2f, "LOW" ) );
-        risk_percent_to_value.insert( std::make_pair( 0.5f, "MED" ) );
-        risk_percent_to_value.insert( std::make_pair( 0.3f, "HIGH" ) );
-
-        std::multimap< float, std::string > accessibility_percent_to_value;
-        accessibility_percent_to_value.insert( std::make_pair( 0.2f, "NO" ) );
-        accessibility_percent_to_value.insert( std::make_pair( 0.8f, "YES" ) );
-
-        tPropertiesDistrib properties_distrib;
-        properties_distrib.insert( std::make_pair( "RISK", risk_percent_to_value ) );
-        properties_distrib.insert( std::make_pair( "ACCESSIBILITY", accessibility_percent_to_value ) );
-
         tProperties individual_properties;
         individual_properties.insert( std::make_pair( "ACCESSIBILITY", "YES" ) );
         individual_properties.insert( std::make_pair( "RISK", "MED" ) );
 
+        std::map<std::string,float> risk_ip_values ;
+        risk_ip_values.insert( std::make_pair( "LOW",  0.2f ) );
+        risk_ip_values.insert( std::make_pair( "MED",  0.5f ) );
+        risk_ip_values.insert( std::make_pair( "HIGH", 0.3f ) );
+
+        IPFactory::GetInstance()->AddIP( 1, "RISK", risk_ip_values );
+
+        std::map<std::string,float> access_ip_values ;
+        access_ip_values.insert( std::make_pair( "NO",  0.2f ) );
+        access_ip_values.insert( std::make_pair( "YES", 0.8f ) );
+
+        IPFactory::GetInstance()->AddIP( 1, "ACCESSIBILITY", access_ip_values );
+
         ConcurrencyConfiguration* tmp_p_cc = nullptr;
         try
         {
-            tmp_p_cc = ReadConcurrency( properties_distrib, "testdata/ConcurrencyParametersTest/TestGoodParametersRisk.json" );
+            tmp_p_cc = ReadConcurrency( "testdata/ConcurrencyParametersTest/TestGoodParametersRisk.json" );
         }
         catch( DetailedException& re )
         {
@@ -148,12 +153,11 @@ SUITE(ConcurrencyParametersTest)
 
     TEST_FIXTURE(ConcurrencyParametersFixture, TestGoodParametersNone)
     {
-        std::multimap< float, std::string > accessibility_percent_to_value;
-        accessibility_percent_to_value.insert( std::make_pair( 0.2f, "NO" ) );
-        accessibility_percent_to_value.insert( std::make_pair( 0.8f, "YES" ) );
+        std::map<std::string,float> access_ip_values ;
+        access_ip_values.insert( std::make_pair( "NO",  0.2f ) );
+        access_ip_values.insert( std::make_pair( "YES", 0.8f ) );
 
-        tPropertiesDistrib properties_distrib;
-        properties_distrib.insert( std::make_pair( "ACCESSIBILITY", accessibility_percent_to_value ) );
+        IPFactory::GetInstance()->AddIP( 1, "ACCESSIBILITY", access_ip_values );
 
         tProperties individual_properties;
         individual_properties.insert( std::make_pair( "ACCESSIBILITY", "YES" ) );
@@ -161,7 +165,7 @@ SUITE(ConcurrencyParametersTest)
         ConcurrencyConfiguration* tmp_p_cc = nullptr;
         try
         {
-            tmp_p_cc = ReadConcurrency( properties_distrib, "testdata/ConcurrencyParametersTest/TestGoodParametersNone.json" );
+            tmp_p_cc = ReadConcurrency( "testdata/ConcurrencyParametersTest/TestGoodParametersNone.json" );
         }
         catch( DetailedException& re )
         {
@@ -189,21 +193,21 @@ SUITE(ConcurrencyParametersTest)
 
     void TestHelper_Exception( int lineNumber, const std::string& rFilename, const std::string& rExpMsg )
     {
-        std::multimap< float, std::string > risk_percent_to_value;
-        risk_percent_to_value.insert( std::make_pair( 0.7f, "LOW" ) );
-        risk_percent_to_value.insert( std::make_pair( 0.3f, "HIGH" ) );
+        std::map<std::string,float> risk_ip_values ;
+        risk_ip_values.insert( std::make_pair( "LOW",  0.7f ) );
+        risk_ip_values.insert( std::make_pair( "HIGH", 0.3f ) );
 
-        std::multimap< float, std::string > accessibility_percent_to_value;
-        accessibility_percent_to_value.insert( std::make_pair( 0.2f, "NO" ) );
-        accessibility_percent_to_value.insert( std::make_pair( 0.8f, "YES" ) );
+        IPFactory::GetInstance()->AddIP( 1, "RISK", risk_ip_values );
 
-        tPropertiesDistrib properties_distrib;
-        properties_distrib.insert( std::make_pair( "ACCESSIBILITY", accessibility_percent_to_value ) );
-        properties_distrib.insert( std::make_pair( "RISK", risk_percent_to_value ) );
+        std::map<std::string,float> access_ip_values ;
+        access_ip_values.insert( std::make_pair( "NO",  0.2f ) );
+        access_ip_values.insert( std::make_pair( "YES", 0.8f ) );
+
+        IPFactory::GetInstance()->AddIP( 1, "ACCESSIBILITY", access_ip_values );
 
         try
         {
-            unique_ptr<ConcurrencyConfiguration> p_cc( ReadConcurrency( properties_distrib, rFilename.c_str() ) );
+            unique_ptr<ConcurrencyConfiguration> p_cc( ReadConcurrency( rFilename.c_str() ) );
 
             CHECK_LN( false, lineNumber ); // should not get here
         }

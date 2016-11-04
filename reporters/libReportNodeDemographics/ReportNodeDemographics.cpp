@@ -17,6 +17,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"
 #include "IIndividualHuman.h"
 #include "ReportUtilities.h"
+#include "Properties.h"
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!! CREATING NEW REPORTS
@@ -86,6 +87,8 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
     ReportNodeDemographics::ReportNodeDemographics()
         : BaseTextReport( "ReportNodeDemographics.csv" )
         , m_AgeYears()
+        , m_IPKeyToCollect()
+        , m_IPValuesList()
         , m_Data()
     {
         // ------------------------------------------------------------------------------------------------
@@ -102,6 +105,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
 
     bool ReportNodeDemographics::Configure( const Configuration * inputJson )
     {
+        initConfigTypeMap( "IP_Key_To_Collect", &m_IPKeyToCollect, "Name of the key to add a column for.", "" );
         if( inputJson->Exist("Age_Bins") )
         {
             initConfigTypeMap("Age_Bins", &m_AgeYears, "Age Bins (in years) to aggregate within and report");
@@ -116,18 +120,40 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         
         if( ret )
         {
-            // initialize the counters so that they can be indexed by gender and age
-            for( int g = 0 ; g < 2 ; g++ )
+        }
+        return ret;
+    }
+
+    void ReportNodeDemographics::Initialize( unsigned int nrmSize )
+    {
+        if( !m_IPKeyToCollect.empty() )
+        {
+            std::list<std::string> ip_value_list = IPFactory::GetInstance()->GetIP( m_IPKeyToCollect )->GetValues().GetValuesToList();
+            for( auto val : ip_value_list )
             {
-                m_Data.push_back( std::vector<NodeData>() );
-                for( int a = 0 ; a < m_AgeYears.size() ; a++ )
+                m_IPValuesList.push_back( val );
+            }
+        }
+        else
+        {
+            m_IPValuesList.push_back( "<no ip>" ); // need at least one in the list
+        }
+
+        // initialize the counters so that they can be indexed by gender and age
+        for( int g = 0 ; g < 2 ; g++ )
+        {
+            m_Data.push_back( std::vector<std::vector<NodeData>>() );
+            for( int a = 0 ; a < m_AgeYears.size() ; a++ )
+            {
+                m_Data[ g ].push_back( std::vector<NodeData>() );
+                for( int i = 0 ; i < m_IPValuesList.size() ; ++i )
                 {
                     NodeData nd;
-                    m_Data[ g ].push_back( nd );
+                    m_Data[ g ][ a ].push_back( nd );
                 }
             }
         }
-        return ret;
+        BaseTextReport::Initialize( nrmSize );
     }
 
     std::string ReportNodeDemographics::GetHeader() const
@@ -136,8 +162,14 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         header << "Time"             << ", "
                << "NodeID"           << ", "
                << "Gender"           << ", "
-               << "AgeYears"         << ", "
-               << "NumIndividuals"   << ", "
+               << "AgeYears"         << ", " ;
+
+        if( !m_IPKeyToCollect.empty() )
+        {
+            header << "IPKey=" << m_IPKeyToCollect << ", ";
+        }
+
+        header << "NumIndividuals"   << ", "
                << "NumInfected"
                ;
 
@@ -153,12 +185,13 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
     {
         int gender_index  = (int)(individual->GetGender());
         int age_bin_index = ReportUtilities::GetAgeBin( individual->GetAge(), m_AgeYears );
+        int ip_index      = GetIPIndex( individual->GetProperties() );
 
-        m_Data[ gender_index ][ age_bin_index ].num_people += 1;
+        m_Data[ gender_index ][ age_bin_index ][ ip_index ].num_people += 1;
 
         if( individual->IsInfected() )
         {
-            m_Data[ gender_index ][ age_bin_index ].num_infected += 1;
+            m_Data[ gender_index ][ age_bin_index ][ ip_index ].num_infected += 1;
         }
     }
 
@@ -176,13 +209,20 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
             }
             for( int a = 0 ; a < m_AgeYears.size() ; a++ )
             {
-                GetOutputStream() << time
-                           << "," << node_id
-                           << "," << gender 
-                           << "," << m_AgeYears[ a ] 
-                           << "," << m_Data[ g ][ a ].num_people 
-                           << "," << m_Data[ g ][ a ].num_infected 
-                           << std::endl;
+                for( int i = 0 ; i < m_IPValuesList.size() ; ++i )
+                {
+                    GetOutputStream() << time
+                               << "," << node_id
+                               << "," << gender 
+                               << "," << m_AgeYears[ a ] ;
+                    if( !m_IPKeyToCollect.empty() )
+                    {
+                        GetOutputStream() << ", " << m_IPValuesList[ i ] ;
+                    }
+                    GetOutputStream() << "," << m_Data[ g ][ a ][ i ].num_people
+                                      << "," << m_Data[ g ][ a ][ i ].num_infected
+                                      << std::endl;
+                }
             }
         }
 
@@ -191,9 +231,25 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         {
             for( int a = 0 ; a < m_AgeYears.size() ; a++ )
             {
-                NodeData nd ;
-                m_Data[ g ][ a ] = nd;
+                for( int i = 0 ; i < m_IPValuesList.size() ; ++i )
+                {
+                    NodeData nd ;
+                    m_Data[ g ][ a ][ i ] = nd;
+                }
             }
         }
     }
+
+    int ReportNodeDemographics::GetIPIndex( tProperties* pProps ) const
+    {
+        int index = 0;
+        if( !m_IPKeyToCollect.empty() )
+        {
+            std::string value = pProps->at( m_IPKeyToCollect );
+
+            index = std::find( m_IPValuesList.cbegin(), m_IPValuesList.cend(), value ) - m_IPValuesList.cbegin();
+        }
+        return index;
+    }
+
 }

@@ -37,7 +37,7 @@ namespace Kernel
         , m_RelType( relType )
         , m_pRNG( prng )
         , m_Group( AssortivityGroup::NO_GROUP )
-        , m_PropertyName()
+        , m_PropertyKey()
         , m_Axes()
         , m_WeightingMatrix()
         , m_StartYear( 0.0 )
@@ -76,7 +76,10 @@ namespace Kernel
 
                 if( JsonConfigurable::_dryrun || (m_Group == AssortivityGroup::INDIVIDUAL_PROPERTY) )
                 {
-                    initConfigTypeMap( "Property_Name", &m_PropertyName, "TBD - The name of the property to base the assortivity on." );
+                    std::string rel_type_str = RelationshipType::pairs::lookup_key( m_RelType ) ;
+                    std::string param_name = rel_type_str + std::string(":Property_Name") ;
+                    m_PropertyKey.SetParameterName( param_name );
+                    initConfigTypeMap( "Property_Name", &m_PropertyKey, "TBD - The name of the property to base the assortivity on." );
                 }
             }
 
@@ -131,7 +134,7 @@ namespace Kernel
             }
             else if( m_Group == AssortivityGroup::INDIVIDUAL_PROPERTY )
             {
-                if( m_PropertyName.length() <= 0 )
+                if( !m_PropertyKey.IsValid() )
                 {
                     std::stringstream ss ;
                     ss << RelationshipType::pairs::lookup_key( m_RelType ) << ":Property_Name must be defined and cannot be empty string." ;
@@ -173,23 +176,24 @@ namespace Kernel
 
     void Assortivity::CheckAxesForProperty()
     {
-        std::vector<std::string> property_values ;
+        IPKeyValueContainer property_values ;
         try
         {
-            property_values = Node::GetIndividualPropertyValuesList( m_PropertyName );
+            property_values = IPFactory::GetInstance()->GetIP( m_PropertyKey.ToString() )->GetValues();
         }
         catch( DetailedException& )
         {
             std::stringstream ss ;
             ss <<  RelationshipType::pairs::lookup_key( m_RelType ) 
-               << ":Property_Name(=" << m_PropertyName << ") is not defined in the demographics." ;
+               << ":Property_Name(=" << m_PropertyKey.ToString() << ") is not defined in the demographics." ;
             throw GeneralConfigurationException(__FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
         }
 
-        bool invalid_axes = property_values.size() != m_Axes.size();
+        std::set<std::string> values_as_set = property_values.GetValuesToStringSet();
+        bool invalid_axes = property_values.Size() != m_Axes.size();
         for( int i = 0 ; !invalid_axes && (i < m_Axes.size()) ; i++ )
         {
-            invalid_axes = std::find( property_values.begin(), property_values.end(), m_Axes[i] ) == property_values.end() ;
+            invalid_axes = (values_as_set.count( m_Axes[i] ) != 1 );
         }
         if( invalid_axes )
         {
@@ -198,8 +202,8 @@ namespace Kernel
                << AssortivityGroup::pairs::lookup_key( m_Group ) <<") requires that the Axes names"
                << "(=" << ValuesToString( m_Axes ) << ") "
                << "match the property values"
-               << "(=" << ValuesToString( property_values ) << ") "
-               << "defined in the demographics for Property=" << m_PropertyName << "." ;
+               << "(=" << property_values.GetValuesToString() << ") "
+               << "defined in the demographics for Property=" << m_PropertyKey.ToString() << "." ;
             throw GeneralConfigurationException(__FILE__, __LINE__, __FUNCTION__, ss.str().c_str() ) ;
         }
     }
@@ -262,7 +266,7 @@ namespace Kernel
         {
             throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "p_hec", "IIndividualHumanEventContext", "IIndividualHumanSTI");
         }
-        std::string prop_name = pAssortivity->GetPropertyName();
+        std::string prop_name = pAssortivity->GetPropertyKey().ToString();
         if( p_hec->GetProperties()->count( prop_name ) <= 0 )
         {
             std::stringstream ss ;
@@ -270,6 +274,15 @@ namespace Kernel
             throw GeneralConfigurationException(__FILE__, __LINE__, __FUNCTION__,  ss.str().c_str() );
         }
         return p_hec->GetProperties()->at(prop_name) ;
+
+        //IPKey key = pAssortivity->GetPropertyKey();
+        //if( !(p_hec->GetProperties()->Contains( key )) )
+        //{
+        //    std::stringstream ss ;
+        //    ss << "Individual did not have a property with the name " << key.ToString() ;
+        //    throw GeneralConfigurationException(__FILE__, __LINE__, __FUNCTION__,  ss.str().c_str() );
+        //}
+        //return p_hec->GetProperties()->Get( key ).GetValueAsString() ;
     }
 
     IIndividualHumanSTI* Assortivity::SelectPartner( const IIndividualHumanSTI* pPartnerA,
@@ -413,13 +426,25 @@ namespace Kernel
     void Assortivity::serialize(IArchive& ar, Assortivity* obj)
     {
         Assortivity& sort = *obj;
+
+        std::string key_name;
+        if( ar.IsWriter() )
+        {
+            key_name = sort.m_PropertyKey.ToString();
+        }
+
         ar.labelElement("m_RelType"        ) & (uint32_t&)sort.m_RelType;
         ar.labelElement("m_Group"          ) & (uint32_t&)sort.m_Group;
-        ar.labelElement("m_PropertyName"   ) & sort.m_PropertyName;
+        ar.labelElement("m_PropertyName"   ) & key_name;
         ar.labelElement("m_Axes"           ) & sort.m_Axes;
         ar.labelElement("m_WeightingMatrix") & sort.m_WeightingMatrix;
         ar.labelElement("m_StartYear"      ) & sort.m_StartYear;
         ar.labelElement("m_StartUsing"     ) & sort.m_StartUsing;
+
+        if( ar.IsReader() )
+        {
+            sort.m_PropertyKey = IPKey( key_name );
+        }
 
         //RANDOMBASE*                     m_pRNG ;
     }

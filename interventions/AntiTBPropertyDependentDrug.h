@@ -13,7 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    class DrugTypeByProperty : public JsonConfigurable
+    class DrugTypeByProperty : public JsonConfigurable, public IComplexJsonConfigurable
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         friend class AntiTBPropDepDrug;
@@ -21,8 +21,8 @@ namespace Kernel
         public:
             DrugTypeByProperty() {}
 
-            virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key );
-            virtual json::QuickBuilder GetSchema();
+            virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
+            virtual json::QuickBuilder GetSchema() override;
 
         protected:
             std::map< std::string, std::string > prop2drugMap;

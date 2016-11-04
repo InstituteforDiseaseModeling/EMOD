@@ -56,7 +56,6 @@ namespace Kernel
 
         void ConcurrencyParameters::Initialize( const std::string& rRelTypeName,
                                                 const std::string& rConcurrencyProperty, 
-                                                const tPropertiesDistrib& rPropertiesDist,  
                                                 const ::Configuration *json );
 
         float GetProbExtra( const char* prop_value, Gender::Enum gender ) const;
@@ -101,7 +100,7 @@ namespace Kernel
         ConcurrencyConfiguration();
         virtual ~ConcurrencyConfiguration();
 
-        virtual void Initialize( const tPropertiesDistrib& rPropertiesDist, const ::Configuration *json );
+        virtual void Initialize( const ::Configuration *json );
 
         // ------------------------
         // --- IConcurrency Methods

@@ -214,45 +214,54 @@ namespace Kernel {
                 // Parse metadata for all input files
 
                 num_datavalues = -1;
-                num_nodes = -1;
+
+                // num_nodes = -1;
+                // We no longer require climate files to have identical structure nor are they
+                // required to have unique entries for each node (i.e. multiple simulation nodes
+                // may utilize the same data if, e.g., the simulation node size is smaller than the
+                // resolution of the climate cell(s).
+                int32_t num_airtemp_entries = -1;
+                int32_t num_landtemp_entries = -1;
+                int32_t num_rainfall_entries = -1;
+                int32_t num_humidity_entries = -1;
 
                 if( climate_airtemperature_filename == "" )
                 {
                     throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "climate_structure", "ClimateStructure::CLIMATE_BY_DATA:", "climate_airtemperature_filename", "<empty>" );
                 }
                 string airtemp_filepath = FileSystem::Concat( EnvPtr->InputPath, climate_airtemperature_filename );
-                ParseMetadataForFile(airtemp_filepath, idreference, &climate_update_resolution, &num_datavalues, &num_nodes, airtemperature_offsets);
+                ParseMetadataForFile(airtemp_filepath, idreference, &climate_update_resolution, &num_datavalues, &num_airtemp_entries, airtemperature_offsets);
 
                 if( climate_landtemperature_filename == "" )
                 {
                     throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "climate_structure", "ClimateStructure::CLIMATE_BY_DATA:", "climate_landtemperature_filename", "<empty>" );
                 }
                 string landtemp_filepath = FileSystem::Concat( EnvPtr->InputPath, climate_landtemperature_filename );
-                ParseMetadataForFile(landtemp_filepath, idreference, &climate_update_resolution, &num_datavalues, &num_nodes, landtemperature_offsets);
+                ParseMetadataForFile(landtemp_filepath, idreference, &climate_update_resolution, &num_datavalues, &num_landtemp_entries, landtemperature_offsets);
 
                 if( climate_rainfall_filename == "" )
                 {
                     throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "climate_structure", "ClimateStructure::CLIMATE_BY_DATA:", "climate_rainfall_filename", "<empty>" );
                 }
                 string rainfall_filepath = FileSystem::Concat( EnvPtr->InputPath, climate_rainfall_filename );
-                ParseMetadataForFile(rainfall_filepath, idreference, &climate_update_resolution, &num_datavalues, &num_nodes, rainfall_offsets);
+                ParseMetadataForFile(rainfall_filepath, idreference, &climate_update_resolution, &num_datavalues, &num_rainfall_entries, rainfall_offsets);
 
                 if( climate_relativehumidity_filename == "" )
                 {
                     throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "climate_structure", "ClimateStructure::CLIMATE_BY_DATA:", "climate_relativehumidity_filename", "<empty>" );
                 }
                 string humidity_filepath = FileSystem::Concat( EnvPtr->InputPath, climate_relativehumidity_filename );
-                ParseMetadataForFile(humidity_filepath, idreference, &climate_update_resolution, &num_datavalues, &num_nodes, humidity_offsets);
+                ParseMetadataForFile(humidity_filepath, idreference, &climate_update_resolution, &num_datavalues, &num_humidity_entries, humidity_offsets);
 
                 // open all input files
 
-                if(!OpenClimateFile(airtemp_filepath, num_datavalues * num_nodes * sizeof(float), climate_airtemperature_file))
+                if(!OpenClimateFile(airtemp_filepath, num_datavalues * num_airtemp_entries * sizeof(float), climate_airtemperature_file))
                     return false;
-                if(!OpenClimateFile(landtemp_filepath, num_datavalues * num_nodes * sizeof(float), climate_landtemperature_file))
+                if(!OpenClimateFile(landtemp_filepath, num_datavalues * num_landtemp_entries * sizeof(float), climate_landtemperature_file))
                     return false;
-                if(!OpenClimateFile(rainfall_filepath, num_datavalues * num_nodes * sizeof(float), climate_rainfall_file))
+                if(!OpenClimateFile(rainfall_filepath, num_datavalues * num_rainfall_entries * sizeof(float), climate_rainfall_file))
                     return false;
-                if(!OpenClimateFile(humidity_filepath, num_datavalues * num_nodes * sizeof(float), climate_humidity_file))
+                if(!OpenClimateFile(humidity_filepath, num_datavalues * num_humidity_entries * sizeof(float), climate_humidity_file))
                     return false;
                 }
                 break;
@@ -277,12 +286,12 @@ namespace Kernel {
         string idreference,
         ClimateUpdateResolution::Enum * const update_resolution,
         int * const pNumDatavalues,
-        int * const pNumNodes,
-        std::hash_map<uint32_t, uint32_t> &node_offsets
+        int * const pNumEntries,
+        std::unordered_map<uint32_t, uint32_t> &node_offsets
     )
     {
         LOG_DEBUG_F( "%s: %s\n", __FUNCTION__, data_filepath.c_str() );
-        release_assert( pNumNodes );
+        release_assert(pNumEntries);
 
         string metadata_filepath = data_filepath + ".json";
 
@@ -293,7 +302,7 @@ namespace Kernel {
             throw FileIOException( __FILE__, __LINE__, __FUNCTION__, metadata_filepath.c_str() );
         }
 
-        if(!boost::iequals((string)((*config)["Metadata"]["IdReference"].As<json::String>()), idreference))
+        if(!boost::iequals(string((*config)["Metadata"]["IdReference"].As<json::String>()), idreference))
         {
             std::ostringstream msg;
             msg << "IdReference used to generate climate file " << data_filepath << " doesn't match the IdReference used for the demographics" << std::endl;
@@ -302,10 +311,10 @@ namespace Kernel {
 
         if(update_resolution != nullptr)
         {
-            string str_clim_res = (string)((*config)["Metadata"]["UpdateResolution"].As<json::String>());
+            string str_clim_res = string((*config)["Metadata"]["UpdateResolution"].As<json::String>());
             int md_updateres = ClimateUpdateResolution::pairs::lookup_value(str_clim_res.c_str());
 
-            if(md_updateres == -1 || (*update_resolution != (ClimateUpdateResolution::Enum) md_updateres))
+            if(md_updateres == -1 || (*update_resolution != ClimateUpdateResolution::Enum(md_updateres)))
             {
                 throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Climate_Update_Resolution", ClimateUpdateResolution::pairs::lookup_key(*update_resolution), (std::string("metadata from ") + metadata_filepath).c_str(), str_clim_res.c_str() );
             }
@@ -313,7 +322,7 @@ namespace Kernel {
 
         if(pNumDatavalues != nullptr)
         {
-            int md_datavalues = (int)((*config)["Metadata"]["DatavalueCount"].As<json::Number>());
+            int md_datavalues = int((*config)["Metadata"]["DatavalueCount"].As<json::Number>());
 
             if(*pNumDatavalues == -1)
                 *pNumDatavalues = md_datavalues;
@@ -324,27 +333,38 @@ namespace Kernel {
             }
         }
 
-        int md_numnodes = (int)((*config)["Metadata"]["NodeCount"].As<json::Number>());
+        // ***** TODO ***** We need to have version numbers on the JSON metadata
+        // files so that we can correctly interpret "NodeCount" and "NumberDTKNodes"
+        // Proposal - switch to "ClimateCellCount" and "OffsetEntryCount" to differentiate
+        // between the number of entries expected in the binary (ClimateCellCount)
+        // and the number of entries expected in the NodeOffsets string (OffsetEntryCount).
 
-        if(*pNumNodes == -1)
-            *pNumNodes = md_numnodes;
-        else if(*pNumNodes != md_numnodes)
-        {
-            //std::cerr << "Number of nodes in climate file " << data_filepath << " doesn't match expected value: " << *num_nodes << std::endl;
-            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "num_nodes", *pNumNodes, "md_numnodes", md_numnodes );
+        int md_num_entries = int((*config)["Metadata"]["NodeCount"].As<json::Number>());
+        int md_num_offsets = md_num_entries;
+
+        // "Slim" climate files map multiple DTK nodes to a single climate cell (node).
+        // "NodeCount" gives the number of climate cells (nodes).
+        // "NumberDTKNodes" (if present) gives the number of entries in the NodeOffsets string.
+        if ((*config)["Metadata"].Exist("NumberDTKNodes")) {
+            md_num_offsets = int((*config)["Metadata"]["NumberDTKNodes"].As<json::Number>());
         }
 
-        string offsets_str = (string)((*config)["NodeOffsets"].As<json::String>());
-        if(offsets_str.length() / 16 != *pNumNodes)
+        if (*pNumEntries == -1)
+        {
+            *pNumEntries = md_num_entries;
+        }
+
+        string offsets_str = string((*config)["NodeOffsets"].As<json::String>());
+        if ( offsets_str.length() / 16 < md_num_offsets)
         {
             //std::cerr << "Format error encountered loading climate metadata file: " << metadata_filepath << endl; 
             //std::cerr << "Length of NodeOffsets isn't consistent with \"NodeCount\" attribute" << endl;
-            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "offsets_str.length() / 16", offsets_str.length() / 16, "*num_nodes", *pNumNodes );
+            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "offsets_str.length() / 16", offsets_str.length() / 16, "*md_num_offsets", md_num_offsets);
         }
 
         uint32_t nodeid = 0, offset = 0;
 
-        for(int n = 0; n < *pNumNodes; n++)
+        for(int n = 0; n < md_num_offsets; n++)
         {
 #ifdef _MSC_VER
             sscanf_s(offsets_str.substr(n * 16, 8).c_str(), "%x", &nodeid);

@@ -1,7 +1,7 @@
 Year,Node_ID,Event_Name,Individual_ID,Age,Gender,Infectiousness,HasHIV,OnART,CD4,WHO_Stage,CascadeState
-2020,1,EighteenMonthsOld,3751,540.456,M,0,N,N,1e+006,-1,None
-2020,1,GaveBirth,2214,11994.7,F,0,N,N,1e+006,-1,None
-2020,1,Births,8699,0,M,0,N,N,1e+006,-1,None
+2020,1,EighteenMonthsOld,3751,540.456,M,0,N,N,1e+06,-1,None
+2020,1,GaveBirth,2214,11994.7,F,0,N,N,1e+06,-1,None
+2020,1,Births,8699,0,M,0,N,N,1e+06,-1,None
 2020,1,STINewInfection,1,17119.9,F,0.001,Y,N,504.373,1.14742,None
 2020,1,STINewInfection,2,16265.9,F,0.001,Y,N,69.0162,4,None
 2020,1,STINewInfection,3,15785.4,M,0.026,Y,N,537.37,1.06519,None

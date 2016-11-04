@@ -26,12 +26,6 @@ namespace Kernel
     {
     }
 
-    QuickBuilder
-    ReferenceTrackingEventCoordinatorHIV::GetSchema()
-    {
-        return QuickBuilder( jsonSchemaBase );
-    }
-
     bool
     ReferenceTrackingEventCoordinatorHIV::Configure(
         const Configuration * inputJson

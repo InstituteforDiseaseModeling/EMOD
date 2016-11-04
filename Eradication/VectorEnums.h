@@ -65,6 +65,7 @@ namespace Kernel
         ENUM_VALUE_SPEC(HUMAN_POPULATION                                    , 3)
         ENUM_VALUE_SPEC(CONSTANT                                            , 4)
         ENUM_VALUE_SPEC(BRACKISH_SWAMP                                      , 5)
+        ENUM_VALUE_SPEC(LINEAR_SPLINE                                       , 6)
         ENUM_VALUE_SPEC(ALL_HABITATS                                        , 100))
 
     ENUM_DEFINE(HEGModel,

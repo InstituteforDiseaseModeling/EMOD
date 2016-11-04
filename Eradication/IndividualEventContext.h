@@ -16,7 +16,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Common.h" // for HumanStateChange enum at least
 #include "suids.hpp"
-#include "Properties.h"
+#include "PropertiesString.h"
 
 namespace Kernel
 {

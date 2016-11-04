@@ -52,7 +52,7 @@ namespace Kernel
     // ------------------------------------------------------------------------
 
     // This is a container for the AgeRange objects
-    class IDMAPI AgeRangeList : public JsonConfigurable
+    class IDMAPI AgeRangeList : public JsonConfigurable, public IComplexJsonConfigurable
     {
     public:
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
@@ -63,8 +63,8 @@ namespace Kernel
 
         const AgeRange& operator[]( int index ) const;
 
-        virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key );
-        virtual json::QuickBuilder GetSchema();
+        virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
+        virtual json::QuickBuilder GetSchema() override;
 
         void Add( const AgeRange& rar );
         int Size() const;
@@ -204,7 +204,7 @@ namespace Kernel
     // this list are to be in order based on the period they are covering.  The elements
     // are not allowed to overlap so that the coordinator is only distributing interventions
     // for one of the items in this list.
-    class IDMAPI TargetedDistributionList : public JsonConfigurable
+    class IDMAPI TargetedDistributionList : public JsonConfigurable, public IComplexJsonConfigurable
     {
     public:
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
@@ -213,8 +213,8 @@ namespace Kernel
         TargetedDistributionList( NChooserObjectFactory* pObjectFactory );
         virtual ~TargetedDistributionList();
 
-        virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key );
-        virtual json::QuickBuilder GetSchema();
+        virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
+        virtual json::QuickBuilder GetSchema() override;
 
         virtual void CheckForOverlap();
         virtual void Add( TargetedDistribution* ptd );
@@ -270,7 +270,6 @@ namespace Kernel
         virtual ~NChooserEventCoordinator();
 
         virtual bool Configure( const Configuration * inputJson ) override;
-        virtual QuickBuilder GetSchema() override;
 
         // IEventCoordinator methods
         virtual void SetContextTo(ISimulationEventContext *isec) override;

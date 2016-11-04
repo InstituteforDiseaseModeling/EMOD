@@ -15,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <map>
 #include <set>
 
-#include "Properties.h"
+#include "PropertiesString.h"
 #include "StrainIdentity.h"
 #include "IInfectable.h"
 #include "Types.h"      // for act_prob_vec_t

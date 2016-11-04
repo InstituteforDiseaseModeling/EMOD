@@ -73,5 +73,7 @@ namespace Kernel
         NChooserEventCoordinatorSTI();
         NChooserEventCoordinatorSTI( NChooserObjectFactory* pObjectFactory );
         virtual ~NChooserEventCoordinatorSTI();
+
+        virtual bool Configure( const Configuration * inputJson ) override;
     };
 }

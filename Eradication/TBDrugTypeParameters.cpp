@@ -25,7 +25,7 @@ namespace Kernel
     TB_drug_resistance_rate(0.0),
     TB_drug_relapse_rate(0.0),
     TB_drug_mortality_rate(0.0)
-    { LOG_DEBUG( "ctor\n" );
+    {
         initConfigTypeMap("TB_Drug_Inactivation_Rate", &TB_drug_inactivation_rate, TB_Drug_Inactivation_Rate_DESC_TEXT, 0.0, 1.0, 1.0);
         initConfigTypeMap("TB_Drug_Clearance_Rate", &TB_drug_clearance_rate, TB_Drug_Clearance_Rate_DESC_TEXT, 0.0, 1.0, 1.0);
         initConfigTypeMap("TB_Drug_Resistance_Rate", &TB_drug_resistance_rate, TB_Drug_Resistance_Rate_DESC_TEXT, 0.0, 1.0, 0.0); // 0.0 means no resistance 
@@ -39,6 +39,7 @@ namespace Kernel
     }
 
     TBDrugTypeParameters* TBDrugTypeParameters::CreateTBDrugTypeParameters(
+        const Configuration * inputJson,
         const std::string& tb_drug_name
     )
     { 

@@ -135,6 +135,7 @@
         "TB_Smear_Positive_Fraction_Child": 1, 
         "Transmission_Blocking_Immunity_Decay_Rate": 0.1, 
         "Transmission_Blocking_Immunity_Duration_Before_Decay": 270, 
+        "logLevel_JsonConfigurable": "WARNING", 
         "x_Air_Migration": 1, 
         "x_Birth": 0.05, 
         "x_Family_Migration": 1, 

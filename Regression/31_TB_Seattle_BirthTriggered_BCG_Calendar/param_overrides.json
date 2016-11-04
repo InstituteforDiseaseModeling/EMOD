@@ -64,6 +64,7 @@
             }
         },
         "PRIMARY":{
+            "logLevel_JsonConfigurable" : "WARNING",
             "Config_Name":"31_TB_Seattle_BirthTriggered_BCG_Calendar",
             "ENUMS":{
                 "Simulation_Type":"TB_SIM"

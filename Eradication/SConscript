@@ -64,14 +64,12 @@ else:
                             "DllLoader.cpp",
                             "EventsForOtherNodes.cpp",
                             "Instrumentation.cpp",
-                            "JsonObjectDemog.cpp",
                             "LoadBalanceScheme.cpp",
                             "Migration.cpp",
                             "NodeRankMap.cpp",
                             "MpiDataExchanger.cpp",
                             "NodeInfo.cpp",
                             "PythonSupport.cpp",
-                            "Properties.cpp",
                             "SimulationConfig.cpp",
                             "SimulationFactory.cpp",
                             "StrainIdentity.cpp",
@@ -102,7 +100,6 @@ else:
                             "StrainAwareTransmissionGroups.cpp",
                             "TransmissionGroupsBase.cpp",
                             "TransmissionGroupsFactory.cpp",
-                            "VectorTransmissionGroups.cpp",
 
                             # Generic
                             "GroupEventCoordinator.cpp",
@@ -152,6 +149,7 @@ else:
 
                             "IndividualVector.cpp",
                             "InfectionVector.cpp",
+                            "LarvalHabitatMultiplier.cpp",
                             "MigrationInfoVector.cpp",
                             "NodeInfoVector.cpp",
                             "NodeVector.cpp",
@@ -173,6 +171,7 @@ else:
                             "VectorProbabilities.cpp",
                             "VectorSpeciesParameters.cpp",
                             "VectorSpeciesReport.cpp",
+                            "VectorTransmissionGroups.cpp",
                             "../interventions/Bednet.cpp",
                             "../interventions/HousingModification.cpp", 
                             "../interventions/HumanHostSeekingTrap.cpp", 
@@ -215,20 +214,19 @@ else:
                             "SusceptibilityEnvironmental.cpp",
                         ]
 
-# polio not supported externally
-#    polioSrcFiles = environmentalSrcFiles + [
-#                            # Polio
-#                            "BinnedReportPolio.cpp",
-#                            "IndividualPolio.cpp",
-#                            "InfectionPolio.cpp",
-#                            "NodePolio.cpp",
-#                            "PolioInterventionsContainer.cpp",
-#                            "ReportPolio.cpp",
-#                            "SimulationPolio.cpp",
-#                            "SpatialReportPolio.cpp",
-#                            "SusceptibilityPolio.cpp",
-#                            "../interventions/PolioVaccine.cpp",
-#                        ]
+    polioSrcFiles = environmentalSrcFiles + [
+                            # Polio
+                            "BinnedReportPolio.cpp",
+                            "IndividualPolio.cpp",
+                            "InfectionPolio.cpp",
+                            "NodePolio.cpp",
+                            "PolioInterventionsContainer.cpp",
+                            "ReportPolio.cpp",
+                            "SimulationPolio.cpp",
+                            "SpatialReportPolio.cpp",
+                            "SusceptibilityPolio.cpp",
+                            "../interventions/PolioVaccine.cpp",
+                        ]
                         
     airborneSrcFiles = [
                             # Airborne
@@ -265,15 +263,14 @@ else:
                             "../interventions/NodeLevelHealthTriggeredIVScaleUpSwitch.cpp"
                         ]
 
-# tbhiv not supported externally yet
-#    # TBHIV
-#    tbhivSrcFiles = [       "IndividualCoinfection.cpp",
-#                            #"GroupEventCoordinatorHIV.cpp",
-#                            "MasterInterventionsContainer.cpp",
-#                            "NodeTBHIV.cpp",
-#                            "ReportTBHIV.cpp",
-#                            "SimulationTBHIV.cpp"
-#    ]
+    # TBHIV
+    tbhivSrcFiles = [       "IndividualCoinfection.cpp",
+                            #"GroupEventCoordinatorHIV.cpp",
+                            "MasterInterventionsContainer.cpp",
+                            "NodeTBHIV.cpp",
+                            "ReportTBHIV.cpp",
+                            "SimulationTBHIV.cpp"
+    ]
 
     # STI
     stiSrcFiles = [
@@ -458,15 +455,15 @@ else:
             env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
     else:
         print( "Monolithic all-disease build." )
-#        env.Append( CPPDEFINES=["ENABLE_POLIO" ] )
+# EMOD release        env.Append( CPPDEFINES=["ENABLE_POLIO" ] )
         env.Append( CPPDEFINES=["ENABLE_PYTHON_FEVER" ] )
         env.Append( CPPDEFINES=["ENABLE_TB" ] )
-#        env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )
+# EMOD release        env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )
         eradicationSrcFiles.extend( malariaSrcFiles )
         eradicationSrcFiles.extend( hivSrcFiles )
         eradicationSrcFiles.extend( tbSrcFiles )
-#        eradicationSrcFiles.extend( tbhivSrcFiles )
-#        eradicationSrcFiles.extend( polioSrcFiles )
+# EMOD release        eradicationSrcFiles.extend( tbhivSrcFiles )
+# EMOD release        eradicationSrcFiles.extend( polioSrcFiles )
         eradicationSrcFiles.extend( pyDemoSrcFiles )
 
         def extract_sources(project_file):
@@ -499,8 +496,13 @@ else:
         print(source_files)
         eradicationSrcFiles = source_files
 
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # !!! These linker flags are here so that they are not included with the DLLs.  !!!
+    # !!! These are only for the EXE.                                               !!!
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     erad_env = env.Clone()
     if os.sys.platform == 'win32':
+        erad_env.Append( LINKFLAGS=[ "/STACK:\"100000000\"\",100000000\"" ] )
         erad_env.Append( LINKFLAGS=[ "/DELAYLOAD:\"python27.dll\""] )
         erad_env.Append( LIBS=["delayimp.lib"] )
 
@@ -525,7 +527,7 @@ else:
                            'ControllerFactory.h',
                            'IController.h',
                            'Common.h',
-#                           'PolioDefs.h',
+                           'PolioDefs.h',
                            'KernelTypes.h',
                            'Climate.h',
                            'ClimateByData.h',

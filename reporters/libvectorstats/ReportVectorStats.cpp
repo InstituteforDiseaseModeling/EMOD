@@ -101,10 +101,6 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         // --- so it needs to start with a refcount of 1.
         // ------------------------------------------------------------------------------------------------
         AddRef();
-
-        species_list.push_back( "arabiensis" );
-        species_list.push_back( "funestus" );
-        species_list.push_back( "gambiae" );
     }
 
     ReportVectorStats::~ReportVectorStats()
@@ -113,8 +109,17 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
 
     bool ReportVectorStats::Configure( const Configuration * inputJson )
     {
-
-        bool ret = BaseTextReportEvents::Configure( inputJson );
+        if( inputJson->Exist( "Species_List" ) )
+        {
+            initConfigTypeMap( "Species_List", &species_list, "The species to include information on." );
+        }
+        else
+        {
+            species_list.push_back( "arabiensis" );
+            species_list.push_back( "funestus" );
+            species_list.push_back( "gambiae" );
+        }
+        bool ret = JsonConfigurable::Configure( inputJson );
 
 
         // Manually push required events into the eventTriggerList

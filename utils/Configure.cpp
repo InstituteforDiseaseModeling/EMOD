@@ -15,6 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IdmString.h"
 #include "Log.h"
 #include "Debug.h"
+#include "Properties.h"
 
 static const char * _module = "JsonConfigurable";
 
@@ -334,8 +335,6 @@ namespace Kernel
 
     /// END WaningConfig
 
-    std::map< std::string, IJsonConfigurable* > IJsonConfigurable::generic_container;
-
     namespace jsonConfigurable
     {
         ConstrainedString::ConstrainedString( std::string &init_str )
@@ -402,6 +401,49 @@ namespace Kernel
         }
     }
 
+    JsonConfigurable::JsonConfigurable()
+    : IConfigurable()
+    , m_pData( nullptr )
+    , jsonSchemaBase()
+    {
+        // -----------------------------------------------------------------------
+        // --- We don't want to create the ConfigData in the constructor because
+        // --- some subclasses are copied a lot and this causes this memory to be
+        // --- created a lot when it is not needed.
+        // -----------------------------------------------------------------------
+    }
+
+    JsonConfigurable::~JsonConfigurable()
+    {
+        delete m_pData;
+        m_pData = nullptr;
+    }
+
+    JsonConfigurable::ConfigData* JsonConfigurable::GetConfigData()
+    {
+        // ---------------------------------------------------------------------------------------
+        // --- We create the memory in this method for multiple reasons.
+        // --- 1) We only create the memory when it is needed.  As stated above, this saves memory
+        // --- objects are copied and don't need this memory at all.
+        // --- 2) Since most objects call the set of initConfig() methods and then call Configure()
+        // --- to initialize their variables, we want to delete this memory at the end of Configure().
+        // --- However, there are some objects that call Configure() multiple times (call once to get
+        // --- some of the parameters and call certain initConfigs() based on those parameters, call
+        // --- a second time to initialize these new parameters).  This method allows us to create
+        // --- the memory again if it is needed.
+        // ---------------------------------------------------------------------------------------
+        if( m_pData == nullptr )
+        {
+            m_pData = new ConfigData();
+        }
+        return m_pData;
+    }
+
+    json::Object& JsonConfigurable::GetSchemaBase()
+    {
+        return jsonSchemaBase;
+    }
+
     void
     JsonConfigurable::initConfigTypeMap(
         const char* paramName,
@@ -412,7 +454,7 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F("initConfigTypeMap<bool>: %s\n", paramName);
-        boolConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->boolConfigTypeMap[ paramName ] = pVariable;
         json::Object newIntSchema;
         /* Use this when boolean configuration parameters are actually 'true'/'false'.
         newIntSchema["default"] = json::Boolean(defaultvalue); */
@@ -436,7 +478,7 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "initConfigTypeMap<int>: %s\n", paramName);
-        intConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->intConfigTypeMap[ paramName ] = pVariable;
         json::Object newIntSchema;
         newIntSchema["min"] = json::Number(min);
         newIntSchema["max"] = json::Number(max);
@@ -461,7 +503,7 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "initConfigTypeMap<float>: %s\n", paramName);
-        floatConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->floatConfigTypeMap[ paramName ] = pVariable;
         json::Object newFloatSchema;
             newFloatSchema["min"] = json::Number(min);
         newFloatSchema["max"] = json::Number(max);
@@ -485,7 +527,7 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "initConfigTypeMap<double>: %s\n", paramName);
-        doubleConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->doubleConfigTypeMap[ paramName ] = pVariable;
         json::Object newDoubleSchema;
         if ( _dryrun )
         {
@@ -509,7 +551,7 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "initConfigTypeMap<string>: %s\n", paramName);
-        stringConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->stringConfigTypeMap[ paramName ] = pVariable;
         json::Object newStringSchema;
         newStringSchema["default"] = json::String(default_str);
         if ( _dryrun )
@@ -531,7 +573,7 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "initConfigTypeMap<ConstrainedString>: %s\n", paramName);
-        conStringConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->conStringConfigTypeMap[ paramName ] = pVariable;
         json::Object newConStringSchema;
         newConStringSchema["default"] = json::String(default_str); // would be nice if this always in the constraint list!
         if ( _dryrun )
@@ -555,7 +597,7 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "initConfigTypeMap<set<string>>: %s\n", paramName);
-        stringSetConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->stringSetConfigTypeMap[ paramName ] = pVariable;
         json::Object root;
         json::QuickBuilder newStringSetSchema( root );
         newStringSetSchema["default"] = json::Array();
@@ -597,8 +639,8 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "initConfigTypeMap<vector<string>>: %s\n", paramName);
-        vectorStringConfigTypeMap[ paramName ] = pVariable;
-        vectorStringConstraintsTypeMap[ paramName ] = &constraint_variable;
+        GetConfigData()->vectorStringConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->vectorStringConstraintsTypeMap[ paramName ] = &constraint_variable;
         json::Object newVectorStringSchema;
         if ( _dryrun )
         {
@@ -625,8 +667,8 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "initConfigTypeMap<vector<vector<string>>>: %s\n", paramName);
-        vector2dStringConfigTypeMap[ paramName ] = pVariable;
-        vector2dStringConstraintsTypeMap[ paramName ] = &constraint_variable;
+        GetConfigData()->vector2dStringConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->vector2dStringConstraintsTypeMap[ paramName ] = &constraint_variable;
         json::Object newVectorStringSchema;
         newVectorStringSchema["description"] = json::String(description);
         newVectorStringSchema["type"] = json::String("Vector 2d String");
@@ -648,7 +690,7 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "initConfigTypeMap<vector<float>>: %s\n", paramName);
-        vectorFloatConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->vectorFloatConfigTypeMap[ paramName ] = pVariable;
         json::Object newVectorFloatSchema;
         if ( _dryrun )
         {
@@ -672,7 +714,7 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "initConfigTypeMap<vector<int>>: %s\n", paramName);
-        vectorIntConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->vectorIntConfigTypeMap[ paramName ] = pVariable;
         json::Object newVectorIntSchema;
         if ( _dryrun )
         {
@@ -696,7 +738,7 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "initConfigTypeMap<vector,vector<float>>>: %s\n", paramName);
-        vector2dFloatConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->vector2dFloatConfigTypeMap[ paramName ] = pVariable;
         json::Object newVector2dFloatSchema;
         if ( _dryrun )
         {
@@ -720,7 +762,7 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "initConfigTypeMap<vector,vector<int>>>: %s\n", paramName);
-        vector2dIntConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->vector2dIntConfigTypeMap[ paramName ] = pVariable;
         json::Object newVector2dIntSchema;
         if ( _dryrun )
         {
@@ -745,7 +787,7 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "initConfigTypeMap<pwcMap>: %s\n", paramName);
-        ffMapConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->ffMapConfigTypeMap[ paramName ] = pVariable;
         json::Object newNestedSchema;
         if ( _dryrun )
         {
@@ -764,7 +806,7 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "initConfigTypeMap<pwcMap>: %s\n", paramName);
-        ffMapConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->ffMapConfigTypeMap[ paramName ] = pVariable;
         json::Object newNestedSchema;
         if ( _dryrun )
         {
@@ -783,7 +825,7 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "initConfigTypeMap<pwcMap>: %s\n", paramName);
-        sfMapConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->sfMapConfigTypeMap[ paramName ] = pVariable;
         json::Object newNestedSchema;
         if ( _dryrun )
         {
@@ -803,7 +845,7 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "initConfigTypeMap<RangedFloat>: %s\n", paramName);
-        rangedFloatConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->rangedFloatConfigTypeMap[ paramName ] = pVariable;
         json::Object newFloatSchema;
         newFloatSchema["min"] = json::Number( pVariable->getMin() );
         newFloatSchema["max"] = json::Number( pVariable->getMax() );
@@ -843,7 +885,7 @@ namespace Kernel
     )
     {
         LOG_DEBUG_F( "initConfigTypeMap<NaturalNumber>: %s\n", paramName);
-        naturalNumberConfigTypeMap[ paramName ] = pVariable;
+        GetConfigData()->naturalNumberConfigTypeMap[ paramName ] = pVariable;
         json::Object newNNSchema;
         newNNSchema["min"] = json::Number( 0 );
         newNNSchema["max"] = json::Number( max );
@@ -885,7 +927,7 @@ namespace Kernel
         // --- Put the schema for the special type into map first
         // --- so that its definition appears before it is used.
         // ------------------------------------------------------
-        jcTypeMap[ paramName ] = pVariable;
+        GetConfigData()->jcTypeMap[ paramName ] = pVariable;
 
         if ( _dryrun )
         {
@@ -903,6 +945,42 @@ namespace Kernel
         }
     }
 
+    void JsonConfigurable::initConfigComplexType(
+        const char* paramName,
+        IComplexJsonConfigurable * pVariable,
+        const char* description,
+        const char* condition_key, 
+        const char* condition_value
+    )
+    {
+        if( JsonConfigurable::_dryrun )
+        {
+            json::QuickBuilder custom_schema = pVariable->GetSchema();
+
+            // going to get something back like : {
+            //  "type_name" : "idmType:VectorAlleleEnumPair",
+            //  "type_schema" : {
+            //      "first" : ...,
+            //      "second" : ...
+            //      }
+            //  }
+            std::string custom_type_label = (std::string) custom_schema[ _typename_label() ].As<json::String>();
+            json::String custom_type_label_as_json_string = json::String( custom_type_label );
+            jsonSchemaBase[ custom_type_label ] = custom_schema[ _typeschema_label() ];
+            json::Object newComplexTypeSchemaEntry;
+            newComplexTypeSchemaEntry["description"] = json::String( description );
+            newComplexTypeSchemaEntry["type"] = json::String( custom_type_label_as_json_string );
+            if( condition_key && condition_value )
+            {
+                json::Object condition;
+                condition[ condition_key ] = json::String( condition_value );
+                newComplexTypeSchemaEntry["depends-on"] = condition;
+            }
+            jsonSchemaBase[ paramName ] = newComplexTypeSchemaEntry;
+        }
+        GetConfigData()->complexTypeMap[ paramName ] = pVariable;
+    }
+
     void
     JsonConfigurable::handleMissingParam( const std::string& key )
     {
@@ -913,6 +991,46 @@ namespace Kernel
         else
         {
             throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, "N/A", key.c_str() );
+        }
+    }
+
+    void
+    JsonConfigurable::initConfigTypeMap(
+        const char* paramName,
+        IPKey * pVariable,
+        const char * description
+    )
+    {
+        LOG_DEBUG_F( "initConfigTypeMap<IPKey>: %s\n", paramName);
+        json::Object newIPKeySchema;
+        newIPKeySchema["description"] = json::String(description);
+        newIPKeySchema["type"] = json::String("IPKey");
+        GetConfigData()->ipKeyTypeMap[ paramName ] = pVariable;
+        jsonSchemaBase[paramName] = newIPKeySchema;
+
+        if( pVariable->GetParameterName().empty() )
+        {
+            pVariable->SetParameterName( paramName );
+        }
+    }
+
+    void
+    JsonConfigurable::initConfigTypeMap(
+        const char* paramName,
+        IPKeyValue * pVariable,
+        const char * description
+    )
+    {
+        LOG_DEBUG_F( "initConfigTypeMap<IPKey>: %s\n", paramName);
+        json::Object newIPKeyValueSchema;
+        newIPKeyValueSchema["description"] = json::String(description);
+        newIPKeyValueSchema["type"] = json::String("IPKeyValue");
+        GetConfigData()->ipKeyValueTypeMap[ paramName ] = pVariable;
+        jsonSchemaBase[paramName] = newIPKeyValueSchema;
+
+        if( pVariable->GetParameterName().empty() )
+        {
+            pVariable->SetParameterName( paramName );
         }
     }
 
@@ -945,7 +1063,7 @@ namespace Kernel
         // until we figure that out, go the other way
 
         // ---------------------------------- BOOL ------------------------------------
-        for (auto& entry : boolConfigTypeMap)
+        for (auto& entry : GetConfigData()->boolConfigTypeMap)
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
@@ -980,7 +1098,7 @@ namespace Kernel
         }
 
         // ---------------------------------- INT -------------------------------------
-        for (auto& entry : intConfigTypeMap)
+        for (auto& entry : GetConfigData()->intConfigTypeMap)
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
@@ -1028,7 +1146,7 @@ namespace Kernel
         }
 
         // ---------------------------------- FLOAT ------------------------------------
-        for (auto& entry : floatConfigTypeMap)
+        for (auto& entry : GetConfigData()->floatConfigTypeMap)
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
@@ -1067,7 +1185,7 @@ namespace Kernel
         }
 
         // ---------------------------------- DOUBLE ------------------------------------
-        for (auto& entry : doubleConfigTypeMap)
+        for (auto& entry : GetConfigData()->doubleConfigTypeMap)
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
@@ -1104,7 +1222,7 @@ namespace Kernel
         }
 
         // ---------------------------------- RANGEDFLOAT ------------------------------------
-        for (auto& entry : rangedFloatConfigTypeMap)
+        for (auto& entry : GetConfigData()->rangedFloatConfigTypeMap)
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
@@ -1144,7 +1262,7 @@ namespace Kernel
         }
 
         // ---------------------------------- NATURALNUMBER ------------------------------------
-        for (auto& entry : naturalNumberConfigTypeMap)
+        for (auto& entry : GetConfigData()->naturalNumberConfigTypeMap)
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
@@ -1183,7 +1301,7 @@ namespace Kernel
         }
 
         // ---------------------------------- STRING ------------------------------------
-        for (auto& entry : stringConfigTypeMap)
+        for (auto& entry : GetConfigData()->stringConfigTypeMap)
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
@@ -1213,7 +1331,7 @@ namespace Kernel
             }
         }
 
-        for (auto& entry : conStringConfigTypeMap)
+        for (auto& entry : GetConfigData()->conStringConfigTypeMap)
         {
             const std::string& key = entry.first;
             entry.second->parameter_name = key ;
@@ -1244,7 +1362,7 @@ namespace Kernel
         }
 
         // ---------------------------------- SET of STRINGs ------------------------------------
-        for (auto& entry : stringSetConfigTypeMap)
+        for (auto& entry : GetConfigData()->stringSetConfigTypeMap)
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
@@ -1273,7 +1391,7 @@ namespace Kernel
         }
 
         // ---------------------------------- VECTOR of STRINGs ------------------------------------
-        for (auto& entry : vectorStringConfigTypeMap)
+        for (auto& entry : GetConfigData()->vectorStringConfigTypeMap)
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
@@ -1297,7 +1415,7 @@ namespace Kernel
                 handleMissingParam( key );
             }
 
-            auto allowed_values = vectorStringConstraintsTypeMap[ key ];
+            auto allowed_values = GetConfigData()->vectorStringConstraintsTypeMap[ key ];
             for( auto &candidate : *(entry.second) )
             {
                 if( allowed_values->size() > 0 && std::find( allowed_values->begin(), allowed_values->end(), candidate ) == allowed_values->end() )
@@ -1316,7 +1434,7 @@ namespace Kernel
         }
 
         // ---------------------------------- VECTOR VECTOR of STRINGs ------------------------------------
-        for (auto& entry : vector2dStringConfigTypeMap)
+        for (auto& entry : GetConfigData()->vector2dStringConfigTypeMap)
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
@@ -1339,7 +1457,7 @@ namespace Kernel
 
                 handleMissingParam( key );
             }
-            auto allowed_values = vector2dStringConstraintsTypeMap[ key ];
+            auto allowed_values = GetConfigData()->vector2dStringConstraintsTypeMap[ key ];
             for( auto &candidate_vector : *(entry.second) )
             {
                 for( auto &candidate : candidate_vector )
@@ -1361,7 +1479,7 @@ namespace Kernel
         }
 
         //----------------------------------- VECTOR of FLOATs ------------------------------
-        for (auto& entry : vectorFloatConfigTypeMap)
+        for (auto& entry : GetConfigData()->vectorFloatConfigTypeMap)
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
@@ -1384,7 +1502,7 @@ namespace Kernel
         }
 
         //----------------------------------- VECTOR of INTs ------------------------------
-        for (auto& entry : vectorIntConfigTypeMap)
+        for (auto& entry : GetConfigData()->vectorIntConfigTypeMap)
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
@@ -1407,7 +1525,7 @@ namespace Kernel
         }
 
         //----------------------------------- VECTOR VECTOR of FLOATs ------------------------------
-        for (auto& entry : vector2dFloatConfigTypeMap)
+        for (auto& entry : GetConfigData()->vector2dFloatConfigTypeMap)
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
@@ -1433,7 +1551,7 @@ namespace Kernel
         }
 
         //----------------------------------- VECTOR VECTOR of INTs ------------------------------
-        for (auto& entry : vector2dIntConfigTypeMap)
+        for (auto& entry : GetConfigData()->vector2dIntConfigTypeMap)
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
@@ -1459,19 +1577,24 @@ namespace Kernel
         }
 /////////////////// END FIX BOUNDARY
 
-        // Let's see if we can iterate over our template base class generic container!
-        //std::cout << "IJsonConfigurable::generic_container.size() = " << IJsonConfigurable::generic_container.size() << std::endl;
-        for( auto iter = IJsonConfigurable::generic_container.begin();
-             IJsonConfigurable::generic_container.size() > 0;
-             )
+        // ---------------------------------- COMPLEX MAP ------------------------------------
+        for (auto& entry : GetConfigData()->complexTypeMap)
         {
-            auto temp_cont = *iter;
-            IJsonConfigurable::generic_container.erase( iter++ );
-            temp_cont.second->Configure( inputJson );
+            const auto & key = entry.first;
+            IComplexJsonConfigurable * pJc = entry.second;
+
+            if( inputJson->Exist( key ) )
+            {
+                pJc->ConfigureFromJsonAndKey( inputJson, key );
+            }
+            else if( !_useDefaults )
+            {
+                handleMissingParam( key );
+            }
         }
 
         // ---------------------------------- FLOAT-FLOAT MAP ------------------------------------
-        for (auto& entry : ffMapConfigTypeMap)
+        for (auto& entry : GetConfigData()->ffMapConfigTypeMap)
         {
             // NOTE that this could be used for general float to float, but right now hard-coding year-as-int to float
             const auto & key = entry.first;
@@ -1490,7 +1613,7 @@ namespace Kernel
         }
 
         // ---------------------------------- STRING-FLOAT MAP ------------------------------------
-        for (auto& entry : sfMapConfigTypeMap)
+        for (auto& entry : GetConfigData()->sfMapConfigTypeMap)
         {
             // NOTE that this could be used for general float to float, but right now hard-coding year-as-int to float
             const auto & key = entry.first;
@@ -1508,7 +1631,7 @@ namespace Kernel
         }
 
         // ---------------------------------- JsonConfigurable MAP ------------------------------------
-        for (auto& entry : jcTypeMap)
+        for (auto& entry : GetConfigData()->jcTypeMap)
         {
             const auto & key = entry.first;
             JsonConfigurable * pJc = entry.second;
@@ -1528,13 +1651,57 @@ namespace Kernel
             }
         }
 
+
+        // ---------------------------------- IPKey ------------------------------------
+        for (auto& entry : GetConfigData()->ipKeyTypeMap)
+        {
+            const std::string& param_key = entry.first;
+            json::QuickInterpreter schema = jsonSchemaBase[param_key];
+            if ( !inputJson->Exist(param_key) && _useDefaults )
+            {
+                LOG_INFO_F( "Using the default value ( \"%s\" : \"\" ) for unspecified parameter.\n", param_key.c_str() );
+                if( _track_missing )
+                {
+                    missing_parameters_set.insert(param_key);
+                }
+            }
+            else
+            {
+                *(entry.second) = (std::string) GET_CONFIG_STRING( inputJson, (entry.first).c_str() );
+            }
+        }
+
+        // ---------------------------------- IPKeyValue ------------------------------------
+        for (auto& entry : GetConfigData()->ipKeyValueTypeMap)
+        {
+            const std::string& param_key = entry.first;
+            json::QuickInterpreter schema = jsonSchemaBase[param_key];
+            IPKeyValue val ;
+            if ( !inputJson->Exist(param_key) && _useDefaults )
+            {
+                LOG_INFO_F( "Using the default value ( \"%s\" : \"\" ) for unspecified parameter.\n", param_key.c_str() );
+                if( _track_missing )
+                {
+                    missing_parameters_set.insert(param_key);
+                }
+            }
+            else
+            {
+                val = (std::string) GET_CONFIG_STRING( inputJson, (entry.first).c_str() );
+            }
+            *(entry.second) = val;
+        }
+
+        delete m_pData;
+        m_pData = nullptr;
+
         return true;
     }
 
-    /*QuickBuilder JsonConfigurable::GetSchema()
+    QuickBuilder JsonConfigurable::GetSchema()
     {
         return QuickBuilder( jsonSchemaBase );
-    }*/
+    }
 
     std::set< std::string > JsonConfigurable::missing_parameters_set;
 

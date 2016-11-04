@@ -28,13 +28,12 @@ namespace Kernel
         friend class AntiTBPropDepDrug;
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
     public:
+        static TBDrugTypeParameters* CreateTBDrugTypeParameters( const Configuration * inputJson, const std::string& tb_drug_name );
+
         TBDrugTypeParameters( const std::string& tb_drug_name );
-        static TBDrugTypeParameters* CreateTBDrugTypeParameters( const std::string& tb_drug_name );
         virtual ~TBDrugTypeParameters();
         bool Configure( const ::Configuration *json );
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
-
-
 
     protected:
         float TB_drug_inactivation_rate;

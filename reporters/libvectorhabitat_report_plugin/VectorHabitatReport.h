@@ -41,6 +41,7 @@ protected:
     ChannelDataMap::channel_data_t egg_crowding_factor;
     ChannelDataMap::channel_data_t local_larval_mortality;
     ChannelDataMap::channel_data_t artificial_larval_mortality;
+    ChannelDataMap::channel_data_t rainfall_larval_mortality;
     ChannelDataMap::channel_data_t local_larval_growth_mod;
 };
 

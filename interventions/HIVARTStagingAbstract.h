@@ -10,6 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #pragma once
 
 #include "HIVSimpleDiagnostic.h"
+#include "Properties.h"
 
 namespace Kernel
 {
@@ -28,7 +29,6 @@ namespace Kernel
 
         // IDistributingDistributableIntervention
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
-        virtual bool Distribute( IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO );
 
     protected:
         virtual bool positiveTestResult();
@@ -45,8 +45,7 @@ namespace Kernel
 
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
-        std::string ip_tb_key ;
-        std::string ip_tb_value_expected ;
+        IPKeyValue ip_tb_value_expected ;
 
         static void serialize( IArchive& ar, HIVARTStagingAbstract* obj );
 #pragma warning( pop )

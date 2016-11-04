@@ -18,7 +18,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Contexts.h"
 #include "IdmDateTime.h"
 #include "IIndividualHuman.h"
-#include "IInfection.h"
 #include "ISimulation.h"
 #include "INodeContext.h"
 #include "NodeRankMap.h"
@@ -100,7 +99,7 @@ namespace Kernel
         virtual INodeInfo* CreateNodeInfo() override;
         virtual INodeInfo* CreateNodeInfo( int rank, INodeContext* pNC ) override;
 
-        virtual void Initialize(const ::Configuration *config);
+        virtual void Initialize(const ::Configuration *config) override;
 
     protected:
 
@@ -124,7 +123,7 @@ namespace Kernel
 
         // Node initialization
         virtual void LoadInterventions( const char* campaignfilename );
-        int  populateFromDemographics(const char* campaign_filename, const char* loadbalance_filename); // creates nodes from demographics input file data
+        virtual int  populateFromDemographics(const char* campaign_filename, const char* loadbalance_filename); // creates nodes from demographics input file data
         virtual void addNewNodeFromDemographics(suids::suid node_suid, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory); // For derived Simulation classes to add correct node type
         void addNode_internal( INodeContext *node, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory); // Helper to add Nodes
         int  getInitialRankFromNodeId( ExternalNodeId_t node_id ); // Need in MPI implementation

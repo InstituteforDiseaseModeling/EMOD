@@ -94,6 +94,11 @@ public:
       return array[index];
    }
 
+   QuickBuilder& operator = (const QuickBuilder& builder) {
+       m_Element = builder.m_Element;
+       return *this;
+   }
+
    QuickBuilder& operator = (const Element& element) {
       m_Element = element;
       return *this;

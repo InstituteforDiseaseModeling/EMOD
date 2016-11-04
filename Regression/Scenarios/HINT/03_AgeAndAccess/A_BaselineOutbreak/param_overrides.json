@@ -40,6 +40,7 @@
             "Enable_Demographics_Reporting": 0
         },
         "PRIMARY": {
+            "logLevel_JsonConfigurable" : "WARNING",
             "Config_Name": "HINT_AgeAndAccess_BaselineOutbreak",
             "Geography": "SamplesInput",
             "Run_Number": 2

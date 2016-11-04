@@ -38,12 +38,6 @@ namespace Kernel
 
     IMPL_QUERY_INTERFACE2(StandardInterventionDistributionEventCoordinator, IEventCoordinator, IConfigurable)
 
-    QuickBuilder
-    StandardInterventionDistributionEventCoordinator::GetSchema()
-    {
-        return QuickBuilder( jsonSchemaBase );
-    }
-
     // ctor
     StandardInterventionDistributionEventCoordinator::StandardInterventionDistributionEventCoordinator() 
     : parent(nullptr)
@@ -203,20 +197,25 @@ namespace Kernel
 
         // intervention class names for informative logging
         std::ostringstream intervention_name;
-        intervention_name << std::string( json::QuickInterpreter(intervention_config._json)["class"].As<json::String>() );
+        if( LOG_LEVEL( INFO ) )
+        {
+            intervention_name << std::string( json::QuickInterpreter( intervention_config._json )[ "class" ].As<json::String>() );
+
+#ifdef WIN32
+            // DMB This method was crashing in Linux trying to get the class name out of Positive_Diagnosis_Config.  Not sure why.
+            // including deeper information for "distributing" interventions (e.g. calendars)
+            formatInterventionClassNames( intervention_name, &json::QuickInterpreter( intervention_config._json ) );
+#endif
+        }
 
         auto qi_as_config = Configuration::CopyFromElement( (intervention_config._json) );
         _di = InterventionFactory::getInstance()->CreateIntervention(qi_as_config);
-
-        // including deeper information for "distributing" interventions (e.g. calendars)
-        formatInterventionClassNames( intervention_name, &json::QuickInterpreter(intervention_config._json) );
 
         // Only visit individuals if this is NOT an NTI. Check...
         // Check to see if intervention is an INodeDistributable...
         INodeDistributableIntervention *ndi = InterventionFactory::getInstance()->CreateNDIIntervention(qi_as_config);
         INodeDistributableIntervention *ndi2 = nullptr;
 
-        //LOG_DEBUG_F("[UpdateNodes] limitPerNode = %d\n", limitPerNode);
         LOG_DEBUG_F("[UpdateNodes] visiting %d nodes per NodeSet\n", cached_nodes.size());
         for (auto event_context : cached_nodes)
         {
@@ -239,16 +238,19 @@ namespace Kernel
                 // For now, distribute evenly across nodes. 
                 int totalIndivGivenIntervention = event_context->VisitIndividuals( this, limitPerNode );
 
-                // Create log message 
-                std::stringstream ss;
-                ss << "UpdateNodes() gave out " << totalIndivGivenIntervention << " '" << intervention_name.str().c_str() << "' interventions ";
-                std::string restriction_str = demographic_restrictions.GetPropertyRestrictionsAsString();
-                if( !restriction_str.empty() )
+                if( LOG_LEVEL( INFO ) )
                 {
-                    ss << " with property restriction(s) " << restriction_str << " " ;
+                    // Create log message 
+                    std::stringstream ss;
+                    ss << "UpdateNodes() gave out " << totalIndivGivenIntervention << " '" << intervention_name.str().c_str() << "' interventions ";
+                    std::string restriction_str = demographic_restrictions.GetPropertyRestrictionsAsString();
+                    if( !restriction_str.empty() )
+                    {
+                        ss << " with property restriction(s) " << restriction_str << " " ;
+                    }
+                    ss << "at node " << event_context->GetExternalId() << "\n" ;
+                    LOG_INFO( ss.str().c_str() );
                 }
-                ss << "at node " << event_context->GetId().data << "\n" ;
-                LOG_INFO( ss.str().c_str() );
             }
         }
         delete qi_as_config;

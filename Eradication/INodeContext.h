@@ -111,12 +111,7 @@ namespace Kernel
 
         // for interventions
         virtual INodeEventContext* GetEventContext() = 0;
-        virtual const tPropertiesDistrib& GetIndividualPropertyDistributions() const = 0;
-        virtual void checkValidIPValue( const std::string& key, const std::string& to_value ) = 0;
         virtual void AddEventsFromOtherNodes( const std::vector<std::string>& rEventNameList ) = 0;
-
-        //Verify that the user entered in set of property key/value pairs which are included in the demographics file
-        virtual void VerifyPropertyDefined( const std::string& rKey, const std::string& rVal ) const = 0;
 
         virtual bool IsEveryoneHome() const = 0;
         virtual void SetWaitingForFamilyTrip( suids::suid migrationDestination, 
@@ -126,6 +121,7 @@ namespace Kernel
                                               bool isDestinationNewHome ) = 0;
 
         virtual float GetBasePopulationScaleFactor() const = 0;
+        virtual ProbabilityNumber GetProbMaternalTransmission() const = 0;
     };
 }
 

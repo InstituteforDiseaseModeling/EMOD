@@ -17,6 +17,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "TBContexts.h"
 #include "Debug.h"                        // for release-assert
 #include "SimulationConfig.h"
+#include "TBParameters.h"
+#include "TBDrugTypeParameters.h" //for TBDrugTypes
 
 static const char* _module = "AntiTBPropDepDrug";
 
@@ -70,7 +72,7 @@ namespace Kernel
     json::QuickBuilder
     DrugTypeByProperty::GetSchema()
     {
-        json::QuickBuilder schema( jsonSchemaBase );
+        json::QuickBuilder schema( GetSchemaBase() );
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
         schema[ tn ] = json::String( "idmType:DrugTypeByProperty" );
@@ -116,7 +118,7 @@ namespace Kernel
         
         tProperties* pProp = ivc->GetParent()->GetEventContext()->GetProperties();
 
-        auto tbdtMap = GET_CONFIGURABLE(SimulationConfig)->TBDrugMap;
+        auto tbdtMap = GET_CONFIGURABLE(SimulationConfig)->tb_params->TBDrugMap;
         for (auto& pair : (*pProp))
         {
             const std::string& propkey = pair.first;

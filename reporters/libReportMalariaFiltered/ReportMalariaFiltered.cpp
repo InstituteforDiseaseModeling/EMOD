@@ -124,6 +124,21 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         return ret;
     }
 
+    void ReportMalariaFiltered::Initialize( unsigned int nrmSize )
+    {
+        ReportMalaria::Initialize( nrmSize );
+
+        // ----------------------------------------------------------------------------------
+        // --- We only want to normalize on the number of nodes included in the report.
+        // --- If m_NodesToInclude.size() == 0, then we are doing all nodes in the simulation
+        // ----------------------------------------------------------------------------------
+        if( m_NodesToInclude.size() > 0 )
+        {
+            _nrmSize = m_NodesToInclude.size();
+        }
+        release_assert( _nrmSize );
+    }
+
     void ReportMalariaFiltered::UpdateEventRegistration( float currentTime, 
                                                          float dt, 
                                                          std::vector<INodeEventContext*>& rNodeEventContextList )

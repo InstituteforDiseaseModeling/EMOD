@@ -14,6 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "NodeVectorEventContext.h" // for INodeVectorInterventionEffectsApply methods
 #include "SimulationConfig.h"
+#include "VectorParameters.h"
 
 static const char * _module = "VectorControlNodeTargeted";
 
@@ -47,30 +48,39 @@ namespace Kernel
     }
 
     SimpleVectorControlNode::SimpleVectorControlNode()
-        : killing_effect( nullptr )
-        , blocking_effect( nullptr )
-        , habitat_target(VectorHabitatType::ALL_HABITATS) 
-        , invic(NULL)
+    : BaseNodeIntervention()
+    , killing_effect( nullptr )
+    , blocking_effect( nullptr )
+    , habitat_target(VectorHabitatType::ALL_HABITATS) 
+    , invic( nullptr )
     {
         initSimTypes( 2, "VECTOR_SIM", "MALARIA_SIM" );
     }
 
     SimpleVectorControlNode::SimpleVectorControlNode( const SimpleVectorControlNode& master )
     : BaseNodeIntervention( master )
+    , killing_effect( nullptr )
+    , blocking_effect( nullptr )
+    , habitat_target( VectorHabitatType::ALL_HABITATS )
+    , invic( nullptr )
     {
-        killing_config  = master.killing_config;
-        blocking_config = master.blocking_config;
+        if( master.blocking_effect != nullptr )
+        {
+            blocking_config = master.blocking_config;
+            auto tmp_blocking = Configuration::CopyFromElement( blocking_config._json );
+            blocking_effect = WaningEffectFactory::CreateInstance( tmp_blocking );
+            delete tmp_blocking;
+            tmp_blocking = nullptr;
+        }
 
-        auto tmp_killing  = Configuration::CopyFromElement( killing_config._json  );
-        auto tmp_blocking = Configuration::CopyFromElement( blocking_config._json );
-
-        killing_effect  = WaningEffectFactory::CreateInstance( tmp_killing  );
-        blocking_effect = WaningEffectFactory::CreateInstance( tmp_blocking );
-
-        delete tmp_killing;
-        delete tmp_blocking;
-        tmp_killing  = nullptr;
-        tmp_blocking = nullptr;
+        if( master.killing_effect != nullptr )
+        {
+            killing_config = master.killing_config;
+            auto tmp_killing = Configuration::CopyFromElement( killing_config._json );
+            killing_effect = WaningEffectFactory::CreateInstance( tmp_killing );
+            delete tmp_killing;
+            tmp_killing = nullptr;
+        }
     }
 
     SimpleVectorControlNode::~SimpleVectorControlNode()
@@ -330,12 +340,12 @@ namespace Kernel
     {
         if( !JsonConfigurable::_dryrun )
         {
-            VectorSamplingType::Enum vector_sampling_type = GET_CONFIGURABLE(SimulationConfig)->vector_sampling_type;
+            VectorSamplingType::Enum vector_sampling_type = GET_CONFIGURABLE(SimulationConfig)->vector_params->vector_sampling_type;
             if ( vector_sampling_type == VectorSamplingType::VECTOR_COMPARTMENTS_NUMBER || vector_sampling_type == VectorSamplingType::VECTOR_COMPARTMENTS_PERCENT )
             {
                 throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Explicit sugar feeding only implemented in individual-mosquito model, not in cohort model." );
             }
-            if ( GET_CONFIGURABLE(SimulationConfig)->vector_sugar_feeding == VectorSugarFeeding::VECTOR_SUGAR_FEEDING_NONE )
+            if ( GET_CONFIGURABLE(SimulationConfig)->vector_params->vector_sugar_feeding == VectorSugarFeeding::VECTOR_SUGAR_FEEDING_NONE )
             {
                 LOG_WARN("Distributing SugarTrap with vector sugar-feeding frequency set to VECTOR_SUGAR_FEEDING_NONE.\n");
             }
@@ -370,7 +380,7 @@ namespace Kernel
     {
         if( !JsonConfigurable::_dryrun )
         {
-            VectorSamplingType::Enum vector_sampling_type = GET_CONFIGURABLE(SimulationConfig)->vector_sampling_type;
+            VectorSamplingType::Enum vector_sampling_type = GET_CONFIGURABLE(SimulationConfig)->vector_params->vector_sampling_type;
             if (vector_sampling_type == VectorSamplingType::VECTOR_COMPARTMENTS_NUMBER || vector_sampling_type == VectorSamplingType::VECTOR_COMPARTMENTS_PERCENT)
             {
                 throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Explicit oviposition only implemented in individual-mosquito model, not in cohort model." );

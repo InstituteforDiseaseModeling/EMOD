@@ -48,7 +48,7 @@ VectorSpeciesReport::VectorSpeciesReport( const Kernel::jsonConfigurable::tDynam
     }
 
     const char* _axis_labels[]       = { "Vector Species" };
-    const int   _num_bins_per_axis[] = { rVectorSpeciesNames.size() };
+    const int   _num_bins_per_axis[] = { int(rVectorSpeciesNames.size()) };
 
     report_name = _report_name;
 

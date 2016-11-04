@@ -58,6 +58,11 @@ namespace Kernel
     std::vector<float> IndividualHumanSTIConfig::maleToFemaleRelativeInfectivityAges;
     std::vector<float> IndividualHumanSTIConfig::maleToFemaleRelativeInfectivityMultipliers;
 
+    bool IndividualHumanSTIConfig::enable_coital_dilution = true;
+    float IndividualHumanSTIConfig::coital_dilution_2_partners      = 1.0f;
+    float IndividualHumanSTIConfig::coital_dilution_3_partners      = 1.0f;
+    float IndividualHumanSTIConfig::coital_dilution_4_plus_partners = 1.0f;
+
     GET_SCHEMA_STATIC_WRAPPER_IMPL(IndividualHumanSTI,IndividualHumanSTIConfig)
     BEGIN_QUERY_INTERFACE_BODY(IndividualHumanSTIConfig)
     END_QUERY_INTERFACE_BODY(IndividualHumanSTIConfig)
@@ -81,6 +86,11 @@ namespace Kernel
         initConfigTypeMap( "Male_To_Female_Relative_Infectivity_Multipliers", &maleToFemaleRelativeInfectivityMultipliers, STI_Male_To_Female_Relative_Infectivity_Multipliers_DESC_TEXT, 0.0f, 25.0f, 1.0f );
 
         initConfigTypeMap( "Condom_Transmission_Blocking_Probability", &condom_transmission_blocking_probability, STI_Condom_Transmission_Blocking_Probability_DESC_TEXT, 0.0f, 1.0f, 0.9f );
+
+        initConfigTypeMap( "Enable_Coital_Dilution", &enable_coital_dilution, Enable_Coital_Dilution_DESC_TEXT, true );
+        initConfigTypeMap( "Coital_Dilution_Factor_2_Partners", &coital_dilution_2_partners, Coital_Dilution_Factor_2_Partners_DESC_TEXT, FLT_EPSILON, 1.0f, 1.0f );
+        initConfigTypeMap( "Coital_Dilution_Factor_3_Partners", &coital_dilution_3_partners, Coital_Dilution_Factor_3_Partners_DESC_TEXT, FLT_EPSILON, 1.0f, 1.0f);
+        initConfigTypeMap( "Coital_Dilution_Factor_4_Plus_Partners", &coital_dilution_4_plus_partners, Coital_Dilution_Factor_4_Plus_Partners_DESC_TEXT, FLT_EPSILON, 1.0f, 1.0f );
 
         bool ret = JsonConfigurable::Configure( config );
 

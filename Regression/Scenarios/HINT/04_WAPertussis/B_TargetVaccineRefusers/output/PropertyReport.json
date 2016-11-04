@@ -4760,7 +4760,7 @@
                 0
             ]
         },
-        "Disease Deaths:Accessibility:VaccineRefuse,Age_Bin:Age_Bin_Property_From_13_To_-1": {
+        "Disease Deaths:Accessibility:VaccineRefuse,Age_Bin:Age_Bin_Property_From_13_To_125": {
             "Units": "",
             "Data": [
                 0,
@@ -19010,7 +19010,7 @@
                 0
             ]
         },
-        "Disease Deaths:Accessibility:VaccineTake,Age_Bin:Age_Bin_Property_From_13_To_-1": {
+        "Disease Deaths:Accessibility:VaccineTake,Age_Bin:Age_Bin_Property_From_13_To_125": {
             "Units": "",
             "Data": [
                 0,
@@ -33260,7 +33260,7 @@
                 0
             ]
         },
-        "Infected:Accessibility:VaccineRefuse,Age_Bin:Age_Bin_Property_From_13_To_-1": {
+        "Infected:Accessibility:VaccineRefuse,Age_Bin:Age_Bin_Property_From_13_To_125": {
             "Units": "",
             "Data": [
                 0,
@@ -47510,7 +47510,7 @@
                 0
             ]
         },
-        "Infected:Accessibility:VaccineTake,Age_Bin:Age_Bin_Property_From_13_To_-1": {
+        "Infected:Accessibility:VaccineTake,Age_Bin:Age_Bin_Property_From_13_To_125": {
             "Units": "",
             "Data": [
                 0,
@@ -61760,7 +61760,7 @@
                 0
             ]
         },
-        "New Infections:Accessibility:VaccineRefuse,Age_Bin:Age_Bin_Property_From_13_To_-1": {
+        "New Infections:Accessibility:VaccineRefuse,Age_Bin:Age_Bin_Property_From_13_To_125": {
             "Units": "",
             "Data": [
                 0,
@@ -76010,7 +76010,7 @@
                 0
             ]
         },
-        "New Infections:Accessibility:VaccineTake,Age_Bin:Age_Bin_Property_From_13_To_-1": {
+        "New Infections:Accessibility:VaccineTake,Age_Bin:Age_Bin_Property_From_13_To_125": {
             "Units": "",
             "Data": [
                 0,
@@ -90260,7 +90260,7 @@
                 85148.0703125
             ]
         },
-        "Statistical Population:Accessibility:VaccineRefuse,Age_Bin:Age_Bin_Property_From_13_To_-1": {
+        "Statistical Population:Accessibility:VaccineRefuse,Age_Bin:Age_Bin_Property_From_13_To_125": {
             "Units": "",
             "Data": [
                 775660.3125,
@@ -104510,7 +104510,7 @@
                 479849.21875
             ]
         },
-        "Statistical Population:Accessibility:VaccineTake,Age_Bin:Age_Bin_Property_From_13_To_-1": {
+        "Statistical Population:Accessibility:VaccineTake,Age_Bin:Age_Bin_Property_From_13_To_125": {
             "Units": "",
             "Data": [
                 4577221,

@@ -142,11 +142,6 @@ namespace Kernel
 
     IMPLEMENT_FACTORY_REGISTERED(CampaignEvent)
 
-    QuickBuilder CampaignEvent::GetSchema()
-    {
-        return QuickBuilder( jsonSchemaBase );
-    }
-
     IMPL_QUERY_INTERFACE1(CampaignEvent, IConfigurable)
 
     CampaignEvent::CampaignEvent()

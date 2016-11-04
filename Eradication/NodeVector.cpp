@@ -19,6 +19,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorCohortIndividual.h"
 #include "VectorPopulationIndividual.h"
 #include "VectorPopulationAging.h"
+#include "VectorParameters.h"
 #include "Log.h"
 #include "SimulationConfig.h"
 #include "TransmissionGroupsFactory.h"
@@ -51,27 +52,30 @@ namespace Kernel
     TransmissionGroupMembership_t NodeVector::vector_to_human_outdoor;
 
     NodeVector::NodeVector() 
-        : Node()
-        , m_larval_habitats()
+        : m_larval_habitats()
         , m_vectorpopulations()
-        , m_vector_lifecycle_probabilities()
+        , m_vector_lifecycle_probabilities( nullptr )
         , larval_habitat_multiplier()
-        , vector_mortality(true)
-        , mosquito_weight(0)
-        , vector_migration_info(nullptr)
+        , vector_mortality( true )
+        , mosquito_weight( 0 )
+        , vector_migration_info( nullptr )
     {
+        delete event_context_host;
+        NodeVector::setupEventContextHost();    // This is marked as a virtual function, but isn't virtualized here because we're still in the ctor.
     }
 
     NodeVector::NodeVector(ISimulationContext *context, suids::suid _suid) 
         : Node(context, _suid)
         , m_larval_habitats()
         , m_vectorpopulations()
-        , m_vector_lifecycle_probabilities()
+        , m_vector_lifecycle_probabilities( nullptr )
         , larval_habitat_multiplier()
-        , vector_mortality(true)
-        , mosquito_weight(0)
-        , vector_migration_info(nullptr)
+        , vector_mortality( true )
+        , mosquito_weight( 0 )
+        , vector_migration_info( nullptr )
     {
+        delete event_context_host;
+        NodeVector::setupEventContextHost();    // This is marked as a virtual function, but isn't virtualized here because we're still in the ctor.
     }
 
     bool
@@ -79,6 +83,8 @@ namespace Kernel
         const Configuration * config
     )
     {
+        larval_habitat_multiplier.Initialize();
+
         initConfigTypeMap( "Enable_Vector_Mortality", &vector_mortality, Enable_Vector_Mortality_DESC_TEXT, true );
         initConfigTypeMap( "Mosquito_Weight", &mosquito_weight, Mosquito_Weight_DESC_TEXT, 1, 1e4, 1 ); // should this be renamed vector_weight?
 
@@ -86,7 +92,7 @@ namespace Kernel
 
         if( !JsonConfigurable::_dryrun )
         {
-            VectorSamplingType::Enum vector_sampling_type = GET_CONFIGURABLE(SimulationConfig)->vector_sampling_type;
+            VectorSamplingType::Enum vector_sampling_type = GET_CONFIGURABLE(SimulationConfig)->vector_params->vector_sampling_type;
             if (vector_sampling_type == VectorSamplingType::TRACK_ALL_VECTORS && mosquito_weight != 1)
             {
                 LOG_WARN_F("A \"Mosquito_Weight\" parameter (%d != 1) is only valid for the \"SAMPLE_IND_VECTORS\" value of \"Vector_Sampling_Type\".  For \"TRACK_ALL_VECTORS\", all individual mosquitoes will be simulated with weight=1.\n", mosquito_weight);
@@ -100,6 +106,7 @@ namespace Kernel
     void NodeVector::Initialize()
     {
         Node::Initialize();
+
 
         if (ClimateFactory::climate_structure == ClimateStructure::CLIMATE_OFF)
         {
@@ -117,31 +124,7 @@ namespace Kernel
 
         if (demographics["NodeAttributes"].Contains("LarvalHabitatMultiplier"))
         {
-            if( demographics["NodeAttributes"]["LarvalHabitatMultiplier"].IsObject() )
-            {
-                const char** habitat_keys = VectorHabitatType::pairs::get_keys();
-                std::vector<std::string> habitats(habitat_keys,habitat_keys+VectorHabitatType::pairs::count());
-                for (auto habitat_name : habitats) // TODO: JsonObjectDemog::Iterator with Enum checking inside loop?
-                {
-                    if (demographics["NodeAttributes"]["LarvalHabitatMultiplier"].Contains(habitat_name))
-                    {
-                        VectorHabitatType::Enum habitat = VectorHabitatType::Enum(VectorHabitatType::pairs::lookup_value(habitat_name.c_str()));
-                        larval_habitat_multiplier[habitat] = float(demographics["NodeAttributes"]["LarvalHabitatMultiplier"][habitat_name].AsDouble());
-                        LOG_INFO_F("Node ID=%d with LarvalHabitatMultiplier(%s)=%0.2f\n", externalId, habitat_name.c_str(), larval_habitat_multiplier[habitat]);
-                    }
-                    else
-                    {
-                        LOG_DEBUG_F("No LarvalHabitatMultiplier specified for %s habitat at Node ID=%d\n",habitat_name.c_str(),externalId);
-                    }
-                }
-            }
-            else
-            {
-                float multiplier = float(demographics["NodeAttributes"]["LarvalHabitatMultiplier"].AsDouble());
-                larval_habitat_multiplier[VectorHabitatType::ALL_HABITATS] = multiplier;
-                LOG_INFO_F("Node ID=%d with LarvalHabitatMultiplier(ALL_HABITATS)=%0.2f\n", externalId, multiplier);
-                LOG_WARN("DeprecationWarning: Specification of \"LarvalHabitatMultiplier\" as a floating-point value in the \"NodeAttributes\" block will soon be deprecated. Specify as an object with habitat-type keys, e.g. \"LarvalHabitatMultiplier\" : {\"TEMPORARY_RAINFALL\" : 0.3}\n");
-            }
+            larval_habitat_multiplier.Read( demographics["NodeAttributes"]["LarvalHabitatMultiplier"].GetJsonObject(), externalId );
         }
         else
         {
@@ -170,9 +153,14 @@ namespace Kernel
         }
         m_vectorpopulations.clear();
 
-        for (auto habitat : m_larval_habitats)
+        for (auto& entry : m_larval_habitats)
         {
-            delete habitat;
+            LOG_DEBUG_F("%s: Cleaning up habitats for species '%s'.\n", __FUNCTION__, entry.first.c_str() );
+            for (auto& habitat : entry.second)
+            {
+                delete habitat;
+                habitat = nullptr;
+            }
         }
         m_larval_habitats.clear();
 
@@ -208,7 +196,7 @@ namespace Kernel
 
         vector_migration_info = p_mf_vector->CreateMigrationInfoVector( this, rNodeIdSuidMap );
 
-        VectorSamplingType::Enum vector_sampling_type = GET_CONFIGURABLE(SimulationConfig)->vector_sampling_type;
+        VectorSamplingType::Enum vector_sampling_type = GET_CONFIGURABLE(SimulationConfig)->vector_params->vector_sampling_type;
         if( vector_migration_info->IsVectorMigrationFileBased() )
         {
             if( (vector_sampling_type != VectorSamplingType::TRACK_ALL_VECTORS) &&
@@ -256,7 +244,7 @@ namespace Kernel
 
         LOG_DEBUG("groups added.\n");
 
-        VectorSamplingType::Enum vector_sampling_type = GET_CONFIGURABLE(SimulationConfig)->vector_sampling_type;
+        VectorSamplingType::Enum vector_sampling_type = GET_CONFIGURABLE(SimulationConfig)->vector_params->vector_sampling_type;
         if ( (vector_sampling_type == VectorSamplingType::VECTOR_COMPARTMENTS_NUMBER || vector_sampling_type == VectorSamplingType::VECTOR_COMPARTMENTS_PERCENT) &&
               params()->number_basestrains > 1 &&
               params()->number_substrains  > 1 )
@@ -332,13 +320,18 @@ namespace Kernel
 
         // changes in larval capacities.
         // drying of larval habitat, function of temperature and humidity
-        for (auto habitat : m_larval_habitats)
+        for ( auto& entry : m_larval_habitats )
         {
-            release_assert(habitat);
-            habitat->Update( dt, getContextPointer() );
+            LOG_DEBUG_F( "%s: Updating habitats for mosquito species %s.\n", __FUNCTION__, entry.first.c_str() );
+
+            for ( auto habitat : entry.second )
+            {
+                release_assert( habitat );
+                habitat->Update( dt, getContextPointer(), entry.first );
+            }
         }
 
-        transmissionGroups->EndUpdate(1.0f);
+        transmissionGroups->EndUpdate(1.0f); // finish processing human-to-mosquito infectiousness
 
         // don't need to update the vector populations before the first timestep
         if ( dt <= 0 ) 
@@ -352,6 +345,9 @@ namespace Kernel
             population->UpdateVectorPopulation(dt);
             infectionrate += float(population->getInfectivity());
         }
+
+        // do again so that humans bitten this time step get infected
+        transmissionGroups->EndUpdate( 1.0f ); // finish processing mosquito-to-human infectiousness
 
         // Now process the node's emigrating mosquitoes
         processEmigratingVectors();
@@ -434,13 +430,13 @@ namespace Kernel
         }
 
         // Individual mosquito model
-        VectorSamplingType::Enum vector_sampling_type = GET_CONFIGURABLE(SimulationConfig)->vector_sampling_type;
+        VectorSamplingType::Enum vector_sampling_type = GET_CONFIGURABLE(SimulationConfig)->vector_params->vector_sampling_type;
         if (vector_sampling_type == VectorSamplingType::TRACK_ALL_VECTORS || 
             vector_sampling_type == VectorSamplingType::SAMPLE_IND_VECTORS)
         {
             LOG_DEBUG( "Creating VectorPopulationIndividual instance(s).\n" );
 
-            for (auto& vector_species_name : params()->vector_species_names)
+            for (auto& vector_species_name : params()->vector_params->vector_species_names)
             {
                 int32_t population_per_species = DEFAULT_VECTOR_POPULATION_SIZE;
                 if( demographics["NodeAttributes"].Contains( "InitialVectorsPerSpecies" ) )
@@ -463,10 +459,10 @@ namespace Kernel
 
         }
         // Aging cohort model
-        else if (params()->vector_aging)
+        else if (params()->vector_params->vector_aging)
         {
             LOG_DEBUG( "Creating VectorPopulationAging instance(s).\n" );
-            for (auto& vector_species_name : params()->vector_species_names)
+            for (auto& vector_species_name : params()->vector_params->vector_species_names)
             {
                 VectorPopulation *vectorpopulation = VectorPopulationAging::CreatePopulation(getContextPointer(), vector_species_name);
                 release_assert( vectorpopulation );
@@ -477,7 +473,7 @@ namespace Kernel
         else
         {
             LOG_DEBUG( "Creating VectorPopulation (regular) instance(s).\n" );
-            for (auto& vector_species_name : params()->vector_species_names)
+            for (auto& vector_species_name : params()->vector_params->vector_species_names)
             {
                 VectorPopulation *vectorpopulation = VectorPopulation::CreatePopulation(getContextPointer(), vector_species_name);
                 release_assert( vectorpopulation );
@@ -486,7 +482,7 @@ namespace Kernel
         }
     }
 
-    void NodeVector::AddVectors(std::string releasedSpecies, VectorMatingStructure _vector_genetics, unsigned long int releasedNumber)
+    void NodeVector::AddVectors(std::string releasedSpecies, VectorMatingStructure _vector_genetics, uint64_t releasedNumber)
     {
         bool found_existing_vector_population = false;
         for (auto population : m_vectorpopulations)
@@ -558,7 +554,7 @@ namespace Kernel
             vp->Vector_Migration( vector_migration_info, &migrating_vectors );
             while (migrating_vectors.size() > 0)
             {
-                VectorCohort* p_vc = migrating_vectors.front();
+                IVectorCohort* p_vc = migrating_vectors.front();
                 migrating_vectors.pop_front();
 
                 ivsc->PostMigratingVector( this->GetSuid(), p_vc );
@@ -601,7 +597,7 @@ namespace Kernel
 
         // bookkeeping
         VectorCohortList_t migratingvectors;             // to hold vectors
-        VectorCohort *tempentry;                         // to hold vector popped off migrating list
+        IVectorCohort *tempentry;                        // to hold vector popped off migrating list
         std::vector<suids::suid>::iterator itNodeId;     // iterator for "sprinkling" vectors evenly across locally adjacent nodes
 
         if (vectormigrationrate > 0)
@@ -619,8 +615,9 @@ namespace Kernel
                     migratingvectors.pop_front();
 
                     // give vectors to attached communities like a sprinkler / round-robin
-                    tempentry->SetMigrating( *itNodeId, MigrationType::LOCAL_MIGRATION, 0.0, 0.0, false );
-                    ivsc->PostMigratingVector( this->GetSuid(), tempentry);
+                    IMigrate* emigre = tempentry->GetIMigrate();
+                    emigre->SetMigrating( *itNodeId, MigrationType::LOCAL_MIGRATION, 0.0, 0.0, false );
+                    ivsc->PostMigratingVector( this->GetSuid(), tempentry );
 
                     // circular iteration among available nodes
                     if ( ++itNodeId == vectormigCommIDs.end() )
@@ -666,45 +663,40 @@ namespace Kernel
         return m_vector_lifecycle_probabilities;
     }
 
-    VectorHabitat* NodeVector::GetVectorHabitatByType(VectorHabitatType::Enum type)
+    IVectorHabitat* NodeVector::GetVectorHabitatBySpeciesAndType( std::string& species, VectorHabitatType::Enum type, const Configuration* inputJson )
     {
-        VectorHabitatList_t::iterator it = std::find_if( m_larval_habitats.begin(), m_larval_habitats.end(), [type](VectorHabitat* habitat){ return habitat->GetVectorHabitatType() == type; } );
-        if ( it != m_larval_habitats.end() )
+        IVectorHabitat* habitat;
+
+        VectorHabitatList_t& habitats = m_larval_habitats[ species ];
+        VectorHabitatList_t::iterator it = std::find_if( habitats.begin(), habitats.end(), [type](IVectorHabitat* entry){ return entry->GetVectorHabitatType() == type; } );
+        if ( it != habitats.end() )
         { 
-            LOG_DEBUG_F("Found larval habitat with type = %s\n", VectorHabitatType::pairs::lookup_key(type));
-            return *it;
+            LOG_DEBUG_F( "%s: Found larval habitat with type = %s\n", __FUNCTION__, VectorHabitatType::pairs::lookup_key( type ) );
+            habitat = *it;
         }
         else
         {
-            LOG_DEBUG_F("There is no larval habitat yet with type = %s\n", VectorHabitatType::pairs::lookup_key(type));
-            return nullptr;
+            release_assert( inputJson != nullptr );
+
+            LOG_DEBUG_F( "%s: Creating new larval habitat with type %s for species %s.\n", __FUNCTION__, VectorHabitatType::pairs::lookup_key( type ), species.c_str() );
+
+            habitat = VectorHabitat::CreateHabitat( type, inputJson );
+            habitats.push_front( habitat );
         }
+
+        return habitat;
     }
 
-    void NodeVector::AddVectorHabitat(VectorHabitat* habitat)
+    VectorHabitatList_t* NodeVector::GetVectorHabitatsBySpecies( std::string& species )
     {
-        m_larval_habitats.push_front(habitat);
+        // This will create an empty habitat list if necessary, which is okay.
+        return &(m_larval_habitats[ species ]);
     }
 
-    float NodeVector::GetLarvalHabitatMultiplier(VectorHabitatType::Enum type) const
+    float NodeVector::GetLarvalHabitatMultiplier(VectorHabitatType::Enum type, const std::string& species) const
     {
-        return HabitatMultiplierByType(type)*HabitatMultiplierByType(VectorHabitatType::ALL_HABITATS);
-    }
-
-    float NodeVector::HabitatMultiplierByType(VectorHabitatType::Enum type) const
-    {
-        auto it=larval_habitat_multiplier.find(type);
-        if (it==larval_habitat_multiplier.end())
-        {
-            LOG_DEBUG_F("No modifiers for habitat type %s\n",VectorHabitatType::pairs::lookup_key(type));
-            return 1.0f;
-        }
-        else
-        {
-            float scale=it->second;
-            LOG_DEBUG_F("Habitat scale modified by %0.2f for type %s\n",scale,VectorHabitatType::pairs::lookup_key(type));
-            return scale;
-        }
+        return larval_habitat_multiplier.GetMultiplier( type, species ) *
+               larval_habitat_multiplier.GetMultiplier( VectorHabitatType::ALL_HABITATS, species );
     }
 
     void NodeVector::InitializeVectorPopulation(VectorPopulation* vp)
@@ -722,11 +714,6 @@ namespace Kernel
 
         // Add this new vector population to the list
         m_vectorpopulations.push_front(vp);
-    }
-
-    const std::list<VectorHabitat *>& NodeVector::GetHabitats() const
-    {
-        return m_larval_habitats ;
     }
 
     VectorPopulationList_t& NodeVector::GetVectorPopulations()
@@ -749,18 +736,3 @@ namespace Kernel
     }
 } // end namespace Kernel
 
-#if 0
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive & ar, NodeVector& node, const unsigned int  file_version )
-    {
-        // Serialize fields
-        ar & node.m_vectorpopulations;
-        ar & node.m_larval_habitats;
-        ar & node.larval_habitat_multiplier
-
-        // Serialize base class
-        ar & boost::serialization::base_object<Kernel::Node>(node);
-    }
-}
-#endif

@@ -143,6 +143,8 @@ add_option( "Report" , "build report target dll" , 1 , True) #, Report="Spatial"
 # installation options
 add_option( "Install" , "install target dll into given directory" , 1 , True) #, Install="install dir" )
 
+add_option( "TestSugar" , "Build in additional logging for scientific or other validation, might slow performance" , 0, True)
+
 # current default is Release
 Dbg = has_option( "Debug" )
 Rel = has_option( "Release" )
@@ -178,7 +180,7 @@ env = Environment( BUILD_DIR=buildDir,
                    TARGET_ARCH=msarch ,
                    PYSYSPLATFORM=pi,
                    MSVSPROJECTSUFFIX='.vcxproj' ,
-                   MSVC_VERSION='11.0'
+                   MSVC_VERSION='14.0'
                    )
 
 if not(Dbg) and not(Rel):
@@ -213,8 +215,8 @@ if os.sys.platform == 'win32':
                           "#/baseReportLib",
                           "#/utils",
                           "#/libgeneric_static",
-                          "#/C:/boost/boost_1_51_0",
-                          "#/C:/Python27/Include",
+                          os.environ['IDM_BOOST_PATH'],
+                          os.environ['IDM_PYTHON_PATH']+"/include",
                           "#/Dependencies/ComputeClusterPack/Include",
                           "#/cajun/include",
                           "#/rapidjson/include",
@@ -285,12 +287,6 @@ def findVersion( root , choices ):
                 return r + c
     raise RuntimeError("can't find a version of [" + repr(root) + "] choices: " + repr(choices))
 
-
-# platform independend compile and linker setting
-# This has to be added in the static build
-#env.Append( CPPDEFINES=["ENABLE_TB" ] )
-#env.Append( CPPDEFINES=["ENABLE_POLIO" ] )
-
 if os.sys.platform.startswith("linux"):
     linux = True
     static = True
@@ -321,10 +317,15 @@ elif "win32" == os.sys.platform:
 
     env['DIST_ARCHIVE_SUFFIX'] = '.zip'
 
-    env.Append( CPPDEFINES=[ "WIN32" ] )
+    # PSAPI_VERSION relates to process api dll Psapi.dll.
+    env.Append( CPPDEFINES=["_CONSOLE"] )
+
+    env.Append( CPPDEFINES=[ "BOOST_ALL_NO_LIB" ] )
+    env.Append( CPPDEFINES=[ "IDM_EXPORT"] )
+    env.Append( CPPDEFINES=[ "NDEBUG"] )
     env.Append( CPPDEFINES=[ "_UNICODE" ] )
     env.Append( CPPDEFINES=[ "UNICODE" ] )
-    env.Append( CPPDEFINES=[ "BOOST_ALL_NO_LIB" ] )
+    env.Append( CPPDEFINES=[ "WIN32" ] )
 
     # this is for MSVC <= 10.0
     #winSDKHome = findVersion( [ "C:/Program Files/Microsoft SDKs/Windows/", "C:/Program Files (x86)/Microsoft SDKs/Windows/" ] , [ "v7.0A", "v7.0"] )
@@ -335,22 +336,11 @@ elif "win32" == os.sys.platform:
     winSDKHome = "C:/Program Files (x86)/Windows Kits/8.0/"
     env.Append( EXTRACPPPATH=[ winSDKHome + "/Include/um" ] )
     env.Append( EXTRALIBPATH=[ winSDKHome + "Lib/win8/um/x64" ] )
-    env.Append( EXTRALIBPATH=[ "C:/Python27/libs" ] )
-    env.Append( EXTRALIBPATH=[ "#/Dependencies/ComputeClusterPack/Lib/amd64" ] )
 
     print( "Windows SDK Root '" + winSDKHome + "'" )
 
     #print( "Windows MSVC Root '" + winVCHome + "'" )
     #env.Append( EXTRACPPPATH=[ winVCHome + "/Include" ] )
-
-    # /EHsc exception handling style for visual studio
-    # /W3 warning level
-    # /WX abort build on compiler warnings
-    env.Append(CCFLAGS=["/EHsc","/W3"])
-
-    # /bigobj for an object file bigger than 64K
-    # DMB It is in the VS build parameters but it doesn't show up in the Command Line view
-    #env.Append(CCFLAGS=["/bigobj"])
 
     # some warnings we don't like:
     # c4355
@@ -366,38 +356,44 @@ elif "win32" == os.sys.platform:
     # 'conversion' conversion from 'type1' to 'type2', possible loss of data
     #  An integer type is converted to a smaller integer type.
     
-    # PSAPI_VERSION relates to process api dll Psapi.dll.
-    env.Append( CPPDEFINES=["_CONSOLE"] )
-
-    # this would be for pre-compiled headers, could play with it later  
-    #env.Append( CCFLAGS=['/Yu"pch.h"'] )
+    # this would be for pre-compiled headers, could play with it later
+    # DMB - I tried to get this to work, but the conftest doesn't have the header file.
+    #     - I tried moving this append to after we test the compiler but then I ran into
+    #       it needing the stdafx.pch.  Punt.
+    #env.Append( CCFLAGS=['/Yu"stdafx.h"'] )
 
     # docs say don't use /FD from command line (minimal rebuild)
-    # /Gy function level linking (implicit when using /Z7)
-    # /Z7 debug info goes into each individual .obj file -- no .pdb created 
-    # /Zi debug info goes into a PDB file
-    env.Append( CCFLAGS= ["/errorReport:none"] )
-
+    # /Gy         : function level linking (implicit when using /Z7)
+    # /Z7         : debug info goes into each individual .obj file -- no .pdb created 
+    # /Zi         : debug info goes into a PDB file
+    # /MD         : Causes your application to use the multithread, dll version of the run-time library (LIBCMT.lib)
+    # /MT         : use static lib
+    # /O2         : optimize for speed (as opposed to size)
+    # /MP         : build with multiple processes
+    # /Gm-        : No minimal build
+    # /WX-        : Do NOT treat warnings as errors
+    # /Gd         : the default setting, specifies the __cdecl calling convention for all functions
+    # /EHsc       : exception handling style for visual studio
+    # /W3         : warning level
+    # /WX         : abort build on compiler warnings
+    # /bigobj     : for an object file bigger than 64K - DMB It is in the VS build parameters but it doesn't show up in the Command Line view
+    # /fp:precise : Specifies floating-point behavior in a source code file. - DMB - I tried fp:fast and zero improvement
+    # /FS force to use MSPDBSRV.EXE (serializes access to .pdb files which is needed for multi-core builds)
     # Not including debug information for SCONS builds
-    env.Append( CCFLAGS=["/fp:strict", "/GS-", "/Oi", "/Ot", "/Zc:forScope", "/Zc:wchar_t" ])
-
-    env.Append( CCFLAGS=["/DIDM_EXPORT"] )
-    env.Append( LIBS=["python27.lib"] )
-
-    # /MD  : Causes your application to use the multithread, dll version of the run-time library (LIBCMT.lib)
-    # /MT  : use static lib
-    # /O2  : optimize for speed (as opposed to size)
-    # /MP  : build with multiple processes
-    # /Gm- : No minimal build
-    # /WX- : Do NOT treat warnings as errors
-    # /Gd  : the default setting, specifies the __cdecl calling convention for all functions
-    env.Append( CCFLAGS= ["/O2", "/MD", "/MP", "/Gm-", "/WX-", "/Gd" ] )
-    env.Append( CPPDEFINES= ["NDEBUG"] )
+    env.Append( CCFLAGS= [ "/EHsc", "/errorReport:none"] )
+    env.Append( CCFLAGS= [ "/fp:precise" ] )
+    env.Append( CCFLAGS= [ "/Gd", "/Gm-", "/GS", "/Gy" ] )
+    env.Append( CCFLAGS= [ "/MD", "/MP" ] )
+    env.Append( CCFLAGS= [ "/O2", "/Oi", "/Ot" ] )
+    env.Append( CCFLAGS= [ "/W3", "/WX-"] )
+    env.Append( CCFLAGS= [ "/Zc:inline", "/Zc:forScope", "/Zc:wchar_t", "/Zi" ] )
+    env.Append( CCFLAGS= [ "/FS" ] )
 
     # Disable these two for faster generation of codes
     #env.Append( CCFLAGS= ["/GL"] ) # /GL whole program optimization
     #env.Append( LINKFLAGS=" /LTCG " )         # /LTCG link time code generation
     #env.Append( ARFLAGS=" /LTCG " ) # for the Library Manager
+
     # /DEBUG will tell the linker to create a .pdb file
     # which WinDbg and Visual Studio will use to resolve
     # symbols if you want to debug a release-mode image.
@@ -405,6 +401,7 @@ elif "win32" == os.sys.platform:
     # NOTE: /DEBUG and Dbghelp.lib go together with changes in Exception.cpp which adds
     #       the ability to print a stack trace.
     env.Append( LINKFLAGS=" /DEBUG " )
+
     # For MSVC <= 10.0
     #env.Append( LINKFLAGS=[ "/NODEFAULTLIB:LIBCPMT", "/NODEFAULTLIB:LIBCMT", "/MACHINE:X64"] )
         
@@ -414,17 +411,21 @@ elif "win32" == os.sys.platform:
     # /DYNAMICBASE:NO : Don't Use address space layout randomization
     # /SUBSYSTEM:CONSOLE : Win32 character-mode application.
     env.Append( LINKFLAGS=[ "/MACHINE:X64", "/MANIFEST", "/HEAP:\"100000000\"\",100000000\" ", "/OPT:REF", "/OPT:ICF ", "/DYNAMICBASE:NO", "/SUBSYSTEM:CONSOLE"] )
+    env.Append( LINKFLAGS=[ "/ERRORREPORT:NONE", "/NOLOGO", "/TLBID:1" ] )
+    #env.Append( LINKFLAGS=[ "/VERBOSE:Lib" ] )
 
-    # This causes problems with the report DLLs.  Don't have time right now to figure out
-    # how to remove flags from the DLL build.
-    #env.Append( LINKFLAGS=[ "/STACK:\"100000000\"\",100000000\"" ] )
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # !!! See SConscript file for liker flags that are specific to the EXE and not the DLLS !!!
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     winLibString = "Dbghelp.lib psapi.lib ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib"
-
     winLibString += ""
-
     env.Append( LIBS=Split(winLibString) )
 
+    env.Append( EXTRALIBPATH=[ "C:/Python27/libs" ] )
+    env.Append( LIBS=["python27.lib"] )
+
+    env.Append( EXTRALIBPATH=[ "#/Dependencies/ComputeClusterPack/Lib/amd64" ] )
     env.Append( LIBS=["msmpi.lib"] )
 
 else:
@@ -518,6 +519,12 @@ def setEnvAttrs(myenv):
 
     print "DLL=" + str(myenv['AllDlls'])
     print "Install=" + myenv['Install']
+
+    if has_option( "TestSugar" ):
+        print( "TestSugar ON, LOG_VALID enabled." )
+        env.Append( CPPDEFINES= ["ENABLE_LOG_VALID"] )
+    else:
+        print( "TestSugar off, no LOG_VALID." )
 
 # Main starting  point
 env = doConfigure( env )

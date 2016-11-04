@@ -18,6 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "Log.h"
 #include "MalariaEnums.h"
+#include "MalariaParameters.h"
 
 #include "Sigmoid.h"
 #include "SusceptibilityMalaria.h"
@@ -77,7 +78,8 @@ namespace Kernel
         m_temp_duration(0),
         m_max_parasites(0),
         m_inv_microliters_blood(INV_MICROLITERS_BLOOD_ADULT),
-        drugResistanceFlag(0)
+        drugResistanceFlag(0),
+        m_pMDE(nullptr)
     {
     }
 
@@ -98,7 +100,8 @@ namespace Kernel
         m_temp_duration(0),
         m_max_parasites(0),
         m_inv_microliters_blood(INV_MICROLITERS_BLOOD_ADULT),
-        drugResistanceFlag(0)
+        drugResistanceFlag(0),
+        m_pMDE( nullptr )
     {
     }
 
@@ -204,14 +207,14 @@ namespace Kernel
                 break;
 
             case MalariaStrains::FALCIPARUM_RANDOM_STRAIN:
-                m_MSPtype = randgen->i(params()->falciparumMSPVars);
-                m_nonspectype = randgen->i(params()->falciparumNonSpecTypes);
+                m_MSPtype = randgen->i(params()->malaria_params->falciparumMSPVars);
+                m_nonspectype = randgen->i(params()->malaria_params->falciparumNonSpecTypes);
 
                 #pragma loop(hint_parallel(8))
 
                 for (int i = 0; i < CLONAL_PfEMP1_VARIANTS; i++)
                 {
-                    m_IRBCtype[i] = randgen->i(params()->falciparumPfEMP1Vars); 
+                    m_IRBCtype[i] = randgen->i(params()->malaria_params->falciparumPfEMP1Vars); 
                     m_minor_epitope_type[i] = randgen->i(MINOR_EPITOPE_VARS_PER_SET) + MINOR_EPITOPE_VARS_PER_SET * m_nonspectype;
                 }
                 break;
@@ -220,16 +223,16 @@ namespace Kernel
                 // in the future replace this with the specific strain ID
                 tempstrainID = infection_strain->GetGeneticID();
 
-                m_MSPtype = tempstrainID%params()->falciparumMSPVars;
-                m_nonspectype = (tempstrainID/params()->falciparumMSPVars)%params()->falciparumNonSpecTypes;
-                tempStridePosition = tempstrainID%params()->falciparumPfEMP1Vars;
-                tempStrideLength = stridelengths[(tempstrainID/params()->falciparumPfEMP1Vars)%120];// in case it goes over limit of primes
+                m_MSPtype = tempstrainID%params()->malaria_params->falciparumMSPVars;
+                m_nonspectype = (tempstrainID/params()->malaria_params->falciparumMSPVars)%params()->malaria_params->falciparumNonSpecTypes;
+                tempStridePosition = tempstrainID%params()->malaria_params->falciparumPfEMP1Vars;
+                tempStrideLength = stridelengths[(tempstrainID/params()->malaria_params->falciparumPfEMP1Vars)%120];// in case it goes over limit of primes
                #pragma loop(hint_parallel(8))
 
                 for (int i = 0; i < CLONAL_PfEMP1_VARIANTS; i++)
                 {
                     m_IRBCtype[i] = tempStridePosition; 
-                    tempStridePosition = (tempStridePosition + tempStrideLength)% params()->falciparumPfEMP1Vars;
+                    tempStridePosition = (tempStridePosition + tempStrideLength)% params()->malaria_params->falciparumPfEMP1Vars;
                     m_minor_epitope_type[i] = randgen->i(MINOR_EPITOPE_VARS_PER_SET) + MINOR_EPITOPE_VARS_PER_SET * m_nonspectype;
                 }
                 break;
@@ -252,7 +255,7 @@ namespace Kernel
         #pragma loop(hint_parallel(8))
         for (int i = 0; i < CLONAL_PfEMP1_VARIANTS; i++)
         {
-            if ((m_IRBCtype[i] > params()->falciparumPfEMP1Vars) || (m_IRBCtype[i] < 0))
+            if ((m_IRBCtype[i] > params()->malaria_params->falciparumPfEMP1Vars) || (m_IRBCtype[i] < 0))
             {
                 m_IRBCtype[i] = 0;
                 // ERROR: ("Error in IRBCtype!\n");
@@ -488,17 +491,21 @@ namespace Kernel
 
             // Offset basic sigmoid: effect rises as basic sigmoid beginning from a fever of MIN_FEVER_DEGREES_KILLING
             double fever_cytokine_killrate = (immunity->get_fever() > MIN_FEVER_DEGREES_KILLING) ? immunity->get_fever_killing_rate() * Sigmoid::basic_sigmoid(1.0, immunity->get_fever() - MIN_FEVER_DEGREES_KILLING) : 0.0;
-            LOG_VALID_F("fever = %0.9f (%0.2f C)  killrate = %0.9f\n", immunity->get_fever(), immunity->get_fever_celsius(), fever_cytokine_killrate);
+            //LOG_VALID_F("fever = %0.9f (%0.2f C)  killrate = %0.9f\n", immunity->get_fever(), immunity->get_fever_celsius(), fever_cytokine_killrate);
 
             // ability to query for drug effects
             IIndividualHumanContext *patient = GetParent();
             IIndividualHumanInterventionsContext *context = patient->GetInterventionsContext();
-            IMalariaDrugEffects *imde = nullptr;
+
+            if( m_pMDE == nullptr )
+            {
+                context->QueryInterface( GET_IID( IMalariaDrugEffects ), (void **)&m_pMDE );
+            }
 
             double drug_killrate = 0;
-            if (s_OK ==  context->QueryInterface(GET_IID(IMalariaDrugEffects), (void **)&imde))
+            if( m_pMDE != nullptr )
             {
-                drug_killrate = imde->get_drug_IRBC_killrate();
+                drug_killrate = m_pMDE->get_drug_IRBC_killrate();
                 // crude preliminary version of drug resistance
                 if(getDrugResistanceFlag() > 0){drug_killrate = 0;}
             }
@@ -507,7 +514,7 @@ namespace Kernel
             {
                 if ( m_IRBC_count[i] == 0 ) continue; // don't need to estimate killing if there are no IRBC of this variant to kill!
 
-                LOG_VALID_F( "Ab concentration for variant %d: %0.9f (major) %0.9f (minor)\n", i, m_PfEMP1_antibodies[i].major->GetAntibodyConcentration(), m_PfEMP1_antibodies[i].minor->GetAntibodyConcentration() );
+                //LOG_VALID_F( "Ab concentration for variant %d: %0.9f (major) %0.9f (minor)\n", i, m_PfEMP1_antibodies[i].major->GetAntibodyConcentration(), m_PfEMP1_antibodies[i].minor->GetAntibodyConcentration() );
 
                 // total = antibodies (major, minor, maternal) + fever + drug
                 double pkill = EXPCDF(-dt * ( (m_PfEMP1_antibodies[i].major->GetAntibodyConcentration() + InfectionMalariaConfig::non_specific_antigenicity * m_PfEMP1_antibodies[i].minor->GetAntibodyConcentration() + immunity->get_maternal_antibodies() ) * InfectionMalariaConfig::antibody_IRBC_killrate + fever_cytokine_killrate + drug_killrate));
@@ -516,7 +523,7 @@ namespace Kernel
                 // This is fine for large numbers of killed IRBC's, but an issue arises for small numbers
                 // big question, is 1.5 killed IRBC's 1 or 2 killed?
 
-                LOG_VALID_F("pkill = %0.9f\n", pkill);
+                //LOG_VALID_F("pkill = %0.9f\n", pkill);
 
                 double tempval1 = m_IRBC_count[i] * pkill;
                 if ( tempval1 > 0 ) // don't need to smear the killing by a random number if it is going to be zero
@@ -561,7 +568,7 @@ namespace Kernel
             // only update if there are actually IRBCs
             if (m_IRBC_count[i] > 0)
             {
-                LOG_VALID_F("Increasing IRBC count by %lld for variant %d:  ( %d, %d )\n", m_IRBC_count[i], i, m_PfEMP1_antibodies[i].minor->GetAntibodyVariant(), m_PfEMP1_antibodies[i].major->GetAntibodyVariant());
+                //LOG_VALID_F("Increasing IRBC count by %lld for variant %d:  ( %d, %d )\n", m_IRBC_count[i], i, m_PfEMP1_antibodies[i].minor->GetAntibodyVariant(), m_PfEMP1_antibodies[i].major->GetAntibodyVariant());
 
                 // PfEMP-1 major epitopes
                 m_PfEMP1_antibodies[i].major->IncreaseAntigenCount(m_IRBC_count[i]);
@@ -581,7 +588,6 @@ namespace Kernel
         // ability to query for drug effects
         IIndividualHumanContext *patient              = GetParent();
         IIndividualHumanInterventionsContext *context = patient->GetInterventionsContext();
-        IMalariaDrugEffects *imde                     = nullptr;
 
         // check for valid inputs
         if (dt > 0 && immunity)
@@ -594,14 +600,19 @@ namespace Kernel
                 // We leave this variable here at zero incase we change DepositInfectiousnessFromGametocytes()
                 double fever_cytokine_killrate = 0; // 0 = don't kill due to fever
 
+                if( m_pMDE == nullptr )
+                {
+                    context->QueryInterface( GET_IID( IMalariaDrugEffects ), (void **)&m_pMDE );
+                }
+
                 // gametocyte killing drugs
                 double drug_killrate = 0;
-                if (s_OK ==  context->QueryInterface(GET_IID(IMalariaDrugEffects), (void **)&imde))
+                if( m_pMDE != nullptr )
                 {
                     if (i < GametocyteStages::Stage3)
-                        drug_killrate = imde->get_drug_gametocyte02();
+                        drug_killrate = m_pMDE->get_drug_gametocyte02();
                     else
-                        drug_killrate = imde->get_drug_gametocyte34();
+                        drug_killrate = m_pMDE->get_drug_gametocyte34();
                 }
 
                 // no randomness in gametocyte killing, but a continuity correction
@@ -798,12 +809,16 @@ namespace Kernel
             // ability to query for drug effects
             IIndividualHumanContext *patient = GetParent();
             IIndividualHumanInterventionsContext *context = patient->GetInterventionsContext();
-            IMalariaDrugEffects *imde = nullptr;
+
+            if( m_pMDE == nullptr )
+            {
+                context->QueryInterface( GET_IID( IMalariaDrugEffects ), (void **)&m_pMDE );
+            }
 
             double drug_killrate = 0;
-            if (s_OK ==  context->QueryInterface(GET_IID(IMalariaDrugEffects), (void **)&imde))
+            if( m_pMDE != nullptr )
             {
-                drug_killrate = imde->get_drug_hepatocyte();
+                drug_killrate = m_pMDE->get_drug_hepatocyte();
             }
 
             //binomial chance of survival

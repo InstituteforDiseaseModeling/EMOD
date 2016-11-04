@@ -38,316 +38,18 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Serialization.h"
 #include "IdmMpi.h"
 
+#ifdef ENABLE_TBHIV
+#include "TBHIVParameters.h"
+#endif
+
 static const char* _module = "Node";
 
 using namespace json;
-
-template <typename T, std::size_t N>
-inline std::size_t sizeof_array( T (&)[N] ) {
-   return N;
-}
 
 #include "Properties.h"
 
 namespace Kernel
 {
-    const char * Node::_age_bins_key = "Age_Bin"; // move to Properties.h
-    const char * Node::transitions_dot_json_filename = "transitions.json";
-    std::string Node::getAgeBinPropertyNameFromIndex(
-        const NodeDemographics& demo,
-        unsigned int idx
-    )
-    {
-        release_assert( idx>0 );
-        float min_age = float(demo[idx-1].AsDouble());
-        float max_age = float(demo[idx].AsDouble());
-        std::ostringstream retMsg;
-        retMsg << "Age_Bin_Property_From_" << min_age << "_To_" << max_age;
-        return retMsg.str();
-    }
-
-    void Node::checkValidIPValue( const std::string& key, const std::string& to_value )
-    {
-        LOG_DEBUG_F( "%s: key=%s, value=%s\n", __FUNCTION__, key.c_str(), to_value.c_str() );
-        bool good = false;
-        release_assert( distribs.find( key ) != distribs.end() );
-        for (const auto& pair : distribs.at(key))
-        {
-            if( pair.second == to_value )
-            {
-                good = true;
-            }
-        }
-
-        if( good == false )
-        {
-            throw InitializationException( __FILE__, __LINE__, __FUNCTION__, ( std::string( "Bad to_value in Individual_Property transitions: " ) + to_value ).c_str() );
-        }
-    }
-
-    void Node::TestOnly_ClearProperties()
-    {
-        base_distribs.clear();
-    }
-
-    void Node::TestOnly_AddPropertyKeyValue( const char* key, const char* value )
-    {
-        base_distribs[ key ].insert( make_pair( 0.0f, value ) );
-    }
-
-    std::vector<std::string> Node::GetIndividualPropertyKeyList()
-    {
-        std::vector<std::string> key_list ;
-        for( auto entry : base_distribs )
-        {
-            key_list.push_back( entry.first );
-        }
-        return key_list ;
-    }
-
-    std::vector<std::string> Node::GetIndividualPropertyValuesList( const std::string& rKey )
-    {
-        if( base_distribs.find( rKey ) == base_distribs.end() )
-        {
-            // failed to find this property key in the main map.
-            std::ostringstream msg;
-            msg << "Failed to find property key " << rKey << " in individual properties specified in demographics file." << std::endl;
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__,  msg.str().c_str() );
-        }
-
-        std::vector<std::string> values ;
-        for( auto& prop_entry : base_distribs[ rKey ] )
-        {
-            values.push_back( prop_entry.second );
-        }
-        return values ;
-    }
-
-    void Node::VerifyPropertyDefinedInDemographics( const std::string& rKey, const std::string& rVal )
-    {
-#if defined(_DLLS_)
-        return;
-#endif
-        if( base_distribs.find( rKey ) != base_distribs.end() )
-        {
-            bool found = false;
-            for( auto& prop_entry : base_distribs[ rKey ] )
-            {
-                auto val = prop_entry.second;
-                if( rVal == val )
-                {
-                    found = true;
-                    break;
-                }
-            }
-            if( found == false )
-            {
-                // error: value not found
-                std::ostringstream msg;
-                msg << "Failed to find property restriction value " << rVal << " in individual properties specified in demographics file." << std::endl;
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__,  msg.str().c_str() );
-            }
-        }
-        else
-        {
-            // failed to find this property key in the main map.
-            std::ostringstream msg;
-            msg << "Failed to find property restriction key " << rKey << " in individual properties specified in demographics file." << std::endl;
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__,  msg.str().c_str() );
-        }
-    }
-
-    void Node::VerifyPropertyDefined( const std::string& rKey, const std::string& rVal ) const
-    {
-        // --------------------------------------------------------------------
-        // --- We have a static version of this method because it is using
-        // --- the static variables.  We have a virtual method of this check
-        // --- because we want the DLL's to have access to this static variable.
-        // --------------------------------------------------------------------
-        VerifyPropertyDefinedInDemographics( rKey, rVal );
-    }
-
-    void Node::convertTransitions(
-        const NodeDemographics &trans,
-        json::Object& tx_camp,
-        const std::string& prop_key
-    )
-    {
-        DemographicsContext::using_compiled_demog = false;
-        for( int idx = 0; idx<trans.get_array().size(); idx++ )
-        {
-            json::Object new_event;
-            json::QuickBuilder new_event_qb( new_event );
-            new_event[ "class" ] = json::String( "CampaignEvent" );
-
-            json::Object new_sub_event = json::Object();
-            new_sub_event[ "class" ] = json::String( "StandardInterventionDistributionEventCoordinator" );
-
-            json::Object new_ic = json::Object();
-            json::QuickBuilder new_ic_qb = json::QuickBuilder( new_ic );
-
-            new_event_qb[ "Event_Coordinator_Config" ] = new_sub_event;
-            // This boilerplate stuff should come from Use_Defaults(!)
-            new_event_qb[ "Event_Coordinator_Config" ][ "Dont_Allow_Duplicates" ] = json::Number( 0 );
-            new_event_qb[ "Event_Coordinator_Config" ][ "Number_Distributions" ] = json::Number( -1.0 );
-            new_event_qb[ "Event_Coordinator_Config" ][ "Number_Repetitions" ] = json::Number( 1.0 );
-            new_event_qb[ "Event_Coordinator_Config" ][ "Property_Restrictions" ] = json::Array();
-            new_event_qb[ "Event_Coordinator_Config" ][ "Target_Demographic" ] = json::String( "Everyone" );
-            new_event_qb[ "Event_Coordinator_Config" ][ "Timesteps_Between_Repetitions" ] = json::Number( 0 );
-            new_event_qb[ "Event_Coordinator_Config" ][ "Target_Residents_Only" ] = json::Number( 0 );
-            new_event_qb[ "Event_Coordinator_Config" ][ "Include_Arrivals" ] = json::Number( 0 );
-            new_event_qb[ "Event_Coordinator_Config" ][ "Include_Departures" ] = json::Number( 0 );
-
-            new_event_qb[ "Nodeset_Config" ] = json::Object();
-            new_event_qb[ "Nodeset_Config" ][ "class" ] = json::String( "NodeSetAll" );
-
-            trans[ idx ].validateIPTransition();
-
-            std::string from_value = trans[idx][ "From" ].AsString();
-            LOG_DEBUG_F( "from_value = %s\n", from_value.c_str() );
-
-            // Don't use property_restrictions to target age_bin transitions
-            if( from_value != "NULL" && prop_key != _age_bins_key ) // Initial transitions for Age_Bins have no original property
-            {
-                // this is implemented as a property restriction in the event coord
-                new_event_qb[ "Event_Coordinator_Config" ][ "Property_Restrictions" ] = json::Array();
-                new_event_qb[ "Event_Coordinator_Config" ][ "Property_Restrictions" ][0] = json::String( prop_key + ":" + from_value );
-            } 
-
-            std::string to_value = trans[idx][ "To" ].AsString();
-            LOG_DEBUG_F( "to_value = %s\n", to_value.c_str() );
-            checkValidIPValue( prop_key, to_value );
-            double coverage_value = trans[idx][ "Coverage" ].AsDouble();
-            LOG_DEBUG_F( "coverage_value = %f\n", coverage_value );
-            new_event_qb[ "Event_Coordinator_Config" ][ "Demographic_Coverage" ] = json::Number( coverage_value );
-
-            double probability = trans[idx][ IP_PROBABILITY_KEY ].AsDouble();
-            LOG_DEBUG_F( "probability = %f\n", probability );
-            std::string type = trans[idx][ "Type" ].AsString();
-            LOG_DEBUG_F( "type = %s\n", type.c_str() );
-            double when_value = trans[idx][ IP_WHEN_KEY ][ "Start" ].AsDouble();
-            LOG_DEBUG_F( "when_value = %f\n", when_value );
-            double stop_time = FLT_MAX;
-            if( trans[idx][ IP_WHEN_KEY ].Contains( "Duration" ) )
-            {
-                stop_time = trans[idx][ IP_WHEN_KEY ][ "Duration" ].AsDouble();
-                LOG_DEBUG_F( "stop_time = %f\n", stop_time );
-            }
-            std::string trigger = "";
-            float reversion = 0.0f;
-            if( trans[idx].Contains( IP_REVERSION_KEY ) )
-            {
-                reversion = trans[idx][ IP_REVERSION_KEY ].AsDouble();
-            }
-            if( type == "At_Timestep" )
-            {
-                new_event[ "Start_Day" ] = json::Number( when_value );
-                new_ic_qb[ "class" ] = json::String( "PropertyValueChanger" );
-                new_ic_qb[ "Dont_Allow_Duplicates" ] = json::Number( 0 );
-                new_ic_qb[ "Target_Property_Key" ] = json::String( prop_key );
-                new_ic_qb[ "Target_Property_Value" ] = json::String( to_value );
-                new_ic_qb[ "Daily_Probability" ] = json::Number( probability );
-                new_ic_qb[ "Maximum_Duration" ] = json::Number( stop_time );
-                new_ic_qb[ "Revert" ] = json::Number( reversion );
-
-                if( when_value == 0 && prop_key == _age_bins_key && to_value.find( "Age_Bin_Property_From_0" ) != std::string::npos )
-                {
-                    // We need a birth-triggered intervention for this age_bin initialization from age_bin 0.
-                    // Add BirthTriggeredIV.
-                    json::QuickBuilder new_event_birth = new_event; // better be a deep copy
-                    new_event_birth[ "Start_Day" ] = json::Number( 0 );
-
-                    json::Object new_bti = json::Object();
-                    json::QuickBuilder new_bti_qb = json::QuickBuilder( new_bti );
-                    new_bti_qb[ "class" ] = json::String( "BirthTriggeredIV" );
-                    new_bti_qb[ "Dont_Allow_Duplicates" ] = json::Number( 0 );
-                    new_bti_qb[ "Demographic_Coverage" ] = json::Number( 1.0 );
-                    new_bti_qb[ "Target_Demographic" ] = json::String( "Everyone" );
-                    new_bti_qb[ "Target_Residents_Only" ] = json::Number( 0 );
-                    new_bti_qb[ "Property_Restrictions" ] = json::Array();
-                    new_bti_qb[ "Duration" ] = json::Number( -1.0 );
-                    new_bti_qb[ "Actual_IndividualIntervention_Config" ] = new_ic_qb.As<json::Object>();
-                    new_event_birth[ "Event_Coordinator_Config" ][ "Intervention_Config" ] = new_bti; // this is CRAP (TBD)
-                    ((json::Array&)tx_camp[ "Events" ]).Insert( new_event_birth );
-                }
-            }
-            else if( type == "At_Age" )
-            {
-                // Add Calendar Intervention
-                double age = DAYSPERYEAR * trans[idx][ "Age_In_Years" ].AsDouble();
-                new_event[ "Start_Day" ] = json::Number( when_value );
-                new_ic_qb[ "class" ] = json::String( "IVCalendar" );
-                new_ic_qb[ "Dont_Allow_Duplicates" ] = json::Number( 0 );
-                new_ic_qb[ "Dropout" ] = json::Number( 0 );
-                new_ic_qb[ "Calendar" ][0][ "Age" ] = json::Number( age );
-                new_ic_qb[ "Calendar" ][0][ "Probability" ] = json::Number( 1.0 );
-                new_ic_qb[ "Actual_IndividualIntervention_Configs" ][0][ "class" ] = json::String( "PropertyValueChanger" );
-                new_ic_qb[ "Actual_IndividualIntervention_Configs" ][0][ "Dont_Allow_Duplicates" ] = json::Number( 0 );
-                new_ic_qb[ "Actual_IndividualIntervention_Configs" ][0][ "Target_Property_Key" ] = json::String( prop_key );
-                new_ic_qb[ "Actual_IndividualIntervention_Configs" ][0][ "Target_Property_Value" ] = json::String( to_value );
-                new_ic_qb[ "Actual_IndividualIntervention_Configs" ][0][ "Daily_Probability" ] = json::Number( probability );
-                new_ic_qb[ "Actual_IndividualIntervention_Configs" ][0][ "Maximum_Duration" ] = json::Number( stop_time );
-                new_ic_qb[ "Actual_IndividualIntervention_Configs" ][0][ "Revert" ] = json::Number( reversion );
-
-                // Add BirthTriggeredIV.
-                json::Element deepCopy = new_event;
-                json::QuickBuilder new_event_birth( deepCopy );
-                new_event_birth[ "Start_Day" ] = json::Number( 0 );
-
-                json::Object new_bti = json::Object();
-                json::QuickBuilder new_bti_qb = json::QuickBuilder( new_bti );
-                new_bti_qb[ "class" ] = json::String( "BirthTriggeredIV" );
-                new_bti_qb[ "Dont_Allow_Duplicates" ] = json::Number( 0 );
-                new_bti_qb[ "Demographic_Coverage" ] = json::Number( 1.0 );
-                new_bti_qb[ "Target_Demographic" ] = json::String( "Everyone" );
-                new_bti_qb[ "Target_Residents_Only" ] = json::Number( 0 );
-                new_bti_qb[ "Property_Restrictions" ] = json::Array();
-                new_bti_qb[ "Duration" ] = json::Number( -1.0 );
-                new_bti_qb[ "Actual_IndividualIntervention_Config" ] = new_ic_qb.As<json::Object>();
-                new_event_birth[ "Event_Coordinator_Config" ][ "Intervention_Config" ] = new_bti; // this is CRAP (TBD)
-                ((json::Array&)tx_camp[ "Events" ]).Insert( new_event_birth );
-
-                // Set here after copied for BirthTriggeredIV
-                new_event_qb[ "Event_Coordinator_Config" ][ "Target_Demographic" ] = json::String( "ExplicitAgeRanges" );
-                double min = 0;
-                double max = age/DAYSPERYEAR;
-                new_event_qb[ "Event_Coordinator_Config" ][ "Target_Age_Min" ] = json::Number( min );
-                new_event_qb[ "Event_Coordinator_Config" ][ "Target_Age_Max" ] = json::Number( max );
-
-            }
-            else
-            {
-                ostringstream msg;
-                msg << "type = " << type << ", not understood. Should be At_Timestep, At_Age, or At_Event.";
-                throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-            }
-
-            if( trans[idx].Contains( IP_AGE_KEY ) )
-            {
-                auto age_bounds = trans[idx][ IP_AGE_KEY ];
-                if( age_bounds.Contains( "Min" ) )
-                {
-                    new_event_qb[ "Event_Coordinator_Config" ][ "Target_Demographic" ] = json::String( "ExplicitAgeRanges" );
-                    double min = trans[idx][ IP_AGE_KEY ][ "Min" ].AsDouble();
-                    double max = MAX_HUMAN_AGE;
-                    if( trans[idx][ IP_AGE_KEY ].Contains( "Max" ) )
-                    {
-                        max = trans[idx][ IP_AGE_KEY ][ "Max" ].AsDouble();
-                        if( max == -1 )
-                        {
-                            max = MAX_HUMAN_AGE;
-                        }
-                    }
-                    new_event_qb[ "Event_Coordinator_Config" ][ "Target_Age_Min" ] = json::Number( min );
-                    new_event_qb[ "Event_Coordinator_Config" ][ "Target_Age_Max" ] = json::Number( max );
-                }
-            }
-            new_event_qb[ "Event_Coordinator_Config" ][ "Intervention_Config" ] = new_ic;
-            ((json::Array&)tx_camp[ "Events" ]).Insert( new_event );
-        }
-        DemographicsContext::using_compiled_demog = true;
-    }
-
     // QI stoff in case we want to use it more extensively
     GET_SCHEMA_STATIC_WRAPPER_IMPL(Node,Node)
 
@@ -355,16 +57,15 @@ namespace Kernel
     //   Initialization methods
     //------------------------------------------------------------------
 
-    static const char* keys_whitelist_tmp[] = { "Accessibility", "Geographic", "Place", "Risk", "QualityOfCare", "HasActiveTB"  };
-
     // <ERAD-291>
     // TODO: Make simulation object initialization more consistent.  Either all pass contexts to constructors or just have empty constructors
     Node::Node(ISimulationContext *_parent_sim, suids::suid _suid)
         : serializationMask(SerializationFlags(uint32_t(SerializationFlags::Population) | uint32_t(SerializationFlags::Parameters)))
         , _latitude(FLT_MAX)
         , _longitude(FLT_MAX)
-        , distribs()
         , ind_sampling_type( IndSamplingType::TRACK_ALL )
+        , age_initialization_distribution_type(DistributionType::DISTRIBUTION_OFF)
+        , population_scaling(PopulationScaling::USE_INPUT_FILE)
         , population_density_infectivity_correction(PopulationDensityInfectivityCorrection::CONSTANT_INFECTIVITY)
         , suid(_suid)
         , urban(false)
@@ -439,8 +140,6 @@ namespace Kernel
         , infectivity_scaling(InfectivityScaling::CONSTANT_INFECTIVITY)
         , zoonosis_rate(0.0f)
         , routes()
-        , whitelist_enabled(true)
-        , ipkeys_whitelist( keys_whitelist_tmp, keys_whitelist_tmp+sizeof_array(keys_whitelist_tmp) )
         , infectivity_sinusoidal_forcing_amplitude( 1.0f )
         , infectivity_sinusoidal_forcing_phase( 0.0f )
         , infectivity_boxcar_forcing_amplitude( 1.0f )
@@ -462,8 +161,9 @@ namespace Kernel
         : serializationMask(SerializationFlags(uint32_t(SerializationFlags::Population) | uint32_t(SerializationFlags::Parameters)))
         , _latitude(FLT_MAX)
         , _longitude(FLT_MAX)
-        , distribs()
         , ind_sampling_type( IndSamplingType::TRACK_ALL )
+        , age_initialization_distribution_type(DistributionType::DISTRIBUTION_OFF)
+        , population_scaling(PopulationScaling::USE_INPUT_FILE)
         , population_density_infectivity_correction(PopulationDensityInfectivityCorrection::CONSTANT_INFECTIVITY)
         , suid(suids::nil_suid())
         , urban(false)
@@ -538,8 +238,6 @@ namespace Kernel
         , infectivity_scaling(InfectivityScaling::CONSTANT_INFECTIVITY)
         , zoonosis_rate(0.0f)
         , routes()
-        , whitelist_enabled(true)
-        , ipkeys_whitelist( keys_whitelist_tmp, keys_whitelist_tmp+sizeof_array(keys_whitelist_tmp) )
         , infectivity_sinusoidal_forcing_amplitude( 1.0f )
         , infectivity_sinusoidal_forcing_phase( 0.0f )
         , infectivity_boxcar_forcing_amplitude( 1.0f )
@@ -635,6 +333,8 @@ namespace Kernel
 
     bool Node::Configure( const Configuration* config )
     {
+        initConfig( "Age_Initialization_Distribution_Type", age_initialization_distribution_type, config, MetadataDescriptor::Enum(Age_Initialization_Distribution_Type_DESC_TEXT, Age_Initialization_Distribution_Type_DESC_TEXT, MDD_ENUM_ARGS(DistributionType)) );
+
         initConfig( "Infectivity_Scale_Type", infectivity_scaling, config, MetadataDescriptor::Enum("infectivity_scaling", Infectivity_Scale_Type_DESC_TEXT, MDD_ENUM_ARGS(InfectivityScaling)) );
         if ((infectivity_scaling == InfectivityScaling::SINUSOIDAL_FUNCTION_OF_TIME) || JsonConfigurable::_dryrun )
         {
@@ -671,6 +371,8 @@ namespace Kernel
         initConfigTypeMap( "Enable_Demographics_Gender",      &demographics_gender,     Enable_Demographics_Gender_DESC_TEXT,     true  );  // DJK*: This needs to be configurable!
 
         initConfigTypeMap( "Enable_Maternal_Transmission",    &maternal_transmission,   Enable_Maternal_Transmission_DESC_TEXT,   false, "Enable_Birth" );
+        initConfigTypeMap( "Maternal_Transmission_Probability", &prob_maternal_transmission, Maternal_Transmission_Probability_DESC_TEXT, 0.0f, 1.0f,    0.0f, "Enable_Maternal_Transmission"  );
+
         initConfigTypeMap( "Enable_Demographics_Birth",       &demographics_birth,      Enable_Demographics_Birth_DESC_TEXT,      false, "Enable_Birth" );  // DJK*: Should be "Enable_Disease_Heterogeneity_At_Birth"
         initConfig( "Birth_Rate_Dependence", vital_birth_dependence, config, MetadataDescriptor::Enum(Birth_Rate_Dependence_DESC_TEXT, Birth_Rate_Dependence_DESC_TEXT, MDD_ENUM_ARGS(VitalBirthDependence)), "Enable_Birth" );
 
@@ -692,6 +394,7 @@ namespace Kernel
             initConfigTypeMap( "Sample_Rate_20_Plus",  &sample_rate_20_plus, Sample_Rate_20_Plus_DESC_TEXT,   0.0f, 1000.0f, 1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP || ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
         }
 
+        initConfig( "Population_Scale_Type", population_scaling,  config, MetadataDescriptor::Enum(Population_Scale_Type_DESC_TEXT, Population_Scale_Type_DESC_TEXT, MDD_ENUM_ARGS(PopulationScaling)) );
         initConfigTypeMap( "Base_Population_Scale_Factor",      &population_scaling_factor,  Base_Population_Scale_Factor_DESC_TEXT,      0.0f, FLT_MAX, 1.0f, "Population_Scale_Type", "FIXED_SCALING" );
         initConfigTypeMap( "Max_Node_Population_Samples",       &max_sampling_cell_pop,      Max_Node_Population_Samples_DESC_TEXT,       1.0f, FLT_MAX, 30.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_POPULATION_SIZE,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
 
@@ -716,10 +419,6 @@ namespace Kernel
         initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_Start_Time", &birth_rate_boxcar_start_time, Boxcar_Birth_Rate_Forcing_Start_Time_DESC_TEXT, 0.0f, 365.0f, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );
         initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_End_Time", &birth_rate_boxcar_end_time, Boxcar_Birth_Rate_Forcing_End_Time_DESC_TEXT, 0.0f, 365.0f, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );
 
-        if( config && (*config).Exist( "Disable_IP_Whitelist" ) && (*config)["Disable_IP_Whitelist"].As<json::Number>() == 1 )
-        {
-            whitelist_enabled = false;
-        }
 
         bool ret = JsonConfigurable::Configure( config );
         return ret;
@@ -776,36 +475,6 @@ namespace Kernel
         Ind_Sample_Rate         = indsamplerate;
     }
 
-    void Node::checkIpKeyInWhitelist( const std::string& propertyKey, size_t numValues )
-    {
-        if( whitelist_enabled )
-        {
-            if( ipkeys_whitelist.count( propertyKey ) == 0 )
-            {
-                std::ostringstream msg;
-                msg << "Individual Property key " << propertyKey << " found in demographics file. Use one of: ";
-                for (auto& key : ipkeys_whitelist)
-                {
-                    msg << key << std::endl;
-                }
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-            }
-
-            if (((numValues > 5) && (propertyKey != "Geographic")) || (numValues > 125))
-            {
-                std::ostringstream msg;
-                msg << "Too many values for Individual Property key " << propertyKey << ".  This key has " << numValues << " and the limit is 5, except for Geographic, which is 125." << std::endl;
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-            }
-        }
-    }
-
-    // Bad: 0.2, OK: 0.5, Good: 0.3
-    // Distrib["QoC"][0.2] = "Bad";
-    // Distrib["QoC"][0.7] = "Ok";
-    // Distrib["QoC"][1.0] = "Good";
-    tPropertiesDistrib Node::base_distribs;
-
     void Node::SetParameters(NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory)
     {
         // Parameters set from an input filestream
@@ -816,251 +485,19 @@ namespace Kernel
         delete demographics_temp;
         externalId = demographics["NodeID"].AsInt();
 
+
         //////////////////////////////////////////////////////////////////////////////////////
-        std::map< std::string, std::vector< std::string > > indivPropNameValuePairs;
-        //std::map< std::string, std::map< std::string, float > > indivPropInits;
-        LOG_DEBUG( "Looking for Individual_Properties in demographics.json file(s)\n" );
-        if( demographics.Contains( IP_KEY ) )
+        bool white_list_enabled = true ;
+        if( (EnvPtr != nullptr) && 
+            (EnvPtr->Config != nullptr) &&
+            EnvPtr->Config->Exist( "Disable_IP_Whitelist" ) &&
+            (*(EnvPtr->Config))["Disable_IP_Whitelist"].As<json::Number>() == 1 )
         {
-            LOG_INFO_F( "%d Individual_Properties found in demographics.json file(s)\n", demographics[IP_KEY].get_array().size() );
-            // Check that we're not using more than 2 axes in whitelist mode
-            if( demographics[IP_KEY].get_array().size() > 2 && 
-                whitelist_enabled )
-            {
-                std::ostringstream msg;
-                msg << "Too many Individual Property axes (" 
-                    << demographics[IP_KEY].get_array().size()
-                    << "). Max is 2."
-                    << std::endl;
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-            }
-
-            json::Object tx_camp;
-            tx_camp[ "Use_Defaults" ] = json::Number( 1 );
-            tx_camp[ "Events" ] = json::Array();
-            bool localized = false;
-            for( int idx=0; idx<demographics[IP_KEY].get_array().size(); idx++ )
-            {
-                float maxProbBound = 0.0f;
-                std::string propertyKey = demographics[IP_KEY][idx][IP_NAME_KEY].AsString();
-                if( propertyKey == _age_bins_key )
-                {
-                    // iterate through array of age boundaries. For each one, create initialization transitions and calendars. 
-                    JsonObjectDemog age_bin_tx( JsonObjectDemog::JSON_OBJECT_ARRAY );
-                    const auto ageBinJsonArray = demographics[IP_KEY][idx][IP_AGE_BIN_KEY];
-                    auto num_edges = demographics[IP_KEY][idx][IP_AGE_BIN_KEY].get_array().size();
-                    float last_age_edge = -0.01f; // would use -1 but that's our max/"EOF" value.
-                    for( int age_bin_idx=0; age_bin_idx<num_edges; age_bin_idx++ )
-                    {
-                        float age_edge = float(demographics[IP_KEY][idx][IP_AGE_BIN_KEY][age_bin_idx].AsDouble());
-                        if( age_edge <= last_age_edge && age_edge != -1)
-                        {
-                            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "age_edge", age_edge, "last_age_edge", last_age_edge );
-                        }
-                        last_age_edge = age_edge;
-                        if( age_bin_idx == 0 )
-                        {
-                           if( age_edge != 0 )
-                           {
-                               std::ostringstream errMsg;
-                               errMsg << "First age bin value must be 0 (not " << age_edge << ").";
-                               throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, errMsg.str().c_str() );
-                           }
-                           else
-                           {
-                               continue;
-                           }
-                        }
-                        else if( age_bin_idx == num_edges-1 )
-                        {
-                           if( age_edge != -1 )
-                           {
-                               std::ostringstream msg;
-                               msg << "Value of final edge in "
-                                   << IP_AGE_BIN_KEY
-                                   << " array must be -1.";
-                               throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-                           }
-                        }
-                        // Put people in correct bucket at first
-                        float min_age = float(ageBinJsonArray[age_bin_idx-1].AsDouble());
-                        float max_age = age_edge;
-                        if( max_age == -1 )
-                        {
-                            max_age = MAX_HUMAN_AGE;
-                        }
-                        JsonObjectDemog initTx( JsonObjectDemog::JSON_OBJECT_OBJECT );
-                        initTx.Add( "From", "NULL" );
-                        initTx.Add( "To", getAgeBinPropertyNameFromIndex( ageBinJsonArray, age_bin_idx) );
-                        // TBD: following line generates huge warning for MSVC
-                        distribs[ _age_bins_key ].insert( make_pair( 0.0f, getAgeBinPropertyNameFromIndex( ageBinJsonArray, age_bin_idx) ) ); // for PropertyReport
-                        initTx.Add( "Type", "At_Timestep" );
-
-                        JsonObjectDemog startStopObj( JsonObjectDemog::JSON_OBJECT_OBJECT );
-                        startStopObj.Add( "Start", 0.0 );
-                        startStopObj.Add( "Duration", -1.0 );
-                        initTx.Add( IP_WHEN_KEY, startStopObj );
-
-                        //initTx.initTx.Add( "From", "NULL" );
-                        //initTx.initTx.Add("To", getAgeBinPropertyNameFromIndex( ageBinJsonArray, age_bin_idx) );
-                        // TBD: following line generates huge warning for MSVC
-                        //distribs[ _age_bins_key ].insert( make_pair( 0.0f, getAgeBinPropertyNameFromIndex( ageBinJsonArray, age_bin_idx) ) ); // for PropertyReport
-                        initTx.Add( "Type", "At-Time" );
-                        initTx.Add( "When", 0.0 );
-                        initTx.Add( "Coverage", 1.0 );
-
-                        JsonObjectDemog minmaxObj( JsonObjectDemog::JSON_OBJECT_OBJECT );
-                        minmaxObj.Add( "Min", min_age );
-                        minmaxObj.Add( "Max", max_age );
-                        initTx.Add( "Age_Restrictions", minmaxObj );
-                        initTx.Add( IP_AGE_KEY, minmaxObj );
-                        
-                        initTx.Add( IP_PROBABILITY_KEY, 1.0 );
-                        initTx.Add( IP_REVERSION_KEY, 0.0 );
-                        age_bin_tx.PushBack( initTx );
-
-                        // Give people calendars to move to next bucket.
-                        // All folks in age_bins<max-1 need calendars for all subsequent age_bins!
-                        if( age_bin_idx > 1 )
-                        {
-                            JsonObjectDemog bdayTx( JsonObjectDemog::JSON_OBJECT_OBJECT );
-                            bdayTx.Add( "From", getAgeBinPropertyNameFromIndex( ageBinJsonArray, age_bin_idx-1) );
-                            bdayTx.Add( "To", getAgeBinPropertyNameFromIndex( ageBinJsonArray, age_bin_idx) );
-                            //distribs[ _age_bins_key ].insert( make_pair( 0.0f, getAgeBinPropertyNameFromIndex( ageBinJsonArray, age_bin_idx) ) ); // for PropertyReport
-
-                            JsonObjectDemog binStartStopObj( JsonObjectDemog::JSON_OBJECT_OBJECT );
-                            binStartStopObj.Add( "Start", 1.0 );
-                            binStartStopObj.Add( "Duration", -1.0 );
-                            bdayTx.Add( IP_WHEN_KEY, binStartStopObj );
-
-                            bdayTx.Add( "Type", "At_Age" );
-                            bdayTx.Add( "Age_In_Years", min_age );
-                            bdayTx.Add( "Coverage", 1.0 );
-
-                            JsonObjectDemog binMinMaxObj( JsonObjectDemog::JSON_OBJECT_OBJECT );
-                            binMinMaxObj.Add( "Min", 0.0 );
-                            binMinMaxObj.Add( "Max", min_age );
-                            bdayTx.Add( IP_AGE_KEY, binMinMaxObj );
-                            
-                            bdayTx.Add( IP_PROBABILITY_KEY, 1.0 );
-                            bdayTx.Add( IP_REVERSION_KEY, 0.0 );
-                            age_bin_tx.PushBack( bdayTx );
-                        }
-                    }
-
-                    // convert Transitions to transitions.json
-                    // Create NodeDemographics object from json_spirit so that we can
-                    // call convertTransitions which assumes NodeDemographics input.
-                    auto tx_full_string_table = new map<string, string>();
-                    NodeDemographics manual_transitions_node_demographics( age_bin_tx, tx_full_string_table, (INodeContext*) this, externalId, "transitions", "" );
-                    convertTransitions( manual_transitions_node_demographics, tx_camp, propertyKey );
-                }
-                else
-                {
-                    if( !demographics[IP_KEY][idx].Contains( IP_VALUES_KEY ) )
-                    {
-                        std::ostringstream badMap;
-                        badMap << "demographics[" << IP_KEY << "][" << idx << "]";
-                        throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, badMap.str().c_str(), IP_VALUES_KEY );
-                    }
-
-                    auto num_values = demographics[IP_KEY][idx][IP_VALUES_KEY].get_array().size();
-                    checkIpKeyInWhitelist( propertyKey, num_values );
-                    for( int val_idx=0; val_idx<num_values; val_idx++ )
-                    {
-                        std::string value = demographics[IP_KEY][idx][IP_VALUES_KEY][val_idx].AsString();
-                        if( std::find( indivPropNameValuePairs[ propertyKey ].begin(), indivPropNameValuePairs[ propertyKey ].end(), value ) != indivPropNameValuePairs[ propertyKey ].end() )
-                        {
-                            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ( std::string( "Duplicate Value found: " ) + value ).c_str() );
-                        }
-                        indivPropNameValuePairs[ propertyKey ].push_back( value );
-                    }
-                    if( demographics[IP_KEY][idx][IP_INIT_KEY].get_array().size() != demographics[IP_KEY][idx][IP_VALUES_KEY].get_array().size() )
-                    {
-                        std::ostringstream msg;
-                        msg << "Number of Values ("
-                            << demographics[IP_KEY][idx][IP_VALUES_KEY].get_array().size() 
-                            << ") needs to be the same as number of "
-                            << IP_INIT_KEY
-                            << "'s ("
-                            << demographics[IP_KEY][idx][IP_INIT_KEY].get_array().size()
-                            << ")."
-                            << std::endl;
-                        throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-                    }
-                    const char* use_this_init_key = IP_KEY;
-
-                    std::string ip_key_localized( IP_KEY );
-                    ip_key_localized += "::Localized";
-                    const char* localized_key = ip_key_localized.c_str();
-                    // const char* localized_key = ( std::string( IP_KEY ) + "::Localized" ).c_str();
-
-                    if( demographics.Contains( localized_key ) )
-                    {
-                        use_this_init_key = localized_key;
-                        localized = true;
-                    }
-                    auto init_values = demographics[use_this_init_key][idx][IP_INIT_KEY];
-                    for( int val_idx=0; val_idx<init_values.get_array().size(); val_idx++ )
-                    {
-                        try
-                        {
-                            ProbabilityNumber init_value = init_values[val_idx].AsDouble();
-
-                            const std::string& value = indivPropNameValuePairs[ propertyKey ][ val_idx ];
-                            maxProbBound += init_value;
-                            distribs[ propertyKey ].insert( make_pair( maxProbBound, value ) );
-                            LOG_DEBUG_F( "Found IP distribs[ %s ][ %f ] = %s\n", propertyKey.c_str(), maxProbBound, value.c_str() );
-                        }
-                        catch( OutOfRangeException ex )
-                        {
-                            throw ConfigurationRangeException( __FILE__, __LINE__, __FUNCTION__, IP_INIT_KEY, demographics[IP_KEY][idx][IP_INIT_KEY][val_idx].AsDouble(), 0 );
-                        }
-                    }
-                    if( maxProbBound < 0.99999 || maxProbBound > 1.000001 )
-                    {
-                        std::ostringstream msg;
-                        msg << "Bin probabilities in "
-                            << IP_INIT_KEY
-                            << " section for property "
-                            << propertyKey
-                            << " must add up to 1.0. Instead came to "
-                            << maxProbBound
-                            << "."
-                            << std::endl;
-                        throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-                    }
-                    // convert Transitions to ip_transitions_campaign.json
-                    convertTransitions( demographics[ IP_KEY ][ idx ][ "Transitions" ], tx_camp, propertyKey );
-                }
-            }
-
-            // This is node-level code but we only want to open this file once regardless how many nodes we have.
-            // An implicit assumption is that all ranks have at least one node.
-            static bool doOnce = false;
-            if( doOnce==false )
-            {
-                std::string transitions_file_path = FileSystem::Concat( Environment::getInstance()->OutputPath, std::string(Node::transitions_dot_json_filename) );
-                // Rank 0 creates the transitions json file
-                if( EnvPtr->MPI.Rank == 0 )
-                {
-                    LOG_DEBUG_F( "Creating %s file.\n", transitions_file_path.c_str() );
-                    std::ofstream tx_camp_json( transitions_file_path.c_str() );
-                    json::Writer::Write( tx_camp, tx_camp_json );
-                }
-
-                // Everybody stops here for a sync-up after rank 0 writes transitions.json
-                EnvPtr->MPI.p_idm_mpi->Barrier();
-
-                doOnce = true;
-            }
-
-            if( base_distribs.size() == 0 && localized == false ) // set base_distribs once we have parsed a node that has no localizations
-            {
-                LOG_DEBUG_F( "Using initial distributions for node %lu as base for all subsequent nodes.\n", GetSuid().data );
-                base_distribs = distribs;
-            }
+            white_list_enabled = false;
         }
+
+        LOG_DEBUG( "Looking for Individual_Properties in demographics.json file(s)\n" );
+        IPFactory::GetInstance()->Initialize( GetExternalID(), demographics.GetJsonObject(), white_list_enabled );
 
         //////////////////////////////////////////////////////////////////////////////////////
 
@@ -1071,12 +508,13 @@ namespace Kernel
         {
             Above_Poverty = float(demographics["NodeAttributes"]["AbovePoverty"].AsDouble());
             urban = (demographics["NodeAttributes"]["Urban"].AsInt() != 0);
-
-            if (GET_CONFIGURABLE(SimulationConfig)->coinfection_incidence == true)
+#ifdef ENABLE_TBHIV
+            if (GET_CONFIGURABLE(SimulationConfig)->tbhiv_params->coinfection_incidence == true)
             {
                 demographic_distributions[NodeDemographicsDistribution::HIVCoinfectionDistribution] = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["HIVCoinfectionDistribution"], "gender", "time", "age");
                 demographic_distributions[NodeDemographicsDistribution::HIVMortalityDistribution]   = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["HIVMortalityDistribution"], "gender", "time", "age");
             }
+#endif // ENABLE_TBHIV
         }
 
         VitalDeathDependence::Enum vital_death_dependence = GET_CONFIGURABLE(SimulationConfig)->vital_death_dependence;
@@ -1162,104 +600,66 @@ namespace Kernel
         demographic_distributions[NodeDemographicsDistribution::ImmunityDistribution] = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["ImmunityDistribution"], "age");
     }
 
+    ITransmissionGroups* Node::CreateTransmissionGroups()
+    {
+        return TransmissionGroupsFactory::CreateNodeGroups( TransmissionGroupType::SimpleGroups );
+    }
+
+    void Node::AddDefaultRoute( RouteToContagionDecayMap_t& rDecayMap )
+    {
+        AddRoute( rDecayMap, "contact" );
+    }
+
+    void Node::AddRoute( RouteToContagionDecayMap_t& rDecayMap, const std::string& rRouteName )
+    {
+        if( rDecayMap.find( rRouteName ) == rDecayMap.end() )
+        {
+            LOG_DEBUG_F("Adding route %s.\n", rRouteName.c_str());
+            rDecayMap[ rRouteName ] = 1.0f;
+            routes.push_back( rRouteName );
+        }
+    }
+
+    void Node::BuildTransmissionRoutes( RouteToContagionDecayMap_t& rDecayMap )
+    {
+        transmissionGroups->Build( rDecayMap, 1, 1 );
+    }
+
     void Node::SetupIntranodeTransmission()
     {
-        LOG_DEBUG_F( "%s\n", __FUNCTION__ );
-        transmissionGroups = TransmissionGroupsFactory::CreateNodeGroups(TransmissionGroupType::SimpleGroups);
         RouteToContagionDecayMap_t decayMap;
-        if( demographics.Contains( IP_KEY ) && params()->heterogeneous_intranode_transmission_enabled)
+
+        transmissionGroups = CreateTransmissionGroups();
+
+        if( (IPFactory::GetInstance()->GetIPList().size() > 0) && params()->heterogeneous_intranode_transmission_enabled )
         {
             ValidateIntranodeTransmissionConfiguration();
 
-            const NodeDemographics& properties = demographics[IP_KEY];
-            for (int iProperty = 0; iProperty < properties.size(); iProperty++)
+            for( auto p_ip : IPFactory::GetInstance()->GetIPList() )
             {
-                const NodeDemographics& property = properties[iProperty];
-                if (property.Contains(TRANSMISSION_MATRIX_KEY))
+                if( p_ip->GetIntraNodeTransmissions( GetExternalID() ).HasMatrix() )
                 {
-                    const NodeDemographics& transmissionMatrix = property[ TRANSMISSION_MATRIX_KEY ];
-                    PropertyValueList_t valueList;
-                    const NodeDemographics& scalingMatrixRows = transmissionMatrix[TRANSMISSION_DATA_KEY];
-                    ScalingMatrix_t scalingMatrix;
+                    std::string routeName = p_ip->GetIntraNodeTransmissions( GetExternalID() ).GetRouteName();
 
-                    string routeName = transmissionMatrix.Contains( ROUTE_KEY ) ? transmissionMatrix[ ROUTE_KEY ].AsString() : "contact";
-                    std::transform(routeName.begin(), routeName.end(), routeName.begin(), ::tolower);
-                    string propertyName = property[IP_NAME_KEY].AsString();
+                    AddRoute( decayMap, routeName );
 
-                    if (routeName != "contact")
-                    {
-                        throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, std::string( "Found route " + routeName + ". For generic sims, routes other than 'contact' are not supported, use Environmental sims for 'environmental' decay.").c_str());
-                    }
-                    else
-                    {
-                        if (decayMap.find(routeName)==decayMap.end())
-                        {
-                            LOG_DEBUG_F("HINT: Adding route %s.\n", routeName.c_str());
-                            decayMap[routeName] = 1.0f;
-                            routes.push_back(routeName);
-                        }
-                    }
-
-                    if( propertyName == _age_bins_key )
-                    {
-                        int valueCount = distribs[ _age_bins_key ].size();
-                        int counter = 0;
-                        for( const auto& entry : distribs[ _age_bins_key ])
-                        {
-                            valueList.push_back( entry.second );
-                            MatrixRow_t matrixRow;
-                            const NodeDemographics& scalingMatrixRow = scalingMatrixRows[counter++];
-    
-                            for (int iSink = 0; iSink < valueCount; iSink++) 
-                            {
-                                 matrixRow.push_back(float(scalingMatrixRow[iSink].AsDouble()));
-                            }
-                            scalingMatrix.push_back(matrixRow);
-                        }
-                    }
-                    else
-                    {
-                        const NodeDemographics& propertyValues = property[ IP_VALUES_KEY ];
-                        int valueCount = propertyValues.size();
-                        for (int iValue = 0; iValue < valueCount; iValue++)
-                        {
-                            valueList.push_back(propertyValues[iValue].AsString());
-                            MatrixRow_t matrixRow;
-                            const NodeDemographics& scalingMatrixRow = scalingMatrixRows[iValue];
-    
-                            for (int iSink = 0; iSink < valueCount; iSink++) 
-                            {
-                                 matrixRow.push_back(float(scalingMatrixRow[iSink].AsDouble()));
-                            }
-                            scalingMatrix.push_back(matrixRow);
-                        }
-                    }
-
-                    LOG_DEBUG_F("adding property [%s]:%s\n", propertyName.c_str(), routeName.c_str());
-                    transmissionGroups->AddProperty(propertyName, valueList, scalingMatrix, routeName);
+                    transmissionGroups->AddProperty( p_ip->GetKey().ToString(), 
+                                                     p_ip->GetValues().GetValuesToList(),
+                                                     p_ip->GetIntraNodeTransmissions( GetExternalID() ).GetMatrix(),
+                                                     routeName );
                 }
                 else //HINT is enabled, but no transmission matrix is detected
                 {
-                    string default_route("contact");
-                    float default_rate = 1.0f;
-                    if (decayMap.find(default_route)==decayMap.end())
-                    {
-                        LOG_DEBUG("HINT on with no transmission matrix: Adding route 'contact'.\n");
-                        decayMap[default_route] = default_rate;
-                        routes.push_back(default_route);
-                    }
+                    AddDefaultRoute( decayMap );
                 }
             }
-
         }
         else //HINT is not enabled
         {
-            LOG_DEBUG("Non-HINT: Adding route 'contact'.\n");
-            decayMap[string("contact")] = 1.0f;
-            routes.push_back(string("contact"));
+            AddDefaultRoute( decayMap );
         }
 
-        transmissionGroups->Build(decayMap, 1, 1);
+        BuildTransmissionRoutes( decayMap );
     }
 
     void Node::GetGroupMembershipForIndividual(const RouteList_t& route, tProperties* properties, TransmissionGroupMembership_t* transmissionGroupMembership)
@@ -1398,8 +798,14 @@ namespace Kernel
         // This is based on the current infectiousness at the start of the timestep of all individuals present at the start of the timestep
         updateInfectivity(dt);
 
-        for (auto individual : individualHumans)
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!! GH-798 - I had to change this for loop to use an index so that a user could have an Outbreak intervention within
+        // !!! a NLHTIV. Outbreak will import/add people to the scenario.  This gets around the issue of the iterator being violated.
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        for( int i = 0 ; i < individualHumans.size() ; ++i )
         {
+            IIndividualHuman* individual = individualHumans[i];
+
             individual->Update(GetTime().time, dt);
 
             // JPS: Should we do this later, after updateVitalDynamics() instead?  
@@ -1795,7 +1201,7 @@ namespace Kernel
         uint32_t InitPop = uint32_t(demographics["NodeAttributes"]["InitialPopulation"].AsUint64());
 
         // correct initial population if necessary (historical simulation for instance
-        if ( GET_CONFIGURABLE(SimulationConfig)->population_scaling )
+        if ( population_scaling )
         {
             InitPop = uint32_t(InitPop * population_scaling_factor);
         }
@@ -1825,7 +1231,7 @@ namespace Kernel
 
         // Cache pointers to the initial age distribution with the node, so it doesn't have to be created for each individual.
         // After the demographic initialization is complete, it can be removed from the map and deleted
-        if( params()->age_initialization_distribution_type == DistributionType::DISTRIBUTION_COMPLEX )
+        if( age_initialization_distribution_type == DistributionType::DISTRIBUTION_COMPLEX )
         {
             if( !demographics.Contains( "IndividualAttributes" ) || !demographics["IndividualAttributes"].Contains( "AgeDistribution" ) )
             {
@@ -1948,7 +1354,7 @@ namespace Kernel
 
         // Don't need this distribution after demographic initialization is completed
         // (If we ever want to use it in the future, e.g. in relation to Outbreak ImportCases, we can remove the following.  Clean-up would then be done only in the destructor.)
-        if( params()->age_initialization_distribution_type == DistributionType::DISTRIBUTION_COMPLEX )
+        if( age_initialization_distribution_type == DistributionType::DISTRIBUTION_COMPLEX )
         {
             EraseAndDeleteDemographicsDistribution(NodeDemographicsDistribution::AgeDistribution);
         }
@@ -2036,7 +1442,6 @@ namespace Kernel
             if ( ind_sampling_type != IndSamplingType::TRACK_ALL && randgen->e() >= temp_sampling_rate ) continue;
 
             // Configure and/or add new individual (EAW: there doesn't appear to be any significant difference between the two cases below)
-            auto prob_maternal_transmission = GET_CONFIGURABLE(SimulationConfig)->prob_maternal_transmission;
             IIndividualHuman* child = nullptr;
             if (demographics_birth)
             {
@@ -2091,6 +1496,11 @@ namespace Kernel
         auto context = dynamic_cast<IIndividualHumanContext*>(mother);
         child->setupMaternalAntibodies(context, this);
         Births += mc_weight;//  Born with age=0 and no infections and added to sim with same sampling weight as mother
+    }
+
+    ProbabilityNumber Node::GetProbMaternalTransmission() const
+    {
+        return prob_maternal_transmission;
     }
 
     float Node::getPrevalenceInPossibleMothers()
@@ -2247,7 +1657,7 @@ namespace Kernel
         IIndividualHuman* new_individual = createHuman(parent->GetNextIndividualHumanSuid(), mc_weight, initial_age, gender, poverty_parameter); // initial_infections isn't needed here if SetInitialInfections function is used
 
         // EAW: is there a reason that the contents of the two functions below aren't absorbed into CreateHuman?  this whole process seems very convoluted.
-        new_individual->SetParameters(1.0, immunity_parameter, risk_parameter, migration_heterogeneity);// default values being used except for total number of communities
+        new_individual->SetParameters( this, 1.0, immunity_parameter, risk_parameter, migration_heterogeneity);// default values being used except for total number of communities
         new_individual->SetInitialInfections(initial_infections);
         new_individual->UpdateGroupMembership();
         new_individual->UpdateGroupPopulation(1.0f);
@@ -2273,7 +1683,7 @@ namespace Kernel
     {
         LOG_DEBUG_F( "1. %s\n", __FUNCTION__ );
         IIndividualHuman* new_individual = createHuman( suids::nil_suid(), 0, 0, 0, 0);
-        new_individual->SetParameters(1.0, 0, 0, 0);// default values being used except for total number of communities
+        new_individual->SetParameters( this, 1.0, 0, 0, 0);// default values being used except for total number of communities
 
 #if 0
         new_individual->SetInitialInfections(0);
@@ -2305,12 +1715,12 @@ namespace Kernel
     {
         // Set age from distribution, or if no proper distribution set, make all initial individuals 20 years old (7300 days)
 
-        if(params()->age_initialization_distribution_type == DistributionType::DISTRIBUTION_COMPLEX)
+        if(age_initialization_distribution_type == DistributionType::DISTRIBUTION_COMPLEX)
         {
             // "AgeDistribution" is added to map in Node::SetParameters if 'enable_age_initialization_distribution' flag is set
             age = GetDemographicsDistribution(NodeDemographicsDistribution::AgeDistribution)->DrawFromDistribution(randgen->e());
         }
-        else if (params()->age_initialization_distribution_type == DistributionType::DISTRIBUTION_SIMPLE)
+        else if (age_initialization_distribution_type == DistributionType::DISTRIBUTION_SIMPLE)
         {
             if( !demographics.Contains( "IndividualAttributes" ) ||
                 !demographics["IndividualAttributes"].Contains( "AgeDistributionFlag" ) ||
@@ -2847,12 +2257,6 @@ namespace Kernel
         return GET_CONFIGURABLE(SimulationConfig);
     }
 
-    const tPropertiesDistrib&
-    Node::GetIndividualPropertyDistributions() const
-    {
-        return distribs;
-    }
-
     bool Node::IsValidTransmissionRoute( string& transmissionRoute )
     {
         std::transform(transmissionRoute.begin(), transmissionRoute.end(), transmissionRoute.begin(), ::tolower);
@@ -2864,73 +2268,29 @@ namespace Kernel
     {
         bool oneOrMoreMatrices = false;
 
-        const NodeDemographics& properties = demographics[ IP_KEY ];
-        for (int iProperty = 0; iProperty < properties.size(); iProperty++) {
-
-            const NodeDemographics& property = properties[ iProperty ];
-            if (property.Contains(TRANSMISSION_MATRIX_KEY)) {
-
-                const NodeDemographics& transmissionMatrix = property[ TRANSMISSION_MATRIX_KEY ];
-
-                //check route
-                if (transmissionMatrix.Contains(ROUTE_KEY)) {
-                    string transmissionRoute = transmissionMatrix[ ROUTE_KEY ].AsString();
-                    if (!IsValidTransmissionRoute(transmissionRoute))
-                    {
-                        ostringstream message;
-                        message << "HINT Configuration: Unsupported route '" << transmissionMatrix[ ROUTE_KEY ].AsString() << "'." << endl;
-                        message << "For generic/TB sims, only \"contact\" route (contagion is reset at each timestep) is supported." << endl;
-                        message << "For environmental/polio sims, we support \"contact\" (contagion is reset at each timestep) and \"environmental\" (fraction of contagion carried over to next time step = 1 - Node_Contagion_Decay_Rate." << endl;
-                        message << "For malaria sims, transmissionMatrix is not supported (yet)." << endl;
-                        throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, message.str().c_str());
-                    }
-                }
-                else {
-                    LOG_WARN_F("HINT Configuration: Missing 'Route' for property '%s'. Will use default route 'contact' (contagion is reset at each timestep).\n", property[IP_NAME_KEY].AsString().c_str());
-                }
-
+        for( auto p_ip : IPFactory::GetInstance()->GetIPList() )
+        {
+            if( p_ip->GetIntraNodeTransmissions( GetExternalID() ).HasMatrix() )
+            {
                 oneOrMoreMatrices = true;
-                int valueCount;
 
-                string propertyName = property[IP_NAME_KEY].AsString();
-                if (propertyName == _age_bins_key) {
-
-                    valueCount = distribs[ _age_bins_key ].size();
-                    if (valueCount == 0) {
-                        throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "HINT Configuration: Expected one or more age bins.");
-                    }
-                }
-                else {
-
-                    const NodeDemographics& propertyValues = property[ IP_VALUES_KEY ];
-                    valueCount = propertyValues.size();
-                    if (valueCount == 0) {
-                        ostringstream message;
-                        message << "HINT Configuration: Expected one or more property values for property '" << propertyName << "'.";
-                        throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, message.str().c_str());
-                    }
-                }
-
-                const NodeDemographics& scalingMatrixRows = transmissionMatrix[TRANSMISSION_DATA_KEY];
-                if (scalingMatrixRows.size() != valueCount) {
+                string route_name = p_ip->GetIntraNodeTransmissions( GetExternalID() ).GetRouteName();
+                if( !IsValidTransmissionRoute( route_name ) )
+                {
                     ostringstream message;
-                    message << "HINT Configuration: Transmission matrix for property '" << propertyName << "' has incorrect number of rows - " << scalingMatrixRows.size() << " (expected " << valueCount << ").";
+                    message << "HINT Configuration: Unsupported route '" << route_name << "'." << endl;
+                    message << "For generic/TB sims, only \"contact\" route (contagion is reset at each timestep) is supported." << endl;
+                    message << "For environmental/polio sims, we support \"contact\" (contagion is reset at each timestep) and \"environmental\" (fraction of contagion carried over to next time step = 1 - Node_Contagion_Decay_Rate." << endl;
+                    message << "For malaria sims, transmissionMatrix is not supported (yet)." << endl;
                     throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, message.str().c_str());
                 }
 
-                for (int iRow = 0; iRow < valueCount; iRow++) {
-
-                    const NodeDemographics& scalingMatrixRow = scalingMatrixRows[ iRow ];
-                    if (scalingMatrixRow.size() != valueCount) {
-                        ostringstream message;
-                        message << "HINT Configuration: Transmission matrix row " << iRow << " has incorrect number of columns - " << scalingMatrixRow.size() << " (expected " << valueCount << ").";
-                        throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, message.str().c_str());
-                    }
-                }
+                oneOrMoreMatrices = true;
             }
         }
 
-        if (!oneOrMoreMatrices) {
+        if (!oneOrMoreMatrices) 
+        {
             LOG_WARN("HINT Configuration: heterogeneous intranode transmission is enabled, but no transmission matrices were found in the demographics file(s).\n");
             // TODO throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "HINT Configuration: No transmission matrices were found in the demographics file(s).");
         }
@@ -2950,6 +2310,7 @@ namespace Kernel
 
         if ((node.serializationMask & SerializationFlags::Parameters) != 0) {
             ar.labelElement("ind_sampling_type") & (uint32_t&)node.ind_sampling_type;
+            ar.labelElement("age_initialization_distribution_type") & (uint32_t&)node.age_initialization_distribution_type;
             ar.labelElement("population_density_infectivity_correction") & (uint32_t&)node.population_density_infectivity_correction;
 
             ar.labelElement("demographics_birth") & node.demographics_birth;
@@ -2967,6 +2328,7 @@ namespace Kernel
             ar.labelElement("immune_threshold_for_downsampling") & node.immune_threshold_for_downsampling;
 
             ar.labelElement("population_density_c50") & node.population_density_c50;
+            ar.labelElement("population_scaling") & (uint32_t&)node.population_scaling;
             ar.labelElement("population_scaling_factor") & node.population_scaling_factor;
             ar.labelElement("maternal_transmission") & node.maternal_transmission;
             ar.labelElement("vital_birth") & node.vital_birth;
@@ -2977,8 +2339,6 @@ namespace Kernel
             ar.labelElement("animal_reservoir_type") & (uint32_t&)node.animal_reservoir_type;
             ar.labelElement("infectivity_scaling") & (uint32_t&)node.infectivity_scaling;
             ar.labelElement("zoonosis_rate") & node.zoonosis_rate;
-
-            ar.labelElement("whitelist_enabled") & node.whitelist_enabled;
 
             ar.labelElement("infectivity_sinusoidal_forcing_amplitude") & node.infectivity_sinusoidal_forcing_amplitude;
             ar.labelElement("infectivity_sinusoidal_forcing_phase") & node.infectivity_sinusoidal_forcing_phase;
@@ -2995,7 +2355,6 @@ namespace Kernel
         if ((node.serializationMask & SerializationFlags::Properties) != 0) {
             ar.labelElement("_latitude") & node._latitude;
             ar.labelElement("_longitude") & node._longitude;
-// clorton          ar.labelElement("distribs") & node.distribs;
             ar.labelElement("suid_data") & node.suid.data;
             ar.labelElement("urban") & node.urban;
             ar.labelElement("birthrate") & node.birthrate;
@@ -3042,7 +2401,6 @@ namespace Kernel
             ar.labelElement("migration_dist1") & node.migration_dist1;
             ar.labelElement("migration_dist2") & node.migration_dist2;
             ar.labelElement("routes") & node.routes;
-// clorton          ar.labelElement("ipkeys_whitelist") & node.ipkeys_whitelist;
         }
     }
 }

@@ -20,7 +20,6 @@ namespace Kernel
     PropertyRestrictions::PropertyRestrictions()
     : JsonConfigurable()
     , _restrictions()
-    , verified(false)
     {
     }
 
@@ -49,7 +48,8 @@ namespace Kernel
         json::QuickInterpreter s2sarray = (*inputJson)[key].As<json::Array>();
         for( int idx=0; idx < (*inputJson)[key].As<json::Array>().Size(); idx++ )
         {
-            std::map< std::string, std::string > kvp;
+            IPKeyValueContainer container;
+
             auto json_map = s2sarray[idx].As<json::Object>();
             for( auto data = json_map.Begin();
                       data != json_map.End();
@@ -57,15 +57,16 @@ namespace Kernel
             {
                 std::string key = data->name;
                 std::string value = (std::string)s2sarray[idx][key].As< json::String >();
-                kvp.insert( std::make_pair( key, value ) );
+                IPKeyValue kv( key, value );
+                container.Add( kv );
             }
-            _restrictions.push_back( kvp );
+            _restrictions.push_back( container );
         }
     }
 
     json::QuickBuilder PropertyRestrictions::GetSchema()
     {
-        json::QuickBuilder schema( jsonSchemaBase );
+        json::QuickBuilder schema( GetSchemaBase() );
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
 
@@ -85,7 +86,13 @@ namespace Kernel
 
     void PropertyRestrictions::Add( std::map< std::string, std::string >& rMap )
     {
-        _restrictions.push_back( rMap );
+        IPKeyValueContainer container;
+        for( auto& entry : rMap )
+        {
+            IPKeyValue kv( entry.first, entry.second );
+            container.Add( kv );
+        }
+        _restrictions.push_back( container );
     }
 
     bool PropertyRestrictions::Qualifies( const IIndividualHumanEventContext* pHEC )
@@ -93,32 +100,17 @@ namespace Kernel
         auto * pProp = const_cast<Kernel::IIndividualHumanEventContext*>(pHEC)->GetProperties();
         release_assert( pProp );
 
-        if( !verified )
-        {
-            for (auto& prop_map : _restrictions)
-            {
-                for (auto& prop : prop_map)
-                {
-                    const std::string& szKey = prop.first;
-                    const std::string& szVal = prop.second;
-
-                    Node::VerifyPropertyDefinedInDemographics( szKey, szVal );
-                }
-            }
-            verified = true;
-        }
-
         bool qualifies = true;
 
         // individual has to have one of these properties
-        for (auto& prop_map : _restrictions)
+        for( IPKeyValueContainer& container : _restrictions)
         {
             qualifies = false;
             bool meets_property_restriction_criteria = true;
-            for (auto& prop : prop_map)
+            for( IPKeyValue kv : container)
             {
-                const std::string& szKey = prop.first;
-                const std::string& szVal = prop.second;
+                const std::string szKey = kv.GetKey().ToString();
+                const std::string szVal = kv.GetValueAsString();
 
                 LOG_DEBUG_F( "Applying property restrictions in event coordinator: %s/%s.\n", szKey.c_str(), szVal.c_str() );
                 // Every individual has to have a property value for each property key
@@ -146,6 +138,7 @@ namespace Kernel
                 break;
             }
         }
+
         return qualifies;
     }
 
@@ -154,12 +147,12 @@ namespace Kernel
         std::string restriction_str ;
         if( _restrictions.size() > 0 )
         {
-            for( auto prop_map : _restrictions )
+            for( IPKeyValueContainer container : _restrictions )
             {
                 restriction_str += "[ ";
-                for( auto entry : prop_map )
+                for( IPKeyValue kv : container )
                 {
-                    std::string prop = entry.first + ":" + entry.second;
+                    std::string prop = kv.ToString();
                     restriction_str += "'"+ prop +"', " ;
                 }
                 restriction_str = restriction_str.substr( 0, restriction_str.length()-2 );

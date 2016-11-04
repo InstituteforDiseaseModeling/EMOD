@@ -47,6 +47,7 @@ public:
     Configuration *Config;
     void* SimConfig;
     void* pPythonSupport;
+    void* pIPFactory;
     StatusReporter * Status_Reporter;
     
 #pragma warning( push )
@@ -78,20 +79,23 @@ public:
     // Cleans up open files, handles, memory, etc held by the environment
     static void Finalize();
 
-    static void setLogger(SimpleLogger* log) { if(localEnv == nullptr) localEnv = new Environment();  localEnv->Log = log; }
-    static const Configuration* getConfiguration() { return localEnv->Config ; }
+    static const Configuration* getConfiguration();
     static Configuration* CopyFromElement( const json::Element& rElement );
     static Configuration* LoadConfigurationFile( const std::string& rFileName );
-    static void setSimulationConfig(void* SimConfig) { localEnv->SimConfig = SimConfig; }
-    static const void* getSimulationConfig() { return localEnv->SimConfig; }
-    static StatusReporter * getStatusReporter () { return localEnv->Status_Reporter ; }
+
+    static Environment* getInstance();
+    static void setInstance( Environment * env );
+    static void setLogger( SimpleLogger* log );
+    static void setSimulationConfig( void* SimConfig );
+    static const void* getSimulationConfig();
+    static StatusReporter * getStatusReporter();
+    static void setIPFactory( void* pipf );
+    static void* getIPFactory();
 
     // Return path to specified file according to the following order of preference:
     // (1) in current working directory, (2) in specified InputPath
     static std::string FindFileOnPath( const std::string& rFilename );
 
-    static const Environment* getInstance() { return localEnv; }
-    static void setInstance(Environment * env) { localEnv = env; }
 
     virtual ~Environment();
 

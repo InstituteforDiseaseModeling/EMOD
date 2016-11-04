@@ -28,12 +28,6 @@ namespace Kernel
 
     GET_SCHEMA_STATIC_WRAPPER_IMPL(SimpleInterventionDistributionEventCoordinator, SimpleInterventionDistributionEventCoordinator)
 
-    QuickBuilder
-    SimpleInterventionDistributionEventCoordinator::GetSchema()
-    {
-        return QuickBuilder( jsonSchemaBase );
-    }
-
     // ctor
     SimpleInterventionDistributionEventCoordinator::SimpleInterventionDistributionEventCoordinator()
     : parent(nullptr)

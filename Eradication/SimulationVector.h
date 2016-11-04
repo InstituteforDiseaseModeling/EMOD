@@ -16,12 +16,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Simulation.h"
 #include "VectorContexts.h"
 #include "VectorCohort.h"
-#include "VectorCohortIndividual.h" // for vector migration
-#include "VectorPopulation.h"
-#include "IndividualVector.h"
-#include "Sugar.h"
-#include "Common.h"
-#include "VectorEnums.h"
 
 #ifndef BEDNET_ARRAY_LENGTH
 #define BEDNET_ARRAY_LENGTH 768
@@ -50,13 +44,13 @@ namespace Kernel
         virtual ~SimulationVector();
 
         // IVectorSimulationContext methods
-        virtual void  PostMigratingVector( const suids::suid& nodeSuid, VectorCohort* ind ) override;
+        virtual void  PostMigratingVector( const suids::suid& nodeSuid, IVectorCohort* ind ) override;
         virtual float GetNodePopulation( const suids::suid& nodeSuid ) override;
         virtual float GetAvailableLarvalHabitat( const suids::suid& nodeSuid, const std::string& rSpeciesID ) override;
 
         // Allows correct type of community to be added by derived class Simulations
         virtual void addNewNodeFromDemographics(suids::suid node_suid, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory) override;
-        virtual int  populateFromDemographics(const char* campaign_filename, const char* loadbalance_filename);
+        virtual int  populateFromDemographics(const char* campaign_filename, const char* loadbalance_filename) override;
 
         // Creates reporters.  Specifies vector-species-specific reporting in addition to base reporting
         virtual void Reports_CreateBuiltIn() override;
@@ -83,11 +77,11 @@ namespace Kernel
         SimulationVector();
         static bool ValidateConfiguration(const ::Configuration *config);
 
-        virtual void resolveMigration();
-        virtual void setupMigrationQueues();
+        virtual void resolveMigration() override;
+        virtual void setupMigrationQueues() override;
 
     private:
 
-        virtual ISimulationContext *GetContextPointer();
+        virtual ISimulationContext *GetContextPointer() override;
     };
 }

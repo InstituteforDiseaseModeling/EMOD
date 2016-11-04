@@ -64,6 +64,7 @@
             }
         },
         "PRIMARY":{
+            "logLevel_JsonConfigurable" : "WARNING",
             "Config_Name":"29_TB_Seattle_HTI_HSB_Drugs",
             "ENUMS":{
                 "Simulation_Type":"TB_SIM"

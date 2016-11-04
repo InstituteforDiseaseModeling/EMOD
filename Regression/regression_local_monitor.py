@@ -46,7 +46,8 @@ class Monitor(threading.Thread):
                 cmd = [self.config_json["bin_path"], "-C", "config.json", "--input-path", actual_input_dir, "--python-script-path", self.config_json["PSP"]]
             else:
                 cmd = [self.config_json["bin_path"], "-C", "config.json", "--input-path", actual_input_dir ]
-            print( "Calling '" + str(cmd) + "' from " + sim_dir + "\n" )
+            #print( "Calling '" + str(cmd) + "' from " + sim_dir + "\n" )
+            print( "Running '" + str(self.config_json["parameters"]["Config_Name"]) + "' in " + sim_dir + "\n" )
             proc = subprocess.Popen( cmd, stdout=stdout, stderr=stderr, cwd=sim_dir )
             proc.wait()
         # JPS - do we want to append config_json["parameters"]["Geography"] to the input_path here too like we do in the HPC case?
@@ -268,6 +269,10 @@ class Monitor(threading.Thread):
             alt_ref_path = os.path.join( ru.cache_cwd, os.path.join( str(self.config_id), os.path.join( "output", report_name ) ) )
             if os.path.exists( alt_ref_path ):
                 ref_path = alt_ref_path
+
+
+        if os.name == "nt" and report_name == "InsetChart.linux.json":
+            return True
 
         #if test_hash != ref_hash:
         if os.path.exists( test_path ) == False:

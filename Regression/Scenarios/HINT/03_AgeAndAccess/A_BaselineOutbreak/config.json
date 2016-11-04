@@ -99,6 +99,7 @@
         "Susceptibility_Scale_Type": "CONSTANT_SUSCEPTIBILITY", 
         "Transmission_Blocking_Immunity_Decay_Rate": 0.01, 
         "Transmission_Blocking_Immunity_Duration_Before_Decay": 90, 
+        "logLevel_JsonConfigurable": "WARNING", 
         "x_Air_Migration": 1, 
         "x_Birth": 1, 
         "x_Local_Migration": 1, 

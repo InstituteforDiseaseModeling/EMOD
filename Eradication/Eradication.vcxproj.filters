@@ -408,9 +408,6 @@
     <ClCompile Include="..\interventions\HealthSeekingBehavior.cpp">
       <Filter>Source Files\Campaign\IndividualTargeted</Filter>
     </ClCompile>
-    <ClCompile Include="Properties.cpp">
-      <Filter>Source Files\Kernel</Filter>
-    </ClCompile>
     <ClCompile Include="MultiRouteTransmissionGroups.cpp">
       <Filter>Source Files\HINT</Filter>
     </ClCompile>
@@ -558,7 +555,6 @@
     <ClCompile Include="GroupEventCoordinator.cpp" />
     <ClCompile Include="MultiInterventionEventCoordinator.cpp" />
     <ClCompile Include="MultiRouteTransmissionGroups.cpp" />
-    <ClCompile Include="Properties.cpp" />
     <ClCompile Include="PropertyReport.cpp" />
     <ClCompile Include="PropertyReportTB.cpp" />
     <ClCompile Include="SimpleTransmissionGroups.cpp" />
@@ -568,7 +564,6 @@
     <ClCompile Include="GroupEventCoordinator.cpp" />
     <ClCompile Include="MultiInterventionEventCoordinator.cpp" />
     <ClCompile Include="MultiRouteTransmissionGroups.cpp" />
-    <ClCompile Include="Properties.cpp" />
     <ClCompile Include="PropertyReport.cpp" />
     <ClCompile Include="PropertyReportTB.cpp" />
     <ClCompile Include="SimpleTransmissionGroups.cpp" />
@@ -578,7 +573,6 @@
     <ClCompile Include="GroupEventCoordinator.cpp" />
     <ClCompile Include="MultiInterventionEventCoordinator.cpp" />
     <ClCompile Include="MultiRouteTransmissionGroups.cpp" />
-    <ClCompile Include="Properties.cpp" />
     <ClCompile Include="PropertyReport.cpp" />
     <ClCompile Include="PropertyReportTB.cpp" />
     <ClCompile Include="SimpleTransmissionGroups.cpp" />
@@ -632,9 +626,6 @@
     </ClCompile>
     <ClCompile Include="..\interventions\WaningEffectFactory.cpp">
       <Filter>Source Files\Campaign\WaningEffects</Filter>
-    </ClCompile>
-    <ClCompile Include="JsonObjectDemog.cpp">
-      <Filter>Source Files\Kernel</Filter>
     </ClCompile>
     <ClCompile Include="BehaviorPfa.cpp">
       <Filter>Source Files\STI</Filter>
@@ -975,6 +966,9 @@
     <ClCompile Include="..\interventions\ControlledVaccine.cpp">
       <Filter>Source Files\Campaign\IndividualTargeted</Filter>
     </ClCompile>
+    <ClCompile Include="LarvalHabitatMultiplier.cpp">
+      <Filter>Source Files\Vector</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VectorPopulation.h">
@@ -1237,9 +1231,6 @@
     </ClInclude>
     <ClInclude Include="..\interventions\HealthSeekingBehavior.h">
       <Filter>Source Files\Campaign\IndividualTargeted</Filter>
-    </ClInclude>
-    <ClInclude Include="Properties.h">
-      <Filter>Source Files\Kernel</Filter>
     </ClInclude>
     <ClInclude Include="IContagionPopulation.h">
       <Filter>Source Files\HINT</Filter>
@@ -1830,9 +1821,6 @@
     <ClInclude Include="..\interventions\VectorControlNodeTargeted.h">
       <Filter>Source Files\Campaign\NodeTargeted\Vector</Filter>
     </ClInclude>
-    <ClInclude Include="JsonObjectDemog.h">
-      <Filter>Source Files\Kernel</Filter>
-    </ClInclude>
     <ClInclude Include="HIVInterventionsContainer.h">
       <Filter>Source Files\Campaign\InterventionContainers\STI\HIV</Filter>
     </ClInclude>
@@ -2153,6 +2141,21 @@
     </ClInclude>
     <ClInclude Include="..\interventions\ControlledVaccine.h">
       <Filter>Source Files\Campaign\IndividualTargeted</Filter>
+    </ClInclude>
+    <ClInclude Include="IVectorHabitat.h">
+      <Filter>Source Files\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="LarvalHabitatMultiplier.h">
+      <Filter>Source Files\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="TBParameters.h">
+      <Filter>Source Files\Airborne\TB</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorParameters.h">
+      <Filter>Source Files\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="MalariaParameters.h">
+      <Filter>Source Files\Vector\Malaria</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -26,6 +26,8 @@
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "HIVRandomChoice",
+                        "Abort_States": [  ],
+                        "Cascade_State": "",
                         "Choices":
                         {
                             "HCTUptakePostDebut4": 0.5,

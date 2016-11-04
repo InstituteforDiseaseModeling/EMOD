@@ -189,10 +189,10 @@ namespace Kernel
             LOG_VALID_F("Looking at route name %s.\n", routeNameFromMap.c_str());
             for (int iRoute = 0; iRoute < route.size(); iRoute++)
             {
-                const string routeName = route[iRoute];
+                const string& routeName = route[iRoute];
                 if (routeNameFromMap == routeName)
                 {
-                    LOG_VALID_F("foundRoute: routeIndex=%d\n",idx);
+                    //LOG_VALID_F("foundRoute: routeIndex=%d\n",idx);
                     (*membershipOut)[idx] = 0;
                 }
             }

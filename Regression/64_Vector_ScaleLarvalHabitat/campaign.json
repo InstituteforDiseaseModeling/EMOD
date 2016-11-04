@@ -3,9 +3,11 @@
         {
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
-                    "Habitat_Scale": 0.05, 
-                    "Habitat_Target": "TEMPORARY_RAINFALL", 
-                    "class": "ScaleLarvalHabitat"
+                    "class": "ScaleLarvalHabitat",
+                    "Larval_Habitat_Multiplier" :
+                    {
+                        "TEMPORARY_RAINFALL" : 0.05
+                    }
                 }, 
                 "class": "NodeEventCoordinator"
             }, 

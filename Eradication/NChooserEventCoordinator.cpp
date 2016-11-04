@@ -126,7 +126,7 @@ namespace Kernel
             ar.Configure( nullptr );
         }
 
-        json::QuickBuilder schema( jsonSchemaBase );
+        json::QuickBuilder schema( GetSchemaBase() );
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
         schema[ tn ] = json::String( "idmType:AgeRangeList" );
@@ -365,30 +365,38 @@ namespace Kernel
 
             if( (m_NumTargeted.size() > 0) && ((m_NumTargetedMales.size() > 0) || (m_NumTargetedFemales.size() > 0)) )
             {
-                int max = m_NumTargetedMales.size();
-                if( max < m_NumTargetedFemales.size() ) max = m_NumTargetedFemales.size();
-
-                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, 
-                    "Num_Targeted", m_NumTargeted.size(),
-                    "Num_Targeted_Males/Num_Targeted_Females", max, 
-                    "If using Num_Targeted, then Num_Targeted_Males and Num_Targeted_Females must be empty.\nIf using Num_Targeted_Males and Num_Targeted_Females, then Num_Targeted must be empty." );
+                std::stringstream ss;
+                ss << "The number of elements in 'Num_Targeted' is " << m_NumTargeted.size() << ".\n";
+                ss << "The number of elements in 'Num_Targeted_Males' is " << m_NumTargetedMales.size() << ".\n";
+                ss << "The number of elements in 'Num_Targeted_Females' is " << m_NumTargetedFemales.size() << ".\n";
+                ss << "If using Num_Targeted, then Num_Targeted_Males and Num_Targeted_Females must be empty.\nIf using Num_Targeted_Males and Num_Targeted_Females, then Num_Targeted must be empty.";
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
             }
 
             if( (m_NumTargeted.size() > 0) && (m_AgeRangeList.Size() != m_NumTargeted.size()) )
             {
-                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, 
-                    "Num_Targeted", m_NumTargeted.size(),
-                    "Age_Ranges_Years", m_AgeRangeList.Size(), 
-                    "Num_Targeted and Age_Range_Years must have the same number of elements, but not zero.  There should be one age range for each number targeted." );
+                std::stringstream ss;
+                ss << "The number of elements in 'Num_Targeted'(=" << m_NumTargeted.size() << ") is not the same as 'Age_Ranges_Years'(=" << m_AgeRangeList.Size() << ").\n";
+                ss << "'Num_Targeted' and 'Age_Range_Years' must have the same number of elements, but not zero.  There must be one age range for each number targeted.";
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
             }
 
-            if( ((m_NumTargetedMales.size() > 0) && ((m_AgeRangeList.Size() != m_NumTargetedMales.size()) || (m_AgeRangeList.Size() != m_NumTargetedFemales.size()))) ||
-                ((m_AgeRangeList.Size() == 0) && (m_NumTargeted.size() == 0) &&  (m_NumTargetedMales.size() == 0) &&  (m_NumTargetedFemales.size() == 0)) )
+            if( ((m_NumTargetedMales.size() > 0) || (m_NumTargetedFemales.size() > 0)) && ((m_AgeRangeList.Size() != m_NumTargetedMales.size()) || (m_AgeRangeList.Size() != m_NumTargetedFemales.size())) )
             {
-                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, 
-                    "Num_Targeted_Males", m_NumTargetedMales.size(),
-                    "Age_Ranges_Years", m_AgeRangeList.Size(), 
-                    "Num_Targeted_Males, Num_Targeted_Females, and Age_Range_Years must have the same number of elements, but not zero.  There should be one age range for each number targeted." );
+                std::stringstream ss;
+                ss << "The number of elements in 'Num_Targeted_Males' is " << m_NumTargetedMales.size() << ".\n";
+                ss << "The number of elements in 'Num_Targeted_Females' is " << m_NumTargetedFemales.size() << ".\n";
+                ss << "The number of elements in 'Age_Range_Years' is " << m_AgeRangeList.Size() << ".\n";
+                ss << "'Num_Targeted_Males', 'Num_Targeted_Females', and 'Age_Range_Years' must have the same number of elements, but not zero.  There must be one age range for each number targeted.";
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            }
+
+            if( (m_AgeRangeList.Size() == 0) && (m_NumTargeted.size() == 0) && (m_NumTargetedMales.size() == 0) && (m_NumTargetedFemales.size() == 0) )
+            {
+                std::stringstream ss;
+                ss << "The arrays 'Age_Range_Years', 'Num_Targeted_Males', and 'Num_Targeted_Females' have zero elements.\n";
+                ss << "Num_Targeted_Males, Num_Targeted_Females, and Age_Range_Years must have the same number of elements, but not zero.  There must be one age range for each number targeted.";
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
             }
 
             CheckForZeroTargeted();
@@ -485,7 +493,7 @@ namespace Kernel
 
     float TargetedDistribution::GetCurrentInDays( const IdmDateTime& rDateTime ) const
     {
-        return rDateTime.Year() * DAYSPERYEAR;
+        return rDateTime.time;
     }
 
     void TargetedDistribution::CreateAgeAndGenderList( const IdmDateTime& rDateTime, float dt )
@@ -686,7 +694,7 @@ namespace Kernel
             p_td->Configure( nullptr );
         }
 
-        json::QuickBuilder schema( jsonSchemaBase );
+        json::QuickBuilder schema( GetSchemaBase() );
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
         schema[ tn ] = json::String( "idmType:TargetedDistributionList" );
@@ -723,7 +731,8 @@ namespace Kernel
         // ----------------------------------------------------
         // --- Update where we are in the list of distributions
         // ----------------------------------------------------
-        while( m_TargetedDistributions[ m_CurrentIndex ]->IsPastEnd( rDateTime ) )
+        while( (m_CurrentIndex < m_TargetedDistributions.size()) &&
+               m_TargetedDistributions[ m_CurrentIndex ]->IsPastEnd( rDateTime ) )
         {
             ++m_CurrentIndex;
         }
@@ -844,11 +853,6 @@ namespace Kernel
         delete m_pObjectFactory;
     }
 
-
-    QuickBuilder NChooserEventCoordinator::GetSchema()
-    {
-        return QuickBuilder( jsonSchemaBase );
-    }
 
     bool NChooserEventCoordinator::Configure( const Configuration * inputJson )
     {

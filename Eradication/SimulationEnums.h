@@ -47,15 +47,6 @@ namespace Kernel
         ENUM_VALUE_SPEC(DISTRIBUTION_SIMPLE                                 , 1)
         ENUM_VALUE_SPEC(DISTRIBUTION_COMPLEX                                , 2))
 
-    // ENUM defs for evolution_polio_clock_type
-    ENUM_DEFINE(EvolutionPolioClockType, 
-        ENUM_VALUE_SPEC(POLIO_EVOCLOCK_NONE                                 , 0)
-        ENUM_VALUE_SPEC(POLIO_EVOCLOCK_LINEAR                               , 1)
-        ENUM_VALUE_SPEC(POLIO_EVOCLOCK_IMMUNITY                             , 2)
-        ENUM_VALUE_SPEC(POLIO_EVOCLOCK_REVERSION_AND_IMMUNITY               , 3)
-        ENUM_VALUE_SPEC(POLIO_EVOCLOCK_REVERSION                            , 4)
-        ENUM_VALUE_SPEC(POLIO_EVOCLOCK_POISSONSITES                         , 5))
-
     // ENUM defs for IND_SAMPLING_TYPE
     ENUM_DEFINE(IndSamplingType, 
         ENUM_VALUE_SPEC(TRACK_ALL                                           , 0)
@@ -64,15 +55,6 @@ namespace Kernel
         ENUM_VALUE_SPEC(ADAPTED_SAMPLING_BY_AGE_GROUP                       , 3)
         ENUM_VALUE_SPEC(ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE          , 4)
         ENUM_VALUE_SPEC(ADAPTED_SAMPLING_BY_IMMUNE_STATE                    , 5))
-
-    // ENUM defs for LOAD_BALANCING_SCHEME
-    ENUM_DEFINE(LoadBalancingScheme, 
-        ENUM_VALUE_SPEC(STATIC                                              , 0)
-        ENUM_VALUE_SPEC(PROCESSOR_LOAD_FIXED_TIME                           , 1)
-        ENUM_VALUE_SPEC(PROCESSOR_LOAD_RUNTIME_TRIGGER                      , 2)
-        ENUM_VALUE_SPEC(PROCESSOR_LOAD_RUNTIME_COST_FUNCTION                , 3)
-        ENUM_VALUE_SPEC(PROCESSOR_COMMUNICATION_LOAD_1                      , 4)
-        ENUM_VALUE_SPEC(PROCESSOR_COMMUNICATION_LOAD_2                      , 5))
 
     // ENUM defs for MIGRATION_PATTERN
     ENUM_DEFINE(MigrationPattern, 
@@ -147,13 +129,6 @@ namespace Kernel
         ENUM_VALUE_SPEC(STI_SIM                                             , 8)
         ENUM_VALUE_SPEC(HIV_SIM                                             , 9)
         ENUM_VALUE_SPEC(PY_SIM                                          , 10))
-
-    // ENUM defs for VDPV_virulence_model_type
-    ENUM_DEFINE(VDPVVirulenceModelType, 
-        ENUM_VALUE_SPEC(POLIO_VDPV_NONVIRULENT                              , 0)
-        ENUM_VALUE_SPEC(POLIO_VDPV_PARALYSIS                                , 1)
-        ENUM_VALUE_SPEC(POLIO_VDPV_PARALYSIS_AND_LOG_INFECTIVITY            , 2)
-        ENUM_VALUE_SPEC(POLIO_VDPV_LOG_PARALYSIS_AND_LOG_INFECTIVITY        , 3))
 
     // ENUM defs for VITAL_BIRTH_DEPENDENCE
     ENUM_DEFINE(VitalBirthDependence, 

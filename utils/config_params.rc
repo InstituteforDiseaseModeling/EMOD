@@ -43,9 +43,8 @@
 #define Base_Relative_Humidity_DESC_TEXT     "The value of humidity where Climate_Model is set to CLIMATE_CONSTANT."
 #define Base_Sporozoite_Survival_Fraction_DESC_TEXT "Fraction of sporozoites that survive to infect a hepatocyte in the absence of anti-CSP protection."
 #define Base_Year_DESC_TEXT     "Absolute time in years when the simulation begins, e.g. 1990.  This can be combined with CampaignEventByYear to trigger campaign events."
-#define Birth_Rate_Dependence_DESC_TEXT     "This parameter determines how the birth rate specified in the demographics file is used. Possible values are: FIXED_BIRTH_RATE- The absolute rate at which new individuals are born. POPULATION_DEP_RATE - Scales the node population to determine the birth rate. DEMOGRAPHIC_DEP_RATE - Scales the female population within fertility age ranges to determine the birth rate. INDIVIDUAL_PREGNANCIES - Results in a similar birth rate as DEMOGRAPHIC_DEP_RATE, but pregnancies are assigned on an individual basis and result in a 40-week pregnancy for a specific individual with a birth at the end, INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE, and INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR"
+#define Birth_Rate_Dependence_DESC_TEXT     "This parameter determines how the birth rate specified in the demographics file is used. Possible values are: FIXED_BIRTH_RATE- The absolute rate at which new individuals are born. POPULATION_DEP_RATE - Scales the node population to determine the birth rate. DEMOGRAPHIC_DEP_RATE - Scales the female population within fertility age ranges to determine the birth rate. INDIVIDUAL_PREGNANCIES - Results in a similar birth rate as DEMOGRAPHIC_DEP_RATE, but pregnancies are assigned on an individual basis and result in a 40-week pregnancy for a specific individual with a birth at the end, INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE, and INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR."
 #define Campaign_Filename_DESC_TEXT     "Path of the simulation campaign file.  This configuration file defines campaign related settings and thus, is an optional file, only required when interventions are part of the simulation."
-#define CD4_Strata_Activation_DESC_TEXT "CD4 strata"
 #define Climate_Model_DESC_TEXT     "Determines how the climate of a simulation is configured and from what file(s). Possible values are: CLIMATE_OFF, CLIMATE_CONSTANT - Uses the conditional parameters that give the fixed values of temperature or rain for land temperature, air temperature, rainfall and humidity. CLIMATE_KOPPEN - Uses an input file that decodes Koppen codes by geographic location. CLIMATE_BY_DATA - Reads everything out of several input files with additional parameters that allow the addition of stochasticity or scale offsets."
 #define Climate_Update_Resolution_DESC_TEXT     "Update resolution for data in climate files. Possible values are: CLIMATE_UPDATE_YEAR, CLIMATE_UPDATE_MONTH, CLIMATE_UPDATE_WEEK, CLIMATE_UPDATE_DAY and CLIMATE_UPDATE_HOUR."
 #define Clinical_Fever_Threshold_High_DESC_TEXT     "The fever threshold (in degrees Celsius above normal) to start a clinical incident."
@@ -77,13 +76,13 @@
 #define Enable_Birth_DESC_TEXT     "Set to 1 to enable individuals to be added to the simulation by birth."
 #define Enable_Configurable_Inset_Chart_DESC_TEXT  "Set to 1 to skip standard inset chart and enable configurable inset chart.  Requires parameters Inset_Chart_Channel_Blacklist or Whitelist, Inset_Chart_Start_Day, Inset_Chart_End_Day, Inset_Chart_Aggregation_Duration to configure the inset chart."
 #define Enable_Climate_Stochasticity_DESC_TEXT     "Controls overall stochasticity for climate. Use value 0 to disable all additional climate stochasticity. Use value 1 to enable additional variation as specified by the parameters: Air_Temperature_Variance, Land_Temperature_Variance, Enable_Rainfall_Stochasticity and Relative_Humidity_Variance."
-#define Enable_Coinfection_Incidence_DESC_TEXT "Enable Coinfection Incidence"
-#define Enable_Coinfection_Mortality_DESC_TEXT "HIVTB specific mortality"
+#define Enable_Coinfection_Incidence_DESC_TEXT "Enable Coinfection Incidence."
+#define Enable_Coinfection_Mortality_DESC_TEXT "HIVTB specific mortality."
 #define Enable_Demographics_Birth_DESC_TEXT     "Assumes that newborn characteristics such as sickle-cell status are heterogeneous. Set to 0 to assume by default that all newborns have identical characteristics."
 #define Enable_Demographics_Gender_DESC_TEXT     "Enable_Demographics_Gender=0 assigns gender based on a 50/50 draw, while Enable_Demographics_Gender=1 draws from a male/female ratio that is randomly smeared by a Gaussian of width 1%."
 #define Enable_Demographics_Initial_DESC_TEXT     "Uses demographics input files to configure the initial population. Enter 0 to use a standard testing sandbox which is useful for testing and validating code pathways."
-#define Default_Geography_Torus_Size_DESC_TEXT "TBD - When using the default geography (i.e. Enable_Demographis_Initial = 0), this is square root of the number of nodes in the simulation.  For migration, the nodes are assumed to be a torus."
-#define Default_Geography_Initial_Node_Population_DESC_TEXT "TBD - When using the default geography (i.e. Enable_Demographis_Initial = 0), this is the initial number of individuals in each node."
+#define Default_Geography_Torus_Size_DESC_TEXT "When using the default geography (i.e. Enable_Demographics_Initial = 0), this is the square root of the number of nodes in the simulation.  For migration, the nodes are assumed to be a torus."
+#define Default_Geography_Initial_Node_Population_DESC_TEXT "When using the default geography (i.e. Enable_Demographics_Initial = 0), this is the initial number of individuals in each node."
 #define Enable_Demographics_Other_DESC_TEXT     "Includes the impact of other relevant demographic factors. For example, fraction of individuals above poverty, urban/rural characteristics, heterogeneous initial immunity and risk. Set to 0 to run the simulation without other relevant demographic factors."
 #define Enable_Demographics_Reporting_DESC_TEXT     "Outputs demographic summary data and age-binned reports to file."
 #define Enable_Disease_Mortality_DESC_TEXT     "Set to 1 to enable disease mortality. Set to 0 to disable disease mortality."
@@ -100,15 +99,15 @@
 #define Enable_Sea_Migration_DESC_TEXT     "Set to 1 to account for migration on ships in and out of coastal cities with seaports. Set to 0 to assume by default that no migration occurs by sea travel."
 #define Enable_Sexual_Combination_DESC_TEXT     "Set to 1 to enable sexual combination of male and female gametocytes. Set to 0 for transmission of each strain only. Note: This parameter is currently not in use."
 #define Enable_Spatial_Output_DESC_TEXT     "Use value 0 to disable all spatial output channels. Use value 1 to enable spatial output of all channels listed in the array parameter: Spatial_Output_Channels.  For full documentation of spatial output channels, please see the online documentation."
-#define Spatial_Output_Days_To_Accumulate_DESC_TEXT  "Number of days to accumulate for each entry in spatial report output.  Accumulation method is sum"
+#define Spatial_Output_Days_To_Accumulate_DESC_TEXT  "Number of days to accumulate for each entry in spatial report output.  Accumulation method is sum."
 #define Enable_Superinfection_DESC_TEXT     "Set to 1 if an individual can have multiple infections with the same agent simultaneously. Set to 0 if multiple infections are not possible. See the Max_Individual_Infections parameter."
-#define Enable_Vector_Mortality_DESC_TEXT "TBD"
-#define Enable_Vector_Migration_DESC_TEXT     "Set to 1 to enable vector migration. Set to 0 to disable vector migration. Note: Only supported for individual-vector model with Vector_Sampling_Type value of TRACK_ALL_VECTORS or SAMPLE_IND_VECTORS"
+#define Enable_Vector_Mortality_DESC_TEXT "Set to 1 to allow vectors to die. Only relevant when VECTOR_SAMPLING_TYPE is TRACK_ALL_VECTORS."
+#define Enable_Vector_Migration_DESC_TEXT     "Set to 1 to enable vector migration. Set to 0 to disable vector migration. Note: Only supported for individual-vector model with Vector_Sampling_Type value of TRACK_ALL_VECTORS or SAMPLE_IND_VECTORS."
 #define Enable_Vector_Migration_Local_DESC_TEXT     "Set to 1 to consider local vector migration by vectors to adjacent nodes. Set to 0 to not consider local vector migration."
 #define Enable_Vector_Migration_Regional_DESC_TEXT     "Set to 1 to consider regional vector migration by vectors to non-adjacent nodes. Set to 0 to not consider regional vector migration."
 #define Enable_Vital_Dynamics_DESC_TEXT     "Set to 1 as a master switch to enable vital dynamics (births and deaths). Set to 0 to disable vital dynamics. Even when set to 1, the individual toggles for births and deaths can still disable these."
 #define Erythropoiesis_Anemia_Effect_DESC_TEXT   "Exponential rate of increased red-blood-cell production from reduced red-blood-cell availability."
-#define Event_Coordinator_Config_DESC_TEXT "Configuration of the EventCoordinator to be instantiated."
+#define Event_Coordinator_Config_DESC_TEXT "The configuration of the EventCoordinator to be instantiated."
 #define Falciparum_MSP_Variants_DESC_TEXT     "The number of distinct MSP variants for P. falciparum malaria in the overall parasite population in the simulation, not necessarily in an individual."
 #define Falciparum_Nonspecific_Types_DESC_TEXT     "The number of distinct non-specific types of P. falciparum malaria."
 #define Falciparum_PfEMP1_Variants_DESC_TEXT     "The number of distinct PfEMP1 variants for P. falciparum malaria in the overall parasite population in the simulation."
@@ -119,7 +118,7 @@
 #define Fever_Severe_Inverse_Width_DESC_TEXT     "The inverse width relative to threshold value of severe disease turn-on around threshold for fever."
 #define Fever_Severe_Threshold_DESC_TEXT     "The severe disease threshold level for fever."
 #define Gametocyte_Stage_Survival_Rate_DESC_TEXT     "Rate of gametocyte survival from one development stage to the next in the absence of drugs or inflammatory immune response."
-#define Habitat_Type_DESC_TEXT     "An array of habitat type used for larval breeding. For example, ['CONSTANT', 'TEMPORARY_RAINFALL', 'WATER_VEGETATION']. More than one habitat may be selected. Possible values are: CONSTANT, TEMPORARY_RAINFALL, WATER_VEGETATION, HUMAN_POPULATION and BRACKISH_SWAMP. Vectors may reside in more than one habitat. This allows for inter-species competition in a shared habitat."
+#define Habitat_Type_DESC_TEXT     "This parameter is deprecated and has been replaced with Larval_Habitat_Types."
 #define HEG_Fecundity_Limiting_DESC_TEXT     "The fractional reduction in the number of eggs laid by a female mosquito who is homozygous in the homing endonuclease gene (HEG)."
 #define HEG_Homing_Rate_DESC_TEXT     "The fractional redistribution from heterozygous offspring to the homozygous homing-endonuclease-gene (HEG) behavior."
 #define HEG_Model_DESC_TEXT  "An enum governing the homing endonuclease gene (HEG) dynamics. Possible values are: OFF, GERMLINE_HOMING (early), EGG_HOMING (late)."
@@ -157,12 +156,20 @@
 #define Land_Temperature_Variance_DESC_TEXT     "The standard deviation (in degrees Celsius) for normally distributed noise applied to the daily land temperature values when Climate_Model is configured as CLIMATE_CONSTANT or CLIMATE_BY_DATA.  Only used if the Enable_Climate_Stochasticity is set to 1."
 #define Larval_Density_Mortality_Offset_DESC_TEXT "An offset factor in the formula determining the larval-age-dependent mortality for the GRADUAL_INSTAR_SPECIFIC and LARVAL_AGE_DENSITY_DEPENDENT_MORTALITY_ONLY models."
 #define Larval_Density_Mortality_Scalar_DESC_TEXT "A scale factor in the formula determining the larval-age-dependent mortality for the GRADUAL_INSTAR_SPECIFIC and LARVAL_AGE_DENSITY_DEPENDENT_MORTALITY_ONLY models."
+#define Larval_Habitat_Types_DESC_TEXT  "A measure of the habitat type and scaling factors to use to estimate larval population. You can specify this with a dictionary specifying habitat type with a simple numeric scaling factor or, for LINEAR_SPLINE, with a more detailed configuration for scaling. \
+Possible habitat values are: \
+CONSTANT \
+TEMPORARY_RAINFALL \
+WATER_VEGETATION \
+HUMAN_POPULATION \
+BRACKISH_SWAMP \
+LINEAR_SPLINE."
 #define Larval_Rainfall_Mortality_Threshold_DESC_TEXT     "The threshold value on daily rainfall in millimeters, above which larval mortality is applied when Vector_Larval_Rainfall_Mortality is set to either SIGMOID or SIGMOID_HABITAT_SHIFTING."
 #define Load_Balance_Filename_DESC_TEXT     "Path to input file used when a static load balancing scheme is selected."
 #define Local_Migration_Filename_DESC_TEXT     "Path of input file defining patterns of migration to adjacent nodes by foot travel."
 #define Local_Migration_Roundtrip_Duration_DESC_TEXT     "The average time spent at the destination node during a round-trip migration by foot travel."
 #define Local_Migration_Roundtrip_Probability_DESC_TEXT     "Likelihood that an individual who walks into a neighboring cell will return to the cell of origin during the next migration. Relevant only when Enable_Local_Migration is selected."
-#define Malaria_Model_DESC_TEXT     "The type of malaria model used in a simulation. Possible values are:  MALARIA_FIXED_DURATION, MALARIA_EXPONENTIAL_DURATION, MALARIA_REDUCEDSTATE_MODEL and  MALARIA_MECHANISTIC_MODEL.  Important: All malaria simulations should use MALARIA_MECHANISTIC_MODEL. The others are placeholder values.  "
+#define Malaria_Model_DESC_TEXT     "The type of malaria model used in a simulation. Possible values are:  MALARIA_FIXED_DURATION, MALARIA_EXPONENTIAL_DURATION, MALARIA_REDUCEDSTATE_MODEL and  MALARIA_MECHANISTIC_MODEL.  Important: All malaria simulations should use MALARIA_MECHANISTIC_MODEL. The others are placeholder values."
 #define Malaria_Strain_Model_DESC_TEXT     "The generator that is used to construct the antigenic repertoire of a malaria infection. Possible values are: FALCIPARUM_NONRANDOM_STRAIN, FALCIPARUM_RANDOM50_STRAIN, FALCIPARUM_RANDOM_STRAIN and FALCIPARUM_STRAIN_GENERATOR."
 #define Maternal_Antibodies_Type_DESC_TEXT       "Type of maternal antibody protection.  Possible values are: OFF, SIMPLE_WANING, CONSTANT_INITIAL_IMMUNITY (independent of acquired immunity in possible mothers)."
 #define Maternal_Antibody_Decay_Rate_DESC_TEXT   "Decay rate per day in protection from maternal antibodies."
@@ -188,9 +195,7 @@
 #define New_Diagnostic_Sensitivity_DESC_TEXT     "The number of microliters of blood tested to find single parasites in a new diagnostic (corresponds to inverse parasites/microliters sensitivity)."
 #define Newborn_Biting_Risk_DESC_TEXT     "For age-dependent biting risk type = linear; defines the y-intercept of the linear portion of the biting risk curve."
 #define Node_Grid_Size_DESC_TEXT     "Spatial resolution indicating the node grid size for a simulation in degrees."
-#define Node_List_DESC_TEXT "comma-separated list of node ids"
 #define Node_Polygon_Format_DESC_TEXT "Right now just SHAPE."
-#define Node_Polygon_Vertices_DESC_TEXT "comma-separated list of polygon points."
 #define Nodeset_Config_DESC_TEXT "The NodeSet describing the nodes covered by the event."
 #define Nonspecific_Antibody_Growth_Rate_Factor_DESC_TEXT     "Factor that adjusts Antibody_Capacity_Growth_Rate for less immunogenic surface proteins called the minor epitopes."
 #define Nonspecific_Antigenicity_Factor_DESC_TEXT     "Nonspecific antigenicity factor that adjusts antibody IRBC killrate to account for IRBCs caused by antibody responses to antigenically weak surface proteins."
@@ -221,12 +226,12 @@
 #define Relative_Humidity_Filename_DESC_TEXT     "Path of input file defining relative humidity data measured 2 meters above ground. Relevant only if Climate_Model is set to CLIMATE_BY_DATA."
 #define Relative_Humidity_Scale_Factor_DESC_TEXT     "The scalar used in multiplying relative humidity value(s). This is only used or needed when Climate_Model is set to CLIMATE_BY_DATA."
 #define Relative_Humidity_Variance_DESC_TEXT     "The standard deviation (in percentage, %) for normally distributed noise applied to the daily relative humidity values when Climate_Model is configured as CLIMATE_CONSTANT or CLIMATE_BY_DATA.  Only used if the Enable_Climate_Stochasticity is set to 1."
-#define Report_HIV_ART_DESC_TEXT     "Enable HIV 'ART'"
-#define Report_HIV_ByAgeAndGender_DESC_TEXT     "Enable HIV 'By Age and Gender Reporter'"
-#define Report_HIV_Infection_DESC_TEXT     "Enable HIV 'Infection Reporter'"
-#define Report_HIV_Mortality_DESC_TEXT     "Enable HIV Mortality (disease and non-disease deaths) Reporter"
-#define Report_HIV_Period_DESC_TEXT     "Value of HIV By Age And Gender report period"
-#define Required_Habitat_Factor_DESC_TEXT     "An array of scaling factors used to determine the volume of habitat needed for larvae to breed. Represents the number of larvae in a 1x1-degree area. The factor multiplicatively scales the resulting weather or population dependent functional form."
+#define Report_HIV_ART_DESC_TEXT     "Enable HIV 'ART'."
+#define Report_HIV_ByAgeAndGender_DESC_TEXT     "Enable HIV 'By Age and Gender Reporter'."
+#define Report_HIV_Infection_DESC_TEXT     "Enable HIV 'Infection Reporter'."
+#define Report_HIV_Mortality_DESC_TEXT     "Enable HIV Mortality (disease and non-disease deaths) Reporter."
+#define Report_HIV_Period_DESC_TEXT     "Value of HIV By Age And Gender report period."
+#define Required_Habitat_Factor_DESC_TEXT     "This parameter is deprecated and has been replaced with Larval_Habitat_Types."
 #define Roundtrip_Waypoints_DESC_TEXT     "The maximum number of points reached during a trip before steps are retraced on the return trip home."
 #define Run_Number_DESC_TEXT     "Sets the random number seed through a bit manipulation process for USE_PSEUDO_DES. When running a multi-core simulation, combines with processor rank to produce independent random number streams for each process."
 #define Sample_Rate_0_18mo_DESC_TEXT     "Relative sampling rate for infants for the 0-18-month age group for age-adapted sampling."
@@ -236,31 +241,29 @@
 #define Sample_Rate_20_Plus_DESC_TEXT     "Relative sampling rate for young adults in the age group 20 years or greater for age-adapted sampling."
 #define Sample_Rate_5_9_DESC_TEXT     "Relative sampling rate for children in the age group 5-9 years for age-adapted sampling."
 #define Sample_Rate_Birth_DESC_TEXT     "Relative of relative sampling for births for age-adapted sampling."
-#define Sample_Rate_Immune_DESC_TEXT     "Relative sampling rate for people who have acquired immunity - through recovery or vaccination"
-#define Immune_Threshold_For_Downsampling_DESC_TEXT  "Threshold on acquisition immunity at which to apply immunity dependent downsampling.  Only matters when Individual_Sampling_Type is set to ADAPTED_SAMPLING_BY_IMMUNE_STATE"
+#define Sample_Rate_Immune_DESC_TEXT     "Relative sampling rate for people who have acquired immunity - through recovery or vaccination."
+#define Immune_Threshold_For_Downsampling_DESC_TEXT  "Threshold on acquisition immunity at which to apply immunity dependent downsampling.  Only matters when Individual_Sampling_Type is set to ADAPTED_SAMPLING_BY_IMMUNE_STATE."
 #define Sea_Migration_Filename_DESC_TEXT     "Path of input file defining patterns of migration by ship."
 #define Sea_Migration_Roundtrip_Duration_DESC_TEXT     "The average time spent at the destination node during a round-trip migration by ship."
 #define Sea_Migration_Roundtrip_Probability_DESC_TEXT     "Likelihood that an individual who travels by ship into a neighboring cell will return to the cell of origin during the next migration. Relevant only when Enable_Sea_Migration is checked."
 #define Semipermanent_Habitat_Decay_Rate_DESC_TEXT     "Daily rate of larval habitat loss for semi-permanent habitats with Habitat_Type parameter of WATER_VEGETATION or BRACKISH_SWAMP."
-#define Serialization_Test_Cycles_DESC_TEXT "Serialization_Test_Cycles"
 #define Simulation_Duration_DESC_TEXT     "Elapsed time noted in days from the start to the end of a simulation."
 #define Simulation_Timestep_DESC_TEXT     "Value indicating simulation time step in days."
-#define Simulation_Type_DESC_TEXT     "Type of disease being simulated. Possible values are: GENERIC_SIM, VECTOR_SIM, MALARIA_SIM, ENVIRONMENTAL_SIM, AIRBORNE_SIM, TB_SIM, STI_SIM and HIV_SIM."
+#define Simulation_Type_DESC_TEXT     "Type of disease being simulated. Supported values include GENERIC_SIM, VECTOR_SIM, MALARIA_SIM, TB_SIM, STI_SIM, HIV_SIM, and PY_SIM. To query the values supported for your specific build, use the --version option."
 #define Spatial_Output_Channels_DESC_TEXT     "An array of channel names for spatial output by Node and time step. The data from each channel will be written to a separate binary file. For full documentation of spatial output channels, please see the online documentation."
-#define Start_Day_DESC_TEXT "Day of the simulation to activate the event's event coordinator"
+#define Start_Day_DESC_TEXT "Day of the simulation to activate the event's event coordinator."
 #define Start_Time_DESC_TEXT     "Time noted in days when the simulation begins. This time influences the point in the temporal input data, such as where in the climate input the DTK starts running the simulation. Note: The Start_Day of campaign events is in absolute time. So, time relative to the beginning of the simulation depends on this parameter."
 #define Start_Year_DESC_TEXT     "Absolute year of the simulation to activate the event's event coordinator.  Internally converted to Start_Day using Base_Year and Simulation_Timestep."
-#define Susceptibility_Scale_Type_DESC_TEXT "Alter infectivity by time or season. Possible values are: CONSTANT_SUSCEPTIBILITY, LOG_LINEAR_FUNCTION_OF_TIME"
-#define Susceptibility_Scaling_Rate_DESC_TEXT "For Susceptibility_Scale_Type of any_FUNCTION_OF_TIME, Susceptbility_Scaling_Rate determines the variation in time of the susceptibility to exposed contagion"
+#define Susceptibility_Scale_Type_DESC_TEXT "Alter infectivity by time or season. Possible values are: CONSTANT_SUSCEPTIBILITY, LOG_LINEAR_FUNCTION_OF_TIME."
+#define Susceptibility_Scaling_Rate_DESC_TEXT "For Susceptibility_Scale_Type of any_FUNCTION_OF_TIME, Susceptbility_Scaling_Rate determines the variation in time of the susceptibility to exposed contagion."
 #define Target_Age_Max_DESC_TEXT "Upper end of age targeted for intervention, in years."
 #define Target_Age_Min_DESC_TEXT "Lower end of age targeted for intervention, in years."
-#define Target_Demographic_DESC_TEXT "The demographic group (from a list of possibles) targeted by this intervention (e.g., Infants)"
+#define Target_Demographic_DESC_TEXT "The demographic group (from a list of possibles) targeted by this intervention (e.g., Infants)."
 #define TB_Active_Cure_Rate_DESC_TEXT "The mean rate at which active symptomatic individuals progress to a cured (uninfected) state. In the absence of treatment, this rate is added to TB_Inactivation_Rate and TB_Active_Mortality_Rate to determine the total_rate of the active smear-positive state, then the ratio of TB_Active_Cure_Rate to total_rate determines the probability that an actively infected individual will go to a cured state after a mean duration of 1 / total_rate."
 #define TB_Active_Mortality_Rate_DESC_TEXT "The mean rate at which active smear-positive individuals die from TB disease. In the absence of treatment, this rate is added to TB_Active_Cure_Rate and TB_Inactivation_Rate to determine the total_rate of the active smear-positive state, then the ratio of TB_Active_Mortality_Rate to total_rate determines the probability that an active smear-positive individual will die from TB disease after a mean duration of 1 / total_rate."
 #define TB_Active_Period_Distribution_DESC_TEXT "Distribution for duration of active disease. For both EXPONENTIAL_DURATION and GAUSSIAN_DURATION, the mean is defined by total_rate which is the sum of TB_Inactivation_Rate and TB_Active_Mortality_Rate corrected for smear status. For GAUSSIAN_DURATION, an additional parameter TB_Active_Period_Std_Dev is used to provide a value for standard deviation."
 #define TB_Active_Period_Std_Dev_DESC_TEXT "When TB_Active_Period_Distribution is set to GAUSSIAN_DURATION, this parameter provides the value for standard deviation."
 #define TB_Active_Presymptomatic_Infectivity_Multiplier_DESC_TEXT "A constant by which Base_Infectivity is multiplied to give the infectiousness of active presymptomatic individuals."
-#define TB_cd4_activation_vec_DESC_TEXT "Increased risk per time step of TB activation by CD4"
 #define TB_Drug_Efficacy_Multiplier_Failed_DESC_TEXT "A constant by which drug efficacy parameters (TB_Drug_Inactivation_Rate and TB_Drug_Clearance_Rate) are multiplied to give the efficacy of first-line drugs when given to individuals who have failed treatment. The value of 1 assumes equal efficacy for treatment-naive and treatment-failed individuals."
 #define TB_Drug_Efficacy_Multiplier_MDR_DESC_TEXT "A constant by which drug efficacy parameters (TB_Drug_Inactivation_Rate and TB_Drug_Clearance_Rate) are multiplied to give the efficacy of first-line drugs when given to individuals with MDR-TB. The value of 1 assumes equal efficacy for drug-sensitive TB and MDR-TB."
 #define TB_Drug_Efficacy_Multiplier_Relapsed_DESC_TEXT "A constant by which drug efficacy parameters (TB_Drug_Inactivation_Rate and TB_Drug_Clearance_Rate) are multiplied to give the efficacy of first-line drugs when given to individuals who have relapsed after treatment. The value of 1 assumes equal efficacy for treatment-naive and relapsed individuals."
@@ -295,20 +298,20 @@
 #define Target_Age_Min_DESC_TEXT "Lower end of age targeted for intervention, in years."
 #define Target_Age_Max_DESC_TEXT "Upper end of age targeted for intervention, in years."
 
-#define Start_Day_DESC_TEXT "Day of the simulation to activate the event's event coordinator"
+#define Start_Day_DESC_TEXT "Day of the simulation to activate the event's event coordinator."
 #define Nodeset_Config_DESC_TEXT "The NodeSet describing the nodes covered by the event."
-#define Event_Coordinator_Config_DESC_TEXT "Configuration of the EventCoordinator to be instantiated."
+#define Event_Coordinator_Config_DESC_TEXT "The configuration of the EventCoordinator to be instantiated."
 
-#define Target_Disease_State_DESC_TEXT "The disease state group (from a list of possibles) targeted by this intervention (e.g., Infected)"
-#define Target_Group_DESC_TEXT "TBD"
-#define Time_Offset_DESC_TEXT "time used in demographic file for intervention is simulation time - time_offset"
+#define Target_Disease_State_DESC_TEXT "The disease state group (from a list of possibles) targeted by this intervention (e.g., Infected)."
+#define Target_Group_DESC_TEXT "The group of individuals targeted by this intervention."
+#define Time_Offset_DESC_TEXT "The time used in demographic file for intervention is simulation time - time_offset."
 
-#define Node_List_DESC_TEXT "comma-separated list of node ids"
-#define Node_Polygon_Vertices_DESC_TEXT "comma-separated list of polygon points."
+#define Node_List_DESC_TEXT "Comma-separated list of node IDs."
+#define Node_Polygon_Vertices_DESC_TEXT "Comma-separated list of polygon points."
 #define Node_Polygon_Format_DESC_TEXT "Right now just SHAPE."
 
 #define Vector_Sampling_Type_DESC_TEXT     "Type of vector module used in a simulation. Possible values are: TRACK_ALL_VECTORS, SAMPLE_IND_VECTORS, VECTOR_COMPARTMENTS_NUMBER and VECTOR_COMPARTMENTS_PERCENT."
-#define Vector_Species_Names_DESC_TEXT     "An array of vector species names for all species that are present in the simulation. For example, ['arabiensis', 'funestus', 'gambiae']"
+#define Vector_Species_Names_DESC_TEXT     "An array of vector species names for all species that are present in the simulation. For example, ['arabiensis', 'funestus', 'gambiae']."
 #define Vector_Sugar_Feeding_Frequency_DESC_TEXT     "How often does a female mosquito take a sugar feed? Possible values are: VECTOR_SUGAR_FEEDING_NONE - No sugar feeding. VECTOR_SUGAR_FEEDING_ON_EMERGENCE_ONLY - Sugar feeding once at emergence. VECTOR_SUGAR_FEEDING_EVERY_FEED - Sugar feeding occurs once per blood meal. VECTOR_SUGAR_FEEDING_EVERY_DAY - Sugar feeding occurs everyday. Note: This parameter is used in conjunction with the SugarTrap and OvipositionTrap interventions. These features require Vector_Sampling_Type to be set to TRACK_ALL_VECTORS or SAMPLE_IND_VECTORS."
 #define Wolbachia_Infection_Modification_DESC_TEXT     "The change in vector susceptibility to infection due to a Wolbachia infection."
 #define Wolbachia_Mortality_Modification_DESC_TEXT     "The change in vector mortality due to a Wolbachia infection."
@@ -336,8 +339,8 @@ DENSITY_DELAYED_GROWTH_NOT_MORTALITY, \
 NO_DENSITY_DEPENDENCE."
 
 //TB/HIV
-#define TB_cd4_activation_vec_DESC_TEXT "Increased risk per time step of TB activation by CD4"
-#define CD4_Strata_Activation_DESC_TEXT "CD4 strata"
+#define TB_cd4_activation_vec_DESC_TEXT "Increased risk per time step of TB activation by CD4."
+#define CD4_Strata_Activation_DESC_TEXT "CD4 strata."
 
 // EAW: ADDED MALARIA PARAMETERS (v1.6)
 #define Maternal_Antibodies_Type_DESC_TEXT       "Type of maternal antibody protection.  Possible values are: OFF, SIMPLE_WANING, CONSTANT_INITIAL_IMMUNITY (independent of acquired immunity in possible mothers)."
@@ -349,11 +352,11 @@ NO_DENSITY_DEPENDENCE."
 // was the boolean: Enable_Variable_Pyrogenic_Threshold
 #define Innate_Immune_Variation_Type_DESC_TEXT   "Type of individual innate immune variation.  Possible values are: NONE (homogeneous), PYROGENIC_THRESHOLD (parasite threshold resulting in cytokine production), PYROGENIC_THRESHOLD_VS_AGE (age-dependent threshold), CYTOKINE_KILLING (effectiveness of cytokines in killing infected red-blood cells)."
 
-#define Serialization_Test_Cycles_DESC_TEXT "Serialization_Test_Cycles"
-#define Path_to_Python_Scripts_DESC_TEXT "Path to Python Scripts"
-        
-#define HIV_Coinfection_Probability_DESC_TEXT "Probability of getting both HIV and TB when creating a new TB infection"
-#define Coinfected_Mortality_Rate_DESC_TEXT "Mortality rate per timestep when coinfected (NOTE! this is the addl mortality OVER TB-only mortality"
+#define Serialization_Test_Cycles_DESC_TEXT "The number of serialization test cycles."
+#define Path_to_Python_Scripts_DESC_TEXT "The path to Python scripts."
+
+#define HIV_Coinfection_Probability_DESC_TEXT "Probability of getting both HIV and TB when creating a new TB infection."
+#define Coinfected_Mortality_Rate_DESC_TEXT "Mortality rate per timestep when coinfected (NOTE! this is the addl mortality OVER TB-only mortality."
 
 #define HIV_Acute_Duration_In_Months_DESC_TEXT "Determines time since infection, in months, over which the Acute_Stage_Infectivity_Multiplier is applied to coital acts occurring in that time period."
 #define HIV_AIDS_Duration_In_Months_DESC_TEXT "Determines the time period prior to an AIDS-related death over which the AIDS_Stage_Infectivity_Multiplier is applied."
@@ -386,7 +389,11 @@ NO_DENSITY_DEPENDENCE."
 #define STI_Prob_Extra_Relationship_Female_DESC_TEXT "Probability of a female receiving an extra relationship flag.  The flag allows the individual to seek additional relationships while currently in a relationship of the same type. Used for INDEPENDENT and CORRELATED values of STI_Extra_Relational_Flag_Type."
 #define STI_Max_Simultaneous_Relationships_Male_DESC_TEXT "Upper bound on the number of concurrent relationships of the given type that a male is allowed to have."
 #define STI_Max_Simultaneous_Relationships_Female_DESC_TEXT "Upper bound on the number of concurrent relationships of the given type that a female is allowed to have."
-#define STI_Correlated_Relationship_Type_Order_DESC_TEXT "TBD"
+#define STI_Correlated_Relationship_Type_Order_DESC_TEXT "When Extra_Relational_Flag_Type is set to Correlated in demographics for a relationship type, this parameter specifies the order of conditional probabilities for extra-relational flags.  In this configuration, the Prob_Extra_Relationship_[gender] parameters specify conditional probabilites, given the individual has received flags for all previous relationship types in the Correlated_Relationship_Type_Order.  The value must be a array containing the following values (in an order of your choice): \
+TRANSITORY \
+INFORMAL \
+MARITAL \
+COMMERCIAL."
 
 #define Event_Report_Duration_Days_DESC_TEXT "Used by custom reports. The number of days over which to report events."
 #define Event_Report_Report_Description_DESC_TEXT "Used by custom reports. Augments the filename of the report. If multiple CSV reports are being generated, this allows you to distinguish one report from another."
@@ -410,15 +417,14 @@ NO_DENSITY_DEPENDENCE."
 
 #define PFA_Burnin_Duration_In_Days_DESC_TEXT "Number of days to continue tuning the pair formation rates.  After this duration, the rates will remain at the last rate value calculated."
 
-#define Number_Age_Bins_Male_DESC_TEXT "TBD"
-#define Number_Age_Bins_Female_DESC_TEXT "TBD"
-#define Age_of_First_Bin_Edge_Male_DESC_TEXT "TBD"
-#define Age_of_First_Bin_Edge_Female_DESC_TEXT "TBD"
-#define Years_Between_Bin_Edges_Male_DESC_TEXT "TBD"
-#define Years_Between_Bin_Edges_Female_DESC_TEXT "TBD"
-#define Joint_Probabilities_DESC_TEXT "TBD"
+#define Number_Age_Bins_Male_DESC_TEXT "Male age bin count. This is the number of columns in Joint_Probabilities."
+#define Number_Age_Bins_Female_DESC_TEXT "Female age bin count. This is the number of columns in Joint_Probabilities."
+#define Age_of_First_Bin_Edge_Male_DESC_TEXT "Age of the first male bin when defining the pair formation matrix."
+#define Age_of_First_Bin_Edge_Female_DESC_TEXT "Age of the first female bin when defining the pair formation matrix."
+#define Years_Between_Bin_Edges_Male_DESC_TEXT "The size of the bin, in years, for males."
+#define Years_Between_Bin_Edges_Female_DESC_TEXT "The size of the bin, in years, for females."
+#define Joint_Probabilities_DESC_TEXT "Preference matrix. There is one column for each female bin and one row for each male bin."
 #define Enable_Default_Reporting_DESC_TEXT "Enables and disables the default InsetChart.json report."
-#define Enable_Configurable_Property_Report_DESC_TEXT "TBD"
 
 #define Probability_Person_Is_Behavioral_Super_Spreader_DESC_TEXT "Probability that an individual is a behavioral super spreader."
 #define Enable_Coital_Dilution_DESC_TEXT "Switch to enable coital dilution."
@@ -469,11 +475,11 @@ NO_DENSITY_DEPENDENCE."
 #define Boxcar_Migration_Rate_Forcing_End_Time_DESC_TEXT     "End of high migration season, when Migration_Rate_Time_Dependence is equal to ANNUAL_BOXCAR_FUNCTION."
 #define Maternal_Transmission_Probability_DESC_TEXT     "Probability of transmission of infection from mother to infant at birth. Relevant only if Enable_Maternal_Transmission is set to 1. Note: This parameter should be set to 0 and ignored for malaria and vector simulations."
 #define Immunity_Initialization_Distribution_Type_DESC_TEXT "Method for initializing the immunity distribution in the simulated population. Possible values are: DISTRIBUTION_OFF - All individuals default to no immunity. DISTRIBUTION_SIMPLE - Individual immunities are drawn from a distribution whose functional form and parameters are specified in the 'IndividualAttributes' demographics input layers: 'ImmunityDistributionFlag', 'ImmunityDistribution1', and 'ImmunityDistribution2'. DISTRIBUTION_COMPLEX - Individual immnunities are drawn from an age-dependent piecewise linear distribution specified in the 'IndividualAttributes' demographics input layer 'ImmunityDistribution'."
-#define Birth_Rate_Time_Dependence_DESC_TEXT    "Allows for time dependence in the birth rate.  Available values are NONE, SINUSOIDAL_FUNCTION_OF_TIME, ANNUAL_BOXCAR_FUNCTION"
-#define Migration_Rate_Time_Dependence_DESC_TEXT    "Allows for time dependence in the migration rate.  Available values are NONE, SINUSOIDAL_FUNCTION_OF_TIME, ANNUAL_BOXCAR_FUNCTION"
+#define Birth_Rate_Time_Dependence_DESC_TEXT    "Allows for time dependence in the birth rate.  Available values are NONE, SINUSOIDAL_FUNCTION_OF_TIME, ANNUAL_BOXCAR_FUNCTION."
+#define Migration_Rate_Time_Dependence_DESC_TEXT    "Allows for time dependence in the migration rate.  Available values are NONE, SINUSOIDAL_FUNCTION_OF_TIME, ANNUAL_BOXCAR_FUNCTION."
 #define Susceptibility_Scaling_Intercept_DESC_TEXT "For Susceptibility_Scale_Type of any_FUNCTION_OF_AGE, describes the susceptibility scaling factor at age 0."
-#define Distribution_Times_DESC_TEXT "Vector of ints for simulation times at which distribution of events occurs in a CalendarEventCoordinator" 
-#define Distribution_Coverages_DESC_TEXT "Vector of floats for fraction of individuals that will receive this intervention in a CalendarEventCoordinator" 
+#define Distribution_Times_DESC_TEXT "Vector of ints for simulation times at which distribution of events occurs in a CalendarEventCoordinator."
+#define Distribution_Coverages_DESC_TEXT "Vector of floats for fraction of individuals that will receive this intervention in a CalendarEventCoordinator."
 
 #define Vector_Migration_Filename_Local_DESC_TEXT     "Path of input file defining patterns of vector migration to adjacent nodes."
 #define Vector_Migration_Filename_Regional_DESC_TEXT     "Path of input file defining patterns of vector migration to non-adjacent nodes."
@@ -483,63 +489,73 @@ NO_DENSITY_DEPENDENCE."
 
 #define Target_Residents_Only_DESC_TEXT "If true, only distribute the intervention to those that claim the node as their residence - i.e. started in the node"
 
-#define HIV_DTP_Mutation_DESC_TEXT "TBD"
-#define HIV_DTP_Mutation_Fitness_Cost_DESC_TEXT "TBD"
-#define HIV_DTP_Mutation_Fold_Change_IC50_DESC_TEXT "TBD"
-#define HIV_DTP_Mutation_Increase_Slope_DESC_TEXT "TBD"
-#define HIV_DTP_Mutant_Equilibrium_Frequency_DESC_TEXT "TBD"
-#define HIV_DTP_Mutation_Fitness_Cost_DESC_TEXT "TBD"
-#define HIV_DTP_PKPD_Cmax_DESC_TEXT "TBD"
-#define HIV_DTP_PKPD_Cmin_DESC_TEXT "TBD"
-#define HIV_DTP_PKPD_Halflife_DESC_TEXT "TBD"
-#define HIV_DTP_Dose_Interval_DESC_TEXT "TBD"
-#define HIV_DTP_Drug_Class_DESC_TEXT "TBD"
-#define HIV_DTP_Nucleoside_Analog_DESC_TEXT "TBD"
-
 // Individual
-#define Minimum_Adult_Age_Years_DESC_TEXT "TBD"
+#define Minimum_Adult_Age_Years_DESC_TEXT "Used for demographic initialization if IndividualAttributes contains PercentageChildren in migration reporting (libhumanmigrationtracking) and in SusceptibilityTB."
 
 // MigrationInfoVector
-#define Vector_Migration_Modifier_Equation_DESC_TEXT "TBD"
-#define Vector_Migration_Habitat_Modifier_DESC_TEXT  "TBD"
-#define Vector_Migration_Food_Modifier_DESC_TEXT     "TBD"
-#define Vector_Migration_Stay_Put_Modifier_DESC_TEXT "TBD"
+#define Vector_Migration_Modifier_Equation_DESC_TEXT "Functional form of vector migration modifiers."
+#define Vector_Migration_Habitat_Modifier_DESC_TEXT  "Preference of a vector to migrate toward a node with more habitat. Only relevant when VECTOR_SAMPLING_TYPE is TRACK_ALL_VECTORS."
+#define Vector_Migration_Food_Modifier_DESC_TEXT     "Preference of a vector to migrate toward a node currently occupied by humans, independent of the number of humans in the node. Only relevant when VECTOR_SAMPLING_TYPE is TRACK_ALL_VECTORS."
+#define Vector_Migration_Stay_Put_Modifier_DESC_TEXT "Preference of a vector to remain in its current node rather than migrate to another node. Only relevant when VECTOR_SAMPLING_TYPE is TRACK_ALL_VECTORS."
 
-#define Enable_Vector_Mortality_DESC_TEXT "TBD"
+#define Enable_Vector_Mortality_DESC_TEXT "Set to 1 to allow vectors to die. Only relevant when VECTOR_SAMPLING_TYPE is TRACK_ALL_VECTORS."
 
-#define Report_HIV_ByAgeAndGender_Collect_Circumcision_Data_DESC_TEXT  "TBD"
-#define Report_HIV_ByAgeAndGender_Collect_HIV_Data_DESC_TEXT           "TBD"
-#define Report_HIV_ByAgeAndGender_Collect_IP_Data_DESC_TEXT            "TBD"
-#define Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4_DESC_TEXT   "TBD"
-#define Report_HIV_ByAgeAndGender_Event_Counter_List_DESC_TEXT         "TBD"
-#define Report_HIV_ByAgeAndGender_Has_Intervention_With_Name_DESC_TEXT "TBD"
+#define Report_HIV_ByAgeAndGender_Collect_Circumcision_Data_DESC_TEXT  "When set to 1, the ReportHIVByAgeAndGender.csv output file will have separate rows for those who do or do not have the MaleCircumcision intervention, as well as an additional column with 0 and 1 indicating whether the row corresponds to those who are or are not circumcised. Setting this to 1 will thus double the number of rows in ReportHIVByAgeAndGender.csv."
+#define Report_HIV_ByAgeAndGender_Collect_HIV_Data_DESC_TEXT           "When set to 1, the ReportHIVByAgeAndGender.csv output file will have separate rows for those who do or do not have the ART intervention, as well as an additional column with 0 and 1 indicating whether the row corresponds to those who are or are not on ART. Setting this to 1 will thus double the number of rows in ReportHIVByAgeAndGender.csv."
+#define Report_HIV_ByAgeAndGender_Collect_IP_Data_DESC_TEXT            "When set to 1, the ReportHIVByAgeAndGender.csv output file will have separate rows for those with different Individual Property values, as well as an additional column for each Individual Property indicating which row corresponds to which value of that Individual Property. Setting this to 1 will typically increase by severalfold the number of rows in ReportHIVByAgeAndGender.csv."
+#define Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4_DESC_TEXT   "When set to 1, the ReportHIVByAgeAndGender.csv output file will separate the count of the number of infected individuals by CD4 stratum. When set to 0, the number of infected individuals are aggregated into one column regardless of CD4 count."
+#define Report_HIV_ByAgeAndGender_Event_Counter_List_DESC_TEXT         "This list allows the user to add additional columns to the ReportHIVByAgeAndGender.csv output files counting the number of times an intervention with the corresponding Distributed_Event_Trigger has been distributed."
+#define Report_HIV_ByAgeAndGender_Has_Intervention_With_Name_DESC_TEXT "This parameter is deprecated and has been replaced with Report_HIV_ByAgeAndGender_Collect_Intervention_Data."
+#define Report_HIV_ByAgeAndGender_Collect_Intervention_Data_DESC_TEXT "Takes a JSON list of strings in square braces that stratifies the population by adding a column of 0s and 1s depending on whether or not the person has the indicated intervention. This only works for interventions that remain with a person for a period of time, such as ART, VMMC, vaccine/PrEP, or a delay state in the cascade of care. You can name the intervention by adding a parameter Intervention_Name in the campaign file, and then give this parameter the same Intervention_Name. This allows you to have multiple types of vaccines, VMMCs, etc., but to only stratify on the type you want."
 
-#define Enable_Family_Migration_DESC_TEXT   "TBD"
-#define Family_Migration_Filename_DESC_TEXT "TBD"
-#define x_Family_Migration_DESC_TEXT        "TBD"
-#define Family_Migration_Roundtrip_Duration_DESC_TEXT "TBD"
+#define Enable_Family_Migration_DESC_TEXT   "Set to 1 to enable migration of all members of a household. All residents must be home before they can leave on the trip."
+#define Family_Migration_Filename_DESC_TEXT "The name of the binary file to use to configure family migration."
+#define x_Family_Migration_DESC_TEXT        "Multiplier for rate of migration by families."
+#define Family_Migration_Roundtrip_Duration_DESC_TEXT "The number of days to complete the trip and return to the original node."
+#define Family_Migration_Type_DESC_TEXT "The type of family migration to use. Possible values are: \
+NO_MIGRATION \
+FIXED_RATE_MIGRATION."
 
 #define Load_Balance_Scheme_DESC_TEXT "TBD"
 
-#define NC_AR_Min_DESC_TEXT  "TBD-Minimum age in years of range - greater than or equal to"
-#define NC_AR_Max_DESC_TEXT  "TBD-Maximum age in years of range - less than but not equal to"
+#define Load_Balance_Scheme_Nodes_On_Core_Matrix_DESC_TEXT "A two-dimensional array of processors/tasks to node IDs used for load balancing in a simulation."
 
-#define NC_TD_Start_Day_DESC_TEXT            "TBD-The day to start distributing the intervention"
-#define NC_TD_End_Day_DESC_TEXT              "TBD-The day to stop distributing the intervention"
-#define NC_TD_Num_Targeted_DESC_TEXT          "TBD-The number of individuals to distribute interventions to during this time period (both genders randomly); Num_Targeted_Males/Females must be empty if using this"
-#define NC_TD_Num_Targeted_Males_DESC_TEXT    "TBD-The number of individuals to distribute interventions to during this time period (males only); Num_Targeted must be empty if using this and Num_Targeted_Females must be same length"
-#define NC_TD_Num_Targeted_Females_DESC_TEXT  "TBD-The number of individuals to distribute interventions to during this time period (females only); Num_Targeted must be empty if using this and Num_Targeted_Males must be same length"
-#define NC_TD_Age_Ranges_Years_DESC_TEXT      "TBD-An array of age bins, where a person can be selected if min <= age < max.  It must have the same number of objects as Num_Targeted_XXX has elements."
-#define NC_TD_Property_Restrictions_Within_Node_DESC_TEXT "TBD-Individuals must have these properties in order to be selected."
+#define NC_AR_Min_DESC_TEXT  "For the NChooserEventCoordinator, this parameter determines the minimum age, in years. An individual is considered in range if their age is greater than or equal to the minimum age and less than the maximum age, in floating point years of age."
+#define NC_AR_Max_DESC_TEXT  "For the NChooserEventCoordinator, this parameter determines the maximum age, in years. An individual is considered in range if their age is greater than or equal to the minimum age and less than the maximum age, in floating point years of age."
 
-#define NC_Distributions_DESC_TEXT       "TBD-The ordered list of elements defining when, who, and how many interventions to distribute."
-#define NC_Intervention_Config_DESC_TEXT "TBD-The intervention to be distributed by NChooserEventCoordinator."
+#define NC_TD_Start_Day_DESC_TEXT            "The day to start distributing the intervention."
+#define NC_TD_End_Day_DESC_TEXT              "The day to stop distributing the intervention. No interventions are distributed on this day or going forward."
+#define NC_TD_Num_Targeted_DESC_TEXT          "The number of individuals to target with the intervention. Note that this value will be scaled up by the population scaling factor equal to Base_Population_Scale_Factor. If using this parameter, Num_Targeted_Males/Females must be empty."
+#define NC_TD_Num_Targeted_Males_DESC_TEXT    "The number of male individuals to distribute interventions to during this time period. If using the parameter with Num_Targeted_Females to target specific genders, they both must be the same length, and Num_Targeted must be empty."
+#define NC_TD_Num_Targeted_Females_DESC_TEXT  "The number of female individuals to distribute interventions to during this time period. If using the parameter with Num_Targeted_Males to target specific genders, they both must be the same length, and Num_Targeted must be empty."
+#define NC_TD_Age_Ranges_Years_DESC_TEXT      "A list of age ranges that individuals must be in to qualify for an intervention. Each age range is a JSON object with a minimum and a maximum property. An individual is considered in range if their age is greater than or equal to the minimum age and less than the maximum age, in floating point years of age. It must have the same number of objects as Num_Targeted_XXX has elements."
+#define NC_TD_Property_Restrictions_Within_Node_DESC_TEXT "An array of key-value pairs that defines the properties individuals must have in order to be selected."
+
+#define NC_Distributions_DESC_TEXT       "The ordered list of elements defining when, to whom, and how many interventions to distribute."
+#define NC_Intervention_Config_DESC_TEXT "The intervention to be distributed by NChooserEventCoordinator."
 
 
-#define NC_STI_TD_Start_Year_DESC_TEXT            "TBD-The year to start distributing the intervention - January 1st of year"
-#define NC_STI_TD_End_Year_DESC_TEXT              "TBD-The year to stop distributing the intervention - January 1st of year"
+#define NC_STI_TD_Start_Year_DESC_TEXT            "The year to start distributing the intervention. Start_Year along with End_Year defines the time period to distribute the intervention. The intervention is evenly distributed between each time step in the time period."
+#define NC_STI_TD_End_Year_DESC_TEXT              "The year to stop distributing the intervention. End_Year along with Start_Year defines the time period to distribute the intervention. The intervention is evenly distributed between each time step in the time period."
 
-#define NC_HIV_TD_Target_Disease_State_DESC_TEXT  "TBD-If not empty, a targeted individual is expected to have a particular disease specific state.  To be flexible, this is a two-dimensional array of TargetDiseaseState where the elements of the inner array are AND'd and these arrays are OR'd. "
-#define NC_HIV_TD_Has_Intervention_Name_DESC_TEXT "TBD-If usinng Has_Intervention or Not_Have_Intervention disease states, then this is the name of the intervention considered."
+#define NC_HIV_TD_Target_Disease_State_DESC_TEXT  "For the NChooserEventCoordinatorHIV, a two-dimensional array of particular disease states. To qualify for the intervention, an individual must have only one of the targeted disease states. An individual must have all of the disease states in the inner array. Possible values are: \
+HIV_Positive \
+HIV_Negative \
+Tested_Positive \
+Tested_Negative \
+Male_Circumcision_Positive \
+Male_Circumcision_Negative \
+Has_Intervention \
+Not_have_Intervention."
 
-#define RTEC_HIV_Target_Disease_State_DESC_TEXT "TBD-Options are: Everyone, HIV_Positive, HIV_Negative, Tested_Positive, Tested_Negative, Not_Tested_Or_Tested_Negative"
+#define NC_HIV_TD_Has_Intervention_Name_DESC_TEXT "The name of the intervention to look for in an individual when using Has_Intervention or Not_have_Intervention in Target_Disease_State."
+
+#define RTEC_HIV_Target_Disease_State_DESC_TEXT "For the ReferenceTrackingEventCoordinatorHIV, a two-dimensional array of particular disease states. To qualify for the intervention, an individual must have only one of the targeted disease states. An individual must have all of the disease states in the inner array. Possible values are: \
+HIV_Positive \
+HIV_Negative \
+Tested_Positive \
+Tested_Negative \
+Male_Circumcision_Positive \
+Male_Circumcision_Negative \
+Has_Intervention \
+Not_have_Intervention."

@@ -19,8 +19,15 @@ namespace Kernel
 {
     class IndividualHumanHIVConfig : public IndividualHumanSTIConfig
     {
+        GET_SCHEMA_STATIC_WRAPPER( IndividualHumanHIVConfig )
+        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
+        DECLARE_QUERY_INTERFACE()
     protected:
         friend class IndividualHumanHIV;
+
+        static float maternal_transmission_ART_multiplier;
+
+        virtual bool Configure( const Configuration* config ) override;
     };
 
     class IHIVInfection;

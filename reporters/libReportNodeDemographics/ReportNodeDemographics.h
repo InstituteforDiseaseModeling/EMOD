@@ -11,6 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #pragma once
 
 #include "BaseTextReport.h"
+#include "PropertiesString.h"
 
 namespace Kernel
 {
@@ -35,12 +36,18 @@ namespace Kernel
         // BaseEventReport
         virtual bool Configure( const Configuration* ) override;
 
+        virtual void Initialize( unsigned int nrmSize ) override;
         virtual std::string GetHeader() const override;
         virtual bool IsCollectingIndividualData( float currentTime, float dt ) const override;
         virtual void LogIndividualData( IIndividualHuman* individual ) override;
         virtual void LogNodeData( INodeContext* pNC ) override;
+
     private:
+        int GetIPIndex( tProperties* pProps ) const;
+
         std::vector<float> m_AgeYears;
-        std::vector<std::vector<NodeData>> m_Data;
+        std::string m_IPKeyToCollect;
+        std::vector<std::string> m_IPValuesList;
+        std::vector<std::vector<std::vector<NodeData>>> m_Data;
     };
 }

@@ -129,6 +129,12 @@ namespace Kernel
         vector_genetics = new_value;
     }
 
+    IMigrate* VectorCohort::GetIMigrate()
+    {
+        return static_cast<IMigrate*>(this);
+    }
+
+
     /*VectorCohort::~VectorCohort()
     {
         LOG_VALID( "VectorCohort destructor.\n" );

@@ -17,7 +17,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 #include "IHIVInterventionsContainer.h" // for time-date util function and access into IHIVCascadeOfCare and IHIVMedicalHistory
 #include "Relationship.h"   // for discordant checking
-#include "Node.h"
 
 static const char * _module = "HIVARTStagingAbstract";
 
@@ -30,48 +29,40 @@ namespace Kernel
 
     HIVARTStagingAbstract::HIVARTStagingAbstract()
     : HIVSimpleDiagnostic()
-    , ip_tb_key( DEFAULT_STRING )
-    , ip_tb_value_expected( DEFAULT_STRING )
+    , ip_tb_value_expected()
     {
-        initConfigTypeMap( "Individual_Property_Active_TB_Key", &ip_tb_key, HIV_Staging_Individual_Property_Active_TB_Key_DESC_TEXT, DEFAULT_STRING );
-        initConfigTypeMap( "Individual_Property_Active_TB_Value", &ip_tb_value_expected, HIV_Staging_Individual_Property_Active_TB_Value_DESC_TEXT, DEFAULT_STRING );
     }
 
     HIVARTStagingAbstract::HIVARTStagingAbstract( const HIVARTStagingAbstract& master )
         : HIVSimpleDiagnostic( master )
-        , ip_tb_key( master.ip_tb_key )
         , ip_tb_value_expected( master.ip_tb_value_expected )
     {
     }
 
     bool HIVARTStagingAbstract::Configure( const Configuration * inputJson )
     {
+        std::string ip_key_str = DEFAULT_STRING ;
+        std::string ip_value_str = DEFAULT_STRING ;
+        initConfigTypeMap( "Individual_Property_Active_TB_Key", &ip_key_str, HIV_Staging_Individual_Property_Active_TB_Key_DESC_TEXT, DEFAULT_STRING );
+        initConfigTypeMap( "Individual_Property_Active_TB_Value", &ip_value_str, HIV_Staging_Individual_Property_Active_TB_Value_DESC_TEXT, DEFAULT_STRING );
         bool ret = HIVSimpleDiagnostic::Configure(inputJson);
         if( ret && !JsonConfigurable::_dryrun )
         {
-            if( ((ip_tb_key != DEFAULT_STRING) && (ip_tb_value_expected == DEFAULT_STRING)) ||
-                ((ip_tb_key == DEFAULT_STRING) && (ip_tb_value_expected != DEFAULT_STRING)) )
+            if( ((ip_key_str != DEFAULT_STRING) && (ip_value_str == DEFAULT_STRING)) ||
+                ((ip_key_str == DEFAULT_STRING) && (ip_value_str != DEFAULT_STRING)) )
             {
                 throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, 
-                                                       "Individual_Property_Active_TB_Key", ip_tb_key.c_str(),
-                                                       "Individual_Property_Active_TB_Value", ip_tb_value_expected.c_str(),
+                                                       "Individual_Property_Active_TB_Key", ip_key_str.c_str(),
+                                                       "Individual_Property_Active_TB_Value", ip_value_str.c_str(),
                                                        "You must define both parameters." );
+            }
+            else if( (ip_key_str != DEFAULT_STRING) && (ip_value_str != DEFAULT_STRING) )
+            {
+                ip_tb_value_expected = IPKeyValue( ip_key_str, ip_value_str ) ;
             }
         }
 
         return ret ;
-    }
-
-    bool HIVARTStagingAbstract::Distribute( IIndividualHumanInterventionsContext *context,
-                                            ICampaignCostObserver * const pICCO )
-    {
-        if( (ip_tb_key != DEFAULT_STRING) && (ip_tb_value_expected != DEFAULT_STRING) )
-        {
-            // if the user defines both parameters, then we assume that they also
-            // defined the properties in the demographcis
-            Node::VerifyPropertyDefinedInDemographics( ip_tb_key, ip_tb_value_expected );
-        }
-        return HIVSimpleDiagnostic::Distribute( context, pICCO );
     }
 
     // staged for ART via CD4 agnostic testing?
@@ -89,19 +80,31 @@ namespace Kernel
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IHIVMedicalChart", "IIndividualHumanContext" );
         }
 
+        //bool has_active_tb = false ;
+        //if( ip_tb_value_expected.IsValid() )
+        //{
+        //    has_active_tb = parent->GetEventContext()->GetProperties()->Contains( ip_tb_value_expected );
+        //}
         // ---------------------------------------------------------
         // --- Get the value of the IndividualProperty if it exists.
         // ---------------------------------------------------------
-        std::string ip_tb_value_actual = "<NA>" ;
-        const auto* p_props = parent->GetEventContext()->GetProperties();
-        if( p_props->find( ip_tb_key ) != p_props->end() )
+        std::string ip_tb_value_expected_str = "<NA>" ;
+
+        bool has_active_tb = false;
+        if( ip_tb_value_expected.IsValid() )
         {
-            ip_tb_value_actual = p_props->at( ip_tb_key );
+            std::string ip_tb_key = ip_tb_value_expected.GetKey().ToString();
+            std::string ip_tb_value_actual = "<NA>";
+            const auto* p_props = parent->GetEventContext()->GetProperties();
+            if( p_props->find( ip_tb_key ) != p_props->end() )
+            {
+                ip_tb_value_actual = p_props->at( ip_tb_key );
+            }
+            has_active_tb = (ip_tb_value_actual == ip_tb_value_expected.GetValueAsString()) ;
         }
 
         float year         = parent->GetEventContext()->GetNodeEventContext()->GetTime().Year();
         float CD4count     = med_parent->LowestRecordedCD4();
-        bool has_active_tb = (ip_tb_value_actual == ip_tb_value_expected) ;
         bool is_pregnant   = parent->GetEventContext()->IsPregnant() ;
 
         bool result = positiveTestResult( hiv_parent, year, CD4count, has_active_tb, is_pregnant );
@@ -149,7 +152,18 @@ namespace Kernel
         HIVSimpleDiagnostic::serialize( ar, obj );
         HIVARTStagingAbstract& art = *obj;
 
-        ar.labelElement("ip_tb_key"           ) & art.ip_tb_key;
-        ar.labelElement("ip_tb_value_expected") & art.ip_tb_value_expected;
+        std::string key_value;
+        if( ar.IsWriter() )
+        {
+            key_value = art.ip_tb_value_expected.ToString();
+        }
+
+        //ar.labelElement("ip_tb_value_expected") & art.ip_tb_value_expected;
+        ar.labelElement("ip_tb_value_expected") & key_value;
+
+        if( ar.IsReader() )
+        {
+            art.ip_tb_value_expected = IPKeyValue( key_value );
+        }
     }
 }

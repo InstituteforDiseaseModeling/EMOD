@@ -24,14 +24,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    class ResistanceHegGenetics : public JsonConfigurable
+    class ResistanceHegGenetics : public JsonConfigurable, public IComplexJsonConfigurable
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
         public:
             ResistanceHegGenetics() {}
-            virtual void ConfigureFromJsonAndKey( const Configuration *, const std::string &key );
-            virtual json::QuickBuilder GetSchema();
+            virtual void ConfigureFromJsonAndKey( const Configuration *, const std::string &key ) override;
+            virtual json::QuickBuilder GetSchema() override;
             VectorAllele::Enum pesticideResistance;
             VectorAllele::Enum HEG;
     };
@@ -44,6 +44,7 @@ namespace Kernel
 
     public:
         MosquitoRelease();
+        MosquitoRelease( const MosquitoRelease& master );
         virtual ~MosquitoRelease() { }
 
         // INodeDistributableIntervention

@@ -21,7 +21,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    class InputEIRConfig : public JsonConfigurable, public std::vector<float>
+    class InputEIRConfig : public JsonConfigurable, 
+                           public IComplexJsonConfigurable, 
+                           public std::vector<float>
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
@@ -40,6 +42,7 @@ namespace Kernel
 
     public:
         InputEIR();
+        InputEIR( const InputEIR& master );
         virtual ~InputEIR() { }
 
         // INodeDistributableIntervention

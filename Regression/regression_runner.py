@@ -4,6 +4,7 @@ import os
 import json
 import threading
 import subprocess
+import glob
 import shutil # copyfile
 import glob
 import regression_local_monitor

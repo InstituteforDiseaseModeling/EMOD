@@ -62,11 +62,9 @@ namespace Kernel
         bool operator==( const NodeDemographics& rThat ) const ;
         bool operator!=( const NodeDemographics& rThat ) const ;
 
-        // Explicit checks for required keys for Individual Properties transitions
-        void validateIPTransition() const;
-
         std::string ToString() const { return jsonValue.ToString(); }
         bool IsObject() const { return jsonValue.IsObject(); }
+        const JsonObjectDemog& GetJsonObject() const { return jsonValue; }
 
     protected:
         friend class NodeDemographicsFactory;

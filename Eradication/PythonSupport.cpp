@@ -161,7 +161,7 @@ namespace Kernel
         }
         std::cout << "Using (configured) python_script_path: " << m_PythonScriptPath << std::endl;
         PyObject* path = PyString_FromString( m_PythonScriptPath.c_str() );
-        //LOG_DEBUG_F( "Using Python Script Path: %s.\n", GET_CONFIGURABLE(SimulationConfig)->python_script_path );
+        //LOG_DEBUG_F( "Using Python Script Path: %s.\n", m_PythonScriptPath );
         release_assert( path );
     
         //std::cout << "Calling PyList_Append." << std::endl;

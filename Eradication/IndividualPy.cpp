@@ -47,8 +47,9 @@ namespace Kernel
         HANDLE_INTERFACE(IIndividualHumanPy)
     END_QUERY_INTERFACE_DERIVED(IndividualHumanPy, IndividualHuman)
 
-    IndividualHumanPy::IndividualHumanPy(suids::suid _suid, float monte_carlo_weight, float initial_age, int gender, float initial_poverty) :
-        IndividualHuman(_suid, monte_carlo_weight, initial_age, gender, initial_poverty)
+    IndividualHumanPy::IndividualHumanPy(suids::suid _suid, float monte_carlo_weight, float initial_age, int gender, float initial_poverty) 
+    : IndividualHuman(_suid, monte_carlo_weight, initial_age, gender, initial_poverty)
+    , transmissionGroupMembershipByRoute()
     {
 #ifdef ENABLE_PYTHON_FEVER
         // Call into python script to notify of new individual
@@ -94,7 +95,10 @@ namespace Kernel
                     PyErr_Print();
                     std::stringstream msg;
                     msg << "Embedded python code failed: PyObject_CallObject failed in call to 'destroy'.";
-                    throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+#pragma warning (push)
+#pragma warning(disable: 4297)
+                        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+#pragma warning( pop )
                 }
             }
         }
@@ -314,6 +318,22 @@ namespace Kernel
             retVal = HumanStateChange::KilledByInfection;
         }
         return retVal;
+    }
+
+    void IndividualHumanPy::UpdateGroupMembership()
+    {
+        tProperties* properties = GetProperties();
+        const RouteList_t& routes = parent->GetTransmissionRoutes();
+        LOG_DEBUG_F( "Updating transmission group membership for individual %d for %d routes (first route is %s).\n", this->GetSuid().data, routes.size(), routes[ 0 ].c_str() );
+
+        for( auto& route : routes )
+        {
+            LOG_DEBUG_F( "Updating for Route %s.\n", route.c_str() );
+            RouteList_t single_route;
+            single_route.push_back( route );
+            parent->GetGroupMembershipForIndividual( single_route, properties, &transmissionGroupMembershipByRoute[ route ] );
+        }
+        IndividualHuman::UpdateGroupMembership();
     }
 }
 

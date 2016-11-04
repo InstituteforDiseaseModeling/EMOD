@@ -62,10 +62,17 @@ SUITE(HivArtStagingByCD4DiagnosticTest)
             idm_time.time = 2009.0 * 365.0;
             m_NEC.SetTime( idm_time );
 
-            Node::TestOnly_AddPropertyKeyValue( "HasActiveTB", "YES" );
-            Node::TestOnly_AddPropertyKeyValue( "HasActiveTB", "NO" );
+            std::map<std::string,float> ip_values ;
+            ip_values.insert( std::make_pair( "YES", 0.5f ) );
+            ip_values.insert( std::make_pair( "NO",  0.5f ) );
+
+            IPFactory::DeleteFactory();
+            IPFactory::CreateFactory();
+            IPFactory::GetInstance()->AddIP( 1, "HasActiveTB", ip_values );
 
             m_Human.GetProperties()->operator[]( "HasActiveTB" ) = "YES" ;
+            //m_Human.GetProperties()->Set( IPKeyValue("HasActiveTB:YES") ) ;
+
             m_Human.SetHasHIV( true );
 
             m_pSimulationConfig->sim_type = SimType::HIV_SIM ;
@@ -76,8 +83,9 @@ SUITE(HivArtStagingByCD4DiagnosticTest)
         ~DiagnosticFixture()
         {
             delete m_pSimulationConfig;
+            Environment::setSimulationConfig( nullptr );
+            IPFactory::DeleteFactory();
             Environment::Finalize();
-            Node::TestOnly_ClearProperties();
         }
     };
 
@@ -94,6 +102,7 @@ SUITE(HivArtStagingByCD4DiagnosticTest)
 
         m_InterventionsContext.OnTestCD4( 333.0 );
         m_Human.GetProperties()->operator[]( "HasActiveTB" ) = "YES" ;
+        //m_Human.GetProperties()->Set( IPKeyValue("HasActiveTB:YES") ) ;
         m_Human.SetIsPregnant( true );
 
         CHECK_EQUAL( IndividualEventTriggerType::NoTrigger, m_NEC.GetTriggeredEvent() ) ;
@@ -137,6 +146,7 @@ SUITE(HivArtStagingByCD4DiagnosticTest)
 
         m_InterventionsContext.OnTestCD4( 999.0 );
         m_Human.GetProperties()->operator[]( "HasActiveTB" ) = "YES" ;
+        //m_Human.GetProperties()->Set( IPKeyValue("HasActiveTB:YES") ) ;
         m_Human.SetIsPregnant( true );
 
         CHECK_EQUAL( IndividualEventTriggerType::NoTrigger, m_NEC.GetTriggeredEvent() ) ;
@@ -184,6 +194,7 @@ SUITE(HivArtStagingByCD4DiagnosticTest)
 
         m_InterventionsContext.OnTestCD4( 333.0 );
         m_Human.GetProperties()->operator[]( "HasActiveTB" ) = "YES" ;
+        //m_Human.GetProperties()->Set( IPKeyValue("HasActiveTB:YES") ) ;
         m_Human.SetIsPregnant( true );
 
         CHECK_EQUAL( IndividualEventTriggerType::NoTrigger, m_NEC.GetTriggeredEvent() ) ;

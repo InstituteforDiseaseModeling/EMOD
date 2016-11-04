@@ -25,6 +25,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="externalReleaseFilter.py" />
+    <Compile Include="fixupSolution.py" />
     <Compile Include="solutionFilter.py" />
   </ItemGroup>
   <ItemGroup>

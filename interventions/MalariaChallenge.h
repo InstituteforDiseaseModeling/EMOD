@@ -29,6 +29,7 @@ namespace Kernel
 
     public:
         MalariaChallenge();
+        MalariaChallenge( const MalariaChallenge& master );
         virtual ~MalariaChallenge() { }
 
         // INodeDistributableIntervention

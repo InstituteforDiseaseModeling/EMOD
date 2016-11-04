@@ -108,6 +108,8 @@ namespace Kernel
 
         virtual void Update(float currenttime, float dt) override;
 
+        virtual IMigrate* GetIMigrate() override;
+
         // IIndividualHumanContext
         virtual suids::suid GetSuid() const override;
         virtual suids::suid GetNextInfectionSuid() override;
@@ -134,6 +136,7 @@ namespace Kernel
         virtual void Die( HumanStateChange ) override;
         virtual INodeEventContext   * GetNodeEventContext() override; // for campaign cost reporting in e.g. HealthSeekingBehavior
         virtual tProperties* GetProperties() override;
+        //virtual IPKeyValueContainer* GetProperties();
         virtual const std::string& GetPropertyReportString() const override { return m_PropertyReportString; }
         virtual void SetPropertyReportString( const std::string& str ) override { m_PropertyReportString = str; }
         virtual bool AtHome() const override;
@@ -164,7 +167,7 @@ namespace Kernel
 
         // Initialization
         virtual void SetInitialInfections(int init_infs) override;
-        virtual void SetParameters(float infsample, float imm_mod, float risk_mod, float mig_mod) override; // specify each parameter, default version of SetParams()
+        virtual void SetParameters( INodeContext* pParent, float infsample, float imm_mod, float risk_mod, float mig_mod) override; // specify each parameter, default version of SetParams()
         virtual void CreateSusceptibility(float imm_mod=1.0, float risk_mod=1.0);
         virtual void setupMaternalAntibodies(IIndividualHumanContext* mother, INodeContext* node) override;
         virtual void SetMigrationModifier( float modifier ) override { migration_mod = modifier; }
@@ -223,7 +226,6 @@ namespace Kernel
         infection_list_t              infections;
         InterventionsContainer*       interventions;
         TransmissionGroupMembership_t transmissionGroupMembership;
-        map<string, TransmissionGroupMembership_t> transmissionGroupMembershipByRoute;
 
         // Infections
         bool  m_is_infected;    // TODO: replace with more sophisticated strain-tracking capability
@@ -259,6 +261,7 @@ namespace Kernel
         suids::suid home_node_id ;
 
         tProperties Properties;
+        //IPKeyValueContainer* pProperties;
         std::string m_PropertyReportString;
 
         INodeContext* parent;   // Access back to node/simulation methods

@@ -9,13 +9,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #pragma once
 
-#include <string>
 #include <map>
 
-#include "Common.h"
 #include "Node.h"
 #include "VectorHabitat.h"
 #include "VectorPopulation.h"
+#include "LarvalHabitatMultiplier.h"
 
 class ReportVector;
 class VectorSpeciesReport;
@@ -24,7 +23,7 @@ namespace Kernel
 {
     struct IMigrationInfoVector;
     class SpatialReportVector;
-    class NodeVector : public Node, public IVectorNodeContext , public INodeVector
+    class NodeVector : public Node, public IVectorNodeContext, public INodeVector
     {
         GET_SCHEMA_STATIC_WRAPPER(NodeVector)
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
@@ -42,9 +41,9 @@ namespace Kernel
         // INodeContext methods
         // IVectorNodeContext methods
         virtual VectorProbabilities* GetVectorLifecycleProbabilities() override;
-        virtual VectorHabitat*       GetVectorHabitatByType(VectorHabitatType::Enum type) override;
-        virtual void                 AddVectorHabitat(VectorHabitat* habitat) override;
-        virtual float                GetLarvalHabitatMultiplier(VectorHabitatType::Enum type) const override;
+        virtual IVectorHabitat*      GetVectorHabitatBySpeciesAndType( std::string& species, VectorHabitatType::Enum type, const Configuration* inputJson) override;
+        virtual VectorHabitatList_t* GetVectorHabitatsBySpecies( std::string& species ) override;
+        virtual float                GetLarvalHabitatMultiplier(VectorHabitatType::Enum type, const std::string& species ) const override;
 
         virtual IIndividualHuman* processImmigratingIndividual(IIndividualHuman*) override;
         virtual IIndividualHuman* addNewIndividual(float = 1.0f, float = 0.0f, int = 0, int = 0, float = 1.0f, float = 1.0f, float = 1.0f, float = 0.0f) override;
@@ -57,7 +56,7 @@ namespace Kernel
         void         updateVectorLifecycleProbabilities(float dt);
 
         void SetVectorPopulations(void);    //default--1 population as before
-        virtual void AddVectors(std::string releasedSpecies, VectorMatingStructure _vector_genetics, unsigned long int releasedNumber) override;
+        virtual void AddVectors(std::string releasedSpecies, VectorMatingStructure _vector_genetics, uint64_t releasedNumber) override;
 
         virtual void SetupMigration( IMigrationInfoFactory * migration_factory, 
                                      MigrationStructure::Enum ms,
@@ -65,7 +64,6 @@ namespace Kernel
         virtual void processImmigratingVector( VectorCohort* immigrant ) override;
         void processEmigratingVectors();
 
-        virtual const std::list<VectorHabitat *>& GetHabitats() const ;
         virtual VectorPopulationList_t& GetVectorPopulations() override;
 
         static TransmissionGroupMembership_t human_to_vector_all;
@@ -81,12 +79,14 @@ namespace Kernel
         static RouteList_t route_outdoor;*/
 
     protected:
-        VectorHabitatList_t     m_larval_habitats;
+
+        std::map<std::string, VectorHabitatList_t> m_larval_habitats;
         VectorPopulationList_t  m_vectorpopulations;
 
         VectorProbabilities* m_vector_lifecycle_probabilities;
 
-        std::map<VectorHabitatType::Enum,float> larval_habitat_multiplier;
+
+        LarvalHabitatMultiplier larval_habitat_multiplier;
 
         bool vector_mortality;
         int32_t mosquito_weight;
@@ -98,7 +98,6 @@ namespace Kernel
 
         virtual void setupEventContextHost() override;
         virtual void InitializeVectorPopulation(VectorPopulation* vp);
-        float HabitatMultiplierByType(VectorHabitatType::Enum type) const;
         void VectorMigrationBasedOnFiles();
         void VectorMigrationToAdjacentNodes();
             

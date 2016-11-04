@@ -18,6 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "BinaryArchiveReader.h"
 #include "BinaryArchiveWriter.h"
 #include "JsonObjectDemog.h"
+#include "Properties.h"
 
 #include <FileSystem.h>
 #include <IndividualTB.h>
@@ -43,12 +44,22 @@ SUITE(SerializationTest)
             Environment::setLogger( new SimpleLogger() );
             Environment::setSimulationConfig( m_pSimulationConfig );
             const_cast<Environment*>(Environment::getInstance())->RNG = &fake_rng;
+
+            IPFactory::DeleteFactory();
+            IPFactory::CreateFactory();
+
+            std::map<std::string,float> ip_values ;
+            ip_values.insert( std::make_pair( "LOW",  0.9f ) );
+            ip_values.insert( std::make_pair( "HIGH", 0.1f ) );
+
+            IPFactory::GetInstance()->AddIP( 1, "Risk", ip_values );
         }
 
         ~SerializationFixture()
         {
             delete m_pSimulationConfig;
             m_pSimulationConfig = nullptr;
+            IPFactory::DeleteFactory();
             Environment::Finalize();
         }
     };

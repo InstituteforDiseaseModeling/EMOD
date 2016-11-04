@@ -64,6 +64,7 @@
             }
         },
         "PRIMARY":{
+            "logLevel_JsonConfigurable" : "WARNING",
             "Config_Name":"32_TB_Seattle_Diagnostic_Drugs",
             "ENUMS":{
                 "Simulation_Type":"TB_SIM"

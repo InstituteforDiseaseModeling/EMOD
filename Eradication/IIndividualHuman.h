@@ -18,6 +18,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
+    struct IMigrate;
+
     // Interface for controlling objects (e.g. Node)
     struct IIndividualHuman : ISerializable
     {
@@ -25,7 +27,7 @@ namespace Kernel
         virtual void setupMaternalAntibodies(IIndividualHumanContext* mother, INodeContext* node) = 0;
         virtual void AcquireNewInfection(StrainIdentity *infstrain = nullptr, int incubation_period_override = -1) = 0;
         virtual void SetInitialInfections(int init_infs) = 0;
-        virtual void SetParameters(float infsample, float imm_mod, float risk_mod, float mig_mod) = 0;
+        virtual void SetParameters( INodeContext* pParent, float infsample, float imm_mod, float risk_mod, float mig_mod) = 0;
         virtual void InitializeHuman() = 0;
         virtual void SetMigrationModifier( float modifier ) = 0;
 
@@ -50,6 +52,7 @@ namespace Kernel
         virtual NewInfectionState::_enum GetNewInfectionState() const = 0;
         virtual HumanStateChange GetStateChange() const = 0;
 
+        virtual IMigrate* GetIMigrate() = 0;
         virtual IIndividualHumanInterventionsContext* GetInterventionsContext() const = 0;
 
         virtual tProperties* GetProperties() = 0;

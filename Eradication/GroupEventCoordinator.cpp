@@ -24,12 +24,6 @@ namespace Kernel
 
     IMPL_QUERY_INTERFACE2(GroupInterventionDistributionEventCoordinator, IEventCoordinator, IConfigurable)
 
-    QuickBuilder
-    GroupInterventionDistributionEventCoordinator::GetSchema()
-    {
-        return QuickBuilder( jsonSchemaBase );
-    }
-
     // ctor
     GroupInterventionDistributionEventCoordinator::GroupInterventionDistributionEventCoordinator() 
         : StandardInterventionDistributionEventCoordinator()

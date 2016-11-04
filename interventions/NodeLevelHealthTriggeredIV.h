@@ -60,11 +60,15 @@ namespace Kernel
         bool notification_occured ;
         std::map<std::string,std::set<int>> event_occured_map ;
         std::map<suids::suid,bool> event_occurred_while_resident_away;
-        IndividualInterventionConfig actual_intervention_config;
+        IndividualInterventionConfig actual_individual_intervention_config;
+        NodeInterventionConfig actual_node_intervention_config;
         IDistributableIntervention *_di;
+        INodeDistributableIntervention *_ndi;
+        bool using_individual_config;
 
         virtual bool qualifiesToGetIntervention( const IIndividualHumanEventContext * pIndividual );
         virtual float getDemographicCoverage() const;
         virtual void onDisqualifiedByCoverage( IIndividualHumanEventContext *pIndiv );
+        std::string GetInterventionClassName() const;
     };
 }

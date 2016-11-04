@@ -36,6 +36,7 @@ Environment::Environment()
 , Config(nullptr)
 , SimConfig(nullptr)
 , pPythonSupport(nullptr)
+, pIPFactory(nullptr)
 , Status_Reporter(nullptr)
 , InputPath()
 , OutputPath()
@@ -58,6 +59,10 @@ bool Environment::Initialize(
     bool get_schema)
 {
     release_assert( pMpi );
+    if( localEnv == nullptr )
+    {
+        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Environment has not been created." );
+    }
 
     localEnv->MPI.p_idm_mpi = pMpi;
     localEnv->MPI.NumTasks  = pMpi->GetNumTasks();
@@ -151,6 +156,9 @@ Environment::~Environment()
 
     if (Report.Validation)
         delete Report.Validation;
+
+    delete pIPFactory ;
+    pIPFactory = nullptr ;
 }
 
 void Environment::Finalize()
@@ -161,6 +169,10 @@ void Environment::Finalize()
 
 std::string Environment::FindFileOnPath( const std::string& rFilename )
 {
+    if( localEnv == nullptr )
+    {
+        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Environment has not been created." );
+    }
     if( FileSystem::FileExists( FileSystem::Concat(FileSystem::GetCurrentWorkingDirectory(), rFilename) ) )
     {
         return rFilename;
@@ -176,6 +188,16 @@ std::string Environment::FindFileOnPath( const std::string& rFilename )
     }
 }
 
+const Configuration* Environment::getConfiguration()
+{ 
+    if( localEnv == nullptr )
+    {
+        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Environment has not been created." );
+    }
+    return getInstance()->Config ;
+}
+
+
 Configuration* Environment::CopyFromElement( const json::Element& rElement )
 {
     return Configuration::CopyFromElement( rElement );
@@ -184,4 +206,64 @@ Configuration* Environment::CopyFromElement( const json::Element& rElement )
 Configuration* Environment::LoadConfigurationFile( const std::string& rFileName )
 {
     return Configuration::Load( rFileName );
+}
+
+Environment* Environment::getInstance()
+{ 
+    if( localEnv == nullptr )
+    {
+        localEnv = new Environment();
+    }
+    return localEnv;
+}
+
+void Environment::setInstance(Environment * env)
+{
+    if( localEnv != nullptr )
+    {
+        delete localEnv ;
+    }
+    localEnv = env ;
+}
+
+void Environment::setLogger(SimpleLogger* log)
+{ 
+    getInstance()->Log = log; 
+}
+
+void Environment::setSimulationConfig(void* SimConfig)
+{ 
+    getInstance()->SimConfig = SimConfig;
+}
+
+const void* Environment::getSimulationConfig()
+{ 
+    if( localEnv == nullptr )
+    {
+        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Environment has not been created." );
+    }
+    return localEnv->SimConfig;
+}
+
+StatusReporter * Environment::getStatusReporter() 
+{ 
+    if( localEnv == nullptr )
+    {
+        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Environment has not been created." );
+    }
+    return localEnv->Status_Reporter ;
+}
+
+void Environment::setIPFactory( void* pipf )
+{ 
+    getInstance()->pIPFactory = pipf; 
+}
+
+void* Environment::getIPFactory()
+{
+    if( localEnv == nullptr )
+    {
+        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Environment has not been created." );
+    }
+    return localEnv->pIPFactory;
 }

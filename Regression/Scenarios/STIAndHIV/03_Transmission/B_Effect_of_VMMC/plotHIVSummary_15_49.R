@@ -90,7 +90,7 @@ p.deaths = ggplot(both.c, aes(x=Year, y=HIVCauseMortalityRate, colour=Gender)) +
     ylab( "HIV-Cause Mortality Rate 15-49 (Deaths/PY)" ) +
     ggtitle( "Mortality" )
 
-q = arrangeGrob(p.prevalence, p.incidence, p.deaths, nrow=1,ncol=3)
+q = grid.arrange(p.prevalence, p.incidence, p.deaths, nrow=1,ncol=3)
 
 ggsave(file.path(fig_dir,"HIV_Summary.png"), plot=q, width=6, height=4)
 

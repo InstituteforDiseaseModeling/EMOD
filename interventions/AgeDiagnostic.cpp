@@ -115,7 +115,7 @@ namespace Kernel
     json::QuickBuilder
     AgeThresholds::GetSchema()
     {
-        json::QuickBuilder schema( jsonSchemaBase );
+        json::QuickBuilder schema( GetSchemaBase() );
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
         schema[ tn ] = json::String( "idmType:AgeThresholds" );

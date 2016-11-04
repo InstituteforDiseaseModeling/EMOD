@@ -38,7 +38,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ControllerFactory.h"
 
 #include "JsonFullWriter.h"
-#include "JsonFullReader.h"
 #include "snappy.h"
 
 #pragma warning(disable : 4244)
@@ -124,7 +123,7 @@ bool call_templated_functor_with_sim_type_hack(ControllerExecuteFunctorT &cef)
 char* GenerateFilename( uint32_t time_step )
 {
     size_t length = EnvPtr->OutputPath.size() + 32;
-    char* filename = (char*)malloc( length );
+    char* filename = static_cast<char*>(malloc( length ));
     release_assert( filename );
 #ifdef WIN32
     sprintf_s( filename, length, "%s\\state-%04d.dtk", EnvPtr->OutputPath.c_str(), time_step );

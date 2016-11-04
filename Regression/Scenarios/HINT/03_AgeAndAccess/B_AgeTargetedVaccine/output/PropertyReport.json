@@ -750,7 +750,7 @@
                 0
             ]
         },
-        "Disease Deaths:Accessibility:Easy,Age_Bin:Age_Bin_Property_From_20_To_-1": {
+        "Disease Deaths:Accessibility:Easy,Age_Bin:Age_Bin_Property_From_20_To_125": {
             "Units": "",
             "Data": [
                 0,
@@ -2230,7 +2230,7 @@
                 0
             ]
         },
-        "Disease Deaths:Accessibility:Hard,Age_Bin:Age_Bin_Property_From_20_To_-1": {
+        "Disease Deaths:Accessibility:Hard,Age_Bin:Age_Bin_Property_From_20_To_125": {
             "Units": "",
             "Data": [
                 0,
@@ -3710,7 +3710,7 @@
                 0
             ]
         },
-        "Infected:Accessibility:Easy,Age_Bin:Age_Bin_Property_From_20_To_-1": {
+        "Infected:Accessibility:Easy,Age_Bin:Age_Bin_Property_From_20_To_125": {
             "Units": "",
             "Data": [
                 0,
@@ -5190,7 +5190,7 @@
                 0
             ]
         },
-        "Infected:Accessibility:Hard,Age_Bin:Age_Bin_Property_From_20_To_-1": {
+        "Infected:Accessibility:Hard,Age_Bin:Age_Bin_Property_From_20_To_125": {
             "Units": "",
             "Data": [
                 0,
@@ -6670,7 +6670,7 @@
                 0
             ]
         },
-        "New Infections:Accessibility:Easy,Age_Bin:Age_Bin_Property_From_20_To_-1": {
+        "New Infections:Accessibility:Easy,Age_Bin:Age_Bin_Property_From_20_To_125": {
             "Units": "",
             "Data": [
                 0,
@@ -8150,7 +8150,7 @@
                 0
             ]
         },
-        "New Infections:Accessibility:Hard,Age_Bin:Age_Bin_Property_From_20_To_-1": {
+        "New Infections:Accessibility:Hard,Age_Bin:Age_Bin_Property_From_20_To_125": {
             "Units": "",
             "Data": [
                 0,
@@ -9630,7 +9630,7 @@
                 130
             ]
         },
-        "Statistical Population:Accessibility:Easy,Age_Bin:Age_Bin_Property_From_20_To_-1": {
+        "Statistical Population:Accessibility:Easy,Age_Bin:Age_Bin_Property_From_20_To_125": {
             "Units": "",
             "Data": [
                 197,
@@ -11110,7 +11110,7 @@
                 123
             ]
         },
-        "Statistical Population:Accessibility:Hard,Age_Bin:Age_Bin_Property_From_20_To_-1": {
+        "Statistical Population:Accessibility:Hard,Age_Bin:Age_Bin_Property_From_20_To_125": {
             "Units": "",
             "Data": [
                 215,

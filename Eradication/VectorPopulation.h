@@ -12,8 +12,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <list>
 #include <map>
 
-#include "BoostLibWrapper.h"
-
 #include "Common.h"
 #include "IContagionPopulation.h"
 #include "IInfectable.h"
@@ -25,7 +23,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorHabitat.h"
 #include "VectorMatingStructure.h"
 #include "VectorProbabilities.h"
-#include "VectorSpeciesParameters.h"
 
 #include "ISerializable.h"
 
@@ -33,6 +30,7 @@ namespace Kernel
 {
     class IVectorCohortWithHabitat;
     class SimulationConfig ;
+    class VectorSpeciesParameters;
 
     struct IVectorPopulation : ISerializable
     {
@@ -73,9 +71,9 @@ namespace Kernel
 
         // For NodeVector to calculate # of migrating vectors (processEmigratingVectors) and put them in new node (processImmigratingVector)
         virtual void Vector_Migration( IMigrationInfo* pMigInfo, VectorCohortList_t* pMigratingQueue );
-        virtual unsigned long int Vector_Migration(float = 0, VectorCohortList_t * = nullptr);
+        virtual uint64_t Vector_Migration(float = 0, VectorCohortList_t * = nullptr);
         void AddAdults(VectorCohort *adults) { AdultQueues.push_front(adults); }
-        virtual void AddVectors(VectorMatingStructure _vector_genetics, unsigned long int releasedNumber);
+        virtual void AddVectors(VectorMatingStructure _vector_genetics, uint64_t releasedNumber);
 
         // IInfectable
         virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route ) override;
@@ -128,15 +126,15 @@ namespace Kernel
         virtual void Update_Egg_Hatching    ( float dt );
 
         // Factorize the feeding cycle, which is common to all adult vectors
-        virtual uint32_t ProcessFeedingCycle(float dt, VectorCohort *queue, VectorStateEnum::Enum state);
+        virtual uint32_t ProcessFeedingCycle( float dt, IVectorCohort* cohort, VectorStateEnum::Enum state );
         float GetFeedingCycleDurationByTemperature() const;
 
         // Calculation of mated females based on gender_mating characteristics of male/female populations
-        virtual void ApplyMatingGenetics(VectorCohort* vq, VectorMatingStructure male_vector_genetics);
+        virtual void ApplyMatingGenetics( IVectorCohort* cohort, VectorMatingStructure male_vector_genetics );
         // Helper functions for egg calculations
-        void CreateEggCohortOfType(VectorHabitat*, uint32_t, VectorMatingStructure);
-        void CreateEggCohortAlleleSorting(VectorHabitat*, uint32_t, VectorMatingStructure);
-        void CreateEggCohortHEGSorting(VectorHabitat*, uint32_t, VectorMatingStructure);
+        void CreateEggCohortOfType( IVectorHabitat*, uint32_t, VectorMatingStructure );
+        void CreateEggCohortAlleleSorting( IVectorHabitat*, uint32_t, VectorMatingStructure );
+        void CreateEggCohortHEGSorting( IVectorHabitat*, uint32_t, VectorMatingStructure );
 
         // Seek a compatible (same gender mating type) queue in specified list (e.g. AdultQueues, InfectiousQueues) and increase its population.
         virtual void MergeProgressedCohortIntoCompatibleQueue(VectorCohortList_t &queues, int32_t population, VectorMatingStructure _vector_genetics);
@@ -147,7 +145,7 @@ namespace Kernel
         float GetRelativeSurvivalWeight(VectorHabitat* habitat) const;
 
         // VectorPopulation accounting helper function
-        virtual void queueIncrementTotalPopulation(VectorCohort* vq, VectorStateEnum::Enum state = VectorStateEnum::STATE_ADULT);
+        virtual void queueIncrementTotalPopulation( IVectorCohort* cohort, VectorStateEnum::Enum state = VectorStateEnum::STATE_ADULT );
 
         // TODO: Hook these up to configurable parameters?
         //       Now, they are only set to 1.0f in constructor.
@@ -155,7 +153,7 @@ namespace Kernel
         float ADfeed_eggbatchmod;
 
         // List of habitats for this species
-        VectorHabitatList_t m_larval_habitats;
+        VectorHabitatList_t* m_larval_habitats; // "shared" pointer, NodeVector owns this memory
         std::map<VectorHabitatType::Enum, float> m_larval_capacities;
 
         int32_t neweggs; 
@@ -208,7 +206,7 @@ namespace Kernel
         VectorProbabilities           *m_probabilities;
         ITransmissionGroups           *m_transmissionGroups;
 
-        bool m_VectorMortality ;
+        bool m_VectorMortality;
 
         DECLARE_SERIALIZABLE(VectorPopulation);
     };

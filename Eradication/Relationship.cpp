@@ -283,16 +283,16 @@ namespace Kernel {
         // DJK: If we don't care about logging individual coital acts, could check IsDiscordant here
         unsigned int nRels = 1;
         float coital_rate_attenuation_factor = 1;
-        if( GET_CONFIGURABLE(SimulationConfig)->enable_coital_dilution )
+        if( IndividualHumanSTIConfig::enable_coital_dilution )
         {
             nRels = std::max<size_t>( male_partner->GetRelationships().size(), female_partner->GetRelationships().size() );
 
             if( nRels == 2)
-                coital_rate_attenuation_factor = GET_CONFIGURABLE(SimulationConfig)->coital_dilution_2_partners;
+                coital_rate_attenuation_factor = IndividualHumanSTIConfig::coital_dilution_2_partners;
             else if( nRels == 3)
-                coital_rate_attenuation_factor = GET_CONFIGURABLE(SimulationConfig)->coital_dilution_3_partners;
+                coital_rate_attenuation_factor = IndividualHumanSTIConfig::coital_dilution_3_partners;
             else if( nRels >= 4)
-                coital_rate_attenuation_factor = GET_CONFIGURABLE(SimulationConfig)->coital_dilution_4_plus_partners;
+                coital_rate_attenuation_factor = IndividualHumanSTIConfig::coital_dilution_4_plus_partners;
 
             if( nRels > 1 )
             {

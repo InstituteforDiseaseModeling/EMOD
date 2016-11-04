@@ -1,0 +1,11 @@
+{
+    "LarvalHabitatMultiplier" :
+    {
+        "HUMAN_POPULATION" : 5.0,
+        "TEMPORARY_RAINFALL" :
+        {
+            "arabiensis" : 6.0,
+            "gambiae"    : 7.0
+        }
+    }
+}

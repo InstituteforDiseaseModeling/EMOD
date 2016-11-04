@@ -24,12 +24,6 @@ namespace Kernel
 
     IMPL_QUERY_INTERFACE2(NodeSetPolygon, INodeSet, IConfigurable)
 
-    json::QuickBuilder
-    NodeSetPolygon::GetSchema()
-    {
-        return json::QuickBuilder( jsonSchemaBase );
-    }
-
     bool
     NodeSetPolygon::Configure(
         const Configuration * inputJson

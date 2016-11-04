@@ -267,3 +267,8 @@ testing
 *.s
 *.ii
 config_new.xlsx
+
+# Visual Studio 2015 files
+*.VC.db
+*.VC.opendb
+

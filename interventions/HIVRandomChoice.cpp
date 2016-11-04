@@ -127,7 +127,7 @@ namespace Kernel
     json::QuickBuilder
     Event2ProbabilityMapType::GetSchema()
     {
-        json::QuickBuilder schema( jsonSchemaBase );
+        json::QuickBuilder schema( GetSchemaBase() );
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
         schema[ tn ] = json::String( "idmType:Event2ProbabilityMapType" );
@@ -144,8 +144,8 @@ namespace Kernel
 
         return schema;
     }
-    BEGIN_QUERY_INTERFACE_DERIVED(HIVRandomChoice, SimpleDiagnostic)
-    END_QUERY_INTERFACE_DERIVED(HIVRandomChoice, SimpleDiagnostic)
+    BEGIN_QUERY_INTERFACE_DERIVED(HIVRandomChoice, HIVSimpleDiagnostic)
+    END_QUERY_INTERFACE_DERIVED(HIVRandomChoice, HIVSimpleDiagnostic)
 
     IMPLEMENT_FACTORY_REGISTERED(HIVRandomChoice)
 

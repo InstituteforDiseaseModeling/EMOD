@@ -119,6 +119,8 @@
         "Susceptibility_Scale_Type": "CONSTANT_SUSCEPTIBILITY", 
         "Transmission_Blocking_Immunity_Decay_Rate": 0.00017, 
         "Transmission_Blocking_Immunity_Duration_Before_Decay": 1460, 
+        "logLevel_JsonConfigurable": "WARNING", 
+        "logLevel_SimpleHealthSeekingBehavior": "WARNING", 
         "x_Air_Migration": 1, 
         "x_Birth": 1, 
         "x_Family_Migration": 1, 

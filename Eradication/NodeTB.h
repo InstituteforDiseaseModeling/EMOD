@@ -41,7 +41,8 @@ namespace Kernel
         static NodeTB *CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid);
         virtual bool Configure( const Configuration* config ) override;
 
-        virtual void SetupIntranodeTransmission() override;
+        virtual ITransmissionGroups* CreateTransmissionGroups() override;
+        virtual void BuildTransmissionRoutes( RouteToContagionDecayMap_t& rDecayMap ) override;
         virtual void notifyOnInfectionIncidence ( IndividualHumanTB * pIncident ) override;
         virtual void notifyOnInfectionMDRIncidence ( IndividualHumanTB * pIncident ) override;
         virtual void resetNodeStateCounters(void) override;

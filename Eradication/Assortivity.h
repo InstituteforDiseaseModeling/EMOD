@@ -13,6 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IAssortivity.h"
 #include "IRelationship.h"
 #include "EnumSupport.h"
+#include "Properties.h"
 
 class RANDOMBASE ;
 
@@ -39,7 +40,7 @@ namespace Kernel
         Assortivity( RelationshipType::Enum relType=RelationshipType::TRANSITORY, RANDOMBASE *prng=nullptr );
         virtual ~Assortivity();
 
-        std::string GetPropertyName() const { return m_PropertyName ; }
+        IPKey GetPropertyKey() const { return m_PropertyKey ; }
 
         // -------------------------
         // --- IAssortivity Methods
@@ -98,7 +99,7 @@ namespace Kernel
         RelationshipType::Enum          m_RelType ;
         RANDOMBASE*                     m_pRNG ;
         AssortivityGroup::Enum          m_Group ;
-        std::string                     m_PropertyName ;
+        IPKey                           m_PropertyKey ;
         std::vector<std::string>        m_Axes ;
         std::vector<std::vector<float>> m_WeightingMatrix ;
         float                           m_StartYear;  // if current year is < start year, default to NO_GROUP

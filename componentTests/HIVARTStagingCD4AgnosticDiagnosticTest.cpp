@@ -65,15 +65,21 @@ SUITE(HivArtStagingCD4AgnosticDiagnosticTest)
 
             m_Human.SetHasHIV( true );
 
-            Node::TestOnly_AddPropertyKeyValue( "HasActiveTB", "YES" );
-            Node::TestOnly_AddPropertyKeyValue( "HasActiveTB", "NO" );
+            std::map<std::string,float> ip_values ;
+            ip_values.insert( std::make_pair( "YES", 0.5f ) );
+            ip_values.insert( std::make_pair( "NO",  0.5f ) );
+
+            IPFactory::DeleteFactory();
+            IPFactory::CreateFactory();
+            IPFactory::GetInstance()->AddIP( 1, "HasActiveTB", ip_values );
         }
 
         ~DiagnosticFixture()
         {
             delete m_pSimulationConfig;
+            Environment::setSimulationConfig( nullptr );
+            IPFactory::DeleteFactory();
             Environment::Finalize();
-            Node::TestOnly_ClearProperties();
         }
     };
 
@@ -89,6 +95,7 @@ SUITE(HivArtStagingCD4AgnosticDiagnosticTest)
         m_Human.SetAge( 22*365 ); // Adult
         m_Human.SetWhoStage( 2.1f ); // WHO stage > 2005 stage = 2
         m_Human.GetProperties()->operator[]( "HasActiveTB" ) = "NO" ;
+        //m_Human.GetProperties()->Set( IPKeyValue("HasActiveTB:NO") ) ;
         m_Human.SetIsPregnant( false );
 
         CHECK_EQUAL( IndividualEventTriggerType::NoTrigger, m_NEC.GetTriggeredEvent() ) ;
@@ -128,6 +135,7 @@ SUITE(HivArtStagingCD4AgnosticDiagnosticTest)
         m_Human.SetAge( 22*365 ); // Adult
         m_Human.SetWhoStage( 1.5f ); // WHO stage < 2005 stage = 2
         m_Human.GetProperties()->operator[]( "HasActiveTB" ) = "YES" ;
+        //m_Human.GetProperties()->Set( IPKeyValue("HasActiveTB:YES") ) ;
         m_Human.SetIsPregnant( false );
 
         CHECK_EQUAL( IndividualEventTriggerType::NoTrigger, m_NEC.GetTriggeredEvent() ) ;
@@ -168,6 +176,7 @@ SUITE(HivArtStagingCD4AgnosticDiagnosticTest)
         m_Human.SetAge( 0.5*365 ); // child
         m_Human.SetWhoStage( 1.25f ); // WHO stage < 2005 stage = 2
         m_Human.GetProperties()->operator[]( "HasActiveTB" ) = "NO" ;
+        //m_Human.GetProperties()->Set( IPKeyValue("HasActiveTB:NO") ) ;
         m_Human.SetIsPregnant( false );
 
         CHECK_EQUAL( IndividualEventTriggerType::NoTrigger, m_NEC.GetTriggeredEvent() ) ;
@@ -206,6 +215,7 @@ SUITE(HivArtStagingCD4AgnosticDiagnosticTest)
         m_Human.SetAge( 1.5*365 ); // child
         m_Human.SetWhoStage( 1.75f ); // WHO stage > 2005 child stage = 1.5
         m_Human.GetProperties()->operator[]( "HasActiveTB" ) = "NO" ;
+        //m_Human.GetProperties()->Set( IPKeyValue("HasActiveTB:NO") ) ;
         m_Human.SetIsPregnant( false );
 
         CHECK_EQUAL( IndividualEventTriggerType::NoTrigger, m_NEC.GetTriggeredEvent() ) ;
@@ -244,6 +254,7 @@ SUITE(HivArtStagingCD4AgnosticDiagnosticTest)
         m_Human.SetAge( 22*365 ); // Adult
         m_Human.SetWhoStage( 1.5f ); // WHO stage M 2005 stage = 2
         m_Human.GetProperties()->operator[]( "HasActiveTB" ) = "NO" ;
+        //m_Human.GetProperties()->Set( IPKeyValue("HasActiveTB:NO") ) ;
         m_Human.SetIsPregnant( false );
 
         CHECK_EQUAL( IndividualEventTriggerType::NoTrigger, m_NEC.GetTriggeredEvent() ) ;
@@ -288,6 +299,7 @@ SUITE(HivArtStagingCD4AgnosticDiagnosticTest)
         m_Human.SetAge( 22*365 ); // Adult
         m_Human.SetWhoStage( 2.1f ); // WHO stage > 2005 stage = 2
         m_Human.GetProperties()->operator[]( "HasActiveTB" ) = "NO" ;
+        //m_Human.GetProperties()->Set( IPKeyValue("HasActiveTB:NO") ) ;
         m_Human.SetIsPregnant( false );
 
         CHECK_EQUAL( IndividualEventTriggerType::NoTrigger, m_NEC.GetTriggeredEvent() ) ;

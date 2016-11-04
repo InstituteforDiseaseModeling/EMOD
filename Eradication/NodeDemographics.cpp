@@ -1525,22 +1525,7 @@ bool NodeDemographicsDistribution::operator!=( const NodeDemographicsDistributio
     return !(*this == rThat);
 }
 
-void NodeDemographics::validateIPTransition() const
-{
-    std::string key_list[] = { "To", "From", "Coverage", "Type", IP_PROBABILITY_KEY, IP_WHEN_KEY };
-    for( auto key : key_list )
-    {
-        if( !Contains( key ) )
-        {
-            throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, NodeDemographicsFactory::GetDemographicsFileList()[0].c_str(), key.c_str() );
-        }
-    }
 
-    if( !(*this)[ IP_WHEN_KEY ].Contains( "Start" ) )
-    {
-        throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, NodeDemographicsFactory::GetDemographicsFileList()[0].c_str(), "Start" );
-    }
-}
 
 }
 

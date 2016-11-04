@@ -14,7 +14,7 @@
                "Base_Population_Scale_Factor": 1, 
                "Birth_Rate_Dependence": "POPULATION_DEP_RATE", 
                "Birth_Rate_Time_Dependence": "NONE",
-               "Demographics_Filenames": ["NO_DEFAULT_DEMOGRAPHICS"], 
+               "Demographics_Filenames": [], 
                "Default_Geography_Initial_Node_Population":1000,
                "Default_Geography_Torus_Size":10,
                "Enable_Aging": 1, 

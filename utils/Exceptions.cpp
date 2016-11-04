@@ -116,7 +116,7 @@ static inline std::string dump_backtrace()
         {
             method_name = symbol->Name ;
             char buff[50] ;
-            sprintf_s(buff,"0x%0X", symbol->Address );
+            sprintf_s(buff,"0x%0IX", symbol->Address );
             address = std::string(buff);
         }
 

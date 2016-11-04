@@ -45,11 +45,6 @@ namespace Kernel
         return retValue;
     }
 
-    QuickBuilder CalendarEventCoordinator::GetSchema()
-    {
-        return QuickBuilder( jsonSchemaBase );
-    }
-
     void CalendarEventCoordinator::BuildDistributionCalendar(
         std::vector<int> distribution_times,
         std::vector<float> distribution_coverages

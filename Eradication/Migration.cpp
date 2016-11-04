@@ -13,6 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "JsonObjectDemog.h"
 #include "NoCrtWarnings.h"
 #include "IIndividualHuman.h"
+#include "IndividualEventContext.h"
 #include "IdmString.h"
 
 #define UNINITIALIZED_STRING "UNINITIALIZED STRING"
@@ -216,13 +217,8 @@ namespace Kernel
         Gender::Enum gender = Gender::MALE;
         if( traveler != nullptr )
         {
-            IIndividualHuman* p_ih = nullptr;
-            if( s_OK != traveler->QueryInterface(GET_IID(IIndividualHuman), (void**)&p_ih) )
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "traveler", "IIndividualHuman", "IIndividualHumanContext" );
-            }
-            age_years = p_ih->GetAge() / DAYSPERYEAR;
-            gender = (Gender::Enum)(p_ih->GetGender());
+            age_years = traveler->GetEventContext()->GetAge() / DAYSPERYEAR;
+            gender = (Gender::Enum)(traveler->GetEventContext()->GetGender());
         }
 
         CalculateRates( gender, age_years );

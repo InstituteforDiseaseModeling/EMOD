@@ -13,14 +13,16 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    class Event2ProbabilityMapType : public JsonConfigurable, public JsonConfigurable::tStringFloatMapConfigType
+    class Event2ProbabilityMapType : public JsonConfigurable, 
+                                     public IComplexJsonConfigurable, 
+                                     public JsonConfigurable::tStringFloatMapConfigType
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
         public:
             Event2ProbabilityMapType() {}
-            virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key );
-            virtual json::QuickBuilder GetSchema();
+            virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
+            virtual json::QuickBuilder GetSchema() override;
 
             static void serialize(IArchive& ar, Event2ProbabilityMapType& obj);
     };

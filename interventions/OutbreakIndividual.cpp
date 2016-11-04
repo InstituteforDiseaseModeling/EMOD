@@ -34,11 +34,6 @@ namespace Kernel
 
     IMPLEMENT_FACTORY_REGISTERED(OutbreakIndividual)
 
-    QuickBuilder OutbreakIndividual::GetSchema()
-    {
-        return QuickBuilder( jsonSchemaBase );
-    }
-
     OutbreakIndividual::OutbreakIndividual()
     {
         initConfigTypeMap( "Antigen", &antigen, Antigen_DESC_TEXT, 0, 10, 0 );

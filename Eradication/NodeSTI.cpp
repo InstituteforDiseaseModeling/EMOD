@@ -122,7 +122,7 @@ namespace Kernel
         }
         std::istringstream iss( demographics[SOCIETY_KEY].ToString() );
         Configuration* p_config = Configuration::Load( iss, "demographics" );
-        society->SetParameters( dynamic_cast<IIdGeneratorSTI*>(parent), GetIndividualPropertyDistributions(), p_config );
+        society->SetParameters( dynamic_cast<IIdGeneratorSTI*>(parent), p_config );
         delete p_config ;
     }
 

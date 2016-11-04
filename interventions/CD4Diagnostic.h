@@ -16,15 +16,15 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    class CD4Thresholds : public JsonConfigurable
+    class CD4Thresholds : public JsonConfigurable, public IComplexJsonConfigurable
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
 
         public:
             CD4Thresholds() {}
-            virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key );
-            virtual json::QuickBuilder GetSchema();
+            virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
+            virtual json::QuickBuilder GetSchema() override;
             std::vector<std::pair< NaturalNumber, NaturalNumber > > thresholds;
             std::vector< std::string > thresh_events;
 

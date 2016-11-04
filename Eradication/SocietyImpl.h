@@ -40,7 +40,7 @@ namespace Kernel
         virtual IPairFormationAgent* GetPFA(RelationshipType::Enum) override;
         virtual IPairFormationStats* GetStats(RelationshipType::Enum) override;
 
-        virtual void SetParameters( IIdGeneratorSTI* pIdGen, const tPropertiesDistrib& rPropertiesDist, const Configuration* config ) override;
+        virtual void SetParameters( IIdGeneratorSTI* pIdGen, const Configuration* config ) override;
         virtual IRelationshipParameters* GetRelationshipParameters( RelationshipType::Enum type ) override;
 
         virtual IConcurrency* GetConcurrency() override;

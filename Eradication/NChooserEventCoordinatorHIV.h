@@ -110,5 +110,7 @@ namespace Kernel
         NChooserEventCoordinatorHIV();
         NChooserEventCoordinatorHIV( NChooserObjectFactory* pObjectFactory );
         virtual ~NChooserEventCoordinatorHIV();
+
+        virtual bool Configure( const Configuration * inputJson ) override;
     };
 }

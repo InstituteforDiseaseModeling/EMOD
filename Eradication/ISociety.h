@@ -13,7 +13,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IdmDateTime.h"
 #include "Configure.h"
 #include "IRelationship.h"
-#include "Properties.h"
 
 
 namespace Kernel {
@@ -35,7 +34,7 @@ namespace Kernel {
         virtual IPairFormationAgent* GetPFA(RelationshipType::Enum) = 0;
         virtual IPairFormationStats* GetStats(RelationshipType::Enum) = 0;
 
-        virtual void SetParameters( IIdGeneratorSTI* pIdGen, const tPropertiesDistrib& rPropertiesDist, const Configuration* config ) = 0;
+        virtual void SetParameters( IIdGeneratorSTI* pIdGen, const Configuration* config ) = 0;
         virtual IRelationshipParameters* GetRelationshipParameters( RelationshipType::Enum type ) = 0;
 
         virtual IConcurrency* GetConcurrency() = 0;

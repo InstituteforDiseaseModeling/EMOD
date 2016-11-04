@@ -20,6 +20,8 @@
         { "path" : "103_OneMalariaIndividual_MultipleSwitchingAntigensSuperInfection" },
         { "path" : "110_Namawala_Production_Burnin" },
         { "path" : "111_Namawala_Immune_Initialization" },
+        { "path" : "119_MalariaSurvey_Multicore" },
+        { "path" : "127_Malaria_GH_757" },
         { "path" : "Scenarios/VectorAndMalaria/02_Namawala_Full_Malaria_Model" },
         { "path" : "Scenarios/VectorAndMalaria/08_Garki_IRSMDA" }
     ],

@@ -1,0 +1,15 @@
+{
+    "Default_Config_Path": "defaults/generic_default_config.json", 
+    "parameters": {
+        "Config_Name": "114_Generic_NChooser_Properties", 
+        "Geography": "SamplesInput", 
+        "Simulation_Duration": 120, 
+        "Run_Number": 1,
+        "Base_Population_Scale_Factor": 1.0, 
+        "Demographics_Filenames": [ "NChooser_demographics_with_properties.json" ],
+        "Listed_Events": [
+            "Vaccinated",
+            "VaccineExpired"
+        ]
+    }
+}

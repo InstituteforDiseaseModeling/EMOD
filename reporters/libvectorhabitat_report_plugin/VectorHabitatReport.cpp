@@ -190,6 +190,7 @@ void VectorHabitatReport::EndTimestep( float currentTime, float dt )
     Accumulate("Egg Crowding Factor", egg_crowding_factor);
     Accumulate("Local Larval Mortality", local_larval_mortality);
     Accumulate("Artificial Larval Mortality", artificial_larval_mortality);
+    Accumulate("Rainfall Larval Mortality", rainfall_larval_mortality);
     Accumulate("Local Larval Growth Modifier", local_larval_growth_mod);
 
     std::vector<std::string> channel_names = channelDataMap.GetChannelNames();
@@ -243,6 +244,7 @@ void VectorHabitatReport::LogNodeData( INodeContext * pNC )
                 egg_crowding_factor.push_back(         hab->GetEggCrowdingCorrection()        );
                 local_larval_mortality.push_back(      hab->GetLocalLarvalMortality(1.0, 0.5) ); // NOTE: mortality relative to species baseline (1.0) and intermediate larval age (0.5)
                 artificial_larval_mortality.push_back( hab->GetArtificialLarvalMortality()    );
+                rainfall_larval_mortality.push_back(   hab->GetRainfallMortality()            );
                 local_larval_growth_mod.push_back(     hab->GetLocalLarvalGrowthModifier()    );
             }
             else
@@ -255,6 +257,7 @@ void VectorHabitatReport::LogNodeData( INodeContext * pNC )
                 egg_crowding_factor[idx]         = hab->GetEggCrowdingCorrection();
                 local_larval_mortality[idx]      = hab->GetLocalLarvalMortality(1.0, 0.5); // NOTE: mortality relative to species baseline (1.0) and intermediate larval age (0.5)
                 artificial_larval_mortality[idx] = hab->GetArtificialLarvalMortality();
+                rainfall_larval_mortality[idx]   = hab->GetRainfallMortality();
                 local_larval_growth_mod[idx]     = hab->GetLocalLarvalGrowthModifier();
             }
         }

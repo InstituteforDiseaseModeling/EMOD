@@ -13,6 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IIndividualHumanSTI.h"
 #include "IIndividualHumanHIV.h"
 #include "IHIVInterventionsContainer.h"
+#include "SimulationConfig.h"
 
 static const char * _module = "NChooserEventCoordinatorHIV";
 
@@ -250,6 +251,16 @@ namespace Kernel
 
     NChooserEventCoordinatorHIV::~NChooserEventCoordinatorHIV()
     {
+    }
+
+    bool NChooserEventCoordinatorHIV::Configure( const Configuration * inputJson )
+    {
+        if( !JsonConfigurable::_dryrun &&
+            (GET_CONFIGURABLE( SimulationConfig )->sim_type != SimType::HIV_SIM) )
+        {
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "NChooserEventCoordinatorHIV can only be used in HIV simulations." );
+        }
+        return NChooserEventCoordinatorSTI::Configure( inputJson );
     }
 }
 

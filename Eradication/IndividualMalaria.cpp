@@ -21,6 +21,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationConfig.h"
 #include "MathFunctions.h"
 #include "MalariaBarcode.h"
+#include "MalariaParameters.h"
 
 #ifdef randgen
 #undef randgen
@@ -565,7 +566,7 @@ namespace Kernel
 
             // then gametocytes
             float gametocyte_density = (m_female_gametocytes + m_male_gametocytes) * m_inv_microliters_blood;
-            m_gametocytes_detected = float(1.0 / params()->parasiteSmearSensitivity * randgen->Poisson(params()->parasiteSmearSensitivity * gametocyte_density));
+            m_gametocytes_detected = float(1.0 / params()->malaria_params->parasiteSmearSensitivity * randgen->Poisson(params()->malaria_params->parasiteSmearSensitivity * gametocyte_density));
         }
         else if (test_type == MALARIA_TEST_NEW_DIAGNOSTIC)
         {
@@ -607,7 +608,7 @@ namespace Kernel
 
     bool  IndividualHumanMalaria::HasFever() const
     {
-        return malaria_susceptibility->get_fever() > GET_CONFIGURABLE(SimulationConfig)->feverDetectionThreshold;
+        return malaria_susceptibility->get_fever() > GET_CONFIGURABLE(SimulationConfig)->malaria_params->feverDetectionThreshold;
     }
 
     float IndividualHumanMalaria::CheckGametocyteCountWithTest(int test_type) const

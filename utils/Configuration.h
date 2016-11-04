@@ -167,6 +167,5 @@ namespace Kernel
 protected: \
     template<class Mode> void common_configured_dispatch(const Configuration *config, /*caller supplies base object, out param*/ QuickBuilder *schema);\
 public: \
-    virtual bool Configure(const Configuration *config); \
-    virtual QuickBuilder GetSchema();
+    virtual bool Configure(const Configuration *config);
 }

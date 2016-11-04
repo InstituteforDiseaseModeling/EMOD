@@ -10,7 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #pragma once
 
 #include "SimulationEnums.h"
-#include "Properties.h"
+#include "PropertiesString.h"
 #include "IRelationship.h"
 
 #define EXTRA_RELATIONAL_ALLOWED(rel)   (1 << (unsigned int)rel)

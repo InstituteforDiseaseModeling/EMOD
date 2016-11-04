@@ -86,6 +86,7 @@ namespace Kernel
         virtual void SetContextTo(INodeEventContext *context) = 0;
         virtual void Update(float dt) = 0;
         virtual void ValidateSimType( const std::string& simTypeStr ) = 0;
+        virtual INodeDistributableIntervention * Clone()  = 0;
 
         virtual ~INodeDistributableIntervention() { }
     };

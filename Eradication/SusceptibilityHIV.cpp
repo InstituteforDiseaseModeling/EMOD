@@ -11,6 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <limits>
 #include "SusceptibilityHIV.h"
 #ifdef ENABLE_TBHIV
+#include "TBHIVParameters.h"
 #include "IndividualCoinfection.h"
 #endif
 #include "IIndividualHumanHIV.h"
@@ -47,6 +48,8 @@ namespace Kernel
     float SusceptibilityHIVConfig::post_infection_CD4_inverse_kappa = 0.0f;
     float SusceptibilityHIVConfig::disease_death_CD4_alpha = 0.0f;
     float SusceptibilityHIVConfig::disease_death_CD4_inverse_beta = 0.0f;
+    float SusceptibilityHIVConfig::days_between_symptomatic_and_death_lambda = 183.0f;
+    float SusceptibilityHIVConfig::days_between_symptomatic_and_death_inv_kappa = 1.0f;
 
 
     bool
@@ -54,10 +57,14 @@ namespace Kernel
         const Configuration* config
     )
     {
-        initConfigTypeMap( "CD4_Post_Infection_Weibull_Scale", &post_infection_CD4_lambda, CD4_Post_Infection_Weibull_Scale_DESC_TEXT, 1.0f, 1000.0f, 560.4319099584783f );
+        initConfigTypeMap( "CD4_Post_Infection_Weibull_Scale",         &post_infection_CD4_lambda, CD4_Post_Infection_Weibull_Scale_DESC_TEXT,                1.0f, 1000.0f, 560.4319099584783f );
         initConfigTypeMap( "CD4_Post_Infection_Weibull_Heterogeneity", &post_infection_CD4_inverse_kappa, CD4_Post_Infection_Weibull_Heterogeneity_DESC_TEXT, 0.0f, 100.0f, 1/3.627889600819898f );
-        initConfigTypeMap( "CD4_At_Death_LogLogistic_Scale", &disease_death_CD4_alpha, CD4_At_Death_LogLogistic_Scale_DESC_TEXT, 1.0f, 1000.0f, 31.63f );
+
+        initConfigTypeMap( "CD4_At_Death_LogLogistic_Scale",         &disease_death_CD4_alpha, CD4_At_Death_LogLogistic_Scale_DESC_TEXT,                1.0f, 1000.0f, 31.63f );
         initConfigTypeMap( "CD4_At_Death_LogLogistic_Heterogeneity", &disease_death_CD4_inverse_beta, CD4_At_Death_LogLogistic_Heterogeneity_DESC_TEXT, 0.0f, 100.0f, 0.0f);
+
+        initConfigTypeMap( "Days_Between_Symptomatic_And_Death_Weibull_Scale",         &days_between_symptomatic_and_death_lambda,    Days_Between_Symptomatic_And_Death_Weibull_Scale_DESC_TEXT,         1, 3650.0f, 183.0f );   // Constrain away from 0 for use as a rate
+        initConfigTypeMap( "Days_Between_Symptomatic_And_Death_Weibull_Heterogeneity", &days_between_symptomatic_and_death_inv_kappa, Days_Between_Symptomatic_And_Death_Weibull_Heterogeneity_DESC_TEXT, 0.1f, 10.0f, 1.0f );   // Constrain away from 0 for use as a rate
 
         bool ret = JsonConfigurable::Configure( config );
 
@@ -313,10 +320,8 @@ namespace Kernel
     void SusceptibilityHIV::UpdateSymptomaticPresentationTime()
     {
         // Calculate symptomatic presentation time 
-        float days_between_symptomatic_and_death_lambda = GET_CONFIGURABLE(SimulationConfig)->days_between_symptomatic_and_death_lambda;
-        float days_between_symptomatic_and_death_inv_kappa = GET_CONFIGURABLE(SimulationConfig)->days_between_symptomatic_and_death_inv_kappa;
-
-        days_between_symptomatic_and_death = Environment::getInstance()->RNG->Weibull2( days_between_symptomatic_and_death_lambda, days_between_symptomatic_and_death_inv_kappa );
+        days_between_symptomatic_and_death = Environment::getInstance()->RNG->Weibull2( SusceptibilityHIVConfig::days_between_symptomatic_and_death_lambda, 
+                                                                                        SusceptibilityHIVConfig::days_between_symptomatic_and_death_inv_kappa );
 
         LOG_DEBUG_F( "Individual %d will be symptomatic %f days before death\n", parent->GetSuid().data, days_between_symptomatic_and_death );
     }
@@ -331,8 +336,8 @@ namespace Kernel
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanCoinfection", "IndividualHumanCoinfection" );
         }
 
-        float CD4_time_step =GET_CONFIGURABLE(SimulationConfig)->cd4_time_step;
-        int CD4_time_length = GET_CONFIGURABLE(SimulationConfig)->num_cd4_time_steps;
+        float CD4_time_step =GET_CONFIGURABLE(SimulationConfig)->tbhiv_params->cd4_time_step;
+        int CD4_time_length = GET_CONFIGURABLE(SimulationConfig)->tbhiv_params->num_cd4_time_steps;
 
         std::vector <float> v_CD4(CD4_time_length, 0.0f);
         int jj = 0;

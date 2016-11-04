@@ -22,6 +22,7 @@ namespace Kernel
 {
     NodeVectorEventContextHost::NodeVectorEventContextHost(Node* _node) 
     : NodeEventContextHost(_node)
+    , larval_reduction( false, -FLT_MAX, FLT_MAX, 0.0f )
     , pLarvalKilling(0)
     , pLarvalHabitatReduction(0)
     , pVillageSpatialRepellent(0)
@@ -97,7 +98,15 @@ namespace Kernel
     )
     {
         larval_reduction_target = target;
-        pLarvalHabitatReduction = reduction;
+        larval_reduction.Initialize();
+        larval_reduction.SetMultiplier( target, reduction );
+    }
+
+    void
+    NodeVectorEventContextHost::UpdateLarvalHabitatReduction( const LarvalHabitatMultiplier& lhm )
+    {
+        larval_reduction.Initialize();
+        larval_reduction.SetAsReduction( lhm );
     }
 
     void
@@ -200,24 +209,21 @@ namespace Kernel
     }
 
     float NodeVectorEventContextHost::GetLarvalHabitatReduction(
-        VectorHabitatType::Enum habitat_query // shouldn't the type be the enum???
+        VectorHabitatType::Enum habitat_query, // shouldn't the type be the enum???
+        const std::string& species
     )
     {
-        auto ret = 0.0f;
-        if( larval_reduction_target == VectorHabitatType::ALL_HABITATS ||
-            habitat_query == larval_reduction_target )
+        VectorHabitatType::Enum vht = habitat_query;
+        if( larval_reduction_target == VectorHabitatType::ALL_HABITATS )
         {
-            LOG_DEBUG_F( "%s: actual larval habitat matches intervention target.\n", __FUNCTION__ );
-            ret = pLarvalHabitatReduction;
+            vht = VectorHabitatType::ALL_HABITATS;
         }
-        else
+        if( !larval_reduction.WasInitialized() )
         {
-            LOG_DEBUG_F( "%s: actual larval habitat (%s) does NOT match intervention target (%s).\n",
-                         __FUNCTION__, 
-                        VectorHabitatType::pairs::lookup_key( habitat_query ),
-                        VectorHabitatType::pairs::lookup_key( larval_reduction_target )
-                       );
+            larval_reduction.Initialize();
         }
+        float ret = larval_reduction.GetMultiplier( vht, species );
+
         LOG_DEBUG_F( "%s returning %f (habitat_query = %s)\n", __FUNCTION__, ret, VectorHabitatType::pairs::lookup_key( habitat_query ) );
         return ret;
     }
@@ -320,6 +326,7 @@ namespace Kernel
         ar & context.larval_killing_target;
         ar & context.larval_reduction_target;
         ar & context.ovitrap_killing_target;
+        //ar & context.larval_reduction;
 
         ar & context.pLarvalKilling; // by habitat???
         ar & context.pLarvalHabitatReduction; // by habitat???

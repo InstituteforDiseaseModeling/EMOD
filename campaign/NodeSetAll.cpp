@@ -21,13 +21,6 @@ namespace Kernel
 
     IMPL_QUERY_INTERFACE2(NodeSetAll, INodeSet, IConfigurable)
 
-    json::QuickBuilder
-    NodeSetAll::GetSchema()
-    //const
-    {
-        return json::QuickBuilder( jsonSchemaBase );
-    }
-
     bool
     NodeSetAll::Configure(
         const Configuration * pInputJson

@@ -25,6 +25,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorContexts.h"
 #include "VectorMatingStructure.h"
 #include "Types.h"
+#include "LarvalHabitatMultiplier.h"
 
 namespace Kernel
 {
@@ -35,6 +36,7 @@ namespace Kernel
     public:
         virtual void UpdateLarvalKilling( VectorHabitatType::Enum habitat, float killing ) = 0;
         virtual void UpdateLarvalHabitatReduction( VectorHabitatType::Enum habitat, float reduction ) = 0;
+        virtual void UpdateLarvalHabitatReduction( const LarvalHabitatMultiplier& lhm ) = 0;
         virtual void UpdateOutdoorKilling( float killing ) = 0;
         virtual void UpdateOviTrapKilling(VectorHabitatType::Enum  habitat, float killing) = 0;
         virtual void UpdateVillageSpatialRepellent(float) = 0;
@@ -68,36 +70,39 @@ namespace Kernel
         virtual QueryResult QueryInterface(iid_t iid, void** pinstance);
        
         // INodeVectorInterventionEffectsApply
-        virtual void UpdateLarvalKilling( VectorHabitatType::Enum habitat, float killing );
-        virtual void UpdateLarvalHabitatReduction( VectorHabitatType::Enum habitat, float reduction );
-        virtual void UpdateOutdoorKilling( float killing );
-        virtual void UpdateVillageSpatialRepellent(float reduction);
-        virtual void UpdateADIVAttraction(float reduction);
-        virtual void UpdateADOVAttraction(float reduction);
-        virtual void UpdatePFVKill(float killing);
-        virtual void UpdateOutdoorKillingMale(float killing);
-        virtual void UpdateSugarFeedKilling(float killing);
-        virtual void UpdateOviTrapKilling(VectorHabitatType::Enum  habitat, float killing);
-        virtual void UpdateAnimalFeedKilling(float killing);
-        virtual void UpdateOutdoorRestKilling(float killing);
+        virtual void UpdateLarvalKilling( VectorHabitatType::Enum habitat, float killing ) override;
+        virtual void UpdateLarvalHabitatReduction( VectorHabitatType::Enum habitat, float reduction ) override;
+        virtual void UpdateLarvalHabitatReduction( const LarvalHabitatMultiplier& lhm ) override;
+        virtual void UpdateOutdoorKilling( float killing ) override;
+        virtual void UpdateVillageSpatialRepellent(float reduction) override;
+        virtual void UpdateADIVAttraction(float reduction) override;
+        virtual void UpdateADOVAttraction(float reduction) override;
+        virtual void UpdatePFVKill(float killing) override;
+        virtual void UpdateOutdoorKillingMale(float killing) override;
+        virtual void UpdateSugarFeedKilling(float killing) override;
+        virtual void UpdateOviTrapKilling(VectorHabitatType::Enum  habitat, float killing) override;
+        virtual void UpdateAnimalFeedKilling(float killing) override;
+        virtual void UpdateOutdoorRestKilling(float killing) override;
 
         // INodeVectorInterventionEffects;
-        virtual float GetLarvalKilling(VectorHabitatType::Enum);
-        virtual float GetLarvalHabitatReduction(VectorHabitatType::Enum);
-        virtual float GetVillageSpatialRepellent();
-        virtual float GetADIVAttraction();
-        virtual float GetADOVAttraction();
-        virtual float GetPFVKill();
-        virtual float GetOutdoorKilling();
-        virtual float GetOutdoorKillingMale();
-        virtual float GetSugarFeedKilling();
-        virtual float GetOviTrapKilling(VectorHabitatType::Enum);
-        virtual float GetAnimalFeedKilling();
-        virtual float GetOutdoorRestKilling();
+        virtual float GetLarvalKilling(VectorHabitatType::Enum) override;
+        virtual float GetLarvalHabitatReduction(VectorHabitatType::Enum, const std::string& species) override;
+        virtual float GetVillageSpatialRepellent() override;
+        virtual float GetADIVAttraction() override;
+        virtual float GetADOVAttraction() override;
+        virtual float GetPFVKill() override;
+        virtual float GetOutdoorKilling() override;
+        virtual float GetOutdoorKillingMale() override;
+        virtual float GetSugarFeedKilling() override;
+        virtual float GetOviTrapKilling(VectorHabitatType::Enum) override;
+        virtual float GetAnimalFeedKilling() override;
+        virtual float GetOutdoorRestKilling() override;
 
         VectorHabitatType::Enum larval_killing_target;
         VectorHabitatType::Enum larval_reduction_target;
         VectorHabitatType::Enum ovitrap_killing_target;
+
+        LarvalHabitatMultiplier larval_reduction;
 
         // IMosquitoReleaseConsumer
         virtual void ReleaseMosquitoes( NonNegativeFloat cost, const std::string& species, const VectorMatingStructure& genetics, NaturalNumber number );

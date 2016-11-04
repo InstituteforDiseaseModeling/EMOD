@@ -57,7 +57,7 @@ namespace Kernel
     json::QuickBuilder
     InputEIRConfig::GetSchema()
     {
-        json::QuickBuilder schema( jsonSchemaBase );
+        json::QuickBuilder schema( GetSchemaBase() );
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
         schema[ tn ] = json::String( "idmType:InputEIRConfig" );
@@ -79,17 +79,21 @@ namespace Kernel
 
     IMPLEMENT_FACTORY_REGISTERED(InputEIR)
 
-    QuickBuilder InputEIR::GetSchema()
-    {
-        return QuickBuilder( jsonSchemaBase );
-    }
-
     InputEIR::InputEIR() 
-        : today(0)
-        , daily_EIR(0.0f)
-        , risk_function(nullptr)
+    : BaseNodeIntervention()
+    , today(0)
+    , daily_EIR(0.0f)
+    , risk_function(nullptr)
     {
         initSimTypes( 1, "MALARIA_SIM" ); // using sporozoite challenge
+    }
+
+    InputEIR::InputEIR( const InputEIR& master )
+    : BaseNodeIntervention( master )
+    , today( master.today )
+    , daily_EIR( master.daily_EIR )
+    , risk_function( master.risk_function )
+    {
     }
 
     bool InputEIR::Configure( const Configuration * inputJson )

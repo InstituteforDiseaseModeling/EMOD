@@ -465,6 +465,8 @@
                 "Demographic_Coverage": 1, 
                 "Intervention_Config": {
                     "class": "HIVRandomChoice", 
+                    "Abort_States": [ ], 
+                    "Cascade_State": "", 
                     "Choices": {
                         "WillReceiveTraditionalMaleCircumcision": 0.482, 
                         "WillNotReceiveTraditionalMaleCircumcisionInitialPop": 0.518
@@ -487,6 +489,8 @@
                 "Demographic_Coverage": 1, 
                 "Intervention_Config": {
                     "class": "HIVRandomChoice", 
+                    "Abort_States": [ ], 
+                    "Cascade_State": "", 
                     "Choices": {
                         "WillReceiveTraditionalMaleCircumcision": 0.832, 
                         "WillNotReceiveTraditionalMaleCircumcisionInitialPop": 0.168
@@ -509,6 +513,8 @@
                 "Demographic_Coverage": 1, 
                 "Intervention_Config": {
                     "class": "HIVRandomChoice", 
+                    "Abort_States": [ ], 
+                    "Cascade_State": "", 
                     "Choices": {
                         "WillReceiveTraditionalMaleCircumcision": 0.887, 
                         "WillNotReceiveTraditionalMaleCircumcisionInitialPop": 0.113
@@ -531,6 +537,8 @@
                 "Demographic_Coverage": 1, 
                 "Intervention_Config": {
                     "class": "HIVRandomChoice", 
+                    "Abort_States": [ ], 
+                    "Cascade_State": "", 
                     "Choices": {
                         "WillReceiveTraditionalMaleCircumcision": 0.878, 
                         "WillNotReceiveTraditionalMaleCircumcisionInitialPop": 0.122
@@ -553,6 +561,8 @@
                 "Demographic_Coverage": 1, 
                 "Intervention_Config": {
                     "class": "HIVRandomChoice", 
+                    "Abort_States": [ ], 
+                    "Cascade_State": "", 
                     "Choices": {
                         "WillReceiveTraditionalMaleCircumcision": 0.955, 
                         "WillNotReceiveTraditionalMaleCircumcisionInitialPop": 0.045
@@ -575,6 +585,8 @@
                 "Demographic_Coverage": 1, 
                 "Intervention_Config": {
                     "class": "HIVRandomChoice", 
+                    "Abort_States": [ ], 
+                    "Cascade_State": "", 
                     "Choices": {
                         "WillReceiveTraditionalMaleCircumcision": 0.97, 
                         "WillNotReceiveTraditionalMaleCircumcisionInitialPop": 0.03
@@ -597,6 +609,8 @@
                 "Demographic_Coverage": 1, 
                 "Intervention_Config": {
                     "class": "HIVRandomChoice", 
+                    "Abort_States": [ ], 
+                    "Cascade_State": "", 
                     "Choices": {
                         "WillReceiveTraditionalMaleCircumcision": 0.963, 
                         "WillNotReceiveTraditionalMaleCircumcisionInitialPop": 0.037
@@ -619,6 +633,8 @@
                 "Demographic_Coverage": 1, 
                 "Intervention_Config": {
                     "class": "HIVRandomChoice", 
+                    "Abort_States": [ ], 
+                    "Cascade_State": "", 
                     "Choices": {
                         "WillReceiveTraditionalMaleCircumcision": 0.973, 
                         "WillNotReceiveTraditionalMaleCircumcisionInitialPop": 0.027
@@ -725,6 +741,8 @@
                     "Trigger_Condition": "Births", 
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRandomChoice", 
+                        "Abort_States": [ ], 
+                        "Cascade_State": "", 
                         "Choices": {
                             "WillReceiveTraditionalMaleCircumcision": 0.482, 
                             "WillNotReceiveTraditionalMaleCircumcisionAtBirth": 0.518
@@ -750,6 +768,8 @@
                     "Trigger_Condition": "Births", 
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRandomChoice", 
+                        "Abort_States": [ ], 
+                        "Cascade_State": "", 
                         "Choices": {
                             "WillReceiveTraditionalMaleCircumcision": 0.832, 
                             "WillNotReceiveTraditionalMaleCircumcisionAtBirth": 0.168
@@ -775,6 +795,8 @@
                     "Trigger_Condition": "Births", 
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRandomChoice", 
+                        "Abort_States": [ ], 
+                        "Cascade_State": "", 
                         "Choices": {
                             "WillReceiveTraditionalMaleCircumcision": 0.887, 
                             "WillNotReceiveTraditionalMaleCircumcisionAtBirth": 0.113
@@ -800,6 +822,8 @@
                     "Trigger_Condition": "Births", 
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRandomChoice", 
+                        "Abort_States": [ ], 
+                        "Cascade_State": "", 
                         "Choices": {
                             "WillReceiveTraditionalMaleCircumcision": 0.878, 
                             "WillNotReceiveTraditionalMaleCircumcisionAtBirth": 0.122
@@ -825,6 +849,8 @@
                     "Trigger_Condition": "Births", 
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRandomChoice", 
+                        "Abort_States": [ ], 
+                        "Cascade_State": "", 
                         "Choices": {
                             "WillReceiveTraditionalMaleCircumcision": 0.955, 
                             "WillNotReceiveTraditionalMaleCircumcisionAtBirth": 0.045
@@ -850,6 +876,8 @@
                     "Trigger_Condition": "Births", 
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRandomChoice", 
+                        "Abort_States": [ ], 
+                        "Cascade_State": "", 
                         "Choices": {
                             "WillReceiveTraditionalMaleCircumcision": 0.97, 
                             "WillNotReceiveTraditionalMaleCircumcisionAtBirth": 0.03
@@ -875,6 +903,8 @@
                     "Trigger_Condition": "Births", 
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRandomChoice", 
+                        "Abort_States": [ ], 
+                        "Cascade_State": "", 
                         "Choices": {
                             "WillReceiveTraditionalMaleCircumcision": 0.963, 
                             "WillNotReceiveTraditionalMaleCircumcisionAtBirth": 0.037
@@ -900,6 +930,8 @@
                     "Trigger_Condition": "Births", 
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRandomChoice", 
+                        "Abort_States": [ ], 
+                        "Cascade_State": "", 
                         "Choices": {
                             "WillReceiveTraditionalMaleCircumcision": 0.973, 
                             "WillNotReceiveTraditionalMaleCircumcisionAtBirth": 0.027

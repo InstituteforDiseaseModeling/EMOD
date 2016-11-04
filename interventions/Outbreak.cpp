@@ -35,11 +35,6 @@ namespace Kernel
 
     IMPLEMENT_FACTORY_REGISTERED(Outbreak)
 
-    QuickBuilder Outbreak::GetSchema()
-    {
-        return QuickBuilder( jsonSchemaBase );
-    }
-
     Outbreak::Outbreak() : import_age(DAYSPERYEAR)
     {
         initConfigTypeMap( "Antigen", &antigen, Antigen_DESC_TEXT, 0, 10, 0 );

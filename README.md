@@ -1,47 +1,19 @@
-## V2.8
-What's New in EMOD V2.8
-The EMOD source v2.8 release includes new and updated features as well as updates to the schema.
-+ WaningEffectMapLinear and WaningEffectMapPiecewise capabilities have been added to provide more power and flexibility in defining how interventions can wane by allowing you to specify a detailed waning curve.
-    + WaningEffectMapLinear allows you to specify a detailed waning curve using linear interpolation between points.
-    + WaningEffectMapPiecewise allows you to specify a detailed waning curve using a piecewise/step function.
-+ ControlledVaccine extends SimpleVaccine by adding controls to when an individual can and cannot be revaccinated.
-+ ReferenceTrackingEventCoordinator allows you to define a particular coverage of an intervention that should be present in the population over time.
-+ ReferenceTrackingEventCoordinatorHIV builds on the ReferenceTrackingEventCoordinator by adding an HIV specific state that individuals must have in order to get the intervention.
-+ The schema for the config parameters has been updated to now only require config.json parameters if the dependent feature is enabled. For example, previous to v2.8 you had to include a parameter for Maternal_Transmission_Probability even if Enable_Maternal_Transmission was set to 0 (False/OFF). This update produces smaller config.json files making the configuration files easier to create, view, and edit.
-+ For the list of breaking changes go to the [IDM documentation](http://idmod.org/idmdoc).
+## V2.10
+The EMOD source v2.10 release includes new and updated Malaria configuration, demographic and intervention parameters. With this release, EMOD now uses Microsoft Visual Studio 2015, Boost 1.61.0 and SCons 2.5.0. See the **Software Upgrades** section for more information.
 
-## V2.7.0
-The EMOD source v2.7 release enhances the STI and HIV models with new and updated features.
-+ Both multi-node and multi-core capabilities have been added to support spatial simulations including relationship migration.
-+ Relationship types have been expanded:
-    + A fourth relationship type, Commercial, has been added.
-    + The maximum number of simultaneous partnership for an individual is increased to 63.
-+ The HIVByAgeAndGender report now captures the data for HIV status.
-+ Many of the relationship-oriented parameters have been moved from the configuration file to the demographics file including concurrency, pair-forming, extra-relationship rates. For the list of breaking changes go to the [IDM documentation](http://idmod.org/idmdoc).
+### Malaria 
 
-##V2.6.0
-With this release, you can now run EMOD on CentOS 7.1.
-+ The EMOD executable has been tested and is supported on CentOS 7.1. EMOD has also been successfully built and run on Ubuntu, SUSE and Arch. If you have issues building the EMOD executable, you can contact IDM at IDMSupport@idmod.org.
-+ The PrepareLinuxEnvironment script is available on GitHub. It is an example of creating an environment for building EMOD and cloning the source code. The script was designed and tested to run on an Azure CentOS 7.1 virtual machine but you can modify it for other distributions.
+Several habitat parameters in the Malaria model have been upgraded, creating more flexibility in the model and enabling the user to have more control over habitat customization. These changes allow the model to more accurately capture real-world habitat availability and how it affects different mosquito species.
 
-EMOD on Windows continues to be supported on Windows 10 and Windows Server 2012 for local simulations, and Windows HPC Server 2012 for remote simulations. For information on the prerequisites needed to build EMOD, go to [Prerequisite Software] (http://idmod.org/idmdoc/#EMOD/EMODBuildAndRegression/Prerequisite%20Software.htm).
++ **LINEAR_SPLINE habitat type**: This new option under _Larval_Habitat_Type_ increases model customization by allowing the user to specify an arbitrary functional form (derived from data) for larval habitat availability throughout the year, instead of relying on climatological parameters such as rainfall or temperature. See [Vector Species Parameters](http://idmod.org/idmdoc/#EMOD/ParameterReference/Vector%20Species%20Parameters.htm) in the IDM documentation.
++ **LarvalHabitatMultiplier by species**: This new feature in demographics allows larval habitat availability to be modified independently for each species sharing a particular habitat type. Prior versions of EMOD applied the same modifier to all species within a shared habitat; this upgrade enables you to apply modifiers to individual species within a habitat. See [NodeAttributes](http://idmod.org/idmdoc/#EMOD/ParameterReference/NodeAttributes.htm) in the IDM documentation.
++ **ScaleLarvalHabitat by species**: This new intervention enables species-specific effects of habitat interventions within shared habitat types, such that habitat availability is modified on a per-species level. Look for ScaleLarvalHabitat in the [Intervention Parameter Listing](http://idmod.org/idmdoc/#EMOD/ParameterReference/Intervention%20Parameter%20Listing.htm) in the IDM documentation.
 
-For information on building EMOD, go to [Building the EMOD Executable](http://idmod.org/idmdoc/#EMOD/EMODBuildAndRegression/Building%20the%20EMOD%20Executable.htm).
+### EMOD Software Upgrades
++ **Microsoft Visual Studio**: EMOD now uses Visual Studio 2015, and Visual Studio 2012 is no longer supported. The Visual Studio solution file in the EMOD source, EradicationKernel, has been updated for Visual Studio 2015. If you have custom reporter EMODules (DLLS) that were built using Visual Studio 2012, you will need to rebuild them with Visual Studio 2015; otherwise, your simulation will crash when it attempts to load the DLLs built by Visual Studio 2012.
++ **Boost**: EMOD now supports using Boost 1.61.0. If you continue to use Boost 1.51.0, you will get the following warning, "Unknown compiler version - please run the configure tests and report the results."
++ **Environment Variables**: To make it easier to use Boost and Python with Visual Studio, IDM paths have been created. These two paths, IDM_BOOST_PATH and IDM_PYTHON_PATH, need to be added to your  environment variables by using either the setx command from a command line or the Windows System Properties panel.
++ **SCons**: EMOD was tested using SCons 2.5.0, as it supports Visual Studio 2015. If you do not add the new IDM environment variables for Boost and Python, you will need to modify the Boost and Python paths in the SConstruct file in the EMOD root directory. 
++ **Python**: EMOD was tested with Python 2.7.11 and 2.7.12. If you are building the EMOD executable and have an earlier version of Python (e.g. 2.7.2), you will see the following warning message on some files, "c:\python27\include\pymath.h(22): warning C4273: 'round': inconsistent dll linkage." Upgrade to Python 2.7.11 or 2.7.12 to get rid of the warning message.
 
-##V2.5.0
-This release: 
-+ Supports disease-specific builds.
-+ Extends the EMOD functionality with Python.
-+ Simulates micro-spatial modeling at household level.
-+ Models spatial migration of disease vectors with greater controls.
-+ Runs multicore (HPC) simulations for all disease types.
-
-For information on prerequisite software, building the EMOD executable, and learning about the disease models, go to the [IDM documentation](http://idmod.org/idmdoc).
-
-##v2.0.0 HIV Release
-+ This is the first release of the STI and HIV models. 
-+ The STI contact network enables users to configure up to three relationship types with different durations, gender-specific levels of concurrency, age patterns of formation, and preference functions.
-+ The HIV-specific implementation of the STI network model adds co-factors and interventions affecting transmission, disease progression on and off therapy, and detailed and time-variable linkage and retention along the care continuum. 
-For tutorials on these new models, as well as the other disease models, prerequisite software, and building the EMOD executable, go to the [IDM documentation](http://idmod.org/idmdoc).
-
-<a href="https://zenhub.com"><img src="https://raw.githubusercontent.com/ZenHubIO/support/master/zenhub-badge.png"></a>
+For more information, go to [Prerequisite Software for the EMOD Source](http://idmod.org/idmdoc/#EMOD/EMODBuildAndRegression/Prerequisite%20Software.htm) and [Building the EMOD Executable](http://idmod.org/idmdoc/#EMOD/EMODBuildAndRegression/Building%20the%20EMOD%20Executable.htm).

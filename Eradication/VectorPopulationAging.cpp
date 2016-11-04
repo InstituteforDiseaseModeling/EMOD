@@ -16,6 +16,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorCohortAging.h"
 #include "VectorPopulation.h"
 #include "Vector.h"
+#include "VectorSpeciesParameters.h"
 
 #ifdef randgen
 #undef randgen
@@ -175,7 +176,7 @@ namespace Kernel
 
     void VectorPopulationAging::Update_Immature_Queue( float dt )
     { 
-        unsigned long int tempPop = 0;
+        uint64_t tempPop = 0;
         float currentProbability = 0.0;
 
         float p_local_mortality = 0;
@@ -189,7 +190,7 @@ namespace Kernel
         // Use the verbose "for" construct here because we may be modifying the list and need to protect the iterator.
         for (VectorCohortList_t::iterator iList = ImmatureQueues.begin(); iList != ImmatureQueues.end(); /* iList++ */)
         { 
-            VectorCohort *tempentry1 = *iList;
+            IVectorCohort* tempentry1 = *iList;
             release_assert( tempentry1 );
             VectorCohortList_t::iterator iCurrent = iList++;
 
@@ -282,7 +283,7 @@ namespace Kernel
         }
     }
 
-    void VectorPopulationAging::AddVectors(VectorMatingStructure _vector_genetics, unsigned long int releasedNumber)
+    void VectorPopulationAging::AddVectors(VectorMatingStructure _vector_genetics, uint64_t releasedNumber)
     {
         VectorCohortAging* tempentry;
         

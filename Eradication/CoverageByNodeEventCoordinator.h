@@ -13,15 +13,15 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    class CoverageByNodeJson: public JsonConfigurable 
+    class CoverageByNodeJson: public JsonConfigurable, public IComplexJsonConfigurable
     {
         public:
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
 
             CoverageByNodeJson() {}
-            virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key );
-            virtual json::QuickBuilder GetSchema();
+            virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
+            virtual json::QuickBuilder GetSchema() override;
         public:
             std::map<uint32_t, float> node_coverage_map;
     };

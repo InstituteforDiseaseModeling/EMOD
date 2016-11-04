@@ -24,6 +24,7 @@ namespace Kernel
 
         // ReportMalaria
         virtual bool Configure( const Configuration* ) override;
+        virtual void Initialize( unsigned int nrmSize ) override;
 
         virtual void UpdateEventRegistration( float currentTime, 
                                               float dt, 

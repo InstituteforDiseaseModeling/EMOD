@@ -19,7 +19,7 @@ FullTreatmentWhenSymptom, \
 SingleDoseParasiteDetect, \
 FullTreatmentParasiteDetect, \
 SingleDoseNewDetectionTech, \
-FullTreatmentNewDetectionTech"
+FullTreatmentNewDetectionTech."
 #define AMDRUG_Drug_Type_DESC_TEXT "Type of anti-malarial drug to distribute in a drugs intervention. Possible values are: \
 Artemisinin (AR), \
 Chloroquine (CQ), \
@@ -29,13 +29,14 @@ Primaquine (PQ), \
 Artemether_Lumefantrine (AR_LM), \
 Generic Transmission Blocking (TBD), \
 Generic Pre-erythrocytic (PED), \
-Tafenoquine (TQ)"
+Tafenoquine (TQ)."
 
 #define AD_Attraction_Config_DESC_TEXT "Fraction of feeds attracted to the artificial diet. A parameter that is decayed."
 #define AD_Target_DESC_TEXT "The targeted deployment of artificial diet. Possible values are: \
 AD_WithinVillage, \
-AD_OutsideVillage"
-#define BT_Actual_Intervention_Config_DESC_TEXT "The configuration of the actual intervention sought. Selects a class for the intervention and configures the parameters specific for that intervention class."
+AD_OutsideVillage."
+#define BT_Actual_IndividualIntervention_Config_DESC_TEXT "The configuration of the actual individual-based intervention sought. Selects a class for the intervention and configures the parameters specific for that intervention class."
+#define BT_Actual_NodeIntervention_Config_DESC_TEXT "The configuration of the actual node-level intervention sought. Selects a class for the intervention and configures the parameters specific for that intervention class."
 #define BT_Demographic_Coverage_DESC_TEXT "The fraction of newborns who receive an actual intervention. "
 #define BT_Duration_DESC_TEXT "The number of days to continue this intervention."
 #define DRUG_Cost_To_Consumer_DESC_TEXT "Unit cost per drug (unamortized)."
@@ -53,16 +54,16 @@ AD_OutsideVillage"
 //#define HST_Attract_Rate_DESC_TEXT "The fraction of human-feeding attempts attracted to a trap. A parameter that is decayed."
 //#define HST_Killing_Rate_DESC_TEXT "The fraction of feeds on the human host seeking trap. A parameter that is decayed."
 #define HST_Cost_To_Consumer_DESC_TEXT "Unit cost per trap (unamortized)."
-#define HST_Killing_Config_DESC_TEXT "TBD"
-#define HST_Attract_Config_DESC_TEXT "TBD"
+#define HST_Killing_Config_DESC_TEXT "The configuration of killing efficacy and waning for human host-seeking trap."
+#define HST_Attract_Config_DESC_TEXT "The configuration of killing efficacy and waning for human host-seeking trap."
 //#define HM_Blocking_Rate_DESC_TEXT "The current blocking rate. Blocking with a household modification corresponds to the pre-feed repellency, which means that the mosquito skips the feed and flies out the door. A parameter that is decayed."
-#define HM_Cost_To_Consumer_DESC_TEXT "Unit cost per housing modification (unamortized)." 
+#define HM_Cost_To_Consumer_DESC_TEXT "Unit cost per housing modification (unamortized)."
 //#define HM_Killing_Rate_DESC_TEXT "The current killing rate. Killing with a housing modification intervention is conditional on NOT repelling the mosquito pre-feed. A parameter that is decayed."
-#define HM_Killing_Config_DESC_TEXT "TBD"
-#define HM_Blocking_Config_DESC_TEXT "TBD"
+#define HM_Killing_Config_DESC_TEXT "The configuration of killing efficacy and waning for housing modification. Killing is conditional on NOT blocking the mosquito before feeding."
+#define HM_Blocking_Config_DESC_TEXT "The configuration of pre-feed mosquito repellency and waning for housing modification."
 
 #define IVM_Cost_To_Consumer_DESC_TEXT "Unit cost per Ivermectin dosing (unamortized)."
-#define IVM_Killing_Config_DESC_TEXT   "Configuration of drug-killing efficacy and waning"
+#define IVM_Killing_Config_DESC_TEXT   "The configuration of drug-killing efficacy and waning."
 
 #define CAL_Actual_Intervention_Configs_DESC_TEXT "An array of interventions distributed as specified in the calendar. Selects a class for the intervention and configures the parameters specific for that intervention class."
 #define CAL_Calendar_DESC_TEXT "An array of ages days and probability of receiving an intervention."
@@ -73,8 +74,8 @@ If false (0), all calendar dates/doses are applied independently of each other. 
 #define CAL_Age_DESC_TEXT "An array of ages (in days). In IVCalendar, there is a list of actual interventions where the distribution is dependent on whether the individual's age matches the next date in the calendar."
 #define CAL_Probability_DESC_TEXT "The probability of an individual receiving the list of actual interventions at the corresponding age."
 
-#define LV_Killing_Config_DESC_TEXT  "TBD"
-#define LV_Blocking_Config_DESC_TEXT  "TBD"
+#define LV_Killing_Config_DESC_TEXT  "The configuration of larval killing efficacy and waning for targeted stage."
+#define LV_Blocking_Config_DESC_TEXT  "The onfiguration of larval habitat reduction and waning for targeted stage."
 //#define LV_Killing_DESC_TEXT "Larval killing of targeted stage. A parameter that is decayed."
 //#define LV_Reduction_DESC_TEXT "Larval habitat reduction in the targeted quantity. A parameter that is decayed."
 #define LV_Habitat_Target_DESC_TEXT "The larval habitat type targeted for larvicide. Possible values are: \
@@ -83,58 +84,48 @@ WATER_VEGETATION \
 HUMAN_POPULATION \
 CONSTANT \
 BRACKISH_SWAMP \
-ALL_HABITATS \
-"
-
-#define SLH_Habitat_Scale_DESC_TEXT "Larval habitat scale factor for the targeted habitat type."
-#define SLH_Habitat_Target_DESC_TEXT "The habitat type for which the larval habitat is scaled. Possible values are: \
-TEMPORARY_RAINFALL \
-WATER_VEGETATION \
-HUMAN_POPULATION \
-CONSTANT \
-BRACKISH_SWAMP \
-ALL_HABITATS \
+ALL_HABITATS. \
 "
 
 #define MR_Released_Gender_DESC_TEXT "Gender of released mosquitoes. Possible values are: \
 VECTOR_FEMALE \
-VECTOR_MALE \
+VECTOR_MALE. \
 "
 #define MR_Released_Genetics_DESC_TEXT "The genetic properties of the released mosquito, e.g. HEG and pesticide resistance."
 #define MR_Mated_Genetics_DESC_TEXT "The genetic properties of the mate if released mosquitoes have mated, e.g. HEG and pesticide resistance."
 
 #define MR_Released_Sterility_DESC_TEXT "Sterility of released mosquitoes. Possible values are: \
 VECTOR_FERTILE \
-VECTOR_STERILE \
+VECTOR_STERILE. \
 "
 #define MR_Released_Wolbachia_DESC_TEXT "Wolbachia type of released mosquitoes. Possible values are: \
 WOLBACHIA_FREE \
 VECTOR_WOLBACHIA_A \
 VECTOR_WOLBACHIA_B \
-VECTOR_WOLBACHIA_AB \
+VECTOR_WOLBACHIA_AB. \
 "
 #define MR_Released_Pesticide_Resistance_DESC_TEXT "Pesticide-resistance characteristics of released mosquitoes. Possible values are: \
 WILD \
 HALF \
 FULL \
-NotMated"
+NotMated."
 #define MR_Released_HEGs_DESC_TEXT "HEG characteristics of released mosquitoes. Possible values are: \
 WILD \
 HALF \
 FULL \
-NotMated"
+NotMated."
 #define MR_Released_Number_DESC_TEXT "Number of mosquitos released in the intervention."
 #define MR_Released_Species_DESC_TEXT "Name of released mosquito species."
 #define MR_Cost_To_Consumer_DESC_TEXT "Cost of each mosquito release."
 
 #define Antigen_DESC_TEXT "The antigenic ID of the outbreak infection."
 #define Genome_DESC_TEXT "The genetic ID of the outbreak infection."
-#define Outbreak_Source_DESC_TEXT "The source of the disease outbreak. Possible values are \
+#define Outbreak_Source_DESC_TEXT "The source of the disease outbreak. Possible values are: \
 PrevalenceIncrease \
-ImportCases \
+ImportCases. \
 "
 #define Import_Age_DESC_TEXT "Age (in days) of infected import cases"
-#define Incubation_Period_Override_DESC_TEXT "0 = outbreak will bypass incubation, 1 = outbreak infection will start from beginning"
+#define Incubation_Period_Override_DESC_TEXT "0 = outbreak will bypass incubation, 1 = outbreak infection will start from beginning."
 
 #define OT_Killing_DESC_TEXT "Killing of the targeted stage. A parameter that is decayed. The fraction of oviposition cycles that end in the female mosquito's death. If there is skip oviposition, this is not the mortality per skip but the effective net mortality per gonotrophic cycle over all skips."
 #define OT_Habitat_Target_DESC_TEXT "The oviposition habitat type targeted by oviposition traps. Possible values are: \
@@ -143,7 +134,7 @@ WATER_VEGETATION \
 HUMAN_POPULATION \
 CONSTANT \
 BRACKISH_SWAMP \
-ALL_HABITATS \
+ALL_HABITATS. \
 "
 
 #define SB_Bednet_Type_DESC_TEXT "Type of bednet. Possible values are: \
@@ -173,17 +164,17 @@ Note: This enum does not affect the code at all. \
 #define DTN_Negative_Diagnosis_Config_DESC_TEXT "The intervention distributed to individuals, if they test negative. This is only valid if Event_Or_Config is set to Config."
 #define DTN_Defaulters_Diagnosis_Config_DESC_TEXT "The intervention distributed to individuals if they receive the test but subsequently defaults (they do not return to get the test result). This is only valid if Event_Or_Config is set to Config."
 
-#define Treatment_Fraction_Negative_Diagnosis_DESC_TEXT "this is the treatment fraction for those who test negative"
+#define Treatment_Fraction_Negative_Diagnosis_DESC_TEXT "this is the treatment fraction for those who test negative."
 
 #define HSB_Actual_Intervention_Config_DESC_TEXT "The configuration of an actual intervention sought. Selects a class for the intervention and configures the parameters specific for that intervention class."
 #define HSB_Actual_Intervention_Config_Event_DESC_TEXT "The event of an actual intervention sought. Selects a class for the intervention and configures the parameters specific for that intervention class."
 #define HSB_Tendency_DESC_TEXT "The probability of seeking healthcare."
 #define HSB_Single_Use_DESC_TEXT "One-time, or persistent?"
 #define HSB_Update_New_Tendency_DESC_TEXT "The new rate of seeking care. The original value was set by HealthSeekingBehaviorUpdateable."
-#define NodeHTI_Demographic_Coverage_Time_Profile_DESC_TEXT "Profile of ramp up to demographic coverage"
-#define NodeHTI_Initial_Demographic_Coverage_DESC_TEXT "initial level of demographic coverage if using linear scale up"
-#define NodeHTI_Primary_Time_Constant_DESC_TEXT "time to full scale up of demographic coverage"
-#define NodeHTI_Not_Covered_IndividualIntervention_Configs_DESC_TEXT  "if you qualify by everything except demographic coverage, you get this array of interventions"
+#define NodeHTI_Demographic_Coverage_Time_Profile_DESC_TEXT "Profile of ramp up to demographic coverage."
+#define NodeHTI_Initial_Demographic_Coverage_DESC_TEXT "initial level of demographic coverage if using linear scale up."
+#define NodeHTI_Primary_Time_Constant_DESC_TEXT "time to full scale up of demographic coverage."
+#define NodeHTI_Not_Covered_IndividualIntervention_Configs_DESC_TEXT  "if you qualify by everything except demographic coverage, you get this array of interventions."
 #define HTI_Trigger_Condition_DESC_TEXT "The condition for triggering a health seeking intervention."
 #define SI_Durability_Time_Profile_DESC_TEXT "Profile of durability time decay. Possible values are: \
 BOXDURABILITY - Only the primary_decay_time_constant matters, since there is a single efficacy. In principle, a generic vaccine_type will have both reduced acquisition and transmission, but it is not decayed separately. \
@@ -196,14 +187,14 @@ BOXDECAYDURABILITY - The primary and secondary decay time constants work togethe
 #define SI_Reduced_Transmit_DESC_TEXT "The transmission reduction ratio."
 #define SI_Secondary_Decay_Time_Constant_DESC_TEXT "Only relevant when BOXDECAYDURABILITY is set for decaying the efficacy by the combination of a box function and an exponential decay. See the durability_time_profile."
 #define SI_Vaccine_Type_DESC_TEXT "The type of immunoglobulin. Possible values are: \
-StrainSpecific"
+StrainSpecific."
 //#define SIR_Blocking_Rate_DESC_TEXT "The current blocking rate. A parameter that is decayed."
 #define SIR_Cost_To_Consumer_DESC_TEXT "Unit cost per repellent (unamortized)."
 
 //#define SIR_Killing_Rate_DESC_TEXT "The current killing rate. A parameter that is decayed."
 //#define SIR_Primary_Decay_Time_Constant_DESC_TEXT "The primary decay time constant of the decay profile (for killing). See the durability_time_profile."
 //#define SIR_Secondary_Decay_Time_Constant_DESC_TEXT "The secondary decay time constant of the decay profile (for repellency/blocking). See the durability_time_profile."
-#define SIR_Blocking_Config_DESC_TEXT "TBD"
+#define SIR_Blocking_Config_DESC_TEXT "The configuration of efficacy and waning for individual repellent."
 #define SV_Cost_To_Consumer_DESC_TEXT "Unit cost per vaccine (unamortized). The unit 'cost' assigned to the intervention. Setting Cost_To_Consumer to zero for all other interventions, and to a non-zero amount for one intervention, provides a convenient way to track the number of times the intervention has been applied in a simulation."
 
 //#define SV_Primary_Decay_Time_Constant_DESC_TEXT "The primary decay time constant of the decay profile. See durability_time_profile."
@@ -219,18 +210,17 @@ StrainSpecific"
 - MortalityBlocking - Specifies the fraction by which the disease-mortality rate of a vaccinated Individual is reduced (\"reduced_mortality\"). \
  \
 "
-#define MEV_Acquire_Config_DESC_TEXT "TBD"
-#define MEV_Transmit_Config_DESC_TEXT "TBD"
-#define MEV_Mortality_Config_DESC_TEXT "TBD"
+#define MEV_Acquire_Config_DESC_TEXT "The configuration for multi-effect vaccine acquisition."
+#define MEV_Transmit_Config_DESC_TEXT "The configuration for multi-effect vaccine transmission."
+#define MEV_Mortality_Config_DESC_TEXT "The configuration for multi-effect vaccine mortality."
 
-
-#define SS_Killing_Config_DESC_TEXT "TBD"
-#define SS_Reduction_Config_DESC_TEXT "TBD"
+#define SS_Killing_Config_DESC_TEXT "The configuration of killing efficacy and waning for space spaying."
+#define SS_Reduction_Config_DESC_TEXT "The configuration of larval habitat reduction and waning for space spraying."
 #define SS_Kill_Target_DESC_TEXT "The gender kill target of space spraying. Possible values are: \
 SpaceSpray_FemalesOnly \
 SpaceSpray_MalesOnly \
-SpaceSpray_FemalesAndMales"
-#define SS_Killing_DESC_TEXT "A parameter that is decayed. This intervention imposes an additional daily mortality on targeted vectors.."
+SpaceSpray_FemalesAndMales."
+#define SS_Killing_DESC_TEXT "A parameter that is decayed. This intervention imposes an additional daily mortality on targeted vectors."
 #define SS_Reduction_DESC_TEXT "Reduction in the targeted quantity which is larval habitat type specified by target. A parameter that is decayed."
 #define SS_Habitat_Target_DESC_TEXT "The larval habitat type targeted for habitat reduction. Possible values are: \
 TEMPORARY_RAINFALL \
@@ -238,10 +228,10 @@ WATER_VEGETATION \
 HUMAN_POPULATION \
 CONSTANT \
 BRACKISH_SWAMP \
-ALL_HABITATS \
+ALL_HABITATS. \
 "
 
-#define SR_Repellency_Config_DESC_TEXT "TBD"
+#define SR_Repellency_Config_DESC_TEXT "The configuration of efficacy and waning for spatial repellent."
 #define SR_Repellency_DESC_TEXT "Fraction of feeds repelled by spatial repellent. A parameter that is decayed."
 #define ST_Cost_To_Consumer_DESC_TEXT "Unit cost per vector control (unamortized)."
 #define ST_Durability_Time_Profile_DESC_TEXT "Profile of durability time decay. Possible values are: \
@@ -278,37 +268,37 @@ BOXDECAYDURABILITY - The primary and secondary decay time constants work togethe
 
 #define MC_Challenge_Type_DESC_TEXT "The type of malaria challenge.  Possible values are: \
 InfectiousBites \
-Sporozoites"
-#define MC_Infectious_Bite_Count_DESC_TEXT "Number of infectious bites"
-#define MC_Sporozoite_Count_DESC_TEXT "Number of sporozoites"
+Sporozoites."
+#define MC_Infectious_Bite_Count_DESC_TEXT "Number of infectious bites."
+#define MC_Sporozoite_Count_DESC_TEXT "Number of sporozoites."
 
-#define RV_Antibody_Variant_DESC_TEXT "Antibody variant index"
-#define RV_Boosted_Antibody_Concentration_DESC_TEXT "Boosted antibody concentration (where unity equals maximum from natural exposure)"
-#define RV_Cost_To_Consumer_DESC_TEXT "Unit cost of RTS,S vaccination (unamortized)"
+#define RV_Antibody_Variant_DESC_TEXT "Antibody variant index."
+#define RV_Boosted_Antibody_Concentration_DESC_TEXT "Boosted antibody concentration (where unity equals maximum from natural exposure)."
+#define RV_Cost_To_Consumer_DESC_TEXT "Unit cost of RTS,S vaccination (unamortized)."
 #define RV_Antibody_Type_DESC_TEXT "Antibody type.  Possible values are: \
 CSP \
 MSP1 \
 PfEMP1_minor \
-PfEMP1_major"
+PfEMP1_major."
 
-#define PC_Target_Property_Key_DESC_TEXT "target_property_key"
-#define PC_Target_Property_Value_DESC_TEXT "target_property_value"
-#define PC_Daily_Probability_DESC_TEXT "probability per day"
+#define PC_Target_Property_Key_DESC_TEXT "The name of the EMOD-defined property of the group."
+#define PC_Target_Property_Value_DESC_TEXT "The value of the user-defined group where the individuals will be transitioned."
+#define PC_Daily_Probability_DESC_TEXT "The probability per day that an individual will move to the Target_Property_Value."
 #define PC_Maximum_Duration_DESC_TEXT "Maximum duration of 'delayed-release' property change, in days."
-#define PC_Revert_DESC_TEXT "revert rate, or maybe the number of days until reversion, or maybe a bool if revert is allowed"
+#define PC_Revert_DESC_TEXT "Reversion rate, or the number of days until reversion, or a bool if reversion is allowed."
 
 // MultiInterventionEventCoordinator
-#define MIEC_Intervention_Configs_DESC_TEXT "The array of nested json parameters for the interventions to be distributed by this event coordinator."
+#define MIEC_Intervention_Configs_DESC_TEXT "The array of nested JSON parameters for the interventions to be distributed by this event coordinator."
 
 // MultiInterventionDistributor
-#define MID_Intervention_List_DESC_TEXT "The array of nested json parameters for the interventions to be distributed by this intervention."
+#define MID_Intervention_List_DESC_TEXT "The array of nested JSON parameters for the interventions to be distributed by this intervention."
 
 // DelayDistribution intervention
 #define DI_Delay_Distribution_DESC_TEXT "Distribution of duration of delay period.  Supported values are: \
 FIXED_DURATION \
 UNIFORM_DURATION \
 GAUSSIAN_DURATION \
-EXPONENTIAL_DURATION"
+EXPONENTIAL_DURATION."
 #define DI_Coverage_DESC_TEXT "Fraction of individuals receiving delayed distribution of configured interventions."
 #define DI_Actual_IndividualIntervention_Configs_DESC_TEXT "Array of nested interventions to be distributed at end of delay period to covered fraction."
 #define DI_Delay_Period_DESC_TEXT "If a FIXED_DURATION is specified as the Delay_Distribution, add this parameter Delay_Period to directly specify the time delay (in number of days). If EXPONENTIAL_DURATION is specified as the Delay_Distribution, Delay_Period, represents the exponential rate that describes the distribution of the time delay (in units of 1/days)."
@@ -333,10 +323,10 @@ EXPONENTIAL_DURATION"
 #define DM_Upper_Age_In_Years_DESC_TEXT "The age (in years) below which children are given the corresponding fraction of an adult drug dose."
 #define DM_Fraction_Of_Adult_Dose_By_Year_Array_DESC_TEXT "An array of doses that contain Upper_Age_In_Years and Fraction_Of_Adult_Dose values."
 
-#define BTNTI_Efficacy_DESC_TEXT "Efficacy"
+#define BTNTI_Efficacy_DESC_TEXT "Efficacy of the intervention."
 
-#define IE_Age_Dependence_DESC_TEXT "Dependence of InputEIR on age"
-#define IE_Monthly_EIR_DESC_TEXT "EIR by month"
+#define IE_Age_Dependence_DESC_TEXT "Dependence of InputEIR on age."
+#define IE_Monthly_EIR_DESC_TEXT "EIR by month."
 #define IE_Config_Type_DESC_TEXT "An array of 12 elements that contain an entomological inoculation rate (EIR) for each month."
 
 #define MC_Coverage_DESC_TEXT "Fraction of individuals receiving distribution."
@@ -348,10 +338,10 @@ EXPONENTIAL_DURATION"
 #define WEBE_Decay_Time_Constant_DESC_TEXT "Exponential decay length in days."
 #define WEC_Initial_Effect_DESC_TEXT "Initial strength of effect."
 #define WEE_Initial_Effect_DESC_TEXT "Initial strength of effect."
-#define WEE_Decay_Time_Constant_DESC_TEXT "Exponential decay length in days"
+#define WEE_Decay_Time_Constant_DESC_TEXT "Exponential decay length in days."
 
 #define MSCIS_New_STI_Co_Status_DESC_TEXT "Determines whether to apply STI co-infection, or cure/remove STI co-infection.When called with 1, it sets the co-infection status to true. When called with 0, it sets the co-infection status to false."
-#define STI_Barrier_Cost_DESC_TEXT "TBD"
+#define STI_Barrier_Cost_DESC_TEXT "When using the STIBarrier intervention to change defaults from demographics, Cost_To_Consumer determines the unit cost.  Note that there is no cost for condoms distributed using demographics-configured default usage probabilities."
 #define STI_Barrier_Early_DESC_TEXT "The left asymptote for the sigmoid trend over time."
 #define STI_Barrier_Late_DESC_TEXT "The right asymptote for the sigmoid trend over time."
 #define STI_Barrier_MidYear_DESC_TEXT "The time of the infection point in the sigmoid trend over time."
@@ -368,8 +358,7 @@ EXPONENTIAL_DURATION"
 #define HIV_CD4_Diagnostic_Low_DESC_TEXT "The low end of the diagnostic level."
 #define HIV_CD4_Thresholds_DESC_TEXT "Used to associate ranges of CD4 counts with events that should occur for individuals whose CD4 counts fall into those ranges."
 #define HIV_Adult_Treatment_Age_DESC_TEXT "The age that delineates adult patients from pediatric patients for the purpose of treatment eligibility. Patients younger than this age may be eligible on the basis of their pediatric patient status."
-#define HIV_Stable_Partner_Minimum_Duration_DESC_TEXT "TBD"
-#define HIV_Adult_By_Stable_Discordant_Partner_DESC_TEXT "TBD"
+#define HIV_Stable_Partner_Minimum_Duration_DESC_TEXT "If the number of days since the start of a relationship is greater or equal to this value, the relationship is considered to be stable and is able to be targeted with interventions such as those that reach stable discordant couples."
 #define HIV_Adult_By_Pregnant_DESC_TEXT "Determines the WHO stage at or above which pregnant adults are eligible for ART."
 #define HIV_Adult_By_WHO_Stage_DESC_TEXT "Determines the WHO stage at or above which adults are eligible for ART."
 #define HIV_Adult_By_TB_DESC_TEXT "Determines the WHO stage at or above which adults having active TB (via individual property Has_Active_TB) are eligible for ART."
@@ -413,62 +402,77 @@ EXPONENTIAL_DURATION"
 #define HIV_Staging_Individual_Property_Active_TB_Key_DESC_TEXT "The Individual Property key ('HasActiveTB') to determine whether the individual has TB."
 #define HIV_Staging_Individual_Property_Active_TB_Value_DESC_TEXT "The Individual Property value ('Yes') to determine whether the individual has TB."
 
-#define ART_Basic_Viral_Suppression_DESC_TEXT "ART will suppress viral load and extend prognosis if true"
+#define ART_Basic_Viral_Suppression_DESC_TEXT "ART will suppress viral load and extend prognosis if true."
 #define ART_Basic_Days_To_Achieve_Viral_Suppression_DESC_TEXT "The number of days after ART initiation over which infectiousness declines linearly until the ART_Viral_Suppression_Multiplier takes full effect. "
-#define STI_IPD_Negative_Diagnosis_Event_DESC_TEXT "Event to broadcast when individual is found to NOT be Post-Debut age."
+#define STI_IPD_Negative_Diagnosis_Event_DESC_TEXT "The name of the event to broadcast when individual is found to NOT be Post-Debut age."
 
 #define Interpolated_Value_Map_Times_DESC_TEXT "An array of years."
 #define Interpolated_Value_Map_Values_DESC_TEXT "An array of values to match the defined Times."
 
-#define BETON_Event_Trigger_DESC_TEXT "TBD"
-#define BETON_Distance_DESC_TEXT "TBD"
-#define BETON_Include_My_Node_DESC_TEXT     "TBD"
-#define BETON_Node_Selection_Type_DESC_TEXT "TBD"
-
-#define Dont_Allow_Duplicates_DESC_TEXT "TBD"
+#define BETON_Event_Trigger_DESC_TEXT "The name of the event to broadcast to selected nodes."
+#define BETON_Distance_DESC_TEXT "The maximum distance, in kilometers, to the destination node for the node to be selected. The location values used are those valued entered in the demographics. Only applies if Node_Selection_Type is either DISTANCE_ONLY or DISTANCE_AND_MIGRATION."
+#define BETON_Include_My_Node_DESC_TEXT     "Set to 1 to broadcast the event to the current node."
+#define BETON_Node_Selection_Type_DESC_TEXT "The method by which to select nodes to receive the event. Options include: \
+DISTANCE_ONLY: Nodes located within the distance specified by Max_Distance_To_Other_Nodes_Km are selected. \
+MIGRATION_NODES_ONLY: Nodes that are local or regional are selected. \
+DISTANCE_AND_MIGRATION: Nodes are selected using DISTANCE_ONLY and MIGRATION_NODES_ONLY criteria."
 
 #define Sigmoid_Min_DESC_TEXT  "TBD"
 #define Sigmoid_Max_DESC_TEXT  "TBD"
 #define Sigmoid_Mid_DESC_TEXT  "TBD"
 #define Sigmoid_Rate_DESC_TEXT "TBD"
+#define Dont_Allow_Duplicates_DESC_TEXT "If an individual's container has an intervention, set to 1 to prevent them from receiving another copy of the intervention. Supported by all intervention types."
 
-#define On_Distributed_Event_Trigger_DESC_TEXT "TBD"
+#define On_Distributed_Event_Trigger_DESC_TEXT "The name of the event to broadcast when the intervention is distributed to an individual."
 
-
-#define Blackout_Period_DESC_TEXT "TBD"
-#define Blackout_Event_Trigger_DESC_TEXT "TBD"
+#define Blackout_Period_DESC_TEXT "After the initial intervention distribution, the time, in days, to wait before distributing the intervention again. If it cannot distribute due to the blackout period, it will broadcast the user-defined Blackout_Event_Trigger."
+#define Blackout_Event_Trigger_DESC_TEXT "The event to broadcast if an intervention cannot be distributed due to the Blackout_Period."
 
 //MigrateFamily & MigrateIndividuals
-#define NodeID_To_Migrate_To_DESC_TEXT "TBD"
-#define Is_Moving_DESC_TEXT "TBD"
+#define NodeID_To_Migrate_To_DESC_TEXT "The destination node ID for intervention-based migration."
+#define Is_Moving_DESC_TEXT "Set to 1 to indicate the individual is permanently moving to a new home node for intervention-based migration."
 
-#define DBL_Type_DESC_TEXT "TBD"
-#define DBL_Fixed_DESC_TEXT "TBD"
-#define DBL_Uniform_Min_DESC_TEXT "TBD"
-#define DBL_Uniform_Max_DESC_TEXT "TBD"
-#define DBL_Gausian_Mean_DESC_TEXT "TBD"
-#define DBL_Gausian_StdDev_DESC_TEXT "TBD"
-#define DBL_Exponential_Period_DESC_TEXT "TBD"
-#define DBL_Poisson_Mean_DESC_TEXT "TBD"
-   
-#define DAN_Type_DESC_TEXT "TBD"
-#define DAN_Fixed_DESC_TEXT "TBD"
-#define DAN_Uniform_Min_DESC_TEXT "TBD"
-#define DAN_Uniform_Max_DESC_TEXT "TBD"
-#define DAN_Gausian_Mean_DESC_TEXT "TBD"
-#define DAN_Gausian_StdDev_DESC_TEXT "TBD"
-#define DAN_Exponential_Period_DESC_TEXT "TBD"
-#define DAN_Poisson_Mean_DESC_TEXT "TBD"
+#define DBL_Type_DESC_TEXT "The shape of the distribution of the number of days to wait before migrating to the destination node for intervention-based migration. Possible values are: \
+FIXED_DURATION \
+UNIFORM_DURATION \
+GAUSSIAN_DURATION \
+EXPONENTIAL_DURATION \
+POISSON_DURATION."
+#define DBL_Fixed_DESC_TEXT "The value to use for a fixed distribution of the number of days to wait before migrating to the destination node."
+#define DBL_Uniform_Min_DESC_TEXT "The minimum value to use for a uniform distribution of the number of days to wait before migrating to the destination node."
+#define DBL_Uniform_Max_DESC_TEXT "The maximum value to use for a uniform distribution of the number of days to wait before migrating to the destination node."
+#define DBL_Gausian_Mean_DESC_TEXT "The mean value to use for a Gaussian distribution of the number of days to wait before migrating to the destination node."
+#define DBL_Gausian_StdDev_DESC_TEXT "The standard deviation to use for a Gaussian distribution of the number of days to wait before migrating to the destination node."
+#define DBL_Exponential_Period_DESC_TEXT "The period (1/rate) to use for an exponential distribution of the number of days to wait before migrating to the destination node."
+#define DBL_Poisson_Mean_DESC_TEXT "The mean to use for a Poisson distribution of the number of days to wait before migrating to the destination node."
+
+#define DAN_Type_DESC_TEXT "The shape of the distribution of trips to the destination node for intervention-based migration. Possible values are: \
+Duration_XXX_Fixed \
+Duration_XXX_Uniform_Min \
+Duration_XXX_Uniform_Max \
+Duration_XXX_Gaussian_Mean \
+Duration_XXX_Gaussian_Std_Dev \
+Duration_XXX_Exponential_Period \
+Duration_XXX_Poisson_Mean."
+#define DAN_Fixed_DESC_TEXT "The value to use for a fixed distribution of the trips to the destination node."
+#define DAN_Uniform_Min_DESC_TEXT "The minimum value to use for a uniform distribution of the trips to the destination node."
+#define DAN_Uniform_Max_DESC_TEXT "The maximum value to use for a uniform distribution of the trips to the destination node."
+#define DAN_Gausian_Mean_DESC_TEXT "The mean value to use for a Gaussian distribution of the trips to the destination node."
+#define DAN_Gausian_StdDev_DESC_TEXT "The standard deviation to use for a Gaussian distribution of the trips to the destination node."
+#define DAN_Exponential_Period_DESC_TEXT "The period (1/rate) to use for an exponential distribution of the trips to the destination node."
+#define DAN_Poisson_Mean_DESC_TEXT "The mean to use for a Poisson distribution of the trips to the destination node."
 
 #define Male_Circumcision_Reduced_Acquire_DESC_TEXT "Reduction of susceptibility to HIV by VMMC."
-#define Male_Circumcision_Distributed_Event_Trigger_DESC_TEXT "TBD"
-#define Male_Circumcision_Apply_If_Higher_Reduced_Acquire_DESC_TEXT "TBD"
+#define Male_Circumcision_Distributed_Event_Trigger_DESC_TEXT "When defined as part of an intervention block of class MaleCircumcision, this string defines the name of the column in the output files ReportHIVByAgeAndGender.csv and ReportEventRecorder.csv, which log when the intervention has been distributed."
+#define Male_Circumcision_Apply_If_Higher_Reduced_Acquire_DESC_TEXT "If set to 0, the MaleCircumcision intervention can never be applied to someone who already has a MaleCircumcision intervention. If set to 1, a male who already has a MaleCircumcision intervention, but whose pre-existing MaleCircumcision intervention has a lower efficacy parameter (Reduced_Acquire) than the one about to be applied, will receive the higher-efficacy MaleCircumcision."
 
-#define RV_Distributed_Event_Trigger_DESC_TEXT "TBD"
-#define RV_Expired_Event_Trigger_DESC_TEXT "TBD"
-#define RV_Duration_To_Wait_Before_Revaccination_DESC_TEXT "TBD"
+#define RV_Distributed_Event_Trigger_DESC_TEXT "The name of the event to be broadcast when the intervention is distributed to an individual."
+#define RV_Expired_Event_Trigger_DESC_TEXT "The name of the event to be broadcast when the intervention expires."
+#define RV_Duration_To_Wait_Before_Revaccination_DESC_TEXT "The length of time, in days, to wait before revaccinating an individual. After this time has passed, the individual can be revaccinated and if the first vaccine has not expired, the individual can receive the effect from both doses of the vaccine."
 
-#define Intervention_Name_DESC_TEXT "TBD"
+#define Intervention_Name_DESC_TEXT "The optional name used to refer to this intervention as a means to differentiate it from others that use the same class."
 
-#define WEM_Expire_At_Durability_Map_End_DESC_TEXT "TBD-If true, the intervention will expire when the end of the map is reached."
-#define WEM_Durability_Map_End_DESC_TEXT           "TBD-Time since the intervention was distributed to a multiplier times the Initial_Effect"
+#define WEM_Expire_At_Durability_Map_End_DESC_TEXT "Set to 1 to let the intervention expire when the end of the map is reached."
+#define WEM_Durability_Map_End_DESC_TEXT           "Time, in days, since the intervention was distributed to a multiplier times the Initial_Effect."
+
+#define SLH_Larval_Habitat_Multiplier_DESC_TEXT "The value by which to scale the larval habitat availability specified in Larval_Habitat_Types across all habitat types, for specific habitat types, or for specific mosquito species within each habitat type."

@@ -13,6 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "InterventionFactory.h"
 #include "SimulationConfig.h"  // for "Human_Feeding_Mortality" parameter
+#include "VectorParameters.h"
 
 static const char* _module = "VectorInterventionsContainer";
 
@@ -141,7 +142,7 @@ namespace Kernel
         p_kill_ADIH = 0;         // kill probability of in-house artificial diet
         p_survive_insecticidal_drug = 1.0; // post-feed kill probability of insecticidal drug (e.g. Ivermectin)-- starts at 1.0 because will do 1.0-p_kill below
 
-        float p_dieduringfeeding = GET_CONFIGURABLE(SimulationConfig)->human_feeding_mortality;
+        float p_dieduringfeeding = GET_CONFIGURABLE(SimulationConfig)->vector_params->human_feeding_mortality;
 
         // call base level
         InterventionsContainer::Update(dt);

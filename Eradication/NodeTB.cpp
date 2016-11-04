@@ -106,107 +106,17 @@ namespace Kernel
         }
     }
 
-    //NOTE: This is directly copied from Node.cpp, with the only difference being the use of StrainAwareGroups instead of SimpleGroups
-    void NodeTB::SetupIntranodeTransmission()
+    ITransmissionGroups* NodeTB::CreateTransmissionGroups()
     {
-        transmissionGroups = TransmissionGroupsFactory::CreateNodeGroups(TransmissionGroupType::StrainAwareGroups);
-        RouteToContagionDecayMap_t decayMap;
-        if( demographics.Contains( IP_KEY ) && params()->heterogeneous_intranode_transmission_enabled)
-        {
-            ValidateIntranodeTransmissionConfiguration();
+        return TransmissionGroupsFactory::CreateNodeGroups( TransmissionGroupType::StrainAwareGroups );
+    }
 
-            const NodeDemographics& properties = demographics[IP_KEY];
-            for (int iProperty = 0; iProperty < properties.size(); iProperty++)
-            {
-                const NodeDemographics& property = properties[iProperty];
-                if (property.Contains(TRANSMISSION_MATRIX_KEY))
-                {
-                    const NodeDemographics& transmissionMatrix = property[ TRANSMISSION_MATRIX_KEY ];
-                    PropertyValueList_t valueList;
-                    const NodeDemographics& scalingMatrixRows = transmissionMatrix[TRANSMISSION_DATA_KEY];
-                    ScalingMatrix_t scalingMatrix;
-
-                    string routeName = transmissionMatrix.Contains( ROUTE_KEY ) ? transmissionMatrix[ ROUTE_KEY ].AsString() : "contact";
-                    std::transform(routeName.begin(), routeName.end(), routeName.begin(), ::tolower);
-                    string propertyName = property[IP_NAME_KEY].AsString();
-
-                    if (routeName != "contact")
-                    {
-                        throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, std::string( "Found route " + routeName + ". For generic sims, routes other than 'contact' are not supported, use Environmental sims for 'environmental' decay.").c_str());
-                    }
-                    else
-                    {
-                        if (decayMap.find(routeName)==decayMap.end())
-                        {
-                            LOG_DEBUG_F("HINT: Adding route %s.\n", routeName.c_str());
-                            decayMap[routeName] = 1.0f;
-                            routes.push_back(routeName);
-                        }
-                    }
-
-                    if( propertyName == _age_bins_key )
-                    {
-                        int valueCount = distribs[ _age_bins_key ].size();
-                        int counter = 0;
-                        for( const auto& entry : distribs[ _age_bins_key ])
-                        {
-                            valueList.push_back( entry.second );
-                            MatrixRow_t matrixRow;
-                            const NodeDemographics& scalingMatrixRow = scalingMatrixRows[counter++];
-    
-                            for (int iSink = 0; iSink < valueCount; iSink++) 
-                            {
-                                 matrixRow.push_back(float(scalingMatrixRow[iSink].AsDouble()));
-                            }
-                            scalingMatrix.push_back(matrixRow);
-                        }
-                    }
-                    else
-                    {
-                        const NodeDemographics& propertyValues = property[ IP_VALUES_KEY ];
-                        int valueCount = propertyValues.size();
-                        for (int iValue = 0; iValue < valueCount; iValue++)
-                        {
-                            valueList.push_back(propertyValues[iValue].AsString());
-                            MatrixRow_t matrixRow;
-                            const NodeDemographics& scalingMatrixRow = scalingMatrixRows[iValue];
-    
-                            for (int iSink = 0; iSink < valueCount; iSink++) 
-                            {
-                                 matrixRow.push_back(float(scalingMatrixRow[iSink].AsDouble()));
-                            }
-                            scalingMatrix.push_back(matrixRow);
-                        }
-                    }
-
-                    LOG_DEBUG_F("adding property [%s]:%s\n", propertyName.c_str(), routeName.c_str());
-                    transmissionGroups->AddProperty(propertyName, valueList, scalingMatrix, routeName);
-                }
-                else //HINT is enabled, but no transmission matrix is detected
-                {
-                    string default_route("contact");
-                    float default_rate = 1.0f;
-                    if (decayMap.find(default_route)==decayMap.end())
-                    {
-                        LOG_DEBUG("HINT on with no transmission matrix: Adding route 'contact'.\n");
-                        decayMap[default_route] = default_rate;
-                        routes.push_back(default_route);
-                    }
-                }
-            }
-
-        }
-        else //HINT is not enabled
-        {
-            LOG_DEBUG("Non-HINT: Adding route 'contact'.\n");
-            decayMap[string("contact")] = 1.0f;
-            routes.push_back(string("contact"));
-        }
-
+    void NodeTB::BuildTransmissionRoutes( RouteToContagionDecayMap_t& rDecayMap )
+    {
         int max_antigens = GET_CONFIGURABLE(SimulationConfig)->number_basestrains;
         int max_genomes = GET_CONFIGURABLE(SimulationConfig)->number_substrains;
         LOG_DEBUG_F("max_antigens %f, max_genomes %f", max_antigens, max_genomes);
-        transmissionGroups->Build(decayMap, max_antigens, max_genomes); 
+        transmissionGroups->Build( rDecayMap, max_antigens, max_genomes ); 
     }
 
     void NodeTB::resetNodeStateCounters(void)
@@ -258,7 +168,7 @@ namespace Kernel
     IIndividualHuman* NodeTB::processImmigratingIndividual( IIndividualHuman* individual )
     {
         individual = NodeAirborne::processImmigratingIndividual( individual );
-        dynamic_cast<IndividualHumanTB*>(individual)->RegisterInfectionIncidenceObserver( this );
+        static_cast<IndividualHumanTB*>(individual)->RegisterInfectionIncidenceObserver( this );
         return individual;
     }
 

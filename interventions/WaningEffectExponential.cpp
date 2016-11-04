@@ -22,11 +22,6 @@ namespace Kernel
     IMPLEMENT_FACTORY_REGISTERED(WaningEffectExponential)
     IMPL_QUERY_INTERFACE2(WaningEffectExponential, IWaningEffect, IConfigurable)
 
-    json::QuickBuilder WaningEffectExponential::GetSchema()
-    {
-        return json::QuickBuilder( jsonSchemaBase );
-    }
-
     bool WaningEffectExponential::Configure( const Configuration * pInputJson )
     {
         initConfigTypeMap("Initial_Effect",      &currentEffect,     WEE_Initial_Effect_DESC_TEXT,       0, 1, 1);

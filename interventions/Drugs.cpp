@@ -12,7 +12,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "RANDOM.h"
 #include "MathFunctions.h"
 #include "Sigmoid.h"
-#include "SimulationConfig.h"        // Just for PKPDModel parameter (!)
+#include "SimulationEnums.h"        // Just for PKPDModel parameter (!)
+#include "Contexts.h"
 
 static const char * _module = "GenericDrug";
 

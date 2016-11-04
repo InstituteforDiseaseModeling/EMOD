@@ -20,6 +20,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SusceptibilityHIV.h"
 #include "EventTrigger.h"
 #include "NodeEventContext.h"
+#include "Properties.h"
 
 static const char* _module = "ReportHIVByAgeAndGender";
 
@@ -182,12 +183,22 @@ namespace Kernel
         // age will get zero
         if( is_collecting_ip_data )
         {
-            ip_key_list = Node::GetIndividualPropertyKeyList();
+            const std::vector<IndividualProperty*>& ip_list = IPFactory::GetInstance()->GetIPList();
+            for( IndividualProperty* p_ip : ip_list )
+            {
+                ip_key_list.push_back( p_ip->GetKey().ToString() );
+            }
 
             for( int i = 0 ; i < ip_key_list.size() ; i++ )
             {
                 std::string key = ip_key_list[ i ] ;
-                ip_key_value_list_map[ key ] = Node::GetIndividualPropertyValuesList( key );
+                std::vector<std::string> value_list ;
+                const IPKeyValueContainer& container = IPFactory::GetInstance()->GetIP( key )->GetValues();
+                for( IPKeyValue kv : container )
+                {
+                    value_list.push_back( kv.GetValueAsString() );
+                }
+                ip_key_value_list_map[ key ] = value_list;
 
                 AddConstant() ;
             }

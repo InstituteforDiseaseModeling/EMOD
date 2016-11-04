@@ -15,6 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "MalariaDrugTypeParameters.h"
 #include "MalariaInterventionsContainer.h"  // for IMalariaDrugEffectsApply methods
 #include "SimulationConfig.h"               // for global-context access to PKPDmodel (!)
+#include "MalariaParameters.h"
 
 static const char * _module = "AntimalarialDrug";
 
@@ -124,7 +125,7 @@ namespace Kernel
 
     void AntimalarialDrug::ConfigureDrugTreatment( IIndividualHumanInterventionsContext * ivc )
     {
-        auto mdtMap = GET_CONFIGURABLE(SimulationConfig)->MalariaDrugMap;
+        auto mdtMap = GET_CONFIGURABLE(SimulationConfig)->malaria_params->MalariaDrugMap;
         if( mdtMap.find( drug_type ) == mdtMap.end() )
         {
             throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, "mdtMap", drug_type.c_str() );
@@ -182,7 +183,7 @@ namespace Kernel
         drug_gametocyteM   = drug_params->drug_gametocyteM_killrate;
         drug_hepatocyte    = drug_params->drug_hepatocyte_killrate;
 
-        durability_time_profile = GET_CONFIGURABLE(SimulationConfig)->PKPD_model;
+        durability_time_profile = GET_CONFIGURABLE(SimulationConfig)->malaria_params->PKPD_model;
         fast_decay_time_constant = drug_params->drug_decay_T1;
         slow_decay_time_constant = drug_params->drug_decay_T2;
 

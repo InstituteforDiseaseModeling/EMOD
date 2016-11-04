@@ -14,11 +14,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 static const char* _module = "InterpolatedValueMap";
 
-static const float MIN_TIME = 0.0f ;
-static const float MAX_TIME = 999999.0f ;
-static const float MIN_VALUE = 0.0f ;
-static const float MAX_VALUE = FLT_MAX ;
-
 static const std::string TIMES = "Times" ;
 static const std::string VALUES = "Values" ;
 
@@ -39,6 +34,17 @@ namespace Kernel
         }
     }
 
+    InterpolatedValueMap::InterpolatedValueMap( float min_time, 
+                                                float max_time,
+                                                float min_value,
+                                                float max_value )
+        : tFloatFloatMapConfigType()
+        , m_MinTime( min_time )
+        , m_MaxTime( max_time )
+        , m_MinValue( min_value )
+        , m_MaxValue( max_value )
+    {
+    }
 
     void
     InterpolatedValueMap::ConfigureFromJsonAndKey(
@@ -65,13 +71,13 @@ namespace Kernel
         std::string time_str  = key + ":" + TIMES ;
         std::string value_str = key + ":" + VALUES ;
 
-        float prev_time = MIN_TIME ;
+        float prev_time = m_MinTime ;
 
         // Now we have the values in our local variables, populate our map.
         for( auto idx=0; idx<times.size(); idx++ )
         {
-            checkRange<float>( time_str.c_str(),  MIN_TIME,  times[idx],  MAX_TIME  );
-            checkRange<float>( value_str.c_str(), MIN_VALUE, values[idx], MAX_VALUE );
+            checkRange<float>( time_str.c_str(),  m_MinTime,  times[idx],  m_MaxTime  );
+            checkRange<float>( value_str.c_str(), m_MinValue, values[idx], m_MaxValue );
 
             if( (idx > 0) && (times[idx] <= prev_time) )
             {
@@ -94,7 +100,7 @@ namespace Kernel
     json::QuickBuilder
     InterpolatedValueMap::GetSchema()
     {
-        json::QuickBuilder schema( jsonSchemaBase );
+        json::QuickBuilder schema( GetSchemaBase() );
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
         schema[ tn ] = json::String( "idmType:InterpolatedValueMap" );
@@ -102,13 +108,13 @@ namespace Kernel
         schema[ts] = json::Object();
         schema[ts][TIMES] = json::Array();
         schema[ts][TIMES][0][ "type" ] = json::String( "float" );
-        schema[ts][TIMES][0][ "min" ] = json::Number( MIN_TIME );
-        schema[ts][TIMES][0][ "max" ] = json::Number( MAX_TIME );
+        schema[ts][TIMES][0][ "min" ] = json::Number( m_MinTime );
+        schema[ts][TIMES][0][ "max" ] = json::Number( m_MaxTime );
         schema[ts][TIMES][0][ "description" ] = json::String( Interpolated_Value_Map_Times_DESC_TEXT );
         schema[ts][VALUES] = json::Array();
         schema[ts][VALUES][0][ "type" ] = json::String( "float" );
-        schema[ts][VALUES][0][ "min" ] = json::Number( MIN_VALUE );
-        schema[ts][VALUES][0][ "max" ] = json::Number( MAX_VALUE );
+        schema[ts][VALUES][0][ "min" ] = json::Number( m_MinValue );
+        schema[ts][VALUES][0][ "max" ] = json::Number( m_MaxValue );
         schema[ts][VALUES][0][ "description" ] = json::String( Interpolated_Value_Map_Values_DESC_TEXT );
         return schema;
     }

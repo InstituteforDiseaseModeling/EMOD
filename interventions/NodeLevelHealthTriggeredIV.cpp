@@ -45,8 +45,11 @@ namespace Kernel
     , notification_occured(false)
     , event_occured_map()
     , event_occurred_while_resident_away()
-    , actual_intervention_config()
+    , actual_individual_intervention_config()
+    , actual_node_intervention_config()
     , _di(nullptr)
+    , _ndi(nullptr)
+    , using_individual_config(false)
     {
     }
 
@@ -159,7 +162,21 @@ namespace Kernel
     {
         JsonConfigurable::_useDefaults = InterventionFactory::useDefaults;
 
-        initConfigComplexType("Actual_IndividualIntervention_Config", &actual_intervention_config, BT_Actual_Intervention_Config_DESC_TEXT);
+        if( JsonConfigurable::_dryrun || inputJson->Exist( "Actual_NodeIntervention_Config" ) )
+        {
+            initConfigComplexType( "Actual_NodeIntervention_Config", &actual_node_intervention_config, BT_Actual_NodeIntervention_Config_DESC_TEXT );
+        }
+        if( JsonConfigurable::_dryrun || inputJson->Exist( "Actual_IndividualIntervention_Config" ) )
+        {
+            initConfigComplexType( "Actual_IndividualIntervention_Config", &actual_individual_intervention_config, BT_Actual_IndividualIntervention_Config_DESC_TEXT );
+        }
+        if( !JsonConfigurable::_dryrun && 
+            ( ( inputJson->Exist( "Actual_IndividualIntervention_Config" ) &&  inputJson->Exist( "Actual_NodeIntervention_Config" )) || 
+              (!inputJson->Exist( "Actual_IndividualIntervention_Config" ) && !inputJson->Exist( "Actual_NodeIntervention_Config" )) ) )
+        {
+            throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "You must define either 'Actual_IndividualIntervention_Config' or 'Actual_NodeIntervention_Config' but not both." );
+        }
+
         initConfigTypeMap("Duration", &max_duration, BT_Duration_DESC_TEXT, -1.0f, FLT_MAX, -1.0f ); // -1 is a convention for indefinite duration
 
         initConfigTypeMap( "Blackout_Period", &blackout_period, Blackout_Period_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
@@ -170,10 +187,19 @@ namespace Kernel
         bool retValue = ConfigureTriggers( inputJson );
 
         //this section copied from standardevent coordinator
-        if( retValue )
+        if( retValue && !JsonConfigurable::_dryrun )
         {
             demographic_restrictions.CheckConfiguration();
-            InterventionValidator::ValidateIntervention( actual_intervention_config._json );
+            if( inputJson->Exist( "Actual_IndividualIntervention_Config" ) )
+            {
+                InterventionValidator::ValidateIntervention( actual_individual_intervention_config._json );
+                using_individual_config = true;
+            }
+            else if( inputJson->Exist( "Actual_NodeIntervention_Config" ) )
+            {
+                InterventionValidator::ValidateIntervention( actual_node_intervention_config._json );
+                using_individual_config = false;
+            }
         }
         JsonConfigurable::_useDefaults = false;
         return retValue;    
@@ -295,70 +321,42 @@ namespace Kernel
         assert( parent );
         assert( parent->GetRng() );
 
-        //initialize this flag by individual (not by node)
-        m_disqualified_by_coverage_only = false;
-
-        if( qualifiesToGetIntervention( pIndiv ) == false )
+        bool distributed = false;
+        if( _di != nullptr )
         {
-            LOG_DEBUG_F("Individual failed to qualify for intervention, m_disqualified_by_coverage_only is %d \n", m_disqualified_by_coverage_only);
-            if (m_disqualified_by_coverage_only == true)
+            //initialize this flag by individual (not by node)
+            m_disqualified_by_coverage_only = false;
+
+            if( qualifiesToGetIntervention( pIndiv ) == false )
             {
-                onDisqualifiedByCoverage( pIndiv );
+                LOG_DEBUG_F("Individual failed to qualify for intervention, m_disqualified_by_coverage_only is %d \n", m_disqualified_by_coverage_only);
+                if (m_disqualified_by_coverage_only == true)
+                {
+                    onDisqualifiedByCoverage( pIndiv );
+                }
+                return false;
             }
-            return false;
-        }
 
-        // Query for campaign cost observer interface from INodeEventContext *parent
-        ICampaignCostObserver *iCCO;
-        if (s_OK != parent->QueryInterface(GET_IID(ICampaignCostObserver), (void**)&iCCO))
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "ICampaignCostObserver", "INodeEventContext" );
-        }
-
-        // Important: Use the instance method to obtain the intervention factory obj instead of static method to cross the DLL boundary
-        //const IInterventionFactory* ifobj = dynamic_cast<NodeEventContextHost *>(parent)->GetInterventionFactoryObj();
-        IGlobalContext *pGC = nullptr;
-        const IInterventionFactory* ifobj = nullptr;
-        if (s_OK == parent->QueryInterface(GET_IID(IGlobalContext), (void**)&pGC))
-        {
-            ifobj = pGC->GetInterventionFactory();
-        }
-        if (!ifobj)
-        {
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "The pointer to IInterventionFactory object is not valid (could be DLL specific)" );
-        }
-
-        if( _di == nullptr )
-        {
-            auto config = Configuration::CopyFromElement( (actual_intervention_config._json) );
-            _di = const_cast<IInterventionFactory*>(ifobj)->CreateIntervention( config );
-            release_assert( _di );
-            delete config;
-            config = nullptr;
-        }
-        // Huge performance win by cloning instead of configuring.
-        release_assert( _di );
-        IDistributableIntervention *di = _di->Clone();
-        release_assert( di );
-        di->AddRef();
-
-        auto ret = true;
-        {
-            if( di->Distribute( pIndiv->GetInterventionsContext(), iCCO ) )
+            // Query for campaign cost observer interface from INodeEventContext *parent
+            ICampaignCostObserver *iCCO;
+            if (s_OK != parent->QueryInterface(GET_IID(ICampaignCostObserver), (void**)&iCCO))
             {
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "ICampaignCostObserver", "INodeEventContext" );
+            }
 
-                notification_occured = true ;
-                event_occured_map[ StateChange ].insert( pIndiv->GetSuid().data ); 
+            // Huge performance win by cloning instead of configuring.
+            IDistributableIntervention *di = _di->Clone();
+            release_assert( di );
+            di->AddRef();
 
-                auto classname = (std::string) json::QuickInterpreter(actual_intervention_config._json)["class"].As<json::String>();
+            distributed = di->Distribute( pIndiv->GetInterventionsContext(), iCCO );
+            if( distributed )
+            {
+                std::string classname = GetInterventionClassName();
                 LOG_DEBUG_F("A Node level health-triggered intervention (%s) was successfully distributed to individual %d\n",
                             classname.c_str(),
                             pIndiv->GetInterventionsContext()->GetParent()->GetSuid().data
                            );
-
-                // It's not at all clear to me that we would incur cost at this point, but we could.
-                //iCCO->notifyCampaignExpenseIncurred( interventionCost, pIndiv );
-                ret = true;
             }
             else
             {
@@ -366,8 +364,32 @@ namespace Kernel
             }
             di->Release();
         }
+        else
+        {
+            release_assert( _ndi );
 
-        return ret;
+            // Huge performance win by cloning instead of configuring.
+            INodeDistributableIntervention *ndi = _ndi->Clone();
+            release_assert( ndi );
+            ndi->AddRef();
+
+            distributed =  ndi->Distribute( parent, nullptr );
+
+            if( distributed )
+            {
+                std::string classname = GetInterventionClassName();
+                LOG_INFO_F("Distributed '%s' intervention to node %d\n", classname.c_str(), parent->GetExternalId() );
+            }
+            ndi->Release();
+        }
+
+        if( distributed )
+        {
+            notification_occured = true ;
+            event_occured_map[ StateChange ].insert( pIndiv->GetSuid().data ); 
+        }
+
+        return distributed;
     }
 
     void NodeLevelHealthTriggeredIV::Update( float dt )
@@ -406,6 +428,42 @@ namespace Kernel
     {
         release_assert( context );
         parent = context;
+
+        // Important: Use the instance method to obtain the intervention factory obj instead of static method to cross the DLL boundary
+        //const IInterventionFactory* ifobj = dynamic_cast<NodeEventContextHost *>(parent)->GetInterventionFactoryObj();
+        IGlobalContext *pGC = nullptr;
+        const IInterventionFactory* ifobj = nullptr;
+        if (s_OK == parent->QueryInterface(GET_IID(IGlobalContext), (void**)&pGC))
+        {
+            ifobj = pGC->GetInterventionFactory();
+        }
+        if (!ifobj)
+        {
+            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "The pointer to IInterventionFactory object is not valid (could be DLL specific)" );
+        }
+        if( (_di == nullptr) && (_ndi == nullptr) )
+        {
+            Configuration* config = nullptr;
+            if( using_individual_config )
+            {
+                config = Configuration::CopyFromElement( (actual_individual_intervention_config._json) );
+            }
+            else
+            {
+                config = Configuration::CopyFromElement( (actual_node_intervention_config._json) );
+            }
+
+            _di = const_cast<IInterventionFactory*>(ifobj)->CreateIntervention( config );
+
+            if( _di == nullptr )
+            {
+                _ndi = const_cast<IInterventionFactory*>(ifobj)->CreateNDIIntervention( config );
+            }
+            release_assert( (_di !=nullptr) || (_ndi != nullptr) );
+
+            delete config;
+            config = nullptr;
+        }
     }
 
     // private/protected
@@ -440,6 +498,20 @@ namespace Kernel
     void NodeLevelHealthTriggeredIV::onDisqualifiedByCoverage( IIndividualHumanEventContext *pIndiv )
     {
         //do nothing, this is for the scale up switch
+    }
+
+    std::string NodeLevelHealthTriggeredIV::GetInterventionClassName() const
+    {
+        std::string class_name;
+        if( using_individual_config )
+        {
+            class_name = std::string(json::QuickInterpreter( actual_individual_intervention_config._json )[ "class" ].As<json::String>());
+        }
+        else
+        {
+            class_name = std::string( json::QuickInterpreter( actual_node_intervention_config._json )[ "class" ].As<json::String>() );
+        }
+        return class_name;
     }
 }
 

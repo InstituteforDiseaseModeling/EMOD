@@ -20,6 +20,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
+    struct IMalariaDrugEffects;
+
     class IInfectionMalaria : public ISupports
     {
     public:
@@ -152,5 +154,6 @@ namespace Kernel
 
         // drug resistance flag
         int drugResistanceFlag;
+        IMalariaDrugEffects* m_pMDE;
     };
 }

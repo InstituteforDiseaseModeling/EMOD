@@ -118,15 +118,15 @@ namespace Kernel
 #endif
     };
 
-    class IDMAPI NodeListConfig : public JsonConfigurable
+    class IDMAPI NodeListConfig : public JsonConfigurable, public IComplexJsonConfigurable
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
 
         public:
             NodeListConfig() {}
-            virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key );
-            virtual json::QuickBuilder GetSchema();
+            virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
+            virtual json::QuickBuilder GetSchema() override;
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
             tNodeIdList nodelist;

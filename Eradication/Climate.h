@@ -12,6 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include <fstream>
 #include <math.h>
+#include <unordered_map>
 
 #include "BoostLibWrapper.h"
 
@@ -23,13 +24,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Configure.h"
 
 #ifdef __GNUC__
-#include <ext/hash_map>
 namespace std
 {
      using namespace __gnu_cxx;
 }
-#else
-#include <hash_map>
 #endif
 
 class Configuration;
@@ -123,7 +121,7 @@ namespace Kernel
         ClimateFactory(boost::bimap<uint32_t, suids::suid> * nodeid_suid_map);
         ClimateFactory(){} // just for GetSchema
         bool Initialize(const ::Configuration *config, const std::string idreference);
-        bool ParseMetadataForFile(std::string data_filepath, std::string idreference, ClimateUpdateResolution::Enum * const update_resolution, int * const num_datavalues, int * const num_nodes, std::hash_map<uint32_t, uint32_t> &node_offsets);
+        bool ParseMetadataForFile(std::string data_filepath, std::string idreference, ClimateUpdateResolution::Enum * const update_resolution, int * const num_datavalues, int * const num_nodes, std::unordered_map<uint32_t, uint32_t> &node_offsets);
         bool OpenClimateFile(std::string filepath, uint32_t expected_size, std::ifstream &file);
 
         boost::bimap<uint32_t, suids::suid> * nodeid_suid_map;
@@ -144,13 +142,13 @@ namespace Kernel
         std::ifstream climate_koppentype_file;
 
         // node offsets in ClimateByData files
-        std::hash_map<uint32_t, uint32_t> landtemperature_offsets;
-        std::hash_map<uint32_t, uint32_t> airtemperature_offsets;
-        std::hash_map<uint32_t, uint32_t> rainfall_offsets;
-        std::hash_map<uint32_t, uint32_t> humidity_offsets;
+        std::unordered_map<uint32_t, uint32_t> landtemperature_offsets;
+        std::unordered_map<uint32_t, uint32_t> airtemperature_offsets;
+        std::unordered_map<uint32_t, uint32_t> rainfall_offsets;
+        std::unordered_map<uint32_t, uint32_t> humidity_offsets;
 
         // node offsets in ClimateKoppen file
-        std::hash_map<uint32_t, uint32_t> koppentype_offsets;
+        std::unordered_map<uint32_t, uint32_t> koppentype_offsets;
 
         // metadata info
         ClimateUpdateResolution::Enum climate_update_resolution;

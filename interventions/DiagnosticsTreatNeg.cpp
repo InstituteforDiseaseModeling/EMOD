@@ -78,7 +78,7 @@ namespace Kernel
     , m_gets_positive_test_intervention(false)
     {
         initSimTypes( 1, "TB_SIM" );
-        days_to_diagnosis.handle = std::bind( &DiagnosticTreatNeg::onDiagnosisComplete, this, 0 );
+        days_to_diagnosis.handle = std::bind( &DiagnosticTreatNeg::onDiagnosisComplete, this, 0.0f );
     }
 
     DiagnosticTreatNeg::DiagnosticTreatNeg( const DiagnosticTreatNeg& master )
@@ -95,7 +95,7 @@ namespace Kernel
         // !!! I needed to use the assignment operator to get this to work correctly.
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         defaulters_config = master.defaulters_config;
-        days_to_diagnosis.handle = std::bind( &DiagnosticTreatNeg::onDiagnosisComplete, this, 0 );
+        days_to_diagnosis.handle = std::bind( &DiagnosticTreatNeg::onDiagnosisComplete, this, 0.0f );
     }
 
     DiagnosticTreatNeg::~DiagnosticTreatNeg()

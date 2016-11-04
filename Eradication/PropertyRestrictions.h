@@ -15,19 +15,20 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "BoostLibWrapper.h"
 #include "Configure.h"
+#include "Properties.h"
 
 namespace Kernel
 {
     struct IIndividualHumanEventContext;
 
-    class IDMAPI PropertyRestrictions : public JsonConfigurable
+    class IDMAPI PropertyRestrictions : public JsonConfigurable, public IComplexJsonConfigurable
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
     public:
         PropertyRestrictions();
-        virtual void ConfigureFromJsonAndKey( const Configuration *, const std::string &key );
-        virtual json::QuickBuilder GetSchema();
+        virtual void ConfigureFromJsonAndKey( const Configuration *, const std::string &key ) override;
+        virtual json::QuickBuilder GetSchema() override;
 
         int Size() const;
         void Add( std::map< std::string, std::string >& rMap );
@@ -37,8 +38,7 @@ namespace Kernel
     private:
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
-        std::list< std::map< std::string, std::string > > _restrictions;
-        bool verified;
+        std::list< IPKeyValueContainer > _restrictions;
 #pragma warning( pop )
     };
 }

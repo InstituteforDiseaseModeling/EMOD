@@ -48,6 +48,12 @@ namespace Kernel
         static std::vector<float> maleToFemaleRelativeInfectivityAges;
         static std::vector<float> maleToFemaleRelativeInfectivityMultipliers;
 
+        static bool  enable_coital_dilution;
+
+        static float coital_dilution_2_partners;
+        static float coital_dilution_3_partners;
+        static float coital_dilution_4_plus_partners;
+
         virtual bool Configure( const Configuration* config ) override;
     };
 

@@ -19,10 +19,10 @@ private:
     suids::suid m_suid ;
 
 public:
-    INodeContextFake()
+    INodeContextFake( int id = 1 )
     : m_suid()
     {
-        m_suid.data = 1 ;
+        m_suid.data = id ;
     }
 
     INodeContextFake( const suids::suid& rSuid )
@@ -167,16 +167,6 @@ public:
         throw std::exception("The method or operation is not implemented.");
     }
 
-    virtual const tPropertiesDistrib& GetIndividualPropertyDistributions() const override
-    {
-        throw std::exception("The method or operation is not implemented.");
-    }
-
-    virtual void checkValidIPValue( const std::string& key, const std::string& to_value ) override
-    {
-        throw std::exception("The method or operation is not implemented.");
-    }
-
     virtual void AddEventsFromOtherNodes( const std::vector<std::string>& rEventNameList ) override
     {
         throw std::exception("The method or operation is not implemented.");
@@ -198,11 +188,6 @@ public:
     }
 
     act_prob_vec_t DiscreteGetTotalContagion(const TransmissionGroupMembership_t* membership) override
-    {
-        throw std::exception("The method or operation is not implemented.");
-    }
-
-    virtual void VerifyPropertyDefined( const std::string& rKey, const std::string& rVal ) const override
     {
         throw std::exception("The method or operation is not implemented.");
     }
@@ -273,4 +258,10 @@ public:
     {
         return 1.0;
     }
+
+    virtual ProbabilityNumber GetProbMaternalTransmission() const
+    {
+        return 1.0;
+    }
+
 };

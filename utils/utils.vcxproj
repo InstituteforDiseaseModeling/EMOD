@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -24,21 +24,21 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='QuickStart|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -69,7 +69,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>BOOST_ALL_NO_LIB;WIN32;IDM_EXPORT;_DEBUG;_LIB;%(PreprocessorDefinitions);_SCL_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>C:\boost\boost_1_51_0;..\Dependencies\ComputeClusterPack\Include;..\cajun\Include;..\Eradication\;..\campaign;..\rapidjson\include;..\rapidjson\modp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IDM_BOOST_PATH);..\Dependencies\ComputeClusterPack\Include;..\cajun\Include;..\Eradication\;..\campaign;..\rapidjson\include;..\rapidjson\modp</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -89,7 +89,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>BOOST_ALL_NO_LIB;WIN32;IDM_EXPORT;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\boost\boost_1_51_0;..\Dependencies\ComputeClusterPack\Include;..\cajun\Include;..\Eradication\;..\campaign;..\rapidjson\include;..\rapidjson\modp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IDM_BOOST_PATH);..\Dependencies\ComputeClusterPack\Include;..\cajun\Include;..\Eradication\;..\campaign;..\rapidjson\include;..\rapidjson\modp</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -113,7 +113,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>DISABLE_MPI;BOOST_ALL_NO_LIB;WIN32;IDM_EXPORT;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\boost\boost_1_51_0;..\cajun\Include;..\Eradication\;..\campaign;..\rapidjson\include;..\rapidjson\modp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IDM_BOOST_PATH);..\cajun\Include;..\Eradication\;..\campaign;..\rapidjson\include;..\rapidjson\modp</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -155,12 +155,14 @@
     <ClCompile Include="JsonFullReader.cpp" />
     <ClCompile Include="JsonFullWriter.cpp" />
     <ClCompile Include="JsonObject.cpp" />
+    <ClCompile Include="JsonObjectDemog.cpp" />
     <ClCompile Include="JsonRawReader.cpp" />
     <ClCompile Include="JsonRawWriter.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="MathFunctions.cpp" />
     <ClCompile Include="ProgramOptions.cpp" />
     <ClCompile Include="ProgVersion.cpp" />
+    <ClCompile Include="Properties.cpp" />
     <ClCompile Include="RANDOM.cpp" />
     <ClCompile Include="RapidJsonImpl.cpp" />
     <ClCompile Include="Serialization.cpp" />
@@ -225,6 +227,7 @@
     <ClInclude Include="JsonFullReader.h" />
     <ClInclude Include="JsonFullWriter.h" />
     <ClInclude Include="JsonObject.h" />
+    <ClInclude Include="JsonObjectDemog.h" />
     <ClInclude Include="JsonRawReader.h" />
     <ClInclude Include="JsonRawWriter.h" />
     <ClInclude Include="Log.h" />
@@ -232,6 +235,8 @@
     <ClInclude Include="Profile.h" />
     <ClInclude Include="ProgramOptions.h" />
     <ClInclude Include="ProgVersion.h" />
+    <ClInclude Include="Properties.h" />
+    <ClInclude Include="PropertiesString.h" />
     <ClInclude Include="RANDOM.h" />
     <ClInclude Include="RapidJsonImpl.h" />
     <ClInclude Include="Serialization.h" />

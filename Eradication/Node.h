@@ -26,7 +26,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IInfectable.h"
 #include "MathFunctions.h"
 #include "Serialization.h"
-#include "Properties.h"
 
 class RANDOMBASE;
 
@@ -57,9 +56,6 @@ namespace Kernel
 
     public:
         static Node *CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid); 
-        static void VerifyPropertyDefinedInDemographics( const std::string& rKey, const std::string& rVal );
-        static std::vector<std::string> GetIndividualPropertyKeyList();
-        static std::vector<std::string> GetIndividualPropertyValuesList( const std::string& rKey );
 
         Node(ISimulationContext *_parent_sim, suids::suid _suid);
         Node(); // constructor for serialization use
@@ -72,7 +68,6 @@ namespace Kernel
         virtual suids::suid   GetSuid() const override;
         virtual suids::suid   GetNextInfectionSuid() override;
         virtual ::RANDOMBASE* GetRng() override;
-        virtual const tPropertiesDistrib& GetIndividualPropertyDistributions() const override;
         virtual void AddEventsFromOtherNodes( const std::vector<std::string>& rEventNameList ) override;
 
 
@@ -126,11 +121,15 @@ namespace Kernel
         virtual void GetGroupMembershipForIndividual(const RouteList_t& route, tProperties* properties, TransmissionGroupMembership_t* membershipOut) override;
         virtual void UpdateTransmissionGroupPopulation(const TransmissionGroupMembership_t* membership, float size_changes,float mc_weight) override;
         virtual void SetupIntranodeTransmission();
+        virtual ITransmissionGroups* CreateTransmissionGroups();
+        virtual void AddDefaultRoute( RouteToContagionDecayMap_t& rDecayMap );
+        virtual void AddRoute( RouteToContagionDecayMap_t& rDecayMap, const std::string& rRouteName );
+        virtual void BuildTransmissionRoutes( RouteToContagionDecayMap_t& rDecayMap );
+        virtual bool IsValidTransmissionRoute( string& transmissionRoute );
 
         virtual act_prob_vec_t DiscreteGetTotalContagion(const TransmissionGroupMembership_t* membership) override;
 
         virtual void ValidateIntranodeTransmissionConfiguration();
-        virtual bool IsValidTransmissionRoute( string& transmissionRoute );
 
         virtual float GetTotalContagion(const TransmissionGroupMembership_t* membership) override;
         virtual const RouteList_t& GetTransmissionRoutes() const override;
@@ -150,15 +149,13 @@ namespace Kernel
                                               float timeAtDestination,
                                               bool isDestinationNewHome ) override;
 
+        virtual ProbabilityNumber GetProbMaternalTransmission() const;
+
         virtual void ManageFamilyTrip( float currentTime, float dt );
 
-        static void TestOnly_ClearProperties();
-        static void TestOnly_AddPropertyKeyValue( const char* key, const char* value );
     private:
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
-        static tPropertiesDistrib base_distribs;
-
         SerializationFlags serializationMask;
 
         // Do not access these directly but use the access methods above.
@@ -166,11 +163,11 @@ namespace Kernel
         float _longitude;
 
     protected:
-        ::tPropertiesDistrib distribs;
-
         // moved from SimulationConfig
         IndSamplingType::Enum                        ind_sampling_type;                         // Individual_Sampling_Type
         PopulationDensityInfectivityCorrection::Enum population_density_infectivity_correction; // Population_Density_Infectivity_Correction
+        DistributionType::Enum                       age_initialization_distribution_type;      // Age_Initialization_Distribution_Type
+        PopulationScaling::Enum                      population_scaling;                        // POPULATION_SCALING
 
         // Node properties
         suids::suid suid;
@@ -341,19 +338,6 @@ namespace Kernel
 
 
         const SimulationConfig* params() const;
-        void checkIpKeyInWhitelist(const std::string& key, size_t numValues );
-        void convertTransitions( const NodeDemographics &trans, json::Object& tx_camp, const std::string& key );
-        std::string getAgeBinPropertyNameFromIndex( const NodeDemographics& demo, unsigned int idx );
-        virtual void checkValidIPValue( const std::string& key, const std::string& to_value ) override;
-
-        //Verify that the user entered in set of property key/value pairs which are included in the demographics file
-        virtual void VerifyPropertyDefined( const std::string& rKey, const std::string& rVal ) const override;
-
-        bool whitelist_enabled;
-        std::set< std::string > ipkeys_whitelist;
-        static const char* _age_bins_key;
-        static const char* transitions_dot_json_filename;
-
         float infectivity_sinusoidal_forcing_amplitude; // Only for Infectivity_Scale_Type = SINUSOIDAL_FUNCTION_OF_TIME
         float infectivity_sinusoidal_forcing_phase;     // Only for Infectivity_Scale_Type = SINUSOIDAL_FUNCTION_OF_TIME
         float infectivity_boxcar_forcing_amplitude;     // Only for Infectivity_Scale_Type = ANNUAL_BOXCAR_FUNCTION

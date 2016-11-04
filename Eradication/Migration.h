@@ -13,15 +13,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <vector>
 #include <string>
 #include <fstream>
+#include <unordered_map>
 
 #ifdef __GNUC__
-#include <ext/hash_map>
 namespace std
 {
      using namespace __gnu_cxx;
 }
-#else
-#include <hash_map>
 #endif
 
 #include "IMigrationInfo.h"
@@ -250,7 +248,7 @@ namespace Kernel
         uint32_t                m_AgeDataSize;
         std::ifstream           m_FileStream;
 
-        std::hash_map< ExternalNodeId_t, uint32_t > m_Offsets;
+        std::unordered_map< ExternalNodeId_t, uint32_t > m_Offsets;
 #pragma warning( pop )
     };
 

@@ -114,7 +114,7 @@ SUITE(InterpolatedValueMapTest)
     TEST(TestTimeTooLarge)
     {
         TestHelper_Exception( __LINE__, "testdata/InterpolatedValueMapTest/TestTimeTooLarge.json",
-            "Configuration variable MyDataMap:Times with value 1e+006 out of range: greater than 999999." );
+            "Configuration variable MyDataMap:Times with value 1e+06 out of range: greater than 999999." );
     }
 
     TEST(TestBadTimeOrder)

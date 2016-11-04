@@ -24,7 +24,7 @@ static const char* BUILD_DATE = __DATE__ " " __TIME__;
 #endif
 
 #define    MAJOR_VERSION    2
-#define    MINOR_VERSION    8
+#define    MINOR_VERSION    10
 #ifndef REVISION_NUMBER
 #define    REVISION_NUMBER  0
 #endif

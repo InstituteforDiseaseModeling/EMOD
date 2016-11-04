@@ -17,14 +17,12 @@
             "Male_To_Female_Relative_Infectivity_Ages": [
                 15, 
                 25, 
-                35,
-                0
+                35
              ], 
              "Male_To_Female_Relative_Infectivity_Multipliers": [
                 5, 
                 1, 
-                0.5,
-                1
+                0.5
             ] 
         }, 
         "____________INTRAHOST___________": {

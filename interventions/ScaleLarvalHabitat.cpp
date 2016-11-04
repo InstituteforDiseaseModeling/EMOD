@@ -18,6 +18,18 @@ namespace Kernel
 
     IMPLEMENT_FACTORY_REGISTERED(ScaleLarvalHabitat)
 
+    ScaleLarvalHabitat::ScaleLarvalHabitat()
+    : SimpleVectorControlNode()
+    , m_LHM(true)
+    {
+    }
+
+    ScaleLarvalHabitat::ScaleLarvalHabitat( const ScaleLarvalHabitat& master )
+    : SimpleVectorControlNode( master )
+    , m_LHM( master.m_LHM )
+    {
+    }
+
     void ScaleLarvalHabitat::Update( float dt )
     {
         // Do not decay the scaled habitat,
@@ -29,16 +41,7 @@ namespace Kernel
 
     bool ScaleLarvalHabitat::Configure( const Configuration * inputJson )
     {
-        initConfig( "Habitat_Target", 
-                    habitat_target, 
-                    inputJson, 
-                    MetadataDescriptor::Enum( "Habitat_Target", 
-                                              SLH_Habitat_Target_DESC_TEXT, 
-                                              MDD_ENUM_ARGS(VectorHabitatType) 
-                                            ) 
-                  );
-
-        initConfigTypeMap("Habitat_Scale", &reduction, SLH_Habitat_Scale_DESC_TEXT, 0, 10, 1);
+        initConfigComplexType( "Larval_Habitat_Multiplier", &m_LHM, SLH_Larval_Habitat_Multiplier_DESC_TEXT );
 
         return JsonConfigurable::Configure( inputJson );
     }
@@ -47,9 +50,7 @@ namespace Kernel
     {
         if( invic )
         {
-            // Use habitat reduction function, hence (1-Habitat_Scale)
-            invic->UpdateLarvalHabitatReduction( GetHabitatTarget(), 
-                                                 1.0f - GetReduction() );
+            invic->UpdateLarvalHabitatReduction( m_LHM );
         }
         else
         {

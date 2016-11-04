@@ -54,8 +54,6 @@ both.c$IncidenceRate[ is.nan(both.c$IncidenceRate) ] = 0
 both.c$HIVCauseMortalityRate = both.c$Died_from_HIV / both.c$Population
 both.c$Gender = factor(both.c$Gender, labels=c("Male", "Female"))
 
-print( both.c )
-
 p.prevalence = ggplot(both.c, aes(x=Year, y=Prevalence, colour=Gender)) +
     geom_line() +
     geom_vline(xintercept=PrEP_YEAR, colour="black", linetype="dashed") + # PrEP in PrEP_YEAR
@@ -89,6 +87,6 @@ p.deaths = ggplot(both.c, aes(x=Year, y=HIVCauseMortalityRate, colour=Gender)) +
     ylab( "HIV-Cause Mortality Rate 15-49 (Deaths/PY)" ) +
     ggtitle( "Mortality" )
 
-q = arrangeGrob(p.prevalence, p.incidence, p.deaths, ncol=3)
+q = grid.arrange(p.prevalence, p.incidence, p.deaths, ncol=3)
 
 ggsave(file.path(fig_dir,"HIV_Summary.png"), plot=q, width=6, height=4)

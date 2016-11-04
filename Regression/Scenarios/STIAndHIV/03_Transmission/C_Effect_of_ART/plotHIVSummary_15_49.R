@@ -105,6 +105,6 @@ p.ART = ggplot(both.c, aes(x=Year, y=ARTCoverage, colour=Gender)) +
     ylab( "Antiretroviral Therapy Coverage (%)" ) +
     ggtitle( "ART" )
 
-q = arrangeGrob(p.prevalence, p.incidence, p.deaths, p.ART, ncol=4)
+q = grid.arrange(p.prevalence, p.incidence, p.deaths, p.ART, ncol=4)
 
 ggsave(file.path(fig_dir,"HIV_Summary.png"), plot=q, width=8, height=4)

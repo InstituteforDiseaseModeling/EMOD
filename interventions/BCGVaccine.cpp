@@ -24,11 +24,6 @@ namespace Kernel
 
 #ifdef ENABLE_TB
     IMPLEMENT_FACTORY_REGISTERED(BCGVaccine)
-    /*QuickBuilder BCGVaccine::GetSchema()
-    {
-        return QuickBuilder( jsonSchemaBase );
-    }*/
-
     bool
     BCGVaccine::Configure(
         const Configuration * inputJson

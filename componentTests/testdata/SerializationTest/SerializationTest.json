@@ -1348,8 +1348,7 @@
                 "original_days_to_diagnosis" : 77,
                 "absoluteDuration"           : 33,
                 "negative_diagnosis_event"   : "Event_1",
-                "ip_tb_key"                  : "Risk",
-                "ip_tb_value_expected"       : "LOW",
+                "ip_tb_value_expected"       : "Risk:LOW",
                 "adultAge"                   : 15,
                 "adultByWHOStage" :
                 [
@@ -1440,8 +1439,7 @@
                 "original_days_to_diagnosis" : 77,
                 "absoluteDuration"           : 33,
                 "negative_diagnosis_event"   : "Event_1",
-                "ip_tb_key"                  : "Risk",
-                "ip_tb_value_expected"       : "LOW",
+                "ip_tb_value_expected"       : "Risk:LOW",
                 "threshold" :
                 [
                     { "key" : 1971, "value" : 0.1 },

@@ -18,28 +18,30 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    class LarvalHabitatParams : public JsonConfigurable
+    class LarvalHabitatParams : public JsonConfigurable, public IComplexJsonConfigurable
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
 
         public:
             LarvalHabitatParams() {}
-            virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key );
-            virtual json::QuickBuilder GetSchema();
-            std::map< VectorHabitatType::Enum, float > habitat_map; 
+            virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
+            virtual json::QuickBuilder GetSchema() override;
+            std::map< VectorHabitatType::Enum, const Configuration* > habitat_map; 
     };
 
-    class VectorSpeciesParameters : public JsonConfigurable
+    class IDMAPI VectorSpeciesParameters : public JsonConfigurable
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
 
     public:
-        static VectorSpeciesParameters* CreateVectorSpeciesParameters(const std::string& vector_species_name);
+        static VectorSpeciesParameters* CreateVectorSpeciesParameters( const Configuration* inputJson, const std::string& vector_species_name );
         virtual ~VectorSpeciesParameters();
         bool Configure( const ::Configuration *json );
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
 
+#pragma warning( push )
+#pragma warning( disable: 4251 ) // See IdmApi.h for details
         LarvalHabitatParams habitat_params;
         float aquaticarrhenius1;
         float aquaticarrhenius2;
@@ -71,5 +73,6 @@ namespace Kernel
 
     private:
         std::string _species;
+#pragma warning( pop )
     };
 }

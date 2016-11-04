@@ -22,12 +22,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "BoostLibWrapper.h"
 #include "IdmMpi.h"
 
+#include "JsonFullWriter.h"
+#include "JsonFullReader.h"
 
 using namespace std;
 using namespace json;
 
 static const char * _module = "ChannelData";
-
 
 ChannelDataMap::ChannelDataMap()
     : channel_data_map()
@@ -145,7 +146,6 @@ void ChannelDataMap::Accumulate( const std::string& channel_name, int index, Cha
     //*(data.end() - num_total_bins + bin_index) += value;
 }
 
-
 void ChannelDataMap::ExponentialValues( const std::string& channel_name )
 {
     channel_data_t& r_channel_data = channel_data_map[ channel_name ];
@@ -162,6 +162,65 @@ void ChannelDataMap::Reduce()
     // will be very slow
     // keeps track of how many timesteps have been reduced and only reduces ones that havent been reduced yet
 
+    // --------------------------------------------------
+    // --- Synchronize the number of channels in the map
+    // --------------------------------------------------
+    std::map<std::string,int> send_name_size_map;
+    for( auto& entry : channel_data_map )
+    {
+        send_name_size_map[ entry.first ] = entry.second.size();
+    }
+
+    Kernel::JsonFullWriter writer;
+    Kernel::IArchive* par = static_cast<Kernel::IArchive*>(&writer);
+    Kernel::IArchive& ar = *par;
+
+    ar.labelElement("Channels") & send_name_size_map;
+
+    const char* buffer = ar.GetBuffer();
+    size_t buffer_size = ar.GetBufferSize();
+
+    EnvPtr->MPI.p_idm_mpi->PostChars( (char*)buffer, buffer_size, EnvPtr->MPI.Rank );
+
+    for( int from_rank = 0 ; from_rank < EnvPtr->MPI.NumTasks ; ++from_rank )
+    {
+        if( from_rank == EnvPtr->MPI.Rank ) continue;
+
+        std::vector<char> receive_json;
+
+        EnvPtr->MPI.p_idm_mpi->GetChars( receive_json, from_rank );
+
+        receive_json.push_back( '\0' );
+
+        Kernel::JsonFullReader reader( receive_json.data() );
+        Kernel::IArchive* reader_par = static_cast<Kernel::IArchive*>(&reader);
+        Kernel::IArchive& reader_ar = *reader_par;
+
+        std::map<std::string,int> get_name_size_map;
+        reader_ar.labelElement("Channels") & get_name_size_map;
+
+        for( auto& entry : get_name_size_map )
+        {
+            std::string name = entry.first;
+            int         size = entry.second;
+
+            if( channel_data_map.count( name ) == 0 )
+            {
+                channel_data_t data(size);
+                channel_data_map[ name ] = data;
+            }
+            else if( channel_data_map[ name ].size() != size )
+            {
+                std::stringstream ss;
+                ss << "Channel=" << name << "  from rank=" << from_rank << " had size=" << size << " while this rank=" << EnvPtr->MPI.Rank << " had size=" << channel_data_map[ name ].size() << "\n";
+                throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            }
+        }
+    }
+
+    // -----------------------------------------------
+    // --- Reduce the data in each channel of the map
+    // -----------------------------------------------
     channel_data_t receive_buffer;
 
     if (channel_data_map.size() == 0) return; // nothing to do if nothing has been recorded yet
@@ -283,6 +342,7 @@ void ChannelDataMap::WriteOutput(
         for (auto val : entry.second)
         {
             if (boost::math::isnan(val)) val = 0;  // Since NaN isn't part of the json standard, force all NaN values to zero
+            if (boost::math::isinf(val)) val = 0;  // Since INF isn't part of the json standard, force all INF values to zero
             pIJsonObj->Add(val);
         }
         pIJsonObj->EndArray();
@@ -311,6 +371,7 @@ void ChannelDataMap::WriteOutput(
     }
     pIJsonObj->FinishWriter();
     delete pIJsonObj ;
+    delete buffer;
 }
 
 

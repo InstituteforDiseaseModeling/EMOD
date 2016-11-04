@@ -33,13 +33,13 @@ namespace Kernel
         virtual void Update_Male_Queue      ( float dt ) override;
 
         // function to support adding in new vectors (Wolbachia types, etc...)
-        virtual void AddVectors(VectorMatingStructure _vector_genetics, unsigned long int releasedNumber) override;
+        virtual void AddVectors(VectorMatingStructure _vector_genetics, uint64_t releasedNumber) override;
 
         // IInfectable
         virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route ) override;
 
         virtual void Vector_Migration( IMigrationInfo* pMigInfo, VectorCohortList_t* pMigratingQueue ) override;
-        virtual unsigned long int Vector_Migration(float = 0.0f, VectorCohortList_t * = nullptr) override;
+        virtual uint64_t Vector_Migration(float = 0.0f, VectorCohortList_t * = nullptr) override;
 
     protected:
         uint32_t m_mosquito_weight;
@@ -53,7 +53,7 @@ namespace Kernel
 
         VectorPopulationIndividual(uint32_t mosquito_weight);
         virtual void InitializeVectorQueues(unsigned int adults, unsigned int _infectious) override;
-        virtual uint32_t ProcessFeedingCycle(float dt, VectorCohort *queue, VectorStateEnum::Enum state) override;
+        virtual uint32_t ProcessFeedingCycle( float dt, IVectorCohort* cohort, VectorStateEnum::Enum state ) override;
         void ExposeCohortList( const IContagionPopulation* cp, VectorCohortList_t& list, float success_prob, float infection_prob );
         void ResetOvipositionTimer( IVectorCohortIndividual* mosquito );
         IVectorCohortIndividual * current_vci; // added this since we have it, then call a function, and function re-qi's for it, which is unnecessary.

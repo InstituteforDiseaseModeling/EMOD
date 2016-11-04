@@ -21,6 +21,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #endif
 #include "NodeEventContext.h"
 #include "INodeContext.h"
+#include "Properties.h"
 
 static const char* _module = "InterventionsContainer";
 
@@ -276,13 +277,7 @@ namespace Kernel
             throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, "properties", property );
         }
 
-        INodeContext* pNode = nullptr;
-        if ( s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeContext), (void**)&pNode) )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeContext", "INodeEventContext" );
-        }
-        pNode->checkValidIPValue( property, new_value );
-        //dynamic_cast<INodeContext*>(parent->GetEventContext()->GetNodeEventContext())->checkValidIPValue( property, new_value );
+        release_assert( IPFactory::GetInstance()->GetIP( property )->GetValues().Contains( IPFactory::CreateKeyValueString( property, new_value ) ) );
 
         if( (*pProps)[ property ] != new_value )
         {

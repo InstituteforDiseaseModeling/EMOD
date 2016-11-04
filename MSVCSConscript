@@ -1,0 +1,41 @@
+# -*- mode: python; -*-
+# This Python script, SConscript, invoked by the SConstruct in this directory,
+#
+# 1. delegates to other per-module SConscript files for executable and library 
+# (static and/or dynamic)
+Import('env')
+
+if False: # env['AllDlls'] or env[ 'DiseaseDll' ] !="" or env[ 'Report' ] != "" or env[ 'Campaign' ] != "":
+    eradicationProjects = ['cajun/CajunScons' + env['MSVSPROJECTSUFFIX'],
+                           'campaign/CampaignScons' + env['MSVSPROJECTSUFFIX'],
+                           'jsonspirit/JsonspiritScons' + env['MSVSPROJECTSUFFIX'],
+                           'utils/UtilsScons' + env['MSVSPROJECTSUFFIX'],
+                           'libgeneric_static/LibgenericStaticScons' + env['MSVSPROJECTSUFFIX'],
+                           'libgeneric/LibvectorStaticScons' + env['MSVSPROJECTSUFFIX'],
+                           'libgeneric/LibgenericScons' + env['MSVSPROJECTSUFFIX'],
+                           'libgeneric/LibbednetdllScons' + env['MSVSPROJECTSUFFIX'],
+                           'libgeneric/LibcalendardllScons' + env['MSVSPROJECTSUFFIX'],
+                           'libgeneric/LibhousingmoddllScons' + env['MSVSPROJECTSUFFIX'],
+                           'libgeneric/LiboutbreakdllScons' + env['MSVSPROJECTSUFFIX'],
+                           'libgeneric/LibsimplevaccinedllScons' + env['MSVSPROJECTSUFFIX'],
+                           'libgeneric/LibmalariadllScons' + env['MSVSPROJECTSUFFIX'],
+                           'libgeneric/LibvectordllScons' + env['MSVSPROJECTSUFFIX'],
+                           'libgeneric/LibgenericScons' + env['MSVSPROJECTSUFFIX'],
+
+                           'eradication/EradicationScons' + env['MSVSPROJECTSUFFIX']]
+else:
+    eradicationProjects = ['cajun/CajunScons' + env['MSVSPROJECTSUFFIX'],
+                           'campaign/CampaignScons' + env['MSVSPROJECTSUFFIX'],
+                           'jsonspirit/JsonspiritScons' + env['MSVSPROJECTSUFFIX'],
+                           'utils/UtilsScons' + env['MSVSPROJECTSUFFIX'],
+                           'eradication/EradicationScons' + env['MSVSPROJECTSUFFIX']]
+
+msvc = GetOption( "MSVC" )
+if msvc is not None and msvc != False and msvc != "":
+
+    bvar = env['BUILD_VARIANT'] + '|x64'
+    print "Top: Generating MSVS" + env['MSVS_VERSION'] + " solution files for '%s'" % bvar
+    
+    env.MSVSSolution(target = 'EradicationKernelScons' + env['MSVSSOLUTIONSUFFIX'],
+                     projects = eradicationProjects,
+                     variant = bvar)

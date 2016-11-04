@@ -13,6 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IIndividualHuman.h"
 #include "Node.h"
 #include "PropertyReport.h"
+#include "Properties.h"
 
 using namespace std;
 using namespace json;
@@ -68,10 +69,10 @@ PropertyReport::GenerateAllPermutationsOnce(
         keys.erase( key );
         //std::cout << "key = " << key << std::endl;
         //std::cout << "Iterating over " << Kernel::Node::distribs[ key ].size() << " values for key " << key << std::endl;
-        auto distribs = indiv->GetParent()->GetIndividualPropertyDistributions();
-        for (auto& entry : distribs[key])
+        IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( key );
+        for( IPKeyValue kv : p_ip->GetValues() )
         {
-            std::string& value = entry.second;
+            std::string value = kv.GetValueAsString();
             //std::cout << "inserting key-value pair into perm: " << key << ":" << value << std::endl;
             auto kvp = perm;
             kvp.insert( make_pair( key, value ) );
@@ -116,7 +117,7 @@ PropertyReport::LogIndividualData(
     std::string reportingBucket = individual->GetPropertyReportString();
     if( reportingBucket.empty() )
     {
-        auto permKeys = getKeys( individual->GetParent()->GetIndividualPropertyDistributions() );
+        auto permKeys = IPFactory::GetInstance()->GetKeysAsStringSet();
         if( permutationsSet.size() == 0 )
         {
             // put all keys in set

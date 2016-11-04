@@ -56,7 +56,7 @@ namespace Kernel
     json::QuickBuilder
     NodeListConfig::GetSchema()
     {
-        json::QuickBuilder schema = json::QuickBuilder( jsonSchemaBase );
+        json::QuickBuilder schema = json::QuickBuilder( GetSchemaBase() );
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
         schema[ tn ] = json::String( "idmType:NodeListConfig" );
@@ -68,13 +68,6 @@ namespace Kernel
         return schema;
     }
 
-    json::QuickBuilder
-    NodeSetNodeList::GetSchema()
-    {
-        json::QuickBuilder schema = json::QuickBuilder( jsonSchemaBase );
-        return schema;
-    }
-   
     bool
     NodeSetNodeList::Configure(
         const Configuration * inputJson

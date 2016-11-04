@@ -14,6 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Log.h"
 #include "NodeVector.h"
 #include "SimulationConfig.h"
+#include "VectorParameters.h"
 
 static const char * _module = "VectorCohortIndividual";
 
@@ -214,7 +215,7 @@ namespace Kernel
     {
         float ret = 0.0f;
         
-        if (GET_CONFIGURABLE(SimulationConfig)->vector_aging)
+        if (GET_CONFIGURABLE(SimulationConfig)->vector_params->vector_aging)
         {
             ret = additional_mortality + addition + mortalityFromAge( age );
         }

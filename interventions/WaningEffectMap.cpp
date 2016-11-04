@@ -39,11 +39,6 @@ namespace Kernel
     }
 
 
-    json::QuickBuilder WaningEffectMapAbstract::GetSchema()
-    {
-        return json::QuickBuilder( jsonSchemaBase );
-    }
-
     bool WaningEffectMapAbstract::Configure( const Configuration * pInputJson )
     {
         initConfigTypeMap( "Initial_Effect",               &m_EffectCurrent,          WEE_Initial_Effect_DESC_TEXT,                0, 1, 1);
@@ -52,7 +47,7 @@ namespace Kernel
         initConfigComplexType( "Durability_Map", &m_DurationMap, WEM_Durability_Map_End_DESC_TEXT );
 
         bool ret = JsonConfigurable::Configure(pInputJson);
-        if( ret )
+        if( ret && !JsonConfigurable::_dryrun )
         {
             m_EffectOriginal = m_EffectCurrent;
 

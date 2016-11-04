@@ -45,7 +45,7 @@ namespace Kernel
 
         bool ret = JsonConfigurable::Configure( inputJson );
 
-        if( event_trigger == NO_TRIGGER_STR )
+        if( !JsonConfigurable::_dryrun && (event_trigger == NO_TRIGGER_STR) )
         {
             LOG_WARN_F("BroadcastEventToOtherNodes was configured with NoTrigger as the Broadcast_Event.  This special event will not be broadcast.");
         }

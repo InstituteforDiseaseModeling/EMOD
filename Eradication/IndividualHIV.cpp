@@ -26,6 +26,20 @@ namespace Kernel
     #define SIX_WEEKS       (6*7.0f)
     #define EIGHTEEN_MONTHS (18*30.0f)
 
+
+    float IndividualHumanHIVConfig::maternal_transmission_ART_multiplier = 1.0f;
+
+    GET_SCHEMA_STATIC_WRAPPER_IMPL(IndividualHumanHIV,IndividualHumanHIVConfig)
+    BEGIN_QUERY_INTERFACE_BODY(IndividualHumanHIVConfig)
+    END_QUERY_INTERFACE_BODY(IndividualHumanHIVConfig)
+
+    bool IndividualHumanHIVConfig::Configure( const Configuration* config )
+    {
+        initConfigTypeMap( "Maternal_Transmission_ART_Multiplier", &maternal_transmission_ART_multiplier, Maternal_Transmission_ART_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.1f );
+
+        return JsonConfigurable::Configure( config );
+    }
+
     BEGIN_QUERY_INTERFACE_DERIVED(IndividualHumanHIV, IndividualHumanSTI)
         HANDLE_INTERFACE(IIndividualHumanHIV)
     END_QUERY_INTERFACE_DERIVED(IndividualHumanHIV, IndividualHumanSTI)
@@ -80,6 +94,8 @@ namespace Kernel
         infection_config.Configure( config );
         SusceptibilityHIVConfig immunity_config;
         immunity_config.Configure( config );
+        IndividualHumanHIVConfig individual_config;
+        individual_config.Configure( config );
 
         // We used to instantiate an individual which would make one or two calls to the PRNG.
         // Let's emulate that here just so our results don't vary.
@@ -222,7 +238,7 @@ namespace Kernel
         auto mod = float(GetHIVInterventionsContainer()->GetProbMaternalTransmissionModifier());
         if( GetHIVInterventionsContainer()->OnArtQuery() && GetHIVInterventionsContainer()->GetArtStatus() != ARTStatus::ON_BUT_ADHERENCE_POOR )
         {
-            retValue *= GET_CONFIGURABLE(SimulationConfig)->maternal_transmission_ART_multiplier;
+            retValue *= IndividualHumanHIVConfig::maternal_transmission_ART_multiplier;
             LOG_DEBUG_F( "Mother giving birth on ART: prob tx = %f\n", float(retValue) );
         }
         else if( mod > 0 )

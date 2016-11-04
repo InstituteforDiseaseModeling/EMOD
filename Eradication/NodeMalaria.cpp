@@ -40,6 +40,8 @@ namespace Kernel
         m_Fever_Prevalence(0),
         m_Maternal_Antibody_Fraction(0)
     {
+        delete event_context_host;
+        NodeMalaria::setupEventContextHost();    // This is marked as a virtual function, but isn't virtualized here because we're still in the ctor.
     }
 
     NodeMalaria::NodeMalaria(ISimulationContext *simulation, suids::suid suid) : NodeVector(simulation, suid),
@@ -55,6 +57,8 @@ namespace Kernel
         m_Fever_Prevalence(0),
         m_Maternal_Antibody_Fraction(0)
     {
+        delete event_context_host;
+        NodeMalaria::setupEventContextHost();    // This is marked as a virtual function, but isn't virtualized here because we're still in the ctor.
     }
 
     bool NodeMalaria::Configure( const Configuration * config )

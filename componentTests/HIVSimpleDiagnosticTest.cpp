@@ -65,6 +65,7 @@ SUITE(HivSimpleDiagnosticTest)
         {
             m_pSimulationConfig->listed_events.clear();
             delete m_pSimulationConfig;
+            Environment::setSimulationConfig( nullptr );
             Environment::Finalize();
         }
     };

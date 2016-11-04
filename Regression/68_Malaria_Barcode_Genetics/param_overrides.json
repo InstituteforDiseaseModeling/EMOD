@@ -20,7 +20,7 @@
         "Config_Name": "68_Malaria_Barcode_Genetics",
         "Custom_Reports_Filename" : "custom_reports.json",
         "Geography": "Namawala",
-        "Run_Number": 68,
+        "Run_Number": 1,
         "Simulation_Duration": 1095,
         "Enable_Interventions": 1
     },

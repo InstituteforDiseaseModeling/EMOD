@@ -92,7 +92,7 @@ namespace Kernel {
         return ret ;
     }
 
-    void SocietyImpl::SetParameters( IIdGeneratorSTI* pIdGen, const tPropertiesDistrib& rPropertiesDist, const Configuration* config )
+    void SocietyImpl::SetParameters( IIdGeneratorSTI* pIdGen, const Configuration* config )
     {
         bool prev_use_defaults = JsonConfigurable::_useDefaults ;
         bool resetTrackMissing = JsonConfigurable::_track_missing;
@@ -106,7 +106,7 @@ namespace Kernel {
 
         Configuration* concurrency_config = Configuration::CopyFromElement( (*config)[ "Concurrency_Configuration" ] );
 
-        p_concurrency->Initialize( rPropertiesDist, concurrency_config );
+        p_concurrency->Initialize( concurrency_config );
 
         delete concurrency_config;
         concurrency_config = nullptr;
@@ -123,7 +123,7 @@ namespace Kernel {
             RelationshipType::Enum rel_type = (RelationshipType::Enum)irel ;
 
             ConcurrencyParameters* p_cp = new ConcurrencyParameters();
-            p_cp->Initialize( main_element_name, r_con_prop_key, rPropertiesDist, config_con );
+            p_cp->Initialize( main_element_name, r_con_prop_key, config_con );
             p_concurrency->AddParameters( rel_type, p_cp );
 
             RelationshipParameters* p_rel_params = new RelationshipParameters( rel_type );
