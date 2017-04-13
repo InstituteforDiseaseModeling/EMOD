@@ -432,4 +432,4 @@ fi
 # Display the final message, completing the script run.
 printf "\n${FontGreen}Your EMOD environment set-up is complete.${FontReset}
 Remember to source your .bashrc files to make the environment changes available for this session.
-For instructions on building the EMOD executable, go to the IDM documentation at ${FontGreen}http://idmod.org/idmdoc/#EMOD/EMODBuildAndRegression/MonolithicSCons.htm${FontReset}.\n\n"
+For instructions on building the EMOD executable, go to the IDM documentation at ${FontGreen}https://institutefordiseasemodeling.github.io/EMOD/general/dev-install-overview.html${FontReset}.\n\n"
