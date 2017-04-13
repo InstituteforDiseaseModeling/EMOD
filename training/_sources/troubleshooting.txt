@@ -1,0 +1,45 @@
+===============
+Troubleshooting
+===============
+
+If you encounter any of the following errors or problems when attempting to run simulations with
+the |quick|, see the information below to resolve the issue.
+
+Setenv.cmd is not recognized
+============================
+
+When you double-click the **EMOD Environment** shortcut to launch the command window, you may see
+the following error with user-specific information displayed::
+
+    '\\file.myRegion.myCompany\user2$\myUserName\EMOD-QuickStart-master'
+    CMD.EXE was started with the above path as the current directory.
+    UNC paths are not supported. Defaulting to Windows directory.
+    'setenv.cmd' is not recognized as an internal or external command, operable program or batch file.
+
+This error indicates that the |quick| was saved to a network directory. Move the |quick| to a locally
+stored directory on your computer.
+
+Code must be updated for 64-bit systems
+=======================================
+
+If you have a 64-bit version of Microsoft Excel installed, when you try to run the |Excel|, you will
+see the following error:
+
+    "The code in this project must be updated for use on 64-bit systems. Please review and update Declare
+    Statements and then mark them with PtrSafe attribute."
+
+Follow the steps below to work around this issue:
+
+#.  Open EMOD_Macros.xlsm in Excel.
+#.  On the **View** menu, in the **Macros** section, select **View Macros**.
+#.  In the **Macro** window, select the TestingHelloWorld macro, and then click **Edit**.
+#.  In the **Microsoft Visual Basic for Applications** window that opens, locate the lines that
+    contain "Private Declare Function".
+#.  Add the PtrSafe attribute by modifying these lines to "Private Declare PtrSafe Function".
+
+Cannot open config.xlsm file in the |Excel|
+===========================================
+
+Excel will not open more than one file with the same name. In all of the training tutorials, the
+configuration files for the |Excel| are named config.xlsm. If Excel will not open your
+config.xlsm, make sure that you don't have a configuration file already open.

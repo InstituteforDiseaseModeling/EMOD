@@ -1,0 +1,355 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Vector species output report &mdash; Malaria Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Malaria Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Malaria Model  documentation" href="index.html"/>
+        <link rel="up" title="Output report structure" href="file-outputs.html"/>
+        <link rel="next" title="Error and logging files" href="file-error-logging.html"/>
+        <link rel="prev" title="Spatial output report" href="file-spatial.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Malaria Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.10
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-overview.html">Malaria disease overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-model-overview.html">Malaria model overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-IDM.html">Malaria research at IDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="file-inputs.html">Input data file structure</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="file-outputs.html">Output report structure</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="file-inset-chart.html">Inset chart output report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="file-binned.html">Binned output report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="file-demographic-summary.html">Demographic summary output report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="file-property.html">Property output report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="file-spatial.html">Spatial output report</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Vector species output report</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file-error-logging.html">Error and logging files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Malaria Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Malaria</a> &raquo;</li>
+      
+          <li><a href="file-reference-overview.html">Input and output file structure</a> &raquo;</li>
+      
+          <li><a href="file-outputs.html">Output report structure</a> &raquo;</li>
+      
+    <li>Vector species output report</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="vector-species-output-report">
+<h1>Vector species output report<a class="headerlink" href="#vector-species-output-report" title="Permalink to this headline">¶</a></h1>
+<p>The vector species output report is a JSON-formatted file where the channel data has been sorted
+into bins. It is identical to the <a class="reference internal" href="file-binned.html"><span class="doc">Binned output report</span></a>, with the exception that the bins are based
+on vector species. The vector species report is generated for all malaria or vector simulations that
+contain values in the <strong>Vector_Species_Names</strong> configuration parameter. For example, if
+<strong>Vector_Species_Names</strong> was set to [&#8220;funestus&#8221;, &#8220;gambiae&#8221;], you would be able to see how many
+infectious vectors there were for <em>A. funestus</em> and <em>A. gambiae</em>. The file name is
+VectorSpeciesReport.json.</p>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>The following is a sample of an VectorSpeciesReport.json file.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+     <span class="nt">&quot;Header&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;DateTime&quot;</span><span class="p">:</span> <span class="s2">&quot;Thu Jul 23 13:06:54 2015&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;DTK_Version&quot;</span><span class="p">:</span> <span class="s2">&quot;5004 trunk Jun 25 2015&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;Report_Version&quot;</span><span class="p">:</span> <span class="s2">&quot;2.1&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;Timesteps&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+          <span class="nt">&quot;Subchannel_Metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+               <span class="nt">&quot;AxisLabels&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="s2">&quot;Vector Species&quot;</span><span class="p">]</span>
+               <span class="p">],</span>
+               <span class="nt">&quot;NumBinsPerAxis&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+               <span class="p">],</span>
+               <span class="nt">&quot;ValuesPerAxis&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">[</span>
+                         <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="p">]</span>
+               <span class="p">],</span>
+               <span class="nt">&quot;MeaningPerAxis&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">[</span>
+                         <span class="p">[</span><span class="s2">&quot;arabiensis&quot;</span><span class="p">]</span>
+                    <span class="p">]</span>
+               <span class="p">]</span>
+          <span class="p">},</span>
+          <span class="nt">&quot;Channels&quot;</span><span class="p">:</span> <span class="mi">4</span>
+     <span class="p">},</span>
+     <span class="nt">&quot;Channels&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;Adult Vectors&quot;</span><span class="p">:</span> <span class="p">{</span>
+               <span class="nt">&quot;Units&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+               <span class="nt">&quot;Data&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="mi">8739</span><span class="p">,</span> <span class="mi">7627</span><span class="p">,</span> <span class="mi">6712</span><span class="p">,</span> <span class="mi">5882</span><span class="p">,</span> <span class="mi">5174</span><span class="p">,</span> <span class="mi">4577</span><span class="p">,</span> <span class="mi">4003</span><span class="p">,</span> <span class="mi">3500</span><span class="p">,</span> <span class="mi">3086</span><span class="p">,</span> <span class="mi">2691</span><span class="p">,</span> <span class="mi">2340</span><span class="p">,</span> <span class="mi">2038</span><span class="p">,</span> <span class="mi">1790</span><span class="p">,</span> <span class="mi">1562</span><span class="p">,</span> <span class="mi">1367</span><span class="p">,</span> <span class="mi">1191</span><span class="p">,</span> <span class="mi">1045</span><span class="p">,</span> <span class="mi">924</span><span class="p">,</span> <span class="mi">801</span><span class="p">,</span> <span class="mi">704</span><span class="p">,</span> <span class="mi">620</span><span class="p">,</span> <span class="mi">540</span><span class="p">,</span> <span class="mi">472</span><span class="p">,</span> <span class="mi">412</span><span class="p">,</span> <span class="mi">353</span><span class="p">,</span> <span class="mi">314</span><span class="p">,</span> <span class="mi">1188</span><span class="p">,</span> <span class="mi">2198</span><span class="p">,</span> <span class="mi">2152</span><span class="p">,</span> <span class="mi">3738</span><span class="p">,</span> <span class="mi">3706</span><span class="p">,</span> <span class="mi">3918</span><span class="p">,</span> <span class="mi">6105</span><span class="p">,</span> <span class="mi">6197</span><span class="p">,</span> <span class="mi">6897</span><span class="p">,</span> <span class="mi">6632</span><span class="p">,</span> <span class="mi">6656</span><span class="p">,</span> <span class="mi">6858</span><span class="p">,</span> <span class="mi">6748</span><span class="p">,</span> <span class="mi">6390</span><span class="p">,</span> <span class="mi">6300</span><span class="p">,</span> <span class="mi">5540</span><span class="p">,</span> <span class="mi">5284</span><span class="p">,</span> <span class="mi">5230</span><span class="p">,</span> <span class="mi">5744</span><span class="p">,</span> <span class="mi">5487</span><span class="p">,</span> <span class="mi">5689</span><span class="p">,</span> <span class="mi">5563</span><span class="p">,</span> <span class="mi">5935</span><span class="p">,</span> <span class="mi">6077</span><span class="p">,</span> <span class="mi">6091</span><span class="p">,</span> <span class="mi">6123</span><span class="p">,</span> <span class="mi">5970</span><span class="p">,</span> <span class="mi">5879</span><span class="p">,</span> <span class="mi">5956</span><span class="p">,</span> <span class="mi">6220</span><span class="p">,</span> <span class="mi">6315</span><span class="p">,</span> <span class="mi">6361</span><span class="p">,</span> <span class="mi">6144</span><span class="p">,</span> <span class="mi">5943</span><span class="p">,</span> <span class="mi">5193</span><span class="p">,</span> <span class="mi">6508</span><span class="p">,</span> <span class="mi">6692</span><span class="p">,</span> <span class="mi">8009</span><span class="p">,</span> <span class="mi">8139</span><span class="p">,</span> <span class="mi">7800</span><span class="p">,</span> <span class="mi">8575</span><span class="p">,</span> <span class="mi">8431</span><span class="p">,</span> <span class="mi">8126</span><span class="p">,</span> <span class="mi">9099</span><span class="p">,</span> <span class="mi">8682</span><span class="p">,</span> <span class="mi">8691</span><span class="p">,</span> <span class="mi">8499</span><span class="p">,</span> <span class="mi">8901</span><span class="p">,</span> <span class="mi">8603</span><span class="p">,</span> <span class="mi">8359</span><span class="p">,</span> <span class="mi">8135</span><span class="p">,</span> <span class="mi">8068</span><span class="p">,</span> <span class="mi">7890</span><span class="p">,</span> <span class="mi">6884</span><span class="p">,</span> <span class="mi">6667</span><span class="p">,</span> <span class="mi">7782</span><span class="p">,</span> <span class="mi">6809</span><span class="p">,</span> <span class="mi">7698</span><span class="p">,</span> <span class="mi">7520</span><span class="p">,</span> <span class="mi">7447</span><span class="p">,</span> <span class="mi">6513</span><span class="p">,</span> <span class="mi">8771</span><span class="p">,</span> <span class="mi">7674</span><span class="p">,</span> <span class="mi">7577</span><span class="p">,</span> <span class="mi">8048</span><span class="p">,</span> <span class="mi">8304</span><span class="p">,</span> <span class="mi">8448</span><span class="p">,</span> <span class="mi">8710</span><span class="p">,</span> <span class="mi">8881</span><span class="p">,</span> <span class="mi">10137</span><span class="p">,</span> <span class="mi">9867</span><span class="p">,</span> <span class="mi">9320</span><span class="p">,</span> <span class="mi">9019</span><span class="p">,</span> <span class="mi">9754</span><span class="p">]</span>
+               <span class="p">]</span>
+          <span class="p">},</span>
+          <span class="nt">&quot;Daily EIR&quot;</span><span class="p">:</span> <span class="p">{</span>
+               <span class="nt">&quot;Units&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+               <span class="nt">&quot;Data&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.00400000018999</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.006000000052154</span><span class="p">,</span> <span class="mf">0.01200000010431</span><span class="p">,</span> <span class="mf">0.01200000010431</span><span class="p">,</span> <span class="mf">0.006000000052154</span><span class="p">,</span> <span class="mf">0.01200000010431</span><span class="p">,</span> <span class="mf">0.01400000043213</span><span class="p">,</span> <span class="mf">0.01999999955297</span><span class="p">,</span> <span class="mf">0.04399999976158</span><span class="p">,</span> <span class="mf">0.0380000025034</span><span class="p">,</span> <span class="mf">0.03400000184774</span><span class="p">,</span> <span class="mf">0.03400000184774</span><span class="p">,</span> <span class="mf">0.02400000020862</span><span class="p">,</span> <span class="mf">0.02600000053644</span><span class="p">,</span> <span class="mf">0.03400000184774</span><span class="p">,</span> <span class="mf">0.0379999987781</span><span class="p">,</span> <span class="mf">0.03999999910593</span><span class="p">,</span> <span class="mf">0.04600000008941</span><span class="p">,</span> <span class="mf">0.04600000008941</span><span class="p">,</span> <span class="mf">0.04399999976158</span><span class="p">,</span> <span class="mf">0.05599999800324</span><span class="p">,</span> <span class="mf">0.03200000151992</span><span class="p">,</span> <span class="mf">0.02400000020862</span><span class="p">,</span> <span class="mf">0.0380000025034</span><span class="p">,</span> <span class="mf">0.02000000141561</span><span class="p">,</span> <span class="mf">0.02799999900162</span><span class="p">,</span> <span class="mf">0.01999999955297</span><span class="p">,</span> <span class="mf">0.01800000108778</span><span class="p">,</span> <span class="mf">0.01400000043213</span><span class="p">,</span> <span class="mf">0.009999999776483</span><span class="p">,</span> <span class="mf">0.00800000037998</span><span class="p">,</span> <span class="mf">0.00800000037998</span><span class="p">,</span> <span class="mf">0.009999999776483</span><span class="p">,</span> <span class="mf">0.006000000052154</span><span class="p">,</span> <span class="mf">0.002000000094995</span><span class="p">,</span> <span class="mf">0.002000000094995</span><span class="p">,</span> <span class="mf">0.002000000094995</span><span class="p">,</span> <span class="mf">0.002000000094995</span><span class="p">,</span> <span class="mf">0.002000000094995</span><span class="p">,</span> <span class="mf">0.002000000094995</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.002000000094995</span><span class="p">,</span> <span class="mf">0.00400000018999</span><span class="p">,</span> <span class="mf">0.002000000094995</span><span class="p">,</span> <span class="mf">0.00800000037998</span><span class="p">,</span> <span class="mf">0.006000000052154</span><span class="p">,</span> <span class="mf">0.01799999922514</span><span class="p">,</span> <span class="mf">0.01799999922514</span><span class="p">,</span> <span class="mf">0.02400000020862</span><span class="p">,</span> <span class="mf">0.02999999932945</span><span class="p">,</span> <span class="mf">0.02799999900162</span><span class="p">,</span> <span class="mf">0.02400000020862</span><span class="p">,</span> <span class="mf">0.06000000238419</span><span class="p">]</span>
+               <span class="p">]</span>
+          <span class="p">},</span>
+          <span class="nt">&quot;Daily HBR&quot;</span><span class="p">:</span> <span class="p">{</span>
+               <span class="nt">&quot;Units&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+               <span class="nt">&quot;Data&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="mf">5.640000343323</span><span class="p">,</span> <span class="mf">4.909999847412</span><span class="p">,</span> <span class="mf">4.430000305176</span><span class="p">,</span> <span class="mf">3.762000083923</span><span class="p">,</span> <span class="mf">3.458000183105</span><span class="p">,</span> <span class="mf">2.966000080109</span><span class="p">,</span> <span class="mf">2.68799996376</span><span class="p">,</span> <span class="mf">2.226000070572</span><span class="p">,</span> <span class="mf">2.041999816895</span><span class="p">,</span> <span class="mf">1.78200006485</span><span class="p">,</span> <span class="mf">1.50200009346</span><span class="p">,</span> <span class="mf">1.351999998093</span><span class="p">,</span> <span class="mf">1.195999979973</span><span class="p">,</span> <span class="mf">1.089999914169</span><span class="p">,</span> <span class="mf">0.8100000023842</span><span class="p">,</span> <span class="mf">0.7920000553131</span><span class="p">,</span> <span class="mf">0.6539999842644</span><span class="p">,</span> <span class="mf">0.6039999723434</span><span class="p">,</span> <span class="mf">0.539999961853</span><span class="p">,</span> <span class="mf">0.4399999976158</span><span class="p">,</span> <span class="mf">0.4039999842644</span><span class="p">,</span> <span class="mf">0.3779999911785</span><span class="p">,</span> <span class="mf">0.2840000092983</span><span class="p">,</span> <span class="mf">0.2580000162125</span><span class="p">,</span> <span class="mf">0.2320000082254</span><span class="p">,</span> <span class="mf">0.2260000109673</span><span class="p">,</span> <span class="mf">0.1800000071526</span><span class="p">,</span> <span class="mf">0.6340000033379</span><span class="p">,</span> <span class="mf">1.213999986649</span><span class="p">,</span> <span class="mf">1.22000002861</span><span class="p">,</span> <span class="mf">2.179999828339</span><span class="p">,</span> <span class="mf">2.012000083923</span><span class="p">,</span> <span class="mf">2.232000112534</span><span class="p">,</span> <span class="mf">3.400000095367</span><span class="p">,</span> <span class="mf">3.461999893188</span><span class="p">,</span> <span class="mf">4.038000106812</span><span class="p">,</span> <span class="mf">3.802000045776</span><span class="p">,</span> <span class="mf">3.886000156403</span><span class="p">,</span> <span class="mf">3.869999885559</span><span class="p">,</span> <span class="mf">3.860000133514</span><span class="p">,</span> <span class="mf">3.598000049591</span><span class="p">,</span> <span class="mf">3.567999839783</span><span class="p">,</span> <span class="mf">3.078000068665</span><span class="p">,</span> <span class="mf">3.067999839783</span><span class="p">,</span> <span class="mf">2.969999790192</span><span class="p">,</span> <span class="mf">3.317999839783</span><span class="p">,</span> <span class="mf">3.110000133514</span><span class="p">,</span> <span class="mf">3.234000205994</span><span class="p">,</span> <span class="mf">3.339999914169</span><span class="p">,</span> <span class="mf">3.555999994278</span><span class="p">,</span> <span class="mf">3.575999975204</span><span class="p">,</span> <span class="mf">3.644000053406</span><span class="p">,</span> <span class="mf">3.519999980927</span><span class="p">,</span> <span class="mf">3.434000015259</span><span class="p">,</span> <span class="mf">3.369999885559</span><span class="p">,</span> <span class="mf">3.398000001907</span><span class="p">,</span> <span class="mf">3.438000202179</span><span class="p">,</span> <span class="mf">3.661999940872</span><span class="p">,</span> <span class="mf">3.786000013351</span><span class="p">,</span> <span class="mf">3.584000110626</span><span class="p">,</span> <span class="mf">3.3140001297</span><span class="p">,</span> <span class="mf">3.067999839783</span><span class="p">,</span> <span class="mf">3.817999839783</span><span class="p">,</span> <span class="mf">3.6859998703</span><span class="p">,</span> <span class="mf">4.696000099182</span><span class="p">,</span> <span class="mf">4.748000144958</span><span class="p">,</span> <span class="mf">4.466000080109</span><span class="p">,</span> <span class="mf">4.932000160217</span><span class="p">,</span> <span class="mf">4.828000068665</span><span class="p">,</span> <span class="mf">4.760000228882</span><span class="p">,</span> <span class="mf">5.244000434875</span><span class="p">,</span> <span class="mf">5.083999633789</span><span class="p">,</span> <span class="mf">4.946000099182</span><span class="p">,</span> <span class="mf">4.944000244141</span><span class="p">,</span> <span class="mf">5.139999866486</span><span class="p">,</span> <span class="mf">4.871999740601</span><span class="p">,</span> <span class="mf">4.868000030518</span><span class="p">,</span> <span class="mf">4.656000137329</span><span class="p">,</span> <span class="mf">4.456000328064</span><span class="p">,</span> <span class="mf">4.487999916077</span><span class="p">,</span> <span class="mf">4.003999710083</span><span class="p">,</span> <span class="mf">3.636000156403</span><span class="p">,</span> <span class="mf">4.421999931335</span><span class="p">,</span> <span class="mf">3.906000137329</span><span class="p">,</span> <span class="mf">4.355999946594</span><span class="p">,</span> <span class="mf">4.354000091553</span><span class="p">,</span> <span class="mf">4.319999694824</span><span class="p">,</span> <span class="mf">3.710000038147</span><span class="p">,</span> <span class="mf">5.109999656677</span><span class="p">,</span> <span class="mf">4.28200006485</span><span class="p">,</span> <span class="mf">4.512000083923</span><span class="p">,</span> <span class="mf">4.640000343323</span><span class="p">,</span> <span class="mf">4.753999710083</span><span class="p">,</span> <span class="mf">4.725999832153</span><span class="p">,</span> <span class="mf">5.130000114441</span><span class="p">,</span> <span class="mf">5.031999588013</span><span class="p">,</span> <span class="mf">5.926000118256</span><span class="p">,</span> <span class="mf">5.78600025177</span><span class="p">,</span> <span class="mf">5.498000144958</span><span class="p">,</span> <span class="mf">5.203999996185</span><span class="p">]</span>
+               <span class="p">]</span>
+          <span class="p">},</span>
+          <span class="nt">&quot;Infectious Vectors&quot;</span><span class="p">:</span> <span class="p">{</span>
+               <span class="nt">&quot;Units&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+               <span class="nt">&quot;Data&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.0001740947045619</span><span class="p">,</span> <span class="mf">0.0007289958302863</span><span class="p">,</span> <span class="mf">0.0007031112909317</span><span class="p">,</span> <span class="mf">0.001617832109332</span><span class="p">,</span> <span class="mf">0.001853412017226</span><span class="p">,</span> <span class="mf">0.002468323102221</span><span class="p">,</span> <span class="mf">0.003447709837928</span><span class="p">,</span> <span class="mf">0.004246284719557</span><span class="p">,</span> <span class="mf">0.005192629992962</span><span class="p">,</span> <span class="mf">0.006973975338042</span><span class="p">,</span> <span class="mf">0.009402283467352</span><span class="p">,</span> <span class="mf">0.009967845864594</span><span class="p">,</span> <span class="mf">0.009184481576085</span><span class="p">,</span> <span class="mf">0.009432478807867</span><span class="p">,</span> <span class="mf">0.0087890625</span><span class="p">,</span> <span class="mf">0.009086320176721</span><span class="p">,</span> <span class="mf">0.01251684967428</span><span class="p">,</span> <span class="mf">0.00983405020088</span><span class="p">,</span> <span class="mf">0.01046025101095</span><span class="p">,</span> <span class="mf">0.008989886380732</span><span class="p">,</span> <span class="mf">0.0088462959975</span><span class="p">,</span> <span class="mf">0.009615384973586</span><span class="p">,</span> <span class="mf">0.0103790089488</span><span class="p">,</span> <span class="mf">0.008421302773058</span><span class="p">,</span> <span class="mf">0.007506768219173</span><span class="p">,</span> <span class="mf">0.005385207012296</span><span class="p">,</span> <span class="mf">0.004952775780112</span><span class="p">,</span> <span class="mf">0.00460246251896</span><span class="p">,</span> <span class="mf">0.003529827110469</span><span class="p">,</span> <span class="mf">0.003033366985619</span><span class="p">,</span> <span class="mf">0.002673486014828</span><span class="p">,</span> <span class="mf">0.002272999146953</span><span class="p">,</span> <span class="mf">0.002212661318481</span><span class="p">,</span> <span class="mf">0.001735250349157</span><span class="p">,</span> <span class="mf">0.001520912512206</span><span class="p">,</span> <span class="mf">0.001597908209078</span><span class="p">,</span> <span class="mf">0.001199939986691</span><span class="p">,</span> <span class="mf">0.001028013415635</span><span class="p">,</span> <span class="mf">0.001028051134199</span><span class="p">,</span> <span class="mf">0.0007794232224114</span><span class="p">,</span> <span class="mf">0.0006648935959674</span><span class="p">,</span> <span class="mf">0.0006714112823829</span><span class="p">,</span> <span class="mf">0.0006141563062556</span><span class="p">,</span> <span class="mf">0.0004560483503155</span><span class="p">,</span> <span class="mf">0.0006515507120639</span><span class="p">,</span> <span class="mf">0.0009238484781235</span><span class="p">,</span> <span class="mf">0.0008697813027538</span><span class="p">,</span> <span class="mf">0.001806358341128</span><span class="p">,</span> <span class="mf">0.001775568234734</span><span class="p">,</span> <span class="mf">0.002525832271203</span><span class="p">,</span> <span class="mf">0.004391397349536</span><span class="p">,</span> <span class="mf">0.004735128954053</span><span class="p">,</span> <span class="mf">0.005472788121551</span><span class="p">,</span> <span class="mf">0.006759656593204</span><span class="p">,</span> <span class="mf">0.009646302089095</span><span class="p">,</span> <span class="mf">0.007996719330549</span><span class="p">]</span>
+               <span class="p">]</span>
+          <span class="p">}</span>
+     <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="file-error-logging.html" class="btn btn-neutral float-right" title="Error and logging files" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="file-spatial.html" class="btn btn-neutral" title="Spatial output report" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for internal docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!-- Google analytics for public docs -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-4', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

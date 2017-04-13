@@ -1,0 +1,170 @@
+=======================================
+Generic 8: SIS - Reoccurring infections
+=======================================
+
+This tutorial assumes that you have read :doc:`generic-tutorial7SI` and :doc:`generic-tutorial1SIR`.
+
+Similar to the :term:`SIRS model`, the infected individuals return to the susceptible state. This model is
+appropriate for diseases that commonly have repeat infections, for example, the common cold
+(rhinoviruses), or sexually transmitted diseases like gonorrhea or chlamydia. For this model, we can
+analytically solve the :term:`ordinary differential equation (ODE)` to understand the dynamics.
+
+For simplicity, the following ODE model ignores the vital process (birth and death):
+
+.. math::
+
+        \begin{aligned}
+        \frac{dS}{dt} & = -\frac{\beta SI}{N} + \gamma I\\
+        \frac{dI}{dt} & = \frac{\beta SI}{N}  - \gamma I\\
+        \end{aligned}
+
+
+At equilibrium, solving:
+
+.. math::
+
+        \frac{dI}{dt} = \beta I \left(1-\frac{1}{N}\right) - \gamma I = 0
+
+
+There are two equilibrium states for the SIS model, the first is :math:`I = 0` (disease free state),
+and the second is:
+
+.. math::
+
+        I = \frac{(\beta - \gamma)N}{\beta} = \left(1-\frac{\gamma}{\beta}\right)N
+
+
+For disease to spread, we need to have :math:`dI/dt > 0`. Therefore, similar to the
+previously described concept of the basic :term:`reproductive number`, when :math:`\beta/\gamma > 1`,
+the disease will spread and approach the second steady state; otherwise, it will eventually
+reach the disease-free state.
+
+
+
+Demographics inputs
+===================
+
+This tutorial uses generic_scenarios_demographics file for demographics input. You can view the
+complete demographics file at <path_to_directory>\Scenarios\InputFiles where <path_to_directory> is
+the location where you installed the |quick|. For more information on demographics files, see
+:doc:`parameter-demographics`.
+
+
+
+Key configuration parameters
+============================
+
+The tutorial simulates a sexually-transmitted disease using the :term:`SIS model` in a hypothetical
+closed community over a 10-year period. The infectious duration is 25 days, and the basic
+reproductive number is 1.2.
+
+You can view the complete config.json in the <path_to_directory>\Scenarios\Generic\08_SIS directory
+where <path_to_directory> is the location where you installed the |quick|.
+
+
+Demographics parameter
+----------------------
+
+Set **Enable_Vital_Dyanamics** to 0.  This will disable vital dynamics (birth and death) in the
+simulation. For more information, see :ref:`config-demographics` parameters.
+
+
+
+SIS model parameters
+--------------------
+
+The generic simulation type uses an :term:`SEIR model` by default. However, it can be modified
+to an SIS model with the following configurations: no incubation period and no immunity. For more
+information, see :ref:`config-generaldisease` parameters.
+
+Set the following parameters:
+
+  * Set **Base_Incubation_Period** to 0.
+
+  * Set **Incubation_Period_Distribution** to "FIXED_DURATION."
+
+  * Set **Enable_Immunity** to 0.
+
+
+
+
+
+Disease parameters
+------------------
+
+As demonstrated previously, the spread of disease in the SIS model depends on :math:`\beta` (set by
+base infectivity) and :math:`\gamma` which are set by duration of infection. For more information,
+see :ref:`config-generaldisease` parameters.
+
+
+Set the following parameters:
+
+  * Set **Base_Infectivity** to 0.048.
+
+  * Set **Base_Infectious_Period** to 25.
+
+  * Set **Infectious_Period_Distribution** to "EXPONENTIAL_DURATION."
+
+
+
+Simulation duration parameters
+------------------------------
+
+The simulation is run for 3 months with a 1-day time step.  For more information, see
+:ref:`config-simulationsetup` parameters.
+
+Set the following parameters:
+
+  * Set **Simulation_Timestep** to 1.
+
+  * Set **Simulation_Duration** to 3650.
+
+
+
+Interventions
+=============
+
+You can view the complete campaign.json in the <path_to_directory>\Scenarios\Generic\08_SIS
+directory where <path_to_directory> is the location where you installed the |quick|.
+
+Initial outbreak
+----------------
+
+This simulation uses an **OutbreakIndividual** event at day 1 to provide the initial seeding.  For more
+information, see :ref:`iv-outbreakindividual` parameters.
+
+.. literalinclude:: ../json/generic8-interventions1.json
+  :language: JSON
+
+
+Run the simulation
+==================
+
+Run the simulation and generate graphs of the simulation output. For more information, see
+:doc:`using-quickstart`.
+
+
+.. include:: ../reuse/note-stochastic.txt
+
+
+
+Simulation output graphs
+------------------------
+
+The following figure shows the growth of an outbreak over time that eventually approaches steady
+state. You can compare the fraction of infected people with the anticipated value based on the
+previous calculation. If we have a reproductive number of 1.2, the infected fraction at equilibrium
+will be 1 - (1/1.2) ~ 17%.
+
+
+.. figure:: ../images/generic-tutorials/Generic_SIS_output_plotInsetChart.png
+
+  Figure 1: Outbreak approaching steady-state
+
+
+
+Exploring the model
+===================
+
+You can change the **Base_Infectivity** value to alter the basic reproductive number (R\ :sub:`0`\  >1
+and R\ :sub:`0`\ <1) to observe the endemic state behavior.

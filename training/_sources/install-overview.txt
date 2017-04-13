@@ -1,0 +1,142 @@
+==========================
+Install the |quick|
+==========================
+
+.. remember that the Quick Start, using the EXE, and building from source have different prerequisites
+.. and, therefore, different topics with instructions. Be sure to update all necessary files when
+.. things change
+
+The |quick| contains a pre-built :term:`Epidemiological MODeling software (EMOD)` executable called
+:term:`Eradication.exe`. It also contains directories for many different real-world scenarios that
+you can model, each of which includes the necessary :term:`input data files`, :term:`configuration
+file`, and :term:`campaign file`. You can easily run simulations with the provided Windows batch
+files or within the familiar interface of the |Excel|.
+
+After you complete installation, we recommend that you walk through the tutorials that describe the
+underlying mathematics of |EMOD_s|, starting with the generic tutorials that demonstrate the basic
+:term:`SEIR model` framework before moving on to the disease-specific tutorials.
+
+.. include:: ../reuse/note-quickstart.txt
+
+Download the |quick|
+====================
+
+#.  Go to the `EMOD-QuickStart`_ GitHub repository.
+
+#.  From the **Clone or download** menu, select **Download ZIP**.
+
+#.  On your local computer, download and unzip the file to a location of your choice.
+
+.. warning::
+
+    You must not save the |quick| to a network drive or include any spaces in the path to the
+    location or the environment setup will fail.
+
+.. _EMOD-QuickStart: https://github.com/InstituteforDiseaseModeling/EMOD-QuickStart.git
+
+Within the EMOD-QuickStart-master directory, you will see |exe_s|, the |EMOD_s| application, various
+files for setting up the environment and running simulations, and the Scenarios directory, which
+contains all required files for modeling various scenarios described in the tutorials.
+
+Within the Scenarios directory, each subdirectory corresponds to a tutorial section and contains the
+scenarios associated with those tutorials. The exceptions to this rule are EmbeddingPython, which
+does not yet have tutorials, InputFiles, which contains the :term:`input data files` used by all
+scenarios, and Scripts, which contains the scripts used to plot the simulation output.
+
+.. TBD add the embedded python info
+
+Set up the |quick| environment
+==============================
+
+The |quick| assumes all directories are located on the virtual Z drive, regardless of where you
+physically save them. The following setup script configures environment variables so that the tools,
+such as the |Excel|, can access the correct location.
+
+#.  Open the EMOD-QuickStart-master directory.
+
+#.  Double-click the **EMOD Environment** shortcut to launch the command window in the virtual Z drive.
+    If a Security Warning appears, click **Open** to ignore it.
+
+    This runs the setenv.bat file, which temporarily sets up the Path and
+    Python\_Path environment variables.
+
+#.  From the command line, enter ``dir``. The directories and files will be listed if the environment
+    is correctly set up.
+
+    If the directories and files are not listed, this indicates that your virtual Z drive is
+    already being used. Use the steps below to select another virtual drive and update some of the
+    |quick| files to use the other virtual drive.
+
+(Optional) Set up a different virtual drive
+-------------------------------------------
+
+In following example, the |quick| is edited to use the virtual drive A. Modify the instructions
+as necessary if you want to use a different virtual drive.
+
+#.  Open the EMOD-QuickStart-master directory.
+
+#.  In the setenv.cmd script, replace all occurrences of "Z" with "A".
+
+#.  In the emod.bat script, replace all occurrences of "Z" with "A".
+
+#.  In each scenario directory, in each Excel configuration file, in cell B2 of the Commissioning
+    sheet, replace "Z" with "A".
+
+#.  If you want to use embedded Python, in Scenarios\EmbeddingPython, in the emod.bat script, replace
+    all occurrences of "Z" with "A".
+
+After updating the files to the virtual drive A, double-click the **EMOD Environment** shortcut to
+see if the command window opens in the virtual drive A and displays the |quick| directories and
+files.
+
+(Optional) Install plotting software
+====================================
+
+None of the following plotting software is required to run simulations with the |quick|, but
+they are useful for creating graphs from and evaluating the model output.
+
+When you install the |quick|, Python and and the package manager, pip, is also installed. When you
+run |quick| simulations, the |quick| automatically runs Python scripts to create graphs of the
+output. These scripts also require you to install the software packages listed below. However, most
+of these graphs are reproduced in the documentation if you do not want to install additional
+software to create the graphs yourself.
+
+Note that all batch files assume that Python is installed at C:\Python27. If you already have Python
+installed in a different location, use a plain text editor to modify the path in the batch files.
+
+.. In addition, many of the HIV and STI tutorials use the plotting software R, MATLAB, and
+.. Statistics and Machine Learning Toolbox to create graphs.
+
+.. include:: ../reuse/third-party-note.txt
+
+.. include:: ../reuse/gohlke.txt
+
+Python utilities
+----------------
+
+The |quick| Python scripts require the Python utilities dateutil, six, and pyparsing.
+
+.. include:: ../reuse/python-utility-install.txt
+
+NumPy
+-----
+
+The |quick| Python scripts require the NumPy Python package.
+
+.. include:: ../reuse/numpy-install.txt
+
+Matplotlib
+----------
+
+The |quick| Python scripts require the matplotlib Python library.
+
+.. include:: ../reuse/matplotlib-install.txt
+
+.. TODO add instructions for R, MATLAB, and Statistics and Machine Learning Toolbox once the HIV
+.. and STI tutorials are added
+
+
+
+
+
+

@@ -1,0 +1,400 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Use input data files &mdash; Generic Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Generic Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Generic Model  documentation" href="index.html"/>
+        <link rel="up" title="How to use the software" href="howto-overview.html"/>
+        <link rel="next" title="Use demographics overlay files" href="howto-demographics-overlay.html"/>
+        <link rel="prev" title="How to use the software" href="howto-overview.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Generic Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.10
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="howto-overview.html">How to use the software</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Use input data files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="howto-demographics-overlay.html">Use demographics overlay files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="howto-demographics-heterogeneity.html">Configure heterogeneous populations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="howto-hint.html">Configure heterogeneous disease transmission</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="howto-configuration.html">Create a configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-campaign.html">Create a campaign file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-simulations.html">Run simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-outputs.html">Use output files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Generic Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Generic</a> &raquo;</li>
+      
+          <li><a href="howto-overview.html">How to use the software</a> &raquo;</li>
+      
+    <li>Use input data files</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="use-input-data-files">
+<h1>Use input data files<a class="headerlink" href="#use-input-data-files" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference internal" href="glossary.html#term-input-data-files"><span class="xref std std-term">input data files</span></a> contain the relatively fixed information about the population within
+each geographic node. For example, the number of individuals, geography, climate, demographics, and
+migration data. This topic describes how to download and use the input data files. These are in
+contrast to the demographic, geography, and migration parameters in the <a class="reference internal" href="glossary.html#term-configuration-file"><span class="xref std std-term">configuration file</span></a>
+that control simulation-wide qualities, such as enabling air migration across all nodes in the
+simulation.</p>
+<p>Except for the demographics file, you will generally use input data files without modifying them in
+any way. Only the demographics file is required, though migration files may be required for multi-node
+simulations. See <a class="reference internal" href="intro-inputs.html"><span class="doc">Input data files</span></a> for an overview of each of the different input files, including
+which are required for different simulations. See <a class="reference internal" href="file-inputs.html"><span class="doc">Input data file structure</span></a> for reference information
+about the structure of each of these files.</p>
+<div class="section" id="download-input-files">
+<h2>Download input files<a class="headerlink" href="#download-input-files" title="Permalink to this headline">¶</a></h2>
+<p>The EMOD-InputData repository uses large file storage (LFS) to manage the binaries and large
+<a class="reference internal" href="glossary.html#term-javascript-object-notation-json"><span class="xref std std-term">JavaScript Object Notation (JSON)</span></a> files. A standard Git clone of the repository will only
+retrieve the metadata for these files managed with LFS. To retrieve the actual data, follow the
+steps below.</p>
+<ol class="arabic">
+<li><p class="first">Install the Git LFS plugin, if it is not already installed.</p>
+<ul class="simple">
+<li>For Windows users, download the plugin from <a class="reference external" href="https://git-lfs.github.com">https://git-lfs.github.com</a>.</li>
+<li>For CentOS on Azure users, the plugin is included with the PrepareLinuxEnvironment.sh script.</li>
+</ul>
+</li>
+<li><p class="first">Using a Git client or Command Prompt window, clone the input data repository to retrieve
+the metadata:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">InstituteforDiseaseModeling</span><span class="o">/</span><span class="n">EMOD</span><span class="o">-</span><span class="n">InputData</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Navigate to the directory where you downloaded the metadata for the
+input data files.</p>
+</li>
+<li><p class="first">Cache the actual data on your local machine:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">lfs</span> <span class="n">fetch</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Replace the metadata in the files with the actual contents:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">lfs</span> <span class="n">checkout</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="specify-input-files-in-the-configuration-file">
+<h2>Specify input files in the configuration file<a class="headerlink" href="#specify-input-files-in-the-configuration-file" title="Permalink to this headline">¶</a></h2>
+<p>Follow the steps below to specify which input files to use in a simulation. Only the demographics
+file is required, though additional files are generally needed for a realistic simulation.</p>
+<ol class="arabic simple">
+<li>Place all input files for a simulation in the same directory. You will specify this
+directory when you run a simulation. See <a class="reference internal" href="howto-simulations.html"><span class="doc">Run simulations</span></a> for more information.</li>
+<li>In your <a class="reference internal" href="glossary.html#term-configuration-file"><span class="xref std std-term">configuration file</span></a>, specify the path to each of these files, relative to the
+directory above, in the appropriate parameter. Generally, these parameters are appended with
+&#8220;_Filename&#8221; or &#8220;_Filenames&#8221;.</li>
+</ol>
+<p>For example, the example below shows the relevant portion of a configuration file. See :doc
+:<cite>parameter-configuration</cite> for a complete list of the parameters.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Air_Temperature_Filename&quot;</span><span class="p">:</span> <span class="s2">&quot;Namawala_single_node_air_temperature_daily.bin&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Air_Temperature_Offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Air_Temperature_Variance&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="nt">&quot;Base_Rainfall&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="nt">&quot;Campaign_Filename&quot;</span><span class="p">:</span> <span class="s2">&quot;campaign.json&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Climate_Model&quot;</span><span class="p">:</span> <span class="s2">&quot;CLIMATE_BY_DATA&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Climate_Update_Resolution&quot;</span><span class="p">:</span> <span class="s2">&quot;CLIMATE_UPDATE_DAY&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Config_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;VectorAndMalaria_5_Namawala_Vector_ITNs&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Demographics_Filenames&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;Namawala_single_node_demographics.json&quot;</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;Geography&quot;</span><span class="p">:</span> <span class="s2">&quot;Namawala&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Land_Temperature_Filename&quot;</span><span class="p">:</span> <span class="s2">&quot;Namawala_single_node_land_temperature_daily.bin&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Land_Temperature_Offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Land_Temperature_Variance&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="nt">&quot;Load_Balance_Filename&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Rainfall_Filename&quot;</span><span class="p">:</span> <span class="s2">&quot;Namawala_single_node_rainfall_daily.bin&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Rainfall_In_mm_To_Fill_Swamp&quot;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span>
+        <span class="nt">&quot;Rainfall_Scale_Factor&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Relative_Humidity_Filename&quot;</span><span class="p">:</span> <span class="s2">&quot;Namawala_single_node_relative_humidity_daily.bin&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Relative_Humidity_Scale_Factor&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Relative_Humidity_Variance&quot;</span><span class="p">:</span> <span class="mf">0.05</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="modify-demographics-files">
+<h2>Modify demographics files<a class="headerlink" href="#modify-demographics-files" title="Permalink to this headline">¶</a></h2>
+<p>The demographics files provided by IDM generally contain information about prevalence,
+immunity, risk, population size, and more for a geographic region. However, you will almost
+certainly want to modify the file to provide more detail or to set up groups within a population to
+more accurately model heterogeneous populations in terms of transmission, group transitions, or
+targeted interventions.</p>
+<p>The demographics file is the only required input data file, with one exception. You have the option
+to run a simulation <em>without</em> a demographics file if you set <strong>Enable_Demographics_Builtin</strong> to 1 in
+the configuration file. However, this option is primarily used for software testing. It will not
+provide meaningful simulation data as it does not represent the population of a real geographic
+location.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="howto-demographics-overlay.html">Use demographics overlay files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-demographics-heterogeneity.html">Configure heterogeneous populations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="howto-demographics-heterogeneity.html#define-the-initial-population-distribution">Define the initial population distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-demographics-heterogeneity.html#create-groups-for-properties-other-than-age">Create groups for properties other than age</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-demographics-heterogeneity.html#create-groups-for-age-ranges">Create groups for age ranges</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="howto-hint.html">Configure heterogeneous disease transmission</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="howto-hint.html#transmission-matrix">Transmission matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-hint.html#multiple-properties">Multiple properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hint-scaling.html">Heterogeneity and transmission scaling</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="howto-demographics-overlay.html" class="btn btn-neutral float-right" title="Use demographics overlay files" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="howto-overview.html" class="btn btn-neutral" title="How to use the software" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for internal docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!-- Google analytics for public docs -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-4', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

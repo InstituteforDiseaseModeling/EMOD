@@ -1,0 +1,724 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Generic 2: SIR - Targeted vaccination campaigns &mdash; Training Tutorials  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Training Tutorials  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Training Tutorials  documentation" href="index.html"/>
+        <link rel="up" title="Generic simulation tutorials" href="generic-simulation-tutorial-overview.html"/>
+        <link rel="next" title="Generic 3: SIER - Incubation periods" href="generic-tutorial3SEIR.html"/>
+        <link rel="prev" title="Generic 1: SIR - Simple single-node outbreak" href="generic-tutorial1SIR.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Training Tutorials
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.5
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">Install the Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using-quickstart.html">How to run Quick Start simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial1SIR.html">Generic 1: SIR - Simple single-node outbreak</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Generic 2: SIR - Targeted vaccination campaigns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial3SEIR.html">Generic 3: SIER - Incubation periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial4SEIR.html">Generic 4: SEIR - Vital dynamics (birth and death)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial5SIRS.html">Generic 5: SIRS - Waning immunity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial6SEIRS.html">Generic 6: SEIRS - Disease-specific mortality and endemics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial7SI.html">Generic 7: SI - Lifelong infection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial8SIS.html">Generic 8: SIS - Reoccurring infections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial9Density.html">Generic 9: Density scaling of infectivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial-10Zoonosis.html">Generic 10: Animal reservoir zoonosis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hint-tutorial-overview.html">Heterogeneous Intra-Node Transmission (HINT) tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-VM-tutorials-overview.html">Vector and malaria tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Training Tutorials</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Training</a> &raquo;</li>
+      
+          <li><a href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a> &raquo;</li>
+      
+    <li>Generic 2: SIR - Targeted vaccination campaigns</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="generic-2-sir-targeted-vaccination-campaigns">
+<h1>Generic 2: SIR - Targeted vaccination campaigns<a class="headerlink" href="#generic-2-sir-targeted-vaccination-campaigns" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial assumes that you have read <a class="reference internal" href="generic-tutorial1SIR.html"><span class="doc">Generic 1: SIR - Simple single-node outbreak</span></a>.</p>
+<p>This tutorial implements vaccination strategies to control an SIR epidemic in a single-node,
+village-scale location. The tutorial demonstrates how to configure vaccination interventions and the
+effect of those vaccine interventions on herd immunity.</p>
+<p>The tutorial also demonstrates how to target vaccines to heterogeneous groups within the node. By
+default, the EMOD executable assumes every individual has the same probability of being selected for
+vaccination. However, it is possible to model certain groups with low or no vaccination coverage
+through the use of <strong>IndividualProperties</strong>. <strong>IndividualProperties</strong> is added to the demographics file and
+configured to create the groups. For more information see IndividualProperties.</p>
+<p>This tutorial consists of three scenarios:</p>
+<ol class="upperalpha simple">
+<li>Baseline outbreak</li>
+<li>Vaccination campaigns all individuals</li>
+<li>Vaccination campaigns targeted groups</li>
+</ol>
+<div class="section" id="vaccination-and-herd-immunity">
+<h2>Vaccination and herd immunity<a class="headerlink" href="#vaccination-and-herd-immunity" title="Permalink to this headline">¶</a></h2>
+<p>In <a class="reference internal" href="generic-tutorial1SIR.html"><span class="doc">Generic 1: SIR - Simple single-node outbreak</span></a>, the <a class="reference internal" href="glossary.html#term-sir-model"><span class="xref std std-term">SIR model</span></a> assumed all individuals are
+susceptible before the importation of an outbreak. However, vaccination is the one of the most
+effective ways to prevent or contain a disease outbreak. This scenario demonstrates the effect of
+vaccinations.</p>
+<p>Starting from the SIR equations discussed in the previous tutorials:</p>
+<div class="math">
+<p><img src="_images/math/7edd99664ee58dde174cfe47bf51ade942786541.png" alt="\begin{aligned}
+\frac{dS}{dt} &amp; = -\frac{\beta SI}{N}\\
+\frac{dI}{dt} &amp; = \frac{\beta SI}{N} - \gamma I\\
+\frac{dR}{dt} &amp; = \gamma I
+\end{aligned}"/></p>
+</div><p>For an outbreak to start, the following condition needs to be satisfied:</p>
+<div class="math">
+<p><img src="_images/math/7a80e228a687dec51a05e01f79079ec362fcb7fa.png" alt="\frac{dI}{dt} = \frac{\beta SI}{N} - \gamma I &gt; 0"/></p>
+</div><p>If a vaccination <a class="reference internal" href="glossary.html#term-campaign"><span class="xref std std-term">campaign</span></a> with coverage p <img class="math" src="_images/math/13c683b3c914de67399ef3412009afe5cae5988b.png" alt="\in"/> [0, 1] is performed before the
+outbreak, only a fraction of susceptible people move to the recovered compartment. If the vaccine
+take is e <img class="math" src="_images/math/13c683b3c914de67399ef3412009afe5cae5988b.png" alt="\in"/> [0, 1], representing the probability of being protected after receiving a
+vaccine dose, the fraction of immune people due to vaccination is <em>ep</em>. Therefore, the previous
+condition can be reduced to:</p>
+<div class="math">
+<p><img src="_images/math/76f536cac951a692cf3a6c46929f95194425f80e.png" alt="\begin{aligned}
+\left(\beta (1 - e p) - \gamma\right) I  &amp; &gt; 0\\
+R_0 (1 - e p) &amp; &gt; 1\\
+R_{eff} &amp; &gt; 1
+\end{aligned}"/></p>
+</div><p>R<sub>eff</sub> is also called the effective reproductive number. Vaccination can reduce the
+disease&#8217;s ability to spread, and the outbreak can be prevented or stopped with less than 100%
+coverage. When R<sub>eff</sub>= 1,  there exists a minimum vaccination coverage that can prevent a
+disease outbreak. This minimum coverage required to prevent an outbreak is usually called <a class="reference internal" href="glossary.html#term-herd-immunity"><span class="xref std std-term">herd
+immunity</span></a> (represented as P<sub>herd</sub>).  Therefore, the analytical form of P<sub>herd</sub> can be
+derived based on the previous condition:</p>
+<div class="math">
+<p><img src="_images/math/9b2300b9107a89017307e3656274abf63ffd71eb.png" alt="p_{herd} = \frac{1}{e}\left(1-\frac{1}{R_0}\right)"/></p>
+</div></div>
+<div class="section" id="multiple-rounds-of-vaccinations">
+<h2>Multiple rounds of vaccinations<a class="headerlink" href="#multiple-rounds-of-vaccinations" title="Permalink to this headline">¶</a></h2>
+<p>If multiple vaccine interventions are performed in the same area, people are selected on a binomial
+basis and all individuals have the same probability of being included. If the vaccine coverage is p,
+every individual has a probability <em>p</em> of being selected in a given round. After the first round,
+the fraction of non-vaccinated is 1-<em>p</em>, and after <em>n</em> rounds this fraction is (1 - p)<sup>n</sup>.
+Therefore, the fraction of people getting at least 1 dose is:</p>
+<div class="math">
+<p><img src="_images/math/4e53996ec944822ab6aa1791c6b069e3f8f5d8fb.png" alt="1-(1-p)^n"/></p>
+</div><p>For example, the fraction of people getting at least one vaccination with a 50% campaign coverage is
+shown in the following table. After a few rounds, the coverage increases significantly with the
+number of campaigns. Scenario B demonstrates this example.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="42%" />
+<col width="58%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Number of Campaigns</th>
+<th class="head">Covered Fraction (&gt;=1 dose)</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>1</td>
+<td>50%</td>
+</tr>
+<tr class="row-odd"><td>2</td>
+<td>75%</td>
+</tr>
+<tr class="row-even"><td>3</td>
+<td>87.5%</td>
+</tr>
+<tr class="row-odd"><td>4</td>
+<td>93.75%</td>
+</tr>
+<tr class="row-even"><td>5</td>
+<td>96.875%</td>
+</tr>
+</tbody>
+</table>
+<p>However, this is usually not the case. In recent polio eradication campaigns, the number of
+<a class="reference internal" href="glossary.html#term-supplemental-immunization-activity-sia"><span class="xref std std-term">supplemental immunization activity (SIA)</span></a> campaigns planned in certain high-risk districts is greater
+than 6 per year, but poliovirus still persists in the area due to certain groups that are
+chronically missed. This can be caused by low accessibility, exclusion from SIA microplans, or
+vaccine refusal. R<sub>eff</sub> has not been driven below 1 because these susceptible people in the
+chronically missed groups are still in contact with the rest of population. In some modeling
+simulations, this assumption has to be included.</p>
+<p>In this second example, the same 50% campaign coverage is repeated so that the same amount of
+vaccine is used. However, 30% of the population is not accessible to any vaccine campaigns. Although
+the number of vaccine doses used is the same as the previous example, the overall coverage is much
+less. The scenario C demonstrates this example.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="27%" />
+<col width="27%" />
+<col width="30%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Number of
+Campaigns</th>
+<th class="head">Covered Fraction of
+Total Population</th>
+<th class="head">Covered Fraction of
+Groups with Access</th>
+<th class="head">Covered Fraction of
+Groups without Access</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>1</td>
+<td>50%</td>
+<td>71.43%</td>
+<td>0%</td>
+</tr>
+<tr class="row-odd"><td>2</td>
+<td>29%</td>
+<td>91.84%</td>
+<td>0%</td>
+</tr>
+<tr class="row-even"><td>3</td>
+<td>68.37%</td>
+<td>97.67%</td>
+<td>0%</td>
+</tr>
+<tr class="row-odd"><td>4</td>
+<td>69.53%</td>
+<td>99.33%</td>
+<td>0%</td>
+</tr>
+<tr class="row-even"><td>5</td>
+<td>69.87%</td>
+<td>99.81%</td>
+<td>0%</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="demographics-inputs">
+<h2>Demographics inputs<a class="headerlink" href="#demographics-inputs" title="Permalink to this headline">¶</a></h2>
+<p>This simulation uses the demographics file &#8220;generic_scenarios_individualproperties_demographics&#8221;.
+Except for an <strong>IndividualProperties</strong> structure, the demographics file is the same as
+&#8220;generic_scenarios_demographics&#8221; used in <a class="reference internal" href="generic-tutorial1SIR.html"><span class="doc">Generic 1: SIR - Simple single-node outbreak</span></a>.</p>
+<div class="section" id="individual-properties">
+<h3>Individual Properties<a class="headerlink" href="#individual-properties" title="Permalink to this headline">¶</a></h3>
+<p>An <strong>IndividualProperties</strong> structure is added to <strong>Defaults</strong> in the demographics file. Its purpose for
+this scenario is to divide individuals into two groups so the individuals in different groups can be
+configured differently. In the third scenario, a vaccine campaign will be targeted at only one of
+the groups but not the other group. This models the situation where individuals in the general
+population have a chance of receiving a vaccine while the other individuals are in the chronically
+missed group.</p>
+<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;Metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+    <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+      <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Accessibility&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Easy&quot;</span><span class="p">,</span> <span class="s2">&quot;Hard&quot;</span><span class="p">],</span>
+      <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+      <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[]</span>
+    <span class="p">}]</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
+  <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="property-and-values">
+<h4>Property and values<a class="headerlink" href="#property-and-values" title="Permalink to this headline">¶</a></h4>
+<p>The <strong>IndividualProperties</strong> structure creates groups using the <strong>Property</strong> and <strong>Values</strong> parameters.</p>
+<p>The <strong>Property</strong> parameter specifies the property type.  This tutorial uses the property type
+<strong>Accessibility</strong>.</p>
+<p>The <strong>Values</strong> array defines the groups. Each element in the array is a group. In this tutorial, the
+groups are &#8220;Easy&#8221; and &#8220;Hard&#8221;. They represent the group that is easy to access during a vaccine campaign
+(Easy), and the chronically missed group (Hard).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><strong>Property</strong> and <strong>Values</strong> creates the groups. However, the different behavior of the two
+groups must be configured with parameters in the campaign files.</p>
+</div>
+</div>
+<div class="section" id="initial-distribution">
+<h4>Initial_Distribution<a class="headerlink" href="#initial-distribution" title="Permalink to this headline">¶</a></h4>
+<p>At the beginning of the simulation individuals are assigned a group using the probabilities in the
+<strong>Initial_Distribution</strong> array. The values in the <strong>Initial_Distribution</strong> array must be in the same order
+as the groups in the <strong>Values</strong> array.</p>
+<p>At the beginning of the simulation, each individual has a 70% of belonging to the &#8220;Easy&#8221; accessibility
+group and a 30% chance of belonging to the &#8220;Hard&#8221; accessibility group as specified by the
+<strong>Initial_Distribution</strong> array.</p>
+<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Accessibility&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Easy&quot;</span><span class="p">,</span> <span class="s2">&quot;Hard&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+            <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><strong>Transitions</strong> is not used in this tutorial but it must be include as an empty array. When the
+simulation is run, it will create an empty <strong>Transitions</strong> output file which can be ignored.</p>
+</div>
+<p>Note that this tutorial only uses <strong>IndividualProperties</strong> to divide the
+population into groups. In more complex simulations, <strong>IndividualProperties</strong> can be used to differentiate the
+disease transmission between multiple groups within a node. This is described in <a class="reference internal" href="hint-tutorial-overview.html"><span class="doc">Heterogeneous Intra-Node Transmission (HINT) tutorials</span></a>.</p>
+</div>
+</div>
+</div>
+<div class="section" id="key-configuration-parameters">
+<h2>Key configuration parameters<a class="headerlink" href="#key-configuration-parameters" title="Permalink to this headline">¶</a></h2>
+<p>All three of the scenarios in this tutorial use the same simulation set up. Please note each
+subdirectory has a copy of the config.json file. You can view the complete config.json in the
+following directories:</p>
+<ul class="simple">
+<li>&lt;path_to_directory&gt;ScenariosGeneric Scenarios02_SIR_VaccinationsA_BaselineOutbreak</li>
+<li>&lt;path_to_directory&gt;ScenariosGeneric Scenarios02_SIR_VaccinationsB_VaccinationAll</li>
+<li>&lt;path_to_directory&gt;ScenariosGeneric Scenarios02_SIR_VaccinationsC_TargetedVaccination</li>
+</ul>
+<div class="section" id="demographics-parameters">
+<h3>Demographics parameters<a class="headerlink" href="#demographics-parameters" title="Permalink to this headline">¶</a></h3>
+<p>Set <strong>Enable_Vital_Dyanamics</strong> to 0.  This will disable vital dynamics (birth and death) in the simulation.
+For more information, see <a class="reference internal" href="parameter-configuration.html#config-demographics"><span class="std std-ref">Demographics</span></a> parameters.</p>
+</div>
+<div class="section" id="sir-model-setup-parameters">
+<h3>SIR model setup parameters<a class="headerlink" href="#sir-model-setup-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The generic simulation uses an SEIR-like disease model by default. You can modify
+the default <a class="reference internal" href="glossary.html#term-seir-model"><span class="xref std std-term">SEIR model</span></a> to an SIR model by turning off the incubation period and immune decay in the
+config.json file. For more information, see <a class="reference internal" href="parameter-configuration.html#config-generaldisease"><span class="std std-ref">General disease</span></a> parameters.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Base_Incubation_Period</strong> to 0.</li>
+<li>Set <strong>Incubation_Period_Distribution</strong> to &#8220;FIXED_DURATION.&#8221;</li>
+<li>Set <strong>Enable_Immune_Decay</strong> to 0.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="disease-parameters">
+<h3>Disease parameters<a class="headerlink" href="#disease-parameters" title="Permalink to this headline">¶</a></h3>
+<p>In the following example, we assume the average infection duration is 7 days,
+and R<sub>0</sub> = 4.9. For more information, see <a class="reference internal" href="parameter-configuration.html#config-generaldisease"><span class="std std-ref">General disease</span></a> parameters.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Base_Infectivity</strong> to 7.</li>
+<li>Set <strong>Base_Infectious_Period</strong> to 0.7.</li>
+<li>Set <strong>Infectious_Period_Distribution</strong> to &#8220;EXPONENTIAL_DISTRIBUTION.&#8221;</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="timestep-and-duration-parameters">
+<h3>Timestep and duration parameters<a class="headerlink" href="#timestep-and-duration-parameters" title="Permalink to this headline">¶</a></h3>
+<p>For more information, see <a class="reference internal" href="parameter-configuration.html#config-simulationsetup"><span class="std std-ref">Simulation setup</span></a> parameters.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Simulation_Timestep</strong> to 1.</li>
+<li>Set <strong>Simulation_Duration</strong> to 120.</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="interventions">
+<h2>Interventions<a class="headerlink" href="#interventions" title="Permalink to this headline">¶</a></h2>
+<p>The three scenarios have different campaign.json files.</p>
+<div class="section" id="a-baseline-outbreak">
+<h3>A. Baseline outbreak<a class="headerlink" href="#a-baseline-outbreak" title="Permalink to this headline">¶</a></h3>
+<p>This scenario uses an <strong>OutbreakIndividual</strong> event at day 30 as the initial seeding of the infection.
+For more information, see <a class="reference internal" href="parameter-campaign.html#iv-outbreakindividual"><span class="std std-ref">OutbreakIndividual</span></a> parameters.</p>
+<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nt">&quot;Outbreak_Source&quot;</span><span class="p">:</span> <span class="s2">&quot;PrevalenceIncrease&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;OutbreakIndividual&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.0005</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Event_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Outbreak&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You can view the complete campaign.json at
+&lt;path_to_directory&gt;ScenariosGeneric Scenarios02_SIR_VaccinationsA_BaselineOutbreak.</p>
+</div>
+<div class="section" id="b-vaccinations-for-all-individuals">
+<h3>B. Vaccinations for all individuals<a class="headerlink" href="#b-vaccinations-for-all-individuals" title="Permalink to this headline">¶</a></h3>
+<p>The following campaign event has three vaccination campaigns that are 7 days apart. The campaigns
+have a 100% vaccine take rate and a 50% per-campaign coverage. The vaccine is acquisition-blocking
+and full immunity lasts for 10 years. For more information, see <a class="reference internal" href="parameter-campaign.html#iv-simplevaccine"><span class="std std-ref">SimpleVaccine</span></a> parameters.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Number_Repetitions</strong> to 3.</li>
+<li>Set <strong>Timesteps_Between_Repetitions</strong> to 7.</li>
+<li>Set <strong>Vaccine_Take</strong> to 1.0.</li>
+<li>Set <strong>Demographic_Coverage</strong> to 3.</li>
+<li>Set <strong>Vaccine_Type</strong> to &#8220;AcquistionBlocking&#8221;.</li>
+<li>Set <strong>Simulation_Duration</strong> to 120.</li>
+<li>Set <strong>Primar_Decay_Time_Constant</strong> to 3650.</li>
+</ul>
+</div></blockquote>
+<p>You can also view campaign.json at
+&lt;path_to_directory&gt;ScenariosGeneric Scenarios02_SIR_VaccinationsB_Vaccinations.</p>
+<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+            <span class="nt">&quot;Durability_Time_Profile&quot;</span><span class="p">:</span> <span class="s2">&quot;BOXDURABILITY&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Primary_Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">3650</span><span class="p">,</span>
+            <span class="nt">&quot;Reduced_Acquire&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;Reduced_Transmit&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;Vaccine_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;AcquisitionBlocking&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Number_Repetitions&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="nt">&quot;Timesteps_Between_Repetitions&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+        <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="c-vaccination-campaigns-for-targeted-groups">
+<h3>C. Vaccination campaigns for targeted groups<a class="headerlink" href="#c-vaccination-campaigns-for-targeted-groups" title="Permalink to this headline">¶</a></h3>
+<p>The following campaign event is the same as the campaign event in scenario B, but it restricts the
+vaccine campaign to the &#8220;Easy&#8221; accessibility group by adding a <strong>Property_Restrictions</strong> parameter
+and setting it to &#8220;Accessibility&#8221;: &#8220;Easy&#8221;. As only 70% of the population is in the &#8220;Easy&#8221;
+accessibility group, vaccine coverage is also reduced.</p>
+<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+            <span class="nt">&quot;Durability_Time_Profile&quot;</span><span class="p">:</span> <span class="s2">&quot;BOXDURABILITY&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Primary_Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">3650</span><span class="p">,</span>
+            <span class="nt">&quot;Reduced_Acquire&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;Reduced_Transmit&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;Vaccine_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;AcquisitionBlocking&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Number_Repetitions&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="nt">&quot;Timesteps_Between_Repetitions&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+        <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Property_Restrictions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Accessibility:Easy&quot;</span><span class="p">],</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You can view the complete campaign.json at
+&lt;path_to_directory&gt;ScenariosGeneric Scenarios02_SIR_VaccinationsC_TargetedVaccinations.</p>
+</div>
+</div>
+<div class="section" id="run-the-simulation">
+<h2>Run the simulation<a class="headerlink" href="#run-the-simulation" title="Permalink to this headline">¶</a></h2>
+<p>Run the simulation and generate graphs of the simulation output. For more information, see
+<a class="reference internal" href="using-quickstart.html"><span class="doc">How to run Quick Start simulations</span></a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Because the EMOD model is <a class="reference internal" href="glossary.html#term-stochastic"><span class="xref std std-term">stochastic</span></a>, your graphs may appear slightly different from
+those given below.</p>
+</div>
+<div class="section" id="id1">
+<h3>A. Baseline outbreak<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p><em>Figure 1: Outbreak without vaccination campaigns</em> shows the complete trajectory of the outbreak
+without vaccination campaigns.</p>
+<div class="figure" id="id4">
+<img alt="_images/Generic_SIR_IP_output_baseline_500x386.png" src="_images/Generic_SIR_IP_output_baseline_500x386.png" />
+<p class="caption"><span class="caption-text">Figure 1: Outbreak without vaccination campaigns</span></p>
+</div>
+<div class="figure" id="id5">
+<img alt="_images/Generic_SIR_IP_output_baseline_property.png" src="_images/Generic_SIR_IP_output_baseline_property.png" />
+<p class="caption"><span class="caption-text">Figure 2: Outbreak without vaccination campaigns - property report</span></p>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>B. Vaccinations for all individuals<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>With three campaigns randomly administered, the fraction of immune people is above the herd immunity
+(in this case, close to 80%), therefore, an outbreak will not start.</p>
+<div class="figure" id="id6">
+<img alt="_images/Generic_SIR_IP_output_vaccination_all.png" src="_images/Generic_SIR_IP_output_vaccination_all.png" />
+<p class="caption"><span class="caption-text">Figure 3: Outbreak with vaccination campaigns</span></p>
+</div>
+<div class="figure" id="id7">
+<img alt="_images/Generic_SIR_IP_output_vaccination_all_property.png" src="_images/Generic_SIR_IP_output_vaccination_all_property.png" />
+<p class="caption"><span class="caption-text">Figure 4:  Outbreak with vaccination campaigns - property report</span></p>
+</div>
+</div>
+<div class="section" id="id3">
+<h3>C. Vaccination campaigns for targeted groups<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>With three campaigns administered only to the easily accessible group, the fraction of immune people
+is never above the group size (70%). If there is an outbreak, the group will not reach the herd
+immunity no matter how many vaccine campaigns are done.</p>
+<div class="figure" id="id8">
+<img alt="_images/Generic_SIR_IP_output_targeted_vaccination.png" src="_images/Generic_SIR_IP_output_targeted_vaccination.png" />
+<p class="caption"><span class="caption-text">Figure 5: Outbreak with targeted vaccination campaigns</span></p>
+</div>
+<div class="figure" id="id9">
+<img alt="_images/Generic_SIR_IP_output_targeted_vaccination_property.png" src="_images/Generic_SIR_IP_output_targeted_vaccination_property.png" />
+<p class="caption"><span class="caption-text">Figure 6: Outbreak with targeted vaccination campaigns - property report</span></p>
+</div>
+</div>
+</div>
+<div class="section" id="exploring-the-model">
+<h2>Exploring the model<a class="headerlink" href="#exploring-the-model" title="Permalink to this headline">¶</a></h2>
+<p>Starting with the campaign.json file in scenario B, change one of the single vaccination
+intervention by varying the vaccination coverage and observe the herd immunity.</p>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="generic-tutorial3SEIR.html" class="btn btn-neutral float-right" title="Generic 3: SIER - Incubation periods" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="generic-tutorial1SIR.html" class="btn btn-neutral" title="Generic 1: SIR - Simple single-node outbreak" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for internal docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!-- Google analytics for public docs -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-4', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

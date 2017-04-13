@@ -1,0 +1,141 @@
+============================
+Introduction to the software
+============================
+
+The |IDM_l| develops detailed simulations of disease transmission through the use of extensive and
+complex software modeling. The primary software, |EMOD_l|, helps determine the combination of health
+policies and intervention strategies that can lead to disease eradication. |EMOD_s| calculates how
+diseases may spread in particular areas and is used to analyze the effects of current and future
+health policies and intervention strategies. It supports infectious disease campaign planning, data
+gathering, new product development, and policy decisions. We share this modeling software with the
+research community to advance the understanding of disease dynamics.
+
+.. include:: ../reuse/sim-types.txt
+
+The illustration below shows how the simulation types are built upon one another. All parameters
+available in the generic :term:`simulation type` are inherited by the vector simulation type. The
+vector simulation type adds additional parameters specific to the biology of vector-borne diseases,
+which in turn are inherited by the malaria simulation type and so on. Therefore, depending on the
+simulation type you select, different parameters are available for you to use.
+
+.. only:: not training
+
+    In addition, simulation types for broader classes of disease can be extended to build your own
+    disease-specific model.
+
+.. figure:: ../images/intro/simulation-types.png
+
+   Simulation type inheritance
+
+|EMOD_s| is a :term:`stochastic`, :term:`agent-based model` that simulates the actions and
+interactions of individuals within geographic areas known as nodes to understand the disease
+dynamics in a population over time. |EMOD_s| can produce statistically significant results over a
+broad set of parameters and scenarios. Quantitative analysis of the simulated output enables disease
+eradication efforts to make more data-driven decisions. The |IDM_s| research team has published many
+articles related to modeling, as well as the modeling concepts underpinning |EMOD_s|. For a list of
+published articles, see `IDM Publications`_.
+
+.. only:: training
+
+    While |EMOD_s| is very powerful, it can be challenging to learn if you are not already familiar
+    with epidemiology and disease modeling. If that is the case, |IDM_s| provides the |quick| for
+    you to learn more about modeling disease dynamics. It has a simpler interface for running
+    simulations and extensive tutorials that walk you through how to model several prepared real-
+    world scenarios.
+
+    The |quick| is installed separately from, and has fewer installation requirements than, the |EMOD_s|
+    source. The |quick| is built on the same  modeling software, but has a few limitations that make
+    it primarily a learning tool. It is not suitable for running large-scale simulations or
+    running simulations using your own data.
+
+    The |quick| provides the following:
+
+    * All files needed to model many different prepared real-world scenarios
+    * Extensive tutorials that walk you through how to model the scenarios
+    * An |Excel| and Windows batch files to quickly and easy run simulations
+    * Windows batch files to create graphs of the model output
+    * Built |exe_l|
+
+    .. include:: ../reuse/note-quickstart.txt
+
+This section provides the conceptual overview of |EMOD_s|. The architecture diagram below shows, at
+a high level, how the system functions. If you run simulations in parallel on a multi-node cluster,
+there is also a Message Passing Interface (MPI) component used to pass data between multiple
+instances of |EMOD_s|.
+
+.. figure:: ../images/intro/architecture.png
+
+   High-level |EMOD_s| system architecture
+
+Input data files
+================
+
+Not all files accepted as input for running a simulation are considered input data files. Rather,
+:term:`input data files` contain the relatively fixed information about a population to model. For
+example, climate, geography, demographics, and migration data.
+
+Configuration file
+==================
+
+The :term:`configuration file` contains parameters that control many different aspects of the
+simulation. |EMOD_s| provides hundreds of parameters for you to configure your simulation. For
+example, configuration parameters can control the following:
+
+* The disease or disease class to simulate (simulation type)
+* The name and location for the input data files and output files
+* Whether to include births, deaths, and migration
+* Disease attributes, such as infectivity, transmission, immunity, and mortality
+* The computing resources to use
+
+Campaign file
+=============
+
+The :term:`campaign file` contains parameters that distribute outbreaks and the interventions used
+to control the spread of disease. For example, campaign parameters can control the following:
+
+* Target demographic (age, location, gender, etc.) for interventions
+* Diagnostic tests to use
+* The cost and timing of interventions
+
+Running a simulation
+====================
+
+The |exe_l| accepts the input data, configuration, and campaign files and then simulates the
+susceptibility and infection of individuals within each geographic :term:`node`. The simulation type
+controls the transmission mechanism of the disease. After the simulation is complete, the |exe_s|
+produces output reports that describe various aspects of the disease dynamics within the modeled
+population.
+
+.. only:: not training
+
+    You can run simulations locally or on a multi-core cluster. Because the model is :term:`stochastic`,
+    you must run simulations multiple times to produce scientifically valid results.
+
+    Depending on how you run the simulation, other programs or environments external to |EMOD_s| may
+    also output error and logging files.
+
+Output files
+============
+
+After the simulation finishes, a :term:`reporter` extracts simulation data, aggregates it, and
+outputs it to a file (known as an :term:`output report`). Most of the reports are also JSON files,
+the most important of which is InsetChart.json. The InsetChart.json file provides simulation-wide
+averages of disease prevalence at each :term:`time step`.
+
+See the topics listed below for a more detailed explanation of each of these system components.
+
+.. I think this would be a great place to add interactive elements or even just a simple
+.. Plinko gif to help illustrate the type of model we use
+
+
+.. toctree::
+   :maxdepth: 2
+   :titlesonly:
+
+   intro-inputs
+   intro-configuration
+   intro-campaign
+   intro-run-simulation
+   intro-outputs
+
+.. _IDM Publications: http://idmod.org/publications

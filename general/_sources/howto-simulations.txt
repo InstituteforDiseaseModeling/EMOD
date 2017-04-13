@@ -1,0 +1,51 @@
+===============
+Run simulations
+===============
+
+There are a number of ways to run an |EMOD_s| simulation, whether locally or on a remote HPC
+cluster. The simplest way is to run a simulation at the command line, however that limits you to
+running one local simulation at a time. Because the |EMOD_s| model is :term:`stochastic`, you must
+run many simulations before you can interpret the outcome. You may want to use a scripting language
+like Python or MATLAB or an application like mpiexec to run multiple simulations at once.
+
+In addition, if you are modifying the |EMOD_s| source code to add functionality to the model, you
+can run simulations in Visual Studio as part of debugging. This process is described in
+:doc:`dev-simulations`.
+
+No matter how you choose to run simulations, you must have a built copy of the |exe_l| or
+|linux_binary|, either downloaded directly from GitHub or built from the |EMOD_s| source code. See
+:doc:`install-overview`. In addition, you must know the paths to the configuration file and
+:term:`input data files` and where you want to store the output files. You will pass this
+information as arguments to |exe_s|.
+
+Directory structure
+===================
+
+Although there are many ways you can structure the files needed to run a simulation, we recommend
+the following to keep your files organized and simplify the file paths set in the configuration file
+or passed as arguments to |exe_s|.
+
+*   Place the configuration and campaign files needed for a simulation in the same directory. This
+    is also known as the :term:`working directory`.
+
+    However, if you are using overlay files, you may want the default configuration or campaign file
+    in a separate directory so they can be used with different overlay files for other simulations.
+
+*   Place all input data files for a given region in the same directory.
+*   Place output for a simulation in a subdirectory of the directory containing configuration
+    and campaign files.
+
+It is not important where you install |exe_s| or the |linux_binary|.
+
+
+.. toctree::
+   :maxdepth: 2
+   :titlesonly:
+
+   howto-simulation-cli
+   howto-simulation-mpiexec
+   howto-simulation-python
+   howto-simulation-matlab
+   howto-simulation-performance
+
+

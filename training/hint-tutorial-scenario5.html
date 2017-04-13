@@ -1,0 +1,496 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>HINT 5: Seattle commuting &mdash; Training Tutorials  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Training Tutorials  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Training Tutorials  documentation" href="index.html"/>
+        <link rel="up" title="Heterogeneous Intra-Node Transmission (HINT) tutorials" href="hint-tutorial-overview.html"/>
+        <link rel="next" title="Vector and malaria tutorials" href="malaria-VM-tutorials-overview.html"/>
+        <link rel="prev" title="HINT 4: Washington state pertussis" href="hint-tutorial-scenario4.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Training Tutorials
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.5
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">Install the Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using-quickstart.html">How to run Quick Start simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial1SIR.html">Generic 1: SIR - Simple single-node outbreak</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial2SIR.html">Generic 2: SIR - Targeted vaccination campaigns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial3SEIR.html">Generic 3: SIER - Incubation periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial4SEIR.html">Generic 4: SEIR - Vital dynamics (birth and death)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial5SIRS.html">Generic 5: SIRS - Waning immunity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial6SEIRS.html">Generic 6: SEIRS - Disease-specific mortality and endemics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial7SI.html">Generic 7: SI - Lifelong infection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial8SIS.html">Generic 8: SIS - Reoccurring infections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial9Density.html">Generic 9: Density scaling of infectivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial-10Zoonosis.html">Generic 10: Animal reservoir zoonosis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="hint-tutorial-overview.html">Heterogeneous Intra-Node Transmission (HINT) tutorials</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="hint-tutorial-scenario1.html">HINT 1: Risk groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hint-tutorial-scenario2.html">HINT 2: School closure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hint-tutorial-scenario3.html">HINT 3: Age and accessibility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hint-tutorial-scenario4.html">HINT 4: Washington state pertussis</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">HINT 5: Seattle commuting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-VM-tutorials-overview.html">Vector and malaria tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Training Tutorials</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Training</a> &raquo;</li>
+      
+          <li><a href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a> &raquo;</li>
+      
+          <li><a href="hint-tutorial-overview.html">Heterogeneous Intra-Node Transmission (HINT) tutorials</a> &raquo;</li>
+      
+    <li>HINT 5: Seattle commuting</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="hint-s-5-seattle-commuting">
+<h1>HINT 5: Seattle commuting<a class="headerlink" href="#hint-s-5-seattle-commuting" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial simulates the person-person disease transmission of influenza in Seattle over the
+course of one year. The tutorial assumes that individuals have round-trip travels, or commutes,
+between census tracts in less than one day. The return time is less than or equal to 8 hours and
+movement is in equilibrium. Different from homogeneous mixing, the heterogeneous movement links and
+rates between census tracts will create a timing difference of epidemic trajectories upon initial
+seeding.</p>
+<p>The tutorial represents Seattle as a single node. There are 125 groups based on Seattle census tract
+data. The heterogeneous infectivity between individuals and the 125 groups is represented by a WAIFW
+matrix with <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values. The values, which represent the heterogeneous force of
+infection at each census tract, are based on the movement rate between census tracts and the return
+rate. Individuals interact mostly with other individuals in their own census tract but also shed
+into or acquire infection from the census tracts that they commuted to during the day.</p>
+<div class="contents local topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#demographics-inputs" id="id3">Demographics inputs</a></li>
+<li><a class="reference internal" href="#generating-seattle-as-a-single-node" id="id4">Generating Seattle as a single node</a><ul>
+<li><a class="reference internal" href="#individualproperties" id="id5">IndividualProperties</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#key-configuration-parameters" id="id6">Key configuration parameters</a></li>
+<li><a class="reference internal" href="#interventions" id="id7">Interventions</a></li>
+<li><a class="reference internal" href="#run-the-simulation" id="id8">Run the simulation</a><ul>
+<li><a class="reference internal" href="#expected-simulation-output" id="id9">Expected simulation output</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exploring-the-model" id="id10">Exploring the model</a><ul>
+<li><a class="reference internal" href="#updating-a-demographics-file" id="id11">Updating a demographics file</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="demographics-inputs">
+<h2><a class="toc-backref" href="#id3">Demographics inputs</a><a class="headerlink" href="#demographics-inputs" title="Permalink to this headline">¶</a></h2>
+<p>To view the complete demographics file, see hint_seattlecommuting_demographics at
+&lt;path_to_directory&gt;ScenariosInputFiles where &lt;path_to_directory&gt; is the location where the Quick Start
+was installed. For more information, see <a class="reference internal" href="parameter-demographics.html"><span class="doc">Demographics file structure and parameters</span></a>.</p>
+</div>
+<div class="section" id="generating-seattle-as-a-single-node">
+<h2><a class="toc-backref" href="#id4">Generating Seattle as a single node</a><a class="headerlink" href="#generating-seattle-as-a-single-node" title="Permalink to this headline">¶</a></h2>
+<p>The hint_seattlecommuting_demographics file was generated from the multi-node
+Seattle_30arcsec_demographics file, the Seattle_30arcsec_local_migration file, and the
+Seattle_30arcsec_regional_migration file using the Python script
+ConvertMultipleNodeDemographicsToSingleNodePools. The script also added the <strong>IndividualProperties</strong>
+attribute that is needed for this tutorial.</p>
+<p>The ConvertMultipleNodeDemographicsToSingleNodePools Python file, Seattle_Template, which is a copy
+of the hint_seattlecommuting_demographics file, and the three multi-node input files are in the
+ScenariosHINT05_SeattleCommutingscript directory.</p>
+<div class="section" id="individualproperties">
+<h3><a class="toc-backref" href="#id5">IndividualProperties</a><a class="headerlink" href="#individualproperties" title="Permalink to this headline">¶</a></h3>
+<p>For more information, see <a class="reference internal" href="parameter-demographics.html#demo-individualproperties"><span class="std std-ref">IndividualProperties</span></a> parameters.</p>
+<div class="section" id="property-and-values">
+<h4>Property and Values<a class="headerlink" href="#property-and-values" title="Permalink to this headline">¶</a></h4>
+<p>The <strong>Property</strong> and <strong>Values</strong> parameters of <strong>IndividualProperties</strong> define 125 groups based on Seattle
+census tracts. The <strong>Property</strong> type must be &#8220;Geographic&#8221; as it is the only property that supports 125
+<strong>Values</strong>. The <strong>Values</strong> are the 3-digit ID for the 125 Seattle census tracts for Seattle.</p>
+</div>
+<div class="section" id="initial-distribution">
+<h4>Initial_Distribution<a class="headerlink" href="#initial-distribution" title="Permalink to this headline">¶</a></h4>
+<p><strong>Initial_Distribution</strong> is an array with 125 elements. See the hint_seattlecommuting_demographics
+file for those values.</p>
+</div>
+<div class="section" id="transitions">
+<h4>Transitions<a class="headerlink" href="#transitions" title="Permalink to this headline">¶</a></h4>
+<p>Individuals will not move from one Seattle census track to the other so <strong>Transitions</strong> is empty.</p>
+</div>
+<div class="section" id="transmissionmatrix">
+<h4>TransmissionMatrix<a class="headerlink" href="#transmissionmatrix" title="Permalink to this headline">¶</a></h4>
+<p><strong>TransmissionMatrix</strong> contains the <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values that scale the base infectivity. The transmission <strong>Route</strong>
+is &#8220;Contact&#8221;. The <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values are added to <strong>Matrix</strong>.</p>
+<p>The <strong>Matrix</strong> was created using a script with a specified return rate. The script loads the existing
+multi-node demographics and migration input files, and converts them to a single-node demographics
+file. Each component in the <strong>TransmissionMatrix</strong> is calculated based on the spatial coupling of round-
+trip movement flow detailed in the article: Balcan, D., Colizza, V., Gonçalves, B., et al. (2009).
+Multiscale mobility networks and the spatial spreading of infectious diseases. PNAS 106(51),
+21484-21489. doi: 10.1073/pnas.0906910106.</p>
+<p>Since the average hours to stay at a destination is 8 hours (1/3 of a day) and the return rate is
+the inverse of the average hours, the return rate is 3. That is, <img class="math" src="_images/math/a357f1bd99eb96d152c433e3b6dd1c544519ed4e.png" alt="\frac{1}{(\frac{1}{3})}=3"/>.</p>
+<p>There are 125 Seattle census tracts so the <strong>Matrix</strong> is a 125 x 125 matrix.</p>
+<p>See the hint_seattlecommuting_demographics file in the ScenarioInputFiles directory to see
+the complete <strong>IndividualProperties</strong> for this simulation.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Geographic&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;002&quot;</span><span class="p">,</span> <span class="s2">&quot;003&quot;</span><span class="p">,</span> <span class="s2">&quot;124&quot;</span><span class="p">,</span> <span class="s2">&quot;125&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">125</span><span class="p">],</span>
+            <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="nt">&quot;TransmissionMatrix&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Route&quot;</span><span class="p">:</span> <span class="s2">&quot;Contact&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Matrix&quot;</span><span class="p">:</span> <span class="p">[]</span>
+            <span class="p">}</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="key-configuration-parameters">
+<h2><a class="toc-backref" href="#id6">Key configuration parameters</a><a class="headerlink" href="#key-configuration-parameters" title="Permalink to this headline">¶</a></h2>
+<p>The generic disease model parameters are configured to approximate the dynamics of influenza-like-
+illness disease. The key influenza disease parameters are listed below. For more information,
+see <a class="reference internal" href="parameter-configuration.html#config-generaldisease"><span class="std std-ref">General disease</span></a> parameters.</p>
+<p>You can see the complete config.json file in the ScenariosHINT05_SeattleCommuting directory.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Base_Infectivity</strong> to 0.3.</li>
+<li>Set <strong>Base_Infectious_Period</strong> to 7.</li>
+<li>Set <strong>Base_Incubation_Period</strong> to 3.</li>
+<li>Set <strong>Enable_Heterogeneous_Intranode_Transmission</strong> to 1.</li>
+<li>Set <strong>Incubation_Period_Distribution</strong> to &#8220;FIXED_DURATION.&#8221;</li>
+<li>Set <strong>Infectious_Period_Distribution</strong> to &#8220;FIXED_DURATION.&#8221;</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="interventions">
+<h2><a class="toc-backref" href="#id7">Interventions</a><a class="headerlink" href="#interventions" title="Permalink to this headline">¶</a></h2>
+<p>This simulation uses an <strong>OutbreakIndividual</strong> event to demonstrate the ability to target an outbreak at
+a geographical region represented as a heterogeneous group. The <strong>OutbreakIndividual</strong> targets the
+infection at 1% of the individuals living in census tract 7 at day 20. For more information,
+see <a class="reference internal" href="parameter-campaign.html#iv-outbreakindividual"><span class="std std-ref">OutbreakIndividual</span></a> parameters.</p>
+<p>You can see the complete campaign.json file in the in the ScenariosHINT05_SeattleCommuting
+directory.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Generic Seattle Regression Campaign&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Coverage&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
+            <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="nt">&quot;Event_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Outbreak&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="nt">&quot;outbreak_source&quot;</span><span class="p">:</span> <span class="s2">&quot;ImportCases&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;OutbreakIndividual&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;Number_Distributions&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;Number_Repetitions&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;Target_Age_Max&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="nt">&quot;Target_Age_Min&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Property_Restrictions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Geographic:007&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="run-the-simulation">
+<h2><a class="toc-backref" href="#id8">Run the simulation</a><a class="headerlink" href="#run-the-simulation" title="Permalink to this headline">¶</a></h2>
+<p>Run the simulation and generate graphs of the simulation output. For more information, see
+<a class="reference internal" href="using-quickstart.html"><span class="doc">How to run Quick Start simulations</span></a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Because the EMOD model is <a class="reference internal" href="glossary.html#term-stochastic"><span class="xref std std-term">stochastic</span></a>, your graphs may appear slightly different from
+those given below.</p>
+</div>
+<div class="section" id="expected-simulation-output">
+<h3><a class="toc-backref" href="#id9">Expected simulation output</a><a class="headerlink" href="#expected-simulation-output" title="Permalink to this headline">¶</a></h3>
+<p>This tutorial shows the timing difference of disease spread between groups due to spatial coupling.
+It has 125 groups that represent the census tracts in Seattle and simulates a daily commute between
+the census tracts.</p>
+<p>The following Inset Charts shows the daily number of infected people for each census tract in the
+simulation sorted by census tract ID. The census tracts are sequentially ordered with the census
+tract with the lowest number at the top of the graph. the graph shows the difference in timing
+between census tracts in terms of the disease spread.</p>
+<div class="figure" id="id1">
+<img alt="_images/HINT_SeattleCommuting_output_spatialCoupling__orig_cropped.png" src="_images/HINT_SeattleCommuting_output_spatialCoupling__orig_cropped.png" />
+<p class="caption"><span class="caption-text">Figure 1: Number of infected people per census tract</span></p>
+</div>
+</div>
+</div>
+<div class="section" id="exploring-the-model">
+<h2><a class="toc-backref" href="#id10">Exploring the model</a><a class="headerlink" href="#exploring-the-model" title="Permalink to this headline">¶</a></h2>
+<p>Change the return rates to either increase or decrease the spatial coupling when generating the
+demographic input and transmission matrix. In general, when the return rates are high, there is less
+coupling between census tracts so the disease curves of the outbreak are less synchronized. The
+following example shows a less synchronized behavior of disease spread when the return rate = 24
+(people spend 1 hour on average at their destination) with the outbreak targeted at &#8220;Geographic: 7&#8221; in
+the demographics file.</p>
+<div class="section" id="updating-a-demographics-file">
+<h3><a class="toc-backref" href="#id11">Updating a demographics file</a><a class="headerlink" href="#updating-a-demographics-file" title="Permalink to this headline">¶</a></h3>
+<p>You can manually modify the the Seattle_template provided in the
+ScenariosHINT05_SeattleCommutingscript directory. However, because of the size of the
+TransmissionMatrix, you might want to use the Python scripts (also in
+ScenariosHINT05_SeattleCommutingscript) to modify the Seattle_template and regenerate the
+demographics file. Update the value of returnRate in
+ConvertMultipleNodeDemographicsToSingleNodePools using an editor of your choice.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">All of the multi-node demographics files and Seattle_template must be in the same directory.</p>
+</div>
+<p>For example, the following Inset Chart graph shows decreased spatial coupling after modifying the
+demographics file.</p>
+<div class="figure" id="id2">
+<img alt="_images/HINT_SeattleCommuting_exploring_decreasedCoupling_orig_cropped.png" src="_images/HINT_SeattleCommuting_exploring_decreasedCoupling_orig_cropped.png" />
+<p class="caption"><span class="caption-text">Figure 2: Decreased coupling between census tracts</span></p>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="malaria-VM-tutorials-overview.html" class="btn btn-neutral float-right" title="Vector and malaria tutorials" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="hint-tutorial-scenario4.html" class="btn btn-neutral" title="HINT 4: Washington state pertussis" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for internal docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!-- Google analytics for public docs -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-4', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

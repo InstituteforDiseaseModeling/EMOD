@@ -1,0 +1,23 @@
+=============================
+Baseline simulation scenarios
+=============================
+
+Run the baseline scenario simulations to understand some of the basic features available in |EMOD_s|.
+The baseline set includes scenarios for each of the generic :term:`SEIRS model`, vector-borne, and malaria disease
+types as well as those that explore the impact of climate and migration on spatially distributed
+simulations.
+
+In this sections, you focus on the simulation :term:`configuration file`. The scenarios in
+:doc:`malaria-VM-tutorials-scenarios-with-campaigns` focus on interventions and introduce the use of a
+:term:`campaign file`.
+
+
+The following scenarios are baseline simulation scenarios:
+
+.. toctree::
+   :maxdepth: 3
+   :titlesonly:
+
+   malaria-VM-tutorials-1-simple
+   malaria-VM-tutorials-2-full
+   malaria-VM-tutorials-3-climate

@@ -1,0 +1,554 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Larval habitat &mdash; Malaria Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Malaria Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Malaria Model  documentation" href="index.html"/>
+        <link rel="up" title="Malaria model structure and framework" href="malaria-model-framework.html"/>
+        <link rel="next" title="Vector transmission model" href="malaria-vector-transmission-model.html"/>
+        <link rel="prev" title="Climate and demographics spatial data" href="malaria-climate-demographics.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Malaria Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.10
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-overview.html">Malaria disease overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="malaria-model-overview.html">Malaria model overview</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="malaria-model-general-info.html">Malaria model general information</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="malaria-model-framework.html">Malaria model structure and framework</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="malaria-climate-demographics.html">Climate and demographics spatial data</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Larval habitat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="malaria-vector-transmission-model.html">Vector transmission model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="malaria-infection-immune-model.html">Malaria infection and immune model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="malaria-symptoms-diagnosis.html">Malaria symptoms and diagnostics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="malaria-antimalarial-drugs.html">Antimalarial drugs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-IDM.html">Malaria research at IDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Malaria Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Malaria</a> &raquo;</li>
+      
+          <li><a href="malaria-model-overview.html">Malaria model overview</a> &raquo;</li>
+      
+          <li><a href="malaria-model-framework.html">Malaria model structure and framework</a> &raquo;</li>
+      
+    <li>Larval habitat</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="larval-habitat">
+<h1>Larval habitat<a class="headerlink" href="#larval-habitat" title="Permalink to this headline">¶</a></h1>
+<p>Available larval habitat is a primary driver of local mosquito populations, and different mosquito
+species can have different habitat preferences. Rainfall and humidity can strongly affect available
+larval habitat, although this depends on the mosquito species and its particular habitat preference.
+For example, <em>Anopheles funestus</em>, which prefers more semi-permanent larval habitat, exhibits
+rainfall dependence, partly due to vegetation on edges of water and the interaction of rainfall with
+agricultural schedules for crops such as rice. Further, preference can vary within species: <em>An. funestus</em>
+exhibits differences in population responses to rainfall which are correlated with
+chromosomal diversity.</p>
+<p>In addition to available habitat, mosquito populations depend on larval development and mortality
+rates. These in turn are affected by a variety of factors, including climate, short term weather,
+and densities of other larvae.</p>
+<p>In the present model, different models for larval habitat are developed for temporary, semi-
+permanent, permanent, and human-driven habitats. The duration of larval development is a decreasing
+function of temperature, and the present model utilizes an Arrhenius temperature-dependent rate
+a<sub>1</sub><sup>(a2/TK)</sup>. In some cases, this temperature-dependent rate must be modified by local
+larval density. Rainfall and temperature then combine through habitat creation and larval
+development to create varying local patterns of distribution by larval instar, and larval mortality
+and development duration determine pupal rates.</p>
+<p>The creation of the habitat model is described in further detail in the articles
+<a class="reference external" href="http://www.malariajournal.com/content/10/1/303">Eckhoff, Malaria Journal 2011, 10:303</a>,
+<a class="reference external" href="http://www.malariajournal.com/content/11/1/419">Eckhoff, Malaria Journal 2012, 11:419</a>, and
+<a class="reference external" href="https://doi.org/10.4269/ajtmh.12-0007">Eckhoff, Am. J. Trop. Med. Hyg. 2013, 88(5)</a>.
+The following sections provide information regarding specific larval habitat types and how to
+configure these parameters in EMOD.</p>
+<p>For a complete list of configuration parameters that are used in the malaria model, see the
+<a class="reference internal" href="parameter-configuration.html"><span class="doc">Configuration parameters</span></a>.</p>
+<div class="section" id="modeling-mosquito-life-cycles-and-larval-habitat">
+<h2>Modeling mosquito life cycles and larval habitat<a class="headerlink" href="#modeling-mosquito-life-cycles-and-larval-habitat" title="Permalink to this headline">¶</a></h2>
+<p>The framework facilitates simulating multiple species of <em>Anopheles</em> mosquitoes simultaneously. This
+allows for a mechanistic description of vector abundances through the effects of
+climate and weather on different preferred larval habitats. Each species is configured separately
+according to its ecological and behavioral preferences. For example, the female <em>An. arabiensis</em>
+deposits eggs primarily in temporary, rainfall-driven habitat and has a higher propensity to feed
+outdoors or on livestock. In contrast, <em>An. farauti</em> larvae live in brackish lagoons in the Solomon
+Islands, where lagoons fill with rain, and larvae are washed out into the ocean due to excess rain.
+The temporary rainfall relationship between larval habitat and rainfall cannot reproduce abrupt
+(sub-week) changes in biting rates, and an additional rainfall-driven larval mortality term has been
+implemented to capture the non-linear rain-to-habitat relationship.</p>
+<div class="figure" id="id1">
+<img alt="_images/Vector_Transmission_abundance.png" src="_images/Vector_Transmission_abundance.png" />
+<p class="caption"><span class="caption-text">Vector abundance depends on larval habitat availability</span></p>
+</div>
+<div class="figure" id="id2">
+<img alt="_images/Vector_Transmission_larval_habitats.png" src="_images/Vector_Transmission_larval_habitats.png" />
+<p class="caption"><span class="caption-text">Larval habitat type determines how rainfall and temperature
+influence vector populations</span></p>
+</div>
+</div>
+<div class="section" id="larval-habitat-types">
+<h2>Larval habitat types<a class="headerlink" href="#larval-habitat-types" title="Permalink to this headline">¶</a></h2>
+<p>The parameter <strong>Larval_Habitat_Types</strong>  is a dictionary that contains one or more string and integer
+pairs. The user indicates the vector species, habitat type(s), and the array of scaling factors
+used to determine the volume of that habitat  needed for larvae to develop. Note that multiple species
+may utilize the same habitat, with each species existing independently. The scaling factor
+represents the number of larvae in a 1x1-degree area. The factor multiplicatively scales the
+resulting weather or population dependent functional form. The following example shows how to use
+this parameter, using <em>Anopheles funestus</em> as the vector and CONSTANT as the scaled habitat type.</p>
+<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Vector_Species_params&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;funestus&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Larval_Habitat_Types&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;CONSTANT&quot;</span><span class="p">:</span> <span class="mi">10000000</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;Acquire_Modifier&quot;</span><span class="p">:</span> <span class="mf">0.2</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The following are possible values for <strong>Larval_Habitat_Types</strong>. They are described in detail below.</p>
+<ul class="simple">
+<li>TEMPORARY_RAINFALL</li>
+<li>WATER_VEGETATION</li>
+<li>CONSTANT</li>
+<li>BRACKISH_SWAMP</li>
+<li>HUMAN_POPULATION</li>
+<li>LINEAR_SPLINE</li>
+</ul>
+<div class="section" id="temporary-rainfall">
+<h3>Temporary rainfall<a class="headerlink" href="#temporary-rainfall" title="Permalink to this headline">¶</a></h3>
+<p>TEMPORARY_RAINFALL habitat corresponds to mosquitoes such as <em>Anopheles arabiensis</em> or
+<em>Anopheles gambiae</em> which breed primarily in temporary puddles which are replenished by rainfall
+and drain through evaporation and infiltration. We have developed a series of update equations for
+the larval carrying capacity which scale the functional form for evaporation rates. This creates a
+relationship in which evaporation and infiltration are higher when the weather is hot and dry.</p>
+<p>The basic update equations appear in the article <a class="reference external" href="http://www.malariajournal.com/content/10/1/303">Eckhoff, Malaria Journal 2011,
+10:303</a> and are as
+follows: Temporary habitat H<sub>temp</sub> in a grid of diameter D<sub>cell</sub> increases with
+rainfall P<sub>rain</sub> and decays with a rate <img class="math" src="_images/math/557d5fad862c9046d26e1a930f45a550c146d592.png" alt="\tau"/><sub>temp</sub> proportional to the
+evaporation rate driven by temperature T(K) and humidity RH:</p>
+<div class="math">
+<p><img src="_images/math/f7c6e93371b81ac593b1fc4d0fe02216f2f73226.png" alt="H_{temp} += P_{rain}K_{temp}D^2_{cell} - H_{temp}\left(\frac{\Delta t}{\tau_{temp}}\right)"/></p>
+</div><div class="math">
+<p><img src="_images/math/721299df1cfe264afe0e4e51280f1eb1d49fcdda.png" alt="\frac{1}{\tau_{temp}} = \left(5.1\times 10^{11} Pa\right)\mathrm{e}^{-\frac{5628.1 K}{T_K}} k_{tempdecay}\sqrt{\frac{0.018kg / mol}{2\pi T T_k}}(1-RH)"/></p>
+</div><p>in which the exponential results from the <a class="reference internal" href="glossary.html#term-clausius-clayperon-relation"><span class="xref std std-term">Clausius-Clayperon relation</span></a>, the root is from the
+expression for vapor evaporation rates due to molecular mass given a partial pressure, and the
+constant is the Clausius-Clayperon integration constant multiplied by a factor
+k<sub>tempdecay</sub> to relate mass evaporation per unity area to habitat loss.</p>
+<p>Examining the two equations more closely, the first is a <a class="reference internal" href="glossary.html#term-time-step"><span class="xref std std-term">time step</span></a> update equation, in which
+available habitat is increased by a multiple of the rainfall in the past time step, scaled by the
+size of the node in the simulation. For example, a 5 km square node will have 25 times the habitat
+of a 1 km square node. Then existing habitat decays with a time constant defined by the second
+equation. The basic functional form is based on an equation for evaporation rates, which is not
+fully realistic in that it neglects boundary layer effects. However, we are looking for a rate of
+habitat loss, not the rate of evaporation, and we also want to take infiltration into account.
+The parameter k<sub>tempdecay</sub> converts raw evaporation rates in kg/m^2/s into habitat loss
+per day.</p>
+<p>The value of k<sub>tempdecay</sub> is initially chosen to set the habitat half-lives near 1 day for
+hot and dry conditions and 2-3 weeks for more tropical conditions. The parameter
+k<sub>tempdecay</sub> in the article <a class="reference external" href="http://www.malariajournal.com/content/10/1/303">Eckhoff, Malaria Journal 2011,
+10:303</a> corresponds to
+<strong>Temporary_Habitat_Decay_Factor</strong> in the simulation configuration file, and it applies to all local
+species using temporary habitat. Each species in a given location can adjust the parameter
+k<sub>temp</sub> from the paper, or equivalently the scaling factor value in <strong>Larval_Habitat_Types</strong>
+in the simulation configuration file (nested under the species name), to adjust the overall scaling
+of the time series. So k<sub>temp</sub> is specific for each species, but k<sub>tempdecay</sub> is a
+single value for all temporary habitat species in that location. Basically, the local weather and
+k<sub>tempdecay</sub> set the overall time profile for larval habitat which can feed-forward into
+adult population levels and biting rates. k<sub>tempdecay</sub> can be adjusted to achieve a best fit
+for the time profile for a given location. Factors such as how sandy or clay-like the soil is will
+affect this value. Once the time profile is correct, k<sub>temp</sub> can be adjusted to yield the
+correct annual <a class="reference internal" href="glossary.html#term-entomological-inoculation-rate-eir"><span class="xref std std-term">entomological inoculation rate (EIR)</span></a> for that species.</p>
+</div>
+<div class="section" id="semi-permanent-water-vegetation">
+<h3>Semi-permanent water vegetation<a class="headerlink" href="#semi-permanent-water-vegetation" title="Permalink to this headline">¶</a></h3>
+<p>The second type of larval habitat, WATER_VEGETATION, is a semi-permanent habitat, which corresponds
+to developing vegetation on the edges of semi-permanent habitat. This could be seen for swamp-like
+or rice cultivation settings, in which the development of vegetation lags the rainfall and will be
+closest to its peak towards the end of the rainy season. The decay is specified as a loss of habitat
+per day, and this slower decay constant means that species with this habitat type will tend to have
+a proportionately higher dry-season population relative to the temporary habitat species.</p>
+<p>In the model, semi-permanent habitat increases with a constant K<sub>semi</sub>D<sub>cell</sub>2P<sub>rain</sub> and decays with a longer time constant <img class="math" src="_images/math/557d5fad862c9046d26e1a930f45a550c146d592.png" alt="\tau"/><sub>semi</sub>(<strong>Semipermanent_Habitat_Decay_Rate</strong> in the simulation configuration file). The parameter K<sub>semi</sub> is the scale factor value in <strong>Larval_Habitat_Types</strong> for species with a
+<strong>Larval_Habitat_Types</strong> of &#8220;WATER_VEGETATION&#8221;. Permanent habitat is fixed at K<sub>perm</sub>D<sub>cell</sub>2, and human population-driven habitat is calculated as population N* K<sub>pop</sub>.
+The values of k<sub>tempdecay</sub>,  <img class="math" src="_images/math/557d5fad862c9046d26e1a930f45a550c146d592.png" alt="\tau"/><sub>semi</sub>,  K<sub>semi</sub>, and K<sub>temp</sub> can be fit to local data on vector abundance by species over time or to local data on
+EIR to tailor a simulation to a specific setting.</p>
+</div>
+<div class="section" id="constant-habitat">
+<h3>Constant habitat<a class="headerlink" href="#constant-habitat" title="Permalink to this headline">¶</a></h3>
+<p>For habitat type CONSTANT, larval carrying capacity is constant throughout the year and does not
+depend on weather. However, there will be a seasonal signal in adult population levels due to the
+effects of temperature upon aquatic development times. For a given carrying capacity, a faster
+development time will allow a local habitat to have a higher larval &#8220;through-put&#8221; with corresponding
+impacts on the adult population. The scaling factor value in the <strong>Larval_Habitat_Types</strong> parameter
+is used to specify the carrying capacity per unit area D<sub>cell</sub>2.</p>
+</div>
+<div class="section" id="brackish-swamp">
+<h3>Brackish swamp<a class="headerlink" href="#brackish-swamp" title="Permalink to this headline">¶</a></h3>
+<p>The BRACKISH_SWAMP habitat setting deals with the dynamics of how rain fills a brackish swamp, how
+it decays and the associated parameter for rainfall-driven mortality threshold. This habitat type is
+observable in the Solomon Islands where an entire larval generation is flushed away as a result of
+the overflowing lagoon geography.  Since this is the case, the <strong>TEMPORARY_RAINFALL</strong> relationship
+between larval habitat and rainfall cannot reproduce these abrupt changes (on 0 week timescales) of
+biting rates. So, an additional rainfall-driven larval mortality term has been implemented that
+captures the non-linear rain-to- habitat relationship. This habitat uses the same decay rate as the
+semi-permanent water vegetation habitat.</p>
+<div class="figure" id="id3">
+<img alt="_images/Rainfall_Driven_Mortality_Flushing_of_Swamp.png" src="_images/Rainfall_Driven_Mortality_Flushing_of_Swamp.png" />
+<p class="caption"><span class="caption-text">Rainfall-driven mortality during swamp flushing</span></p>
+</div>
+</div>
+<div class="section" id="human-population">
+<h3>Human population<a class="headerlink" href="#human-population" title="Permalink to this headline">¶</a></h3>
+<p>The habitat type HUMAN_POPULATION scales with correlates of urban development, for example, water
+that is available due to water pots in urban areas. This type is configured by multiplying the
+number of people in the node’s population times the capacity value set in
+<strong>Larval_Habitat_Types</strong>.  Further, climate is not involved in setting
+the capacity, as available water is not dependent on rainfall (it is instead dependent on human-provided
+water sources).</p>
+</div>
+<div class="section" id="linear-spline">
+<h3>Linear spline<a class="headerlink" href="#linear-spline" title="Permalink to this headline">¶</a></h3>
+<p>LINEAR_SPLINE is a recent addition to the types of habitat supported. Instead of specifying a
+habitat type, users may utilize data that tracks the number of larvae measured throughout the year
+to estimate the daily larval population using linear interpolation. In other words, this option
+enables the user to use data collected from a specific site, or create data files to match a
+particular location.  This option does not replace the climatological parameters, but it instead
+adds a more flexible option in which you do not need climate data.</p>
+<p>LINEAR_SPLINE has different syntax than the other habitat types, as the user is now required to
+provide a distribution of the larval population. The following example provides the syntax for
+configuring this habitat type:</p>
+<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;Vector_Species_params&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;funestus&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;Larval_Habitat_Types&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;LINEAR_SPLINE&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;Capacity_Distribution_Per_Year&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">60.833</span><span class="p">,</span> <span class="mf">121.667</span><span class="p">,</span> <span class="mf">182.5</span><span class="p">,</span> <span class="mf">243.333</span><span class="p">,</span> <span class="mf">304.167</span><span class="p">],</span>
+            <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+          <span class="p">},</span>
+          <span class="nt">&quot;Max_Larval_Capacity&quot;</span><span class="p">:</span> <span class="mf">10000000000.0</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="modifying-habitat-availability">
+<h2>Modifying habitat availability<a class="headerlink" href="#modifying-habitat-availability" title="Permalink to this headline">¶</a></h2>
+<p>Ultimately, habitat is configured in order to create mosquito populations that realistically emulate
+observed <a class="reference internal" href="glossary.html#term-entomological-inoculation-rate-eir"><span class="xref std std-term">entomological inoculation rate (EIR)</span></a>. Briefly, available habitat is directly related
+to mosquito abundance, and mosquito abundance in turn is directly related to biting rate. In order
+to calibrate the model there are several options for configuring habitat. You can first set habitat
+parameters and modify them directly using the habitat scalar and decay rate. Then, after those
+initial parameters are set, you can modify habitat with overall scaling parameters.</p>
+<div class="section" id="habitat-scalars-and-decay-rates">
+<h3>Habitat scalars and decay rates<a class="headerlink" href="#habitat-scalars-and-decay-rates" title="Permalink to this headline">¶</a></h3>
+<p>The following two figures demonstrate the effects of varying the habitat scalar
+(<strong>Larval_Habitat_Types</strong>) and the <strong>Temporary_Habitat_Decay_Factor</strong> (k<sub>tempdecay</sub>)  for a
+single species with temporary habitat. Changing the habitat scalar will scale the resulting adult
+population size and biting rate by a similar factor.</p>
+<div class="figure" id="id4">
+<img alt="_images/Vary_Habitat_Scalar.png" src="_images/Vary_Habitat_Scalar.png" />
+<p class="caption"><span class="caption-text">Effect of varying the habitat scalar, <strong>Larval_Habitat_Types</strong></span></p>
+</div>
+<p>Lowering k<sub>tempdecay</sub> causes the resulting rainfall-driven habitat to decay at a slower
+rate and thus increases <img class="math" src="_images/math/557d5fad862c9046d26e1a930f45a550c146d592.png" alt="\tau"/><sub>temp</sub>.  A slower decay rate will result in higher
+larval habitat on average, and higher resulting adult population biting rates.</p>
+<div class="figure" id="id5">
+<img alt="_images/Vary_Temporary_Habitat_Scalar.png" src="_images/Vary_Temporary_Habitat_Scalar.png" />
+<p class="caption"><span class="caption-text">Effect of varying the decay rate, <strong>Temporary_Habitat_Decay_Factor</strong> (k<sub>tempdecay</sub>)</span></p>
+</div>
+<p>These two parameters can be co-varied to produce an appropriate temporal profile. If rainfall is
+constant, there is only one degree of freedom, as the habitat is always at equilibrium. The two
+degrees of freedom become important when there is a distinct rainy season. For example, scaling
+habitat produces the same ratio between biting rates in the wet season and dry season as seen in
+Effect of Varying Habitat Scalar.</p>
+<p>However, when varying the decay rate, the ratio between habitats is different in the wet season
+versus the dry season. As seen in the graph &#8220;Effect of Varying Temporary Habitat Decay Scalar&#8221;, a
+given ratio in rainy season will become exaggerated in the start of dry season (with a higher ratio
+the drier the season), as the slower decay rate extends habitat longer into the dry season.</p>
+</div>
+<div class="section" id="overall-scaling">
+<h3>Overall scaling<a class="headerlink" href="#overall-scaling" title="Permalink to this headline">¶</a></h3>
+<p>Often, it is desired to study a similar location, with the same species, temporal profile, etc., but
+with a different annual <a class="reference internal" href="glossary.html#term-entomological-inoculation-rate-eir"><span class="xref std std-term">entomological inoculation rate (EIR)</span></a>. EIR depends not only on
+climate, but on larval habitat availability as well. So as an alternative for modifying all  climate
+and habitat parameters to change EIR, it is simpler to use the habitat scaling parameter,
+<strong>x_Temporary_Larval_Habitat</strong> found in the configuration file. This parameter will scale all
+habitat  parameters without changing the temporal dynamics, so that a new transmission is achieved
+with the same ratios among the species, and same time profile. For example, setting
+<strong>x_Temporary_Larval_Habitat</strong> to 0.1 would simulate low EIR (or a  low transmission setting) by
+reducing available habitat to 10%; a value of 1 could be used to  simulate high EIR (or a high
+transmission setting), and there would be no reduction in available habitat.</p>
+<p>An alternative to <strong>x_Temporary_Larval_Habitat</strong> is <strong>LarvalHabitatMulitpilier</strong>.
+<strong>LarvalHabitatMultiplier</strong> is a parameter in the demographics file, and can be applied to all
+habitat types configured for the simulation, specific habitat types, or individual mosquito species
+within particular habitat types in the Nodes array of the demographics file (see NodeAttributes in
+<a class="reference internal" href="parameter-demographics.html"><span class="doc">Demographics file structure and parameters</span></a>). The following example shows the syntax:</p>
+<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">340461476</span><span class="p">,</span>
+        <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;LarvalHabitatMultiplier&quot;</span><span class="p">:</span> <span class="mf">10.0</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>It should be noted that <strong>LarvalHabitatMultiplier</strong> enables habitat availability to be modified
+independently for each species within a shared habitat. This is an upgrade over previous versions
+of EMOD in which the modifier would be applied equally to all species within a shared habitat.</p>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="malaria-vector-transmission-model.html" class="btn btn-neutral float-right" title="Vector transmission model" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="malaria-climate-demographics.html" class="btn btn-neutral" title="Climate and demographics spatial data" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for internal docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!-- Google analytics for public docs -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-4', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

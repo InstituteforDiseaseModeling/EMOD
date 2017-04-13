@@ -1,0 +1,86 @@
+====================
+Use input data files
+====================
+
+The :term:`input data files` contain the relatively fixed information about the population within
+each geographic node. For example, the number of individuals, geography, climate, demographics, and
+migration data. This topic describes how to download and use the input data files. These are in
+contrast to the demographic, geography, and migration parameters in the :term:`configuration file`
+that control simulation-wide qualities, such as enabling air migration across all nodes in the
+simulation.
+
+Except for the demographics file, you will generally use input data files without modifying them in
+any way. Only the demographics file is required, though migration files may be required for multi-node
+simulations. See :doc:`intro-inputs` for an overview of each of the different input files, including
+which are required for different simulations. See :doc:`file-inputs` for reference information
+about the structure of each of these files.
+
+Download input files
+====================
+
+The EMOD-InputData repository uses large file storage (LFS) to manage the binaries and large
+:term:`JavaScript Object Notation (JSON)` files. A standard Git clone of the repository will only
+retrieve the metadata for these files managed with LFS. To retrieve the actual data, follow the
+steps below.
+
+#.  Install the Git LFS plugin, if it is not already installed.
+
+    * For Windows users, download the plugin from https://git-lfs.github.com.
+    * For |Centos| users, the plugin is included with the PrepareLinuxEnvironment.sh script.
+
+#.  Using a Git client or Command Prompt window, clone the input data repository to retrieve
+    the metadata::
+
+        git clone https://github.com/InstituteforDiseaseModeling/EMOD-InputData.git
+
+#.  Navigate to the directory where you downloaded the metadata for the
+    input data files.
+
+#.  Cache the actual data on your local machine::
+
+        git lfs fetch
+
+#.  Replace the metadata in the files with the actual contents::
+
+        git lfs checkout
+
+Specify input files in the configuration file
+=============================================
+
+Follow the steps below to specify which input files to use in a simulation. Only the demographics
+file is required, though additional files are generally needed for a realistic simulation.
+
+#.  Place all input files for a simulation in the same directory. You will specify this
+    directory when you run a simulation. See :doc:`howto-simulations` for more information.
+#.  In your :term:`configuration file`, specify the path to each of these files, relative to the
+    directory above, in the appropriate parameter. Generally, these parameters are appended with
+    "_Filename" or "_Filenames".
+
+For example, the example below shows the relevant portion of a configuration file. See :doc
+:`parameter-configuration` for a complete list of the parameters.
+
+.. literalinclude:: ../json/howto-config-input-files.json
+   :language: json
+
+Modify demographics files
+=========================
+
+The demographics files provided by |IDM_s| generally contain information about prevalence,
+immunity, risk, population size, and more for a geographic region. However, you will almost
+certainly want to modify the file to provide more detail or to set up groups within a population to
+more accurately model heterogeneous populations in terms of transmission, group transitions, or
+targeted interventions.
+
+The demographics file is the only required input data file, with one exception. You have the option
+to run a simulation *without* a demographics file if you set **Enable_Demographics_Builtin** to 1 in
+the configuration file. However, this option is primarily used for software testing. It will not
+provide meaningful simulation data as it does not represent the population of a real geographic
+location.
+
+.. toctree::
+   :maxdepth: 2
+
+   howto-demographics-overlay
+   howto-demographics-heterogeneity
+   howto-hint
+

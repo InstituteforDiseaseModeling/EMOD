@@ -1,0 +1,17 @@
+============================
+Vector and malaria tutorials
+============================
+
+These tutorials are separated into two categories: baseline simulation scenarios
+and scenarios with campaigns. Baseline tutorials focus on simulation the spread of disease without
+the use of interventions. Scenarios with campaigns focus on campaigns aimed at stopping the spread
+of disease with one or more interventions. The tutorials are numbered in the order in which they should be read
+while learning.
+
+
+.. toctree::
+   :maxdepth: 3
+   :titlesonly:
+
+   malaria-VM-tutorials-baseline-sim-scenarios
+   malaria-VM-tutorials-scenarios-with-campaigns

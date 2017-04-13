@@ -1,0 +1,88 @@
+=========================
+Input data file structure
+=========================
+
+The :term:`input data files` described in this section determine the demographics, migration, climate, and other
+relatively fixed information about the population within each geographic node. These files are in
+contrast to the demographic, geographic, and migration parameters in the :term:`configuration file`
+that control simulation-wide qualities, such as enabling air migration across all nodes in the
+simulation.
+
+Generally, you will download and use input data files without modification. For instructions, see
+:doc:`howto-inputs`. However, demographics files can include many user-defined parameter values and
+will likely require modification. Only the demographics file is required for a simulation.
+
+Each type of input data generally requires both a metadata file that contains provenance information
+and a binary file that contains the actual data for each node. Some input files included with
+|EMOD_s| were prepared using CIESIN Gridded Population of the World (GPW) population distribution
+and a corresponding spatial resolution grid (for example, 2.5 arc minutes) to define the initial
+population and extent of the nodes for country-wide input files. Therefore, the naming convention
+for this files usually leads with the geographic location, followed by the spatial resolution, and
+input file type.
+
+IdReference types and NodeID generation
+=======================================
+
+All input files include the parameter **IdReference** in the metadata, which is used to generate the
+**NodeID** associated with each node in a simulation. There are currently four **IdReference**
+values that indicate the associated algorithm used for generating the **NodeID** for each node in a
+simulation. |EMOD_s| uses these values to compare different input data files in a simulation in
+order to match **NodeID** values. However, there is no reason you cannot assign any string you want
+to **IdReference**, provided all the input data files used in a simulation, such as demographics,
+climate, or migration, have the same **IDReference** value.
+
+Generally, nodes are defined using a geographic grid laid over the world, forming approximately
+square nodes of a certain size. The **NodeID** is then calculated based on latitude and
+longitude of the node, where the location of the node is considered the upper left corner of the
+square it represents. **NodeID** values are numbered from south to north for latitude and west
+to east for longitude, with 0,0 being the intersection of the International Date Line and the
+South Pole. Note that **NodeID** values are <longitude><latitude> values (not
+<latitude><longitude> values as normally provided).
+
+The three possible values for **IdReference** that use a grid to define and identify nodes differ
+based on grid resolution. |EMOD_s| is limited to a minimum node size of 30 arc-seconds
+(approximately 1 km at the equator). The three gridded values are:
+
+* Gridded world grump30arcsec
+* Gridded world grump2.5arcmin
+* Gridded world grump1degree
+
+The algorithm for encoding latitude and longitude into a **NodeID**  is as follows::
+
+    unsigned int xpix = math.floor((lon + 180.0) / resolution)
+    unsigned int ypix = math.floor((lat + 90.0) / resolution)
+    unsigned int **NodeID** = (xpix << 16) + ypix + 1
+
+This generates a **NodeID** that is a 4-byte unsigned integer (like all **NodeID** values); the
+first two  bytes represent the longitude of the node and the second two bytes represent the
+latitude. Note that as part of the final calculation, we add one to the NodeID. This is to
+reserve the **NodeID** of zero, since that is used as a null-value in a number of places (for
+example, in the migration files to signal that no migration value is present).
+
+In addition to these gridded values, you can assign a value of "Legacy" to indicate that
+**NodeID** values are defined in and copied directly from the demographics files. This is used
+when the nodes are not demarcated by a grid, but rather by some social construct, such as voting
+precincts or other administrative boundary, that don’t necessarily have an obvious heuristic for
+enumeration. Some types of data may only be available or easier to obtain when in such a form.
+The name "Legacy" does not imply anything derogatory or time-related. It is simply a term that
+was chosen to represent data that isn't related to the gridded information.
+
+When using nodes that are *not* using the gridded format, you cannot assume or easily determine
+resolution, shape, or actual location of the node point within/along that shape. In other words,
+the format of such files depends on the creator of the file and you should refer to any
+information provided in the metadata of the file or by the creator when parsing the file.
+
+.. It may make the most sense to describe the metadata, defaults, nodes sections in the reference
+.. for inputs in general in the overview topic. It doesn't look like they differ for different input data file types.
+.. then we can just describe the parameters for each and link to the GitHub download rather than
+.. try to keep JSON examples up to date. I don't think there's much gained by having those inline.
+
+
+.. toctree::
+   :maxdepth: 2
+   :titlesonly:
+
+   parameter-demographics
+   file-climate
+   file-migration
+   file-load-balancing

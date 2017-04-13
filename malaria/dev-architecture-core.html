@@ -1,0 +1,608 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Simulation core components &mdash; Malaria Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Malaria Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Malaria Model  documentation" href="index.html"/>
+        <link rel="up" title="Simulation controller subsystem" href="dev-architecture-sim-controller.html"/>
+        <link rel="next" title="Campaign management" href="dev-architecture-campaigns.html"/>
+        <link rel="prev" title="Simulation controller subsystem" href="dev-architecture-sim-controller.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Malaria Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.10
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-overview.html">Malaria disease overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-model-overview.html">Malaria model overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-IDM.html">Malaria research at IDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dev-architecture-environment.html">Environment subsystem</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="dev-architecture-sim-controller.html">Simulation controller subsystem</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Simulation core components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dev-architecture-campaigns.html">Campaign management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dev-architecture-reporter.html">Reporter component</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Malaria Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Malaria</a> &raquo;</li>
+      
+          <li><a href="dev-architecture-overview.html">EMOD architecture</a> &raquo;</li>
+      
+          <li><a href="dev-architecture-sim-controller.html">Simulation controller subsystem</a> &raquo;</li>
+      
+    <li>Simulation core components</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="simulation-core-components">
+<h1>Simulation core components<a class="headerlink" href="#simulation-core-components" title="Permalink to this headline">¶</a></h1>
+<p>The simulation component contains core functionality that models the behavior of a disease without any
+interventions and extended functionality to include migration, climate, or other input data to
+create a more realistic simulation. Disease transmission may be more or less complex depending on
+the disease being modeled.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If you modify the source code to add or remove configuration or campaign parameters, you may
+need to update the code used to produce the schema. You must also verify that your simulations
+are still scientifically valid.</p>
+</div>
+<div class="contents local topic" id="content">
+<p class="topic-title first">Content</p>
+<ul class="simple">
+<li><a class="reference internal" href="#simulation" id="id3">Simulation</a></li>
+<li><a class="reference internal" href="#node" id="id4">Node</a></li>
+<li><a class="reference internal" href="#individualhuman" id="id5">IndividualHuman</a><ul>
+<li><a class="reference internal" href="#disease-transmission" id="id6">Disease transmission</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>Each generic EMOD simulation contains the following core base classes:</p>
+<dl class="docutils">
+<dt>Simulation</dt>
+<dd>Created by the simulation controller via a <strong>SimulationFactory</strong> with each run of EMOD.</dd>
+<dt>Node</dt>
+<dd>Corresponds to a geographic area. Each simulation maintains a collection of one or more nodes.</dd>
+<dt>IndividualHuman</dt>
+<dd>Represents a human being. Creates <strong>Susceptibility</strong> and <strong>Infection</strong> objects for
+the collection of individuals it maintains. The file name that defines this class is &#8220;Individual&#8221;
+and you may see it likewise shortened in diagrams.</dd>
+<dt>Susceptibility</dt>
+<dd>Manages an individual&#8217;s immunity.</dd>
+<dt>Infection</dt>
+<dd>Represents an individual&#8217;s infection with a disease.</dd>
+</dl>
+<p>For vector simulations, the following corresponding classes are derived from generic classes:</p>
+<dl class="docutils">
+<dt>SimulationVector</dt>
+<dd>Creates <strong>NodeVector</strong> objects instead of generic <strong>Node</strong> objects.</dd>
+<dt>NodeVector</dt>
+<dd>Creates <strong>IndividualHumanVector</strong> objects instead of generic <strong>IndividualHuman</strong> objects and creates
+and manages <strong>VectorPopulation</strong> objects to model the mosquito vectors.</dd>
+<dt>IndividualHumanVector</dt>
+<dd>Represents a human being and provides the additional layer of functionality for how vectors
+interact with individual humans.</dd>
+<dt>VectorPopulation</dt>
+<dd>The mosquito species at each node, which can be represented by a collection of cohorts that
+counts the population of a specific state of mosquitoes (<strong>VectorCohort</strong>) or by a collection
+of individual agent mosquitoes (<strong>VectorIndividual</strong>).</dd>
+<dt>SusceptibilityVector</dt>
+<dd>Represents a human being&#8217;s susceptibility to vector-borne disease.</dd>
+<dt>InfectionVector</dt>
+<dd>Represents a human being&#8217;s infection with a vector-borne disease.</dd>
+</dl>
+<p>Substitute these classes wherever you see the generic base classes in the architecture documentation.</p>
+<p>For malaria simulations, the following corresponding classes are derived from vector classes:</p>
+<dl class="docutils">
+<dt>SimulationMalaria</dt>
+<dd>Creates <strong>NodeMalaria</strong> objects instead of generic <strong>Node</strong> objects.</dd>
+<dt>NodeMalaria</dt>
+<dd>Creates <strong>IndividualHumanMalaria</strong> objects instead of generic <strong>IndividualHuman</strong> objects and provides
+various malaria-specific counters for the purposes of reporting.</dd>
+<dt>IndividualHumanMalaria</dt>
+<dd>Represents a human being and provides the additional layer of functionality for how malaria
+vectors interact with individual humans.</dd>
+<dt>SusceptibilityMalaria</dt>
+<dd>Represents a human being&#8217;s susceptibility to malaria. It contains much of the intra-host model,
+by modeling the specific details of an individual’s immune system in the context of the
+malaria infection life cycle. It is highly configurable, and interacts closely with <strong>InfectionMalaria</strong>
+objects and the <strong>IndividualHumanMalaria</strong> object, its parent. From a software point of view,
+<strong>SusceptibilityMalaria</strong> derives from <strong>SusceptibilityVector</strong>, but in reality <strong>SusceptibilityVector</strong>
+provides minimal epidemiological functionality.</dd>
+<dt>InfectionMalaria</dt>
+<dd>Represents a human being&#8217;s infection with malaria. It is the other part of the detailed
+intra-host malaria model. It models the progression of the malaria parasite through sporozoite,
+schizont, hepatocyte, merozoite, and gametocyte stages. <strong>InfectionMalaria</strong> objects are
+contained with <strong>IndividualMalaria</strong> objects. There can be multiple such objects. They all
+interact closely with the <strong>SusceptibilityMalaria</strong> object. From a software point of view,
+<strong>InfectionMalaria</strong> derives from <strong>InfectionVector</strong>, but in reality <strong>InfectionVector</strong>
+provides minimal epidemiological functionality.</dd>
+</dl>
+<p>For generic simulations, human-to-human transmission uses a homogeneous contagion
+pool for each node. Every individual in the node sheds disease into the pool and acquires
+disease from the pool. For vector-borne diseases, disease transmission is more complex as it
+must take into account the vector life cycle. See <a class="reference internal" href="#arch-transmission"><span class="std std-ref">Disease transmission</span></a>.</p>
+<p>The relationship between these classes is captured in the following figure.</p>
+<div class="figure" id="id1">
+<img alt="_images/ArchSimulation.png" src="_images/ArchSimulation.png" />
+<p class="caption"><span class="caption-text">Simulation components</span></p>
+</div>
+<p>After the simulation is initialized, all objects in the simulation are updated at each time step,
+typically a single day. Each object implements a method <strong>Update</strong> that advances the state of the
+objects it contains, as follows:</p>
+<ul class="simple">
+<li><strong>Controller</strong> updates <strong>Simulation</strong></li>
+<li><strong>Simulation</strong> updates <strong>Nodes</strong></li>
+<li><strong>Node</strong> updates <strong>IndividualHuman</strong></li>
+<li><strong>IndividualHuman</strong> updates <strong>Susceptibility</strong>, <strong>Infections</strong>, and <strong>InterventionsContainer</strong></li>
+<li><strong>InterventionsContainer</strong> updates <strong>Interventions</strong></li>
+</ul>
+<div class="section" id="simulation">
+<h2><a class="toc-backref" href="#id3">Simulation</a><a class="headerlink" href="#simulation" title="Permalink to this headline">¶</a></h2>
+<p>As a stochastic model, EMOD uses a random number seed for all simulations. The <strong>Simulation</strong>
+object has a data member (RNG) that is an object maintaining the state of the random number
+generator for the parent <strong>Simulation</strong> object. The only generator currently supported is
+pseudo-DES. The random seed is initialized from the configuration parameter <strong>Run_Number</strong> and from the
+process MPI rank. All child objects needing access to the RNG must be provided an appropriate
+(context) pointer by their owners.</p>
+<p>The <strong>Simulation</strong> class contains the following methods:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Method</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Populate()</td>
+<td>Initializes the simulation. The <strong>Populate</strong> method initializes the simulation using
+both the configuration file and the demographic files. <strong>Populate</strong> calls through to
+<strong>populateFromDemographics</strong> to enable the <strong>Simulation</strong> object to create one or many <strong>Node</strong>
+objects populated with <strong>IndividualHumans</strong> as dictated by the demographics file, in conjunction with the
+sampling mode and value dictated by the configuration file. If the configuration file indicates that
+a migration and a climate model are to be used, those input file are also read. <strong>Populate</strong> also
+initializes all <strong>Reporters</strong>.</td>
+</tr>
+<tr class="row-odd"><td>Update()</td>
+<td>Advances the state of nodes.</td>
+</tr>
+</tbody>
+</table>
+<div class="figure" id="id2">
+<img alt="_images/ArchSimulationTree.png" src="_images/ArchSimulationTree.png" />
+<p class="caption"><span class="caption-text">Simulation object hierarchy</span></p>
+</div>
+<p>For multi-core parallelization, the demographics file is read in order on each process and identity
+of each node and is compared with a policy assigning nodes to processes embodied in objects
+implementing <strong>InitialLoadBalancingScheme</strong>. If the initial load balancing scheme allows a node for
+the current rank, the node is created via <strong>addNewNodeFromDemographics</strong>. After all nodes have been
+created and propagated, the <strong>NodeRankMaps</strong> are merged across all processes. See
+<a class="reference internal" href="file-load-balancing.html"><span class="doc">Load-balancing file structure</span></a> for more information.</p>
+</div>
+<div class="section" id="node">
+<h2><a class="toc-backref" href="#id4">Node</a><a class="headerlink" href="#node" title="Permalink to this headline">¶</a></h2>
+<p>Nodes are model abstractions that represent a population of individuals that interact in a way that
+does not depend on their geographic location. However, they represent a geographic location with
+latitude and longitude coordinates, climate information, migration links to other nodes, and
+miscellaneous demographic information. The <strong>Node</strong> is always the container for <strong>IndividualHumans</strong> and
+the contagion pool. The <strong>Node</strong> provides important capabilities for how <strong>IndividualHumans</strong> are created
+and managed. It can also contain a <strong>Climate</strong> object and <strong>Migration</strong> links if those features are
+enabled. The climate and migration settings are initialized based on the information in the input
+data files.</p>
+<p>The <strong>Node</strong> class contains the following methods:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Method</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>PopulateFromDemographics()</td>
+<td>The entry point that invokes <strong>populateNewIndividualsFromDemographics(InitPop)</strong>, which adds
+individuals to a simulation and initializes them. <strong>PopulateNewIndividualsFromBirth()</strong>
+operates similarly, but can use different distributions for demographics and initial infections.</td>
+</tr>
+<tr class="row-odd"><td>Update()</td>
+<td>Advances the state of individuals.</td>
+</tr>
+<tr class="row-even"><td>updateInfectivity()</td>
+<td><p class="first">The workhorse of the simulation, it processes the list of all individuals attached to the <strong>Node</strong>
+object and updates the force of infection data members in the contagion pool object. It calls a
+base class function <strong>updatePopulationStatistics</strong>, which processes all individuals, sets the counters
+for prevalence reporting, and calls <strong>IndividualHuman::GetInfectiousness</strong> for all <strong>IndividualHuman</strong> objects.</p>
+<p class="last">The code in <strong>GetInfectiousness</strong> governs the interaction of the <strong>IndividualHuman</strong> with the contagion
+pool object. The rest of the code in <strong>updateInfectivity</strong> processes the contagion beyond individual
+contributions. This can include decay of persisting contagion, vector population dynamics,
+seasonality, etc. This is also where the population-summed infectivity must be scaled by the
+population in the case of density-independent transmission.</p>
+</td>
+</tr>
+<tr class="row-odd"><td>updateVitalDynamics()</td>
+<td>Manages community level vital dynamics, primarily births, since deaths occur at the individual level.</td>
+</tr>
+</tbody>
+</table>
+<p>By default, an <strong>IndividualHuman</strong> object is created, tracked, and updated for every person within a
+node. To reduce memory usage and processing time, you may want to sample such that each
+<strong>IndividualHuman</strong> object represents multiple people. There are several different sampling strategies
+implemented, with different strategies better suited for different simulations. See
+<a class="reference internal" href="parameter-configuration.html#config-sampling"><span class="std std-ref">Sampling</span></a> for more information.</p>
+<p>If migration is enabled, at the end of the <strong>Node</strong> update, the <strong>Node</strong> moves all migrating
+individuals to a separate migration queue for processing. Once the full simulation time step is
+completed, all migrating individuals are moved from the migration queue and added to their
+destination nodes.</p>
+</div>
+<div class="section" id="individualhuman">
+<h2><a class="toc-backref" href="#id5">IndividualHuman</a><a class="headerlink" href="#individualhuman" title="Permalink to this headline">¶</a></h2>
+<p>The <strong>IndividualHuman</strong> class corresponds to human beings within the simulation. Individuals are always
+contained by a <strong>Node</strong> object. Each <strong>IndividualHuman</strong> object may represent one or more human beings,
+depending on the sampling strategy and value chosen.</p>
+<p>The <strong>IndividualHuman</strong> class contains components for susceptibility, infection, and interventions.
+<strong>Infection</strong> and <strong>Susceptibility</strong> cooperate to represent the detailed dynamics of infection and
+immune mechanisms. Every <strong>IndividualHuman</strong> contains a <strong>Susceptibility</strong> object that represents the
+state of the immune system over time. Only an infected <strong>IndividualHuman</strong> contains an <strong>Infection</strong>
+object, and may contain  multiple <strong>Infection</strong> objects.. <strong>Susceptibility</strong> is passed to initialize
+the infection immunology in <strong>Infection::InitInfectionImmunology()</strong>. The state of an individual&#8217;s
+susceptibility and infection are updated with <strong>Update()</strong> methods. Disease-specific models have
+additional derived classes with properties and methods to represent specifics of the disease biology.</p>
+<p>The <strong>InterventionsContainer</strong> is the mediating structure for how interventions interrupt disease
+transmission or progression. Campaign distribution results in an <strong>Intervention</strong> object being added
+to an individual’s <strong>InterventionsContainer</strong>, where it remains unless and until it is removed. When
+an <strong>IndividualHuman</strong> calls <strong>Update()</strong>, the <strong>InterventionsContainer</strong> is updated and its effects are
+applied to the <strong>IndividualHuman</strong>. These effects are used in the individual, infection, and
+susceptibility update operations. If migration is enabled, at the end of each individual’s update
+step EMOD checks if the individual is scheduled for migration
+(<strong>IndividualHuman::CheckForMigration()</strong>), setting a flag accordingly.</p>
+<p>The <strong>IndividualHuman</strong> class contains the following methods:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Method</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Update()</td>
+<td>Advances the state of both the infection and the immune system and then registers any necessary
+changes in an individual&#8217;s state resulting from those dynamics (that is, death, paralysis,
+or clearance). It also updates intrinsic vital dynamics, intervention effects, migration,
+and exposure to infectivity of the appropriate social network.</td>
+</tr>
+<tr class="row-odd"><td>ExposeToInfectivity()</td>
+<td>Passes the <strong>IndividualHuman</strong> to the <strong>ExposeIndividual()</strong> function if it is exposed to infectivity
+at a time step.</td>
+</tr>
+<tr class="row-even"><td>UpdateInfectiousness()</td>
+<td>Advances the quantity of contagion deposited to the contagion pool by an <strong>IndividualHuman</strong> at
+each time step of their infectious period. This is explained in more detail below.</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="disease-transmission">
+<span id="arch-transmission"></span><h3><a class="toc-backref" href="#id6">Disease transmission</a><a class="headerlink" href="#disease-transmission" title="Permalink to this headline">¶</a></h3>
+<p>Transmission of disease is mediated through a pool mechanism which tracks abstract quantities of
+contagion. The pool mediates individual acquisition and transmission of infections as well as
+external processes that modify the infectivity dynamics external to individuals. The pool provides
+basic mechanisms for depositing, decaying, and querying quantities of contagion which are associated
+with a specific <strong>StrainIdentity</strong>. The pool internally manages a separate <strong>ContagionPopulation</strong>
+for each possible antigen identity. <strong>ContagionPopulations</strong> have further structure and manage an
+array of contagion quantities for each substrain identity.</p>
+<p>Each <strong>IndividualHuman</strong> has a sampling weight <img class="math" src="_images/math/c0024048b579bafcf96ba5ded068b6a3a1882873.png" alt="W_i"/> and a total infectiousness <img class="math" src="_images/math/9a63346d0b18c3361d2ba446d7c9e7cf831d8c4d.png" alt="X_i"/>, the
+rate at which contacts with the infectious individual become infected. This rate can be modified by
+transmission-reducing immunity or heterogeneous contact rates, which are gathered in
+<img class="math" src="_images/math/07ae2b3d4535224a3ac69e74ea2312f1e79dceb4.png" alt="Y_{i,transmit}"/>, and the transmission-reducing effects of interventions, such as
+transmission- blocking vaccines in the factor <img class="math" src="_images/math/6db2ceb185250f25cb65249b4c956af4d742dddf.png" alt="Z_{i,transmit}"/>. The sampling weight
+<img class="math" src="_images/math/c0024048b579bafcf96ba5ded068b6a3a1882873.png" alt="W_i"/> is not included in the probability of acquiring a new infection. Sample particles are
+simulated as single individuals, their weighting <img class="math" src="_images/math/c0024048b579bafcf96ba5ded068b6a3a1882873.png" alt="W_i"/> is used to determine their effects upon
+the rest of the simulation.The total infectiousness <img class="math" src="_images/math/f2d283a2071f9d043c9e0b0f794a8880fa0d3ce9.png" alt="T"/> of the local human population is then
+calculated as:</p>
+<div class="math">
+<p><img src="_images/math/4310ead0cb900359eb44009896e3d01ae2164df9.png" alt="T = \sum_iW_iX_iY_{i,transmit}Z_{i,transmit}"/></p>
+</div><p>For simulation of population density-independent transmission, individual infectiousness <img class="math" src="_images/math/9a63346d0b18c3361d2ba446d7c9e7cf831d8c4d.png" alt="X_i"/>
+includes the average contact rate of the infectious individual, so this total infectiousness is
+divided by the population <img class="math" src="_images/math/9dcbbef8e0f76051d388013b90a95bec3069e484.png" alt="P"/> to get the force of infection <img class="math" src="_images/math/85f51932b6e712a69fbf79e6e4147c1a6858c388.png" alt="FI=\frac{T}{P}"/> for each
+individual in the population. The base rate of acquisition of new infections per person is then
+<img class="math" src="_images/math/09308bfad2b36222f938da7b3d80f7ce42a5fd27.png" alt="FI"/>, which can be modified for each individual <img class="math" src="_images/math/d2ed2630e579be280a30b6646f4d706103c337ce.png" alt="I"/> by their characteristics
+<img class="math" src="_images/math/c8e55c35ea4248b13f63e327536adea130730e01.png" alt="Y_{i,acquire}"/> and interventions <img class="math" src="_images/math/efff9a092a1c6c6e46dd2902822c9493058d5729.png" alt="Z_{i,acquire}"/>. Over a time step <img class="math" src="_images/math/ec002955bdf95ee9869878fbad4f80fc98539359.png" alt="\Delta t"/>,
+the probability of an individual acquiring a new infection is then:</p>
+<div class="math">
+<p><img src="_images/math/60e18ea731a2a035cc6e361958925982809e046e.png" alt="P_{I,i} = 1- \text{exp}(-F_IY_{i,acquire}Z_{i,acquire}\Delta t)"/></p>
+</div><p>A new infection receives an incubation period and infectious period from the input configuration (a
+constant at present, but possibly from specified distributions in the future) and a counter tracks
+the full latency, which is possible when simulating individual particles. After the incubation
+period, the counter for the infectious period begins, during which time the infection contributes to
+the individual’s infectiousness <img class="math" src="_images/math/9a63346d0b18c3361d2ba446d7c9e7cf831d8c4d.png" alt="X_i"/>.</p>
+<p>For vector-borne diseases, during an <strong>Update()</strong> for a node, the infectiousness of vectors is
+calculated on the local human population regarding the vector life cycle, along with the effects
+their interventions, such as bednets. Weather data from the <strong>Climate</strong> object is then used to
+update the available larval habitat for each local vector species. Multiple local vector species
+are supported, and after the weather updates, each vector species is advanced through a time
+step with the <strong>VectorPopulation::TimeStep()</strong> method. This calculates the life cycle and vector
+infection dynamics, along with the feeding cycle. It updates the indoor and outdoor bites, and
+indoor and outdoor infectious bites on the local human population. Each Individual in the local
+human population is then advanced in an <strong>Update()</strong>, propagating its infections forward in
+time, updating its interventions and infectivity, and acquiring any new infections.</p>
+<p><strong>NodeVector::updateInfectivity()</strong> calls the <strong>VectorPopulation::TimeStep()</strong> method for mortality
+adjustments due to weather and the human population and, when completed, processes each list.
+The effects of the human population are accounted for in <strong>VectorPopulation::Update_Host_Effects()</strong>,
+which determines the outcomes for indoor and outdoor attempted feeds on each individual human,
+and then on the human population as a whole, weighting by any heterogeneous biting. The
+processing order is:</p>
+<ol class="arabic simple">
+<li>All infectious female mosquitoes</li>
+<li>All infected female mosquitoes</li>
+<li>All adult uninfected female mosquitoes</li>
+<li>All adult male mosquitoes</li>
+<li>Immature mosquitoes</li>
+<li>All mosquito larvae</li>
+<li>All mosquito eggs</li>
+</ol>
+<p>After each list is updated, all indoor and outdoor bites, both infectious and non-infectious,
+are tallied and updated within the <strong>Node</strong> infectivity objects.</p>
+<p>Within a list update, each cohort of identical-state mosquitoes or each individual-agent
+mosquito experiences risk of mortality, may progress through any stage of development, such as
+sporogony (for infected) or larval maturation (for larval), and may attempt a blood feed (for
+adult females). For mosquitoes attempting a blood feed, outcomes are governed by the calculated
+host effects, with sequential conditional draws for choice of host type, choice of indoor or
+outdoor feeding location, and feed outcome. The potential feed outcomes are die before feeding,
+no host found, die during feeding, die post-feeding, and successful feed. Successful feeds
+result in ovipositions, and eggs laid start the next generation of mosquitoes.</p>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dev-architecture-campaigns.html" class="btn btn-neutral float-right" title="Campaign management" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dev-architecture-sim-controller.html" class="btn btn-neutral" title="Simulation controller subsystem" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for internal docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!-- Google analytics for public docs -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-4', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

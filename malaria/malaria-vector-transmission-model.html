@@ -1,0 +1,395 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Vector transmission model &mdash; Malaria Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Malaria Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Malaria Model  documentation" href="index.html"/>
+        <link rel="up" title="Malaria model structure and framework" href="malaria-model-framework.html"/>
+        <link rel="next" title="Malaria infection and immune model" href="malaria-infection-immune-model.html"/>
+        <link rel="prev" title="Larval habitat" href="malaria-larval-habitat.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Malaria Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.10
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-overview.html">Malaria disease overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="malaria-model-overview.html">Malaria model overview</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="malaria-model-general-info.html">Malaria model general information</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="malaria-model-framework.html">Malaria model structure and framework</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="malaria-climate-demographics.html">Climate and demographics spatial data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="malaria-larval-habitat.html">Larval habitat</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Vector transmission model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="malaria-infection-immune-model.html">Malaria infection and immune model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="malaria-symptoms-diagnosis.html">Malaria symptoms and diagnostics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="malaria-antimalarial-drugs.html">Antimalarial drugs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-IDM.html">Malaria research at IDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Malaria Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Malaria</a> &raquo;</li>
+      
+          <li><a href="malaria-model-overview.html">Malaria model overview</a> &raquo;</li>
+      
+          <li><a href="malaria-model-framework.html">Malaria model structure and framework</a> &raquo;</li>
+      
+    <li>Vector transmission model</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="vector-transmission-model">
+<h1>Vector transmission model<a class="headerlink" href="#vector-transmission-model" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference internal" href="glossary.html#term-vector-model"><span class="xref std std-term">vector model</span></a> can be run in one of two modes: as a <a class="reference internal" href="glossary.html#term-cohort-model"><span class="xref std std-term">cohort model</span></a> or as an
+<a class="reference internal" href="glossary.html#term-individual-mosquito-model"><span class="xref std std-term">individual mosquito model</span></a> (see <a class="reference internal" href="malaria-model-overview.html"><span class="doc">Malaria model overview</span></a> for more information). The
+vector model inherits the same human-infection model structure from the generic simulation type:
+uninfected, latent incubation, infectious, multiple immune variables, and super-infection. However,
+the transmission of infections is not between individual humans, but rather via the human-to-vector
+and vector-to-human pathways. The model is a closed-loop feeding cycle where a successful vector
+(mosquito) feeds (both indoors and outdoors), mates, then produce eggs which become larva and then
+adult mosquitoes.</p>
+<p>For example, vector blood-feeding branches into various probabilities that are calculated once per
+<a class="reference internal" href="glossary.html#term-time-step"><span class="xref std std-term">time step</span></a>. These calculations are based on species parameters and aggregated vector
+interventions (see <a class="reference internal" href="#tree"><span class="std std-ref">feeding decision tree</span></a>).</p>
+<p>Vector transmission can be thought of in terms of vector ecology, and in the EMOD framework is
+comprised of several components: 1.  <a class="reference internal" href="#tracking"><span class="std std-ref">Vector tracking and the mosquito life-cycle</span></a>, 2. mosquito behavior, which involves
+feeding (see <a class="reference internal" href="#feeding"><span class="std std-ref">Modeling feeding cycle outcomes</span></a>), and 3. transmission of malaria-causing <em>Plasmodium</em>
+parasites between humans and mosquitoes (see <a class="reference internal" href="#transmission"><span class="std std-ref">Transmission between humans and vectors</span></a>). Each of these components is
+described in more detail below.</p>
+<p>For a complete list of configuration parameters that are used in the malaria model, see the
+<a class="reference internal" href="parameter-configuration.html"><span class="doc">Configuration parameters</span></a>.</p>
+<div class="section" id="vector-tracking-and-the-mosquito-life-cycle">
+<span id="tracking"></span><h2>Vector tracking and the mosquito life-cycle<a class="headerlink" href="#vector-tracking-and-the-mosquito-life-cycle" title="Permalink to this headline">¶</a></h2>
+<p>Populations are tracked as cohorts throughout the full mosquito life-cycle:</p>
+<ul class="simple">
+<li>From eggs to larvae with a temperature-dependent development period
+preceding emergence</li>
+<li>A brief immature phase including sugar-feeding and mating</li>
+<li>Repeating multi-day <a class="reference internal" href="glossary.html#term-gonotrophic"><span class="xref std std-term">gonotrophic</span></a> cycles during which mosquitoes may be
+exposed to infection by gametocytes</li>
+<li>A temperature-dependent latency for sporogeny</li>
+</ul>
+<p>Life-cycle progression is modulated through a set of required species-specific parameters.</p>
+<div class="figure" id="id1">
+<img alt="_images/Vector_Transmission_life_cycle.png" src="_images/Vector_Transmission_life_cycle.png" />
+<p class="caption"><span class="caption-text">Vector life cycle</span></p>
+</div>
+</div>
+<div class="section" id="modeling-feeding-cycle-outcomes">
+<span id="feeding"></span><h2>Modeling feeding cycle outcomes<a class="headerlink" href="#modeling-feeding-cycle-outcomes" title="Permalink to this headline">¶</a></h2>
+<p>Adult vectors enter a cycle of host-seeking, feeding, and egg-laying that continues until death.
+Successful vector blood-feeding branches into various probabilities that are calculated once per
+<a class="reference internal" href="glossary.html#term-time-step"><span class="xref std std-term">time step</span></a>. These calculations are based on species parameters (for example, <em>An. arabiensis</em>
+has a higher propensity to feed outdoors or on livestock) and aggregated vector interventions.</p>
+<p>Various feeding cycle outcomes are calculated from branching trees of conditional probabilities, and
+individual interventions modulate the probability of choosing between branches. Feeding cycle
+outcomes include:</p>
+<ul class="simple">
+<li>Death before, during, or after feeding</li>
+<li>Host unavailable</li>
+<li>Successful human feed</li>
+</ul>
+<p>The allocation of mosquitoes to feeding-cycle outcomes is based on end-state probabilities that have
+been aggregated over the individual humans in the simulation.</p>
+<p>Multiple simultaneous interventions can target various branches in the vector feeding tree. For
+example, when both <a class="reference internal" href="glossary.html#term-indoor-residual-spraying-irs"><span class="xref std std-term">indoor residual spraying (IRS)</span></a> and <a class="reference internal" href="glossary.html#term-insecticide-treated-nets-itn"><span class="xref std std-term">insecticide-treated nets (ITN)</span></a>
+are applied against indoor host-seeking mosquitoes, IRS can discourage mosquitoes from entering the
+house and kill mosquitoes before feeding. The fraction of mosquitoes that survive can be blocked by
+the ITN, which may also kill a subset of the blocked fraction. Those mosquitoes who survive the
+feeding attempt may be killed by IRS post-feed. This is how deterrent and toxic effects of multiple
+interventions can be represented simultaneously.</p>
+<p id="tree">To interact with these parameters and visualize the workings of this microsolver, see the decision
+tree visualization below:</p>
+<iframe src="https://institutefordiseasemodeling.github.io/UnityVisualization/" height="680" width="1000">
+</iframe><p>To get started, press the play button. You can also pause the visualization at any time.  Parameters
+in blue are vector species parameters, while parameters in  green are types of campaign
+interventions. Information on these parameters can be found in <a class="reference internal" href="parameter-configuration.html"><span class="doc">Configuration parameters</span></a> and
+<a class="reference internal" href="parameter-campaign.html"><span class="doc">Campaign parameters</span></a>. The two pink points on the tree illustrate when transmission of malaria
+parasites is possible.</p>
+<p>When the simulation starts, the initial mosquito population is set at 100 individuals. The starting
+population for day two has an initial seeding of 50 mosquitoes, and also  includes all mosquitoes
+that either live without feeding or feed and oviposit.  The simulation includes parameters that
+determine the lifespan of mosquitoes and the time it takes for oviposited eggs to hatch and mature
+to adulthood. As time progresses, the population will be comprised of only mosquitoes that are
+generated through the oviposition cycle in the model.</p>
+<p>The counters on the right side of the visualization keep track of current and total mosquitoes that
+have &#8220;spawned&#8221; (generated in the simulation), died, lived without feeding, and fed and oviposited.</p>
+<p>As an example, let&#8217;s simulate <em>Anopheles gambiae</em>.  Set <strong>Life_Expectancy</strong> to 10 (most are thought
+to live approximately 1-2 weeks in nature), <strong>Egg_to_Adult</strong> to 5 (this is their minimum duration in
+the aquatic phase), <strong>Days_between_Feeds</strong> to 3, and <strong>Anthropophily</strong> and
+<strong>Indoor_Feeding_Fraction</strong> to 0.8. These mosquitoes prefer to primarily feed on humans, and
+preferentially feed indoors. Now, by changing the interventions, you can see how effective
+interventions (or combinations of interventions) need to be in order to  disrupt (and reduce)
+mosquito feeding and oviposition. Note that the slider bars for interventions range from 0 - 1, with
+1 conferring 100% effectiveness. When mosquito ecology is sufficiently disrupted, malaria
+transmission can be controlled.  You can also manipulate the species parameters to see how mosquito
+ecology impacts the need for particular types of interventions.</p>
+<p>If you are interested in simulating other mosquito species, more information on their relevant attributes
+can be found in the articles <a class="reference external" href="https://malariajournal.biomedcentral.com/articles/10.1186/1475-2875-13-146">Made-to-measure malaria vector control strategies: rational design
+based on insecticide properties and coverage of blood resources for mosquitoes</a>, by Killeen <em>et al</em>.,
+2014, <em>Malaria Journal</em> 13:146, and <a class="reference external" href="https://www.nature.com/articles/sdata201614#data-records">A global bionomic database for the dominant vectors of human
+malaria</a>, by Massey <em>et al</em>., 2016, <em>Nature</em>.</p>
+</div>
+<div class="section" id="transmission-between-humans-and-vectors">
+<span id="transmission"></span><h2>Transmission between humans and vectors<a class="headerlink" href="#transmission-between-humans-and-vectors" title="Permalink to this headline">¶</a></h2>
+<p>Transmission between humans and vectors can only occur when mosquitoes successfully feed on humans
+(see <a class="reference internal" href="#modeling-feeding-cycle-outcomes">Modeling feeding cycle outcomes</a>). Infectious humans can infect susceptible mosquitoes when
+mosquitoes ingest gametocytes during the blood meal. Conversely, infectious mosquitoes can infect
+susceptible humans by injecting sporozoites into the blood during feeding. Infectiousness of
+individuals to mosquitoes is proportional to the number of mature gametocytes absorbed in a blood
+meal, but modulated by a factor that inactivates gametocytes at high cytokine densities. Peak
+infectiousness typically follows peak parasitemia by about ten days. See the
+<a class="reference internal" href="malaria-infection-immune-model.html"><span class="doc">Malaria infection and immune model</span></a> for more information regarding within-host parasite dynamics,
+and the figure on the parasite life-cycle in the <a class="reference internal" href="malaria-overview.html"><span class="doc">Malaria disease overview</span></a> for more information
+on the parasite life stages.</p>
+<div class="figure" id="id2">
+<img alt="_images/Malaria_Infection_human_vector_transmission.png" src="_images/Malaria_Infection_human_vector_transmission.png" />
+<p class="caption"><span class="caption-text">Transmission between humans and vectors</span></p>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="malaria-infection-immune-model.html" class="btn btn-neutral float-right" title="Malaria infection and immune model" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="malaria-larval-habitat.html" class="btn btn-neutral" title="Larval habitat" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for internal docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!-- Google analytics for public docs -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-4', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

@@ -1,1 +1,0 @@
-..\..\..\Scripts\plotPropertyReport.py output_scaleup_property\PropertyReportTB.json -c "Statistical Population"

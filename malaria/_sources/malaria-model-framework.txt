@@ -1,0 +1,65 @@
+======================================
+Malaria model structure and framework
+======================================
+.. this is where it would be nice to link to the model visualizations (the interactive stuff).
+.. Although, they might instead be embedded on the page with the corresponding schematic. Not sure.
+
+The malaria |EMOD_s| is complex, with numerous configurable parameters. The following network
+diagram breaks down the model into various model components, and illustrates how they interact with
+one another.  The components on the network diagram correspond to the structural components  listed
+below. Note that there is  not perfect overlap between the labels on the network diagram and the
+structural components; this is because the network is drawn with increased detail in order to
+provide clarity in how the model functions and the components interact. The following pages will
+describe in detail how the structural components function.
+
+
+.. figure:: ../images/vector-malaria/malaria_network_schematic.png
+
+  Network diagram illustrating the malaria model and its constituent components.
+
+
+.. Do we have a way to embed links into the figure? It would be cool if it was possible to click
+.. on a box on the figure, and go to that component section...
+
+.. TBD: may be getting a new version of the picture, where the vector/human transmission bit is a different color
+.. will need to update the file.
+
+
+ As new technology arises and novel types of interventions become available, it will be
+ relatively seamless to integrate them into the current model structure. For example, as genetic
+ technology improves and testing the utility of utilizing GM mosquitoes (such as a :term:`gene
+ drive mosquito`) in control efforts becomes important, |EMOD_s| will have no difficulty
+ integrating this novel intervention into simulations.
+
+
+See the :doc:`parameter-overview` for a complete description of all configurable parameters for
+the malaria model.
+
+
+Malaria model structural components
+===================================
+
+The model's modular framework includes the following components:
+
+.. any other components? Rephrase this so that it is clear it refers to the above schematic.
+
+.. toctree::
+   :maxdepth: 3
+   :titlesonly:
+
+   malaria-climate-demographics
+   malaria-larval-habitat
+   malaria-vector-transmission-model
+   malaria-infection-immune-model
+   malaria-symptoms-diagnosis
+   malaria-antimalarial-drugs
+
+
+.. Milen: vector-genetic-modifications info?? (is it different than the parasite genetics page?)
+
+
+
+
+
+
+

@@ -1,0 +1,116 @@
+=========================================
+Vector and malaria 1: Simple vector model
+=========================================
+
+In this tutorial you will configure and run a simple, three-species vector simulation in Namawala.
+You will calculate the baseline EIR, and by varying the parameter **x_Temporary_Larval_Habitat**,
+observe the dependence of EIR on larval habitat. (See Scaling Factors.)
+
+Use the config.json and campaign.json in the following directories for this tutorial.
+
+* Scenarios\VectorAndMalaria\01_A_Namawala3Vectors_lowEIR
+
+* Scenarios\VectorAndMalaria\01_B_Namawala3Vectors_highEIR
+
+
+
+Steps
+=====
+
+The config.json is set with the following default values. Optional settings are detailed in the
+various tutorial steps.
+
+#.  Set the parameter **Simulation_Type** to the value “VECTOR_SIM”.
+
+    This vector model inherits the same human-infection model structure from the generic simulation
+    type: uninfected, latent incubation, infectious, multiple immune variables, and super-infection.
+    However, the transmission of infections is no longer between individual humans, but rather via the
+    human-to-vector and vector-to-human pathways. The vector life cycle and feeding cycle in the
+    model are described in the article `Eckhoff, Malaria Journal 2011,
+    10:303 <http://www.malariajournal.com/content/10/1/303>`_. Also, see the `Larval Habitat`_ topic
+    in the malaria documentation.
+
+    .. _Larval Habitat: ./../malaria/malaria-larval-habitat.html
+
+#.  Set the vector population.
+
+    A separate **VectorPopulation** object is created for each vector species in the simulation.
+    Modeling multiple vector species simultaneously allows for a mechanistic description of vector
+    abundances and behavior through the effects of climate and weather on different preferred larval
+    habitats. The three vector species present in this tutorial are *Anopheles arabiensis*, *Anopheles
+    gambiae*, and *Anopheles funestus*, as these vectors drive most transmission in the Namawala region.
+    *An. funestus* has more relative importance during the dry season, but *An. arabiensis* and *An.
+    gambiae* combined carry most of the annual transmission. For more information, see :ref:`config-vector`
+    parameters.
+
+    Set the vector population with the following parameters:
+
+
+    * Set **Vector_Sampling_Type** to "VECTOR_COMPARTMENTS NUMBER"
+    * Set **Vector_Species_Names** to "arabiensis," "funestus," "gambiae"
+
+
+
+#.  Set **Enable_Interventions** to 0 to run a baseline simulation with no public health campaign. For
+    more information, see :ref:`config-simulationsetup` parameters.
+
+
+
+
+#.  Set the incubation period.
+
+    The incubation period **Incubation_Period_Distribution** is set to “FIXED_DURATION” and
+    **Base_Incubation_Period** is set to 25 days corresponding to the duration from an infectious mosquito
+    bite to the development of sufficiently numerous gametocytes to infect mosquitoes. For more
+    information, see :ref:`config-generaldisease` parameters.
+
+#.  Set the infectious period with the following parameters:
+
+
+    * Set **Base_Infectious_Period** to 180.
+    * Set **Base_Infectivity** to 1.
+    * Set **Base_Mortality** to 0.
+    * Set **Enable_Superinfection** to 1.
+    * Set **Infectious_Period_Distribution** to "EXPONENTIAL_DURATION."
+
+#.  Configure the vector species parameters.
+
+    The vector species parameters described in the article `Eckhoff, Malaria Journal 2011,
+    10:303 <http://www.malariajournal.com/content/10/1/303>`__ are
+    specified for each species present in the simulation. For more information, see
+    :ref:`config-vectorspecies` and :ref:`config-scalingfactors` parameters.
+
+
+    * Set **Acquire_Modifier** to 0.2.
+    * Set **Adult_Life_Expectancy** to 10.
+    * Set **Anthropophily** to 0.95.
+    * Set **Aquatic_Arrhenius1** to 84200000000.
+    * Set **Aquatic_Arrhenius2** to 8328.
+    * Set **Aquatic_Mortality_Rate** to 0.1.
+    * Set **Days_Between_Feeds** to 3.
+    * Set **Egg_Batch_Size** to 100.
+    * Set **Immature_Duration** to 2.
+    * Set **Indoor_Feeding_Fraction** to 1.
+    * Set **Infected_Arrhenius1** to 117000000000.
+    * Set **Infected_Arrhenius2** to 8336.
+    * Set **Infected_Egg_Batch_Factor** to 0.8.
+    * Set **Infectious_Human_Feed_Moratality_Factor** to 1.5.
+    * Set **Larval_Habitat_Types** to "TEMPORARY_RAINFALL": 11250000000.
+    * Set **Transmission_Rate** to 0.5.
+    * Set **x_Temporary_Larval_Habitat** to 0.1.
+
+
+.. warning::
+
+  The above settings are for *An. arabiensis* vector population, but settings are
+  different for the other species. These are noted in detail within the configuration file under the
+  **Vector_Species_Params** parameter.
+
+
+Run the simulation
+==================
+
+Run the simulation and generate graphs of the simulation output. For more information, see
+:doc:`using-quickstart`.
+
+

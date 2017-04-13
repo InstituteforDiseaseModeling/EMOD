@@ -1,0 +1,39 @@
+===========================================
+Vector and malaria 10: Insect-killing fence
+===========================================
+
+The **InsectKillingFence** is a node-targeted intervention that is any sort of fence-like system
+designed to stop insects, such as mosquitoes. For example, you could create an insect-killing fence
+by stringing together a series of bednets. The mode-of-action is the killing of the specified
+fraction of all feeding mosquitoes both at the beginning and at the end of the feeding cycle.
+
+While the idea of an insect-killing fence (especially a photonic fence) is interesting in and of
+itself, the real focus of this tutorial concerns its use. Namely, this is an intervention that can
+kill mosquitoes outdoors both on their way in to feed and on their way out to oviposit.
+
+
+Use the config.json and campaign.json in the following directory for this tutorial.
+
+* Scenarios\VectorAndMalaria\10_InsectKillingFence
+
+
+
+Steps
+=====
+
+#.  In the campaign file, in **Intervention_Config**, set **class** to "InsectKillingFence".
+#.  Set **Start_Day** to 1460. For more information, see :ref:`ec-campaignevent` parameters.
+#.  Set the following parameters in the intervention. For more information, see :ref:`iv-insectkillingfence`
+    and :ref:`Waning effect <iv-waningeffect>` parameters.
+
+    * Set **Cost_To_Consumer** to 3.75.
+    * In **Killing_Config**, set **Initial_Effect** to 0.28.
+    * Set **Decay_Time_Constant** to 2190.
+
+
+
+Run the simulation
+==================
+
+Run the simulation and generate graphs of the simulation output. For more information, see
+:doc:`using-quickstart`.

@@ -1,3 +1,0 @@
-DO NOT DELETE.
-
-this file is for the FileSystemTest class to use.

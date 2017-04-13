@@ -1,0 +1,1597 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Configuration parameters &mdash; Generic Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Generic Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Generic Model  documentation" href="index.html"/>
+        <link rel="up" title="EMOD parameter reference" href="parameter-overview.html"/>
+        <link rel="next" title="Campaign parameters" href="parameter-campaign.html"/>
+        <link rel="prev" title="Demographics file structure and parameters" href="parameter-demographics.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Generic Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.10
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="parameter-demographics.html">Demographics file structure and parameters</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Configuration parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameter-campaign.html">Campaign parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Generic Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Generic</a> &raquo;</li>
+      
+          <li><a href="parameter-overview.html">EMOD parameter reference</a> &raquo;</li>
+      
+    <li>Configuration parameters</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="configuration-parameters">
+<h1>Configuration parameters<a class="headerlink" href="#configuration-parameters" title="Permalink to this headline">¶</a></h1>
+<p>The parameters described in this reference section determine the behavior of a simulation.
+Simulations are configured in a <a class="reference internal" href="glossary.html#term-configuration-file"><span class="xref std std-term">configuration file</span></a>. This file is a <a class="reference internal" href="glossary.html#term-javascript-object-notation-json"><span class="xref std std-term">JavaScript Object
+Notation (JSON)</span></a> formatted file that contains mostly a flat list of JSON key-value pairs. For
+information on JSON, see <a class="reference internal" href="parameter-overview.html"><span class="doc">EMOD parameter reference</span></a>.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false.</p>
+</div>
+<div class="contents local topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#cluster-options" id="id1">Cluster options</a></li>
+<li><a class="reference internal" href="#demographics" id="id2">Demographics</a></li>
+<li><a class="reference internal" href="#event-recorder-report-settings" id="id3">Event recorder report settings</a></li>
+<li><a class="reference internal" href="#general-disease" id="id4">General disease</a></li>
+<li><a class="reference internal" href="#geography-and-environment" id="id5">Geography and environment</a></li>
+<li><a class="reference internal" href="#input-files" id="id6">Input files</a></li>
+<li><a class="reference internal" href="#migration" id="id7">Migration</a></li>
+<li><a class="reference internal" href="#output-options" id="id8">Output options</a></li>
+<li><a class="reference internal" href="#sampling" id="id9">Sampling</a></li>
+<li><a class="reference internal" href="#scaling-factors" id="id10">Scaling factors</a></li>
+<li><a class="reference internal" href="#simulation-setup" id="id11">Simulation setup</a></li>
+<li><a class="reference internal" href="#spatial-output-channels" id="id12">Spatial output channels</a></li>
+</ul>
+</div>
+<div class="section" id="cluster-options">
+<span id="config-clusteroptions"></span><h2><a class="toc-backref" href="#id1">Cluster options</a><a class="headerlink" href="#cluster-options" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>Load_Balance_Filename</strong></td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>UNINITIALIZED STRING</td>
+<td>Path to input file used when a static load balancing scheme is selected.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Num_Cores</strong></td>
+<td>integer</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>Number of cores used to run a simulation. This is used by the infrastructure that runs the job, such as an HPC cluster or the Regression scripts, and is not used by the DTK.</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="demographics">
+<span id="config-demographics"></span><h2><a class="toc-backref" href="#id2">Demographics</a><a class="headerlink" href="#demographics" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>Age_Initialization_Distribution_Type</strong></td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>DISTRIBUTION_OFF</td>
+<td>Method for initializing the age distribution in the simulated population. Possible values are: DISTRIBUTION_OFF - All individuals default to age 20-years-old. DISTRIBUTION_SIMPLE - Individual ages are drawn from a distribution whose functional form and parameters are specified in the IndividualAttributes demographics input layers: AgeDistributionFlag, AgeDistribution1, and AgeDistribution2. DISTRIBUTION_COMPLEX - Individual ages are drawn from a piecewise linear distribution specified in the IndividualAttributes demographics input layer AgeDistribution.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Base_Population_Scale_Factor</strong></td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>1</td>
+<td>If Population_Scale_Type is set to FIXED_SCALING, the initial simulation population is uniformly scaled over the entire area to adjust for historical or future population density.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Birth_Rate_Dependence</strong></td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>FIXED_BIRTH_RATE</td>
+<td>This parameter determines how the birth rate specified in the demographics file is used. Possible values are: FIXED_BIRTH_RATE- The absolute rate at which new individuals are born. POPULATION_DEP_RATE - Scales the node population to determine the birth rate. DEMOGRAPHIC_DEP_RATE - Scales the female population within fertility age ranges to determine the birth rate. INDIVIDUAL_PREGNANCIES - Results in a similar birth rate as DEMOGRAPHIC_DEP_RATE, but pregnancies are assigned on an individual basis and result  in a 40-week pregnancy for a specific individual with a birth at the end, INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE, and INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Death_Rate_Dependence</strong></td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NONDISEASE_MORTALITY_OFF</td>
+<td>This parameter determines how the death rate specified in the demographics file is used. Possible values are: NONDISEASE_MORTALITY_OFF, NONDISEASE_MORTALITY_BY_AGE_AND_GENDER and NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Enable_Aging</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Set to 1 to account for aging in the population. Set to 0 to assume that the population does not age.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Enable_Birth</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Set to 1 to enable individuals to be added to the simulation by birth.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Enable_Demographics_Birth</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Assumes that newborn characteristics such as sickle-cell status are heterogeneous. Set to 0 to assume by default that all newborns have identical characteristics.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Enable_Demographics_Builtin</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Uses demographics input files to configure the initial population. Enter 0 to use a standard testing sandbox which is useful for testing and validating code pathways.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Enable_Demographics_Gender</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Enable_Demographics_Gender=0 assigns gender based on a 50/50 draw, while Enable_Demographics_Gender=1 draws from a male/female ratio that is randomly smeared by a Gaussian of width 1%.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Enable_Demographics_Other</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Includes the impact of other relevant demographic factors. For example, fraction of individuals above poverty, urban/rural characteristics, heterogeneous initial immunity and risk. Set to 0 to run the simulation without other relevant demographic factors.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Enable_Disease_Mortality</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Set to 1 to enable disease mortality. Set to 0 to disable disease mortality.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Enable_Heterogeneous_Intranode_Transmission</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Set to 1 to enable heterogeneous intra-node disease transmission. Requires individual property definitions and beta matrix to be specified. Set to 0 to disable.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Enable_Vital_Dynamics</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Set to 1 as a master switch to enable vital dynamics (births and deaths). Set to 0 to disable vital dynamics. Even when set to 1, the individual toggles for births and deaths can still disable these.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Population_Scale_Type</strong></td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>USE_INPUT_FILE</td>
+<td>Either use the initial population specified in the demographics input file or a fixed scaling of this value based on the population scaling factor parameter. Possible values are: USE_INPUT_FILE and FIXED_SCALING.</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="event-recorder-report-settings">
+<span id="config-eventrecorder"></span><h2><a class="toc-backref" href="#id3">Event recorder report settings</a><a class="headerlink" href="#event-recorder-report-settings" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>Report_Event_Recorder</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Enables or disables the ReportEventRecorder.csv report.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Report_Event_Recorder_Ignore_Events_In_List</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>f this flag is set to true, all events listed in Report_Event_Recorder_Events will be ignored. If it is set to false, all events will be recorded.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Report_Event_Recorder_Individual_Properties</strong></td>
+<td>Dynamic String Set</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>Fraction of individuals in the target demographic that will receive this intervention.</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="general-disease">
+<span id="config-generaldisease"></span><h2><a class="toc-backref" href="#id4">General disease</a><a class="headerlink" href="#general-disease" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>Acquisition_Blocking_Immunity_Duration_Before_Decay</strong></td>
+<td>float</td>
+<td>0</td>
+<td>45000</td>
+<td>0</td>
+<td>Number of days after infection until acquisition-blocking immunity begins to decay. Relevant only when Enable_Immunity and Enable_Immune_Decay parameters are set to 1.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Animal_Reservoir_Type</strong></td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NO_ZOONOSIS</td>
+<td>Configures whether there is an animal reservoir and how the risk of zoonosis in configured. Use of the animal reservoir sets a low constant baseline of infectivity beyond what is present in the human population. It allows a more random introduction of cases in continuous time, which is more applicable for various situations such as zoonosis. Possible values are: NO_ZOONOSIS, CONSTANT_ZOONOSIS where the daily rate of zoonotic infection is configured by the parameter Zoonosis_Rate, and ZOONOSIS_FROM_DEMOGRAPHICS where the zoonosis rate is additionally scaled by the node-specific Zoonosis value in the NodeAttributes section of a demographics overlay file.  See Zoonosis_Rate.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Base_Incubation_Period</strong></td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>6</td>
+<td>Average duration, in days, of the incubation period before infected individuals becomes infectious.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Base_Infectious_Period</strong></td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>6</td>
+<td>Average duration, in days, of the infectious period before the infection is cleared.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Base_Infectivity</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1000</td>
+<td>0.3</td>
+<td>The Base_Infectivity parameter determines the base infectiousness of individuals before accounting for transmission-blocking effects of acquired immunity and/or campaign interventions. It has a slightly different meaning for each of the disease types. GENERIC_SIM: The average number of individuals per time step who will be exposed to infection by one infectious individual. In the case of super-infection, the infectiousness is summed over all infections. VECTOR_SIM: The probability of infecting a mosquito during a successful blood meal (modulated by the vector parameter Acquire_Modifier). For vector simulations, the sum infectiousness of an individual is not allowed to exceed 100%. MALARIA_SIM: This simple scale factor is not used. Instead, gametocyte abundances and cytokine-mediated infectiousness are modeled explicitly.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Base_Mortality</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1000</td>
+<td>0.001</td>
+<td>The base mortality of the infection before accounting for individual immune modification factors. Depending on the setting of Mortality_Time_Course, this is either the daily probability of the disease being fatal (DAILY_MORTALITY) or the probability of death at the end of the infection duration (MORTALITY_AFTER_INFECTIOUS).</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Enable_Immune_Decay</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Set to 1 if immunity decays after an infection clears. Set to 0 if recovery from the disease confers complete immunity for life.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Enable_Immunity</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Set to 1 if an individual has protective immunity after an infection clears. Set to 0 if recovery from the infection does not affect the individual&#8217;s future immunity.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Enable_Maternal_Transmission</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Set to 1 to account for infection of infants at birth by infected mothers. Set to 0 to assume that infection is not transmitted by mothers to infants at birth.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Enable_Superinfection</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Set to 1 if an individual can have multiple infections with the same agent simultaneously. Set to 0 if multiple infections are not possible. See the Max_Individual_Infections parameter.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Immunity_Acquisition_Factor</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1000</td>
+<td>0</td>
+<td>Multiplicative reduction in probability of reacquiring the disease. Relevant only when Enable_Immunity and Enable_Immune_Decay parameters are set to 1.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Immunity_Initialization_Distribution_Type</strong></td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>DISTRIBUTION_OFF</td>
+<td>Method for initializing the immunity distribution in the simulated population. Possible values are: DISTRIBUTION_OFF - All individuals default to no immunity. DISTRIBUTION_SIMPLE - Individual immunities are drawn from a distribution whose functional form and parameters are specified in the IndividualAttributes demographics input layers: ImmunityDistributionFlag, ImmunityDistribution1, and ImmunityDistribution2. DISTRIBUTION_COMPLEX - Individual immnunities are drawn from an age-dependent piecewise l.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Immunity_Mortality_Factor</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1000</td>
+<td>0</td>
+<td>Multiplicative reduction in probability of dying from infection after getting re-infected. Relevant only when Enable_Immunity and Enable_Immune_Decay parameters are set to 1.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Immunity_Transmission_Factor</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1000</td>
+<td>0</td>
+<td>Multiplicative reduction in probability of transmitting infection after getting re-infected. Relevant only when Enable_Immunity and Enable_Immune_Decay parameters are set to 1.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Incubation_Period_Distribution</strong></td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NOT_INITIALIZED</td>
+<td>Distribution of duration of incubation period. Can be fixed or exponentially distributed with an average duration from Base_Incubation_Period. Possible values are: FIXED_DURATION and EXPONENTIAL_DURATION.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Incubation_Period_Max</strong></td>
+<td>float</td>
+<td>0.6</td>
+<td>3.40E+38</td>
+<td>0</td>
+<td>The maximum length of the incubation period. Used when Incubation_Period_Distribution is UNIFORM_DURATION.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Incubation_Period_Mean</strong></td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>6</td>
+<td>The standard deviation used when Incubation_Period_Distribution is either GAUSSIAN_DURATION or POISSON_DURATION.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Incubation_Period_Min</strong></td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>0</td>
+<td>The minimum length of the incubation period. Used when the Incubation_Period_Distribution is UNIFORM_DURATION.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Incubation_Period_Std_Dev</strong></td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>1</td>
+<td>The standard deviation incubation period. Used when the Incubation_Period_Distribution is GAUSSIAN_DURATION.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Infection_Updates_Per_Timestep</strong></td>
+<td>integer</td>
+<td>0</td>
+<td>144</td>
+<td>1</td>
+<td>Number of infection updates executed during each timestep. A timestep defaults to one day.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Infectious_Period_Distribution</strong></td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NOT_INITIALIZED</td>
+<td>Distribution of duration of infectious period. Can be fixed or exponentially distributed with an average duration from Base_Infectious_Period. Possible values are: FIXED_DURATION, EXPONENTIAL_DURATION.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Infectious_Period_Max</strong></td>
+<td>float</td>
+<td>0.6</td>
+<td>3.40E+38</td>
+<td>0</td>
+<td>The maximum length of the infectious period. Used when Infectious_Period_Distribution is UNIFORM_DURATION.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Infectious_Period_Mean</strong></td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>6</td>
+<td>The mean of the infectious period. Used when Infectious_Period_Distribution is either GAUSSIAN_DURATION or POISSON_DURATION.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Infectious_Period_Min</strong></td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>0</td>
+<td>The minimum length of the infectious period. Used when the Infectious_Period_Distribution is UNIFORM_DURATION.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Infectious_Period_Std_Dev</strong></td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>1</td>
+<td>The standard deviation of the infectious period. Used when the Infectious_Period_Distribution is GAUSSIAN_DURATION.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Infectivity_Scale_Type</strong></td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>CONSTANT_INFECTIVITY</td>
+<td>Alter infectivity by time or season.  Possible values are: CONSTANT_INFECTIVITY - No infectivity correction is applied. FUNCTION_OF_TIME_AND_LATITUDE - Infectivity is corrected for approximate seasonal forcing. The use of a seasonal infectivity correction is a proxy for the effects of varying climate. From October through March, infectivity increases in the Northern Hemisphere and decreases in the Southern Hemisphere. From April through September, the trend reverses. Regions closer to the equator have reduced forcing compared to temperate regions.  This is not a substitute for the weather-driven vector dynamics of vector-borne and malaria simulations.  FUNCTION_OF_CLIMATE - Allows infectivity to be modulated by weather directly, for example, relative humidity in airborne simulations or rainfall in environmental simulations.  There is no default climate dependence enabled for generic simulations.  EXPONENTIAL_FUNCTION_OF_TIME - To facilitate certain burn-in scenarios, infectivity ramps up from zero at the beginning of the simulation according to the functional form, 1-exp(-rate*time), where the rate is specified by the parameter Infectivity_Scaling_Rate.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Maternal_Transmission_Probability</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Probability of transmission of infection from mother to infant at birth. Relevant only if Enable_Maternal_Transmission is set to 1. Note: This parameter should be set to 0 and ignored for malaria and vector simulations.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Max_Individual_Infections</strong></td>
+<td>integer</td>
+<td>0</td>
+<td>1000</td>
+<td>1</td>
+<td>Limit on the number of infections that an individual can have simultaneously. Note: Relevant only if the Enable_Superinfection parameter is set to 1 to allow multiple infections.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Mortality_Blocking_Immunity_Decay_Rate</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1000</td>
+<td>0.001</td>
+<td>Rate at which mortality-blocking immunity decays after the mortality-blocking immunity offset period. Relevant only when Enable_Immunity and Enable_Immune_Decay parameters are set to 1.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Mortality_Time_Course</strong></td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>DAILY_MORTALITY</td>
+<td>Determines whether disease deaths are calculated on every time step or once at the end of the disease duration. Possible values are: DAILY_MORTALITY and MORTALITY_AFTER_INFECTIOUS.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Number_Basestrains</strong></td>
+<td>integer</td>
+<td>1</td>
+<td>10</td>
+<td>1</td>
+<td>The number of base strains in the simulation, such as antigenic variants.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Number_Substrains</strong></td>
+<td>integer</td>
+<td>1</td>
+<td>16777200</td>
+<td>256</td>
+<td>The number of disease substrains for each base strain, such as genetic variants.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Population_Density_Infectivity_Correction</strong></td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>CONSTANT_INFECTIVITY</td>
+<td>Correction to alter infectivity by population density set in the Population_Density_C50 parameter. Measured in people per sq. km. Possible values are:  CONSTANT_INFECTIVITY and SATURATING_FUNCTION_OF_DENSITY.  Note: Sparsely populated areas have a lower infectivity, while densely populated areas have a higher infectivity which rises to saturate at the Base_Infectivity value.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Transmission_Blocking_Immunity_Decay_Rate</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1000</td>
+<td>0.001</td>
+<td>Rate at which transmission-blocking immunity decays after the base transmission-blocking immunity offset period. Relevant only when Enable_Immunity and Enable_Immune_Decay parameters are set to 1.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Transmission_Blocking_Immunity_Duration_Before_Decay</strong></td>
+<td>float</td>
+<td>0</td>
+<td>45000</td>
+<td>0</td>
+<td>Number of days after infection until transmission-blocking immunity begins to decay. Relevant only when Enable_Immunity and Enable_Immune_Decay parameters are set to 1.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Zoonosis_Rate</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>The daily rate of zoonotic infection per individual when the Animal_Reservoir_Type parameter is set to either CONSTANT_ZOONOSIS or ZOONOSIS_FROM_DEMOGRAPHICS.</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="geography-and-environment">
+<span id="config-geography"></span><h2><a class="toc-backref" href="#id5">Geography and environment</a><a class="headerlink" href="#geography-and-environment" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>Air_Temperature_Variance</strong></td>
+<td>float</td>
+<td>0</td>
+<td>5</td>
+<td>2</td>
+<td>The standard deviation (in degrees Celsius) for normally distributed noise applied to the daily air temperature values when Climate_Model is configured as CLIMATE_CONSTANT or CLIMATE_BY_DATA.  Only used if the Enable_Climate_Stochasticity is set to 1.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Base_Air_Temperature</strong></td>
+<td>float</td>
+<td>-55</td>
+<td>45</td>
+<td>22</td>
+<td>The value of air temperature where Climate_Model is set to CLIMATE_CONSTANT.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Base_Land_Temperature</strong></td>
+<td>float</td>
+<td>-55</td>
+<td>60</td>
+<td>26</td>
+<td>The value of land temperature where Climate_Model is set to CLIMATE_CONSTANT.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Base_Rainfall</strong></td>
+<td>float</td>
+<td>0</td>
+<td>150</td>
+<td>10</td>
+<td>The value of rainfall per day in mm when Climate_Model is set to CLIMATE_CONSTANT.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Base_Relative_Humidity</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0.75</td>
+<td>The value of humidity where Climate_Model is set to CLIMATE_CONSTANT.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Climate_Model</strong></td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>CLIMATE_OFF</td>
+<td>Determines how the climate of a simulation is configured and from what file(s). Possible values are: CLIMATE_OFF, CLIMATE_CONSTANT - Uses the conditional parameters that give the fixed values of temperature or rain for land temperature, air temperature, rainfall and humidity. CLIMATE_KOPPEN - Uses an input file that decodes Koppen codes by geographic location. CLIMATE_BY_DATA - Reads everything out of several input files with additional parameters that allow the addition of stochasticity or scale offsets.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Climate_Update_Resolution</strong></td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>CLIMATE_UPDATE_YEAR</td>
+<td>Update resolution for data in climate files. Possible values are: CLIMATE_UPDATE_YEAR, CLIMATE_UPDATE_MONTH, CLIMATE_UPDATE_WEEK, CLIMATE_UPDATE_DAY and CLIMATE_UPDATE_HOUR.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Default_Geography_Initial_Node_Population</strong></td>
+<td>integer</td>
+<td>0</td>
+<td>1000000</td>
+<td>1000</td>
+<td>When using the default geography (i.e. Enable_Demographics_Initial = 0), this is the initial number of individuals in each node.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Default_Geography_Torus_Size</strong></td>
+<td>integer</td>
+<td>3</td>
+<td>100</td>
+<td>10</td>
+<td>When using the default geography (i.e. Enable_Demographics_Initial = 0), this is the square root of the number of nodes in the simulation.  For migration, the nodes are assumed to be a torus.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Enable_Climate_Stochasticity</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Controls overall stochasticity for climate. Use value 0 to disable all additional climate stochasticity. Use value 1 to enable additional variation as specified by the parameters: Air_Temperature_Variance, Land_Temperature_Variance, Enable_Rainfall_Stochasticity and Relative_Humidity_Variance.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Enable_Rainfall_Stochasticity</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Set to 0 to disable rainfall stochasticity.  Set to 1 to enable stochastic variation of rainfall drawn from an exponential distribution (with a mean value as the daily rainfall from the  Climate_Model values, CLIMATE_CONSTANT or CLIMATE_BY_DATA).</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Land_Temperature_Offset</strong></td>
+<td>float</td>
+<td>-20</td>
+<td>20</td>
+<td>0</td>
+<td>The linear shift of land surface temperature in degrees Celsius. This is only used or needed when Climate_Model is set to CLIMATE_BY_DATA.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Land_Temperature_Variance</strong></td>
+<td>float</td>
+<td>0</td>
+<td>7</td>
+<td>2</td>
+<td>The standard deviation (in degrees Celsius) for normally distributed noise applied to the daily land temperature values when Climate_Model is configured as CLIMATE_CONSTANT or CLIMATE_BY_DATA.  Only used if the Enable_Climate_Stochasticity is set to 1.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Node_Grid_Size</strong></td>
+<td>float</td>
+<td>0.004167</td>
+<td>90</td>
+<td>0.004167</td>
+<td>Spatial resolution indicating the node grid size for a simulation in degrees.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Rainfall_In_mm_To_Fill_Swamp</strong></td>
+<td>float</td>
+<td>1</td>
+<td>10000</td>
+<td>1000</td>
+<td>Millimeters of rain to fill larval habitat to capacity. Only used for vector species with Habitat_Type set to BRACKISH_SWAMP.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Rainfall_Scale_Factor</strong></td>
+<td>float</td>
+<td>0.1</td>
+<td>10</td>
+<td>1</td>
+<td>The scalar used in multiplying rainfall value(s). This is only used or needed when Climate_Model is set to CLIMATE_BY_DATA.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Relative_Humidity_Scale_Factor</strong></td>
+<td>float</td>
+<td>0.1</td>
+<td>10</td>
+<td>1</td>
+<td>The scalar used in multiplying relative humidity value(s). This is only used or needed when Climate_Model is set to CLIMATE_BY_DATA.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Relative_Humidity_Variance</strong></td>
+<td>float</td>
+<td>0</td>
+<td>0.12</td>
+<td>0.05</td>
+<td>The standard deviation (in percentage, %) for normally distributed noise applied to the daily relative humidity values when Climate_Model is configured as CLIMATE_CONSTANT or CLIMATE_BY_DATA.  Only used if the Enable_Climate_Stochasticity is set to 1.</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="input-files">
+<span id="config-inputfiles"></span><h2><a class="toc-backref" href="#id6">Input files</a><a class="headerlink" href="#input-files" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>Air_Migration_Filename</strong></td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>&nbsp;</td>
+<td>Path of input file defining patterns of migration by airplane.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Air_Temperature_Filename</strong></td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>air_temp.json</td>
+<td>Path of input file defining air temperature data measured 2 meters above ground. Relevant only if Climate_Model is set to CLIMATE_BY_DATA.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Campaign_Filename</strong></td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>&nbsp;</td>
+<td>Path of the simulation campaign file.  This configuration file defines campaign related settings and thus, is an optional file, only required when interventions are part of the simulation.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Demographics_Filenames</strong></td>
+<td>Vector String</td>
+<td>NA</td>
+<td>NA</td>
+<td>&nbsp;</td>
+<td>Array of demographics files containing information on the identity and demographics of the region to simulate.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Koppen_Filename</strong></td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>UNINITIALIZED STRING</td>
+<td>Path to input file used to specify Koppen climate classifications. This is only used or needed when Climate_Model is set to CLIMATE_KOPPEN.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Land_Temperature_Filename</strong></td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>land_temp.json</td>
+<td>Path of input file defining temperature data measured at land surface. Relevant only if Climate_Model is set to CLIMATE_BY_DATA.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Local_Migration_Filename</strong></td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>&nbsp;</td>
+<td>Path of input file defining patterns of migration to adjacent nodes by foot travel.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Rainfall_Filename</strong></td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>rainfall.json</td>
+<td>Path of input file defining rainfall data. Relevant only if Climate_Model is set to CLIMATE_BY_DATA.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Regional_Migration_Filename</strong></td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>&nbsp;</td>
+<td>Path of input file defining patterns of migration by vehicle via road or rail network. If the node is not on a road or rail network, regional migration focuses on the closest hub city in the network.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Relative_Humidity_Filename</strong></td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>rel_hum.json</td>
+<td>Path of input file defining relative humidity data measured 2 meters above ground. Relevant only if Climate_Model is set to CLIMATE_BY_DATA.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Sea_Migration_Filename</strong></td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>&nbsp;</td>
+<td>Path of input file defining patterns of migration by ship.</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="migration">
+<h2><a class="toc-backref" href="#id7">Migration</a><a class="headerlink" href="#migration" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils" id="config-migration">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>Air_Migration_Roundtrip_Duration</strong></td>
+<td>float</td>
+<td>0</td>
+<td>10000</td>
+<td>1</td>
+<td>The average time spent at the destination node during a round-trip migration by airplane.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Air_Migration_Roundtrip_Probability</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0.8</td>
+<td>Likelihood that an individual who flies to another cell will return to the cell of origin during the next migration. Relevant only when Enable_Air_Migration is selected.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Enable_Air_Migration</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Set to 1 to account for migration by airplane in and out of cities with airports. Set to 0 to assume by default that no migration occurs by air travel.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Enable_Local_Migration</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Set to 1 to enable local migration, the diffusion of people in and out of nearby nodes by foot travel. Set to 0 to disable local migration.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Enable_Migration_Heterogeneity</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Set to 1 to use migration rate distribution in the demographics file. Set to 0 to assume by default that the same migration rate applies for all individuals.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Enable_Regional_Migration</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Set to 1 to account for migration by road vehicle in and out of nodal cities in the road network. Set to 0 to assume by default that no migration occurs by road travel.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Enable_Sea_Migration</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Set to 1 to account for migration on ships in and out of coastal cities with seaports. Set to 0 to assume by default that no migration occurs by sea travel.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Local_Migration_Roundtrip_Duration</strong></td>
+<td>float</td>
+<td>0</td>
+<td>10000</td>
+<td>1</td>
+<td>The average time spent at the destination node during a round-trip migration by foot travel.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Local_Migration_Roundtrip_Probability</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0.95</td>
+<td>Likelihood that an individual who walks into a neighboring cell will return to the cell of origin during the next migration. Relevant only when Enable_Local_Migration is selected.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Migration_Model</strong></td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NO_MIGRATION</td>
+<td>Model to use for migration. Possible values are: NO_MIGRATION, FIXED_RATE_MIGRATION, VARIABLE_RATE_MIGRATION and LEVY_FLIGHTS.  Note: VARIABLE_RATE_MIGRATION and LEVY FLIGHTS are currently not supported.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Migration_Pattern</strong></td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>RANDOM_WALK_DIFFUSION</td>
+<td>The type of roundtrip. For example, a single roundtrip. Possible values are: RANDOM_WALK_DIFFUSION, SINGLE_ROUND_TRIPS and WAYPOINTS_HOME.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Regional_Migration_Roundtrip_Duration</strong></td>
+<td>float</td>
+<td>0</td>
+<td>10000</td>
+<td>1</td>
+<td>The average time spent at the destination node during a round-trip migration by road network.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Regional_Migration_Roundtrip_Probability</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0.1</td>
+<td>Likelihood that an individual who travels by vehicle to another cell will return to the cell of origin during the next migration. Relevant only when Enable_Regional_Migration is checked.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Roundtrip_Waypoints</strong></td>
+<td>integer</td>
+<td>0</td>
+<td>1000</td>
+<td>10</td>
+<td>The maximum number of points reached during a trip before steps are retraced on the return trip home.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Sea_Migration_Roundtrip_Duration</strong></td>
+<td>float</td>
+<td>0</td>
+<td>10000</td>
+<td>1</td>
+<td>The average time spent at the destination node during a round-trip migration by ship.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Sea_Migration_Roundtrip_Probability</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0.25</td>
+<td>Likelihood that an individual who travels by ship into a neighboring cell will return to the cell of origin during the next migration. Relevant only when Enable_Sea_Migration is checked.</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="output-options">
+<span id="config-outputoptions"></span><h2><a class="toc-backref" href="#id8">Output options</a><a class="headerlink" href="#output-options" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>Enable_Default_Reporting</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Enables and disables the default InsetChart.json report.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Enable_Demographics_Reporting</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Outputs demographic summary data and age-binned reports to file.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Enable_Property_Output</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Use value 0 to disable Individual_Property reports (separate file). Use value 1 to enable.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Enable_Spatial_Output</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Use value 0 to disable all spatial output channels. Use value 1 to enable spatial output of all channels listed in the array parameter: Spatial_Output_Channels.  For full documentation of spatial output channels, please see the online documentation.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Report_Event_Recorder</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Enables or disables the ReportEventRecorder.csv report.</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="sampling">
+<span id="config-sampling"></span><h2><a class="toc-backref" href="#id9">Sampling</a><a class="headerlink" href="#sampling" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>Base_Individual_Sample_Rate</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Base rate of sampling for individuals. This rate equals the fraction of individuals in each node being sampled.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Individual_Sampling_Type</strong></td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>TRACK_ALL</td>
+<td>Type of individual human sampling. Possible values are: TRACK_ALL, FIXED_SAMPLING, ADAPTED_SAMPLING_BY_POPULATION_SIZE, ADAPTED_SAMPLING_BY_AGE_GROUP, and ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Max_Node_Population_Samples</strong></td>
+<td>float</td>
+<td>1</td>
+<td>3.40E+38</td>
+<td>30</td>
+<td>Number of individuals when the sampling rate starts dropping to the rate of adapted sampling by population size.</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="scaling-factors">
+<span id="config-scalingfactors"></span><h2><a class="toc-backref" href="#id10">Scaling factors</a><a class="headerlink" href="#scaling-factors" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>x_Air_Migration</strong></td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>1</td>
+<td>Multiplier for rate of migration by air.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>x_Birth</strong></td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>1</td>
+<td>Multiplier of birth rate from input demographics file.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>x_Local_Migration</strong></td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>1</td>
+<td>Multiplier for rate of migration by foot travel.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>x_Other_Mortality</strong></td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>1</td>
+<td>Multiplier for scaling mortality from causes other than disease being simulated.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>x_Regional_Migration</strong></td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>1</td>
+<td>Multiplier for rate of migration by road vehicle.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>x_Sea_Migration</strong></td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>1</td>
+<td>Multiplier for rate of migration by sea.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>x_Temporary_Larval_Habitat</strong></td>
+<td>double</td>
+<td>NA</td>
+<td>NA</td>
+<td>1</td>
+<td>Scales the habitat size for all mosquito populations.</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="simulation-setup">
+<span id="config-simulationsetup"></span><h2><a class="toc-backref" href="#id11">Simulation setup</a><a class="headerlink" href="#simulation-setup" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>Config_Name</strong></td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>UNINITIALIZED STRING</td>
+<td>User-supplied title naming a configuration.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Enable_Interventions</strong></td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Set to 1 to load campaign interventions from file. Set to 0 to run a baseline simulation without campaigns.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Run_Number</strong></td>
+<td>integer</td>
+<td>0</td>
+<td>2147480000</td>
+<td>1</td>
+<td>Sets the random number seed through a bit manipulation process for USE_PSEUDO_DES. When running a multi-core simulation, combines with processor rank to produce independent random number streams for each process.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Simulation_Duration</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1000000</td>
+<td>1</td>
+<td>Elapsed time noted in days from the start to the end of a simulation.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Simulation_Timestep</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1000000</td>
+<td>1</td>
+<td>Value indicating simulation time step in days.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>Simulation_Type</strong></td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>GENERIC_SIM</td>
+<td>Type of disease being simulated. Supported values include GENERIC_SIM, VECTOR_SIM, MALARIA_SIM, TB_SIM, STI_SIM, HIV_SIM, and PY_SIM. To query the values supported for your specific build, use the &#8211;version option.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>Start_Time</strong></td>
+<td>float</td>
+<td>0</td>
+<td>1000000</td>
+<td>1</td>
+<td>Time noted in days when the simulation begins. This time influences the point in the temporal input data, such as where in the climate input the DTK starts running the simulation. Note: The Start_Day of campaign events is in absolute time. So, time relative to the beginning of the simulation depends on this parameter.</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="spatial-output-channels">
+<span id="config-spatialoutput"></span><h2><a class="toc-backref" href="#id12">Spatial output channels</a><a class="headerlink" href="#spatial-output-channels" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>Spatial_Output_Channels</strong></td>
+<td>Fixed String Set</td>
+<td>NA</td>
+<td>NA</td>
+<td>[]</td>
+<td>An array of channel names for spatial output by Node and time step. The data from each channel will be written to a separate binary file. Channel names include Air_Temperature, Births, Campaign_Cost, Disease_Deaths, Human_Infectious_Reservoir, Infection_Rate, Land_Temperature, New_Infections, New_Reported_Infections, Population, Rainfall and Relative_Humidity.</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="parameter-campaign.html" class="btn btn-neutral float-right" title="Campaign parameters" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="parameter-demographics.html" class="btn btn-neutral" title="Demographics file structure and parameters" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for internal docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!-- Google analytics for public docs -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-4', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,120 @@
+============================
+Create a configuration file
+============================
+
+You define the general configuration and processing of a simulation through a JSON-formatted
+configuration file, typically called config.json. Two forms of the simulation configuration file are
+used: a flattened version and a hierarchical version. This topic describes how to create a
+configuration file of other form. The |exe_l| and |linux_binary| requires a flattened version of the
+simulation configuration file. The hierarchical version allows you to organize parameters into
+logical groups, making them easier to manage. If you use hierarchical configuration files, you must
+flatten them prior to running a simulation.
+
+The |EMOD_s| Regression_ directory contains many different subdirectories that contain
+configuration, campaign, and other associated files to run simulations that represent real-world
+scenarios. Within the each subdirectory, there is usually a hierarchical overlay file
+(param_overrides.json) and a flattened file (config.json), which has been created by combining
+param_overrides.json with one of the default files in `Regression/defaults`_. The default files are
+also organized hierarchically. The naming of these files is an arbitrary convention used at |IDM_s|;
+you may name this files anything you choose. See :doc:`howto-config-overlay` for more information
+about flattening hierarchical files.
+
+For a complete list of configuration parameters that are available to use with this simulation type,
+see :doc:`parameter-configuration`. For more information about JSON, see :doc:`parameter-overview`.
+
+
+Flattened configuration file
+============================
+
+A flattened configuration file is generally a single-depth JSON file with configuration parameters
+listed alphabetically. This is the configuration file format that |exe_s| requires for running
+simulations.
+
+.. only:: malaria or vector
+
+    However, there may be some hierarchical elements in the flattened version. For example,
+    **Vector_Species_Params** and **Malaria_Drug_Params** have nested JSON objects.
+
+Below is an example of a flattened configuration file:
+
+.. literalinclude:: ../json/howto-generic-config-flat-full.json
+   :language: json
+
+Hierarchical configuration file
+===============================
+
+The hierarchical version of a configuration file has a more complex structure. As a way of sorting
+parameters into logical groups, the parameters can be contained inside nested JSON objects. The
+names you use to create these logical categories are unimportant; the scripts used to flatten
+the files will search through the hierarchies and retain only the "leaf" values in the resulting
+flattened file. See :doc:`howto-config-overlay` for more information on flattening files.
+
+Below is an example of a hierarchical configuration file:
+
+.. literalinclude:: ../json/howto-generic-default-config.json
+   :language: json
+
+
+Create or modify configuration files
+=====================================
+
+Although you can create configuration files entirely from scratch, it is often easier to start from
+an existing configuration file and modify it to meet your needs. Any of the configuration files in
+the Regression directory may be used; in particular the `Regression/defaults`_ directory contains
+hierarchical configuration files with the common parameter settings used with different
+simulation types.
+
+The simplest method is to use a text editor to directly edit the parameters or parameter values in
+the JSON file. However, while direct editing of files may be sufficient for small and infrequent
+changes, you will likely find that scripting tools are more powerful and reliable for both creating
+and modifying files.
+
+The following example shows how to read a configuration file to a Python dictionary, modify a
+parameter, and write it back out to the file:
+
+.. code-block:: python
+
+    import json
+
+    # load the current config.json
+    config_file = open( "config.json" )
+    config_json = json.load( config_file )
+    config_file.close()
+
+    # modify one of the parameter values, e.g. "base_infectivity"
+    config_json["parameters"]["base_infectivity"] = 0.5
+
+    # write the modified config file
+    modified_file = open( "modified_config.json", "w" )
+    json.dump( config_json, modified_file, sort_keys=True, indent=4 )
+    modified_file.close()
+
+The following example shows how to modify a configuration file in MATLAB:
+
+.. code-block:: matlab
+
+    addpath Matlab
+    addpath Matlab\test
+
+    % load the simulation configuration file into MATLAB structure
+    configjson = loadJson( "config.json" );
+
+    % modify one of the values
+    configjson.parameters.Base_Infectivity = 08.5;
+
+    % save the new configuration to file
+    saveJson( "modified_config.json", configjson );
+
+
+.. _Regression: https://github.com/InstituteforDiseaseModeling/EMOD/tree/master/Regression
+
+.. _Regression/defaults: https://github.com/InstituteforDiseaseModeling/EMOD/tree/master/Regression/defaults
+
+.. toctree::
+   :maxdepth: 2
+   :titlesonly:
+
+   howto-schema
+   howto-parameter-sweep
+   howto-config-overlay
+

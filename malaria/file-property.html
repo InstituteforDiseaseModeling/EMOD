@@ -1,0 +1,519 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Property output report &mdash; Malaria Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Malaria Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Malaria Model  documentation" href="index.html"/>
+        <link rel="up" title="Output report structure" href="file-outputs.html"/>
+        <link rel="next" title="Spatial output report" href="file-spatial.html"/>
+        <link rel="prev" title="Demographic summary output report" href="file-demographic-summary.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Malaria Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.10
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-overview.html">Malaria disease overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-model-overview.html">Malaria model overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-IDM.html">Malaria research at IDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="file-inputs.html">Input data file structure</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="file-outputs.html">Output report structure</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="file-inset-chart.html">Inset chart output report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="file-binned.html">Binned output report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="file-demographic-summary.html">Demographic summary output report</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Property output report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="file-spatial.html">Spatial output report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="file-vector-species.html">Vector species output report</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file-error-logging.html">Error and logging files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Malaria Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Malaria</a> &raquo;</li>
+      
+          <li><a href="file-reference-overview.html">Input and output file structure</a> &raquo;</li>
+      
+          <li><a href="file-outputs.html">Output report structure</a> &raquo;</li>
+      
+    <li>Property output report</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="property-output-report">
+<h1>Property output report<a class="headerlink" href="#property-output-report" title="Permalink to this headline">¶</a></h1>
+<p>The property output report is a JSON-formatted file with the <a class="reference internal" href="glossary.html#term-channel"><span class="xref std std-term">channel</span></a> output results of the
+simulation, defined by the groups set up using <strong>IndividualProperties</strong> in the demographics file.
+See <a class="reference internal" href="howto-demographics-heterogeneity.html"><span class="doc">Configure heterogeneous populations</span></a>. For example, it allows you to compare disease deaths
+for people in the high risk group versus the low risk group. If you want to aggregate the data, you
+must create a script for aggregating information. The file name is PropertyReport.json.</p>
+<p>To generate the property report, set the <strong>Enable_Property_Output</strong> configuration
+parameter to 1.</p>
+<p>The file contains a header and a channels section.</p>
+<div class="section" id="header">
+<h2>Header<a class="headerlink" href="#header" title="Permalink to this headline">¶</a></h2>
+<p>The header section contains the following parameters.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="14%" />
+<col width="57%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>DateTime</td>
+<td>string</td>
+<td>The time stamp indicating when the report was generated.</td>
+</tr>
+<tr class="row-odd"><td>DTK_Version</td>
+<td>string</td>
+<td>The version of EMOD used.</td>
+</tr>
+<tr class="row-even"><td>Report_Type</td>
+<td>string</td>
+<td>The type of output report.</td>
+</tr>
+<tr class="row-odd"><td>Report_Version</td>
+<td>string</td>
+<td>The format version of the report.</td>
+</tr>
+<tr class="row-even"><td>Start_Time</td>
+<td>integer</td>
+<td>The time noted in days when the simulation begins.</td>
+</tr>
+<tr class="row-odd"><td>Simulation_Timestep</td>
+<td>integer</td>
+<td>The number of days in each time step.</td>
+</tr>
+<tr class="row-even"><td>Timesteps</td>
+<td>integer</td>
+<td>The number of time steps in this simulation.</td>
+</tr>
+<tr class="row-odd"><td>Channels</td>
+<td>integer</td>
+<td>The number of channels in the simulation.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="channels">
+<h2>Channels<a class="headerlink" href="#channels" title="Permalink to this headline">¶</a></h2>
+<p>The channels section contains the following parameters.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="12%" />
+<col width="71%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>&lt;Channel_Title&gt;</td>
+<td>string</td>
+<td>The title of the particular property channel. The channel titles use the following conventions: for a single property, &lt;channel type&gt;:&lt;property&gt;:&lt;value&gt;, and for multiple properties, &lt;channel type&gt;:&lt;property 1&gt;:&lt;value&gt;,&lt;property 2&gt;:&lt;value&gt;. For example, Infected:Accessibility:Easy or New Infections:Accessibility:Difficult,Risk:High.</td>
+</tr>
+<tr class="row-odd"><td>Units</td>
+<td>string</td>
+<td>The units used for this channel.</td>
+</tr>
+<tr class="row-even"><td>Data</td>
+<td>array</td>
+<td>A list of the channel data at each time step.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>The following is a sample of a PropertyReport.json file.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Header&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;DateTime&quot;</span><span class="p">:</span> <span class="s2">&quot;Mon Feb 15 21:49:24 2016&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;DTK_Version&quot;</span><span class="p">:</span> <span class="s2">&quot;5538 trunk 2015/08/07 14:40:43&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Report_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;InsetChart&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Report_Version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.2&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Start_Time&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Simulation_Timestep&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Timesteps&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="nt">&quot;Channels&quot;</span><span class="p">:</span> <span class="mi">8</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Channels&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Disease Deaths:Accessibility:Easy&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Units&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Data&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Disease Deaths:Accessibility:Hard&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Units&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Data&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Infected:Accessibility:Easy&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Units&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Data&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Infected:Accessibility:Hard&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Units&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Data&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;New Infections:Accessibility:Easy&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Units&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Data&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;New Infections:Accessibility:Hard&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Units&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Data&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Statistical Population:Accessibility:Easy&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Units&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Data&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">6946</span><span class="p">,</span>
+                <span class="mi">6946</span><span class="p">,</span>
+                <span class="mi">6946</span><span class="p">,</span>
+                <span class="mi">6946</span><span class="p">,</span>
+                <span class="mi">6946</span><span class="p">,</span>
+                <span class="mi">6946</span><span class="p">,</span>
+                <span class="mi">6946</span><span class="p">,</span>
+                <span class="mi">6946</span><span class="p">,</span>
+                <span class="mi">6946</span><span class="p">,</span>
+                <span class="mi">6946</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Statistical Population:Accessibility:Hard&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Units&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Data&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">3054</span><span class="p">,</span>
+                <span class="mi">3054</span><span class="p">,</span>
+                <span class="mi">3054</span><span class="p">,</span>
+                <span class="mi">3054</span><span class="p">,</span>
+                <span class="mi">3054</span><span class="p">,</span>
+                <span class="mi">3054</span><span class="p">,</span>
+                <span class="mi">3054</span><span class="p">,</span>
+                <span class="mi">3054</span><span class="p">,</span>
+                <span class="mi">3054</span><span class="p">,</span>
+                <span class="mi">3054</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="file-spatial.html" class="btn btn-neutral float-right" title="Spatial output report" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="file-demographic-summary.html" class="btn btn-neutral" title="Demographic summary output report" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for internal docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!-- Google analytics for public docs -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-4', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

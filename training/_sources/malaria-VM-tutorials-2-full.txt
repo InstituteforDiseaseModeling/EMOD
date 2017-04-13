@@ -1,0 +1,68 @@
+========================================
+Vector and malaria 2: Full malaria model
+========================================
+
+The previous tutorial uses a simplified model for infections in the human population. It is based on
+a simple :term:`SEIRS model` with enhancements. For example, the duration spent in the latent state
+can be set to be a fixed interval rather than an exponentially-distributed duration. This provides
+the |EMOD_s| agent-based framework with some advantages over the continuum approximations of an
+:term:`ordinary differential equation (ODE)` -based model. In particular, the advanced user can go
+beyond these four states by using the built-in immunity functions for acquiring infection,
+transmitting infection, and dying from infection. These are all available in the simple disease
+model.
+
+Many users, though, will want to study aspects of malaria infections and population dynamics that do
+not fit into the SEIRS framework. We have developed a detailed :term:`microsolver` using within-host
+parasite dynamics as described in `Eckhoff, Malaria Journal 2011,
+10:303 <http://www.malariajournal.com/content/10/1/303>`_ where development of
+clinical and parasitological immunity is tracked through innate and adaptive immune responses to
+specific antigens. A detailed parasite count over time is tracked for each infected individual,
+permitting simulation of measured prevalence over time by slide microscopy, Rapid Diagnostic Tests
+(RDTs), or other diagnostics. :term:`Gametocyte` production and decay is included to study the human
+infectious reservoir.
+
+This tutorial provides a basic template for running the same simulation of the :term:`vector` population,
+but with infections in the human population simulated with the detailed parasite microsolver. Start
+by running the provided simulation, and then vary different parameters to observe sensitivities. The
+gametocyte parameters are the most uncertain in the solver. Key outputs include the measured
+prevalence by different diagnostic methods, the prevalence of fever, and the human infectious
+reservoir over time.
+
+Use the config.json and campaign.json files in the following directory for this tutorial:
+
+* Scenarios\VectorAndMalaria\02_Namawala_Full_Malaria_Model
+
+
+Steps
+=====
+
+The config.json file is all set with default values described below. Optional
+settings are detailed in the various tutorial steps.
+
+
+#.  Set the parameter **Simulation_Type** to the value "MALARIA_SIM". For more information, see
+    :ref:`config-simulationsetup` parameters.
+
+    The “MALARIA_SIM” setting maintains the vector transmission from “VECTOR_SIM”, but now replaces
+    the human infection model with a detailed microsolver of parasite dynamics.
+
+#.  Set the following parameters. For more information, see :ref:`config-generaldisease` and
+    :ref:`config-malaria` parameters.
+
+    * Set **Base_Incubation_Period** to 7.
+    * Set **Base_Infectious_Period** to 180.
+    * Set **Infection_Updates_Per_Timestep** to 24.
+    * Set **Malaria_Model** to "MALARIA_MECHANISTIC_MODEL."
+    * Set **Malaria_Strain_Model** to "FALCIPARUM_RANDOM_STRAIN."
+    * Set **Parasite_Switch_Type** to "RATE_PER_PARASITE_7VARS"
+
+
+Run the simulation
+==================
+
+Run the simulation and generate graphs of the simulation output. For more information, see
+:doc:`using-quickstart`. The duration of infection is solved dynamically. Experiment
+by varying parameters to observe sensitivities. The gametocyte parameters are the most uncertain in
+the solver. As noted in the overview, key outputs include the measured prevalence by different
+diagnostic methods, the prevalence of fever, and the human infectious reservoir over time.
+

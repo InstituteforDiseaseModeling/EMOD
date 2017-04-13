@@ -1,0 +1,149 @@
+===========================
+Malaria research at |IDM_s|
+===========================
+
+
+Malaria research at |IDM_s| is progressive and dynamic. For the current research, research team
+profiles, and a full list of published papers from IDM's malaria group,  see the
+`IDM Malaria Research Website <http://idmod.org/research/malaria>`_.
+
+
+.. also want to link to the IDM Google Scholar page once that gets set up.
+
+.. per Jaline's suggestion, will list/link papers specific to the topics provided under each heading.
+
+.. question for this: do we want ALL papers on here, or just the first couple or so that created that topic?
+.. currently am going with "all"
+
+.. follow up question: for papers that fit multiple categories, put them down twice? Or pick the best one?
+.. Or pick the best one and also ref the other category? (Currently put them in "best fit" spot only)
+
+.. will have to make a decision about updating this. Options: 1. Let the malaria team do it. 2. Only include
+.. the "most relevant" papers, so that it doesn't need to get updated. 3. Try to remember to add papers on to it...
+
+.. don't have the "fun with maths" paper on here; it didn't seem to fit in the topics, since it's about modeling in general
+.. also don't have the "separatrix algorithm" paper on here (not really about malaria!)
+.. don't have "enviro data set" paper, as it's about creating data and not the malaria emod
+.. don't mention the malERA paper or the group...can if it's desired!
+
+.. NOTE: SOME TITLES ARE IN TITLE CASE, SOME IN SENTENCE CASE ON PURPOSE. THEY MIRROR WHAT CASE THE JOURNAL USES.
+.. Figured it made sense to make it match how it's published, but we can make them all sentence case...
+
+.. Eckhoff 2013  Am J Trop Med Hyg could fit with infection/immunity w/in host dynamics...
+.. Eckhoff 2012 (malaria journal) could fit with infection/immunity w/in host dynamics...
+.. McCarthy et al could also go in the infection/immunity section
+.. Nikolov et al could also fit with "interventions"
+.. Gerardin et al  2016 PLOS comp bio could also fit with "interventions"
+
+
+
+|IDM_s| malaria publications
+============================
+
+Information specific to the components of the model described previously can be found in the following
+list of select |IDM_s| malaria publications.
+
+Vector model
+------------
+
+* Cameron, *et al*., 2015. `Defining the relationship between infection prevalence and clinical incidence of
+  Plasmodium falciparum malaria <http://www.nature.com/articles/ncomms9170>`__. *Nature Communications*. 6:8170
+
+* Eckhoff, 2013. `Mathematical models of within-host and transmission dynamics to determine effects of
+  malaria interventions in a variety of transmission settings <https://www.ncbi.nlm.nih.gov/pubmed/23589530>`__.
+  *Am J Trop Med Hyg*. 88(5):817-27
+
+* Eckhoff, 2012. `Malaria parasite diversity and transmission intensity affect development of parasitological
+  immunity in a mathematical model <https://malariajournal.biomedcentral.com/articles/10.1186/1475-2875-11-419>`__.
+  *Malaria Journal*. 11:419
+
+* Eckhoff, 2011. `A malaria transmission-directed model of mosquito life cycle and ecology
+  <https://malariajournal.biomedcentral.com/articles/10.1186/1475-2875-10-303>`__.
+  *Malaria Journal*. 10:303
+
+
+Infection and immunity: Within-host parasite dynamics
+-----------------------------------------------------
+
+* Lawniczak & Eckhoff, 2016. `A computational lens for sexual-stage transmission, reproduction, fitness and kinetics in
+  Plasmodium falciparum <http://malariajournal.biomedcentral.com/articles/10.1186/s12936-016-1538-5>`__.
+  *Malaria Journal*. 15:487
+
+* Ouedraogo, *et al*., 2015. `Dynamics of the Human Infectious Reservoir for Malaria Determined by Mosquito Feeding Assays and
+  Ultrasensitive Malaria Diagnosis in Burkina Faso <https://academic.oup.com/jid/article-lookup/doi/10.1093/infdis/jiv370>`__.
+  *Journal of Infectious Diseases*. 213(1):90-99
+
+* Gerardin, Ouedraogo, McCarthy, Eckhoff and Wenger, 2015. `Characterization of the infectious reservoir of malaria
+  with an agent-based model calibrated to age-stratified parasite densities and infectiousness
+  <http://malariajournal.biomedcentral.com/articles/10.1186/s12936-015-0751-y>`__. *Malaria Journal*. 14:231
+
+* Eckhoff, 2012. `P. falciparum Infection Durations and Infectiousness Are Shaped by Antigenic Variation
+  and Innate and Adaptive Host Immunity in a Mathematical Model <http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0044950>`__.
+  *PLOS one*. 7(9)
+
+
+
+Outcrossing of parasite genetics
+--------------------------------
+
+* Daniels, *et al*., 2015. `Modeling malaria genomics reveals transmission decline and rebound in Senegal
+  <http://www.pnas.org/content/112/22/7067.full.pdf>`__. *PNAS*. 112(22):7067-7072
+
+
+
+Antimalarial drugs
+------------------
+
+* Bellinger, *et al*., 2016. `Oral, ultra--long-lasting drug delivery: Application toward malaria elimination goals
+  <http://stm.sciencemag.org/content/8/365/365ra157>`__. *Science Translational Medicine*.  8(365).
+
+* Gerardin, Eckhoff and Wenger, 2015. `Mass campaigns with antimalarial drugs: a modeling comparison of
+  artemether-lumefantrine and DHA-piperaquine with and without primaquine as tools for malaria control and
+  elimination <http://bmcinfectdis.biomedcentral.com/articles/10.1186/s12879-015-0887-y>`__.
+  *BMC Infectious Diseases*. 15:144
+
+
+Vaccines
+--------
+
+* Penny, *et al*., 2016. `Public health impact and cost-effectiveness of the RTS,S/AS01 malaria vaccine:
+  a systematic comparison of predictions from four mathematical models
+  <http://thelancet.com/journals/lancet/article/PIIS0140-6736(15)00725-4/fulltext?rss=yes>`__.
+  *The Lancet*. 387(100016): 367-375
+
+* McCarthy, Wenger, Huynh and Eckhoff, 2015. `Calibration of an intrahost malaria model and parameter
+  ensemble evaluation of a pre-erythrocytic vaccine <http://malariajournal.biomedcentral.com/articles/10.1186/1475-2875-14-6>`__.
+  *Malaria Journal*. 14:6
+
+* Wenger & Eckhoff, 2013. `A mathematical model of the impact of present and future malaria vaccines
+  <https://malariajournal.biomedcentral.com/articles/10.1186/1475-2875-12-126>`__. *Malaria Journal*. 12:126
+
+
+Spatial models
+--------------
+
+* Nikolov, *et al*., 2016. `Malaria Elimination Campaigns in the Lake Kariba Region of Zambia: a Spatial Dynamical Model
+  <http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005192>`__. *PLOS Computational Biology*.
+
+* Marshall, *et al*., 2016. `Key traveler groups of relevance to spatial malaria transmission: a survey of movement
+  patterns in four sub-Saharan African countries <http://malariajournal.biomedcentral.com/articles/10.1186/s12936-016-1252-3>`__.
+  *Malaria Journal*. 15(200)
+
+* Gerardin, *et al*., 2016. `Optimal Population-Level Infection Detection Strategies for Malaria Control and Elimination
+  in a Spatial Model of Malaria Transmission <http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004707>`__.
+  *PLOS Computational Biology*.
+
+* Eckhoff, *et al*., 2015. `From puddles to planet: modeling approaches to vector-borne diseases at varying resolution and scale
+  <http://www.sciencedirect.com/science/article/pii/S2214574515000802>`__. *Current Opinion in Insect Science*. 10:118-123
+
+
+Interventions
+-------------
+
+* Eckhoff, Wenger, Godfray and Burt, 2016. `Impact of mosquito gene drive on malaria elimination in a computational model with
+  explicit spatial and temporal dynamics <http://www.pnas.org/content/114/2/E255.full.pdf>`__. *PNAS*. 114(2)
+
+* Bhatt, *et al*., 2015. `The effect of malaria control on Plasmodium falciparum in Africa between 2000 and 2015
+  <http://www.nature.com/nature/journal/v526/n7572/full/nature15535.html>`__. *Nature*. 526:207-211
+
+

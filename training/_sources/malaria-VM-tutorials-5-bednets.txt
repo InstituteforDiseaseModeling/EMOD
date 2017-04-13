@@ -1,0 +1,72 @@
+=========================================
+Vector and malaria 5: Bednet distribution
+=========================================
+
+Beginning with this tutorial, you will be introduced to the procedure for layering campaign
+:term:`intervention` events on top of the tutorials from the previous topics located in
+:doc:`malaria-VM-tutorials-baseline-sim-scenarios`.
+
+Use the config.json and campaign.json files in the following directory for this tutorial.
+
+* Scenarios\VectorAndMalaria\05_Namawala_Vector_ITNs
+
+
+Steps
+=====
+
+The disease simulation parameters of PrimaryScenarios_6_Namawala_Vector_ITNs are identical to the
+ones used it the PrimaryScenarios_2B_Namawala3Vectors_highEIR scenario. However, in order to
+configure the simulation to dispense campaign events, two parameters are modified.
+
+.. literalinclude:: ../json/vm5-event-coordinator1.json
+  :language: JSON
+
+#.  Set the interventions.
+
+    Change **Enable_Interventions** to 1 to enable the use of campaign interventions. You set this in the
+    config.json file. This setting directs the simulation to look for the file
+    specified in **Campaign_Filename** to define how campaign events are configured and distributed. For
+    more information, see :ref:`config-simulationsetup` and :ref:`config-inputfiles` parameters.
+
+#.  Set the fields in the campaign file as described below. For more information, see :ref:`ec-campaignevent`
+    parameters.
+
+    * Set **class** to "CampaignEvent."
+    * Set **Nodeset_Config** to {"class": "NodeSetAll"}.
+    * Set **Start_Day** to 1460.
+
+#.  Set the **Event_Coordinator_Config**, which specifies which event coordinator class will handle the
+    event, and then configures the coordinator in the campaign file.
+
+    * Set **Demographic_Coverage** to 0.7.
+    * Set **Target_Demographic** to "Everyone."
+
+#.  Set the **Intervention_Config** object, which selects a class for the intervention and
+    configures the parameters specific for that intervention class.
+
+    Insecticide-Treated Nets (ITNs) are a key component of modern malaria control efforts and have
+    recently been scaled up towards universal coverage in sub-Saharan Africa. Modern bednets are made
+    of a polyethylene or polyester mesh which is impregnated with a slowly releasing pyrethroid
+    insecticide. Mosquitoes that are seeking a blood meal will encounter a net, and if the net retains
+    its physical integrity and has been correctly installed the feeding attempt is blocked.
+
+    Blocked feeding attempts carry the possibility of killing the mosquito. Two efficacies are thus
+    specified for bednets: the **Blocking_Config**, which sets the rate of blocking indoor feeds on
+    individuals with an ITN, and **Killing_Config**, which sets the rate at which the mosquito dies
+    conditional on a successfully blocked feed. The rate of blocking and killing both decay at a
+    specified rate. For more information, see :ref:`iv-simplebednet` and :ref:`Waning effect <iv-waningeffect>`
+    parameters.
+
+    * Set the **Bednet_Type** as "ITN".
+    * In **Blocking_Config**, set the **Initial_Effect** to 0.9 and **Decay_Time_Constant** to 730.
+    * In **Killing_Config**, set the **Initial_Effect** to 0.6 and **Decay_Time_Constant** to 1460.
+
+
+
+Run the simulation
+==================
+
+Run the simulation and generate graphs of the simulation output. For more information, see
+:doc:`using-quickstart`.  Then, experiment with changing the durability profiles and efficacies.
+
+

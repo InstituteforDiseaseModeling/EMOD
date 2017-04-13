@@ -1,9 +1,0 @@
-#!/bin/bash
-for file in `ls -1 ../interventions/*.{h,cpp}`; do
-    ln -s $file
-done
-rm targetver.h
-rm std*
-rm dllmain.cpp
-rm BasicTestNode*.*
-

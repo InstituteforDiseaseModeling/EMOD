@@ -1,0 +1,63 @@
+=============
+Campaign file
+=============
+
+The :term:`campaign file` is an optional file that distributes outbreaks and contains all parameters
+that define the collection of interventions that make up a disease eradication :term:`campaign`. For
+example,
+
+* When, how, and who to test for a disease
+* When, how, and who to distribute treatments to
+* The vaccines or other preventative interventions to use
+* The medications to use for treatment
+
+Like the :term:`configuration file`, the campaign file is a :term:`JavaScript Object Notation
+(JSON)` formatted file. It is hierarchically organized into logical groups of parameters that can
+have arbitrary levels of nesting. For some interventions, there can be a very complex
+hierarchical structure, including recursion. Typically, the file is named campaign.json. The
+relative path to this file is specified by **Campaign_Filename** in the configuration file.
+
+To distribute an intervention, you must configure the following:
+
+campaign event
+    A JSON object that determines **when** and **where** an intervention is distributed during a campaign.
+event coordinator
+    A JSON object that determines **who** will receive a particular intervention during a campaign.
+intervention
+    A JSON object that determines **what** will be distributed to reduce the spread of a disease. An
+    intervention can be distributed either to an individual (such as a vaccine, drug, or bednet) or
+    to a node (such as a larvicide). Sometimes this can be an intermediate intervention that
+    schedules another intervention.
+
+.. only:: not training
+
+    |IDM_s| provides complete simulation scenarios in the Regression_ directory
+    on GitHub. Within each of the simulation subdirectories, there is a campaign.json file. The
+    Scenarios subdirectory contains the files used in the |quick| tutorials.
+
+    .. _Regression: https://github.com/InstituteforDiseaseModeling/EMOD/tree/master/Regression
+
+.. only:: training
+
+    The |quick| includes complete simulation scenarios in the Scenarios directory. Within each of the
+    scenario subdirectories, there is a campaign.json file.
+
+Overlay file
+==============
+
+As you work more with |EMOD_s|, you may want to change the values of a view parameters of interest
+while keeping the rest constant, for example, when running simulation experiments or testing source
+code changes.
+
+You have the option of creating an :term:`overlay file` to keep campaign parameters of
+interest in a separate file from the complete campaign file that contains default values. These
+files can be flattened into a single file and the values in the overlay file will override those
+in the default file.
+
+.. only:: training
+
+    While some of the scenarios in the |quick| include an overlay file, it is only to highlight
+    certain campaign settings, not override any default values.
+
+See :doc:`parameter-campaign` for a comprehensive list and description of all parameters
+available to use in the campaign file for this simulation type.

@@ -1,0 +1,60 @@
+====================
+Running a simulation
+====================
+
+.. only:: not training
+
+    The |exe_l| consumes the :term:`input data files`, :term:`configuration file`, and, optionally,
+    :term:`campaign file` to run simulations that model disease dynamics and campaign efficacy. You
+    have a few different options for running simulations. The option you choose will depend upon
+    whether you want to run one or more simulations, to run simulations locally or on a remote
+    cluster (for large simulations or multiple simulations), or to run simulations for debugging the
+    source code. This topic briefly describes the different options you have for running
+    simulations.
+
+    Run a single simulation
+    =======================
+
+    You will generally want to run simulations using the |EMOD_s| command-line options. This will
+    run a single simulation and put the output files in a local directory.
+
+    You must either download the latest version of |exe_s| from GitHub or clone the |EMOD_s| source from
+    GitHub and build |exe_s| yourself. This gives you access to the latest features and parameters for
+    |EMOD_s|.
+
+    Run multiple simulations
+    ========================
+
+    Because the |EMOD_s| model is :term:`stochastic`, simulations must be run multiple times to return
+    scientifically valid results. Therefore, you have the following options to run multiple simulations
+    at a time, either locally or remotely on a :term:`high-performance computing (HPC)` cluster.
+    Generally, only small simulations should be run locally.
+
+    Many of these options are scripting languages that you can also use to modify the files consumed by
+    |EMOD_s|, simplifying your workflow when running many simulations.
+
+    Run simulations for debugging
+    =============================
+
+    If you are helping advance the |EMOD_s| model by contributing to source code, there are other
+    options for running simulations that provide debugging support. These options for running
+    simulations are not recommended if you are not modifying the source code.
+
+    You can run a simulation locally from Visual Studio using the built-in debugger. You will be able
+    to put in breakpoints and step through the code while inspecting the values of different state
+    variables throughout the simulation.
+
+    You can use regression_test.py in the GitHub Regression_ directory to run multiple simulations
+    on a cluster, including running the suite of regression tests run by the |IDM_s| testing team.
+
+    .. _Regression: https://github.com/InstituteforDiseaseModeling/EMOD/tree/master/Regression
+
+.. only:: training
+
+    The |quick| provides the simplest way to run simulations. You can run simulations within
+    Microsoft Excel using the |Excel| or with Windows command and batch files. Both of these methods
+    will run a single simulation locally.
+
+    Installing |EMOD_s| from the source provides many more options for running simulations. For example, you
+    can run one or more simulations, run simulations locally or on a remote cluster (for large
+    simulations or multiple simulations), or run simulations for debugging the source code.

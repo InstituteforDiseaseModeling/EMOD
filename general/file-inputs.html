@@ -1,0 +1,352 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Input data file structure &mdash; Generic Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Generic Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Generic Model  documentation" href="index.html"/>
+        <link rel="up" title="Input and output file structure" href="file-reference-overview.html"/>
+        <link rel="next" title="Climate file structure" href="file-climate.html"/>
+        <link rel="prev" title="Input and output file structure" href="file-reference-overview.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Generic Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.10
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Input data file structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="parameter-demographics.html">Demographics file structure and parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="file-climate.html">Climate file structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="file-migration.html">Migration file structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="file-load-balancing.html">Load-balancing file structure</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file-outputs.html">Output report structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file-error-logging.html">Error and logging files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Generic Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Generic</a> &raquo;</li>
+      
+          <li><a href="file-reference-overview.html">Input and output file structure</a> &raquo;</li>
+      
+    <li>Input data file structure</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="input-data-file-structure">
+<h1>Input data file structure<a class="headerlink" href="#input-data-file-structure" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference internal" href="glossary.html#term-input-data-files"><span class="xref std std-term">input data files</span></a> described in this section determine the demographics, migration, climate, and other
+relatively fixed information about the population within each geographic node. These files are in
+contrast to the demographic, geographic, and migration parameters in the <a class="reference internal" href="glossary.html#term-configuration-file"><span class="xref std std-term">configuration file</span></a>
+that control simulation-wide qualities, such as enabling air migration across all nodes in the
+simulation.</p>
+<p>Generally, you will download and use input data files without modification. For instructions, see
+<a class="reference internal" href="howto-inputs.html"><span class="doc">Use input data files</span></a>. However, demographics files can include many user-defined parameter values and
+will likely require modification. Only the demographics file is required for a simulation.</p>
+<p>Each type of input data generally requires both a metadata file that contains provenance information
+and a binary file that contains the actual data for each node. Some input files included with
+EMOD were prepared using CIESIN Gridded Population of the World (GPW) population distribution
+and a corresponding spatial resolution grid (for example, 2.5 arc minutes) to define the initial
+population and extent of the nodes for country-wide input files. Therefore, the naming convention
+for this files usually leads with the geographic location, followed by the spatial resolution, and
+input file type.</p>
+<div class="section" id="idreference-types-and-nodeid-generation">
+<h2>IdReference types and NodeID generation<a class="headerlink" href="#idreference-types-and-nodeid-generation" title="Permalink to this headline">¶</a></h2>
+<p>All input files include the parameter <strong>IdReference</strong> in the metadata, which is used to generate the
+<strong>NodeID</strong> associated with each node in a simulation. There are currently four <strong>IdReference</strong>
+values that indicate the associated algorithm used for generating the <strong>NodeID</strong> for each node in a
+simulation. EMOD uses these values to compare different input data files in a simulation in
+order to match <strong>NodeID</strong> values. However, there is no reason you cannot assign any string you want
+to <strong>IdReference</strong>, provided all the input data files used in a simulation, such as demographics,
+climate, or migration, have the same <strong>IDReference</strong> value.</p>
+<p>Generally, nodes are defined using a geographic grid laid over the world, forming approximately
+square nodes of a certain size. The <strong>NodeID</strong> is then calculated based on latitude and
+longitude of the node, where the location of the node is considered the upper left corner of the
+square it represents. <strong>NodeID</strong> values are numbered from south to north for latitude and west
+to east for longitude, with 0,0 being the intersection of the International Date Line and the
+South Pole. Note that <strong>NodeID</strong> values are &lt;longitude&gt;&lt;latitude&gt; values (not
+&lt;latitude&gt;&lt;longitude&gt; values as normally provided).</p>
+<p>The three possible values for <strong>IdReference</strong> that use a grid to define and identify nodes differ
+based on grid resolution. EMOD is limited to a minimum node size of 30 arc-seconds
+(approximately 1 km at the equator). The three gridded values are:</p>
+<ul class="simple">
+<li>Gridded world grump30arcsec</li>
+<li>Gridded world grump2.5arcmin</li>
+<li>Gridded world grump1degree</li>
+</ul>
+<p>The algorithm for encoding latitude and longitude into a <strong>NodeID</strong>  is as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">unsigned</span> <span class="nb">int</span> <span class="n">xpix</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">lon</span> <span class="o">+</span> <span class="mf">180.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">resolution</span><span class="p">)</span>
+<span class="n">unsigned</span> <span class="nb">int</span> <span class="n">ypix</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">lat</span> <span class="o">+</span> <span class="mf">90.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">resolution</span><span class="p">)</span>
+<span class="n">unsigned</span> <span class="nb">int</span> <span class="o">**</span><span class="n">NodeID</span><span class="o">**</span> <span class="o">=</span> <span class="p">(</span><span class="n">xpix</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">+</span> <span class="n">ypix</span> <span class="o">+</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>This generates a <strong>NodeID</strong> that is a 4-byte unsigned integer (like all <strong>NodeID</strong> values); the
+first two  bytes represent the longitude of the node and the second two bytes represent the
+latitude. Note that as part of the final calculation, we add one to the NodeID. This is to
+reserve the <strong>NodeID</strong> of zero, since that is used as a null-value in a number of places (for
+example, in the migration files to signal that no migration value is present).</p>
+<p>In addition to these gridded values, you can assign a value of &#8220;Legacy&#8221; to indicate that
+<strong>NodeID</strong> values are defined in and copied directly from the demographics files. This is used
+when the nodes are not demarcated by a grid, but rather by some social construct, such as voting
+precincts or other administrative boundary, that don’t necessarily have an obvious heuristic for
+enumeration. Some types of data may only be available or easier to obtain when in such a form.
+The name &#8220;Legacy&#8221; does not imply anything derogatory or time-related. It is simply a term that
+was chosen to represent data that isn&#8217;t related to the gridded information.</p>
+<p>When using nodes that are <em>not</em> using the gridded format, you cannot assume or easily determine
+resolution, shape, or actual location of the node point within/along that shape. In other words,
+the format of such files depends on the creator of the file and you should refer to any
+information provided in the metadata of the file or by the creator when parsing the file.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="parameter-demographics.html">Demographics file structure and parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-climate.html">Climate file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-migration.html">Migration file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-load-balancing.html">Load-balancing file structure</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="file-climate.html" class="btn btn-neutral float-right" title="Climate file structure" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="file-reference-overview.html" class="btn btn-neutral" title="Input and output file structure" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for internal docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!-- Google analytics for public docs -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-4', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

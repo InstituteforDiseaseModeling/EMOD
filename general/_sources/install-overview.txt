@@ -1,0 +1,30 @@
+=====================
+|EMOD_s| installation
+=====================
+
+.. remember that the Quick Start, using the EXE, and building from source have different prerequisites
+.. and, therefore, different topics with instructions. Be sure to update all necessary files when
+.. things change
+
+|EMOD_l| can be installed on computers running |Windows_supp| or |Centos_supp|. For both operating
+systems, there are relatively few prerequisites required and the |exe_l| or |linux_binary| is pre-
+built from the latest |EMOD_s| source code release. After completing installation, you can run
+simulations locally or on an HPC cluster using real-world data.
+
+If you are not familiar with disease modeling, we recommend using the `training documentation`_ that
+uses the |quick| with |Excel| to walk through several disease modeling tutorials before installing
+and working directly with |EMOD_s|. You are also free to walk through those tutorials running
+simulations directly with |EMOD_s| as described here.
+
+.. include:: ../reuse/note-quickstart.txt
+
+If you want to download and modify the |EMOD_s| source code and build the |exe_s| or |linux_binary|
+yourself, see :doc:`dev-install-overview`.
+
+.. _training documentation: ./../training/index.html
+
+.. toctree::
+   :maxdepth: 1
+
+   install-windows
+   install-centos

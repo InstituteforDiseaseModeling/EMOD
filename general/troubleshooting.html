@@ -1,0 +1,521 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Troubleshooting EMOD simulations &mdash; Generic Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Generic Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Generic Model  documentation" href="index.html"/>
+        <link rel="next" title="Glossary" href="glossary.html"/>
+        <link rel="prev" title="Error and logging files" href="file-error-logging.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Generic Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.10
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Generic Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Generic</a> &raquo;</li>
+      
+    <li>Troubleshooting EMOD simulations</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="troubleshooting-emod-s-simulations">
+<h1>Troubleshooting EMOD simulations<a class="headerlink" href="#troubleshooting-emod-s-simulations" title="Permalink to this headline">¶</a></h1>
+<p>If you encounter any of the following problems when attempting to run EMOD simulations, see the
+information below to resolve the issue.</p>
+<p>If you need assistance, you can contact support for help with solving issues. You can contact
+Institute for Disease Modeling (IDM) support at <a class="reference external" href="mailto:support&#37;&#52;&#48;idmod&#46;org">support<span>&#64;</span>idmod<span>&#46;</span>org</a>. When submitting the issue, please include any error
+information. See <a class="reference internal" href="dev-debugging-overview.html"><span class="doc">Debugging and testing</span></a> for troubleshooting issues when attempting to
+build Eradication.exe or Eradication binary.</p>
+<div class="contents local topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#exceptions" id="id1">Exceptions</a><ul>
+<li><a class="reference internal" href="#badenuminswitchstatementexception" id="id2">BadEnumInSwitchStatementException</a></li>
+<li><a class="reference internal" href="#badmapkeyexception" id="id3">BadMapKeyException</a></li>
+<li><a class="reference internal" href="#calculatedvalueoutofrangeexception" id="id4">CalculatedValueOutOfRangeException</a></li>
+<li><a class="reference internal" href="#configurationrangeexception" id="id5">ConfigurationRangeException</a></li>
+<li><a class="reference internal" href="#dllloadingexception" id="id6">DllLoadingException</a></li>
+<li><a class="reference internal" href="#factorycreatefromjsonexception" id="id7">FactoryCreateFromJsonException</a></li>
+<li><a class="reference internal" href="#fileioexception" id="id8">FileIOException</a></li>
+<li><a class="reference internal" href="#filenotfoundexception" id="id9">FileNotFoundException</a></li>
+<li><a class="reference internal" href="#generalconfigurationexception" id="id10">GeneralConfigurationException</a></li>
+<li><a class="reference internal" href="#illegaloperationexception" id="id11">IllegalOperationException</a></li>
+<li><a class="reference internal" href="#incoherentconfigurationexception" id="id12">IncoherentConfigurationException</a></li>
+<li><a class="reference internal" href="#initializationexception" id="id13">InitializationException</a></li>
+<li><a class="reference internal" href="#invalidinputdataexception" id="id14">InvalidInputDataException</a></li>
+<li><a class="reference internal" href="#missingparameterfromconfigurationexception" id="id15">MissingParameterFromConfigurationException</a></li>
+<li><a class="reference internal" href="#mpiexception" id="id16">MPIException</a></li>
+<li><a class="reference internal" href="#notyetimplementedexception" id="id17">NotYetImplementedException</a></li>
+<li><a class="reference internal" href="#nullpointerexception" id="id18">NullPointerException</a></li>
+<li><a class="reference internal" href="#outofrangeexception" id="id19">OutOfRangeException</a></li>
+<li><a class="reference internal" href="#queryinterfaceexception" id="id20">QueryInterfaceException</a></li>
+<li><a class="reference internal" href="#serializationexception" id="id21">SerializationException</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#centos-environment" id="id22">CentOS on Azure environment</a><ul>
+<li><a class="reference internal" href="#regression-test-graphs-differ-when-run-on-centos" id="id23">Regression test graphs differ when run on CentOS on Azure</a></li>
+<li><a class="reference internal" href="#linux-binary-cannot-locate-the-input-data-files" id="id24">Eradication binary cannot locate the input data files</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="exceptions">
+<h2><a class="toc-backref" href="#id1">Exceptions</a><a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
+<p>Whenever EMOD encounters an error condition while running a simulation, it should throw an
+exception. These exceptions are designed to help you diagnose any problems so that you can quickly
+resolve the issue. You can find the exceptions code in the utils directory of the EMOD source
+code within the files Exceptions.h and Exceptions.cpp.</p>
+<p>Each exception will return, at a minimum, the following information:</p>
+<ul class="simple">
+<li>Exception type caught</li>
+<li>The filename where the exception occurred</li>
+<li>The line number in the file where the exception was thrown (which may not be exactly where the
+error actually occurred in the code)</li>
+<li>The function name where the exception was thrown</li>
+</ul>
+<p>Specific exceptions may also return additional information in a message format. This message
+(msg) may contain variable names or the values of those variables, the name of a file that
+wasn&#8217;t found, and other informational text regarding the nature of the problem. For example,
+a file not found exception (FileNotFoundException) might look similar to the following:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="n">E</span><span class="p">]</span> <span class="p">[</span><span class="n">Eradication</span><span class="p">]</span> <span class="n">FileNotFoundException</span> <span class="n">caught</span><span class="p">:</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">Could</span> <span class="ow">not</span> <span class="n">find</span>
+<span class="n">file</span> <span class="o">./</span><span class="n">Namawala_single_node_demographics</span><span class="o">.</span><span class="n">compiled</span><span class="o">.</span><span class="n">json</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">NodeDemographics</span><span class="o">.</span><span class="n">cpp</span><span class="p">,</span>
+<span class="n">lineNumber</span> <span class="o">=</span> <span class="mi">227</span>
+</pre></div>
+</div>
+<div class="section" id="badenuminswitchstatementexception">
+<h3><a class="toc-backref" href="#id2">BadEnumInSwitchStatementException</a><a class="headerlink" href="#badenuminswitchstatementexception" title="Permalink to this headline">¶</a></h3>
+<p>This exception is thrown when an enumeration value is not handled in the switch statement. In other
+words, this exception signals that there is a problem with an enumeration value, typically stemming
+from one of the configuration files, though this is not always the case.</p>
+<p>It is possible the enumeration value is not a valid value (out of range of the numeric range of the
+enumeration), or perhaps the string value is currently not implemented in the code (and should not
+be used in configuration settings yet).</p>
+</div>
+<div class="section" id="badmapkeyexception">
+<h3><a class="toc-backref" href="#id3">BadMapKeyException</a><a class="headerlink" href="#badmapkeyexception" title="Permalink to this headline">¶</a></h3>
+<p>This exception is thrown when there is a standard template library (STL) mapping error. Usually,
+this occurs where spatial output channel names are specified in the configuration file
+if an unrecognized channel name is used.</p>
+<p>If you have not modified the EMOD source code or used an unrecognized channel name, this error
+could signal an internal problem with the code. Contact <a class="reference external" href="mailto:support&#37;&#52;&#48;idmod&#46;org">support<span>&#64;</span>idmod<span>&#46;</span>org</a>.</p>
+</div>
+<div class="section" id="calculatedvalueoutofrangeexception">
+<h3><a class="toc-backref" href="#id4">CalculatedValueOutOfRangeException</a><a class="headerlink" href="#calculatedvalueoutofrangeexception" title="Permalink to this headline">¶</a></h3>
+<p>EMOD performs a large number of mathematical operations on parameter values. Therefore, it is
+possible that, despite original parameter values being with range, the values resulting from these
+multiple calculations may end up outside its valid range. For example, a probability value (range: 0
+to 1.0) that after multiple calculations during a simulation now exceeds 1.0.</p>
+<p>This exception is thrown when such a situation is detected. This exception only applies to numeric
+or Boolean values, not enumeration values.</p>
+</div>
+<div class="section" id="configurationrangeexception">
+<h3><a class="toc-backref" href="#id5">ConfigurationRangeException</a><a class="headerlink" href="#configurationrangeexception" title="Permalink to this headline">¶</a></h3>
+<p>This exception is thrown if a parameter value read from a configuration file is detected to be
+outside its valid range. This exception is similar to the more general case OutOfRangeException.
+However, this exception is only thrown if the out of range exception comes from a numeric or Boolean
+value, not enumeration value, read from a configuration file.</p>
+</div>
+<div class="section" id="dllloadingexception">
+<h3><a class="toc-backref" href="#id6">DllLoadingException</a><a class="headerlink" href="#dllloadingexception" title="Permalink to this headline">¶</a></h3>
+<p>The EMOD architecture is modularized and can be built as a core Eradication.exe along with a series of
+custom reporter EMODules, as opposed to a single monolithic Eradication.exe. This exception indicates that
+EMOD couldn&#8217;t load on of the EMODule DLLs.</p>
+<p>This situation could occur for several reasons:</p>
+<ul class="simple">
+<li>EMOD couldn&#8217;t find the EMODule</li>
+<li>Unresolved symbols were found (Windows)</li>
+<li>EMOD could not find the necessary symbol during the <strong>GetProcAddress</strong> call</li>
+<li>The custom reporter EMODules were built using a version of Visual Studio that is no longer
+supported. Rebuild the EMODules using Visual Studio 2015 (Professional, Premium, or Ultimate).</li>
+</ul>
+</div>
+<div class="section" id="factorycreatefromjsonexception">
+<h3><a class="toc-backref" href="#id7">FactoryCreateFromJsonException</a><a class="headerlink" href="#factorycreatefromjsonexception" title="Permalink to this headline">¶</a></h3>
+<p>EMOD implements class factories that instantiate objects at run time and use information from
+JSON- based configuration information in the creation of these objects. The exception indicates
+something is incorrect with the JSON information.</p>
+<p>In particular, in some cases, the JSON information is nested into a hierarchy of information.
+Therefore, as the factories are called to create the objects described by the outer layers of one of
+these nested hierarchies, the factories do not have any knowledge yet of the inner layers of the
+hierarchies. This inner information contains information the factory needs to complete the object
+instantiation, but this information might not be correct. If that happens, then the factory will
+throw this exception.</p>
+<p>Campaign files often have this kind of nested hierarchical structure, so it&#8217;s important to t verify
+that the hierarchy is set up correctly. For example, if the class name were mistyped and EMOD
+had no implementation of that class, this exception will be thrown.</p>
+</div>
+<div class="section" id="fileioexception">
+<h3><a class="toc-backref" href="#id8">FileIOException</a><a class="headerlink" href="#fileioexception" title="Permalink to this headline">¶</a></h3>
+<p>This exception is generated if there is an unrecoverable problem loading data from a file. The data
+might be corrupted or there may be a mismatch. For example, if the file format or configuration
+information indicates that there should be ten values of some array and there are only nine included
+in the file, then this exception would be thrown.</p>
+<p>This exception is not the same as the exception thrown for a file that is not found. In this case,
+the file is found and loaded, but there is a problem with the data in the file.</p>
+</div>
+<div class="section" id="filenotfoundexception">
+<h3><a class="toc-backref" href="#id9">FileNotFoundException</a><a class="headerlink" href="#filenotfoundexception" title="Permalink to this headline">¶</a></h3>
+<p>This exception is thrown if a file cannot be found. Possible causes might include a incorrectly
+typed filename in the configuration file, a wrong path to the file, or even the path not being set
+in the system environment leading to the system not finding a relative path to the file. One of the
+most likely causes is that quotes are missing around the file name.</p>
+</div>
+<div class="section" id="generalconfigurationexception">
+<h3><a class="toc-backref" href="#id10">GeneralConfigurationException</a><a class="headerlink" href="#generalconfigurationexception" title="Permalink to this headline">¶</a></h3>
+<p>This exception is only thrown if a more specific exception cannot be used for the configuration
+problem detected. This exception is likely thrown when there is very little information available
+about the root problem.</p>
+<p>For example, this exception might be thrown if a parameter name is invalid, such as using an older,
+deprecated version of a parameter name.</p>
+</div>
+<div class="section" id="illegaloperationexception">
+<h3><a class="toc-backref" href="#id11">IllegalOperationException</a><a class="headerlink" href="#illegaloperationexception" title="Permalink to this headline">¶</a></h3>
+<p>This exception is thrown if an illegal operation was detected. In most cases, a more specific
+exception will be thrown rather than this more general one. This exception is likely thrown when
+there is very little information available about the root problem. For example, when a utility
+function error is detected, there is very sparse information available as to what may have led to
+the error. As a result, calling a more specific exception with more context is not an option.</p>
+</div>
+<div class="section" id="incoherentconfigurationexception">
+<h3><a class="toc-backref" href="#id12">IncoherentConfigurationException</a><a class="headerlink" href="#incoherentconfigurationexception" title="Permalink to this headline">¶</a></h3>
+<p>This exception is thrown if mutually contradictory or incompatible configuration settings have been
+detected. For example, if mutually exclusive parameters are set, the minimum parameter value is
+greater than the maximum value, or two distribution axes are specified in a demographics file but
+there is a mismatch with the number of axes scale factors included. The exception can also occur if
+there isn&#8217;t a corresponding mapping between an reference ID in the metadata of a demographics file
+and its corresponding data file.</p>
+</div>
+<div class="section" id="initializationexception">
+<h3><a class="toc-backref" href="#id13">InitializationException</a><a class="headerlink" href="#initializationexception" title="Permalink to this headline">¶</a></h3>
+<p>This exception is thrown if a problem with initialization was detected. In most cases, a more
+specific exception will be thrown rather than this more general one. This exception is likely thrown
+when there is very little information available about the root problem.</p>
+<p>For example, if the very first part of a JSON file has corrupted or badly formatted data, this
+exception may be thrown instead of the more expected file input/output exception, FileIOException.</p>
+</div>
+<div class="section" id="invalidinputdataexception">
+<h3><a class="toc-backref" href="#id14">InvalidInputDataException</a><a class="headerlink" href="#invalidinputdataexception" title="Permalink to this headline">¶</a></h3>
+<p>This exception is thrown when a problem with an input data file is detected. For example, if the
+wrong data type was detected, such as a float being detected when a string is expected you would see
+this exception thrown, or even, if a parameter has an invalid value even if the value is of the
+correct type. As the input data file most likely to have significant modifications, verify that the
+demographics file is set up correctly.</p>
+</div>
+<div class="section" id="missingparameterfromconfigurationexception">
+<h3><a class="toc-backref" href="#id15">MissingParameterFromConfigurationException</a><a class="headerlink" href="#missingparameterfromconfigurationexception" title="Permalink to this headline">¶</a></h3>
+<p>This exception occurs when required parameters are missing. Verify that you are not using deprecated
+parameters and that all required parameters are specified (or set <strong>Use_Defaults</strong> to 1).</p>
+</div>
+<div class="section" id="mpiexception">
+<h3><a class="toc-backref" href="#id16">MPIException</a><a class="headerlink" href="#mpiexception" title="Permalink to this headline">¶</a></h3>
+<p>This exception is thrown if there is an MPI error. As such, these types of issues are related to
+interfacing with MPI (and/or networking issues) and do not necessary imply something wrong with the
+EMOD code or JSON files.</p>
+</div>
+<div class="section" id="notyetimplementedexception">
+<h3><a class="toc-backref" href="#id17">NotYetImplementedException</a><a class="headerlink" href="#notyetimplementedexception" title="Permalink to this headline">¶</a></h3>
+<p>This exception is thrown if an attempt is made to execute code that is not yet implemented.
+For example, there are areas of EMOD where placeholder enumeration values are defined but not
+yet implemented.  If you specify a value like this, it is considered within a valid range, but this
+exception will be thrown in response. Verify that any enumeration values use one of the available
+values as described in the documentation and do not contain any typos.</p>
+</div>
+<div class="section" id="nullpointerexception">
+<h3><a class="toc-backref" href="#id18">NullPointerException</a><a class="headerlink" href="#nullpointerexception" title="Permalink to this headline">¶</a></h3>
+<p>This exception is thrown when a NULL pointer is detected in the code, or rather when a NULL pointer
+- that should NOT be NULL - is used. When thrown at the application level, a NULL pointer exception
+is usually caused by some sort of initialization error, for example, a file not being found.</p>
+<p>As a result, in most cases, a more specific exception will be thrown before the code execution
+reaches a point where this exception would occur. Therefore, this exception is uncommon and likely
+thrown only when there is very little information available about the root problem.</p>
+</div>
+<div class="section" id="outofrangeexception">
+<h3><a class="toc-backref" href="#id19">OutOfRangeException</a><a class="headerlink" href="#outofrangeexception" title="Permalink to this headline">¶</a></h3>
+<p>This exception is thrown when a numeric or Boolean value is out of range. For example, if you index
+an array outside of its valid range, this exception will be thrown. There are other situations where
+more specific exceptions are thrown instead of this more general one. For example, when the numeric
+or Boolean values are from a configuration file, but are detected to be out of range, the
+ConfigurationRangeException is thrown. Likewise, if the value goes out of range as the result of a
+calculation, the CalculatedValueOutOfRangeException is thrown instead.</p>
+</div>
+<div class="section" id="queryinterfaceexception">
+<h3><a class="toc-backref" href="#id20">QueryInterfaceException</a><a class="headerlink" href="#queryinterfaceexception" title="Permalink to this headline">¶</a></h3>
+<p>The EMOD architecture is modularized and many components now implement <strong>QueryInterface</strong>. This
+exception is thrown when a required interface is queried on an object and the object that returns
+that the interface is not supported.</p>
+<p>If you have not modified the EMOD source code and receive this error, it could signal an
+internal problem with the code. Contact <a class="reference external" href="mailto:support&#37;&#52;&#48;idmod&#46;org">support<span>&#64;</span>idmod<span>&#46;</span>org</a>.</p>
+</div>
+<div class="section" id="serializationexception">
+<h3><a class="toc-backref" href="#id21">SerializationException</a><a class="headerlink" href="#serializationexception" title="Permalink to this headline">¶</a></h3>
+<p>This exception is thrown when there is a serialization (or de-serialization) issue. For example, if
+data is being passed over the network (MPI) and the connection drops, then the serialization fails
+and this exception is thrown.</p>
+</div>
+</div>
+<div class="section" id="centos-environment">
+<h2><a class="toc-backref" href="#id22">CentOS on Azure environment</a><a class="headerlink" href="#centos-environment" title="Permalink to this headline">¶</a></h2>
+<p>The following problems are specific to running simulations using the Eradication binary on CentOS 7.1 on Azure.</p>
+<div class="section" id="regression-test-graphs-differ-when-run-on-centos">
+<h3><a class="toc-backref" href="#id23">Regression test graphs differ when run on CentOS on Azure</a><a class="headerlink" href="#regression-test-graphs-differ-when-run-on-centos" title="Permalink to this headline">¶</a></h3>
+<p>After you run regression simulations on CentOS on Azure using runemod.sh in the Scripts directory, it plots
+graphs from the simulation output data with a red line for the reference output and a blue line for
+the new output. The reference output was created by running the simulation on Windows, which in some
+cases may be slightly different than the output from CentOS on Azure.</p>
+<p>For simulations that plot a baseline, you can override the Windows reference output by modifying
+runemod.sh to use output/InsetChart.linux.json as the output location. In that case, the red
+reference plots should always be completely covered by the blue plots.</p>
+</div>
+<div class="section" id="linux-binary-cannot-locate-the-input-data-files">
+<h3><a class="toc-backref" href="#id24">Eradication binary cannot locate the input data files</a><a class="headerlink" href="#linux-binary-cannot-locate-the-input-data-files" title="Permalink to this headline">¶</a></h3>
+<p>If you chose not to have the PrepareLinuxEnvironment.sh script download the EMOD source code and
+input data files, you need to set up the environment variable, path and symlink that are needed
+to run simulations on CentOS on Azure. See <a class="reference internal" href="install-centos.html"><span class="doc">Install EMOD on CentOS on Azure</span></a>.</p>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="glossary.html" class="btn btn-neutral float-right" title="Glossary" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="file-error-logging.html" class="btn btn-neutral" title="Error and logging files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for internal docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!-- Google analytics for public docs -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-4', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

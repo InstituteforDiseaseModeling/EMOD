@@ -1,0 +1,82 @@
+=============================
+Improve |EMOD_s| performance
+=============================
+
+While small simulations can be run quickly on a local computer, the time and memory needed to complete a
+simulation can grow significantly when simulations become larger and more complex. For example, a
+single geographical node simulation might use 3 GB with one core in order to run successfully in one
+minute or less, while another simulation job may require 32 GB in a dual-core system in order to
+complete in approximately the same amount of time.
+
+As your simulations grow, you will likely want to run simulations on an HPC cluster or take other
+steps to improve performance and reduce processing time. This topic describes many of the steps you
+can take to speed up |EMOD_s| simulations.
+
+Parallel processing
+===================
+
+The |exe_l| is "single threaded", meaning that for processing, it will use only one core. However,
+you can use the Message Passing Interface (MPI) to run multiple copies of |exe_s| in parallel,
+either locally or on an HPC cluster. To run a simulation in parallel, you must invoke |exe_s| with
+the mpiexec command. For more information, see :doc:`howto-simulation-mpiexec`.
+
+Parameter settings
+==================
+
+You can also set various parameters in the :term:`configuration file` that will improve performance
+by scaling down the amount of data used or optimizing data processing. See the parameters listed
+in the sections below for guidance on making performance adjustments. See :doc:`parameter-configuration`
+for more information about each of the parameters.
+
+Scaling and sampling
+--------------------
+
+**Simulation_Duration**
+    Obviously, simulating a shorter timespan will take less processing time. However, the
+    processing time is often driven by the number of infections or immune updates, so running a
+    simulation after all infections have cleared may not increase processing time much.
+**Individual_Sampling_Type** and **Base_Individual_Sample_Rate**
+    Instead of the default **Individual_Sampling_Type** setting of "TRACK_ALL", you can speed up
+    performance by using "FIXED_SAMPLING" with the **Base_Individual_Sample_Rate** set to less than
+    one. For example, a simulation with a population of 1 million and sample rate of 0.1 would
+    simulate 100,000 individuals, with each given a weight of 10. There are also sampling parameters
+    that sample the population at different rates by age and by the population of the node.
+
+    However, you should be especially careful not to undersample simulations to the point where they
+    are overly sensitive to rare stochastic events.
+**Population_Scale_Type** and **Base_Population_Scale_Factor**
+    Alternatively, you can simply reduce the total population of the simulation using
+    **Population_Scale_Type** set to "FIXED_SCALING" and **Base_Population_Scale_Factor** set to
+    less than one.
+
+Processing
+----------
+
+**Num_Cores**
+    For large, spatially distributed simulations, running the intra-node dynamics (for example,
+    infection and immune dynamics) in parallel on multiple cores may be very advantageous. Ideally,
+    the timing would be reduced inversely to the number of cores. However, there are costs to
+    serializing individuals for migration over MPI, as well as considerations for balancing the CPU
+    load on each core. These issues may be mitigated using a load balancing input file that is
+    suitable to the geography being simulated. See :doc:`file-load-balancing` for more information.
+
+
+.. only:: vector or malaria
+
+    Vector and malaria
+    ------------------
+
+    **Simulation_Type**
+        "VECTOR_SIM" will run much faster than "MALARIA_SIM" if detailed intra-host dynamics are not
+        "required.
+    **Vector_Sampling_Type** and **Mosquito_Weight**
+        The individual vector simulation ("TRACK_ALL_VECTORS") will run more slowly than the cohort
+        model ("VECTOR_COMPARTMENTS_NUMBER"). If the individual vector model must be used, you can
+        improve performance by sampling some fraction of all vectors ("SAMPLE_IND_VECTORS") where
+        each mosquito has a weight configured by **Mosquito_Weight**, which is analogous to
+        individual human sampling.
+    **Infection_Updates_Per_Timestep**
+        Using fewer intra-day updates to the malaria intra-host model will speed up simulation time.
+        However, updates longer than three hours, such as eight per day, result in increasingly
+        inaccurate dynamics.
+

@@ -1,0 +1,544 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Generic 1: SIR - Simple single-node outbreak &mdash; Training Tutorials  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Training Tutorials  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Training Tutorials  documentation" href="index.html"/>
+        <link rel="up" title="Generic simulation tutorials" href="generic-simulation-tutorial-overview.html"/>
+        <link rel="next" title="Generic 2: SIR - Targeted vaccination campaigns" href="generic-tutorial2SIR.html"/>
+        <link rel="prev" title="Generic simulation tutorials" href="generic-simulation-tutorial-overview.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Training Tutorials
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.5
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">Install the Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using-quickstart.html">How to run Quick Start simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Generic 1: SIR - Simple single-node outbreak</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial2SIR.html">Generic 2: SIR - Targeted vaccination campaigns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial3SEIR.html">Generic 3: SIER - Incubation periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial4SEIR.html">Generic 4: SEIR - Vital dynamics (birth and death)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial5SIRS.html">Generic 5: SIRS - Waning immunity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial6SEIRS.html">Generic 6: SEIRS - Disease-specific mortality and endemics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial7SI.html">Generic 7: SI - Lifelong infection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial8SIS.html">Generic 8: SIS - Reoccurring infections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial9Density.html">Generic 9: Density scaling of infectivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial-10Zoonosis.html">Generic 10: Animal reservoir zoonosis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hint-tutorial-overview.html">Heterogeneous Intra-Node Transmission (HINT) tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-VM-tutorials-overview.html">Vector and malaria tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Training Tutorials</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Training</a> &raquo;</li>
+      
+          <li><a href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a> &raquo;</li>
+      
+    <li>Generic 1: SIR - Simple single-node outbreak</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="generic-1-sir-simple-single-node-outbreak">
+<h1>Generic 1: SIR - Simple single-node outbreak<a class="headerlink" href="#generic-1-sir-simple-single-node-outbreak" title="Permalink to this headline">¶</a></h1>
+<p>This first tutorial is a simple SIR epidemic in a single-<a class="reference internal" href="glossary.html#term-node"><span class="xref std std-term">node</span></a>, village-scale location. The
+tutorial describes the differences between the <a class="reference internal" href="glossary.html#term-stochastic"><span class="xref std std-term">stochastic</span></a> EMOD model and the
+<a class="reference internal" href="glossary.html#term-deterministic"><span class="xref std std-term">deterministic</span></a> <a class="reference internal" href="glossary.html#term-sir-model"><span class="xref std std-term">SIR model</span></a> and demonstrates how the <a class="reference internal" href="glossary.html#term-epidemiological-modeling-software-emod"><span class="xref std std-term">Epidemiological MODeling
+software (EMOD)</span></a> is configured to simulate an SIR epidemic.</p>
+<p>After running the base simulation of the SIR epidemic, you can vary the parameters for
+disease infectivity and infection duration to see the effect on the height of the epidemic peak, the
+time to reach the peak, and the cumulative number of disease cases.</p>
+<div class="section" id="the-sir-model">
+<h2>The SIR model<a class="headerlink" href="#the-sir-model" title="Permalink to this headline">¶</a></h2>
+<p>The simplest way to model epidemic spread in populations is to classify people into
+different population groups or compartments. One of the classic but still widely used models divides
+people into three groups: S - susceptible, I - infected/infectious, and R - recovered/immune. This
+model was first used by Kermack and McKendrick in 1927 and has subsequently been applied to a
+variety of diseases, especially airborne childhood diseases with life-long immunity upon recovery,
+such as measles, mumps, rubella, and pertussis.</p>
+<p>S, I and R represent the number of susceptible,infected, and recovered individuals, and N = S + I +
+R is the total population. The infectious rate β controls the rate of spread which represents the
+probability of transmitting disease between a susceptible and an infectious individual. Recovery
+rate, γ = 1/D, is determined by the average duration, D, of infection.</p>
+<p>If the course of the infection is short (emergent outbreak) compared with the life time of an
+individual, and the disease is non-fatal, vital dynamics (birth and death) can be ignored. In the
+deterministic form, the SIR model can be written as follows:</p>
+<div class="math">
+<p><img src="_images/math/7edd99664ee58dde174cfe47bf51ade942786541.png" alt="\begin{aligned}
+\frac{dS}{dt} &amp; = -\frac{\beta SI}{N}\\
+\frac{dI}{dt} &amp; = \frac{\beta SI}{N} - \gamma I\\
+\frac{dR}{dt} &amp; = \gamma I
+\end{aligned}"/></p>
+</div><p>It is challenging to derive exact analytical solutions of the previous equations because of the non-
+linear dynamics. However, the key metrics that control the spread can be derived. At the initial
+seeding of the infection, the following condition needs to be satisfied for a disease to spread:</p>
+<div class="math">
+<p><img src="_images/math/7a80e228a687dec51a05e01f79079ec362fcb7fa.png" alt="\frac{dI}{dt} = \frac{\beta SI}{N} - \gamma I &gt; 0"/></p>
+</div><p>If the number of infections at the initial stage is small and the initial R = 0 then S is close to N
+and the condition becomes:</p>
+<div class="math">
+<p><img src="_images/math/71dc0448aad7abcd254cecc996180cd1ce39d1ba.png" alt="\frac{\beta}{\gamma} &gt; 1"/></p>
+</div><p>where β/γ is named the <a class="reference internal" href="glossary.html#term-reproductive-number"><span class="xref std std-term">reproductive number</span></a> (R<sub>0</sub>). R<sub>0</sub>is the average number of
+secondary cases generated by an index case in a fully susceptible population. The disease will
+spread in the population when R<sub>0</sub>&gt; 1 and will die out if R<sub>0</sub>&lt; 1.</p>
+</div>
+<div class="section" id="sir-and-emod-s-model-comparison">
+<h2>SIR and EMOD model comparison<a class="headerlink" href="#sir-and-emod-s-model-comparison" title="Permalink to this headline">¶</a></h2>
+<p>The EMOD model is a discrete and stochastic version of the SIR model with state
+changes occurring at fixed time steps and an exponentially distributed duration of infection. The
+discrete form of the previous equation at each <a class="reference internal" href="glossary.html#term-time-step"><span class="xref std std-term">time step</span></a> from to  can be written as:</p>
+<div class="math">
+<p><img src="_images/math/d02c5200b0562fc7bd8cbde855de215b83262a38.png" alt="\begin{aligned}
+S(t+\delta) &amp; = S(t) - \delta\frac{\beta S(t)I(t)}{N}\\
+I(t+\delta) &amp; = I(t) + \delta\frac{\beta S(t)I(t)}{N} - \delta\gamma I(t)\\
+R(t+\delta) &amp; = R(t) +\delta\gamma I(t)
+\end{aligned}"/></p>
+</div><p>The infection and recovery process can be represented as probabilistic binomial draws where:</p>
+<p>The total rate of contagion shedding from all infected individuals (the force of infection):</p>
+<div class="math">
+<p><img src="_images/math/62e4bc8fb65d4dbd5a1d0f6c98ab7b2bb32b9489.png" alt="\lambda = \frac{\beta I}{N}"/></p>
+</div><p>The probability of infection:</p>
+<div class="math">
+<p><img src="_images/math/46ebfe75a9770264d7605c6d8cfcbbac58a8c78c.png" alt="p_i = 1-\mathrm{e}^{\lambda\delta}"/></p>
+</div><p>Probability of recovery:</p>
+<div class="math">
+<p><img src="_images/math/3980639dab1e0e9dc7fd82f77f522a7b5f2c16d8.png" alt="p_r = 1-\mathrm{e}^{\gamma\delta}"/></p>
+</div><p>Therefore,</p>
+<div class="math">
+<p><img src="_images/math/cea72a430216efe4772e3b601293d7e253c44445.png" alt="\begin{aligned}
+S(t+\delta) &amp; = S(t) - \mathrm{Binomial}\left(S(t), p_i\right)\\
+I(t+\delta) &amp; = I(t) + \mathrm{Binomial}\left(S(t), p_i\right) - \mathrm{Binomial}\left(I(t), p_r\right)\\
+R(t+\delta) &amp; = R(t) + \mathrm{Binomial}\left(I(t), p_r\right)
+\end{aligned}"/></p>
+</div><p>Because the EMOD model is stochastic and discrete, the accuracy of the result will depend on δ which
+is set with the parameter <strong>Simulation_Timestep</strong>. By default, δ = 1 which is a day but you can choose a
+smaller time step in order to get more accurate results.</p>
+<p>One of the key the differences between stochastic and deterministic systems is the value of
+R<sub>0</sub>.  A <a class="reference internal" href="glossary.html#term-ordinary-differential-equation-ode"><span class="xref std std-term">ordinary differential equation (ODE)</span></a> model will never predict an
+outbreak when R<sub>0</sub>&lt; 1,  especially when R<sub>0</sub> is close to 1. In stochastic simulations
+it is possible to see outbreaks.</p>
+<p>For more information on the mathematics of the EMOD model, see <a class="reference external" href="./../general/hint-scaling.html">Heterogeneity and transmission scaling</a>
+in the generic documentation set.</p>
+</div>
+<div class="section" id="demographic-inputs">
+<h2>Demographic inputs<a class="headerlink" href="#demographic-inputs" title="Permalink to this headline">¶</a></h2>
+<p>The demographic file generic_scenarios_demographics, defines a single node with 10,000 individuals
+and has a fixed birth and death rate at 20 per 1000 individual per year (0.0000548 per day). This
+demographics file is used by this tutorial and several of the other Generic simulation tutorials.</p>
+<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;InitialPopulation&quot;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>
+        <span class="nt">&quot;BirthRate&quot;</span><span class="p">:</span> <span class="mf">0.0000548</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;NumDistributionAxes&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisUnits&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;male=0,female=1&quot;</span><span class="p">,</span> <span class="s2">&quot;years&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisScaleFactors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">365</span><span class="p">],</span>
+            <span class="nt">&quot;NumPopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="nt">&quot;PopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;ResultUnits&quot;</span><span class="p">:</span> <span class="s2">&quot;deaths per day&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;ResultScaleFactor&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;ResultValues&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mf">0.0000548</span><span class="p">],</span>
+                <span class="p">[</span><span class="mf">0.0000548</span><span class="p">]</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For some of the Generic tutorials that use <strong>generic_scenarios_demographics</strong>, including this
+tutorial, the birth and death rate needs to be 0. In this case, the birth and death process is
+disabled in the <a class="reference internal" href="glossary.html#term-configuration-file"><span class="xref std std-term">configuration file</span></a> (config.json) by setting the parameter <strong>Enable_Vital_Dynamics</strong> to
+0.</p>
+<p>You can view the demographics file at &lt;path_to_directory&gt;ScenariosInputFiles where
+&lt;path_to_directory&gt; is the location where either the Quick Start was installed. For more information
+on demographics files, see <a class="reference internal" href="intro-inputs.html"><span class="doc">Input data files</span></a>.</p>
+</div>
+<div class="section" id="key-configuration-parameters">
+<h2>Key configuration parameters<a class="headerlink" href="#key-configuration-parameters" title="Permalink to this headline">¶</a></h2>
+<p>You can view the complete config.json at
+&lt;path_to_directory&gt;ScenariosGeneric Scenarios01_SIR directory.</p>
+<div class="section" id="demographics-parameters">
+<h3>Demographics parameters<a class="headerlink" href="#demographics-parameters" title="Permalink to this headline">¶</a></h3>
+<p>Set <strong>Enable_Vital_Dyanamics</strong> to 0.  This will disable vital dynamics (birth and death) in the simulation.</p>
+</div>
+<div class="section" id="sir-model-setup-parameters">
+<h3>SIR model setup parameters<a class="headerlink" href="#sir-model-setup-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The EMOD generic simulation uses an SEIR-like disease model by default. You can modify the default
+SEIR model to an SIR model by turning off the incubation period and immune decay in the config.json
+file. For more information, see <a class="reference internal" href="parameter-configuration.html#config-generaldisease"><span class="std std-ref">General disease</span></a> parameters.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Siumulation_Type</strong> to &#8220;GENERIC SIM.&#8221;</li>
+<li>Set <strong>Base_Incubation_Period</strong> to 0.</li>
+<li>Set <strong>Incubation_Period_Distribution</strong> to &#8220;FIXED_DURATION.&#8221;</li>
+<li>Set <strong>Enable_Immune_Decay</strong> to 0.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="disease-parameters">
+<h3>Disease parameters<a class="headerlink" href="#disease-parameters" title="Permalink to this headline">¶</a></h3>
+<p>As demonstrated above, the spread of disease in the SIR model depends on the basic reproductive
+number R<sub>0</sub>=β/γ .  In this simulation, the average infection duration is 4 days, and
+R<sub>0</sub>=14  (measles-like). An exponentially distributed period is used to match the behavior of
+ODE. For more information, see <a class="reference internal" href="parameter-configuration.html#config-generaldisease"><span class="std std-ref">General disease</span></a> parameters.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Base_Infectivity</strong> to 3.5.</li>
+<li>Set <strong>Base_Infectious_Period</strong> to 4.</li>
+<li>Set <strong>Infectious_Period_Distribution</strong> to &#8220;EXPONENTIAL_DURATION.&#8221;</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="simulation-duration-parameters">
+<h3>Simulation duration parameters<a class="headerlink" href="#simulation-duration-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The simulation is run for 3 months with a 1-day time step. For more information, see
+<a class="reference internal" href="parameter-configuration.html#config-simulationsetup"><span class="std std-ref">Simulation setup</span></a> parameters.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Simulation_Timestep</strong> to 1.</li>
+<li>Set <strong>Simulation_Duration</strong> to 90.</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="interventions">
+<h2>Interventions<a class="headerlink" href="#interventions" title="Permalink to this headline">¶</a></h2>
+<p>You can define interventions and events for a simulation through a <a class="reference internal" href="glossary.html#term-javascript-object-notation-json"><span class="xref std std-term">JavaScript Object Notation
+(JSON)</span></a> formatted campaign file, typically called campaign.json.</p>
+<p>Interventions can have either a positive effect on a simulation (for example, a vaccination
+campaign) or a negative impact (for example, an outbreak). For this simulation, the <a class="reference internal" href="glossary.html#term-intervention"><span class="xref std std-term">intervention</span></a> is
+an outbreak.</p>
+<div class="section" id="initial-outbreak">
+<h3>Initial outbreak<a class="headerlink" href="#initial-outbreak" title="Permalink to this headline">¶</a></h3>
+<p>This simulation uses an <strong>OutbreakIndividual</strong> event at day 1 as the initial seeding of the
+infection. For more information, see <a class="reference internal" href="parameter-campaign.html#iv-outbreakindividual"><span class="std std-ref">OutbreakIndividual</span></a> parameters.</p>
+<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Initial Seeding&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="nt">&quot;Outbreak_Source&quot;</span><span class="p">:</span> <span class="s2">&quot;PrevalenceIncrease&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;OutbreakIndividual&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.0005</span><span class="p">,</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Event_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Outbreak&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You can view the complete campaign.json in
+&lt;path_to_directory&gt;ScenariosGeneric Scenarios01_SIR directory.</p>
+</div>
+</div>
+<div class="section" id="run-the-simulation">
+<h2>Run the simulation<a class="headerlink" href="#run-the-simulation" title="Permalink to this headline">¶</a></h2>
+<p>Run the simulation and generate graphs of the simulation output. For more information, see
+<a class="reference internal" href="using-quickstart.html"><span class="doc">How to run Quick Start simulations</span></a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Because the EMOD model is <a class="reference internal" href="glossary.html#term-stochastic"><span class="xref std std-term">stochastic</span></a>, your graphs may appear slightly different from
+those given below.</p>
+</div>
+<div class="section" id="simulation-output-graphs">
+<h3>Simulation output graphs<a class="headerlink" href="#simulation-output-graphs" title="Permalink to this headline">¶</a></h3>
+<p><em>Figure 1: growth of infection and depletion of the susceptible population</em> is a graph of the
+complete course of the outbreak. After the initial fast growth, the epidemic depletes the
+susceptible population. Eventually the virus cannot find enough new susceptible people and dies
+out.</p>
+<div class="figure" id="id1">
+<img alt="_images/Generic_SIR_output_plotInsetChart_default.png" src="_images/Generic_SIR_output_plotInsetChart_default.png" />
+<p class="caption"><span class="caption-text">Figure 1: Growth of infection and depletion of the susceptible population</span></p>
+</div>
+<div class="figure" id="id2">
+<img alt="_images/Generic_SIR_output_plotAllCharts_default.png" src="_images/Generic_SIR_output_plotAllCharts_default.png" />
+<p class="caption"><span class="caption-text">Figure 2: All inset charts</span></p>
+</div>
+</div>
+</div>
+<div class="section" id="exploring-the-model">
+<h2>Exploring the model<a class="headerlink" href="#exploring-the-model" title="Permalink to this headline">¶</a></h2>
+<p>The EMOD model is individual-based, which allows the implementation of a flexible distribution. In
+an ODE model the time constants are exponentially distributed, however, this is not case for some
+diseases. You can test the effects of different distributions in the EMOD executable by changing
+<strong>Infectious_Period_Distribution</strong> in the configuration file.</p>
+<p>Set the value of <strong>Infectious_Period_Distribution</strong> to &#8220;FIXED_DURATION&#8221; and let all other parameters
+remain the same. The following output shows a much faster spread of disease when using a fixed
+duration for the infection period.</p>
+<div class="figure" id="id3">
+<img alt="_images/Generic_SIR_exploring_plotInsetChart_fixed_500x386.png" src="_images/Generic_SIR_exploring_plotInsetChart_fixed_500x386.png" />
+<p class="caption"><span class="caption-text">Figure 3: Infectious_Period_Distribution is FIXED_DURATION</span></p>
+</div>
+<p>You can also try the same SIR model with different basic reproductive number values. For example,
+run the simulation with R<sub>0</sub> equal to 0.2 and 2.0.</p>
+<ul class="simple">
+<li>Simulation with R<sub>0</sub>=0.2 :  Keep <strong>Base_Infectious_Period</strong> equal to 4 and change
+<strong>Base_Infectivity</strong> to 0.05.</li>
+<li>Simulation with R<sub>0</sub>=2.0 :  Keep <strong>Base_Infectious_Period</strong> equal to 4 and change
+<strong>Base_Infectivity</strong> to 0.5.</li>
+</ul>
+<p>The following images shows the simulation results with R<sub>0</sub> equal to 0.2 and 2.0.</p>
+<div class="figure" id="id4">
+<img alt="_images/Generic_SIR_exploring_plotInsetChart_0.2_500x386.png" src="_images/Generic_SIR_exploring_plotInsetChart_0.2_500x386.png" />
+<p class="caption"><span class="caption-text">Figure 4: R<sub>0</sub>=0.2   - No Outbreak (<em>Base_Infectivity</em> = 0.05)</span></p>
+</div>
+<div class="figure" id="id5">
+<img alt="_images/Generic_SIR_exploring_plotInsetChart_2_500x386.png" src="_images/Generic_SIR_exploring_plotInsetChart_2_500x386.png" />
+<p class="caption"><span class="caption-text">Figure 5: R<sub>0</sub>=2.0   - Outbreak (<em>Base_Infectivity</em> = 0.5)</span></p>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="generic-tutorial2SIR.html" class="btn btn-neutral float-right" title="Generic 2: SIR - Targeted vaccination campaigns" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="generic-simulation-tutorial-overview.html" class="btn btn-neutral" title="Generic simulation tutorials" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for internal docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!-- Google analytics for public docs -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-4', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

@@ -1,9 +1,0 @@
-{
-    "Group" : "HIV_INFECTION_STATUS",
-    "Axes" : [ "TRUE", "FALSE" ],
-    "Weighting_Matrix_RowMale_ColumnFemale" :
-    [
-        [ 0.75, 0.25 ],
-        [ 0.40, 0.60 ]
-    ]
-}

@@ -1,0 +1,309 @@
+========================
+Configuration parameters
+========================
+
+The parameters described in this reference section determine the behavior of a simulation.
+Simulations are configured in a :term:`configuration file`. This file is a :term:`JavaScript Object
+Notation (JSON)` formatted file that contains mostly a flat list of JSON key-value pairs. For
+information on JSON, see :doc:`parameter-overview`.
+
+.. include:: ../reuse/warning-case.txt
+
+.. only:: malaria
+
+    The tables below contain only parameters available when using the malaria :term:`simulation type`.
+
+.. only:: hiv
+
+    The tables below contain only parameters available when using the HIV :term:`simulation type`.
+
+.. only:: tb
+
+    The tables below contain only parameters available when using the tuberculosis :term:`simulation type`.
+
+.. only:: training
+
+    The tables below contain only parameters available when using the training tutorials.
+
+.. remember that all simtypes are in the training documentation and the tables should be conditionalized
+.. as such. Anything without conditionals is included in all docsets.
+
+.. really annoying limitation of the contents directive is that it will only include stuff that isn't
+.. conditionalized using the only directive
+
+.. only:: generic
+
+    .. contents:: Contents
+       :local:
+
+.. only:: malaria
+
+    **Contents**
+
+    * :ref:`config-clusteroptions`
+    * :ref:`config-demographics`
+    * :ref:`config-eventrecorder`
+    * :ref:`config-generaldisease`
+    * :ref:`config-geography`
+    * :ref:`config-inputfiles`
+    * :ref:`config-malaria`
+    * :ref:`config-malariadrug`
+    * :ref:`Migration <config-migration>`
+    * :ref:`config-outputoptions`
+    * :ref:`config-sampling`
+    * :ref:`config-scalingfactors`
+    * :ref:`config-simulationsetup`
+    * :ref:`config-spatialoutput`
+    * :ref:`config-vector`
+    * :ref:`config-vectorspecies`
+
+
+.. only:: training
+
+    **Contents**
+
+    * :ref:`config-clusteroptions`
+    * :ref:`config-demographics`
+    * :ref:`config-eventrecorder`
+    * :ref:`config-generaldisease`
+    * :ref:`config-geography`
+    * :ref:`config-inputfiles`
+    * :ref:`config-malaria`
+    * :ref:`config-malariadrug`
+    * :ref:`Migration <config-migration>`
+    * :ref:`config-outputoptions`
+    * :ref:`config-sampling`
+    * :ref:`config-scalingfactors`
+    * :ref:`config-simulationsetup`
+    * :ref:`config-spatialoutput`
+    * :ref:`config-vector`
+    * :ref:`config-vectorspecies`
+
+
+
+.. _config-clusteroptions:
+
+Cluster options
+===============
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/general-config-clusteroptions.csv
+
+.. _config-demographics:
+
+Demographics
+============
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/general-config-demographics.csv
+
+.. _config-eventrecorder:
+
+Event recorder report settings
+==============================
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/general-config-eventrecorderreportsettings.csv
+
+.. _config-generaldisease:
+
+General disease
+===============
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/general-config-generaldisease.csv
+
+.. _config-geography:
+
+Geography and environment
+=========================
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/general-config-geographyandenvironment.csv
+
+.. _config-inputfiles:
+
+Input files
+===========
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/general-config-inputfiles.csv
+
+
+.. only:: malaria or training
+
+    .. _config-malaria:
+
+    Malaria
+    =======
+
+    .. csv-table::
+       :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+       :widths: 10, 5, 5, 5, 5, 20, 5
+       :file: ../csv/malaria-config-malaria.csv
+
+    .. _config-malariadrug:
+
+    Malaria drug efficacy
+    =====================
+
+    .. csv-table::
+       :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+       :widths: 10, 5, 5, 5, 5, 20, 5
+       :file: ../csv/malaria-config-malariadrugefficacy.csv
+
+
+.. This link isn't working before the heading for some reason related to the only directive. Link using :ref:`Migration <config-migration>`
+
+Migration
+=========
+
+.. _config-migration:
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/general-config-migration.csv
+
+
+.. TODO: Add this to the parameter table long descriptions:
+.. Fixed-Rate Migration: For fixed-rate migration (Migration_Model parameter of “FIXED_RATE_MIGRATION”;
+.. the only kind currently implemented), at the beginning of the simulation, or whenever an individual
+.. has just moved, they pick their next destination as well as time when they will migrate. They pick
+.. what type of migration (local, air, regional or sea) (IndividualHuman::SetNextMigration()). If an
+.. individual is on an “outbound” leg of their journey, they will query the Node’s MigrationInfo
+.. object, and through probability, pick a new destination based on the nodes “adjacent” to their
+.. current node. If, on the other hand, the individual is “inbound”, they will simply travel back along
+.. the path they previously came from.
+
+.. A MigrationInfo object provides information about which nodes are “adjacent” to a node and the rates
+.. at which individuals travel to those adjacent nodes. It also is used in Vector migration to identify
+.. close nodes (ones that can be reached by “local” migration) that vectors may migrate to.
+
+.. Migration Patterns: The Migration_Pattern parameter indicates how do people move which sets these
+.. variations:
+
+.. “RANDOM_WALK_DIFFUSION” – Individuals retain no memory of where they came from; every move is to a
+.. new destination with no thought of returning "home".
+.. “SINGLE_ROUND_TRIPS” – There is a certain
+.. probability that an individual's move will be a roundtrip (determined by config.json parameters
+.. Local_Migration_Roundtrip_Probability, Air_Migration_Roundtrip_Probability, etc.). Otherwise, the
+.. departure-point is forgotten and the individual does not return to their original location.
+.. "WAYPOINTS_HOME” – Individuals go on a multi-step journey along several “waypoints” and then retrace
+.. their steps back along their path once they have reached a maximum number of waypoints from their
+.. “home”.
+
+.. _config-outputoptions:
+
+Output options
+==============
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/general-config-outputoptions.csv
+
+.. _config-sampling:
+
+Sampling
+========
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/general-config-sampling.csv
+
+.. TODO add this information to the long description for Individual_Sampling_Type (moved from architecture)
+.. Several different sampling strategies are implemented, with different strategies better suited for
+.. different simulations. The base case TRACK_ALL is to track each individual in the population with a
+.. single Individual object with sampling weight 1. The simplest sampling strategy is “FIXED_SAMPLING”,
+.. in which members of the population are added to the simulation with probability
+.. Base_Individual_Sample_Rate and sampling weight 1/Base_Individual_Sample_Rate. This allows a smaller
+.. set of Individual objects to represent the overall population when dynamics are in a more continuum
+.. regime. Obviously in the case of sparse dynamics, a high sampling rate or tracking all is advisable.
+
+.. The third sampling strategy is “ADAPTED_SAMPLING_BY_POPULATION_SIZE”, a strategy designed for
+.. malaria and vector simulations over large geographical areas with sizable heterogeneities in
+.. population density. In these settings, there is often little to no malaria in the cities, which have
+.. the highest densities by several orders of magnitude over rural malaria-endemic areas and an
+.. increasing share of the country’s population. This sampling strategy uses the parameter
+.. Max_Node_Population_Samples to define how many sample particles should be used to represent a Node’s
+.. population. If the true population of the Node is less than Max_Node_Population_Samples, each member
+.. of the Node’s population is added with sampling weight 1. If the true population of the Node exceeds
+.. Max_Node_Population_Samples, then members of the population are added to the simulation with
+.. probability Max_Node_Population_Samples /population and sampling weight population/
+.. Max_Node_Population_Samples. Thus if Max_Node_Population_Samples is set higher than typical rural
+.. densities, all individuals in these key areas are tracked without wasting memory and processing time
+.. on the cities.
+
+.. The final two sampling strategies are modifications of fixed and adapted sampling, where the
+.. sampling rate is modified by the age of the individual. For each individual in the population, an
+.. age is drawn, and the local sampling rate (either the uniform or population-adapted sampling rate)
+.. is modified by an age-specific factor. For diseases in which only infants or children are relevant,
+.. this allows full sampling of these age groups while using fewer objects to represent the rest of the
+.. population.
+
+.. _config-scalingfactors:
+
+Scaling factors
+===============
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/general-config-scalingfactors.csv
+
+.. _config-simulationsetup:
+
+Simulation setup
+================
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/general-config-simulationsetup.csv
+
+.. _config-spatialoutput:
+
+Spatial output channels
+=======================
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/general-config-spatialoutputchannels.csv
+
+
+.. only:: vector or training
+
+    .. _config-vector:
+
+    Vector
+    ======
+
+    .. csv-table::
+       :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+       :widths: 10, 5, 5, 5, 5, 20, 5
+       :file: ../csv/vector-config-vector.csv
+
+    .. _config-vectorspecies:
+
+    Vector species
+    ==============
+
+    .. csv-table::
+        :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+        :widths: 10, 5, 5, 5, 5, 20, 5
+        :file: ../csv/vector-config-vectorspecies.csv

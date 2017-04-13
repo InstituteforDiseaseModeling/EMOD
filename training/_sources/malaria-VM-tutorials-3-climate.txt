@@ -1,0 +1,44 @@
+======================================================
+Vector and malaria 3: Impact of climate on seasonality
+======================================================
+
+Compare impact of climate on seasonality and run a simple vector model in Namawala, Muheza, and
+Garki single-node. In this next tutorial, we now move out from Namawala to explore the impact of
+different locations and weather patterns.
+
+
+Use the config.json and campaign.json files in the following directories for this tutorial:
+
+* Scenarios\VectorAndMalaria\03_A_Namawala_Vector
+
+* Scenarios\VectorAndMalaria\03_B_Muheza_Vector
+
+* Scenarios\VectorAndMalaria\03_C__Garki_single_node_Vector
+
+
+
+
+Steps
+=====
+
+The files in this tutorial are set up to use the demographic and weather files for
+Namawala, Tanzania in the 1990s, Muheza, Tanzania in the 2000s, and Garki, Nigeria in the early
+1970s. The values are set in the config.json file.
+
+#.  Follow the steps detailed in :doc:`malaria-VM-tutorials-1-simple`.
+
+#.  **Enable_Interventions** remains set to 0 to run a baseline simulation with no public health
+    campaign. For more information, see :ref:`config-simulationsetup` parameters.
+
+Run the simulation
+==================
+
+Run the simulation and generate graphs of the simulation output. For more information, see
+:doc:`using-quickstart`. Compare the impact of climate on seasonality with a simple vector model in
+Namawala, Muheza, and Garki single-node geographies. The differences among the three locations go
+beyond the differences in annual :term:`entomological inoculation rate (EIR)`. The dry season is
+much drier in Garki compared to Namawala, and thus the depth of the low transmission season is
+lower. This causes a stronger variation in human infection in Garki, especially if the tutorial is
+re-run with the full malaria microsolvers.
+
+

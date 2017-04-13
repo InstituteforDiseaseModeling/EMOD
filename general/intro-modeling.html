@@ -1,0 +1,430 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction to disease modeling &mdash; Generic Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Generic Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Generic Model  documentation" href="index.html"/>
+        <link rel="next" title="How to use the software" href="howto-overview.html"/>
+        <link rel="prev" title="Output files" href="intro-outputs.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Generic Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.10
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Generic Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Generic</a> &raquo;</li>
+      
+    <li>Introduction to disease modeling</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="introduction-to-disease-modeling">
+<h1>Introduction to disease modeling<a class="headerlink" href="#introduction-to-disease-modeling" title="Permalink to this headline">¶</a></h1>
+<p>To understand the complex dynamics underlying disease transmission, epidemiologists utilize a set of
+models called compartmental models. Developed in the early 20th century, these models  stratify a
+population into groups, generally based on their risk or infection status. Underlying these models
+is a system of differential equations, so the model is able to track the population as a function of
+time.  Further, the models track the number of people in each category, are able to predict the
+various properties of pathogen spread, can estimate the duration of epidemics, and can be used to
+understand how different situations or interventions can impact the outcome of pathogen spread. To
+see a typical plot of a population in SIR conditions, see the plot in <a class="reference internal" href="#types-of-compartmental-models">Types of compartmental models</a>. If you would like a more in-depth introduction to epidemiology and disease modeling, you
+may want to take the <a class="reference external" href="https://www.coursera.org/learn/epidemics/home/welcome">Epidemics</a> course from The Pennsylvania State University through Coursera.</p>
+<p>An <a class="reference internal" href="glossary.html#term-agent-based-model"><span class="xref std std-term">agent-based model</span></a> (ABM) is another powerful tool used to help understand the complexity
+inherent in disease transmission systems. These models form a type of &#8220;microscale model,&#8221; where they
+simulate the simultaneous interactions of agents in an effort to re-crate complex phenomena.  Each
+agent (such as a human, or vector) can be assigned a variety of &#8220;properties&#8221; (for example, age, gender, etc),
+and their behavior and interactions with one another are determined by using decision rules. These
+models have strong predictive power, and  are able to leverage spatial and temporal dynamics.
+Further, complex environments can be developed in which the agents act, and agents may &#8220;learn&#8221; from
+interactions or &#8220;adapt&#8221; to their environment. As a result, ABMs are excellent for identifying
+&#8220;emerging properties&#8221; of the system: patterns that are not explicitly modeled, but instead occur as
+a consequence of the rules that govern the agents.</p>
+<p>Agent-based models are extensively used in epidemiology due to their predictive power in modeling
+the spread (or conversely, control) of epidemics.  A popular type of ABM for this is one in which
+each agent&#8217;s rules follow the dynamics specified in the compartmental models, where each agent flows
+through the compartments as a function of both “within-host” rules (such as duration of infection) and
+interactions between agents (such as becoming infected when coming into contact with an infectious
+agent). By combining the epidemiological basis of compartmental models with the flexibility of an
+agent-based model, this type of ABM is quite powerful due to their ability to simultaneously address
+the ecology, epidemiology, and pathology of complex systems.</p>
+<div class="section" id="why-use-disease-modeling">
+<h2>Why use disease modeling<a class="headerlink" href="#why-use-disease-modeling" title="Permalink to this headline">¶</a></h2>
+<p>Disease models play an important role in understanding and managing the transmission dynamics of
+various pathogens.  We can use them to describe the spatial and temporal patterns of disease
+prevalence, as well as to explore or better understand the factors that influence infection
+incidence. Modeling is a key step in understanding what treatments and interventions can be most
+effective, how cost-effective these approaches may be, and what specific factors need to be
+considered when trying to eradicate disease.</p>
+</div>
+<div class="section" id="types-of-compartmental-models">
+<h2>Types of compartmental models<a class="headerlink" href="#types-of-compartmental-models" title="Permalink to this headline">¶</a></h2>
+<p>The following diagrams illustrate common compartmental models.  See the
+<a class="reference external" href="./../training/generic-simulation-tutorial-overview.html">Generic simulation tutorials</a> in the Training documentation set for more information, as well as
+exercises on running EMOD simulations utilizing these models.</p>
+<div class="figure" id="id1">
+<img alt="_images/SIR-Plot.jpeg" src="_images/SIR-Plot.jpeg" />
+<p class="caption"><span class="caption-text">SIR Plot, showing typical categorization of a population into Susceptible, Infectious, and Recovered
+states.</span></p>
+</div>
+<div class="section" id="definitions">
+<h3>Definitions<a class="headerlink" href="#definitions" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>Susceptible</dt>
+<dd>Individual is able to become infected.</dd>
+<dt>Exposed</dt>
+<dd>Individual has been infected with a pathogen, but due to the pathogen’s incubation period,
+is not yet infectious.</dd>
+<dt>Infectious</dt>
+<dd>Individual is infected with a pathogen and is capable of transmitting the pathogen to others.</dd>
+<dt>Recovered</dt>
+<dd>Individual is either no longer infectious, or “removed” from the population.</dd>
+</dl>
+</div>
+<div class="section" id="si-susceptible-infectious-model">
+<h3>SI (Susceptible - Infectious) model<a class="headerlink" href="#si-susceptible-infectious-model" title="Permalink to this headline">¶</a></h3>
+<p>In this situation, people never leave the infectious state and have life-long infections. For
+example, herpes is a disease with life-long infectiousness. The dashed line shows how the model
+becomes an SIS (Susceptible - Infectious - Susceptible) model, where infection does not confer
+immunity (or there is waning immunity). Individuals have repeat or reoccurring infections, and
+infected individuals return to the susceptible state. For example, sexually transmitted diseases
+such as gonorrhea or chlamydia fall into this group.</p>
+<div class="figure" id="id2">
+<img alt="_images/SI-SIS.png" src="_images/SI-SIS.png" />
+<p class="caption"><span class="caption-text">SI - SIS model</span></p>
+</div>
+</div>
+<div class="section" id="sir-susceptible-infectious-recovered-model">
+<h3>SIR (Susceptible - Infectious - Recovered) model<a class="headerlink" href="#sir-susceptible-infectious-recovered-model" title="Permalink to this headline">¶</a></h3>
+<p>In this category, individuals in the recovered state gain immunity to the pathogen.  For example,
+measles, mumps, rubella, and pertussis may be modeled using the SIR framework. The dashed line shows
+how the model becomes an SIRS (Susceptible - Infectious - Recovered - Susceptible)   model, where
+recovery does not confer life-long immunity, and individuals may become susceptible again.</p>
+<div class="figure" id="id3">
+<img alt="_images/SIR-SIRS.png" src="_images/SIR-SIRS.png" />
+<p class="caption"><span class="caption-text">SIR - SIRS model</span></p>
+</div>
+</div>
+<div class="section" id="seir-susceptible-exposed-infectious-recovered-model">
+<h3>SEIR (Susceptible - Exposed - Infectious - Recovered) model<a class="headerlink" href="#seir-susceptible-exposed-infectious-recovered-model" title="Permalink to this headline">¶</a></h3>
+<p>In this category, individuals experience a long  incubation duration (the “exposed” category), such
+that the individual is <em>infected</em> but not yet  <em>infectious</em>. For example chicken pox, and even
+vector-borne diseases such as  Dengue Hemorrhagic fever have a long incubation duration where the
+individual cannot yet transmit the pathogen to others. The dashed line shows how the model becomes
+an SEIRS (Susceptible - Exposed - Infectious - Recovered - Susceptible)   model, where recovered
+people may become susceptible again (recovery does not confer life-long immunity).   For example,
+rotovirus and malaria are diseases with long incubation durations, and where infection only confers
+temporary immunity.</p>
+<div class="figure" id="id4">
+<img alt="_images/SEIR-SEIRS.png" src="_images/SEIR-SEIRS.png" />
+<p class="caption"><span class="caption-text">SEIR - SEIRS model</span></p>
+</div>
+</div>
+</div>
+<div class="section" id="fundamental-concepts-in-epidemiology-and-disease-modeling">
+<h2>Fundamental concepts in epidemiology and disease modeling<a class="headerlink" href="#fundamental-concepts-in-epidemiology-and-disease-modeling" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>Basic reproductive number (R<sub>0</sub>)</dt>
+<dd><p class="first">The average number of secondary infections generated by the first
+infectious individual in a population of completely susceptible individuals.   R<sub>0</sub>=S*L* <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/>
+(where S = the number of susceptible hosts, L = length of infection, and <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> = transmissibility). When R<sub>0</sub>&gt; 1,
+disease will spread. It is essentially a measure of the expected or average outcome of transmission.
+This is the threshold parameter used to determine whether or not an epidemic will occur, and determines:</p>
+<ul class="last simple">
+<li>The initial rate of increase of an epidemic (the exponential growth phase).</li>
+<li>The final size of an epidemic (what fraction of susceptibles will be infected).</li>
+<li>The endemic equilibrium fraction of susceptibles in a population (=1/ R<sub>0</sub>).</li>
+<li>The critical vaccination threshold, which is equal to 1-(1/ R<sub>0</sub>), and determines the
+number of people that must be vaccinated to prevent the spread of a pathogen.</li>
+</ul>
+</dd>
+<dt>Disability-adjusted life years (DALY)</dt>
+<dd>The number of years of life lost due to premature mortality
+plus the  years lost due to disability while infected. Used to quantify the burden of disease.</dd>
+<dt>Epidemic</dt>
+<dd><p class="first">An outbreak of an infectious disease, such that a greater number of individuals than normal
+has the disease. Epidemics have very high R<sub>0</sub> (Recall R<sub>0</sub>&gt;1 for a disease to spread)
+and are often associated with acute, highly transmissible pathogens that can be directly transmitted.
+Further, pathogens with lower infectious periods create more explosive epidemics.</p>
+<ul class="last simple">
+<li>To control epidemics, it is necessary to reduce R<sub>0</sub>. This can be done by:<ul>
+<li>Reducing transmissibility.</li>
+<li>Decreasing the number of susceptibles (by vaccination, for example).</li>
+<li>Decreasing the mean number of contacts or the transmissibility, such as by improving sanitation,
+or limiting the number of interactions sick people have with healthy people.</li>
+<li>Reducing length of infectious period.</li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt>Force of infection (FoI)</dt>
+<dd>A measure of the degree to which an infected individual can spread infection;
+the per-capita rate at which susceptibles contract infection. Typically increases with
+transmissibility and prevalence of infection.</dd>
+<dt>Herd immunity</dt>
+<dd>Vaccines protect individuals, but also provide indirect protection to anyone those
+vaccinated people may have infected. The portion of the population that needs to be immunized in
+order to achieve herd immunity is  P &gt; 1 – (1/ R<sub>0</sub>), where P = proportion vaccinated * vaccine
+efficacy.</dd>
+<dt>Incidence (of a pathogen)</dt>
+<dd>The number of new cases or infections in a given time period.</dd>
+<dt>Immune</dt>
+<dd>Unable to become infected/infectious</dd>
+<dt>Prevalence (of a pathogen)</dt>
+<dd>The proportion of a population that is infectious at any given time.</dd>
+<dt>Transmissibility (<img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/>)</dt>
+<dd>Also known as the effective contact rate, is the product of the
+contact rate and the probability of transmission per contact.</dd>
+<dt>Virulence</dt>
+<dd>The capacity of a pathogen to produce disease. It is proportional to parasitemia,
+or the number of circulating copies of the pathogen in the host. The higher the virulence (given
+contact between S and I individuals), the more likely transmission is to occur. However, higher
+virulence means contact may be less likely as infected hosts show more symptoms of  the disease.
+There is a trade-off that occurs between high transmissibility and disease-induced mortality.</dd>
+</dl>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="howto-overview.html" class="btn btn-neutral float-right" title="How to use the software" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="intro-outputs.html" class="btn btn-neutral" title="Output files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for internal docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!-- Google analytics for public docs -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-4', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

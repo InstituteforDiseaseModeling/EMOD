@@ -1,0 +1,497 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Use demographics overlay files &mdash; Malaria Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Malaria Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Malaria Model  documentation" href="index.html"/>
+        <link rel="up" title="Use input data files" href="howto-inputs.html"/>
+        <link rel="next" title="Configure heterogeneous populations" href="howto-demographics-heterogeneity.html"/>
+        <link rel="prev" title="Use input data files" href="howto-inputs.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Malaria Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.10
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="howto-overview.html">How to use the software</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="howto-inputs.html">Use input data files</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Use demographics overlay files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="howto-demographics-heterogeneity.html">Configure heterogeneous populations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="howto-hint.html">Configure heterogeneous disease transmission</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="howto-configuration.html">Create a configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-campaign.html">Create a campaign file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-simulations.html">Run simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-outputs.html">Use output files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-overview.html">Malaria disease overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-model-overview.html">Malaria model overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-IDM.html">Malaria research at IDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Malaria Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Malaria</a> &raquo;</li>
+      
+          <li><a href="howto-overview.html">How to use the software</a> &raquo;</li>
+      
+          <li><a href="howto-inputs.html">Use input data files</a> &raquo;</li>
+      
+    <li>Use demographics overlay files</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="use-demographics-overlay-files">
+<h1>Use demographics overlay files<a class="headerlink" href="#use-demographics-overlay-files" title="Permalink to this headline">¶</a></h1>
+<p>You can use multiple demographic files when setting up a simulation. The &#8220;base layer&#8221; file contains
+default parameter settings and one or more overlay files contains additional parameters or different
+parameter values that override the values in the default file. This topic describes how to set up
+the base layer and overlay files.</p>
+<p>Demographic overlay files allow you to do the following:</p>
+<ul class="simple">
+<li>Separate different sets of parameters and values into individual overlays (for example, to separate
+those that are useful for specific diseases into different overlay files)</li>
+<li>Add new parameters for a simulation into an overlay for easier prototyping</li>
+<li>Override certain parameters of interest in an overlay</li>
+<li>Override certain parameters for a particular sub-region</li>
+<li>Simulating subsets of a larger region for which input data files have been constructed</li>
+</ul>
+<ol class="arabic">
+<li><p class="first">Select the demographics file to use as the base layer file. All nodes to be included in the simulation
+must be listed in this file.</p>
+</li>
+<li><p class="first">In the metadata, make note of the <strong>IdReference</strong> value.</p>
+<p>You may change this value if you desire, but all input files for a simulation must have the
+same <strong>IdReference</strong> value. For more information about this parameter and the structure of
+demographics files in general, see <a class="reference internal" href="parameter-demographics.html"><span class="doc">Demographics file structure and parameters</span></a>.</p>
+</li>
+<li><p class="first">Create one or more overlay files. Keep the following things in mind:</p>
+<ul class="simple">
+<li>In the metadata, the value for <strong>IdReference</strong> must match the value in the base layer file and
+all other input data files.</li>
+<li>Any nodes listed in an overlay but not in the base layer will not be simulated.</li>
+<li>If the demographics files include any JSON array elements, the entire array is overridden.
+You cannot add or remove individual elements in an array using an overlay file.</li>
+<li>Overriding a parameter value on a node will not affect the other parameter values applied to
+that node.</li>
+<li>Values set in the <strong>Defaults</strong> section of an overlay will be applied to all nodes listed in
+that file, not all nodes in the entire simulation. Therefore, an overlay file that includes a
+<strong>Defaults</strong> section but no <strong>Nodes</strong> section will not have any effect.</li>
+</ul>
+</li>
+<li><p class="first">Place all demographics files in the directory where the other input data files are stored.</p>
+</li>
+<li><p class="first">In the <a class="reference internal" href="glossary.html#term-configuration-file"><span class="xref std std-term">configuration file</span></a>, set <strong>Demographics_Filenames</strong> to an array that contains a
+comma-delimited list of demographics files, listing the base layer file first.</p>
+</li>
+</ol>
+<p>An example base layer demographics file and an overlay file is below. You can see that the overlay
+adds the <strong>TransmissionMatrix</strong> for Heterogeneous Intra-Node Transmission (HINT) to only three of the five nodes (which correspond to
+Washington state counties).</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Author&quot;</span><span class="p">:</span> <span class="s2">&quot;ewenger&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;NodeCount&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="nt">&quot;Tool&quot;</span><span class="p">:</span> <span class="s2">&quot;table_to_demographics.py&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;IdReference&quot;</span><span class="p">:</span> <span class="s2">&quot;SampleContent&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;DateCreated&quot;</span><span class="p">:</span> <span class="s2">&quot;2013-08-01 15:37:16.853000&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;BirthRate_DESCRIPTION&quot;</span><span class="p">:</span> <span class="s2">&quot;Replacement of stable age distribution: Birth_Rate_Dependence=DEMOGRAPHIC_DEP_RATE (i.e. 14-45 year-old PossibleMothers)&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;BirthRate&quot;</span><span class="p">:</span> <span class="mf">0.00017675</span><span class="p">,</span>
+
+            <span class="nt">&quot;Airport&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nt">&quot;Region&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;Altitude&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nt">&quot;Seaport&quot;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+            <span class="nt">&quot;AgeDistribution_DESCRIPTION&quot;</span><span class="p">:</span> <span class="s2">&quot;Box between age 0 and 60 years: Age_Initialization_Distribution_Type=DISTRIBUTION_SIMPLE&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;AgeDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;AgeDistribution1&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nt">&quot;AgeDistribution2&quot;</span><span class="p">:</span> <span class="mi">21900</span><span class="p">,</span>
+
+            <span class="nt">&quot;PrevalenceDistribution_DESCRIPTION&quot;</span><span class="p">:</span> <span class="s2">&quot;No initial infections&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;PrevalenceDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nt">&quot;PrevalenceDistribution1&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nt">&quot;PrevalenceDistribution2&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+
+            <span class="nt">&quot;RiskDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nt">&quot;RiskDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;RiskDistribution2&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+
+            <span class="nt">&quot;ImmunityDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nt">&quot;ImmunityDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;ImmunityDistribution2&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+
+            <span class="nt">&quot;MigrationHeterogeneityDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nt">&quot;MigrationHeterogeneityDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;MigrationHeterogeneityDistribution2&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+
+            <span class="nt">&quot;MortalityDistribution_DESCRIPTION&quot;</span><span class="p">:</span> <span class="s2">&quot;WA state (1999-2010).  Source: wonder.cdc.gov&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;NumDistributionAxes&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span> <span class="p">],</span>
+                <span class="nt">&quot;AxisUnits&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;male=0,female=1&quot;</span><span class="p">,</span> <span class="s2">&quot;years&quot;</span> <span class="p">],</span>
+                <span class="nt">&quot;AxisScaleFactors&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">365</span> <span class="p">],</span>
+                <span class="nt">&quot;NumPopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">15</span> <span class="p">],</span>
+                <span class="nt">&quot;PopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="p">],</span>
+                    <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">,</span> <span class="mf">12.5</span><span class="p">,</span> <span class="mf">17.5</span><span class="p">,</span> <span class="mf">22.5</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">120</span> <span class="p">]</span>
+                <span class="p">],</span>
+                <span class="nt">&quot;ResultUnits&quot;</span><span class="p">:</span> <span class="s2">&quot;annual deaths per 1000 individuals&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;ResultScaleFactor&quot;</span><span class="p">:</span> <span class="mf">0.00000273972602739726027397260273973</span><span class="p">,</span>
+                <span class="nt">&quot;ResultValues&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">[</span> <span class="mf">4.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.7</span><span class="p">,</span> <span class="mf">4.1</span><span class="p">,</span> <span class="mf">9.2</span><span class="p">,</span> <span class="mf">19.8</span><span class="p">,</span> <span class="mf">53.7</span><span class="p">,</span> <span class="mf">154.2</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span> <span class="p">],</span>
+                    <span class="p">[</span> <span class="mf">4.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">2.6</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">,</span> <span class="mf">14.3</span><span class="p">,</span> <span class="mf">40.1</span><span class="p">,</span> <span class="mf">129.3</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span> <span class="p">]</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;County&quot;</span><span class="p">:</span> <span class="s2">&quot;Adams&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Latitude&quot;</span><span class="p">:</span> <span class="mf">47.1274</span><span class="p">,</span>
+                <span class="nt">&quot;InitialPopulation&quot;</span><span class="p">:</span> <span class="mi">19200</span><span class="p">,</span>
+                <span class="nt">&quot;Longitude&quot;</span><span class="p">:</span> <span class="mf">-118.38</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;County&quot;</span><span class="p">:</span> <span class="s2">&quot;Asotin&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Latitude&quot;</span><span class="p">:</span> <span class="mf">46.3393</span><span class="p">,</span>
+                <span class="nt">&quot;InitialPopulation&quot;</span><span class="p">:</span> <span class="mi">21800</span><span class="p">,</span>
+                <span class="nt">&quot;Longitude&quot;</span><span class="p">:</span> <span class="mf">-117.0482</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">2</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;County&quot;</span><span class="p">:</span> <span class="s2">&quot;Benton&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Latitude&quot;</span><span class="p">:</span> <span class="mf">46.2068</span><span class="p">,</span>
+                <span class="nt">&quot;InitialPopulation&quot;</span><span class="p">:</span> <span class="mi">183400</span><span class="p">,</span>
+                <span class="nt">&quot;Longitude&quot;</span><span class="p">:</span> <span class="mf">-119.7689</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">3</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;County&quot;</span><span class="p">:</span> <span class="s2">&quot;Chelan&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Latitude&quot;</span><span class="p">:</span> <span class="mf">47.4235</span><span class="p">,</span>
+                <span class="nt">&quot;InitialPopulation&quot;</span><span class="p">:</span> <span class="mi">73600</span><span class="p">,</span>
+                <span class="nt">&quot;Longitude&quot;</span><span class="p">:</span> <span class="mf">-120.3103</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">4</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;County&quot;</span><span class="p">:</span> <span class="s2">&quot;Clallam&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Latitude&quot;</span><span class="p">:</span> <span class="mf">48.1181</span><span class="p">,</span>
+                <span class="nt">&quot;InitialPopulation&quot;</span><span class="p">:</span> <span class="mi">72350</span><span class="p">,</span>
+                <span class="nt">&quot;Longitude&quot;</span><span class="p">:</span> <span class="mf">-123.4307</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">5</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Author&quot;</span><span class="p">:</span> <span class="s2">&quot;cwiswell&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;NodeCount&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="nt">&quot;Tool&quot;</span><span class="p">:</span> <span class="s2">&quot;table_to_demographics.py&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;IdReference&quot;</span><span class="p">:</span> <span class="s2">&quot;SampleContent&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;DateCreated&quot;</span><span class="p">:</span> <span class="s2">&quot;2013-08-01 15:37:16.853000&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Accessibility&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;VaccineTake&quot;</span><span class="p">,</span> <span class="s2">&quot;VaccineRefuse&quot;</span><span class="p">],</span>
+                <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span>
+                <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="nt">&quot;TransmissionMatrix&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&quot;Route&quot;</span><span class="p">:</span> <span class="s2">&quot;Contact&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;Matrix&quot;</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>
+                    <span class="p">]</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Age_Bin&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Age_Bin_Edges_In_Years&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">-1</span> <span class="p">],</span>
+                <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="nt">&quot;TransmissionMatrix&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&quot;Route&quot;</span><span class="p">:</span> <span class="s2">&quot;Contact&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;Matrix&quot;</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="p">[</span><span class="mf">1.4</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+                    <span class="p">]</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">3</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">5</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="howto-demographics-heterogeneity.html" class="btn btn-neutral float-right" title="Configure heterogeneous populations" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="howto-inputs.html" class="btn btn-neutral" title="Use input data files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for internal docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!-- Google analytics for public docs -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-4', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

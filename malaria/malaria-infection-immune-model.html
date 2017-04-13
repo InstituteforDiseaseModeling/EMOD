@@ -1,0 +1,403 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Malaria infection and immune model &mdash; Malaria Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Malaria Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Malaria Model  documentation" href="index.html"/>
+        <link rel="up" title="Malaria model structure and framework" href="malaria-model-framework.html"/>
+        <link rel="next" title="Malaria symptoms and diagnostics" href="malaria-symptoms-diagnosis.html"/>
+        <link rel="prev" title="Vector transmission model" href="malaria-vector-transmission-model.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Malaria Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.10
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-overview.html">Malaria disease overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="malaria-model-overview.html">Malaria model overview</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="malaria-model-general-info.html">Malaria model general information</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="malaria-model-framework.html">Malaria model structure and framework</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="malaria-climate-demographics.html">Climate and demographics spatial data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="malaria-larval-habitat.html">Larval habitat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="malaria-vector-transmission-model.html">Vector transmission model</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Malaria infection and immune model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="malaria-symptoms-diagnosis.html">Malaria symptoms and diagnostics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="malaria-antimalarial-drugs.html">Antimalarial drugs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-IDM.html">Malaria research at IDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Malaria Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Malaria</a> &raquo;</li>
+      
+          <li><a href="malaria-model-overview.html">Malaria model overview</a> &raquo;</li>
+      
+          <li><a href="malaria-model-framework.html">Malaria model structure and framework</a> &raquo;</li>
+      
+    <li>Malaria infection and immune model</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="malaria-infection-and-immune-model">
+<h1>Malaria infection and immune model<a class="headerlink" href="#malaria-infection-and-immune-model" title="Permalink to this headline">¶</a></h1>
+<p>To study aspects of malaria infections and population dynamics that do not fit into the framework of
+a simple <a class="reference internal" href="glossary.html#term-seirs-model"><span class="xref std std-term">SEIRS model</span></a> with enhancements, EMOD contains a detailed <a class="reference internal" href="glossary.html#term-microsolver"><span class="xref std std-term">microsolver</span></a>
+using within-host parasite dynamics. In the microsolver, the development of clinical and
+parasitological immunity is tracked through innate and adaptive immune responses to specific
+antigens. A detailed parasite count over time is tracked for each infected individual. This permits
+the simulation of measured prevalence over time by slide microscopy, RDTs (Rapid Diagnostic Tests)
+or other diagnostics. Gametocyte production and decay is included to study the human infectious
+reservoir.</p>
+<p>Immune variables, such as antibody levels for each antigen, inflammatory <a class="reference internal" href="glossary.html#term-cytokine"><span class="xref std std-term">cytokine</span></a> levels, and
+immunological memory are represented by continuous floating-point variables. Most model parameters
+have a specific physical interpretation and can be rationally constrained by defined experimental
+measurements.</p>
+<p>For a complete list of configuration parameters that are used in the malaria model, see the
+<a class="reference internal" href="parameter-configuration.html"><span class="doc">Configuration parameters</span></a>.</p>
+<div class="section" id="within-host-parasite-dynamics">
+<h2>Within-host parasite dynamics<a class="headerlink" href="#within-host-parasite-dynamics" title="Permalink to this headline">¶</a></h2>
+<p>Within the microsolver framework, each new infection begins with a hepatic (liver-stage) latency of
+fixed duration (7 days) and proceeds through cycles of asexual replication (with a fixed duration of
+2 days) and <a class="reference internal" href="glossary.html#term-gametocyte"><span class="xref std std-term">gametocyte</span></a> production (which takes 10 days). The model accounts for several
+antigenic components to which the immune system may develop immunity: the <a class="reference internal" href="glossary.html#term-merozoite-surface-protein-msp"><span class="xref std std-term">merozoite surface
+protein (MSP)</span></a> variant, the <a class="reference internal" href="glossary.html#term-plasmodium-falciparum-erythrocyte-membrane-protein-1-pfemp1"><span class="xref std std-term">Plasmodium falciparum erythrocyte membrane protein 1 (PfEMP1)</span></a>
+presented on the surface of the infected red-blood cell (IRBC), and less immunogenic minor surface
+epitopes (nonspecific epitopes).</p>
+<div class="figure" id="id1">
+<img alt="_images/Malaria_Infection_within_host_parasite_dynamics.png" src="_images/Malaria_Infection_within_host_parasite_dynamics.png" />
+<p class="caption"><span class="caption-text">Within-host dynamics</span></p>
+</div>
+</div>
+<div class="section" id="gametocyte-development">
+<h2>Gametocyte development<a class="headerlink" href="#gametocyte-development" title="Permalink to this headline">¶</a></h2>
+<p>The model advances gametocytes through five stages of development that are characterized by
+different drug susceptibilities. A fraction of gametocytes die at each developmental stage, and
+gametocytes can be inactivated by cytokines after uptake in a blood meal. Gametocytes reach maturity
+after ten days and remain in the bloodstream with a 2.5-day half-life. EMOD does not model acquired
+immunity to gametocytes.</p>
+<div class="figure" id="id2">
+<img alt="_images/Malaria_Infection_gametocyte_development.png" src="_images/Malaria_Infection_gametocyte_development.png" />
+<p class="caption"><span class="caption-text">Gametocyte development</span></p>
+</div>
+</div>
+<div class="section" id="modeling-a-single-clonal-infection">
+<h2>Modeling a single clonal infection<a class="headerlink" href="#modeling-a-single-clonal-infection" title="Permalink to this headline">¶</a></h2>
+<p>A single clonal infection is modeled with an antigenic repertoire of 50 unique PfEMP-1 variants
+where each is associated with one of five repeating minor epitopes. In the first asexual cycle, the
+first five variants are expressed in equal numbers. At each update, the immune system is stimulated
+by the Infected Red Blood Cell (IRBC) count of each antigenic variant, and concurrently, the IRBC
+counts are decremented on account of immune and drug killing effects.</p>
+<p>At the end of each asexual cycle, the model calculates the fraction of merozoites (16 for each
+previous IRBC) killed by specific recognition of the MSP variant, and the fraction that is
+differentiated into male and female gametocytes. To capture the dynamics of the parasite’s immune
+evasion strategy, the model imposes a constant per-parasite switching rate on the remaining
+merozoites to advance to subsequent antigenic variants in the repertoire.</p>
+<div class="figure" id="id3">
+<img alt="_images/Malaria_Infection_parasite_strain_switching.png" src="_images/Malaria_Infection_parasite_strain_switching.png" />
+<p class="caption"><span class="caption-text">Parasite strain switching</span></p>
+</div>
+<div class="section" id="population-level-variants">
+<h3>Population-level variants<a class="headerlink" href="#population-level-variants" title="Permalink to this headline">¶</a></h3>
+<p>The number of population-level variants affect the age-pattern of natural immunity acquisition. The
+full set of population-level antigenic variants (out of which a single infection’s repertoire is
+randomly drawn), consists of 100 MSP variants, 20 sets of five minor epitopes, and 1000 PfEMP-1
+variants. Some parameters drive the asymptotic levels of adult detected parasitemia while others
+primarily govern the transition between child and adult detected prevalence rates, and provide that
+the number of PfEMP-1 variants is substantially more than an individual would experience in a year.
+A multi-year burn-in period ensures immune initialization dynamics approximate long-term asymptotic
+behavior where individuals in the simulation build antibody responses to a broad repertoire of
+parasite antigens appropriate for their age.</p>
+</div>
+</div>
+<div class="section" id="immune-response-to-infection">
+<h2>Immune response to infection<a class="headerlink" href="#immune-response-to-infection" title="Permalink to this headline">¶</a></h2>
+<p>The immune response to infection is characterized by innate inflammatory and specific antibody
+components that limit maximum parasite density and work to clear infection. As the antibody response
+increases on a dimensionless scale from 0 to 1, the initial inflammatory response is suppressed.
+After the antibody response appears, continued antigenic stimulation will drive up the adapted
+response until that antigenic variant is cleared, at which point both the antibody levels and the
+capacity to respond will decay over time.  The larger the antigenic population, the more infections,
+and thus time, it takes to acquire broad parasitological immunity.</p>
+<div class="figure" id="id4">
+<img alt="_images/Malaria_Infection_immunity_effects_on_course_of_infection.png" src="_images/Malaria_Infection_immunity_effects_on_course_of_infection.png" />
+<p class="caption"><span class="caption-text">Innate and adaptive immunity work together to limit asexual parasite numbers</span></p>
+</div>
+<div class="section" id="innate-immune-response">
+<h3>Innate immune response<a class="headerlink" href="#innate-immune-response" title="Permalink to this headline">¶</a></h3>
+<p>The innate immune response is modeled to depend on a temporary contribution from a rupturing
+<a class="reference internal" href="glossary.html#term-schizont"><span class="xref std std-term">schizont</span></a> at the end of each asexual cycle, as well as the concentration of IRBC surface
+antigens to which an antibody response has not yet been developed. The innate response that is
+suppressed by the presence of specific antibodies is responsible for driving febrile symptoms and
+broad-spectrum parasite suppression.</p>
+<div class="figure" id="id5">
+<img alt="_images/Malaria_Infection_immunity_innate_immune_response.png" src="_images/Malaria_Infection_immunity_innate_immune_response.png" />
+<p class="caption"><span class="caption-text">Innate immune response</span></p>
+</div>
+</div>
+<div class="section" id="adaptive-immune-response">
+<h3>Adaptive immune response<a class="headerlink" href="#adaptive-immune-response" title="Permalink to this headline">¶</a></h3>
+<p>The capacity to generate specific antibodies grows in response to the concentration of each novel
+antigen. Above a capacity threshold level, antibodies are produced in increasing concentration until
+the corresponding antigenic variant is cleared. At this time, the capacity will decay to a non-zero
+memory level. The mechanism by which the antibody capacity evolves captures the time delay of
+specific antibody response on re-infection.</p>
+<div class="figure" id="id6">
+<img alt="_images/Malaria_Infection_immunity_adaptive_response_to_variable_epitopes.png" src="_images/Malaria_Infection_immunity_adaptive_response_to_variable_epitopes.png" />
+<p class="caption"><span class="caption-text">Adaptive immune response to PfEMP1 and minor epitopes</span></p>
+</div>
+<div class="figure" id="id7">
+<img alt="_images/Malaria_Infection_immunity_anti_MSP_immunity.png" src="_images/Malaria_Infection_immunity_anti_MSP_immunity.png" />
+<p class="caption"><span class="caption-text">Adaptive immune response to PfEMP1 and minor epitopesAdaptive immune response to MSP antigens</span></p>
+</div>
+<div class="figure" id="id8">
+<img alt="_images/Malaria_Infection_immunity_anti_CSP_immunity.png" src="_images/Malaria_Infection_immunity_anti_CSP_immunity.png" />
+<p class="caption"><span class="caption-text">Adaptive immune response to CSP</span></p>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="malaria-symptoms-diagnosis.html" class="btn btn-neutral float-right" title="Malaria symptoms and diagnostics" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="malaria-vector-transmission-model.html" class="btn btn-neutral" title="Vector transmission model" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for internal docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!-- Google analytics for public docs -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-4', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>
