@@ -10,7 +10,7 @@ EMOD Software Linux Environment Preparation Script
 
 This script is an example of creating an environment for using the Epidemiological MODeling software (EMOD). The script was designed and tested to run on an Azure CentOS 7 virtual machine.
 
-For Windows users, go to http://idmod.org/idmdoc/#EMOD/EMODBuildAndRegression/BuildingEMODTOC.htm for instructions on downloading the EMOD source and the prerequisite software.
+For Windows users, go to https://institutefordiseasemodeling.github.io/EMOD/general/dev-install-overview.html for instructions on downloading the EMOD source and the prerequisite software.
 
 This script will:
   1. Elevate permissions through sudo. (Required)

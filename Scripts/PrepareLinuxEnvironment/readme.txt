@@ -1,6 +1,6 @@
 The PrepareLinuxEnvironment script is an example of creating an environment for using the Epidemiological MODeling software (EMOD). The script was designed and tested to run on an Azure CentOS 7 virtual machine.
 
-For Windows users, go to http://idmod.org/idmdoc/#EMOD/EMODBuildAndRegression/BuildingEMODTOC.htm for instructions on downloading the EMOD source and the prerequisite software.
+For Windows users, go to https://institutefordiseasemodeling.github.io/EMOD/general/dev-install-overview.html for instructions on downloading the EMOD source and the prerequisite software.
 
 PrepareLinuxEnvironment.sh is an interactive script that will ask if you agree to the following:
   1. Elevate permissions through sudo. (Required)
@@ -20,7 +20,7 @@ Before running the script, you will need:
 Before you run the script you'll need to execute the following:
 
      chmod 755 PrepareLinuxEnvironment.sh
-   
+
 To run PrepareLinuxEnvironment.sh, execute the following at the command prompt:
 
      ./PrepareLinuxEnvironment.sh
@@ -30,7 +30,7 @@ If you want to walk through the script workflow but make no permanent system cha
      ./PrepareLinuxEnvironment.sh test
 
 Please note, it is recommended to read the script using a monotype.
-	 
+
 The following diagram shows the program flow of the PrepareLinuxEnvironment script.
 
                         +-------+
