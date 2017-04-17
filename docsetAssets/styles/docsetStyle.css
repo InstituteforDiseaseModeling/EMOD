@@ -158,9 +158,18 @@ header .profileHeader p {
   padding-top: 4%;
 }
 #news-cat-bar-wrapper.flex {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+/*  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;*/
+  
+  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -ms-flexbox;      /* TWEENER - IE 10 */
+  display: -webkit-flex;     /* NEW - Chrome */
+  display: flex;             /* NEW, Spec - Opera 12.1, Firefox 20+ */
+  flex-wrap: wrap;
+  -webkit-flex-flow: wrap;
+  justify-content: center;
+  -webkit-justify-content: center;
 }
 #news-cat-bar-wrapper {
     max-width: 90%;
