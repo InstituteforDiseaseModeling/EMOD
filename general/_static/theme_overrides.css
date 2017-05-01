@@ -2,12 +2,6 @@
     white-space: normal;
 }
 
-.wy-table-responsive {
-    margin-bottom: 24px;
-    max-width: 100%;
-    overflow: visible;
-}
-
 .wy-table-responsive table td p {
     font-size: 100%;
 }
