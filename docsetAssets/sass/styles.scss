@@ -1,0 +1,651 @@
+/**
+ * @file
+ * Styles are organized using the SMACSS technique. @see http://smacss.com/book/
+ *
+ * When you turn on CSS aggregation at admin/config/development/performance, all
+ * of these @include files will be combined into a single file.
+ */
+
+
+/* Import Sass mixins, variables, Compass modules, etc. */
+
+@import "compass/css3/flexbox";
+$iv_blue: #0073a3;
+$iv_grey: #858c8c;
+p,
+h1,
+h2,
+h3 {
+	font-family: 'Montserrat', sans-serif;
+	font-size: 14px;
+}
+.navText p {
+	color: $iv_grey;
+}
+a {
+	text-decoration: none;
+}
+a:link h3 {
+	color: $iv_blue;
+}
+a:visited h3 {
+	color: $iv_blue;
+}
+a:hover h3 {
+	color: black;
+}
+a:link p {
+	color: $iv_grey
+}
+a:hover p {
+	color: black;
+}
+a:visited p {
+	color: $iv_grey
+}
+body {
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 0px;
+	width: 100%
+}
+
+/* Header */
+
+.profileLogo {
+	background-color: $iv_blue;
+}
+.profileHeader {
+	clear: left;
+}
+.container .outer {
+	width: 100%;
+	padding-top: 500px;
+	position: relative;
+}
+.bannerWrapper {
+	width: 100%;
+	/* or whatever is required */
+	text-align: center;
+	/* ensures the image is always in the h-middle */
+	overflow: hidden;
+	/* hide the cropped portion */
+}
+.bannerWrapperImage {
+	background-image: url(../images/docset_home_banner.jpg);
+	/* lt ie8 */
+	-ms-background-position-x: center;
+	-ms-background-position-y: bottom;
+	background-position: center bottom;
+	/* scale bg image proportionately */
+	background-size: cover;
+}
+.idmlogo.idmlogoDesktop img {
+	height: 40px;
+	margin: 5px 0px;
+	padding: 5px 0px;
+	display: inline;
+}
+.idmlogo.idmlogoMobile {
+	height: 50px;
+	margin: 5px 0px;
+	display: none;
+}
+.bannerWrapperContent {
+	height: 500px;
+	position: relative;
+	/* allows repositioning */
+	left: 100%;
+	/* move the whole width of the image to the right */
+	margin-left: -200%;
+	/* magic! */
+}
+.bannerTitle {
+	text-align: center;
+}
+.bannerContent {
+	margin: auto;
+	max-width: 800px;
+	width: 50%;
+	position: relative;
+	top: 175px;
+	text-align: left;
+}
+.bannerContent p {
+	text-align: left;
+}
+.navText {
+	display: block;
+}
+header {
+	text-align: center;
+	display: block;
+}
+header .profileLogo .logoPlaceholder {
+	background-color: rgba(208, 207, 207, 1.00);
+	width: 187px;
+	text-align: center;
+}
+header .profileHeader h1 {
+	font-family: 'Montserrat', sans-serif;
+	color: white;
+	font-size: 30px;
+	font-weight: 700;
+	line-height: 1;
+}
+header .profileHeader h3 {
+	font-family: sans-serif;
+	color: rgba(146, 146, 146, 1.00);
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 24px;
+}
+hr {
+	background-color: rgba(208, 207, 207, 1.00);
+	height: 1px;
+}
+header .profileHeader p {
+	font-family: 'Montserrat';
+	color: white;
+	font-size: 20px;
+	font-weight: 200;
+	line-height: 1.5;
+	overflow-y: auto;
+}
+
+/* Navigation bar section */
+.content.news-cat-bar.not-mobile-display {
+	padding-top: 4%;
+}
+#news-cat-bar-wrapper {
+	max-width: 90%;
+	margin: auto;
+	position: relative;
+	bottom: 1em;
+}
+// Begin Category bar flex code
+#news-cat-bar-wrapper.flex {
+	padding: 0;
+	text-align: center;
+	@include display-flex;
+	@include flex-wrap(wrap);
+	@include justify-content(center);
+}
+#news-cat-bar-wrapper > .flex-cell {
+	max-width: 200px;
+	margin: .2em;
+	padding: .2em;
+	display: inline-block;
+	/* non-flexbox browsers */
+	@include flex(0 1 18%);
+	text-align: center;
+	vertical-align: top;
+}
+// End News Category Bar flex code
+.flex-cell p {
+	padding: 0px 10px;
+}
+#news-cat-bar-wrapper > .flex-cell img {
+	box-shadow: none;
+	width: 30%;
+}
+
+/* Main Content sections */
+
+.mainContent .section1 {
+	display: block;
+}
+.section1 .sectionTitle,
+.section2 .sectionTitle {
+	font-family: 'Montserrat', sans-serif;
+	color: rgba(146, 146, 146, 1.00);
+	font-size: 18px;
+	font-weight: 700;
+	text-transform: uppercase;
+}
+.section1 .sectionTitleRule,
+.section2 .sectionTitleRule {
+	margin: 0 3% 0 0;
+	float: left;
+	clear: both;
+}
+.section1 .sectionTitleRule2,
+.section2 .sectionTitleRule2 {
+	background-color: rgba(208, 207, 207, 1.00);
+	height: 1px;
+	padding: 0px;
+}
+.mainContent .section1 .section1Content {
+	font-family: ProximaNova;
+	font-size: 14px;
+	font-weight: 100;
+	color: rgba(208, 207, 207, 1.00);
+}
+.mainContent .section1 .section1Content span {
+	color: rgba(146, 146, 146, 1.00);
+	font-family: sans-serif;
+}
+.section2 .sectionContentTitle {
+	font-family: sans-serif;
+	color: rgba(146, 146, 146, 1.00);
+	font-size: 18px;
+	font-weight: 700;
+}
+.section2 .sectionContentSubTitle {
+	font-family: sans-serif;
+	color: rgba(68, 67, 67, 1.00);
+	font-size: 14px;
+	font-weight: 400;
+}
+.section2 .sectionContent {
+	font-family: sans-serif;
+	color: rgba(146, 146, 146, 1.00);
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.8;
+}
+.mainContent {
+	display: block;
+}
+.mainContent .externalResourcesNav .externalResources {
+	background-color: rgba(208, 207, 207, 1.00);
+	display: inline-block;
+	text-align: center;
+	margin-top: 0px;
+	padding-top: 3%;
+	cursor: pointer;
+}
+.mainContent .externalResourcesNav .externalResources:hover {
+	background-color: rgba(153, 153, 153, 1.00);
+}
+.externalResourcesNav .externalResources a {
+	font-family: 'Montserrat', sans-serif;
+	color: rgba(255, 255, 255, 1.00);
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 18px;
+	text-decoration: none;
+}
+.stretch {
+	content: '';
+	display: inline-block;
+	margin-left: 2%;
+	margin-right: 2%;
+}
+
+/* Footer */
+footer .footerDisclaimer {
+	font-family: sans-serif;
+	font-size: 14px;
+	font-weight: 700;
+}
+footer .footerNote {
+	font-family: sans-serif;
+	font-size: 14px;
+	line-height: 18px;
+	font-weight: 700;
+}
+footer .footerNote span {
+	font-weight: 400;
+}
+
+/* Media query for Mobile devices
+ *
+ * 
+*/
+@media only screen and (min-width: 285px) and (max-width: 480px) {
+	/* Header */
+	header {
+		width: 100%;
+		float: none;
+	}
+	header .profileLogo .logoPlaceholder {
+		display: inline-block;
+	}
+	header .profilePhoto {
+		display: inline-block;
+	}
+	header .idmlogoMobile {
+		text-align: left;
+	}
+	.idmlogoMobile h2 {
+		padding: 15px 0px 15px 20px;
+		color: white;
+		margin: 0px;
+	}
+	.bannerContent {
+		max-width: 500px;
+		width: 310px;
+		top: 20px;
+	}
+	header .profileHeader p {
+		font-family: sans-serif;
+		color: white;
+		font-size: 15px;
+		font-weight: 400;
+		line-height: 25px;
+		overflow-y: auto;
+	}
+	.idmlogo.idmlogoDesktop img {
+		display: none;
+	}
+	.idmlogo.idmlogoMobile {
+		height: 50px;
+		margin: 5px 0px;
+		display: inline;
+	}
+	.bannerWrapperContent {
+		height: 320px;
+	}
+	.content.news-cat-bar.not-mobile-display {
+		padding-top: 40px;
+	}
+	#news-cat-bar-wrapper.flex {
+		justify-content: center;
+	}
+	#news-cat-bar-wrapper > .flex-cell {
+		flex: 0 1 calc(30% - .5em);
+		-ms-flex: 0 1 30%;
+		-webkit-flex: 0 1 calc(30% - .5em);
+		text-align: center;
+	}
+	#news-cat-bar-wrapper > .flex-cell img {
+		width: 50px;
+	}
+	.flex-cell h3 {
+		font-size: 14px;
+		margin: 0px 0px 20px 0px;
+	}
+	.navText {
+		display: none;
+	}
+	header .socialNetworkNavBar {
+		text-align: center;
+		display: block;
+		margin-top: 60px;
+		clear: both;
+		margin-bottom: 15%;
+	}
+	header .socialNetworkNavBar .socialNetworkNav {
+		width: 60px;
+		height: 60px;
+		display: inline-block;
+		margin-right: 23px;
+	}
+	/* Main content sections */
+	.mainContent .section1 {
+		text-align: center;
+		margin-bottom: 10%;
+	}
+	.section1 .section1Title,
+	.section2 .section1Title {
+		text-align: center;
+	}
+	.section1 .sectionTitleRule,
+	.section2 .sectionTitleRule {
+		width: 100%;
+	}
+	.section1 .sectionTitleRule2,
+	.section2 .sectionTitleRule2 {
+		display: none;
+	}
+	.mainContent .section1 .section1Content {
+		display: inline-block;
+		text-align: left;
+		font-family: sans-serif;
+		text-align: justify;
+	}
+	.mainContent .section2 {
+		display: block;
+		text-align: center;
+	}
+	.section2 .section2Content {
+		margin-top: 10%;
+		text-align: justify;
+		margin-bottom: 10%;
+	}
+	.mainContent .externalResourcesNav {
+		margin-bottom: 10%;
+	}
+	.mainContent .externalResourcesNav .externalResources {
+		width: 100%;
+		height: 35px;
+	}
+	/* Footer */
+	footer {
+		display: block;
+		text-align: center;
+		font-family: sans-serif;
+	}
+}
+
+/* Media query for Tablet devices (Stepdown)
+ *
+ * 
+*/
+@media only screen and (min-width: 481px) and (max-width: 800px) {
+	/* Header */
+	header {
+		width: 100%;
+		float: none;
+	}
+	header .profileLogo .logoPlaceholder {
+		display: inline-block;
+		font-family: 'Montserrat', sans-serif;
+	}
+	header .profilePhoto {
+		float: left;
+		clear: both;
+		margin-right: 3%;
+		margin-top: 5%;
+	}
+	header .profileHeader {
+		text-align: left;
+	}
+	.bannerContent {
+		max-width: 450px;
+		width: 50%;
+		top: 175px;
+	}
+	header .profileHeader h1 {
+		font-size: 22px;
+		font-weight: 800;
+		line-height: 1;
+	}
+	header .profileHeader p {
+		font-family: 'Montserrat';
+		color: white;
+		font-size: 16px;
+		font-weight: 200;
+		line-height: 1.5;
+		overflow-y: auto;
+	}
+	.content.news-cat-bar.not-mobile-display {
+		padding-top: 6%;
+	}
+	#news-cat-bar-wrapper > .flex-cell img {
+		box-shadow: none;
+		border: none;
+		border: 0;
+		width: 25%;
+	}
+	.flex-cell a img:hover {
+		border: none; 
+
+	}
+	#news-cat-bar-wrapper > .flex-cell {
+		flex: 0 1 calc(45% - .5em);
+		-ms-flex: 0 1 45%;
+	}
+	.flex-cell {
+		margin: 0px 10px;
+	}
+}
+
+/* Media Query for Tablets
+ *
+ *
+ */
+
+@media only screen and (min-width: 801px) and (max-width: 1024px) {
+	/* Header */
+	header {
+		width: 100%;
+		float: none;
+	}
+	header .profileLogo .logoPlaceholder {
+		display: inline-block;
+		font-family: 'Montserrat', sans-serif;
+	}
+	header .profilePhoto {
+		float: left;
+		clear: both;
+		margin-right: 3%;
+		margin-top: 5%;
+	}
+	header .profileHeader {
+		text-align: left;
+		/*	margin-top: 7%;*/
+	}
+	.bannerContent {
+		max-width: 700px;
+		width: 50%;
+		top: 175px;
+	}
+	#news-cat-bar-wrapper > .flex-cell {
+		max-width: 300px;
+		margin: .2em;
+		padding: .2em;
+		display: inline-block;
+		/* non-flexbox browsers */
+		@include flex(0 1 30%);
+		text-align: center;
+		vertical-align: top;
+	}
+	.flex-cell {
+		margin: 10px;
+	}
+	.section1 .section1Title,
+	.section2 .section1Title {
+		text-align: center;
+	}
+	.section1 .sectionTitleRule,
+	.section2 .sectionTitleRule {
+		width: 100%;
+	}
+	.section1 .sectionTitleRule2,
+	.section2 .sectionTitleRule2 {
+		display: none;
+	}
+	.mainContent .section1 .section1Content {
+		display: block;
+		margin: 0% 0% 0% 20%;
+		font-family: sans-serif;
+		margin-top: 5%;
+		margin-bottom: 5%;
+	}
+	.mainContent .section2 {
+		clear: both;
+	}
+	.section2 .section2Content {
+		padding: 0px;
+		margin-left: 20%;
+		font-family: sans-serif;
+		margin-top: 5%;
+		margin-bottom: 5%;
+	}
+	.mainContent .externalResourcesNav {
+		margin-left: 20%;
+		margin-top: 40px;
+		margin-bottom: 40px;
+		text-align: center;
+		padding-top: 0px;
+		clear: both;
+	}
+}
+
+/* Desktops and laptops
+ *
+ *
+ */
+@media only screen and (min-width:1025px) {
+	/* Header */
+	header .profileLogo .logoPlaceholder {
+		/*Do something different with blue stripe?*/
+		/*	float: left;
+	margin-bottom: 50px;*/
+	}
+	header .profilePhoto {
+		float: left;
+		clear: both;
+		margin-right: 3%;
+	}
+	header .profileHeader {
+		text-align: left;
+		/*padding-top: 10%;*/
+	}
+	header .socialNetworkNavBar .socialNetworkNav {
+		width: 74px;
+		height: 74px;
+		display: inline-block;
+		margin-right: 23px;
+	}
+	/* Main content sections */
+	.section1 .sectionTitleRule,
+	.section2 .sectionTitleRule {
+		width: 22.5%;
+	}
+	.mainContent .section1 .section1Content {
+		display: block;
+		margin-top: 0%;
+		margin-right: 0%;
+		margin-left: 26%;
+		margin-bottom: 0%;
+		font-family: sans-serif;
+	}
+	.mainContent .section2 {
+		clear: both;
+	}
+	.section2 .section2Content {
+		padding: 0px;
+		margin-left: 26%;
+		font-family: sans-serif;
+	}
+	.mainContent .externalResourcesNav {
+		margin-top: 40px;
+		margin-bottom: 40px;
+		text-align: center;
+		padding-top: 0px;
+		clear: both;
+	}
+	.mainContent .externalResourcesNav .externalResources {
+		width: 199px;
+		height: 48px;
+	}
+	/* Footer */
+	footer .footerDisclaimer {
+		float: left;
+		margin-left: 3%;
+		font-family: sans-serif;
+	}
+	footer .footerNote {
+		float: right;
+		margin-right: 3%;
+		font-family: sans-serif;
+	}
+}
+//End imported code
+.flex {
+	padding: 0;
+	text-align: center;
+	@include display-flex;
+	@include flex-wrap(nowrap);
+	.flex-cell {
+		margin: .2em;
+		padding: .2em;
+		display: inline-block;
+		/* non-flexbox browsers */
+		@include flex(0 1 18%);
+		text-align: center;
+	}
+}
