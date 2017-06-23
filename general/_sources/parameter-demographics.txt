@@ -21,6 +21,10 @@ named using the name of the region, appended with "_demographics.json".
 Additionally, you can use more than one demographics file, with one serving as the base layer and
 the one or more others acting as overlays that override the values in the base layer.
 
+.. raw:: html
+
+    <button class="collapse-table-button btn btn-info">Collapse all parameter tables</button>
+
 .. contents:: Contents
    :local:
 
@@ -102,7 +106,13 @@ depend on values set in the configuration parameters.
 
 .. TODO we need a better way to version these.
 
-.. only:: generic or training
+.. only:: generic
+
+    .. raw:: html
+
+        <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+    .. rst-class:: toggle-table
 
     .. csv-table::
        :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
@@ -110,6 +120,12 @@ depend on values set in the configuration parameters.
        :file: ../csv/generic-demographics-nodeattributes.csv
 
 .. only:: malaria or vector or training
+
+    .. raw:: html
+
+        <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+    .. rst-class:: toggle-table
 
     .. csv-table::
        :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
@@ -133,6 +149,12 @@ distribution. You can use complex distributions to define a distribution that do
 standard. For example, a complex distribution is useful when trying to represent real-world data.
 
 The table below shows the simple distributions and their associated parameters.
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
 
 .. csv-table::
    :header: Distribution, Demographic parameters, Related configuration parameters
@@ -198,6 +220,12 @@ individuals in a simulation as a means of setting up groups. For example, you ca
 accessibility, age, geography, risk, and other properties and assign individuals to different groups
 based on those property values.
 
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
 .. csv-table::
    :header: Parameter, Data type, Description, Example
    :widths: 5, 5, 15, 10
@@ -205,6 +233,12 @@ based on those property values.
 
 The following table contains the parameters that are available to use in the **Transitions**
 array.
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
 
 .. csv-table::
    :header: Parameter, Data type, Description, Example

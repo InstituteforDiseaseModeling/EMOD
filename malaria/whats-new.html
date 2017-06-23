@@ -80,7 +80,7 @@
             
             
               <div class="version">
-                2.10
+                2.13
               </div>
             
           
@@ -172,32 +172,6 @@ Epidemiological MODeling software (EMOD).</p>
 <h2>EMOD v2.10<a class="headerlink" href="#emod-s-v2-10" title="Permalink to this headline">¶</a></h2>
 <p>The EMOD source v2.10 release includes new and updated malaria configuration, demographic, and
 intervention parameters. With this release, EMOD now uses Visual Studio 2015, Boost 1.61.0, and SCons 2.5.0.</p>
-<div class="section" id="malaria">
-<h3>Malaria<a class="headerlink" href="#malaria" title="Permalink to this headline">¶</a></h3>
-<p>Several habitat parameters in the malaria model have been upgraded, creating more flexibility in
-the model and enabling the user to have more control over habitat customization. These changes
-allow the model to more accurately capture real-world habitat availability and how it affects
-different mosquito species.</p>
-<dl class="docutils">
-<dt><strong>LINEAR_SPLINE</strong> habitat type</dt>
-<dd>This new option under <strong>Larval_Habitat_Types</strong> increases model customization by allowing the
-user to specify an arbitrary functional form (derived from data) for larval habitat
-availability throughout the year, instead of relying on climatological parameters such as
-rainfall or temperature. For more information, see <a class="reference internal" href="parameter-configuration.html#config-vectorspecies"><span class="std std-ref">Vector species</span></a> parameters.</dd>
-<dt><strong>LarvalHabitatMultiplier</strong> by species</dt>
-<dd>This new feature in demographics allows larval habitat availability to be modified
-independently for each species sharing a particular habitat type. Prior versions of EMOD
-applied the same modifier to all species within a shared habitat; this upgrade enables you
-to apply modifiers to individual species within a habitat. For more information, see
-<a class="reference internal" href="parameter-demographics.html#demo-nodeattributes"><span class="std std-ref">NodeAttributes</span></a> parameters.</dd>
-<dt><strong>ScaleLarvalHabitat</strong> by species</dt>
-<dd>This new intervention enables species-specific effects of habitat interventions within
-shared habitat types, such that habitat availability is modified on a per-species level.
-For more information, see <a class="reference internal" href="parameter-campaign.html#iv-scalelarvalhabitat"><span class="std std-ref">ScaleLarvalHabitat</span></a> parameters.</dd>
-<dt>Breaking changes</dt>
-<dd>PIECEWISE_MONTHLY has been changed to LINEAR_SPLINE.</dd>
-</dl>
-</div>
 <div class="section" id="emod-s-software-upgrades">
 <h3>EMOD software upgrades<a class="headerlink" href="#emod-s-software-upgrades" title="Permalink to this headline">¶</a></h3>
 <dl class="docutils">
@@ -227,6 +201,32 @@ files, &#8220;c:python27includepymath.h(22): warning C4273: &#8216;round&#8217;:
 Upgrade to Python 2.7.11 or 2.7.12 to get rid of the warning message.</dd>
 </dl>
 <p>For more information, see <a class="reference internal" href="dev-install-prerequisites.html"><span class="doc">Prerequisites for working with EMOD source code</span></a>.</p>
+</div>
+<div class="section" id="malaria-model">
+<h3>Malaria model<a class="headerlink" href="#malaria-model" title="Permalink to this headline">¶</a></h3>
+<p>Several habitat parameters in the malaria model have been upgraded, creating more flexibility in
+the model and enabling the user to have more control over habitat customization. These changes
+allow the model to more accurately capture real-world habitat availability and how it affects
+different mosquito species.</p>
+<dl class="docutils">
+<dt><strong>LINEAR_SPLINE</strong> habitat type</dt>
+<dd>This new option under <strong>Larval_Habitat_Types</strong> increases model customization by allowing the
+user to specify an arbitrary functional form (derived from data) for larval habitat
+availability throughout the year, instead of relying on climatological parameters such as
+rainfall or temperature. For more information, see <a class="reference internal" href="parameter-configuration.html#config-larval"><span class="std std-ref">Larval habitat</span></a> parameters.</dd>
+<dt><strong>LarvalHabitatMultiplier</strong> by species</dt>
+<dd>This new feature in demographics allows larval habitat availability to be modified
+independently for each species sharing a particular habitat type. Prior versions of EMOD
+applied the same modifier to all species within a shared habitat; this upgrade enables you
+to apply modifiers to individual species within a habitat. For more information, see
+<a class="reference internal" href="parameter-demographics.html#demo-nodeattributes"><span class="std std-ref">NodeAttributes</span></a> parameters.</dd>
+<dt><strong>ScaleLarvalHabitat</strong> by species</dt>
+<dd>This new intervention enables species-specific effects of habitat interventions within
+shared habitat types, such that habitat availability is modified on a per-species level.
+For more information, see <a class="reference internal" href="parameter-campaign.html#iv-scalelarvalhabitat"><span class="std std-ref">ScaleLarvalHabitat</span></a> parameters.</dd>
+<dt>Breaking changes</dt>
+<dd>PIECEWISE_MONTHLY has been changed to LINEAR_SPLINE.</dd>
+</dl>
 </div>
 </div>
 </div>
@@ -287,6 +287,7 @@ Upgrade to Python 2.7.11 or 2.7.12 to get rid of the warning message.</dd>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
       <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
 
   
 

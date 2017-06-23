@@ -1,0 +1,40 @@
+=================================
+HIV model structure and framework
+=================================
+
+
+The HIV |EMOD_s| is complex, with numerous configurable parameters. The following network
+diagram breaks down the model into various model components, and illustrates how they interact with
+one another.  The components on the network diagram correspond to the structural components  listed
+below. Note that there is  not perfect overlap between the labels on the network diagram and the
+structural components; this is because the network is drawn with increased detail in order to
+provide clarity in how the model functions and the components interact. The following pages will
+describe in detail how the structural components function.
+
+.. this is taken from the malaria page. Need to edit for HIV.
+
+.. create and insert a network diagram for HIV.
+
+  Network diagram illustrating the HIV model and its constituent components.
+
+
+
+
+
+
+See the :doc:`parameter-overview` for a complete description of all configurable parameters for
+the HIV model.
+
+
+HIV model structural components
+===============================
+
+The model's modular framework includes the following components:
+
+
+.. toctree::
+   :maxdepth: 3
+   :titlesonly:
+
+
+..need to figure out what the components are, and add them to the toctree!

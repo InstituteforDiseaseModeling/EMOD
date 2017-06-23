@@ -1,0 +1,383 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Download the EMOD source code &mdash; HIV Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within HIV Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="HIV Model  documentation" href="index.html"/>
+        <link rel="up" title="EMOD source code installation" href="dev-install-overview.html"/>
+        <link rel="next" title="Build EMOD from source code" href="dev-install-build-emod.html"/>
+        <link rel="prev" title="Prerequisites for working with EMOD source code" href="dev-install-prerequisites.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> HIV Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HIV-disease-overview.html">HIV disease overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HIV-model-overview.html">HIV model overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HIV-IDM.html">HIV research at IDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dev-install-prerequisites.html">Prerequisites for working with EMOD source code</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Download the EMOD source code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev-install-build-emod.html">Build EMOD from source code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">HIV Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">HIV</a> &raquo;</li>
+      
+          <li><a href="dev-install-overview.html">EMOD source code installation</a> &raquo;</li>
+      
+    <li>Download the EMOD source code</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="download-the-emod-s-source-code">
+<h1>Download the EMOD source code<a class="headerlink" href="#download-the-emod-s-source-code" title="Permalink to this headline">¶</a></h1>
+<p>The EMOD source code is available on GitHub. The EMOD source includes the source code,
+Visual Studio solution, sample configuration files, as well as <a class="reference internal" href="glossary.html#term-regression-test"><span class="xref std std-term">regression test</span></a> and other
+files needed to fully build and test the EMOD executable (Eradication.exe).</p>
+<p>You can have multiple versions of the EMOD source code in separate directories on your local
+computer. For example, you might want to download a new release of EMOD but also keep a previous
+release of the source. In the following examples, the source code is downloaded to the directory
+EMOD at C:/IDM, but you can save to any location you want.</p>
+<p>You can use a Git client of your choice to download from GitHub, however, these instructions show
+how to use Git GUI and Git Bash.</p>
+<div class="section" id="install-git-gui-and-git-bash">
+<h2>Install Git GUI and Git Bash<a class="headerlink" href="#install-git-gui-and-git-bash" title="Permalink to this headline">¶</a></h2>
+<p>To install Git GUI and Git Bash, download a 64-bit version of Git from <a class="reference external" href="https://git-scm.com/download">https://git-scm.com/download</a>.
+On the <strong>Select Components</strong> installer window, you can select one or both of <strong>Git GUI Here</strong> for a
+GUI or <strong>Git Bash Here</strong> for a command window.</p>
+</div>
+<div class="section" id="use-git-gui-to-download-the-emod-s-source">
+<h2>Use Git GUI to download the EMOD source<a class="headerlink" href="#use-git-gui-to-download-the-emod-s-source" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Launch the Git GUI application and click <strong>Clone Existing Repository</strong>.</li>
+<li>From the <strong>Clone Existing Repository</strong> window:<ol class="arabic">
+<li>In <strong>Source Location</strong>, enter <a class="reference external" href="https://github.com/InstituteforDiseaseModeling/EMOD">https://github.com/InstituteforDiseaseModeling/EMOD</a></li>
+<li>In <strong>Target Directory</strong>, enter the location and target directory name: C:/IDM/EMOD</li>
+<li>Click <strong>Clone</strong>. Git GUI will create the directory and download the source code.</li>
+</ol>
+</li>
+<li>Close the Git GUI window when the download completes.</li>
+</ol>
+</div>
+<div class="section" id="use-git-bash-to-download-the-emod-s-source">
+<h2>Use Git Bash to download the EMOD source<a class="headerlink" href="#use-git-bash-to-download-the-emod-s-source" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For a list of the Git Bash commands, you can type <code class="docutils literal"><span class="pre">git</span> <span class="pre">help</span> <span class="pre">git</span></code> from Git Bash, or <code class="docutils literal"><span class="pre">git</span> <span class="pre">help</span>
+<span class="pre">&lt;command&gt;</span></code> for information about a specific command.</p>
+</div>
+<ol class="arabic">
+<li><p class="first">Launch the Git Bash application. From the command line:</p>
+<ol class="arabic">
+<li><p class="first">Go to the location where you want your copy of the EMOD source located:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">C</span><span class="p">:</span>\<span class="n">IDM</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Clone the repository from GitHub:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">InstituteforDiseaseModeling</span><span class="o">/</span><span class="n">EMOD</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</li>
+</ol>
+<p>Git Bash will copy the EMOD source to a directory named EMOD by default as a
+different directory name was not specified after the URL.</p>
+<p>Verify that all directories on <a class="reference external" href="https://github.com/InstituteforDiseaseModeling/EMOD">https://github.com/InstituteforDiseaseModeling/EMOD</a> are now reflected
+on your local clone of the repository. The table below describes each of the directories.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Directory</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Dependencies</td>
+<td>The ComputeClusterPack.</td>
+</tr>
+<tr class="row-odd"><td>Eradication</td>
+<td>Eradication project. Main project for Visual Studio solution.</td>
+</tr>
+<tr class="row-even"><td>Regression</td>
+<td>Scripts to perform regression tests for modified code. It also includes a copy of the
+Quick Start Scenarios directory that contains simulation configuration, batch, input, and script files
+that are associated with the training tutorials.</td>
+</tr>
+<tr class="row-odd"><td>Scripts</td>
+<td>Scripts used in file creation.</td>
+</tr>
+<tr class="row-even"><td>UnitTest++</td>
+<td>Software for early release of additional regression testing.</td>
+</tr>
+<tr class="row-odd"><td>baseReportLib</td>
+<td>Static library of classes used by EMOD built-in reports and custom reports.</td>
+</tr>
+<tr class="row-even"><td>cajun</td>
+<td>Cajun C++ API for <a class="reference internal" href="glossary.html#term-javascript-object-notation-json"><span class="xref std std-term">JavaScript Object Notation (JSON)</span></a> project.</td>
+</tr>
+<tr class="row-odd"><td>campaign</td>
+<td>Campaign project.</td>
+</tr>
+<tr class="row-even"><td>componentTests</td>
+<td>Tests that work in conjunction with the UnitTest++ directory.</td>
+</tr>
+<tr class="row-odd"><td>interventions</td>
+<td>Interventions project.</td>
+</tr>
+<tr class="row-even"><td>rapidjson</td>
+<td>Rapid JSON project.</td>
+</tr>
+<tr class="row-odd"><td>reporters</td>
+<td>Collection of custom reporter projects.</td>
+</tr>
+<tr class="row-even"><td>snappy</td>
+<td>Compression utilities used by the EMOD software.</td>
+</tr>
+<tr class="row-odd"><td>utils</td>
+<td>Miscellaneous utilities.</td>
+</tr>
+</tbody>
+</table>
+<p>Additionally, the repository includes additional files, such as the Visual Studio solution file,
+SCons scripts, the README, and more.</p>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dev-install-build-emod.html" class="btn btn-neutral float-right" title="Build EMOD from source code" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dev-install-prerequisites.html" class="btn btn-neutral" title="Prerequisites for working with EMOD source code" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

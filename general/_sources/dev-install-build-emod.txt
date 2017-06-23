@@ -38,6 +38,11 @@ is implemented in Python and the SCons configuration files, SConstruct and SCons
 as Python scripts. This allows for greater flexibility and extensibility, such as the creation of
 custom SCons abilities just for |EMOD_s|. For more information on Scons, see `www.scons.org`_.
 
+.. warning::
+
+    |EMOD_s| will not build if you use the ``--Debug`` flag. To build a debug version, you must
+    use Visual Studio.
+
 
 #.  Open a command window.
 

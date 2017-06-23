@@ -1,0 +1,382 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Install EMOD on Windows &mdash; Tuberculosis Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Tuberculosis Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Tuberculosis Model  documentation" href="index.html"/>
+        <link rel="up" title="EMOD installation" href="install-overview.html"/>
+        <link rel="next" title="Install EMOD on CentOS on Azure" href="install-centos.html"/>
+        <link rel="prev" title="EMOD installation" href="install-overview.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Tuberculosis Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="install-overview.html">EMOD installation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Install EMOD on Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install-centos.html">Install EMOD on CentOS on Azure</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Tuberculosis Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">TB</a> &raquo;</li>
+      
+          <li><a href="install-overview.html">EMOD installation</a> &raquo;</li>
+      
+    <li>Install EMOD on Windows</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="install-emod-s-on-windows">
+<h1>Install EMOD on Windows<a class="headerlink" href="#install-emod-s-on-windows" title="Permalink to this headline">¶</a></h1>
+<p>Follow the steps below to install EMOD on computers running Windows 10, Windows Server 12, and Windows HPC Server 12 (64-bit).</p>
+<p>The EMOD executable (Eradication.exe) is tested using Windows 10, Windows Server 12, and Windows HPC Server 12 (64-bit). Windows HPC Server is used for testing remote
+simulations on a <a class="reference internal" href="glossary.html#term-high-performance-computing-hpc"><span class="xref std std-term">high-performance computing (HPC)</span></a> cluster and the other Windows
+operating systems are used to test local simulations.</p>
+<ol class="arabic simple">
+<li>Install the Microsoft HPC Pack 2012 Client Utilities Redistributable Package (64-bit). See <a class="reference external" href="http://www.microsoft.com/en-us/download/details.aspx?id=36044">http://www.microsoft.com/en-us/download/details.aspx?id=36044</a> for instructions.</li>
+<li>Install the Microsoft MPI v8. See <a class="reference external" href="https://www.microsoft.com/en-us/download/details.aspx?id=54607">https://www.microsoft.com/en-us/download/details.aspx?id=54607</a> for instructions, being sure to run the MSMpiSetup.exe file.</li>
+<li>Download the EMOD executable (Eradication.exe). See <a class="reference external" href="https://github.com/InstituteforDiseaseModeling/EMOD/releases">EMOD releases</a> on GitHub.</li>
+</ol>
+<div class="section" id="optional-install-plotting-software">
+<h2>(Optional) Install plotting software<a class="headerlink" href="#optional-install-plotting-software" title="Permalink to this headline">¶</a></h2>
+<p>None of the following plotting software is required to run simulations with EMOD, but they
+are useful for creating graphs from and evaluating the model output. In addition, EMOD
+provides many Python scripts for analyzing data.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">IDM does not provide support or guarantees for any third-party software, even software
+that we recommend you install. Send feedback if you encounter any issues, but any support must come
+from the makers of those software packages and their user communities.</p>
+</div>
+<div class="section" id="python-and-python-packages">
+<h3>Python and Python packages<a class="headerlink" href="#python-and-python-packages" title="Permalink to this headline">¶</a></h3>
+<p>Python is required to install many of the software packages described below.</p>
+<p>We recommended that you download some of the Python packages from
+<a class="reference external" href="http://www.lfd.uci.edu/~gohlke/pythonlibs">http://www.lfd.uci.edu/~gohlke/pythonlibs</a>, a page compiled by Christoph Gohlke, University of
+California, Irvine. The libraries there are compiled Windows binaries, including the 64-bit versions
+required by EMOD.</p>
+<ol class="arabic">
+<li><p class="first">Install Python 2.7.11 or 2.7.12. See <a class="reference external" href="https://www.python.org/downloads/">https://www.python.org/downloads/</a> for instructions.</p>
+<ul class="simple">
+<li>In the <strong>Customize Python</strong> dialog box, verify that <strong>Add python.exe to PATH</strong> is selected
+to add Python to the PATH environment variable on your computer.</li>
+</ul>
+</li>
+<li><p class="first">From <strong>Control Panel</strong>, select <strong>Advanced system settings</strong>, and then click
+<strong>Environment Variables</strong>.</p>
+</li>
+<li><p class="first">Add a new variable called IDM_PYTHON_PATH and set it to the directory where you installed
+Python, and then click <strong>OK</strong>.</p>
+</li>
+<li><p class="first">Open a Command Prompt window and type the following to verify installation:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">--</span><span class="n">version</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>The Python package manager, pip, is installed as part of Python 2.7.11 or 2.7.12 and is used to install
+other software packages.</p>
+<div class="section" id="python-utilities">
+<h4>Python utilities<a class="headerlink" href="#python-utilities" title="Permalink to this headline">¶</a></h4>
+<p>The Python utilities dateutil, six, and pyparsing provide text parsing and datetime functionality.</p>
+<ol class="arabic">
+<li><p class="first">Open a Command Prompt window.</p>
+</li>
+<li><p class="first">Enter the following commands:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">python</span><span class="o">-</span><span class="n">dateutil</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">pyparsing</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="numpy">
+<h4>NumPy<a class="headerlink" href="#numpy" title="Permalink to this headline">¶</a></h4>
+<p>The NumPy package adds support for large, multi-dimensional arrays and matrices to Python.</p>
+<ol class="arabic">
+<li><p class="first">Go to <a class="reference external" href="http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy">http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy</a> and select the WHL file for NumPy 1.11.3 (64-bit) that is compatible with
+Python 2.7.11 or 2.7.12.</p>
+</li>
+<li><p class="first">Save the file to your Python installation directory.</p>
+</li>
+<li><p class="first">Open a Command Prompt window and navigate to the Python installation directory, then enter the
+following, substituting the name of the specific NumPy WHL file you downloaded:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">numpy</span><span class="o">-</span><span class="mf">1.</span><span class="n">x</span><span class="o">.</span><span class="n">x</span><span class="o">+</span><span class="n">mkl</span><span class="o">-</span><span class="n">cp27m</span><span class="o">-</span><span class="n">win_amd64</span><span class="o">.</span><span class="n">whl</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="matplotlib">
+<h4>Matplotlib<a class="headerlink" href="#matplotlib" title="Permalink to this headline">¶</a></h4>
+<p>Matplotlib is a Python library for making publication quality plots using syntax familiar to MATLAB
+users. Matplotlib also uses NumpPy for numeric manipulation. Output formats include PDF, Postscript,
+SVG, and PNG, as well as a screen display.</p>
+<ol class="arabic">
+<li><p class="first">Go to <a class="reference external" href="http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib">http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib</a> and select the WHL file for Matplotlib 1.5.3 (64-bit) that is compatible with
+Python 2.7.11 or 2.7.12.</p>
+</li>
+<li><p class="first">Save the file to your Python installation directory.</p>
+</li>
+<li><p class="first">Open a Command Prompt window and navigate to the Python installation directory, then enter the
+following, substituting the name of the specific matplotlib WHL file you downloaded:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">matplotlib</span><span class="o">-</span><span class="mf">1.</span><span class="n">x</span><span class="o">.</span><span class="n">x</span><span class="o">+</span><span class="n">mkl</span><span class="o">-</span><span class="n">cp27m</span><span class="o">-</span><span class="n">win_amd64</span><span class="o">.</span><span class="n">whl</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="r">
+<h3>R<a class="headerlink" href="#r" title="Permalink to this headline">¶</a></h3>
+<p>R is a free software environment for statistical computing and graphics.</p>
+<ul class="simple">
+<li>Go to <a class="reference external" href="https://www.r-project.org/">https://www.r-project.org/</a> and install R 3.2.0 (64-bit).</li>
+</ul>
+</div>
+<div class="section" id="matlab">
+<h3>MATLAB<a class="headerlink" href="#matlab" title="Permalink to this headline">¶</a></h3>
+<p>MATLAB is a high-level language and interactive environment for numerical computation,
+visualization, and programming. The MATLAB Statistics and Machine Learning Toolbox™ provides
+functions and applications to describe, analyze and model data using statistics and machine learning
+algorithms.</p>
+<ol class="arabic simple">
+<li>Go to <a class="reference external" href="http://www.mathworks.com/products/matlab/">http://www.mathworks.com/products/matlab/</a> and install MATLAB R2015a.</li>
+<li>If desired, go to <a class="reference external" href="https://www.mathworks.com/products/statistics.html">https://www.mathworks.com/products/statistics.html</a> and install the MATLAB Statistics and Machine Learning Toolbox™ R2015a.</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="install-centos.html" class="btn btn-neutral float-right" title="Install EMOD on CentOS on Azure" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="install-overview.html" class="btn btn-neutral" title="EMOD installation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>
