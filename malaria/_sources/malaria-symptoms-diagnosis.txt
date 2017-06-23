@@ -39,7 +39,7 @@ stimulated in anemic individuals to increase the rate of RBC production.
 
    Anemia
 
-
+.. _malaria-severe-mortality:
 
 Severe disease and mortality
 ============================

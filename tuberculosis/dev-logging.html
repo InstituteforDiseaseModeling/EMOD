@@ -1,0 +1,376 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Set log levels &mdash; Tuberculosis Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Tuberculosis Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Tuberculosis Model  documentation" href="index.html"/>
+        <link rel="up" title="Debugging and testing" href="dev-debugging-overview.html"/>
+        <link rel="next" title="Run debug simulations in Visual Studio" href="dev-simulations.html"/>
+        <link rel="prev" title="Debugging and testing" href="dev-debugging-overview.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Tuberculosis Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Set log levels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev-simulations.html">Run debug simulations in Visual Studio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev-trouble-build.html">Troubleshooting EMOD builds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev-regression.html">Regression testing</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Tuberculosis Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">TB</a> &raquo;</li>
+      
+          <li><a href="dev-debugging-overview.html">Debugging and testing</a> &raquo;</li>
+      
+    <li>Set log levels</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="set-log-levels">
+<h1>Set log levels<a class="headerlink" href="#set-log-levels" title="Permalink to this headline">¶</a></h1>
+<p>EMOD simulations output several files, including log files. See <a class="reference internal" href="file-error-logging.html"><span class="doc">Error and logging files</span></a> for
+more information on the logging files that are created by a simulation. By default, logging is at
+the &#8220;INFO&#8221; level, but you can set the level at which you want logging information generated. If you
+see redundant log messages, you can also throttle logging to eliminate them.</p>
+<p>There are five log levels. The level chosen will log messages for that level and all higher
+levels (levels of smaller numeric value). You can set default log levels across the entire
+Eradication.exe or for individual files in the Eradication.exe; individual file settings will override the default.
+For example, if you want to increase logging for a  particular file you are debugging without
+increasing logging across the entire Eradication.exe, you can set the default log level to &#8220;WARNING&#8221; and
+set the log level for the file to &#8220;DEBUG&#8221;. The standard output will reflect the default log level for
+all settings except &#8220;ERROR&#8221; or &#8220;WARNING&#8221;. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Log</span><span class="o">-</span><span class="n">levels</span><span class="p">:</span>
+        <span class="n">Default</span> <span class="o">-&gt;</span> <span class="n">INFO</span>
+        <span class="n">Eradication</span> <span class="o">-&gt;</span> <span class="n">INFO</span>
+</pre></div>
+</div>
+<p>The following log levels are available:</p>
+<dl class="docutils">
+<dt>ERROR (1)</dt>
+<dd>This is the highest level. Only errors, including critical errors, are logged to standard output.</dd>
+<dt>WARNING (2)</dt>
+<dd>Warnings and errors are logged to standard output.</dd>
+<dt>INFO (3)</dt>
+<dd>This is the default logging level for the executable and is set implicitly. Informational messages,
+warnings, and errors are logged to standard output.</dd>
+<dt>DEBUG (4)</dt>
+<dd>Debug information, informational messages, warnings, and errors are logged to standard output.
+Debug level logging messages do not require a debug build of Eradication.exe. This setting will generate
+a large number of messages and may impact performance. If you need the debugging messages, we
+recommend that you limit the number of files with this setting and not set it as the default
+across the entire Eradication.exe.</dd>
+<dt>VALID (5)</dt>
+<dd>This is the lowest level. Validation information, debug information, informational messages, warnings,
+and errors are logged to standard output. This log level is for very low-level debugging of specific
+values, including values in tight loops. Because it could severely impact performance, this level
+will only output to standard output during a debug build of Eradication.exe.</dd>
+</dl>
+<div class="section" id="set-default-exe-s-level">
+<h2>Set default Eradication.exe level<a class="headerlink" href="#set-default-exe-s-level" title="Permalink to this headline">¶</a></h2>
+<p>To set the default log level across the entire Eradication.exe, add the parameter <strong>logLevel_default</strong> to
+your configuration file and set it to the log level desired. For example:</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;logLevel_default&quot;</span><span class="p">:</span> <span class="s2">&quot;WARNING&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="set-level-for-individual-files">
+<h2>Set level for individual files<a class="headerlink" href="#set-level-for-individual-files" title="Permalink to this headline">¶</a></h2>
+<p>You can set the log level for an individual file, if it supports the ability. This is typically only
+used for debugging after making source code changes. This setting will override the default set using
+<strong>logLevel_default</strong>, whether set to a higher or lower level.</p>
+<ol class="arabic">
+<li><p class="first">In the C++ files that make up the EMOD source code, open the file for which you want to set
+the log level.</p>
+</li>
+<li><p class="first">Search for <code class="docutils literal"><span class="pre">static</span> <span class="pre">const</span> <span class="pre">char</span> <span class="pre">*</span> <span class="pre">_module</span></code>.</p>
+<p>&#8220;Module&#8221; refers to the C++ file and is not the same as an EMODule. If this string
+isn&#8217;t present, you cannot set a log level for the file.</p>
+</li>
+<li><p class="first">Look for logging macros in the file, such as LOG_WARN(x).</p>
+<p>If macros are present, this indicates that the file supports that log level setting. The file may not
+support all log levels. Logging macros can be found in utils/Log.h. You can also add your own
+logging messages to the file using the logging macros.</p>
+</li>
+<li><p class="first">In the configuration file, add the <strong>logLevel_&lt;FileName&gt;</strong> parameter with the log level desired.
+For example:</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;logLevel_SimulationVectorExport&quot;</span><span class="p">:</span><span class="s2">&quot;DEBUG&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="throttle-redundant-logging">
+<h2>Throttle redundant logging<a class="headerlink" href="#throttle-redundant-logging" title="Permalink to this headline">¶</a></h2>
+<p>It&#8217;s possible that multiple identical logging messages are generated by a file of Eradication.exe. This is
+normal behavior, but the verbosity can be unwanted or unnecessary. You can eliminate duplicate
+messages by turning on &#8220;throttling&#8221;, which retains only one logging message instead of a series of
+duplicate messages from each file.</p>
+<p>Only one copy of the message will be generated when it is one of a series of duplicates <em>from the
+same file</em>. The identical messages need not be output one right after one another to be throttled.
+If an identical message is output <em>from a different file</em>, it will still be generated. Throttling can
+only be enabled across the entire Eradication.exe, not per file. It is off by default.</p>
+<p>To enable throttling, add the following parameter and value to your configuration file:</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Enable_Log_Throttling&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For example, the following log messages are seen with throttling turned off:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="n">FileA</span><span class="p">]</span> <span class="n">identical</span> <span class="n">message</span><span class="p">:</span> <span class="n">I</span><span class="s1">&#39;m in FileA</span>
+<span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="n">FileB</span><span class="p">]</span> <span class="n">another</span> <span class="n">message</span> <span class="kn">from</span> <span class="nn">B</span>
+<span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="n">FileA</span><span class="p">]</span> <span class="n">identical</span> <span class="n">message</span><span class="p">:</span> <span class="n">I</span><span class="s1">&#39;m in FileA</span>
+<span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="n">FileB</span><span class="p">]</span> <span class="n">different</span> <span class="n">message</span> <span class="kn">from</span> <span class="nn">B</span>
+<span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="n">FileA</span><span class="p">]</span> <span class="n">identical</span> <span class="n">message</span><span class="p">:</span> <span class="n">I</span><span class="s1">&#39;m in FileA</span>
+<span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="n">FileB</span><span class="p">]</span> <span class="n">yet</span> <span class="n">another</span> <span class="n">message</span> <span class="kn">from</span> <span class="nn">B.</span>
+<span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="n">FileA</span><span class="p">]</span> <span class="n">identical</span> <span class="n">message</span><span class="p">:</span> <span class="n">I</span><span class="s1">&#39;m in FileA</span>
+</pre></div>
+</div>
+<p>With throttling on, the repeated messages from file A are removed, even though they are intermixed
+with other log messages from file B:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="n">FileA</span><span class="p">]</span> <span class="n">identical</span> <span class="n">message</span><span class="p">:</span> <span class="n">I</span><span class="s1">&#39;m in FileA</span>
+<span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="n">FileB</span><span class="p">]</span> <span class="n">another</span> <span class="n">message</span> <span class="kn">from</span> <span class="nn">B</span>
+<span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="n">FileB</span><span class="p">]</span> <span class="n">different</span> <span class="n">message</span> <span class="kn">from</span> <span class="nn">B</span>
+<span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="n">FileB</span><span class="p">]</span> <span class="n">yet</span> <span class="n">another</span> <span class="n">message</span> <span class="kn">from</span> <span class="nn">B.</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dev-simulations.html" class="btn btn-neutral float-right" title="Run debug simulations in Visual Studio" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dev-debugging-overview.html" class="btn btn-neutral" title="Debugging and testing" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

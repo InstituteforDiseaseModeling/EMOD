@@ -2,308 +2,282 @@
 Configuration parameters
 ========================
 
-The parameters described in this reference section determine the behavior of a simulation.
-Simulations are configured in a :term:`configuration file`. This file is a :term:`JavaScript Object
-Notation (JSON)` formatted file that contains mostly a flat list of JSON key-value pairs. For
-information on JSON, see :doc:`parameter-overview`.
+.. include:: ../reuse/config-param-intro.txt
+
+The tables below contain only parameters available when using the generic :term:`simulation type`.
+Some parameters may appear in multiple categories.
 
 .. include:: ../reuse/warning-case.txt
 
-.. only:: malaria
+.. raw:: html
 
-    The tables below contain only parameters available when using the malaria :term:`simulation type`.
+    <button class="collapse-table-button btn btn-info">Collapse all parameter tables</button>
 
-.. only:: hiv
-
-    The tables below contain only parameters available when using the HIV :term:`simulation type`.
-
-.. only:: tb
-
-    The tables below contain only parameters available when using the tuberculosis :term:`simulation type`.
-
-.. only:: training
-
-    The tables below contain only parameters available when using the training tutorials.
-
-.. remember that all simtypes are in the training documentation and the tables should be conditionalized
-.. as such. Anything without conditionals is included in all docsets.
-
-.. really annoying limitation of the contents directive is that it will only include stuff that isn't
-.. conditionalized using the only directive
-
-.. only:: generic
-
-    .. contents:: Contents
-       :local:
-
-.. only:: malaria
-
-    **Contents**
-
-    * :ref:`config-clusteroptions`
-    * :ref:`config-demographics`
-    * :ref:`config-eventrecorder`
-    * :ref:`config-generaldisease`
-    * :ref:`config-geography`
-    * :ref:`config-inputfiles`
-    * :ref:`config-malaria`
-    * :ref:`config-malariadrug`
-    * :ref:`Migration <config-migration>`
-    * :ref:`config-outputoptions`
-    * :ref:`config-sampling`
-    * :ref:`config-scalingfactors`
-    * :ref:`config-simulationsetup`
-    * :ref:`config-spatialoutput`
-    * :ref:`config-vector`
-    * :ref:`config-vectorspecies`
+.. contents:: Contents
+   :local:
 
 
-.. only:: training
+.. raw:: html
 
-    **Contents**
-
-    * :ref:`config-clusteroptions`
-    * :ref:`config-demographics`
-    * :ref:`config-eventrecorder`
-    * :ref:`config-generaldisease`
-    * :ref:`config-geography`
-    * :ref:`config-inputfiles`
-    * :ref:`config-malaria`
-    * :ref:`config-malariadrug`
-    * :ref:`Migration <config-migration>`
-    * :ref:`config-outputoptions`
-    * :ref:`config-sampling`
-    * :ref:`config-scalingfactors`
-    * :ref:`config-simulationsetup`
-    * :ref:`config-spatialoutput`
-    * :ref:`config-vector`
-    * :ref:`config-vectorspecies`
+    <button class="collapse-table-button btn btn-info">Collapse all parameter tables</button>
 
 
+.. contents:: Contents
+   :local:
 
-.. _config-clusteroptions:
+.. _config-enable:
 
-Cluster options
-===============
+Enable or disable features
+==========================
+
+.. include:: ../reuse/config-enable.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
 
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
-    :file: ../csv/general-config-clusteroptions.csv
+    :file: ../csv/config-enable-generic.csv
 
-.. _config-demographics:
-
-Demographics
-============
-
-.. csv-table::
-    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
-    :widths: 10, 5, 5, 5, 5, 20, 5
-    :file: ../csv/general-config-demographics.csv
-
-.. _config-eventrecorder:
-
-Event recorder report settings
-==============================
-
-.. csv-table::
-    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
-    :widths: 10, 5, 5, 5, 5, 20, 5
-    :file: ../csv/general-config-eventrecorderreportsettings.csv
-
-.. _config-generaldisease:
+.. _config-general-disease:
 
 General disease
 ===============
 
+.. include:: ../reuse/config-general-disease.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
-    :file: ../csv/general-config-generaldisease.csv
+    :file: ../csv/config-general-disease-generic.csv
 
-.. _config-geography:
+.. all general disease params are in generic
+
+.. _config-env:
 
 Geography and environment
 =========================
 
-.. csv-table::
-    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
-    :widths: 10, 5, 5, 5, 5, 20, 5
-    :file: ../csv/general-config-geographyandenvironment.csv
+.. include:: ../reuse/config-env.txt
 
-.. _config-inputfiles:
+.. raw:: html
 
-Input files
-===========
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
 
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
-    :file: ../csv/general-config-inputfiles.csv
+    :file: ../csv/config-env-generic.csv
 
+.. _config-immunity:
 
-.. only:: malaria or training
+Immunity
+========
 
-    .. _config-malaria:
+.. include:: ../reuse/config-immunity.txt
 
-    Malaria
-    =======
+.. raw:: html
 
-    .. csv-table::
-       :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
-       :widths: 10, 5, 5, 5, 5, 20, 5
-       :file: ../csv/malaria-config-malaria.csv
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
 
-    .. _config-malariadrug:
+.. rst-class:: toggle-table
 
-    Malaria drug efficacy
-    =====================
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-immunity-generic.csv
 
-    .. csv-table::
-       :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
-       :widths: 10, 5, 5, 5, 5, 20, 5
-       :file: ../csv/malaria-config-malariadrugefficacy.csv
+.. _config-incubation:
 
+Incubation
+==========
 
-.. This link isn't working before the heading for some reason related to the only directive. Link using :ref:`Migration <config-migration>`
+.. include:: ../reuse/config-incubation.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-incubation-generic.csv
+
+.. no disease-specific incubation params -- even so, I should duplicate and rename these tables
+
+.. _config-infectivity:
+
+Infectivity and transmission
+============================
+
+.. include:: ../reuse/config-infectivity.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-infectivity-generic.csv
+
+.. _config-input:
+
+Input data files
+================
+
+.. include:: ../reuse/config-input.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-input-generic.csv
+
+.. _config-migration:
 
 Migration
 =========
 
-.. _config-migration:
+.. include:: ../reuse/config-migration.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
 
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
-    :file: ../csv/general-config-migration.csv
+    :file: ../csv/config-migration-generic.csv
 
+.. _config-mortality:
 
-.. TODO: Add this to the parameter table long descriptions:
-.. Fixed-Rate Migration: For fixed-rate migration (Migration_Model parameter of “FIXED_RATE_MIGRATION”;
-.. the only kind currently implemented), at the beginning of the simulation, or whenever an individual
-.. has just moved, they pick their next destination as well as time when they will migrate. They pick
-.. what type of migration (local, air, regional or sea) (IndividualHuman::SetNextMigration()). If an
-.. individual is on an “outbound” leg of their journey, they will query the Node’s MigrationInfo
-.. object, and through probability, pick a new destination based on the nodes “adjacent” to their
-.. current node. If, on the other hand, the individual is “inbound”, they will simply travel back along
-.. the path they previously came from.
+Mortality and survival
+======================
 
-.. A MigrationInfo object provides information about which nodes are “adjacent” to a node and the rates
-.. at which individuals travel to those adjacent nodes. It also is used in Vector migration to identify
-.. close nodes (ones that can be reached by “local” migration) that vectors may migrate to.
+.. include:: ../reuse/config-mortality.txt
 
-.. Migration Patterns: The Migration_Pattern parameter indicates how do people move which sets these
-.. variations:
+.. raw:: html
 
-.. “RANDOM_WALK_DIFFUSION” – Individuals retain no memory of where they came from; every move is to a
-.. new destination with no thought of returning "home".
-.. “SINGLE_ROUND_TRIPS” – There is a certain
-.. probability that an individual's move will be a roundtrip (determined by config.json parameters
-.. Local_Migration_Roundtrip_Probability, Air_Migration_Roundtrip_Probability, etc.). Otherwise, the
-.. departure-point is forgotten and the individual does not return to their original location.
-.. "WAYPOINTS_HOME” – Individuals go on a multi-step journey along several “waypoints” and then retrace
-.. their steps back along their path once they have reached a maximum number of waypoints from their
-.. “home”.
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
 
-.. _config-outputoptions:
-
-Output options
-==============
+.. rst-class:: toggle-table
 
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
-    :file: ../csv/general-config-outputoptions.csv
+    :file: ../csv/config-mortality-generic.csv
+
+.. _config-output:
+
+Output settings
+===============
+
+.. include:: ../reuse/config-output.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-output-generic.csv
+
+.. _config-population:
+
+Population dynamics
+===================
+
+.. include:: ../reuse/config-population.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-population-generic.csv
 
 .. _config-sampling:
 
 Sampling
 ========
 
-.. csv-table::
-    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
-    :widths: 10, 5, 5, 5, 5, 20, 5
-    :file: ../csv/general-config-sampling.csv
+.. include:: ../reuse/config-sampling.txt
 
-.. TODO add this information to the long description for Individual_Sampling_Type (moved from architecture)
-.. Several different sampling strategies are implemented, with different strategies better suited for
-.. different simulations. The base case TRACK_ALL is to track each individual in the population with a
-.. single Individual object with sampling weight 1. The simplest sampling strategy is “FIXED_SAMPLING”,
-.. in which members of the population are added to the simulation with probability
-.. Base_Individual_Sample_Rate and sampling weight 1/Base_Individual_Sample_Rate. This allows a smaller
-.. set of Individual objects to represent the overall population when dynamics are in a more continuum
-.. regime. Obviously in the case of sparse dynamics, a high sampling rate or tracking all is advisable.
+.. raw:: html
 
-.. The third sampling strategy is “ADAPTED_SAMPLING_BY_POPULATION_SIZE”, a strategy designed for
-.. malaria and vector simulations over large geographical areas with sizable heterogeneities in
-.. population density. In these settings, there is often little to no malaria in the cities, which have
-.. the highest densities by several orders of magnitude over rural malaria-endemic areas and an
-.. increasing share of the country’s population. This sampling strategy uses the parameter
-.. Max_Node_Population_Samples to define how many sample particles should be used to represent a Node’s
-.. population. If the true population of the Node is less than Max_Node_Population_Samples, each member
-.. of the Node’s population is added with sampling weight 1. If the true population of the Node exceeds
-.. Max_Node_Population_Samples, then members of the population are added to the simulation with
-.. probability Max_Node_Population_Samples /population and sampling weight population/
-.. Max_Node_Population_Samples. Thus if Max_Node_Population_Samples is set higher than typical rural
-.. densities, all individuals in these key areas are tracked without wasting memory and processing time
-.. on the cities.
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
 
-.. The final two sampling strategies are modifications of fixed and adapted sampling, where the
-.. sampling rate is modified by the age of the individual. For each individual in the population, an
-.. age is drawn, and the local sampling rate (either the uniform or population-adapted sampling rate)
-.. is modified by an age-specific factor. For diseases in which only infants or children are relevant,
-.. this allows full sampling of these age groups while using fewer objects to represent the rest of the
-.. population.
-
-.. _config-scalingfactors:
-
-Scaling factors
-===============
+.. rst-class:: toggle-table
 
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
-    :file: ../csv/general-config-scalingfactors.csv
+    :file: ../csv/config-sampling-generic.csv
 
-.. _config-simulationsetup:
+.. _config-scalars:
+
+Scalars and multipliers
+=======================
+
+.. include:: ../reuse/config-scalars.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-scalars-generic.csv
+
+.. _config-setup:
 
 Simulation setup
 ================
 
-.. csv-table::
-    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
-    :widths: 10, 5, 5, 5, 5, 20, 5
-    :file: ../csv/general-config-simulationsetup.csv
+.. include:: ../reuse/config-setup.txt
 
-.. _config-spatialoutput:
+.. raw:: html
 
-Spatial output channels
-=======================
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
 
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
-    :file: ../csv/general-config-spatialoutputchannels.csv
+    :file: ../csv/config-setup-generic.csv
 
-
-.. only:: vector or training
-
-    .. _config-vector:
-
-    Vector
-    ======
-
-    .. csv-table::
-       :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
-       :widths: 10, 5, 5, 5, 5, 20, 5
-       :file: ../csv/vector-config-vector.csv
-
-    .. _config-vectorspecies:
-
-    Vector species
-    ==============
-
-    .. csv-table::
-        :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
-        :widths: 10, 5, 5, 5, 5, 20, 5
-        :file: ../csv/vector-config-vectorspecies.csv
