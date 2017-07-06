@@ -81,7 +81,7 @@
             
             
               <div class="version">
-                2.13
+                2.10
               </div>
             
           
@@ -192,7 +192,7 @@ demographics will use a form of local migration where individuals migrate only t
 named using the name of the region, appended with &#8220;_demographics.json&#8221;.</p>
 <p>Additionally, you can use more than one demographics file, with one serving as the base layer and
 the one or more others acting as overlays that override the values in the base layer.</p>
-<button class="collapse-table-button btn btn-info">Collapse all parameter tables</button><div class="contents local topic" id="contents">
+<div class="contents local topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
 <li><a class="reference internal" href="#demographic-file-structure" id="id1">Demographic file structure</a><ul>
@@ -295,7 +295,7 @@ be contained in a nested JSON object of the same name.</p>
 <p><strong>NodeAttributes</strong> are a JSON object that contains parameters that add or modify information
 regarding the location, migration, habitat, and population of a simulation. Some <strong>NodeAttributes</strong>
 depend on values set in the configuration parameters.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -496,7 +496,7 @@ parameters where one is the distribution type and the other two are used to furt
 distribution. You can use complex distributions to define a distribution that does not fit some
 standard. For example, a complex distribution is useful when trying to represent real-world data.</p>
 <p>The table below shows the simple distributions and their associated parameters.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="20%" />
 <col width="40%" />
@@ -638,7 +638,7 @@ and how to set the other two demographic parameters to initialize the distributi
 individuals in a simulation as a means of setting up groups. For example, you can define values for
 accessibility, age, geography, risk, and other properties and assign individuals to different groups
 based on those property values.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="14%" />
 <col width="14%" />
@@ -726,9 +726,8 @@ based on those property values.</p>
 </tr>
 <tr class="row-odd"><td>TransmissionMatrix</td>
 <td>array</td>
-<td><p class="first">An object that contains <strong>Route</strong> and <strong>Matrix</strong> parameters that define how to scale the base infectivity from individuals in one group to individuals in another. <strong>Enable_Heterogeneous_Intranode_Transmission</strong> in the
-configuration file must be set to 1 or this parameter is ignored.</p>
-<p class="last">The HINT feature is used only in the generic simulation type.</p>
+<td><p class="first">An object that contains <strong>Route</strong> and <strong>Matrix</strong> parameters that define how to scale the base infectivity from individuals in one group to individuals in another.</p>
+<p class="last">See <a class="reference internal" href="howto-hint.html"><span class="doc">Configure heterogeneous disease transmission</span></a> for more information.</p>
 </td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
@@ -749,7 +748,7 @@ configuration file must be set to 1 or this parameter is ignored.</p>
 </table>
 <p>The following table contains the parameters that are available to use in the <strong>Transitions</strong>
 array.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="14%" />
 <col width="14%" />
@@ -1195,7 +1194,6 @@ type.</p>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
       <script type="text/javascript" src="_static/runsearch.js"></script>
-      <script type="text/javascript" src="_static/tablecollapse.js"></script>
 
   
 

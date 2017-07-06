@@ -1,1 +1,0 @@
-.. include:: ../general/howto-demographics-heterogeneity.rst

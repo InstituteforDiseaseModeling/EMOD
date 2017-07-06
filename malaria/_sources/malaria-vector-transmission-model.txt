@@ -39,7 +39,7 @@ Populations are tracked as cohorts throughout the full mosquito life-cycle:
 * Repeating multi-day :term:`gonotrophic` cycles during which mosquitoes may be
   exposed to infection by gametocytes
 
-* A temperature-dependent latency for sporogony
+* A temperature-dependent latency for sporogeny
 
 Life-cycle progression is modulated through a set of required species-specific parameters.
 

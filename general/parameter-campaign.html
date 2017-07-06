@@ -81,7 +81,7 @@
             
             
               <div class="version">
-                2.13
+                2.10
               </div>
             
           
@@ -181,11 +181,11 @@ name of the campaign file.</p>
 <p class="last">The <strong>Outbreak</strong> must be the last event in the campaign file or none of the interventions
 will take place.</p>
 </div>
-<p>EMOD supports a variety of supported campaign interventions, each of which are specified with
-the parameter &#8220;class&#8221;. Each intervention contains multiple parameters used to configure that
-specific event. For example, the distribution of bednets behaves differently in the model than does
-the use of larvicides.  It is therefore important to ensure that interventions are configured
-correctly and applied to the appropriate level target (individual versus node).</p>
+<p>EMOD supports a variety of supported campaign interventions. It is worth noting that each
+intervention contains multiple parameters used to configure that specific event. For example, the
+distribution of bednets behaves differently in the model than does the use of larvicides.  It is
+therefore important to ensure that interventions are configured correctly and applied to the
+appropriate level target (individual versus node).</p>
 <p>This framework enables rigorous testing of possible control strategies to determine which events or
 combination of events will best aid in the elimination of disease for specific geographic locations.</p>
 <p>Like the configuration file, the campaign file is a <a class="reference internal" href="glossary.html#term-javascript-object-notation-json"><span class="xref std std-term">JavaScript Object Notation
@@ -197,7 +197,7 @@ information on how to set up the elements in a campaign file, see <a class="refe
 <p class="first admonition-title">Warning</p>
 <p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false.</p>
 </div>
-<button class="collapse-table-button btn btn-info">Collapse all parameter tables</button><div class="contents local topic" id="contents">
+<div class="contents local topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
 <li><a class="reference internal" href="#events-array" id="id1">Events array</a></li>
@@ -263,7 +263,7 @@ distributed (<strong>Nodeset_Config</strong>). The event coordinator is a nested
 <span class="p">}</span>
 </pre></div>
 </div>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="14%" />
 <col width="14%" />
@@ -325,7 +325,7 @@ intervention is a nested JSON object in <strong>Intervention_Config</strong>.</p
 <span class="p">}</span>
 </pre></div>
 </div>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -443,11 +443,9 @@ intervention is a nested JSON object in <strong>Intervention_Config</strong>.</p
 <div class="section" id="nodesetall">
 <h4>NodeSetAll<a class="headerlink" href="#nodesetall" title="Permalink to this headline">¶</a></h4>
 <p>If you are running a simulation that is in a single location (node) or you want the intervention to
-be distributed in all of the nodes, use <strong>NodeSetAll</strong>. There are no additional parameters.</p>
+be distributed in all of the nodes, use <strong>NodeSetAll</strong>.</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
-    <span class="p">}</span>
+    <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -455,7 +453,7 @@ be distributed in all of the nodes, use <strong>NodeSetAll</strong>. There are n
 <div class="section" id="nodesetnodelist">
 <h4>NodeSetNodeList<a class="headerlink" href="#nodesetnodelist" title="Permalink to this headline">¶</a></h4>
 <p>The intervention is distributed to nodes in the intervention list.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -490,7 +488,7 @@ be distributed in all of the nodes, use <strong>NodeSetAll</strong>. There are n
 <div class="section" id="nodesetpolygon">
 <h4>NodeSetPolygon<a class="headerlink" href="#nodesetpolygon" title="Permalink to this headline">¶</a></h4>
 <p>The intervention is distributed in nodes within the specified polygon.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -536,7 +534,7 @@ be distributed in all of the nodes, use <strong>NodeSetAll</strong>. There are n
 <span id="iv-interventions"></span><h2><a class="toc-backref" href="#id5">Interventions</a><a class="headerlink" href="#interventions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="birthtriggerediv">
 <span id="iv-birthtriggerediv"></span><h3><a class="toc-backref" href="#id6">BirthTriggeredIv</a><a class="headerlink" href="#birthtriggerediv" title="Permalink to this headline">¶</a></h3>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -650,7 +648,7 @@ be distributed in all of the nodes, use <strong>NodeSetAll</strong>. There are n
 </div>
 <div class="section" id="broadcastevent">
 <span id="iv-broadcastevent"></span><h3><a class="toc-backref" href="#id7">BroadcastEvent</a><a class="headerlink" href="#broadcastevent" title="Permalink to this headline">¶</a></h3>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -700,7 +698,7 @@ be distributed in all of the nodes, use <strong>NodeSetAll</strong>. There are n
 </div>
 <div class="section" id="delayedintervention">
 <span id="iv-delayedintervention"></span><h3><a class="toc-backref" href="#id8">DelayedIntervention</a><a class="headerlink" href="#delayedintervention" title="Permalink to this headline">¶</a></h3>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -806,7 +804,7 @@ be distributed in all of the nodes, use <strong>NodeSetAll</strong>. There are n
 </div>
 <div class="section" id="healthseekingbehaviorupdateable">
 <span id="iv-hsbupdateable"></span><h3><a class="toc-backref" href="#id9">HealthSeekingBehaviorUpdateable</a><a class="headerlink" href="#healthseekingbehaviorupdateable" title="Permalink to this headline">¶</a></h3>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -888,7 +886,7 @@ be distributed in all of the nodes, use <strong>NodeSetAll</strong>. There are n
 </div>
 <div class="section" id="ivcalendar">
 <h3><a class="toc-backref" href="#id10">IVCalendar</a><a class="headerlink" href="#ivcalendar" title="Permalink to this headline">¶</a></h3>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils" id="iv-ivcalendar">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -954,7 +952,7 @@ be distributed in all of the nodes, use <strong>NodeSetAll</strong>. There are n
 </div>
 <div class="section" id="multiinterventiondistributor">
 <h3><a class="toc-backref" href="#id11">MultiInterventionDistributor</a><a class="headerlink" href="#multiinterventiondistributor" title="Permalink to this headline">¶</a></h3>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils" id="iv-multiinterventiondistributor">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1004,7 +1002,7 @@ be distributed in all of the nodes, use <strong>NodeSetAll</strong>. There are n
 </div>
 <div class="section" id="nodelevelhealthtriggerediv">
 <span id="iv-nodelevelhealthtriggerediv"></span><h3><a class="toc-backref" href="#id12">NodeLevelHealthTriggeredIV</a><a class="headerlink" href="#nodelevelhealthtriggerediv" title="Permalink to this headline">¶</a></h3>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1166,7 +1164,7 @@ be distributed in all of the nodes, use <strong>NodeSetAll</strong>. There are n
 </div>
 <div class="section" id="outbreak">
 <span id="iv-outbreak"></span><h3><a class="toc-backref" href="#id13">Outbreak</a><a class="headerlink" href="#outbreak" title="Permalink to this headline">¶</a></h3>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1240,7 +1238,7 @@ be distributed in all of the nodes, use <strong>NodeSetAll</strong>. There are n
 </div>
 <div class="section" id="outbreakindividual">
 <span id="iv-outbreakindividual"></span><h3><a class="toc-backref" href="#id14">OutbreakIndividual</a><a class="headerlink" href="#outbreakindividual" title="Permalink to this headline">¶</a></h3>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1306,7 +1304,7 @@ be distributed in all of the nodes, use <strong>NodeSetAll</strong>. There are n
 </div>
 <div class="section" id="pmtct">
 <h3><a class="toc-backref" href="#id15">PMTCT</a><a class="headerlink" href="#pmtct" title="Permalink to this headline">¶</a></h3>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils" id="iv-pmtct">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1356,7 +1354,7 @@ be distributed in all of the nodes, use <strong>NodeSetAll</strong>. There are n
 </div>
 <div class="section" id="propertyvaluechanger">
 <span id="iv-propertyvaluechanger"></span><h3><a class="toc-backref" href="#id16">PropertyValueChanger</a><a class="headerlink" href="#propertyvaluechanger" title="Permalink to this headline">¶</a></h3>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1438,7 +1436,7 @@ be distributed in all of the nodes, use <strong>NodeSetAll</strong>. There are n
 </div>
 <div class="section" id="simplediagnostic">
 <h3><a class="toc-backref" href="#id17">SimpleDiagnostic</a><a class="headerlink" href="#simplediagnostic" title="Permalink to this headline">¶</a></h3>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils" id="iv-simplediagnostic">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1544,7 +1542,7 @@ be distributed in all of the nodes, use <strong>NodeSetAll</strong>. There are n
 </div>
 <div class="section" id="simplehealthseekingbehavior">
 <span id="iv-simplehealthseekingbehavior"></span><h3><a class="toc-backref" href="#id18">SimpleHealthSeekingBehavior</a><a class="headerlink" href="#simplehealthseekingbehavior" title="Permalink to this headline">¶</a></h3>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1658,7 +1656,7 @@ be distributed in all of the nodes, use <strong>NodeSetAll</strong>. There are n
 <span class="p">}</span>
 </pre></div>
 </div>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1754,7 +1752,7 @@ sections for the supported parameters.</p>
 </div>
 <div class="section" id="waningeffectbox-class">
 <h4>WaningEffectBox class<a class="headerlink" href="#waningeffectbox-class" title="Permalink to this headline">¶</a></h4>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1796,7 +1794,7 @@ sections for the supported parameters.</p>
 </div>
 <div class="section" id="waningeffectboxexponential-class">
 <h4>WaningEffectBoxExponential class<a class="headerlink" href="#waningeffectboxexponential-class" title="Permalink to this headline">¶</a></h4>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1846,7 +1844,7 @@ sections for the supported parameters.</p>
 </div>
 <div class="section" id="waningeffectconstant-class">
 <h4>WaningEffectConstant class<a class="headerlink" href="#waningeffectconstant-class" title="Permalink to this headline">¶</a></h4>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1880,7 +1878,7 @@ sections for the supported parameters.</p>
 </div>
 <div class="section" id="waningeffectexponential-class">
 <h4>WaningEffectExponential class<a class="headerlink" href="#waningeffectexponential-class" title="Permalink to this headline">¶</a></h4>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1922,7 +1920,7 @@ sections for the supported parameters.</p>
 </div>
 <div class="section" id="waningeffectlinear-class">
 <h4>WaningEffectLinear class<a class="headerlink" href="#waningeffectlinear-class" title="Permalink to this headline">¶</a></h4>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1964,7 +1962,7 @@ sections for the supported parameters.</p>
 </div>
 <div class="section" id="waningeffectpiecewise-class">
 <h4>WaningEffectPiecewise class<a class="headerlink" href="#waningeffectpiecewise-class" title="Permalink to this headline">¶</a></h4>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -2064,7 +2062,6 @@ sections for the supported parameters.</p>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
       <script type="text/javascript" src="_static/runsearch.js"></script>
-      <script type="text/javascript" src="_static/tablecollapse.js"></script>
 
   
 

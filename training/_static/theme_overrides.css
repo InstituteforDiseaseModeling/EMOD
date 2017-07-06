@@ -36,11 +36,3 @@ h1, h2, .rst-content .toctree-wrapper p.caption, h3, h4, h5, h6, legend {
 div.document span.search-highlight {
     background-color: yellow;
 }
-
-img.math {
-    width: auto;
-}
-
-.btn {
-    margin-bottom: 10px;
-}

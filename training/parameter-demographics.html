@@ -179,7 +179,7 @@ demographics will use a form of local migration where individuals migrate only t
 named using the name of the region, appended with &#8220;_demographics.json&#8221;.</p>
 <p>Additionally, you can use more than one demographics file, with one serving as the base layer and
 the one or more others acting as overlays that override the values in the base layer.</p>
-<button class="collapse-table-button btn btn-info">Collapse all parameter tables</button><div class="contents local topic" id="contents">
+<div class="contents local topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
 <li><a class="reference internal" href="#demographic-file-structure" id="id1">Demographic file structure</a><ul>
@@ -283,7 +283,195 @@ be contained in a nested JSON object of the same name.</p>
 <p><strong>NodeAttributes</strong> are a JSON object that contains parameters that add or modify information
 regarding the location, migration, habitat, and population of a simulation. Some <strong>NodeAttributes</strong>
 depend on values set in the configuration parameters.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>AbovePoverty</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>The proportion of the population that is living above the poverty line.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;AbovePoverty&quot;</span><span class="p">:</span> <span class="mf">0.5</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Airport</td>
+<td>bool</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Set to 1 to indicate that the node is connected by air migration.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Airport&quot;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Altitude</td>
+<td>float</td>
+<td>-3.40282e+038</td>
+<td>3.40E+38</td>
+<td>0</td>
+<td>Required. Only used when <strong>Climate_Model</strong> is set to &#8220;CLIMATE_KOPPEN&#8221;. The unit of measurement is in meters.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Altitude&quot;</span><span class="p">:</span> <span class="mi">250</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>BirthRate</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0.25</td>
+<td>The birth rate. In the configuration file, <strong>Enable_Birth</strong> must be set to 1 and <strong>Birth_Rate_Dependence</strong> will affect how this rate is used.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;BirthRate&quot;</span><span class="p">:</span> <span class="mf">0.0001</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>InitialPopulation</td>
+<td>integer</td>
+<td>0</td>
+<td>2.15E+09</td>
+<td>&nbsp;</td>
+<td>The number of people that will be populated into the node at the beginning of the simulation. You can scale this number using <strong>Base_Population_Scale_Factor</strong> in the configuration file.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;InitialPopulation&quot;</span><span class="p">:</span> <span class="mi">1000</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Latitude</td>
+<td>float</td>
+<td>-3.40282e+038</td>
+<td>3.40E+38</td>
+<td>&nbsp;</td>
+<td>Latitude of the node in decimal degrees. This can be used for several things including determining infectiousness by latitude and defining the size of grid cells.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Latitude&quot;</span><span class="p">:</span> <span class="mf">12.4</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Longitude</td>
+<td>float</td>
+<td>-3.40282e+038</td>
+<td>3.40E+38</td>
+<td>&nbsp;</td>
+<td>Longitude of the node in decimal degrees. This can be used for several things including defining the size of grid cells.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Longitude&quot;</span><span class="p">:</span> <span class="mf">9.1</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Region</td>
+<td>bool</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Set to 1 to indicate that the node is connected by regional migration.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Region&quot;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Seaport</td>
+<td>bool</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Set to 1 to indicate that the node is connected by sea migration.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Seaport&quot;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Urban</td>
+<td>bool</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Set to 1 to enable urban settings. In the configuration file, <strong>Enable_Demographics_Other</strong> must be set to 1 and <strong>Birth_Rate_Dependence</strong> must be set to &#8220;INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE&#8221;.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Urban&quot;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Zoonosis</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>The daily rate of zoonotic infection per individual. If <strong>Animal_Reservoir_Type</strong> is set to &#8220;ZOONOSIS_FROM_DEMOGRAPHICS&#8221;, the value for <strong>Zoonosis</strong> overrides the value set for <strong>Zoonosis_Rate</strong> in the configuration file.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Zoonosis&quot;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -497,7 +685,7 @@ parameters where one is the distribution type and the other two are used to furt
 distribution. You can use complex distributions to define a distribution that does not fit some
 standard. For example, a complex distribution is useful when trying to represent real-world data.</p>
 <p>The table below shows the simple distributions and their associated parameters.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="20%" />
 <col width="40%" />
@@ -639,7 +827,7 @@ and how to set the other two demographic parameters to initialize the distributi
 individuals in a simulation as a means of setting up groups. For example, you can define values for
 accessibility, age, geography, risk, and other properties and assign individuals to different groups
 based on those property values.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="14%" />
 <col width="14%" />
@@ -727,8 +915,7 @@ based on those property values.</p>
 </tr>
 <tr class="row-odd"><td>TransmissionMatrix</td>
 <td>array</td>
-<td>An object that contains <strong>Route</strong> and <strong>Matrix</strong> parameters that define how to scale the base infectivity from individuals in one group to individuals in another. <strong>Enable_Heterogeneous_Intranode_Transmission</strong> in the
-configuration file must be set to 1 or this parameter is ignored.</td>
+<td>An object that contains <strong>Route</strong> and <strong>Matrix</strong> parameters that define how to scale the base infectivity from individuals in one group to individuals in another.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;TransmissionMatrix&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -748,7 +935,7 @@ configuration file must be set to 1 or this parameter is ignored.</td>
 </table>
 <p>The following table contains the parameters that are available to use in the <strong>Transitions</strong>
 array.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="14%" />
 <col width="14%" />
@@ -1194,7 +1381,6 @@ type.</p>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
       <script type="text/javascript" src="_static/runsearch.js"></script>
-      <script type="text/javascript" src="_static/tablecollapse.js"></script>
 
   
 

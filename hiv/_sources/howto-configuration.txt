@@ -1,7 +1,0 @@
-.. include:: ../general/howto-configuration.rst
-
-.. toctree::
-   :maxdepth: 2
-   :titlesonly:
-
-   HIV-modeling-tips

@@ -16,8 +16,7 @@ produce output that should not be considered scientifically accurate.
     for the location of the working directory, input data files, binary file, and cluster settings.
 
     * For local Windows simulations, set the values under [WINDOWS].
-    * For local |Centos| simulations, set the values under [POSIX]. Note that |Centos| simulations
-      are run locally by default and cannot be commissioned to an HPC cluster.
+    * For local |Centos| simulations, set the values under [POSIX].
     * For simulations on |IDM_s| HPC clusters, no changes are necessary if your username and password
       are cached locally.
     * For simulations on your own HPC cluster, create [HPC-<cluster>] and [ENVIRONMENT-<cluster>]

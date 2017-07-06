@@ -1,1 +1,0 @@
-.. include:: ../general/intro-run-simulation.rst

@@ -1,1 +1,0 @@
-.. include:: ../general/install-windows.rst

@@ -46,9 +46,16 @@ list of select |IDM_s| malaria publications.
 Vector model
 ------------
 
+* Cameron, *et al*., 2015. `Defining the relationship between infection prevalence and clinical incidence of
+  Plasmodium falciparum malaria <http://www.nature.com/articles/ncomms9170>`__. *Nature Communications*. 6:8170
+
 * Eckhoff, 2013. `Mathematical models of within-host and transmission dynamics to determine effects of
   malaria interventions in a variety of transmission settings <https://www.ncbi.nlm.nih.gov/pubmed/23589530>`__.
   *Am J Trop Med Hyg*. 88(5):817-27
+
+* Eckhoff, 2012. `Malaria parasite diversity and transmission intensity affect development of parasitological
+  immunity in a mathematical model <https://malariajournal.biomedcentral.com/articles/10.1186/1475-2875-11-419>`__.
+  *Malaria Journal*. 11:419
 
 * Eckhoff, 2011. `A malaria transmission-directed model of mosquito life cycle and ecology
   <https://malariajournal.biomedcentral.com/articles/10.1186/1475-2875-10-303>`__.
@@ -62,9 +69,6 @@ Infection and immunity: Within-host parasite dynamics
   Plasmodium falciparum <http://malariajournal.biomedcentral.com/articles/10.1186/s12936-016-1538-5>`__.
   *Malaria Journal*. 15:487
 
-* Cameron, *et al*., 2015. `Defining the relationship between infection prevalence and clinical incidence of
-  Plasmodium falciparum malaria <http://www.nature.com/articles/ncomms9170>`__. *Nature Communications*. 6:8170
-
 * Ouedraogo, *et al*., 2015. `Dynamics of the Human Infectious Reservoir for Malaria Determined by Mosquito Feeding Assays and
   Ultrasensitive Malaria Diagnosis in Burkina Faso <https://academic.oup.com/jid/article-lookup/doi/10.1093/infdis/jiv370>`__.
   *Journal of Infectious Diseases*. 213(1):90-99
@@ -73,13 +77,10 @@ Infection and immunity: Within-host parasite dynamics
   with an agent-based model calibrated to age-stratified parasite densities and infectiousness
   <http://malariajournal.biomedcentral.com/articles/10.1186/s12936-015-0751-y>`__. *Malaria Journal*. 14:231
 
-* Eckhoff, 2012. `Malaria parasite diversity and transmission intensity affect development of parasitological
-  immunity in a mathematical model <https://malariajournal.biomedcentral.com/articles/10.1186/1475-2875-11-419>`__.
-  *Malaria Journal*. 11:419
-
 * Eckhoff, 2012. `P. falciparum Infection Durations and Infectiousness Are Shaped by Antigenic Variation
   and Innate and Adaptive Host Immunity in a Mathematical Model <http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0044950>`__.
   *PLOS one*. 7(9)
+
 
 
 Outcrossing of parasite genetics

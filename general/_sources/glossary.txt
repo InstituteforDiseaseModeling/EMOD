@@ -9,37 +9,8 @@ usage, general epidemiology, and the particular disease being modeled.
 .. We don't want to link to the glossary entry after the first use anyway. Additionally, it's better
 .. to use a singular term in the glossary, unless that term is almost always used in its plural form.
 
-.. only:: generic
-
-    .. contents:: Contents
-       :local:
-
-
-.. only:: malaria
-
-    **Contents**
-
-    * :ref:`glossary-software`
-    * :ref:`glossary-epi`
-    * :ref:`glossary-malaria`
-
-.. only:: tb
-
-    **Contents**
-
-    * :ref:`glossary-software`
-    * :ref:`glossary-epi`
-    * :ref:`glossary-tb`
-
-.. only:: hiv
-
-    **Contents**
-
-    * :ref:`glossary-software`
-    * :ref:`glossary-epi`
-    * :ref:`glossary-hiv`
-
-.. _glossary-software:
+.. contents:: Contents
+   :local:
 
 Software terms
 ==============
@@ -57,10 +28,6 @@ features, and functionality related to running simulations with |EMOD_l|.
         Free, peer-reviewed, portable C++ source libraries aimed at a wide range of uses including
         parallel processing applications (Boost.MPI). For more information, please see the Boost
         website, http://www.boost.org.
-
-    boxcar function
-        A mathematical function that is equal to zero over the entire real line except for a single
-        interval where it is equal to a constant.
 
     campaign
         A collection of events that use interventions to modify a :term:`simulation`.
@@ -293,8 +260,6 @@ features, and functionality related to running simulations with |EMOD_l|.
         The directory that contains the configuration and campaign files for a simulation. You must
         be in this directory when you invoke |exe_s| at the command line to run a simulation.
 
-.. _glossary-epi:
-
 Epidemiology terms
 ==================
 
@@ -306,7 +271,7 @@ and disease modeling.
     antigen
         A substance that is capable of inducing a specific immune response and that evokes the
         production of one or more antibodies.
-
+        
     Clausius-Clayperon relation
         A way of characterizing a transition between two phases of matter; provides a method to find
         a relationship between temperature and pressure along phase boundaries. Frequently used in
@@ -431,220 +396,5 @@ and disease modeling.
         A matrix of values that describes the rate of transmission between different population
         groups. WAIFW is an abbrevation for Who Acquires Infection From Whom.
 
-    Weibull distribution
-        A probability distribution often used in |EMOD_s| and that requires both a shape parameter
-        and a scale parameter. The shape parameter governs the shape of the density function. When
-        the shape parameter is equal to 1, it is an exponential distribution. For shape parameters
-        above 1, it forms a unimodal (hump-shaped) density function. As the shape parameter becomes
-        large, the function forms a sharp peak. The inverse of the shape parameter is sometimes
-        referred to here as the “heterogeneity” of the distribution (heterogeneity = 1/shape),
-        because it can be helpful to think about the degree of heterogeneity of draws from the
-        distribution, especially for hump-shaped functions with heterogeneity values between 0 and 1
-        (i.e., shape parameters greater than 1). The scale parameter shifts the distribution from
-        left to right. When heterogeneity is small (i.e., the shape parameter is large), the scale
-        parameter sets the location of the sharp peak.
-
 
 .. _Wikipedia: https://en.wikipedia.org/wiki/Standard_Template_Library
-
-.. only:: malaria
-
-    .. _glossary-malaria:
-
-    Malaria and vector terms
-    ========================
-
-    The following terms are used to describe the biological processes involved in malaria and other
-    vector-borne diseases.
-
-    .. glossary::
-
-        circumsporozoite protein (CSP)
-            One of two proteins (the other being thrombospondin-related adhesive protein) involved in
-            sporozoite recognition of host cells in malaria.
-
-        cohort model
-            A vector model that tracks properties of mosquito "cohorts", for example, population, age,
-            gender, fertility, etc.
-
-        cytokine
-            Cytokines are small secreted proteins that are released by cells, and have specific effects
-            on interactions and communications between cells. They are especially important in the immune
-            system, and can function in inflammatory (and anti-inflammatory) response.
-
-        CRISPR
-            A genome-editing technique that utilizes the CRISPR/Cas9 system (a prokaryotic immune system)
-            that can be used to splice DNA sequences in very specific target locations,  enabling the
-            precise insertion or removal of genes of interest.
-
-        entomological inoculation rate (EIR)
-            The commonly-used measure of the intensity of malaria transmission. EIR is equal to the number
-            of mosquito bites per night times the proportion of those bites that test positive for sporozoites.
-
-        gametocyte
-            The male and female sexual forms of the blood-stage malaria parasite. During blood-feeding,
-            gametocytes are taken up into the mosquito mid-gut where they commence the mosquito-phase of
-            the parasite life cycle.
-
-        gene drive mosquito
-            Gene drive is a genetic technique that promotes the inheritance of particular genes or specific
-            genetic elements.  In mosquitoes, approaches are being tested that work to suppress the spread
-            of malaria by creating mosquito lines through fertility suppression, driving-Y chromosomes,
-            or express genes that limit malaria transmission.
-
-        gonotrophic
-            A female mosquito's feeding and egg-laying cycle, where the duration is defined as the average
-            number of days that gravid mosquitoes take to oviposit after taking a blood meal.
-
-        hepatocyte
-           The cell type that comprises liver tissue.
-
-        homing endonuclease gene (HEG)
-            A "selfish" genetic element that can spread through the mosquito population even at a cost to
-            the host. The HEG allele status is a tracked property of mosquitoes. Large numbers of HEG-
-            positive mosquitoes may be introduced into the simulation by a **MosquitoRelease**
-            intervention.
-
-        individual mosquito model
-            A vector model simulation where every individual mosquito in the population is modeled, as
-            well as a simulation of a sampled subset of mosquitoes to represent the population as the
-            whole.
-
-        indoor residual spraying (IRS)
-            The process of spraying insecticide on the interior surfaces of dwellings in order to repel
-            or kill mosquitoes.
-
-        insecticide-treated nets (ITN)
-            Bednets hung over sleeping areas that are treated with insecticide to repel mosquitoes
-            and kill those that land on them.
-
-        larval habitat
-            Mosquito larval ecology includes several habitat types including brackish swamp, constant,
-            human population, temporary rainfall, and semi-permanent water vegetation.
-
-        larvicide
-            A node-targeted intervention that may be configured to have a direct killing effect on the
-            larval population and a temporary reduction on available larval habitat.
-
-        mass drug administration (MDA)
-           The treatment of an entire population in a geographic area with a
-           curative dose of an antimalarial drug without first testing for infection, and regardless of
-           the presence of symptoms.
-
-        merozoite
-            The malaria parasite stage that invades red blood cells. After each cycle of asexual
-            reproduction within the infected red blood cell, merozoites are released into the
-            bloodstream to invade new red blood cells.
-
-        merozoites
-            see "merozoite"
-
-        merozoite surface protein (MSP)
-            A type of protein integral to red blood cell invasion by malaria parasites that is an important
-            target of the human immune response.
-
-        oviposition
-            to deposit or lay eggs.
-
-        pre-erythrocytic
-            Stages of a malaria parasite that occur before the red blood cells are invaded. This
-            includes the period starting from inoculation with sporozoites, through the liver-stage
-            multiplication, up to infected hepatocyte rupture, and the first invasion of erythrocytes by
-            merozoites.
-
-        pre-erythrocytic vaccine (PEV)
-            A vaccine targeted at the earliest stage of malaria parasite development, namely before the
-            blood-stage infection. Other vaccines target the asexual and sexual stages of the parasite.
-
-        Plasmodium falciparum erythrocyte membrane protein 1 (PfEMP1)
-            A protein encoded by the malaria parasite and expressed on the surface of infected red blood
-            cells. PfEMP1 adheres to various human receptors, allowing sequestration of parasitized red
-            blood cells and avoidance of clearance in the spleen. PfEMP1 is an important antigenic
-            target of the human adapted immune response. It exhibits a high degree of antigenic
-            variation via a genetic switching mechanism evolved to escape immune pressure.
-
-        schizont
-            Cells formed during the asexual stage of the life cycle of sporozoan protozoans, such as the
-            malaria parasite.
-
-        spatial repellent
-            An intervention that may be individually-distributed (protective indoors and outdoors), or
-            node-distributed at the community-level, that repels mosquitoes from biting.
-
-        sporogony
-            The asexual process of spore formation in parasitic sporozoans.
-
-        sporozoite
-            a motile, spore-like stage of the malaria parasite that is the infectious agent introduced
-            into the host.
-
-        sugar-baited trap
-            Bait stations, often placed inside houses, that have an attractive and toxic sugar used to
-            attract and kill sugar-feeding male and female mosquitoes.
-
-        superinfection
-            The simultaneous infection with multiple strains of the same pathogen.
-
-        transmission-blocking vaccine (TBV)
-            A vaccine that blocks gametocytes from infected humans by producing viable sporozoites in
-            mosquitoes. Also referred to as a "sexual-stage" vaccine, since vaccines in this class block
-            gametocytes from infected humans by producing viable sporozoites in mosquitoes.
-
-        vaccine intervention types
-            In |EMOD_s|, vaccine intervention types are either "AcquisitionBlocking",
-            "TransmissionBlocking" or "MortalityBlocking". For example, "mode-of-action", "targeted
-            parasite stages", (such as pre-erythrocytic, asexual, or sexual), etc.
-
-        vector
-            Insect or other living carrier that transmits an infectious agent. The vector life cycle and
-            feeding cycle in the model are described in the article `Eckhoff, Malaria Journal 2011,
-            10:303`_.
-
-        vectorial capacity
-            The daily rate of all mosquitoes that would be infected after biting a single infectious host.
-            This measure can be used to describe the transmission intensity of malaria, and serves as a
-            rate at which future infections arise from a currently infected host.
-
-        vector model
-            The vector model includes both a :term:`cohort model` and an :term:`individual mosquito model`. The
-            model is a closed-loop feeding cycle where successful animal feeds (both indoors and
-            outdoors) produce eggs, larva, vector mating, and then, adult mosquitoes. The vector model
-            inherits the same human- infection model structure from the generic simulation type:
-            uninfected, latent incubation, infectious, multiple immune variables, and superinfection.
-            However, the transmission of infections is not between individual humans, but rather via the
-            human-to-vector and vector- to-human pathways.
-
-        Wolbachia
-            This is a genus of bacteria that infects many arthopod species (especially insects). It has
-            been discovered that insects infected with Wolbachia  have increased resistance to viral
-            or other parasitic infections. Work is underway to determine if strains of modified Wolbachia
-            can be used to control malaria, by effectively preventing mosquitoes from becoming
-            infected with  *Plasmodium* parasites.
-
-    .. _Eckhoff, Malaria Journal 2011, 10:303: http://www.malariajournal.com/content/10/1/303
-
-.. only:: hiv
-
-    .. _glossary-hiv:
-
-    HIV terms
-    =========
-
-    The following terms are used to describe the biological processes involved in HIV and other
-    sexually-transmitted infectious diseases.
-
-    .. glossary::
-
-        coital dilution
-            The reduction in the number of sexual acts per partner when an additional, concurrent partner
-            is added. Concurrency is defined as having two or more sexual partnerships overlapping in time.
-
-
-.. only:: tb
-
-    .. _glossary-tb:
-
-    Tuberculosis terms
-    ==================
-
-    TBD

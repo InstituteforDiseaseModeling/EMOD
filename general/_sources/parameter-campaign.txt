@@ -13,11 +13,11 @@ name of the campaign file.
   The **Outbreak** must be the last event in the campaign file or none of the interventions
   will take place.
 
-|EMOD_s| supports a variety of supported campaign interventions, each of which are specified with
-the parameter "class". Each intervention contains multiple parameters used to configure that
-specific event. For example, the distribution of bednets behaves differently in the model than does
-the use of larvicides.  It is therefore important to ensure that interventions are configured
-correctly and applied to the appropriate level target (individual versus node).
+|EMOD_s| supports a variety of supported campaign interventions. It is worth noting that each
+intervention contains multiple parameters used to configure that specific event. For example, the
+distribution of bednets behaves differently in the model than does the use of larvicides.  It is
+therefore important to ensure that interventions are configured correctly and applied to the
+appropriate level target (individual versus node).
 
 This framework enables rigorous testing of possible control strategies to determine which events or
 combination of events will best aid in the elimination of disease for specific geographic locations.
@@ -58,10 +58,6 @@ combination of events will best aid in the elimination of disease for specific g
 
 .. really annoying limitation of the contents directive is that it will only include stuff that isn't
 .. conditionalized using the only directive
-
-.. raw:: html
-
-    <button class="collapse-table-button btn btn-info">Collapse all parameter tables</button>
 
 .. only:: generic
 
@@ -200,12 +196,6 @@ must configure all required parameters.
         "Use_Defaults": 1
     }
 
-.. when I add the intro paragraphs to this topic, combine the dummy example in the individual sections
-.. into a single larger example that contains the events array, event coordinator, and nodeset_config
-.. so it is more clear how these pieces fit together. I don't think having these all broken up with
-.. dummy parameter names makes it very clear. Additionally, may of the parameters in the event
-.. setup are not in tables.
-
 .. _ec-campaignevent:
 
 Campaign event
@@ -228,12 +218,6 @@ distributed (**Nodeset_Config**). The event coordinator is a nested JSON object 
         "Event_Coordinator_Config": {
         }
     }
-
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
 
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
@@ -259,17 +243,10 @@ intervention is a nested JSON object in **Intervention_Config**.
         }
     }
 
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
-
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
     :file: ../csv/general-ec-standardintervention.csv
-
 
 .. _ec-nodesetconfig:
 
@@ -282,14 +259,12 @@ NodeSetAll
 ~~~~~~~~~~
 
 If you are running a simulation that is in a single location (node) or you want the intervention to
-be distributed in all of the nodes, use **NodeSetAll**. There are no additional parameters.
+be distributed in all of the nodes, use **NodeSetAll**.
 
 .. code-block:: json
 
     {
-        "Nodeset_Config": {
-            "class": "NodeSetAll"
-        }
+        "Nodeset_Config": "NodeSetAll"
     }
 
 NodeSetNodeList
@@ -297,34 +272,20 @@ NodeSetNodeList
 
 The intervention is distributed to nodes in the intervention list.
 
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
-
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
     :file: ../csv/general-ec-nodesetnodelist.csv
-
 
 NodeSetPolygon
 ~~~~~~~~~~~~~~
 
 The intervention is distributed in nodes within the specified polygon.
 
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
-
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
     :file: ../csv/general-ec-nodesetpolygon.csv
-
 
 .. _iv-interventions:
 
@@ -336,18 +297,10 @@ Interventions
     Commonly used vector-control interventions
     ------------------------------------------
 
-
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
-        :header: "Name", "Intervention level", "Target life stage", "Target biting preference", "Target biting location", "Effect", "Notes"
+        :header: "Name", "Intervention Level", "Target Life Stage", "Target Biting Preference", "Target Biting Location", "Effect", "Notes"
         :widths: 10, 10, 10, 10, 10, 10, 40
         :file: ../csv/malaria_interventions.csv
-
 
 .. taken from Jaline's wiki page,
 .. https://wiki.idmod.org/pages/viewpage.action?spaceKey=EMOD&postingDay=2016%2F7%2F15&title=Vector+control+interventions+in+DTK
@@ -359,13 +312,6 @@ Interventions
 
     AnimalFeedKill
     --------------
-
-
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
 
     .. csv-table::
         :header:  Parameter, Data type, Minimum, Maximum, Default, Description, Example
@@ -390,18 +336,10 @@ Interventions
 
     .. eventually the example above should be captured in the DB
 
-
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/malaria-iv-antimalarialdrug.csv
-
 
 .. only:: vector or training
 
@@ -409,13 +347,6 @@ Interventions
 
     ArtificialDiet
     --------------
-
-
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
 
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
@@ -427,29 +358,15 @@ Interventions
     ArtificialDietHousingModification
     ---------------------------------
 
-
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-artificialdiethousingmodification.csv
 
-
 .. _iv-birthtriggerediv:
 
 BirthTriggeredIv
 ----------------
-
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
 
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
@@ -461,12 +378,6 @@ BirthTriggeredIv
 BroadcastEvent
 --------------
 
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
-
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
@@ -477,34 +388,20 @@ BroadcastEvent
 DelayedIntervention
 -------------------
 
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
-
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
     :file: ../csv/general-iv-delayedintervention.csv
-
 
 .. _iv-hsbupdateable:
 
 HealthSeekingBehaviorUpdateable
 -------------------------------
 
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
-
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
     :file: ../csv/general-iv-healthseekingbehaviorupdateable.csv
-
 
 .. only:: vector or training
 
@@ -513,85 +410,50 @@ HealthSeekingBehaviorUpdateable
     HumanHostSeekingTrap
     --------------------
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-humanhostseekingtrap.csv
-
 
     .. _iv-insectkillingfence:
 
     InsectKillingFence
     ------------------
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-insectkillingfence.csv
-
 
     .. _iv-insectkillingfencehousingmod:
 
     InsectKillingFenceHousingModification
     -------------------------------------
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-insectkillingfencehousingmodification.csv
-
 
     .. _iv-interpolatedmap:
 
     InterpolatedValueMap
     --------------------
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-interpolatedmap.csv
-
 
     .. _iv-irshousingmod:
 
     IRSHousingModification
     ----------------------
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-irshousingmodification.csv
-
 
 .. only:: malaria or training
 
@@ -600,17 +462,10 @@ HealthSeekingBehaviorUpdateable
     InputEIR
     --------
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/malaria-iv-inputeir.csv
-
 
 .. Another bug where this ref link won't without explicit link text. :ref:`IVCalendar <iv-ivcalendar>`
 
@@ -620,17 +475,10 @@ IVCalendar
 
 .. _iv-ivcalendar:
 
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
-
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
     :file: ../csv/general-iv-ivcalendar.csv
-
 
 .. only:: malaria or training
 
@@ -639,17 +487,10 @@ IVCalendar
     Ivermectin
     ----------
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/malaria-iv-ivermectin.csv
-
 
 .. only:: vector or training
 
@@ -658,17 +499,10 @@ IVCalendar
     Larvicides
     ----------
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-larvicides.csv
-
 
 .. only:: malaria or training
 
@@ -677,17 +511,10 @@ IVCalendar
     MalariaChallenge
     ----------------
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/malaria-iv-malariachallenge.csv
-
 
 .. only:: vector or training
 
@@ -696,17 +523,10 @@ IVCalendar
     MosquitoRelease
     ---------------
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-mosquitorelease.csv
-
 
 .. Another bug where this ref link won't work before the heading so needs explicit link text. :ref:`MultiInterventionDistributor <iv-multiinterventiondistributor>`
 
@@ -716,28 +536,15 @@ MultiInterventionDistributor
 
 .. _iv-multiinterventiondistributor:
 
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
-
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
     :file: ../csv/general-iv-multiinterventiondistributor.csv
 
-
 .. _iv-nodelevelhealthtriggerediv:
 
 NodeLevelHealthTriggeredIV
 --------------------------
-
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
 
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
@@ -748,35 +555,19 @@ NodeLevelHealthTriggeredIV
 
 Outbreak
 --------
-
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
-
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
     :file: ../csv/general-iv-outbreak.csv
 
-
 .. _iv-outbreakindividual:
 
 OutbreakIndividual
 ------------------
-
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
-
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
     :file: ../csv/general-iv-outbreakindividual.csv
-
 
 .. only:: vector or training
 
@@ -784,36 +575,20 @@ OutbreakIndividual
 
     OutdoorRestKill
     ---------------
-
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-outdoorrestkill.csv
 
 
-
     .. _iv-ovipositiontrap:
 
     OvipositionTrap
     ------------------
-
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-ovipositiontrap.csv
-
 
 
 PMTCT
@@ -821,29 +596,15 @@ PMTCT
 
 .. _iv-pmtct:
 
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
-
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
     :file: ../csv/general-iv-pmtct.csv
 
-
 .. _iv-propertyvaluechanger:
 
 PropertyValueChanger
 --------------------
-
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
-
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
@@ -857,17 +618,10 @@ PropertyValueChanger
     RTSSVaccine
     -----------
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/malaria-iv-rtssvaccine.csv
-
 
 .. only:: vector or training
 
@@ -876,34 +630,19 @@ PropertyValueChanger
     ScaleLarvalHabitat
     ------------------
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-scalelarvalhabitat.csv
 
-
     .. _iv-screeninghousingmod:
 
     ScreeningHousingModification
     ----------------------------
-
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-screeninghousingmodification.csv
-
 
     .. _iv-simplebednet:
 
@@ -915,17 +654,10 @@ PropertyValueChanger
     .. literalinclude:: ../json/vm5-event-coordinator1.json
         :language: JSON
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-simplebednet.csv
-
 
 .. Another bug where this ref link won't work before the heading so needs explicit link text.  Use :ref:`SimpleDiagnostic <iv-simplediagnostic>`
 
@@ -934,28 +666,15 @@ SimpleDiagnostic
 
 .. _iv-simplediagnostic:
 
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
-
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
     :file: ../csv/general-iv-simplediagnostic.csv
 
-
 .. _iv-simplehealthseekingbehavior:
 
 SimpleHealthSeekingBehavior
 ---------------------------
-
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
 
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
@@ -970,17 +689,10 @@ SimpleHealthSeekingBehavior
     SimpleIndividualRepellent
     -------------------------
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-simpleindividualrepellent.csv
-
 
 .. Another bug where this ref link won't without explicit link text. :ref:`SimpleVaccine <iv-simplevaccine>`
 
@@ -994,17 +706,10 @@ The following example provides the syntax for configuring a **SimpleVaccine** ca
 .. literalinclude:: ../json/simplevaccine.json
   :language: JSON
 
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
-
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
     :file: ../csv/general-iv-simplevaccine.csv
-
 
 .. only:: vector or training
 
@@ -1013,17 +718,10 @@ The following example provides the syntax for configuring a **SimpleVaccine** ca
     SpaceSpraying
     -------------
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-spacespraying.csv
-
 
 
     .. _iv-spatialrepellent:
@@ -1031,51 +729,30 @@ The following example provides the syntax for configuring a **SimpleVaccine** ca
     SpatialRepellent
     ----------------
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-spatialrepellent.csv
-
 
     .. _iv-spatialrepellenthousingmod:
 
     SpatialRepellentHousingModification
     -----------------------------------
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-spatialrepellenthousingmodification.csv
-
 
     .. _iv-sugartrap:
 
     Sugartrap
     ---------
 
-    .. raw:: html
-
-        <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-    .. rst-class:: toggle-table
-
     .. csv-table::
         :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
         :widths: 10, 5, 5, 5, 5, 20, 5
         :file: ../csv/vector-iv-sugartrap.csv
-
 
 .. Another bug where this ref link won't without explicit link text. :ref:`Waning effect <iv-waningeffect>`
 
@@ -1110,56 +787,29 @@ sections for the supported parameters.
 WaningEffectBox class
 ~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
-
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
     :file: ../csv/generic-iv-waningeffectbox.csv
 
-
 WaningEffectBoxExponential class
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
 
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
     :file: ../csv/generic-iv-waningeffectboxexponential.csv
 
-
 WaningEffectConstant class
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
 
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
     :file: ../csv/generic-iv-waningeffectconstant.csv
 
-
 WaningEffectExponential class
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
 
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
@@ -1169,26 +819,13 @@ WaningEffectExponential class
 WaningEffectLinear class
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
-
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
     :widths: 10, 5, 5, 5, 5, 20, 5
     :file: ../csv/generic-iv-waningeffectmaplinear.csv
 
-
 WaningEffectPiecewise class
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-    <button class="toggle-button btn btn-info">Toggle parameter table</button>
-
-.. rst-class:: toggle-table
 
 .. csv-table::
     :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
