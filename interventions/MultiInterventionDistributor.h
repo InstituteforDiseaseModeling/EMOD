@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -25,15 +25,13 @@ namespace Kernel
         bool Configure( const Configuration* config );
 
         // IDistributableIntervention
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
-        virtual void SetContextTo(IIndividualHumanContext *context);
-        virtual void Update(float dt);
-        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO );
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+        virtual void Update(float dt) override;
+        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO ) override;
 
     protected:
         virtual void Expire();
 
-        IIndividualHumanContext *parent;
-        IndividualInterventionConfig intervention_list; // TBD
+        IndividualInterventionConfig intervention_list;
     };
 }

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -22,7 +22,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IHIVInterventionsContainer.h"
 #include "SimulationEnums.h"
 
-static const char* _module = "ReportHIVART";
+SETUP_LOGGING( "ReportHIVART" )
 
 namespace Kernel
 {
@@ -36,8 +36,8 @@ namespace Kernel
         , simulation( sim )
     {
         // default constructor listens to nothing
-        eventTriggerList.push_back( "StartedART" );
-        eventTriggerList.push_back( "StoppedART" );
+        eventTriggerList.push_back( EventTrigger::StartedART );
+        eventTriggerList.push_back( EventTrigger::StoppedART );
     }
 
     ReportHIVART::~ReportHIVART()
@@ -58,7 +58,7 @@ namespace Kernel
         return header.str();
     }
 
-    bool ReportHIVART::notifyOnEvent(IIndividualHumanEventContext *context, const std::string& StateChange)
+    bool ReportHIVART::notifyOnEvent( IIndividualHumanEventContext *context, const EventTrigger& trigger )
     {
         /*IIndividualHumanHIV * iindividual_hiv = nullptr;
         if (s_OK != context->QueryInterface(GET_IID(IIndividualHumanHIV), (void**)&iindividual_hiv) )
@@ -81,7 +81,7 @@ namespace Kernel
         float            cd4count = med_parent->LastRecordedCD4();
 
         bool startingART = 1;
-        if( StateChange == "StoppedART" )
+        if( trigger == EventTrigger::StoppedART )
         {
             startingART = 0;
         }

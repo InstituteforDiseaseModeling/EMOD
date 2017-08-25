@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,7 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventCoordinator.h"
 #include "InterventionFactory.h"
 
-static const char * _module = "NodeEventCoordinator";
+SETUP_LOGGING( "NodeEventCoordinator" )
 
 namespace Kernel
 {
@@ -31,7 +31,7 @@ namespace Kernel
         bool configured = JsonConfigurable::Configure( inputJson );
         if( configured && !JsonConfigurable::_dryrun )
         {
-            validateInterventionConfig( intervention_config._json );
+            validateInterventionConfig( intervention_config._json, inputJson->GetDataLocation() );
         }
         JsonConfigurable::_useDefaults = reset;
         return configured;
@@ -47,7 +47,7 @@ namespace Kernel
         INodeDistributableIntervention *ndi = nullptr;
         for(auto *nec : cached_nodes)
         {
-            auto tmp_config = Configuration::CopyFromElement( intervention_config._json );
+            auto tmp_config = Configuration::CopyFromElement( intervention_config._json, "campaign" );
             ndi = InterventionFactory::getInstance()->CreateNDIIntervention( tmp_config );
             delete tmp_config;
             tmp_config = nullptr;

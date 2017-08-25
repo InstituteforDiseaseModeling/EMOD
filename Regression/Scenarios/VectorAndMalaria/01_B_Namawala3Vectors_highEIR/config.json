@@ -27,7 +27,7 @@
         "Climate_Model": "CLIMATE_BY_DATA", 
         "Climate_Update_Resolution": "CLIMATE_UPDATE_DAY", 
         "Config_Name": "VectorAndMalaria_1B_Namawala3Vectors_highEIR", 
-        "Custom_Reports_Filename": "NoCustomReports", 
+        "Custom_Reports_Filename": "", 
         "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER", 
         "Default_Geography_Initial_Node_Population": 1000, 
         "Default_Geography_Torus_Size": 10, 
@@ -35,18 +35,21 @@
             "Namawala_single_node_demographics.json"
         ], 
         "Egg_Hatch_Delay_Distribution": "NO_DELAY", 
+        "Egg_Hatch_Density_Dependence": "NO_DENSITY_DEPENDENCE", 
         "Egg_Saturation_At_Oviposition": "SATURATION_AT_OVIPOSITION", 
         "Enable_Aging": 1, 
         "Enable_Birth": 1, 
         "Enable_Climate_Stochasticity": 1, 
         "Enable_Default_Reporting": 1, 
         "Enable_Default_Shedding_Function": 1, 
+        "Enable_Delayed_Hatching_When_Habitat_Dries_Up": 0, 
         "Enable_Demographics_Birth": 0, 
         "Enable_Demographics_Builtin": 0, 
         "Enable_Demographics_Gender": 1, 
         "Enable_Demographics_Other": 0, 
         "Enable_Demographics_Reporting": 1, 
-        "Enable_Disease_Mortality": 0, 
+        "Enable_Drought_Egg_Hatch_Delay": 0, 
+        "Enable_Egg_Mortality": 0, 
         "Enable_Heterogeneous_Intranode_Transmission": 0, 
         "Enable_Immune_Decay": 1, 
         "Enable_Immunity": 1, 
@@ -56,7 +59,7 @@
         "Enable_Rainfall_Stochasticity": 1, 
         "Enable_Spatial_Output": 0, 
         "Enable_Superinfection": 1, 
-        "Enable_Temperature_Dependent_Feeding_Cycle": 0, 
+        "Enable_Temperature_Dependent_Egg_Hatching": 0, 
         "Enable_Vector_Aging": 0, 
         "Enable_Vector_Migration": 0, 
         "Enable_Vector_Mortality": 1, 
@@ -89,6 +92,8 @@
         "Max_Individual_Infections": 5, 
         "Max_Node_Population_Samples": 40, 
         "Mean_Egg_Hatch_Delay": 0, 
+        "Memory_Usage_Halting_Threshold_Working_Set_MB": 4000, 
+        "Memory_Usage_Warning_Threshold_Working_Set_MB": 3500, 
         "Migration_Model": "NO_MIGRATION", 
         "Minimum_Adult_Age_Years": 15, 
         "Mortality_Blocking_Immunity_Decay_Rate": 0.001, 
@@ -126,6 +131,7 @@
         "Simulation_Type": "VECTOR_SIM", 
         "Start_Time": 0, 
         "Susceptibility_Scale_Type": "CONSTANT_SUSCEPTIBILITY", 
+        "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE", 
         "Temporary_Habitat_Decay_Factor": 0.05, 
         "Transmission_Blocking_Immunity_Decay_Rate": 0.01, 
         "Transmission_Blocking_Immunity_Duration_Before_Decay": 90, 
@@ -155,6 +161,7 @@
                 "Larval_Habitat_Types": {
                     "TEMPORARY_RAINFALL": 11250000000
                 }, 
+                "Nighttime_Feeding_Fraction": 1, 
                 "Transmission_Rate": 0.5
             }, 
             "farauti": {
@@ -175,6 +182,7 @@
                 "Larval_Habitat_Types": {
                     "BRACKISH_SWAMP": 10000000000
                 }, 
+                "Nighttime_Feeding_Fraction": 1, 
                 "Transmission_Rate": 0.8
             }, 
             "funestus": {
@@ -195,6 +203,7 @@
                 "Larval_Habitat_Types": {
                     "WATER_VEGETATION": 600000000
                 }, 
+                "Nighttime_Feeding_Fraction": 1, 
                 "Transmission_Rate": 0.5
             }, 
             "gambiae": {
@@ -215,6 +224,7 @@
                 "Larval_Habitat_Types": {
                     "TEMPORARY_RAINFALL": 1250000000
                 }, 
+                "Nighttime_Feeding_Fraction": 1, 
                 "Transmission_Rate": 0.5
             }
         }, 

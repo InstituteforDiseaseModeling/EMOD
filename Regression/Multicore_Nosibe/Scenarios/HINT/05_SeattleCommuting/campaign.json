@@ -12,6 +12,7 @@
                     "Event_Name": "Outbreak (not used)",
                     "Genome": 0,
                     "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0,
                     "outbreak_source": "ImportCases"
                 },
                 "Number_Repetitions": 1,

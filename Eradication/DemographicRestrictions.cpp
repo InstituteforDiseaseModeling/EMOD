@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Node.h"
 #include "IIndividualHuman.h"
 
-static const char * _module = "DemographicRestrictions";
+SETUP_LOGGING( "DemographicRestrictions" )
 
 #define DEFAULT_DEMOGRAPHIC_COVERAGE (1.0)
 
@@ -22,11 +22,13 @@ namespace Kernel
 {
     DemographicRestrictions::DemographicRestrictions()
     : allow_age_restrictions(true)
-    , demographic_coverage(0)
+    , demographic_coverage(DEFAULT_DEMOGRAPHIC_COVERAGE)
     , default_target_demographic(TargetDemographicType::Everyone)
     , target_demographic(default_target_demographic)
-    , target_age_min(0)
-    , target_age_max(0)
+    , target_age_min_years(0)
+    , target_age_max_years(FLT_MAX)
+    , target_age_min_days(0)
+    , target_age_max_days(FLT_MAX)
     , target_gender(TargetGender::All)
     , property_restrictions_set()
     , property_restrictions()
@@ -36,11 +38,13 @@ namespace Kernel
 
     DemographicRestrictions::DemographicRestrictions( bool age_restrictions, TargetDemographicType::Enum defaultTargetDemographic )
     : allow_age_restrictions(age_restrictions)
-    , demographic_coverage(0)
+    , demographic_coverage(DEFAULT_DEMOGRAPHIC_COVERAGE)
     , default_target_demographic(defaultTargetDemographic)
     , target_demographic(default_target_demographic)
-    , target_age_min(0)
-    , target_age_max(0)
+    , target_age_min_years(0)
+    , target_age_max_years(FLT_MAX)
+    , target_age_min_days(0)
+    , target_age_max_days(FLT_MAX)
     , target_gender(TargetGender::All)
     , property_restrictions_set()
     , property_restrictions()
@@ -86,8 +90,9 @@ namespace Kernel
                 throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
             }
 
-            pParent->initConfigTypeMap( "Target_Age_Min", &target_age_min, Target_Age_Min_DESC_TEXT, 0.0f, FLT_MAX,    0.0f, "Target_Demographic", "ExplicitAgeRanges,ExplicitAgeRangesAndGender" );
-            pParent->initConfigTypeMap( "Target_Age_Max", &target_age_max, Target_Age_Max_DESC_TEXT, 0.0f, FLT_MAX, FLT_MAX, "Target_Demographic", "ExplicitAgeRanges,ExplicitAgeRangesAndGender" );
+            pParent->initConfigTypeMap( "Target_Age_Min", &target_age_min_years, Target_Age_Min_DESC_TEXT, 0.0f, FLT_MAX,    0.0f, "Target_Demographic", "ExplicitAgeRanges,ExplicitAgeRangesAndGender" );
+            pParent->initConfigTypeMap( "Target_Age_Max", &target_age_max_years, Target_Age_Max_DESC_TEXT, 0.0f, FLT_MAX, FLT_MAX, "Target_Demographic", "ExplicitAgeRanges,ExplicitAgeRangesAndGender" );
+
             if( (target_demographic == TargetDemographicType::ExplicitAgeRangesAndGender) || JsonConfigurable::_dryrun)
             {
                 pParent->initConfig( "Target_Gender", target_gender, inputJson, MetadataDescriptor::Enum("target_gender", Target_Gender_DESC_TEXT, MDD_ENUM_ARGS(TargetGender)) ); 
@@ -99,7 +104,7 @@ namespace Kernel
         }
 
         // xpath-y way of saying that the possible values for prop restrictions comes from demographics file IP's.
-        property_restrictions_set.value_source = "<demographics>::Defaults.Individual_Properties.*.Property.<keys>:<demographics>::Defaults.Individual_Properties.*.Value.<keys>"; 
+        property_restrictions_set.value_source = IPKey::GetConstrainedStringConstraintKeyValue(); 
         pParent->initConfigTypeMap("Property_Restrictions", &property_restrictions_set, Property_Restriction_DESC_TEXT /*, "Intervention_Config.*.iv_type", "IndividualTargeted"*/ );
 
         pParent->initConfigComplexType("Property_Restrictions_Within_Node", &property_restrictions, Property_Restriction_DESC_TEXT /*, "Intervention_Config.*.iv_type", "IndividualTargeted"*/ );
@@ -109,6 +114,13 @@ namespace Kernel
 
     void DemographicRestrictions::CheckConfiguration()
     {
+        if( target_age_min_years >= target_age_max_years )
+        {
+            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Target_Age_Min", target_age_min_years, "Target_Age_Max", target_age_max_years, "Max must be > than Min" );
+        }
+        target_age_min_days = target_age_min_years * DAYSPERYEAR;
+        target_age_max_days = target_age_max_years * DAYSPERYEAR;
+
         if( property_restrictions_set.size() > 0 )
         {
             if( property_restrictions.Size() > 0 )
@@ -182,16 +194,16 @@ namespace Kernel
                 throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
             }
 
-            if( pIndividual->GetAge() < target_age_min * DAYSPERYEAR )
+            if( pIndividual->GetAge() < target_age_min_days )
             {
                 LOG_DEBUG_F("Individual %lu not given intervention because too young (age=%f) for intervention min age (%f)\n", 
-                            pIndividual->GetSuid().data, pIndividual->GetAge(), target_age_min* DAYSPERYEAR);
+                            pIndividual->GetSuid().data, pIndividual->GetAge(), target_age_min_days);
                 retQualifies = false;
             }
-            else if( pIndividual->GetAge() > target_age_max * DAYSPERYEAR )
+            else if( pIndividual->GetAge() > target_age_max_days )
             {
                 LOG_DEBUG_F("Individual %lu not given intervention because too old (age=%f) for intervention max age (%f)\n", 
-                    pIndividual->GetSuid().data, pIndividual->GetAge(), target_age_max* DAYSPERYEAR);
+                    pIndividual->GetSuid().data, pIndividual->GetAge(), target_age_max_days);
                 retQualifies = false;
             }
 
@@ -223,7 +235,7 @@ namespace Kernel
 
         if( retQualifies && (property_restrictions.Size() > 0) )
         {
-            retQualifies = property_restrictions.Qualifies( pIndividual );
+            retQualifies = property_restrictions.Qualifies( *(const_cast<IIndividualHumanEventContext*>(pIndividual)->GetProperties()) );
         }
         else
         {
@@ -255,62 +267,16 @@ namespace Kernel
 
     float DemographicRestrictions::GetMinimumAge() const
     {
-        return target_age_min;
+        return target_age_min_years;
     }
 
     float DemographicRestrictions::GetMaximumAge() const
     {
-        return target_age_max;
+        return target_age_max_years;
     }
 
     std::string DemographicRestrictions::GetPropertyRestrictionsAsString() const
     {
         return property_restrictions.GetAsString();
     }
-
-#if USE_JSON_SERIALIZATION
-
-    // IJsonSerializable Interfaces
-    void DemographicRestrictions::JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const
-    {
-        root->BeginObject();
-
-        root->Insert("demographic_coverage", demographic_coverage);
-        root->Insert("target_demographic", target_demographic);
-        root->Insert("target_age_min", target_age_min);
-        root->Insert("target_age_max", target_age_max);
-        root->Insert("target_gender", target_gender);
-
-        root->Insert("property_restrictions_map");
-        root->BeginArray();
-        //for (auto& restriction : property_restrictions)
-        //{
-        //}
-        root->EndArray();
-
-        root->EndObject();
-    }
-
-    void DemographicRestrictions::JDeserialize( IJsonObjectAdapter* root, JSerializer* helper )
-    {
-    }
-#endif
 }
-
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(Kernel::DemographicRestrictions);
-namespace Kernel
-{
-
-    template<class Archive>
-    void serialize(Archive &ar, DemographicRestrictions &ec, const unsigned int v)
-    {
-        ar & ec.demographic_coverage;
-        ar & ec.property_restrictions_map;
-        ar & ec.target_demographic;
-        ar & ec.target_age_min;
-        ar & ec.target_age_max;
-        ar & ec.target_gender;
-    }
-}
-#endif

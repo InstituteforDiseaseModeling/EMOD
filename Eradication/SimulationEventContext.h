@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -20,6 +20,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "suids.hpp"
 #include "RANDOM.h"
 #include "IdmDateTime.h"
+#include "INodeContext.h"
 
 namespace Kernel
 {
@@ -27,7 +28,7 @@ namespace Kernel
     struct IEventCoordinator;
     class CampaignEvent;
 
-    struct ISimulationEventContext : public ISupports
+    struct IDMAPI ISimulationEventContext : public ISupports
     {
         // node access
         typedef std::function<bool (suids::suid, INodeEventContext*)> node_visit_function_t; // return true if node was visited
@@ -82,9 +83,7 @@ namespace Kernel
 
         // host implementation
         virtual void Update(float dt);
-
-        void LoadCampaignFromFile( const std::string& campaignfile );
-
+        void LoadCampaignFromFile(const std::string & campaignfile, const std::vector<ExternalNodeId_t>& nodeIds_demographics);
         std::string campaign_filename;
 
     protected:

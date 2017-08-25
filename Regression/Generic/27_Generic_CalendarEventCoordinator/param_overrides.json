@@ -1,0 +1,24 @@
+{
+     "Default_Config_Path": "defaults/generic_default_config.json", 
+     "parameters": {
+          "DEMOGRAPHICS": {
+              "Birth_Rate_Dependence": "POPULATION_DEP_RATE", 
+              "Death_Rate_Dependence" : "NONDISEASE_MORTALITY_OFF",
+              "Enable_Vital_Dynamics": 0, 
+              "Sample_Rate_Birth": 1
+          },
+          "DISEASE": {
+              "Base_Incubation_Period": 0, 
+              "Base_Infectious_Period": 4, 
+              "Base_Infectivity": 0.0001, 
+              "Enable_Immune_Decay": 0
+          },
+          "PRIMARY": {
+               "Config_Name": "27_Generic_CalendarEventCoordinator", 
+               "Demographics_Filenames": ["../00_Generic_Default/demographics.json"], 
+               "Geography": "", 
+               "Run_Number": 1, 
+               "Simulation_Duration": 1500
+          }
+     }
+}

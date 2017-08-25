@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,11 +14,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "AntiTBDrug.h"
 
 #include "Contexts.h"                  // for IIndividualHumanContext, IIndividualHumanInterventionsContext
-#include "Debug.h"                  // for IIndividualHumanContext, IIndividualHumanInterventionsContext
+#include "Debug.h"                     // for IIndividualHumanContext, IIndividualHumanInterventionsContext
 #include "TBInterventionsContainer.h"  // for ITBDrugEffectsApply methods
-#include "NodeEventContext.h"    // for INodeEventContext (ICampaignCostObserver)
+#include "NodeEventContext.h"          // for INodeEventContext (ICampaignCostObserver)
+#include "EventTrigger.h"
 
-static const char* _module = "AntiTBDrug";
+SETUP_LOGGING( "AntiTBDrug" )
 
 namespace Kernel
 {
@@ -37,7 +38,7 @@ namespace Kernel
     , itbda(nullptr)
     , m_pCCO(nullptr)
     {
-        initSimTypes( 1, "TB_SIM" );
+        initSimTypes( 2, "TB_SIM", "TBHIV_SIM" );
     }
 
 
@@ -138,7 +139,7 @@ namespace Kernel
 
         //Update the person's tx naive flag to false and broadcast that they started the drugregimen in the TBInterventionsContainer
         release_assert(itbda);
-        itbda->UpdateTreatmentStatus(IndividualEventTriggerType::TBStartDrugRegimen );
+        itbda->UpdateTreatmentStatus( EventTrigger::TBStartDrugRegimen );
     }
 
     void AntiTBDrug::ApplyEffects()
@@ -163,7 +164,7 @@ namespace Kernel
 
         //Update the person's failed flag to false in the TBInterventionsContainer
         release_assert(itbda);
-        itbda->UpdateTreatmentStatus( IndividualEventTriggerType::TBStopDrugRegimen );
+        itbda->UpdateTreatmentStatus( EventTrigger::TBStopDrugRegimen );
 
         // notify campaign event observer
         if (m_pCCO != nullptr)
@@ -185,25 +186,5 @@ namespace Kernel
         ar.labelElement("TB_drug_mortality_rate") & drug.TB_drug_mortality_rate;
     }
 }
-
-#if 0
-// clorton TODO - these fields don't match fields above.
-BOOST_CLASS_EXPORT(Kernel::AntiTBDrug)
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, AntiTBDrug& drug, const unsigned int v)
-    {
-        ar & drug.TB_drug_inactivation_rate;
-        ar & drug.TB_drug_clearance_rate;
-        ar & drug.drug_type;
-        ar & drug.TB_drug_resistance_rate;
-        ar & drug.TB_drug_relapse_rate;
-        ar & drug.TB_drug_mortality_rate;
-        ar & drug.current_reducedtransmit;
-
-        ar & boost::serialization::base_object<GenericDrug>(drug);
-    }
-}
-#endif
 
 #endif // ENABLE_TB

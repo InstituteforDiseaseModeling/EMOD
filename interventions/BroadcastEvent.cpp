@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 
-static const char * _module = "BroadcastEvent";
+SETUP_LOGGING( "BroadcastEvent" )
 
 namespace Kernel
 {
@@ -33,9 +33,9 @@ namespace Kernel
     {
         initConfigTypeMap( "Broadcast_Event", &broadcast_event, HIV_Broadcast_Event_DESC_TEXT );
 
-        bool ret = JsonConfigurable::Configure( inputJson );
+        bool ret = BaseIntervention::Configure( inputJson );
 
-        if( !JsonConfigurable::_dryrun && ((broadcast_event == NO_TRIGGER_STR) || broadcast_event.IsUninitialized()) )
+        if( !JsonConfigurable::_dryrun && broadcast_event.IsUninitialized() )
         {
             LOG_WARN_F("BroadcastEvent was configured with NoTrigger (or uninitialized) as the Broadcast_Event.  This special event will not be broadcast.\n");
         }
@@ -43,19 +43,22 @@ namespace Kernel
     }
 
     BroadcastEvent::BroadcastEvent()
-    : broadcast_event()
+    : BaseIntervention()
+    , broadcast_event()
     {
     }
 
     BroadcastEvent::BroadcastEvent( const BroadcastEvent& master )
-        :BaseIntervention( master )
+        : BaseIntervention( master )
     {
         broadcast_event = master.broadcast_event;
     }
 
     void BroadcastEvent::Update( float dt )
     {
-        if( (broadcast_event != NO_TRIGGER_STR) && !broadcast_event.IsUninitialized() )
+        if( !BaseIntervention::UpdateIndividualsInterventionStatus() ) return;
+
+        if( !broadcast_event.IsUninitialized() )
         {
             // broadcast the event
             INodeTriggeredInterventionConsumer* broadcaster = nullptr;
@@ -63,7 +66,7 @@ namespace Kernel
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
             }
-            broadcaster->TriggerNodeEventObserversByString( parent->GetEventContext(), broadcast_event );
+            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), broadcast_event );
         }
 
         // expire the intervention

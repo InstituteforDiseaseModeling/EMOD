@@ -7,8 +7,9 @@ import pylab
 from math import ceil, sqrt
 
 def plotOneFromDisk( label = "" ):
-    ref_sim = open( sys.argv[1] )
-    ref_data = json.loads( ref_sim.read() )
+
+    with open( sys.argv[1] ) as ref_sim:
+        ref_data = json.loads( ref_sim.read() )
 
     num_chans = ref_data["Header"]["Channels"]
 

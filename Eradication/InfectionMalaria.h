@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,16 +21,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 namespace Kernel
 {
     struct IMalariaDrugEffects;
-
-    class IInfectionMalaria : public ISupports
-    {
-    public:
-        virtual int64_t get_MaleGametocytes(int stage) = 0;
-        virtual void    reset_MaleGametocytes(int stage) = 0;
-
-        virtual int64_t get_FemaleGametocytes(int stage) = 0;
-        virtual void    reset_FemaleGametocytes(int stage) = 0;
-    };
 
     class InfectionMalariaConfig : public InfectionVectorConfig
     {
@@ -71,7 +61,7 @@ namespace Kernel
         virtual ~InfectionMalaria();
 
         // TODO - becomes part of initialize?
-        virtual void SetParameters(Kernel::StrainIdentity* _infstrain=nullptr, int incubation_period_override = -1 ) override;
+        virtual void SetParameters(IStrainIdentity* _infstrain=nullptr, int incubation_period_override = -1 ) override;
         virtual void InitInfectionImmunology(ISusceptibilityContext* _immunity) override;
 
         virtual void Update(float, ISusceptibilityContext* = nullptr) override;
@@ -102,11 +92,12 @@ namespace Kernel
         // Process all infected hepatocytes
         void malariaProcessHepatocytes(float = 0, IMalariaSusceptibility * = nullptr);
 
-        virtual int64_t get_MaleGametocytes(int stage) override;
-        virtual void    reset_MaleGametocytes(int stage) override;
+        virtual int64_t get_MaleGametocytes(int stage) const override;
+        virtual int64_t get_FemaleGametocytes(int stage) const override;
+        virtual void apply_MatureGametocyteKillProbability(float pkill) override;
 
-        virtual int64_t get_FemaleGametocytes(int stage) override;
-        virtual void    reset_FemaleGametocytes(int stage) override;
+        virtual float get_asexual_density() const override;
+        virtual float get_mature_gametocyte_density() const override;
 
         virtual void SetContextTo(IIndividualHumanContext* context) override;
 

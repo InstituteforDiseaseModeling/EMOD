@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,8 +10,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include <iostream>
 #include <queue>
-#include <string>
 #include <iomanip> //setw(), setfill()
+#include <algorithm>
 
 #include "BoostLibWrapper.h"
 #include "FileSystem.h"
@@ -37,14 +37,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #endif // _DLLS_
 #include "ControllerFactory.h"
 
-#include "JsonFullWriter.h"
-#include "snappy.h"
+#include "SerializedPopulation.h"
 
 #pragma warning(disable : 4244)
 
 using namespace Kernel;
 
-static const char * _module = "Controller";
+SETUP_LOGGING( "Controller" )
 
 
 // more static polymorphism that is temporary until we determine why
@@ -110,104 +109,10 @@ bool call_templated_functor_with_sim_type_hack(ControllerExecuteFunctorT &cef)
 #endif
 }
 
-
-
 #include "Instrumentation.h"
 #include "StatusReporter.h"
 
 #include <functional>
-
-//#pragma comment(lib, "Ws2_32.lib")
-
-
-char* GenerateFilename( uint32_t time_step )
-{
-    size_t length = EnvPtr->OutputPath.size() + 32;
-    char* filename = static_cast<char*>(malloc( length ));
-    release_assert( filename );
-#ifdef WIN32
-    sprintf_s( filename, length, "%s\\state-%04d.dtk", EnvPtr->OutputPath.c_str(), time_step );
-#else
-    sprintf( filename, "%s\\state-%04d.dtk", EnvPtr->OutputPath.c_str(), time_step );
-#endif
-
-    return filename;
-}
-
-FILE* OpenFileForWriting( const char* filename )
-{
-    FILE* f = nullptr;
-    bool opened;
-    errno = 0;
-#ifdef WIN32
-    opened = (fopen_s( &f, filename, "wb") == 0);
-#else
-    f = fopen( filename, "wb");
-    opened = (f != nullptr);
-#endif
-
-    if ( !opened )
-    {
-        LOG_ERR_F( "Couldn't open '%s' for writing (%d).\n", filename, errno );
-        // TODO clorton - throw exception here
-        release_assert( opened );
-    }
-
-    return f;
-}
-
-void WriteIdtkFile(const char* data, size_t length, uint32_t time_step, bool compress)
-{
-#if defined(WIN32)
-    char* filename = GenerateFilename( time_step );
-    LOG_INFO_F( "Writing state to '%s'\n", filename );
-    FILE* f = OpenFileForWriting( filename );
-
-    // "IDTK"
-    fwrite( "IDTK", 1, 4, f );
-    // header size/offset to data
-    std::ostringstream temp_stream;
-    std::time_t now = std::time(nullptr);
-    struct tm gmt;
-    gmtime_s( &gmt, &now );
-    char asc_time[256];
-    strftime( asc_time, sizeof asc_time, "%a %b %d %H:%M:%S %Y", &gmt );
-
-    std::string compressed;
-    if ( compress )
-    {
-        snappy::Compress( data, length, &compressed );
-    }
-
-    temp_stream << '{'
-           << "\"metadata\":{"
-           << "\"version\":" << 1 << ','
-           << "\"date\":" << '"' << asc_time << "\","
-           << "\"compressed\":" << (compress ? "true" : "false") << ','
-           << "\"bytecount\":" << (compress ? compressed.size() : length)
-           << '}'
-           << '}';
-    std::string header = temp_stream.str();
-    uint32_t header_size = header.size();
-    fwrite( &header_size, sizeof header_size, 1, f );
-    // header (uncompressed JSON)
-    fwrite( header.c_str(), 1, header_size, f );
-    // data
-    if ( !compress )
-    {
-        fwrite( data, 1, length, f );
-    }
-    else
-    {
-        fwrite( compressed.c_str(), 1, compressed.size(), f );
-    }
-
-    fflush( f );
-    fclose( f );
-
-    free( filename );
-#endif
-}
 
 void StepSimulation(ISimulation* sim, float dt);
 
@@ -226,12 +131,13 @@ void RunSimulation(SimulationT &sim, int steps, float dt)
 {
     LOG_DEBUG( "RunSimulation\n" );
 
-    std::queue< int > serialization_time_steps;
+    std::queue< int32_t > serialization_time_steps;
     if ( CONFIG_PARAMETER_EXISTS(EnvPtr->Config, "Serialization_Time_Steps") )
     {
-        // std::string serialization_time_steps = GET_CONFIG_STRING(EnvPtr->Config, "Serialization_Time_Steps");
-        vector< int > specified_time_steps = GET_CONFIG_VECTOR_INT( EnvPtr->Config, "Serialization_Time_Steps" );
-        for (int time_step : specified_time_steps)
+        vector< int32_t > specified_time_steps = GET_CONFIG_VECTOR_INT( EnvPtr->Config, "Serialization_Time_Steps" );
+        // Sort specified_time_steps in case the user entered the values out of order.
+        std::sort( specified_time_steps.begin(), specified_time_steps.end() );
+        for (int32_t time_step : specified_time_steps)
         {
             serialization_time_steps.push( time_step );
         }
@@ -243,18 +149,23 @@ void RunSimulation(SimulationT &sim, int steps, float dt)
 
     for (int t = 0; t < steps; t++)
     {
-        if ( (serialization_time_steps.size() > 0) && (t == serialization_time_steps.front()) )
+        // Specifying serialization time step 0 means "please serialize the initial state."
+        if ( (t == 0) && (serialization_time_steps.size() > 0) && (serialization_time_steps.front() == t) )
         {
-            IArchive* writer = static_cast<IArchive*>(new JsonFullWriter());
-            ISerializable* serializable = dynamic_cast<ISerializable*>(&sim);
-            (*writer).labelElement( "simulation" ) & serializable;
-//            (*writer).labelElement( "nodes" ); serialize(*writer, nodes);
-            WriteIdtkFile( (*writer).GetBuffer(), (*writer).GetBufferSize(), t, true );
-            delete writer;
+            SerializedState::SaveSerializedSimulation(dynamic_cast<Simulation*>(&sim), t, true);
             serialization_time_steps.pop();
         }
 
         StepSimulation(&sim, dt);
+
+        // Compare against t + 1 so, e.g., a simulation of duration 90 can specify serialization time step 90 to save the final state.
+        int step = t + 1;
+        if ( (serialization_time_steps.size() > 0) && (serialization_time_steps.front() == step) )
+        {
+            // Using step, (t+1), here too.
+            SerializedState::SaveSerializedSimulation(dynamic_cast<Simulation*>(&sim), step, true);
+            serialization_time_steps.pop();
+        }
 
         if (EnvPtr->MPI.Rank == 0)
         {
@@ -363,8 +274,6 @@ bool DefaultController::execute_internal()
 #endif
 #endif
 
-// clorton    std::string state_filename = (boost::format("SimulationStateProc%04d.txt") % EnvPtr->MPI.Rank).str();
-
     if (EnvPtr->MPI.Rank==0) { ostringstream oss; oss << "Beginning Simulation...";  EnvPtr->getStatusReporter()->ReportStatus(oss.str()); }
 
     // populate it
@@ -390,32 +299,9 @@ bool DefaultController::execute_internal()
 #ifndef _DLLS_
         int remaining_steps = simulation_steps;
 
-        int serialization_test_cycles = GET_CONFIGURABLE(SimulationConfig)->serialization_test_cycles;
-
-        int serialization_cycles = 1 + serialization_test_cycles; 
-        for (int k= 0; /*k < serialization_cycles*/ remaining_steps > 0; k++)
+        for (int k= 0; remaining_steps > 0; k++)
         {
-            int serialization_stress_cycles = serialization_test_cycles > 0 ? 1 : 0;
-            for (int j = 0; j < serialization_stress_cycles; j++)
-            {
-                LOG_INFO("Saving Simulation to disk...\n");
-
-// clorton                state_filename = (boost::format("SimulationStateProc%04dCycle%04d.txt") % EnvPtr->MPI.Rank % j).str();
-
-#if 0
-                REPORT_TIME(false,(boost::format("SaveCycle%d") % k).str(),
-                    save_sim<boost::archive::binary_oarchive>(sim.get(), state_filename.c_str()));
-
-                LOG_INFO("Loading Simulation from disk...\n");
-                REPORT_TIME(false,(boost::format("LoadCycle%d") % k).str(),
-                    sim.reset(dynamic_cast<SimulationT*>(load_sim<boost::archive::binary_iarchive, SimulationT>(state_filename.c_str()))));
-                EnvPtr->Log->Flush();
-
-                serialization_test_state_filenames.push_back(state_filename);
-#endif
-            }
-
-            int cycle_steps = min(remaining_steps, max(1, (int)ceil(float(simulation_steps)/float(serialization_cycles))));
+            int cycle_steps = min(remaining_steps, max(1, simulation_steps));
             if (cycle_steps > 0)
                 RunSimulation(*sim, cycle_steps, dt);
 
@@ -444,8 +330,11 @@ bool DefaultController::execute_internal()
                 FileSystem::RemoveFile( filename );
         }
 
+        LOG_INFO_F( "Exiting %s\n", __FUNCTION__ );
+
         return true;
     }
+    
     return false;
 }
 
@@ -471,8 +360,6 @@ bool DefaultController::execute_internal()
     }
 
 #endif // End of _DLLS_
-
-// clorton    std::string state_filename = (boost::format("SimulationStateProc%04d.txt") % EnvPtr->MPI.Rank).str();
 
     if (EnvPtr->MPI.Rank==0) { ostringstream oss; oss << "Beginning Simulation...";  EnvPtr->getStatusReporter()->ReportStatus(oss.str()); }
 
@@ -504,32 +391,9 @@ bool DefaultController::execute_internal()
 #ifndef _DLLS_
         int remaining_steps = simulation_steps;
 
-        int serialization_test_cycles = GET_CONFIGURABLE(SimulationConfig)->serialization_test_cycles;
-
-        int serialization_cycles = 1 + serialization_test_cycles; 
-        for (int k= 0; /*k < serialization_cycles*/ remaining_steps > 0; k++)
+        for (int k= 0; remaining_steps > 0; k++)
         {
-            int serialization_stress_cycles = serialization_test_cycles > 0 ? 1 : 0;
-            for (int j = 0; j < serialization_stress_cycles; j++)
-            {
-                LOG_INFO("Saving Simulation to disk...\n");
-
-// clorton                state_filename = (boost::format("SimulationStateProc%04dCycle%04d.txt") % EnvPtr->MPI.Rank % j).str();
-
-#if 0
-                REPORT_TIME(false,(boost::format("SaveCycle%d") % k).str(),
-                    save_sim<boost::archive::binary_oarchive>(sim.get(), state_filename.c_str()));
-
-                LOG_INFO("Loading Simulation from disk...\n");
-                REPORT_TIME(false,(boost::format("LoadCycle%d") % k).str(),
-                    sim.reset(dynamic_cast<SimulationT*>(load_sim<boost::archive::binary_iarchive, SimulationT>(state_filename.c_str()))));
-                EnvPtr->Log->Flush();
-
-                serialization_test_state_filenames.push_back(state_filename);
-#endif
-            }
-
-            int cycle_steps = min(remaining_steps, max(1, (int)ceil(float(simulation_steps)/float(serialization_cycles))));
+            int cycle_steps = min(remaining_steps, max(1, simulation_steps));
             if (cycle_steps > 0)
                 RunSimulation(*sim, cycle_steps, dt);
 
@@ -558,6 +422,8 @@ bool DefaultController::execute_internal()
                 FileSystem::RemoveFile( filename );
         }
 
+        LOG_INFO_F( "Exiting %s\n", __FUNCTION__ );
+
         return true;
     }
     return false;
@@ -567,448 +433,3 @@ bool DefaultController::Execute()
 {
     return execute_internal();
 }
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-
-template <class SimulationT>
-bool BurnInCacheTestController::execute_internal()
-{
-    /*
-    Next steps on burn-in caching controller
-
-    - update schema with new parameters
-    - matlab scripts to test locally
-    - write a test case that caches the burn-in for a trivial polio sim
-    - write a test case that caches the burn-in for a nontrivial polio sim
-    */
-    using namespace Kernel;
-#ifdef BURNIN_CACHE_TEST_CONTROLLER
-    LOG_INFO("BurnInCacheTestController::Execute()\n");
-
-    std::string burnin_cache_mode = GET_CONFIGURABLE(SimulationConfig)->burnin_cache_mode;
-    int burnin_period = GET_CONFIGURABLE(SimulationConfig)->burnin_period;
-    std::string burnin_name = GET_CONFIGURABLE(SimulationConfig)->burnin_name;
-
-    std::string state_filename = (boost::format("%s.Proc%04d.state") % burnin_name % EnvPtr->MPI.Rank).str();
-
-    if (burnin_cache_mode=="write")
-    {
-        boost::scoped_ptr<SimulationT> sim((SimulationT*)SimulationFactory::CreateSimulation());
-
-        if (nullptr == sim)
-            return false;
-
-        if (EnvPtr->MPI.Rank==0) { ostringstream oss; oss << "Beginning Simulation..."; EnvPtr->getStatusReporter()->ReportStatus(oss.str()); }
-
-        // run up until burnin_period, save, and quit
-
-        // populate it
-        if(sim->Populate())
-        {
-            float dt = (float)GET_CONFIGURABLE(SimulationConfig)->Sim_Tstep;
-            int simulation_steps = (int)((float)burnin_period/dt);
-
-            // now try to run it
-            RunSimulation(*sim, simulation_steps, dt);
-
-            LOG_INFO_F("Saving Simulation State to %s after %d steps...\n", state_filename.c_str(), simulation_steps);
-            EnvPtr->Log->Flush();
-
-            REPORT_TIME(false, (boost::format("SaveState") ).str(),
-            {
-// clorton                if (!save_sim<boost::archive::binary_oarchive>(
-// clorton                        sim.get(),
-// clorton                        (FileSystem::Concat( EnvPtr->StatePath, state_filename).c_str()))
-                {
-                    // ERROR: ("Failed to save simulation state.");
-                    throw SerializationException( __FILE__, __LINE__, __FUNCTION__, "Saving" );
-                    return false;
-                }
-            });
-
-            sim->WriteReportsData();
-
-            if (EnvPtr->MPI.Rank==0)
-            {
-                LogTimeInfo lti;
-                EnvPtr->Log->GetLogInfo(lti);
-
-                ostringstream oss;
-                oss << "Done - " << lti.hours << ":" << setw(2) << setfill('0') << lti.mins << ":" << setw(2) << setfill('0') << lti.secs;
-                EnvPtr->getStatusReporter()->ReportStatus(oss.str());
-            }
-
-            return true;
-        }
-        return false;
-
-    }
-    else if (burnin_cache_mode=="read")
-    {
-        // load simulation and then run it for remaining steps specified (Sim_Duration - burnin_period)
-        boost::scoped_ptr<SimulationT> sim(nullptr);
-
-        if (EnvPtr->MPI.Rank==0) { ostringstream oss; oss << "Beginning Simulation..."; EnvPtr->getStatusReporter()->ReportStatus(oss.str()); }
-
-        LOG_INFO_F("Loading Simulation State from %s ...\n", state_filename.c_str()); EnvPtr->Log->Flush();
-
-// clorton        REPORT_TIME(false, (boost::format("LoadState") ).str(),  
-// clorton            sim.reset((SimulationT*)load_sim<boost::archive::binary_iarchive, SimulationT>(
-// clorton                (FileSystem::Concat( EnvPtr->StatePath, state_filename ).c_str())));
-
-        if (sim == nullptr)
-        {
-            //ERROR: ("Failed to load saved state.\n");
-            throw SerializationException( __FILE__, __LINE__, __FUNCTION__, "Loading" );
-            return false;
-        }
-
-        float dt = GET_CONFIGURABLE(SimulationConfig)->Sim_Tstep;
-        int simulation_steps = (int)((float)(GET_CONFIGURABLE(SimulationConfig)->Sim_Duration) - burnin_period)/dt);
-
-        // apply a new random number seed from the config so that the evolved trajectory has a chance to differ
-        // HACK JUST COMMENTING OUT COZ ResetRng not in ISimulation. sim->ResetRng(EnvPtr->Config);
-
-        // now try to run it
-        RunSimulation(*sim, simulation_steps, dt);
-
-        sim->WriteReportsData();
-
-        if (EnvPtr->MPI.Rank==0)
-        {
-            LogTimeInfo lti;
-            EnvPtr->Log->GetLogInfo(lti);
-
-            ostringstream oss;
-            oss << "Done - " << lti.hours << ":" << setw(2) << setfill('0') << lti.mins << ":" << setw(2) << setfill('0') << lti.secs;
-            EnvPtr->getStatusReporter()->ReportStatus(oss.str());
-        }
-
-        return true;
-    }
-    else
-    {
-        // default case not implemented for this test controller. in a real controller, the burn-in wrapper would just pass control to some normal inner process
-        // ERROR: ("Burnin mode \"%s\" not implemented for this test controller; must be \"read\" or \"write\".\n", burnin_cache_mode.c_str());
-        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Burnin" );
-        return false;
-    }
-#endif
-    return false;
-}
-
-bool BurnInCacheTestController::Execute()
-{
-    ControllerExecuteFunctor<BurnInCacheTestController> cef(this);
-    return call_templated_functor_with_sim_type_hack(cef);
-}
-
-//////////////////////////////////////////////////////////////////////////
-// SimpleBranchController
-// optionally loads a given state from the shared state cache, runs it for Sim_Duration steps, and optionally writes a new state
-
-template <class SimulationT>
-bool SimpleBranchController::execute_internal()
-{
-#ifdef BRANCH_CONTROLLER
-    using namespace Kernel;
-
-    LOG_INFO("SimpleBranchController::Execute()\n");
-
-    std::string branch_start_state = GET_CONFIGURABLE(SimulationConfig)->branch_start_state;
-    std::string branch_end_state = GET_CONFIGURABLE(SimulationConfig)->branch_end_state;
-    int branch_duration = GET_CONFIGURABLE(SimulationConfig)->branch_duration;
-
-    std::string start_state_filename = (boost::format("%s.Proc%04d.state") % branch_start_state % EnvPtr->MPI.Rank).str();
-    std::string end_state_filename = (boost::format("%s.Proc%04d.state") % branch_end_state % EnvPtr->MPI.Rank).str();
-
-    SimulationT *sim;
-
-    if (EnvPtr->MPI.Rank==0) { ostringstream oss; oss << "Beginning Simulation..."; EnvPtr->getStatusReporter()->ReportStatus(oss.str()); }
-
-    // init sim by reading a state
-    if (branch_start_state.length() > 0)
-    {
-        LOG_INFO_F("Loading Simulation State from %s ...\n", start_state_filename.c_str()); EnvPtr->Log->Flush();
-
-// clorton        BEGIN_REPORT_TIME(false)
-// clorton        {
-// clorton            sim = (SimulationT*)load_sim<boost::archive::binary_iarchive, SimulationT>(
-// clorton                (FileSystem::Concat( EnvPtr->StatePath, start_state_filename ).c_str());
-// clorton        }
-// clorton        END_REPORT_TIME(false,"LoadState")
-
-        if (sim == nullptr)
-        {
-            // ERROR ("Failed to load saved state.\n");
-            throw SerializationException( __FILE__, __LINE__, __FUNCTION__, "Loading" );
-            return false;
-        }
-
-        // apply a new random number seed from the config so that the evolved trajectory has a chance to differ
-        // this is done instead of after populate for consistency with the behavior of the default controller when starting from scratch
-        // HACK TO GET DLL CONCEPT WORKING sim->ResetRng(EnvPtr->Config);
-    }
-    else // initialize via populate
-    {
-        sim = (SimulationT*)SimulationFactory::CreateSimulation();
-
-        if(!sim->Populate())
-        {
-            //delete sim; LEAK ME!!
-            throw InitializationException( __FILE__, __LINE__, __FUNCTION__, "Failed to populate simulation." );
-        }
-    }
-
-    auto termination_predicate =  SimpleTerminationPredicateFactory::CreatePredicate(*sim, EnvPtr->Config);
-
-    // now run
-    RunSimulation(*sim, termination_predicate);
-
-    // write final state if desired
-
-    if (branch_end_state.length() > 0)
-    {
-        LOG_INFO_F("Saving Simulation State to %s after %d steps...\n", end_state_filename.c_str(), branch_duration);
-        EnvPtr->Log->Flush();
-
-        REPORT_TIME(false,(boost::format("SaveState")).str(),
-        {
-// clorton            if (!save_sim<boost::archive::binary_oarchive>(
-// clorton                sim,
-// clorton                (FileSystem::Concat( EnvPtr->StatePath, end_state_filename ).c_str()))
-            {
-                throw SerializationException( __FILE__, __LINE__, __FUNCTION__, "Saving" );
-            }
-        });
-    }
-
-    sim->WriteReportsData();
-
-    if (EnvPtr->MPI.Rank==0)
-    {
-        LogTimeInfo lti;
-        EnvPtr->Log->GetLogInfo(lti);
-
-        ostringstream oss;
-        oss << "Done - " << lti.hours << ":" << setw(2) << setfill('0') << lti.mins << ":" << setw(2) << setfill('0') << lti.secs;
-        EnvPtr->getStatusReporter()->ReportStatus(oss.str());
-    }
-
-    //delete sim;  LEAK ME!! no need to clean up
-#endif
-    return true;
-}
-
-bool SimpleBranchController::Execute()
-{
-    ControllerExecuteFunctor<SimpleBranchController> cef(this);
-    return call_templated_functor_with_sim_type_hack(cef);
-}
-
-template <class SimulationT>
-std::function<bool(SimulationT&,float)>
-    SimpleTerminationPredicateFactory::CreatePredicate(SimulationT &sim_context,  const Configuration *config)
-{
-    string TerminationPredicate;
-    if (!CONFIG_PARAMETER_EXISTS(config, "TerminationPredicate"))
-        TerminationPredicate = "SimDuration";
-#ifdef FUTURE
-    else
-        TerminationPredicate = GET_CONFIGURABLE(SimulationConfig)->TerminationPredicate;
-#endif
-    LOG_INFO( "And now you are here...\n" );
-
-    if ("SimDuration" == TerminationPredicate)
-    {
-        int simulation_duration = GET_CONFIGURABLE(SimulationConfig)->Sim_Duration;
-        return [=](SimulationT& sim,float) { return sim.GetSimulationTime() >= simulation_duration; };
-    }
-
-    else if ("ZeroHumanInfectionsOrSimDuration" == TerminationPredicate)
-    {
-        int simulation_steps = GET_CONFIGURABLE(SimulationConfig)->Sim_Duration;
-
-        int holdoff_period = 100; // cold make this smarter even, but meh
-
-        return [=](SimulationT& sim, float branch_time)->bool
-        {
-            bool terminate = false;
-
-            // have to evaluate this condition on every rank because it involves a reduce, but the result is only valid on rank 0
-            bool infections_reached_zero_after_holdoff = 
-                (sim.GetSimulationTime() > holdoff_period) &&
-                (0 == false/*sim.GetProcessedSummaryData("Infected", sim.GetSimulationTimestep()-1)*/); // only returns a valid number to rank 0, but must be invoked on all processes. call is short circuited to prevent t=-1 being passed.
-
-            // !!!!!!!!!!!!!!!!!!!!!!!!
-            throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Querying simulation to get info for termination predicate." );
-            // !!!!!!!!!!!!!!!!!!!!!!!!
-
-            if (EnvPtr->MPI.Rank == 0) // only rank zero gets a valid value for infected
-            {
-                // assuming 1day/timestep
-                if (infections_reached_zero_after_holdoff)
-                {
-                    LOG_INFO("Infected fraction reached zero, terminating.\n");
-                    terminate = true;
-                }
-                else
-                {
-                    terminate = (sim.GetSimulationTimestep() >= simulation_steps);
-                }
-            }
-
-            int tmp_terminate = (terminate ? 1:0);
-            EnvPtr->MPI.p_idm_mpi->BroadcastInteger( &tmp_terminate, 1, 0 );
-
-            return terminate;
-        };
-    }
-    else if ("VDPVOutbreakOrSimDuration" == TerminationPredicate)
-    {
-        int simulation_steps = GET_CONFIGURABLE(SimulationConfig)->Sim_Duration;
-
-        int holdoff_period = 180; // could be grabbed from config as well
-
-        return [=](SimulationT& sim, float branch_time)->bool
-        {
-            // assuming 1day/timestep
-            bool terminate = false;
-            float cumulative_infections_at_holdoff = 
-                sim.GetSimulationTimestep() > holdoff_period ? 0/*sim.GetProcessedSummaryData("New Reported Infections", holdoff_period)*/ : 0;  // assuming 1 day timesteps // TODO: this isnt the right channel name, obviously!  <ERAD-201>
-            float cumulative_infections_current = 
-                sim.GetSimulationTimestep() > 0 ? 0/*sim.GetProcessedSummaryData("New Reported Infections", sim.GetSimulationTimestep()-1)*/ : 0;
-
-            // !!!!!!!!!!!!!!!!!!!!!!!!
-            throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Querying simulation to get info for termination predicate." );
-            // !!!!!!!!!!!!!!!!!!!!!!!!
-
-            if (EnvPtr->MPI.Rank == 0)
-            {
-                if ( cumulative_infections_at_holdoff < cumulative_infections_current )
-                {
-                    LOG_INFO_F("New paralytic case detected after day %d, terminating.", holdoff_period);
-                    terminate = true;
-                }
-                else
-                {
-                    terminate = (sim.GetSimulationTimestep() >= simulation_steps);
-                }
-            }
-
-            int tmp_terminate = (terminate ? 1:0);
-            EnvPtr->MPI.p_idm_mpi->BroadcastInteger( &tmp_terminate, 1, 0 );
-
-            return terminate;
-        };
-    }
-    else
-    {
-        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Burnin" );
-    }
-}
-
-
-#if USE_BOOST_SERIALIZATION
-
-// R: Note: this could probably be obviated with use of BOOST_CLASS_EXPORT for these top level classes
-template <class Archive>
-void registerSimTypes(Archive &ar)
-{
-#ifndef _DLLS_
-    ar.template register_type<Simulation>();
-    ar.template register_type<SimulationEnvironmental>();  // IF ONLY THIS WORKED
-    ar.template register_type<SimulationPolio>();       // IF ONLY THIS WORKED
-    ar.template register_type<SimulationVector>();
-    ar.template register_type<SimulationMalaria>();
-#ifdef ENABLE_TB
-    ar.template register_type<SimulationAirborne>();
-    ar.template register_type<SimulationTB>();
-#endif
-#endif
-}
-
-template<class OArchiveT, class SimulationT>
-bool save_sim(/*const breaks if I cant make serialize() const?*/ SimulationT *sim, const char * filename)
-{
-    // make an archive
-    std::ofstream ofs(filename, std::ios::binary);
-    if (!ofs.is_open()) 
-    {
-        // ERROR ("save_sim() failed to open file %s for writing.\n", filename);
-        throw SerializationException( __FILE__, __LINE__, __FUNCTION__, "Saving" );
-    }
-
-    OArchiveT oa(ofs);
-    registerSimTypes(oa);
-    oa << (*sim);
-    return true;
-}
-
-
-/* R: TODO: experiment with better boost class registration to clean up serialization mess <ERAD-326>
-
-Noticed this gem in the boost docs:
-(see: http://www.boost.org/doc/libs/1_42_0/libs/serialization/doc/special.html#plugins)
-
-Plugins
-
-In order to implement the library, various facilities for runtime manipulation of types are runtime were required. These are extended_type_info for associating classes with external identifying strings (GUID) and void_cast for casting between pointers of related types. To complete the functionality of extended_type_info the ability to construct and destroy corresponding types has been added. In order to use this functionality, one must specify how each type is created. This should be done at the time a class is exported. So, a more complete example of the code above would be:
-
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_oarchive.hpp>
-... // other archives
-
-#include "a.hpp" // header declaration for class a
-
-// this class has a default constructor
-BOOST_SERIALIZATION_FACTORY_0(a)
-// as well as one that takes one integer argument
-BOOST_SERIALIZATION_FACTORY_1(a, int)
-
-// specify the GUID for this class
-BOOST_CLASS_EXPORT(a)
-... // other class headers and exports
-
----> With this in place, one can construct, serialize and destroy about which only is know the GUID and a base class. <---
-
-If this actually works, a lot of the templates in this file can go away!
-
-*/
-
-template<class IArchiveT, class SimulationT>
-ISimulation* load_sim(const char * filename)
-{
-    // open the archive
-    std::ifstream ifs(filename, std::ios::binary);
-    if (!ifs.is_open())
-    {
-        // ERROR: ("load_sim() failed to open file %s for reading.\n", filename);
-        throw SerializationException( __FILE__, __LINE__, __FUNCTION__, "Loading" );
-        return NULL;
-    }
-
-    IArchiveT ia(ifs);
-    registerSimTypes(ia);
-
-    // restore the schedule from the archive
-#ifdef _DLLS_
-    return NULL; // just testing
-#else
-    return SimulationFactory::CreateSimulationFromArchive<IArchiveT, SimulationT>(ia);
-#endif
-}
-
-#endif // end of USE_BOOST_SERIALIZATION
-
-
-
-// for DLL build
-#if USE_BOOST_SERIALIZATION
-template void Kernel::serialize( boost::archive::binary_oarchive & ar, Simulation& sim, const unsigned int file_version);
-template void Kernel::serialize( boost::archive::binary_iarchive & ar, Simulation& sim, const unsigned int file_version);
-#endif
-
-
-

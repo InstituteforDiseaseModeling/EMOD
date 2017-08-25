@@ -60,7 +60,7 @@
                }, 
                "SEA": {
                     "Enable_Sea_Migration": 0, 
-                    "Sea_Migration_Filename": "Madagascar_Nosibe_2.5arcmin_sea_migration.bin"
+                    "Sea_Migration_Filename": ""
                }
         }, 
         "OUTPUT": {

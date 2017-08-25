@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,8 +16,11 @@ namespace Kernel
     {
         virtual float getAge() const = 0;
         virtual float getModAcquire() const = 0;
-        virtual float GetModTransmit() const = 0;
+        virtual float getModTransmit() const = 0;
         virtual float getModMortality() const = 0;
+        virtual void  updateModAcquire(float updateVal) = 0;
+        virtual void  updateModTransmit(float updateVal) = 0;
+        virtual void  updateModMortality(float updateVal) = 0;
         virtual void  InitNewInfection() = 0;
 
         virtual ~ISusceptibilityContext() {}

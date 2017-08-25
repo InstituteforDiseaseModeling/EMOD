@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -63,8 +63,11 @@ namespace Kernel
         // ISusceptibilityContext interfaces
         virtual float getAge() const override;
         virtual float getModAcquire() const override;
-        virtual float GetModTransmit() const override;
+        virtual float getModTransmit() const override;
         virtual float getModMortality() const override;
+        virtual void  updateModAcquire(float updateVal)  override;
+        virtual void  updateModTransmit(float updateVal)  override;
+        virtual void  updateModMortality(float updateVal)  override;
         virtual float getSusceptibilityCorrection() const;
         virtual bool  IsImmune() const;
         virtual void  InitNewInfection() override;
@@ -84,7 +87,7 @@ namespace Kernel
 
         Susceptibility();
         Susceptibility(IIndividualHumanContext *context);
-        /* clorton virtual */ void Initialize(float _age, float immmod, float riskmod) /* clorton override */;
+        virtual void Initialize(float _age, float immmod, float riskmod);
 
         IIndividualHumanContext *parent;
 

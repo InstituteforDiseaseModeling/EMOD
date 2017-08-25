@@ -40,7 +40,6 @@
                }, 
                "MORTALITY": {
                     "Base_Mortality": 0, 
-                    "Enable_Disease_Mortality": 0, 
                     "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER",
                     "Immunity_Mortality_Factor": 0, 
                     "Mortality_Blocking_Immunity_Decay_Rate": 0.001, 
@@ -123,7 +122,7 @@
           }, 
           "NEEDED_BUT_NOT_USEFUL": {}, 
           "OUTPUT": {
-               "Custom_Reports_Filename" : "NoCustomReports",
+               "Custom_Reports_Filename" : "",
                "Report_Event_Recorder" : 0,
                "Enable_Default_Reporting" : 1,
                "Enable_Spatial_Output": 0,
@@ -132,6 +131,9 @@
           }, 
           "POLIO": {}, 
           "PRIMARY": {
+               "Memory_Usage_Warning_Threshold_Working_Set_MB" : 3500,
+               "Memory_Usage_Halting_Threshold_Working_Set_MB" : 4000,
+
                "Config_Name": "DEFAULT_CONFIG_NAME_SHOULD_BE_SET", 
                "Simulation_Type": "GENERIC_SIM",
                "Geography": "DEFAULT_GEOGRAPHY_SHOULD_BE_SET", 
@@ -158,6 +160,7 @@
                "TB_Extrapulmonary_Fraction_Adult": 0, 
                "TB_Extrapulmonary_Fraction_Child": 0, 
                "TB_Extrapulmonary_Mortality_Multiplier": 0.4, 
+			   "TB_Fast_Progressor_Fraction_Type": "AGE", 
                "TB_Fast_Progressor_Fraction_Adult": 1, 
                "TB_Fast_Progressor_Fraction_Child": 1, 
                "TB_Fast_Progressor_Rate": 4.1096e-05, 

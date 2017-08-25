@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -26,6 +26,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationConfig.h"
 #include "IndividualEventContext.h" // for Die() interface
 #include "MalariaInterventionsContainer.h"
+#include "StrainIdentity.h"
 
 #ifdef randgen
 #undef randgen
@@ -33,7 +34,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "RANDOM.h"
 #define randgen (parent->GetRng())
 
-static const char * _module = "InfectionMalaria";
+SETUP_LOGGING( "InfectionMalaria" )
 
 namespace Kernel
 {
@@ -125,7 +126,15 @@ namespace Kernel
         initConfigTypeMap( "RBC_Destruction_Multiplier", &RBC_destruction_multiplier, RBC_Destruction_Multiplier_DESC_TEXT, 0.0f, 30.0f, DEFAULT_RBC_DESTRUCTION_MULTIPLIER ); // malaria GH
         initConfigTypeMap( "Number_Of_Asexual_Cycles_Without_Gametocytes", &n_asexual_cycles_wo_gametocytes, Number_Of_Asexual_Cycles_Without_Gametocytes_DESC_TEXT, 0, 500, DEFAULT_ASEXUAL_CYCLES_WITHOUT_GAMETOCYTES );
 
-        return JsonConfigurable::Configure( config );
+        bool ret = JsonConfigurable::Configure( config );
+        if( ret && !JsonConfigurable::_dryrun )
+        {
+            if( base_gametocyte_production == 1.0 )
+            {
+                LOG_WARN( "Base_Gametocyte_Production_Rate = 1.0.  Vectors cannot become infected.  If you want vectors to become infected, select a value < 1.0.\n" );
+            }
+        }
+        return ret;
     }
 
     void InfectionMalaria::Initialize(suids::suid suid, int initial_hepatocytes)
@@ -157,7 +166,7 @@ namespace Kernel
     {
     }
 
-    void InfectionMalaria::SetParameters(Kernel::StrainIdentity *_infstrain, int incubation_period_override )
+    void InfectionMalaria::SetParameters( IStrainIdentity *_infstrain, int incubation_period_override )
     {
         // Set up infection strain
         CreateInfectionStrain(_infstrain);
@@ -436,7 +445,7 @@ namespace Kernel
         {
             // total the gametocytes and IRBCs
             #pragma loop(hint_parallel(8))
-            for (int i = 0; i < GametocyteStages::Count; i++)
+            for (int i = 0; i < GametocyteStages::Mature; i++)
             {
                 totalgametocytes += m_malegametocytes[i] + m_femalegametocytes[i];
             }
@@ -468,10 +477,6 @@ namespace Kernel
             }
 
             // Does individual die, or is infection cleared?
-            // NOTE: because the accounting of mature gametocyte decay is handled in IndividualMalaria
-            //       while the new Stage-5 counter is cleared in InfectionMalaria every 48h,
-            //       individuals will remain gametocyte-positive and infectious for a short period
-            //       after their infection is cleared by the condition below.
             if ((totalIRBC + m_hepatocytes + totalgametocytes) < 1)
             {
                 LOG_VALID("CLEARED infection\n");
@@ -896,14 +901,44 @@ namespace Kernel
         return GET_CONFIGURABLE(SimulationConfig);
     }
 
-    int64_t
-    InfectionMalaria::get_MaleGametocytes(int stage)   { return m_malegametocytes[stage]; }
-    void
-    InfectionMalaria::reset_MaleGametocytes(int stage) { m_malegametocytes[stage] = 0; }
-    int64_t
-    InfectionMalaria::get_FemaleGametocytes(int stage)   { return m_femalegametocytes[stage]; }
-    void
-    InfectionMalaria::reset_FemaleGametocytes(int stage) { m_femalegametocytes[stage] = 0; }
+    int64_t InfectionMalaria::get_MaleGametocytes(int stage) const
+    { 
+        return m_malegametocytes[stage]; 
+    }
+
+    int64_t ApplyKillProbability( float pkill, int64_t initial_gc, double eGauss )
+    {
+        double numkilled = (eGauss * sqrt( pkill * initial_gc * (1.0 - pkill) ) + pkill * initial_gc);
+        numkilled = max( 0.0, numkilled ); //can't add by killing
+        int64_t new_gc = int64_t( initial_gc - numkilled );
+        return max( 0L, new_gc );
+    }
+
+    void InfectionMalaria::apply_MatureGametocyteKillProbability(float pkill)
+    { 
+        // Gaussian approximation of binomial errors for male and female mature gametocytes
+        m_femalegametocytes[ GametocyteStages::Mature ] = ApplyKillProbability( pkill, m_femalegametocytes[ GametocyteStages::Mature ], randgen->eGauss() );
+        m_malegametocytes[ GametocyteStages::Mature ] = ApplyKillProbability(   pkill, m_malegametocytes[   GametocyteStages::Mature ], randgen->eGauss() );
+    }
+
+    int64_t InfectionMalaria::get_FemaleGametocytes(int stage) const
+    { 
+        return m_femalegametocytes[stage]; 
+    }
+
+    float InfectionMalaria::get_asexual_density() const
+    { 
+        int64_t totalIRBC = 0;
+        totalIRBC = std::accumulate(m_IRBC_count.begin(), m_IRBC_count.end(), totalIRBC);
+        return totalIRBC * m_inv_microliters_blood;
+    }
+
+    float InfectionMalaria::get_mature_gametocyte_density() const
+    {
+        int64_t mature_female_gametocytes = get_FemaleGametocytes(GametocyteStages::Mature);
+        return mature_female_gametocytes * m_inv_microliters_blood;
+    }
+
 
     REGISTER_SERIALIZABLE(InfectionMalaria);
 

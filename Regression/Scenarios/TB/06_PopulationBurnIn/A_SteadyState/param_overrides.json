@@ -82,15 +82,6 @@
         "TB_Smear_Negative_Infectivity_Multiplier":0.15,
         "TB_Smear_Negative_Mortality_Multiplier":0.15,
         "TB_Smear_Positive_Fraction_Adult":0.65,
-        "TB_Smear_Positive_Fraction_Child":0.25,
-        "Listed_Events": [
-            "ProviderOrdersTBTest",
-            "TBActivation",
-            "TBTestNegative",
-            "TBTestPositive",
-            "TBTestDefault", 
-            "TBFailedDrugRegimen",
-            "TBActivationPostRelapse"
-        ]
+        "TB_Smear_Positive_Fraction_Child":0.25
     }
 }

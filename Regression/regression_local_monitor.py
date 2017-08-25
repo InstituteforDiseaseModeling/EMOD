@@ -17,18 +17,18 @@ class Monitor(threading.Thread):
     sems = threading.Semaphore( MAX_ACTIVE_JOBS )
     completed = 0
 
-    def __init__(self, sim_id, config_id, report, params, config_json=None, compare_results_to_baseline=True):
+    def __init__(self, sim_id, scenario_path, report, params, config_json=None, scenario_type='tests'):
         threading.Thread.__init__( self )
         #print "Running DTK execution and monitor thread."
         sys.stdout.flush()
         self.sim_timestamp = sim_id
-        self.config_id = config_id
+        self.scenario_path = scenario_path
         self.report = report
         self.config_json = config_json
         self.duration = None
         # can I make this static?
         self.params = params
-        self.compare_results_to_baseline = compare_results_to_baseline
+        self.scenario_type = scenario_type
 
     def run(self):
         self.__class__.sems.acquire()
@@ -38,7 +38,10 @@ class Monitor(threading.Thread):
 
         starttime = datetime.datetime.now()
 
-        with open(os.path.join(sim_dir, "stdout.txt"), "w") as stdout, open(os.path.join(sim_dir, "stderr.txt"), "w") as stderr:
+        stdoutfile = "stdout.txt"
+        if self.scenario_type != 'tests':
+            stdoutfile = "test.txt"
+        with open(os.path.join(sim_dir, stdoutfile), "w") as stdout, open(os.path.join(sim_dir, "stderr.txt"), "w") as stderr:
             actual_input_dir = os.path.join( self.params.input_path, self.config_json["parameters"]["Geography"] )
             cmd = None
             # python-script-path is optional parameter.
@@ -57,15 +60,18 @@ class Monitor(threading.Thread):
         self.__class__.completed = self.__class__.completed + 1
         print( str(self.__class__.completed) + " out of " + str(len(ru.reg_threads)) + " completed." )
         # JPS - should check here and only do the verification if it passed... ?
-        if self.compare_results_to_baseline:
+        if self.scenario_type == 'tests':
             if self.params.all_outputs == False:
             # Following line is for InsetChart.json only
                 self.verify(sim_dir)
             else:
                 # Every .json file in output (not hidden with . prefix) will be used for validation
-                for file in os.listdir( os.path.join( self.config_id, "output" ) ):
-                    if ( file.endswith( ".json" ) or file.endswith( ".csv" ) ) and file[0] != ".":
+                for file in os.listdir( os.path.join( self.scenario_path, "output" ) ):
+                    if ( file.endswith( ".json" ) or file.endswith( ".csv" ) or file.endswith( ".h5" ) or file.endswith( ".db" ) ) and file[0] != ".":
                         self.verify( sim_dir, file, "Channels" )
+        elif self.scenario_type == 'science':
+            self.science_verify( sim_dir )
+
         self.__class__.sems.release()
 
     def get_json_data_hash( self, data ):
@@ -80,6 +86,12 @@ class Monitor(threading.Thread):
         fail_validation = False
         failure_txt = ""
 
+        try:
+            json.loads( open( os.path.join( ru.cache_cwd, ref_path ) ).read() )
+        except Exception as ex:
+            print( "Exception {0} loading json file: {1}.".format( ex, ( os.path.join( ru.cache_cwd, ref_path ) ) ) )
+            return
+
         ref_json = json.loads( open( os.path.join( ru.cache_cwd, ref_path ) ).read() )
         if "Channels" not in ref_json.keys():
             ref_md5  = ru.md5_hash_of_file( ref_path )
@@ -87,7 +99,7 @@ class Monitor(threading.Thread):
             if ref_md5 == test_md5:
                 return False, ""
             else:
-                print( self.config_id + " completed but did not match reference! (" + str(self.duration) + ") - " + report_name )
+                print( self.scenario_path + " completed but did not match reference! (" + str(self.duration) + ") - " + report_name )
                 return True, "Non-Channel JSON failed MD5."
         else:
             test_json = json.loads( open( os.path.join( sim_dir, test_path ) ).read() )
@@ -111,12 +123,12 @@ class Monitor(threading.Thread):
                 fail_validation = True
                 print("ERROR: Missing channels - " + ', '.join(missing_channels))
                 failure_txt += "Missing channels:\n" + '\n'.join(missing_channels) + "\n"
-                self.report.addFailingTest( self.config_id, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ) )
+                self.report.addFailingTest( self.scenario_path, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ), self.scenario_type )
 
             if len(new_channels) > 0:
                 print("WARNING: The test "+report_name+" has " + str(len(new_channels)) + " channels not found in the reference.  Please update the reference "+report_name+".")
-                ru.final_warnings += self.config_id + " - New channels not found in reference:\n  " + '\n  '.join(new_channels) + "\nPlease update reference from " + os.path.join( sim_dir, os.path.join( "output", "InsetChart.json" ) ) + "!\n"
-                self.report.addFailingTest( self.config_id, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ) )
+                ru.final_warnings += self.scenario_path + " - New channels not found in reference:\n  " + '\n  '.join(new_channels) + "\nPlease update reference from " + os.path.join( sim_dir, os.path.join( "output", "InsetChart.json" ) ) + "!\n"
+                self.report.addFailingTest( self.scenario_path, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ), self.scenario_type )
 
             if "Header" in ref_json.keys() and ref_json["Header"]["Timesteps"] != test_json["Header"]["Timesteps"]:
                 warning_msg = "WARNING: test "+report_name+" has timesteps " + str(test_json["Header"]["Timesteps"])  + " DIFFERRING from ref "+report_name+" timesteps " + str(ref_json["Header"]["Timesteps"]) + "!\n"
@@ -144,7 +156,7 @@ class Monitor(threading.Thread):
             if len(failures) > 0:
                 fail_validation = True
                 failure_txt += "Channel Timestep Reference_Value Test_Value\n" + ''.join(failures)
-                print( self.config_id + " completed but did not match reference! (" + str(self.duration) + ") - " + report_name )
+                print( self.scenario_path + " completed but did not match reference! (" + str(self.duration) + ") - " + report_name )
 
         return fail_validation, failure_txt
 
@@ -189,7 +201,7 @@ class Monitor(threading.Thread):
 
         print( err_msg )
         failure_txt = err_msg
-        #self.report.addFailingTest( self.config_id, failure_txt, test_path )
+        #self.report.addFailingTest( self.scenario_path, failure_txt, test_path, self.scenario_type )
         return fail_validation, failure_txt
 
     def compareOtherOutputs( self, report_name, ref_path, test_path, failures ):
@@ -199,7 +211,7 @@ class Monitor(threading.Thread):
             # print( "CSV files passed MD5 comparison test." )
             return False, ""
         else:
-            print( self.config_id + " completed but did not match reference! (" + str(self.duration) + ") - " + report_name )
+            print( self.scenario_path + " completed but did not match reference! (" + str(self.duration) + ") - " + report_name )
             return True, "Failes MD5 check."
 
     # Compare Binned Report Types
@@ -218,16 +230,27 @@ class Monitor(threading.Thread):
             min_tstep_ind = min(ref_json["Header"]["Timesteps"], test_json["Header"]["Timesteps"])
 
             for chan_title in (ref_channels & test_channels):
+                num_lines = 10
+                num_skipped = 0
                 for bin_idx in range( 0, num_bins_ref ):
                     for tstep_idx in range( 0, min_tstep_ind ):
                         val_ref  = ref_json[ "Channels"][chan_title]["Data"][bin_idx][tstep_idx]
                         val_test = test_json["Channels"][chan_title]["Data"][bin_idx][tstep_idx]
                         if val_ref != val_test:
-                            failures.append(chan_title + " " + str(bin_idx) + " " + str(tstep_idx) + " " + str( val_ref ) + " " + str( val_test ) + "\n")
+                            if num_lines > 0:
+                                failures.append(chan_title + " " + str(bin_idx) + " " + str(tstep_idx) + " " + str( val_ref ) + " " + str( val_test ) + "\n")
+                                num_lines -= 1
+                            else:
+                                num_skipped += 1
+                if num_skipped > 0:
+                    failures.append( "And another " + str( num_skipped  ) + " lines skipped.\n" )
         return
 
     # Compare Channel Report Types
     def compareChannelReportType( self, ref_json, test_json, failures ):
+        # Use some value N as the max number of rows to include in the report for each channel
+        # With an additional summary line stating how many rows were cropped. 
+        # Should make N overrideable with values from an a .rtpy config file?
         ref_channels  = set(ref_json[ "Channels"])
         test_channels = set(test_json["Channels"])
 
@@ -241,9 +264,17 @@ class Monitor(threading.Thread):
                 failures.append("Reference has "+str(num_steps_ref) + " steps and test has "+str(num_steps_test)+" steps, but the header says the min Timesteps is "+str(min_tstep_ind))
                 print("!!!! Reference has "+str(num_steps_ref) + " steps and test has "+str(num_steps_test)+" steps, but the header says the min Timesteps is "+str(min_tstep_ind))
                 return
+            num_lines = 10
+            num_skipped = 0
             for tstep_idx in range( 0, min_tstep_ind ):
                 if test_json["Channels"][chan_title]["Data"][tstep_idx] != ref_json["Channels"][chan_title]["Data"][tstep_idx]:
-                    failures.append(chan_title + " " + str(tstep_idx) + " " + str( ref_json["Channels"][chan_title]["Data"][tstep_idx] ) + " " + str( test_json["Channels"][chan_title]["Data"][tstep_idx] ) + "\n")
+                    if num_lines > 0:
+                        failures.append(chan_title + " " + str(tstep_idx) + " " + str( ref_json["Channels"][chan_title]["Data"][tstep_idx] ) + " " + str( test_json["Channels"][chan_title]["Data"][tstep_idx] ) + "\n")
+                        num_lines -= 1
+                    else:
+                        num_skipped += 1
+            if num_skipped > 0:
+                failures.append( "And another " + str( num_skipped  ) + " lines skipped.\n" )
         return
 
     # Adding optional report_name parameter, defaults to InsetChart
@@ -260,13 +291,16 @@ class Monitor(threading.Thread):
         failures = []
         failure_txt = ""
 
+        if self.report == None:
+            return 
+
         test_path = os.path.join( sim_dir, os.path.join( "output", report_name ) )
-        ref_path = os.path.join( ru.cache_cwd, os.path.join( str(self.config_id), os.path.join( "output", report_name ) ) )
+        ref_path = os.path.join( ru.cache_cwd, os.path.join( str(self.scenario_path), os.path.join( "output", report_name ) ) )
 
         # if on linux, use alternate InsetChart.json, but only if exists
         if os.name != "nt" and report_name == "InsetChart.json":
             report_name = "InsetChart.linux.json" 
-            alt_ref_path = os.path.join( ru.cache_cwd, os.path.join( str(self.config_id), os.path.join( "output", report_name ) ) )
+            alt_ref_path = os.path.join( ru.cache_cwd, os.path.join( str(self.scenario_path), os.path.join( "output", report_name ) ) )
             if os.path.exists( alt_ref_path ):
                 ref_path = alt_ref_path
 
@@ -276,9 +310,9 @@ class Monitor(threading.Thread):
 
         #if test_hash != ref_hash:
         if os.path.exists( test_path ) == False:
-            print( "Test file \"" + test_path + "\" -- for " + self.config_id + " -- does not exist." )
+            print( "Test file \"" + test_path + "\" -- for " + self.scenario_path + " -- does not exist." )
             failure_txt = "Report not generated by executable."
-            self.report.addFailingTest( self.config_id, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ) )
+            self.report.addFailingTest( self.scenario_path, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ), self.scenario_type )
             return False
 
         if test_path.endswith( ".csv" ):
@@ -292,24 +326,44 @@ class Monitor(threading.Thread):
 
         if fail_validation:
             #print( "Validation failed, add to failing tests report." )
-            self.report.addFailingTest( self.config_id, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ) )
+            self.report.addFailingTest( self.scenario_path, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ), self.scenario_type )
 
             if len(failures) > 0 and not self.params.hide_graphs and report_name.startswith( "InsetChart" ):
                 #print( "Plotting charts for failure deep dive." )  
                 # Note: Use python version 2 for plotAllCharts.py
-                subprocess.Popen( ["python", "plotAllCharts.py", ref_path, test_path, self.config_id ] )
+                subprocess.Popen( ["python", "plotAllCharts.py", ref_path, test_path, self.scenario_path ] )
         else:
-            print( self.config_id + " passed (" + str(self.duration) + ") - " + report_name )
-            self.report.addPassingTest(self.config_id, self.duration)
+            print( self.scenario_path + " passed (" + str(self.duration) + ") - " + report_name )
+            self.report.addPassingTest(self.scenario_path, self.duration, os.path.join(sim_dir, ("output/" + report_name)))
             
             if ru.version_string is not None:
                 try:
-                    timefile = open( os.path.join( self.config_id, "time.txt" ), 'a' )
+                    timefile = open( os.path.join( self.scenario_path, "time.txt" ), 'a' )
                     timefile.write(ru.version_string + '\t' + str(self.duration) + '\n')
                     timefile.close()
                 except Exception as e:
                     print("Problem writing time.txt file (repeat of error Jonathan was seeing on linux?)\n")
                     print(str(e))
 
+    def science_verify( self, sim_dir ):
+        #print( "Scientific Feature Testing: check scientific_feature_report.txt" )
+        report_name = "scientific_feature_report.txt"
+        sfr = os.path.join( sim_dir, report_name )
+        if os.path.exists( sfr ):
+            with open( sfr ) as sfr_file:
+                sfr_data = sfr_file.read()
+                if "SUMMARY: Success=True" in sfr_data:
+                    print( self.scenario_path + " passed (" + str(self.duration) + ") - " + report_name )
+                    #print( self.scenario_path + " passed." )
+                    self.report.addPassingTest(self.scenario_path, self.duration, os.path.join(sim_dir, report_name))
+                    os.remove( os.path.join( sim_dir, "test.txt" ) )
+                else:
+                    fail_text = self.scenario_path + " SFT failed."
+                    print( self.scenario_path + " failed (" + str(self.duration) + ") - " + report_name )
+                    print( sfr_data )
+                    self.report.addFailingTest( self.scenario_path, fail_text, os.path.join( sim_dir, report_name ), self.scenario_type )
+        else:
+            print( self.scenario_path + " failed (" + str(self.duration) + ") - " + report_name + " not generated. This could mean an error in the dtk_post_process.py script, imported scripts, including import errors, which can include not finding a shared python module in the import path.")
+            self.report.addFailingTest( self.scenario_path, "No " + report_name, os.path.join( sim_dir, report_name ), self.scenario_type )
         
 

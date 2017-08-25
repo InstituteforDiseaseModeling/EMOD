@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,7 +19,6 @@ namespace Kernel
 
     class HIVInterventionsContainer : public STIInterventionsContainer,
         public IHIVCampaignSemaphores,
-        public IHIVCascadeOfCare,
         public IHIVMedicalHistory,
         public IHIVDrugEffects,
         public IHIVDrugEffectsApply,
@@ -53,10 +52,6 @@ namespace Kernel
         virtual void GoOffART();
         virtual bool OnPreART() const;
 
-        // IHIVCascadeOfCare
-        virtual std::string getCascadeState() const;
-        virtual void setCascadeState(std::string state);
-        
         // IHIVMedicalHistory
         // updates medical chart
         virtual void OnTestForHIV(bool test_result);
@@ -91,10 +86,10 @@ namespace Kernel
         virtual ReceivedTestResultsType::Enum ReceivedTestResultForHIV() const;
 
         // IHIVCampaignSemaphores
-        virtual bool SemaphoreExists(std::string counter) const;
-        virtual void SemaphoreInit(std::string counter, int value);
-        virtual int SemaphoreIncrement(std::string counter);
-        virtual bool SemaphoreDecrement(std::string counter);
+        virtual bool SemaphoreExists( const std::string& counter ) const;
+        virtual void SemaphoreInit( const std::string& counter, int value );
+        virtual int SemaphoreIncrement( const std::string& counter );
+        virtual bool SemaphoreDecrement( const std::string& counter );
 
         virtual NaturalNumber GetTotalARTInitiations() const;
         virtual NonNegativeFloat GetTotalYearsOnART() const;
@@ -108,6 +103,7 @@ namespace Kernel
         virtual const ProbabilityNumber GetInfectivitySuppression() const;
         virtual float GetDurationSinceLastStartingART() const;
         virtual const ProbabilityNumber& GetProbMaternalTransmissionModifier() const;
+        virtual void BroadcastNewHIVInfection();
 
         virtual void Update(float dt); // hook to update interventions if they need it
 
@@ -131,9 +127,6 @@ namespace Kernel
         float m_suppression_failure_timer;
         IIndividualHumanHIV * hiv_parent;
         ProbabilityNumber maternal_transmission_suppression;
-
-        // cascade of care
-        string cascade_state;   // state specified in Campaign.json.  used for abort states and exit states
 
         // campaign semaphores
         std::map<std::string, int> campaign_semaphores;

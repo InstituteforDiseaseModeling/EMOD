@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,9 +11,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "TransmissionGroupsBase.h"
 #include "Exceptions.h"
+#include "StrainIdentity.h"
+#include "Log.h"
+
+SETUP_LOGGING( "TransmissionGroupsBase" )
 
 namespace Kernel
 {
+
     TransmissionGroupsBase::TransmissionGroupsBase()
         : propertyNameToMatrixMap()
         , propertyValueToIndexMap()
@@ -123,9 +128,22 @@ namespace Kernel
     BEGIN_QUERY_INTERFACE_BODY(TransmissionGroupsBase::ContagionPopulationImpl)
     END_QUERY_INTERFACE_BODY(TransmissionGroupsBase::ContagionPopulationImpl)
 
-    AntigenId TransmissionGroupsBase::ContagionPopulationImpl::GetAntigenId( void ) const
+    TransmissionGroupsBase::ContagionPopulationImpl::ContagionPopulationImpl( IStrainIdentity * strain, float quantity )
+    : contagionQuantity(quantity)
+    , antigenId( strain->GetAntigenID() )
     {
-        return (AntigenId)0;
+        LOG_DEBUG_F( "Creating contagion population with antigen id %d and quantity %f\n", antigenId, contagionQuantity );
+    }
+
+    AntigenId TransmissionGroupsBase::ContagionPopulationImpl::GetAntigenID() const
+    {
+        return antigenId;
+    }
+
+    AntigenId TransmissionGroupsBase::ContagionPopulationImpl::GetGeneticID() const
+    {
+        // Never valid code path, have to implement this method due to interface.
+        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__ );
     }
 
     float TransmissionGroupsBase::ContagionPopulationImpl::GetTotalContagion( void ) const
@@ -133,8 +151,9 @@ namespace Kernel
         return contagionQuantity;
     }
 
-    void TransmissionGroupsBase::ContagionPopulationImpl::ResolveInfectingStrain( StrainIdentity* strainId ) const
+    void TransmissionGroupsBase::ContagionPopulationImpl::ResolveInfectingStrain( IStrainIdentity* strainId ) const
     {
+        strainId->SetAntigenID(antigenId);
         strainId->SetGeneticID(0);
     }
 

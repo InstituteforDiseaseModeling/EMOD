@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeMalariaEventContext.h"  // for ISporozoiteChallengeConsumer methods
 #include "SusceptibilityVector.h"     // for age-dependent biting risk static methods
 
-static const char * _module = "InputEIR";
+SETUP_LOGGING( "InputEIR" )
 
 namespace Kernel
 {
@@ -73,6 +73,7 @@ namespace Kernel
 
     BEGIN_QUERY_INTERFACE_BODY(InputEIR)
         HANDLE_INTERFACE(IConfigurable)
+        HANDLE_INTERFACE(IBaseIntervention)
         HANDLE_INTERFACE(INodeDistributableIntervention)
         HANDLE_ISUPPORTS_VIA(INodeDistributableIntervention)
     END_QUERY_INTERFACE_BODY(InputEIR)
@@ -124,7 +125,7 @@ namespace Kernel
                 }
         }
 
-        bool configured = JsonConfigurable::Configure( inputJson );
+        bool configured = BaseNodeIntervention::Configure( inputJson );
 
         if(monthly_EIR.size() != MONTHSPERYEAR && JsonConfigurable::_dryrun == false )
         {
@@ -135,13 +136,10 @@ namespace Kernel
         return configured;
     }
 
-    void InputEIR::SetContextTo(INodeEventContext *context)
-    {
-        parent = context;
-    }
-
     void InputEIR::Update( float dt )
     {
+        if( !BaseNodeIntervention::UpdateNodesInterventionStatus() ) return;
+
         float ACTUALDAYSPERMONTH = float(DAYSPERYEAR) / MONTHSPERYEAR;  // 30.416666
         int month_index = int(today / ACTUALDAYSPERMONTH) % MONTHSPERYEAR;
         daily_EIR = monthly_EIR.at(month_index) / ACTUALDAYSPERMONTH;
@@ -159,4 +157,14 @@ namespace Kernel
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "iscc", "ISporozoiteChallengeConsumer", "INodeEventContext" );
         }    
     }
+
+    float InputEIR::GetCostPerUnit() const
+    {
+        // -------------------------------------------------------------------------------
+        // --- Since this intervention is used to infect people in absence of mosquitos,
+        // --- it doesn't have a cost associated with it.
+        // -------------------------------------------------------------------------------
+        return 0.0;
+    }
+
 }

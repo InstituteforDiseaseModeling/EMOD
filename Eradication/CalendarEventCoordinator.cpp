@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,7 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "CalendarEventCoordinator.h"
 #include "InterventionFactory.h"
 
-static const char * _module = "CalendarEventCoordinator";
+SETUP_LOGGING( "CalendarEventCoordinator" )
 
 namespace Kernel
 {
@@ -84,7 +84,7 @@ namespace Kernel
             std::ostringstream intervention_name;
             intervention_name << std::string( json::QuickInterpreter(intervention_config._json)["class"].As<json::String>() );
 
-            auto qi_as_config = Configuration::CopyFromElement( (intervention_config._json) );
+            auto qi_as_config = Configuration::CopyFromElement( (intervention_config._json), "campaign" );
             _di = InterventionFactory::getInstance()->CreateIntervention(qi_as_config);
             // including deeper information for "distributing" interventions (e.g. calendars)
             formatInterventionClassNames( intervention_name, &json::QuickInterpreter(intervention_config._json) );

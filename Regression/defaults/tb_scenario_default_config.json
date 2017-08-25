@@ -1,6 +1,9 @@
 {
     "parameters":{
         "GENERAL": {
+            "Memory_Usage_Warning_Threshold_Working_Set_MB" : 3500,
+            "Memory_Usage_Halting_Threshold_Working_Set_MB" : 4000,
+
             "Simulation_Type":"TB_SIM",
             "Geography":"SamplesInput",
             "Run_Number":10400,
@@ -52,7 +55,6 @@
             "DEATH": {
                 "Base_Mortality":0.0,
                 "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER",
-                "Enable_Disease_Mortality":1,
                 "Mortality_Time_Course":"DAILY_MORTALITY",
                 "x_Other_Mortality":1
             }
@@ -132,6 +134,7 @@
             "TB_Extrapulmonary_Fraction_Adult":0,
             "TB_Extrapulmonary_Fraction_Child":0,
             "TB_Extrapulmonary_Mortality_Multiplier":0.4,
+            "TB_Fast_Progressor_Fraction_Type": "AGE", 
             "TB_Fast_Progressor_Fraction_Adult":1,
             "TB_Fast_Progressor_Fraction_Child":1,
             "TB_Fast_Progressor_Rate":0.02,
@@ -171,7 +174,7 @@
             "Campaign_Filename":"campaign.json"
         },
         "REPORTING": {
-            "Custom_Reports_Filename" : "NoCustomReports",
+            "Custom_Reports_Filename" : "",
             "Report_Event_Recorder" : 0,
             "Enable_Default_Reporting" : 1,
             "Enable_Demographics_Reporting":0,

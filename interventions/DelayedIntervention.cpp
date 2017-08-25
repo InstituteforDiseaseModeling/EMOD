@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"
 #include "RANDOM.h"
 
-static const char * _module = "DelayedIntervention";
+SETUP_LOGGING( "DelayedIntervention" )
 
 namespace Kernel
 {
@@ -34,7 +34,6 @@ namespace Kernel
 
     void DelayedIntervention::DistributionConfigure( const Configuration * inputJson )
     {
-        // DJK: Should pass inputJson to factor that creates instance of IDelayDistribution <ERAD-1852>
         delay_distribution.Configure( this, inputJson );
     }
 
@@ -43,9 +42,9 @@ namespace Kernel
         initConfigComplexType("Actual_IndividualIntervention_Configs", &actual_intervention_config, DI_Actual_IndividualIntervention_Configs_DESC_TEXT);
     }
 
-    void DelayedIntervention::InterventionValidate()
+    void DelayedIntervention::InterventionValidate( const std::string& rDataLocation )
     {
-        InterventionValidator::ValidateInterventionArray( actual_intervention_config._json );
+        InterventionValidator::ValidateInterventionArray( actual_intervention_config._json, rDataLocation );
     }
 
     void DelayedIntervention::DelayValidate()
@@ -59,10 +58,10 @@ namespace Kernel
         DistributionConfigure(inputJson);
         InterventionConfigure(inputJson);
 
-        bool retValue = JsonConfigurable::Configure( inputJson );
+        bool retValue = BaseIntervention::Configure( inputJson );
         if( retValue )
         {
-            InterventionValidate();
+            InterventionValidate( inputJson->GetDataLocation() );
             DelayValidate();
         }
         return retValue ;
@@ -100,24 +99,23 @@ namespace Kernel
 
     DelayedIntervention::DelayedIntervention()
     : BaseIntervention()
-    , parent(nullptr)
     , remaining_delay_days(0.0)
     , coverage(1.0)
     , delay_distribution(DistributionFunction::EXPONENTIAL_DURATION)
     , actual_intervention_config()
     {
         delay_distribution.SetTypeNameDesc( "Delay_Distribution", DI_Delay_Distribution_DESC_TEXT );
-        delay_distribution.AddSupportedType( DistributionFunction::FIXED_DURATION,       "Delay_Period",      DI_Delay_Period_DESC_TEXT,      "", "" );
-        delay_distribution.AddSupportedType( DistributionFunction::UNIFORM_DURATION,     "Delay_Period_Min",  DI_Delay_Period_Min_DESC_TEXT,  "Delay_Period_Max",     DI_Delay_Period_Max_DESC_TEXT );
-        delay_distribution.AddSupportedType( DistributionFunction::GAUSSIAN_DURATION,    "Delay_Period_Mean", DI_Delay_Period_Mean_DESC_TEXT, "Delay_Period_Std_Dev", DI_Delay_Period_Std_Dev_DESC_TEXT );
-        delay_distribution.AddSupportedType( DistributionFunction::EXPONENTIAL_DURATION, "Delay_Period",      DI_Delay_Period_DESC_TEXT,      "", "" );
+        delay_distribution.AddSupportedType( DistributionFunction::FIXED_DURATION,       "Delay_Period",       DI_Delay_Period_DESC_TEXT,       "", "" );
+        delay_distribution.AddSupportedType( DistributionFunction::UNIFORM_DURATION,     "Delay_Period_Min",   DI_Delay_Period_Min_DESC_TEXT,   "Delay_Period_Max",     DI_Delay_Period_Max_DESC_TEXT );
+        delay_distribution.AddSupportedType( DistributionFunction::GAUSSIAN_DURATION,    "Delay_Period_Mean",  DI_Delay_Period_Mean_DESC_TEXT,  "Delay_Period_Std_Dev", DI_Delay_Period_Std_Dev_DESC_TEXT );
+        delay_distribution.AddSupportedType( DistributionFunction::EXPONENTIAL_DURATION, "Delay_Period",       DI_Delay_Period_DESC_TEXT,       "", "" );
+        delay_distribution.AddSupportedType( DistributionFunction::WEIBULL_DURATION,     "Delay_Period_Scale", DI_Delay_Period_Scale_DESC_TEXT, "Delay_Period_Shape",   DI_Delay_Period_Shape_DESC_TEXT );
 
         remaining_delay_days.handle = std::bind( &DelayedIntervention::Callback, this, std::placeholders::_1 );
     }
 
     DelayedIntervention::DelayedIntervention( const DelayedIntervention& master )
         : BaseIntervention( master )
-        , parent(nullptr)
         , remaining_delay_days( master.remaining_delay_days )
         , coverage( master.coverage )
         , delay_distribution( master.delay_distribution )
@@ -127,13 +125,10 @@ namespace Kernel
         remaining_delay_days.handle = std::bind( &DelayedIntervention::Callback, this, std::placeholders::_1 );
     }
 
-    void DelayedIntervention::SetContextTo(IIndividualHumanContext *context)
-    {
-        parent = context; // for rng
-    }
-
     void DelayedIntervention::Update( float dt )
-    { 
+    {
+        if( !BaseIntervention::UpdateIndividualsInterventionStatus() ) return;
+
         remaining_delay_days.Decrement( dt );
     }
 
@@ -162,7 +157,7 @@ namespace Kernel
             for( int idx=0; idx<interventions_array.Size(); idx++ )
             {
                 const json::Object& actualIntervention = json_cast<const json::Object&>(interventions_array[idx]);
-                Configuration * tmpConfig = Configuration::CopyFromElement(actualIntervention);
+                Configuration * tmpConfig = Configuration::CopyFromElement( actualIntervention, "campaign" );
                 release_assert( tmpConfig );
                 LOG_DEBUG_F("DelayedIntervention distributed intervention #%d\n", idx);
                 IDistributableIntervention *di = const_cast<IInterventionFactory*>(ifobj)->CreateIntervention(tmpConfig);

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,13 +21,19 @@ namespace Kernel
 
     public:
         MultiInterventionEventCoordinator();
-        virtual void UpdateNodes(float dt) override;
-        virtual bool visitIndividualCallback(IIndividualHumanEventContext *ihec, float &incrementalCostOut, ICampaignCostObserver * pICCO ) override;
 
     protected:
         virtual void initializeInterventionConfig( const Configuration * inputJson ) override;
-        virtual void validateInterventionConfig( const json::Element& rElement ) override;
+        virtual void validateInterventionConfig( const json::Element& rElement, const std::string& rDataLocation ) override;
         virtual bool HasNodeLevelIntervention() const override;
+        virtual void ExtractInterventionNameForLogging() override;
+        virtual void InitializeInterventions() override;
+        virtual void DistributeInterventionsToNodes( INodeEventContext* event_context ) override;
+        virtual void DistributeInterventionsToIndividuals( INodeEventContext* event_context ) override;
+        virtual bool DistributeInterventionsToIndividual( IIndividualHumanEventContext *ihec,
+                                                          float & incrementalCostOut,
+                                                          ICampaignCostObserver * pICCO ) override;
 
+        std::vector<IDistributableIntervention *> m_IndividualInterventions;
     };
 }

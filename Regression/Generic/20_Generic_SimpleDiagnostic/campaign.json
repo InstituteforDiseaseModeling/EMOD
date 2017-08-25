@@ -1,0 +1,168 @@
+{
+    "Events": [
+        {
+            "README": "Exercises nearly all features of SimpleDiagnostic by specifing non-default values for all parameters. Gives out vaccine to certain %age of infected (and non-infected) population.",
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.8,
+                "Intervention_Config": {
+                    "Base_Sensitivity": 0.8,
+                    "Base_Specificity": 0.9,
+                    "Cost_To_Consumer": 0,
+                    "Days_To_Diagnosis": 0.0,
+                    "Positive_Diagnosis_Config": {
+                        "class": "MultiInterventionDistributor",
+                        "Intervention_List": [
+                            {
+                                "Cost_To_Consumer": 0.333,
+                                "Secondary_Decay_Time_Constant": 1,
+                                "Vaccine_Take": 1,
+                                "Vaccine_Type": "AcquisitionBlocking",
+                                "class": "SimpleVaccine",
+                                "Waning_Config": {
+                                    "Box_Duration": 3650, 
+                                    "Initial_Effect": 0.1, 
+                                    "class": "WaningEffectBox"
+                                }
+                            },
+                            {
+                                "Cost_To_Consumer": 0.333,
+                                "Secondary_Decay_Time_Constant": 1,
+                                "Vaccine_Take": 1,
+                                "Vaccine_Type": "TransmissionBlocking",
+                                "class": "SimpleVaccine",
+                                "Waning_Config": {
+                                    "Box_Duration": 3650, 
+                                    "Initial_Effect": 0.9, 
+                                    "class": "WaningEffectBox"
+                                }
+                            },
+                            {
+                                "Cost_To_Consumer": 0.333,
+                                "Secondary_Decay_Time_Constant": 1,
+                                "Vaccine_Take": 1,
+                                "Vaccine_Type": "MortalityBlocking",
+                                "class": "SimpleVaccine",
+                                "Waning_Config": {
+                                    "Box_Duration": 3650, 
+                                    "Initial_Effect": 0.5, 
+                                    "class": "WaningEffectBox"
+                                }
+                            }
+                        ]
+                    },
+                    "Treatment_Fraction": 0.7,
+                    "class": "SimpleDiagnostic"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 20,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "Cost_To_Consumer": 1.0,
+                        "Vaccine_Type": "TransmissionBlocking",
+                        "class": "SimpleVaccine",
+                        "Waning_Config": {
+                            "Initial_Effect": 1.0,
+                            "Box_Duration": 1000,
+                            "class": "WaningEffectBox"
+                        }
+                    },
+                    "Demographic_Coverage": 1.0,
+                    "Trigger_Condition_List": [ "TestedPositive_CureMeNow" ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Listener event",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 100,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Base_Sensitivity": 1.0,
+                    "Base_Specificity": 1.0,
+                    "Cost_To_Consumer": 0.0,
+                    "Days_To_Diagnosis": 0.0,
+                    "Event_Or_Config": "Event",
+                    "Positive_Diagnosis_Event": "TestedPositive_CureMeNow",
+                    "Treatment_Fraction": 1.0,
+                    "class": "SimpleDiagnostic"
+                },
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Diagnostic event",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 100,
+            "class": "CampaignEvent"
+        },
+        {
+            "README": "Perfect Vaccine to prevent infection",
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "Cost_To_Consumer": 1.0,
+                        "Vaccine_Type": "AcquisitionBlocking",
+                        "class": "SimpleVaccine",
+			"Waning_Config": {
+			    "Box_Duration": 1000, 
+			    "Initial_Effect": 1, 
+			    "class": "WaningEffectBox"
+			}
+                    },
+                    "Demographic_Coverage": 1.0,
+                    "Trigger_Condition_List": [ "TestedNegative_ProtectMeNow" ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Listener event",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 120,
+            "class": "CampaignEvent"
+        },
+        {
+            "README": "Super-sneaky reverse diagnostic that uses 0% specifity to test for those NOT infected",
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Base_Sensitivity": 0.0,
+                    "Base_Specificity": 0.0,
+                    "Cost_To_Consumer": 0.0,
+                    "Days_To_Diagnosis": 9.0,
+                    "Event_Or_Config": "Event",
+                    "Positive_Diagnosis_Event": "TestedNegative_ProtectMeNow",
+                    "Treatment_Fraction": 1.0,
+                    "class": "SimpleDiagnostic"
+                },
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Diagnostic event",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 140,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

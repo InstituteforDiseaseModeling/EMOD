@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,7 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 
-static const char * _module = "IVCalendar";
+SETUP_LOGGING( "IVCalendar" )
 
 namespace Kernel
 {
@@ -94,13 +94,12 @@ namespace Kernel
     IMPLEMENT_FACTORY_REGISTERED(IVCalendar)
 
     IVCalendar::IVCalendar()
-    : parent(nullptr)
+    : BaseIntervention()
     , target_age_array()
     , actual_intervention_config()
     , dropout(false)
     , scheduleAges()
     {
-        initConfigTypeMap("Dropout", &dropout, CAL_Dropout_DESC_TEXT, false);
     }
 
     IVCalendar::~IVCalendar()
@@ -113,13 +112,14 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
+        initConfigTypeMap("Dropout", &dropout, CAL_Dropout_DESC_TEXT, false);
         initConfigComplexType("Calendar", &target_age_array, CAL_Calendar_DESC_TEXT);
         initConfigComplexType("Actual_IndividualIntervention_Configs", &actual_intervention_config, CAL_Actual_Intervention_Configs_DESC_TEXT);
 
-        bool ret = JsonConfigurable::Configure( inputJson );
+        bool ret = BaseIntervention::Configure( inputJson );
         if( ret )
         {
-            InterventionValidator::ValidateInterventionArray( actual_intervention_config._json );
+            InterventionValidator::ValidateInterventionArray( actual_intervention_config._json, inputJson->GetDataLocation() );
         }
         return ret ;
     }
@@ -180,6 +180,8 @@ namespace Kernel
     // individual who owns us. Hmm...
     void IVCalendar::Update( float dt )
     {
+        if( !BaseIntervention::UpdateIndividualsInterventionStatus() ) return;
+
         //calendar_age += dt;
         if( ( scheduleAges.size() > 0 ) && ( parent->GetEventContext()->GetAge() >= scheduleAges.front() ) )
         {
@@ -209,7 +211,7 @@ namespace Kernel
                 for( int idx=0; idx<interventions_array.Size(); ++idx )
                 {
                     const json::Object& actualIntervention = json_cast<const json::Object&>(interventions_array[idx]);
-                    Configuration * tmpConfig = Configuration::CopyFromElement(actualIntervention);
+                    Configuration * tmpConfig = Configuration::CopyFromElement( actualIntervention, "campaign" );
                     assert( tmpConfig );
                     IDistributableIntervention *di = const_cast<IInterventionFactory*>(ifobj)->CreateIntervention(tmpConfig);
                     delete tmpConfig;

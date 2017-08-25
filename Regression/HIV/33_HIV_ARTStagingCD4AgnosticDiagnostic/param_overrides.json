@@ -7,12 +7,6 @@
 		"Run_Number": 210,
 		"Simulation_Duration": 30, 
 		"Simulation_Timestep": 1,
-                "Valid_Cascade_States" : [
-                    "CascadeState_1",
-                    "CascadeState_2",
-                    "CascadeState_3",
-                    "CascadeState_4"
-                ],
 		
 		"____________INTRAHOST___________": "",
 
@@ -26,8 +20,8 @@
 		"x_Birth": 20.025, 
 		"Demographics_Filenames": [
 			"../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json",
-			"../input/PFA_overlay.json",
-			"../input/HasActiveTB_IP_Overlay.json"
+			"../input/InterventionStatus_HasActiveTB_overlay.json",
+			"../input/PFA_overlay.json"
 		], 
 
 		"____________REPORTING___________": "",

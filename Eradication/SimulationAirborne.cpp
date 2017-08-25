@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,7 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SusceptibilityAirborne.h"
 #include "SimulationConfig.h"
 
-static const char * _module = "SimulationAirborne";
+SETUP_LOGGING( "SimulationAirborne" )
 
 namespace Kernel
 {
@@ -64,10 +64,13 @@ namespace Kernel
         return true;
     }
 
-    void SimulationAirborne::addNewNodeFromDemographics(suids::suid node_suid, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory)
+    void SimulationAirborne::addNewNodeFromDemographics( suids::suid node_suid, 
+                                                         NodeDemographicsFactory *nodedemographics_factory, 
+                                                         ClimateFactory *climate_factory, 
+                                                         bool white_list_enabled )
     {
         NodeAirborne *node = NodeAirborne::CreateNode(this, node_suid);
-        addNode_internal(node, nodedemographics_factory, climate_factory);
+        addNode_internal( node, nodedemographics_factory, climate_factory, white_list_enabled );
     }
 }
 

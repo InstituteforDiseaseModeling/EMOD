@@ -29,15 +29,8 @@
                     "gambiae"
                 ],
                 "Vector_Species_Params": {
-                    "arabiensis": {
-                        "Immature_Duration": 2, 
+                    "arabiensis": { 
                         "Indoor_Feeding_Fraction": 0.5
-                    },
-                    "funestus": {
-                        "Immature_Duration": 2
-                    },
-                    "gambiae": {
-                        "Immature_Duration": 2
                     }
                 }
             }

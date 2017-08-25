@@ -188,8 +188,8 @@ if not(Dbg) and not(Rel):
     env["Debug"] = False
     env["Release"] = True
 else:
-    env["Debug"] = True
-    env["Release"] = False
+    env["Debug"] = Dbg
+    env["Release"] = Rel
 
 print "Rel=" + str(Rel) + " Dbg=" + str(Dbg)
 
@@ -222,7 +222,7 @@ if os.sys.platform == 'win32':
                           "#/rapidjson/include",
                           "#/rapidjson/modp",
                           "#/snappy",
-                          "#/unittest/UnitTest++/src"])
+                          "#/lz4/lib"])
 else:
     env['ENV']['PATH'] = path
     env['OS_FAMILY'] = 'posix'
@@ -246,7 +246,7 @@ else:
                           "#/rapidjson/include",
                           "#/rapidjson/modp",
                           "#/snappy",
-                          "#/unittest/UnitTest++/src"])
+                          "#/lz4/lib"])
 
 #if has_option( "cxx" ):
 #    env["CC"] = get_option( "cxx" )
@@ -311,6 +311,12 @@ if os.sys.platform.startswith("linux"):
     else:
         env.Append( CCFLAGS=["-O3"] )
         
+    # enable AES support or get [wmmintrin.h:34:3: error: #error "AES/PCLMUL instructions not enabled"]
+    env.Append( CCFLAGS=["-maes"] )
+
+    # trying to avoid [smmintrin.h:31:3: error: #error "SSE4.1 instruction set not enabled"]
+    # trying to avoid [tmmintrin.h:31:3: error: #error "SSSE3 instruction set not enabled"]
+    env.Append( CCFLAGS=[ "-msse", "-msse3", "-msse4.1" ] )
 
 elif "win32" == os.sys.platform:
     windows = True
@@ -365,7 +371,6 @@ elif "win32" == os.sys.platform:
     # docs say don't use /FD from command line (minimal rebuild)
     # /Gy         : function level linking (implicit when using /Z7)
     # /Z7         : debug info goes into each individual .obj file -- no .pdb created 
-    # /Zi         : debug info goes into a PDB file
     # /MD         : Causes your application to use the multithread, dll version of the run-time library (LIBCMT.lib)
     # /MT         : use static lib
     # /O2         : optimize for speed (as opposed to size)
@@ -378,7 +383,6 @@ elif "win32" == os.sys.platform:
     # /WX         : abort build on compiler warnings
     # /bigobj     : for an object file bigger than 64K - DMB It is in the VS build parameters but it doesn't show up in the Command Line view
     # /fp:precise : Specifies floating-point behavior in a source code file. - DMB - I tried fp:fast and zero improvement
-    # /FS force to use MSPDBSRV.EXE (serializes access to .pdb files which is needed for multi-core builds)
     # Not including debug information for SCONS builds
     env.Append( CCFLAGS= [ "/EHsc", "/errorReport:none"] )
     env.Append( CCFLAGS= [ "/fp:precise" ] )
@@ -386,21 +390,27 @@ elif "win32" == os.sys.platform:
     env.Append( CCFLAGS= [ "/MD", "/MP" ] )
     env.Append( CCFLAGS= [ "/O2", "/Oi", "/Ot" ] )
     env.Append( CCFLAGS= [ "/W3", "/WX-"] )
-    env.Append( CCFLAGS= [ "/Zc:inline", "/Zc:forScope", "/Zc:wchar_t", "/Zi" ] )
-    env.Append( CCFLAGS= [ "/FS" ] )
+    env.Append( CCFLAGS= [ "/Zc:inline", "/Zc:forScope", "/Zc:wchar_t" ] )
 
     # Disable these two for faster generation of codes
     #env.Append( CCFLAGS= ["/GL"] ) # /GL whole program optimization
     #env.Append( LINKFLAGS=" /LTCG " )         # /LTCG link time code generation
     #env.Append( ARFLAGS=" /LTCG " ) # for the Library Manager
 
-    # /DEBUG will tell the linker to create a .pdb file
-    # which WinDbg and Visual Studio will use to resolve
-    # symbols if you want to debug a release-mode image.
-    # Note that this means we can't do parallel links in the build.
-    # NOTE: /DEBUG and Dbghelp.lib go together with changes in Exception.cpp which adds
-    #       the ability to print a stack trace.
-    env.Append( LINKFLAGS=" /DEBUG " )
+    # /Zi    : debug info goes into a PDB file
+    # /FS    : force to use MSPDBSRV.EXE (serializes access to .pdb files which is needed for multi-core builds)
+    # /DEBUG : linker to create a .pdb file which WinDbg and Visual Studio will use to resolve symbols if you want to debug a release-mode image.
+    # NOTE1: This means we can't do parallel links in the build.
+    # NOTE2: /DEBUG and Dbghelp.lib go together with changes in Exception.cpp which adds the ability to print a stack trace.
+    #
+    # DMB - 2/21/2017
+    # Commenting out debug options since they don't work when doing scons multithreaded build.
+    # The compiler creates a vc140.pdb file in the root directory but the linker looks for it
+    # in the build\x64\Release\Eradication directory.  However, when you do a single threaded
+    # build, we don't have this issue.
+    #env.Append( CCFLAGS= [ "/Zi" ] )
+    #env.Append( CCFLAGS= [ "/FS" ] )
+    #env.Append( LINKFLAGS=" /DEBUG " )
 
     # For MSVC <= 10.0
     #env.Append( LINKFLAGS=[ "/NODEFAULTLIB:LIBCPMT", "/NODEFAULTLIB:LIBCMT", "/MACHINE:X64"] )
@@ -415,7 +425,7 @@ elif "win32" == os.sys.platform:
     #env.Append( LINKFLAGS=[ "/VERBOSE:Lib" ] )
 
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    # !!! See SConscript file for liker flags that are specific to the EXE and not the DLLS !!!
+    # !!! See SConscript file for linker flags that are specific to the EXE and not the DLLS !!!
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     winLibString = "Dbghelp.lib psapi.lib ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib"
@@ -455,7 +465,7 @@ def doConfigure(myenv):
 def setEnvAttrs(myenv):
 
     diseasedlls = ['Generic', 'Vector', 'Malaria', 'Environmental', 'TB', "STI", "HIV" ]
-    diseases = ['Generic', 'Vector', 'Malaria', 'Polio', 'TB', 'STI', 'HIV', 'Py' ]
+    diseases = ['Generic', 'Vector', 'Malaria', 'Dengue', 'Environmental', 'Polio', 'TB', 'STI', 'HIV', 'TBHIV', 'Typhoid', 'Py' ]
     reportdlls = ['Spatial', 'Binned']
     campaigndlls = ['Bednet', 'IRSHousing']
 

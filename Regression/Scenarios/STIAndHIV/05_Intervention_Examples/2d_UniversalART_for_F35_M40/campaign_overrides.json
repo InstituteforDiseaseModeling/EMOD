@@ -1,29 +1,32 @@
 {
-    "Campaign_Name": "2d_UniversalART_for_F35_M40", 
+    "Campaign_Name": "2d_UniversalART_for_F35_M40",
     "Default_Campaign_Path": "defaults/hiv_default_campaign.json",
     "Use_Defaults": 1,
-    "Events":
-    [
+    "Events": [
         {
             "class": "CampaignEventByYear",
             "Event_Name": "ARTStaging: state 3 (draw blood)",
             "Start_Year": 1990,
-            "Nodeset_Config":
-            {
+            "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Event_Coordinator_Config":
-            {
+            "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config":
-                {
+                "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "ARTStaging3",
-                    "Actual_IndividualIntervention_Config":
-                    {
+                    "Trigger_Condition_List": [
+                        "ARTStaging3"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
                         "class": "HIVDrawBlood",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART" ],
-                        "Cascade_State": "ARTStaging",
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART"
+                        ],
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
                         "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "ARTStaging7"
                     }
@@ -34,29 +37,36 @@
             "class": "CampaignEventByYear",
             "Event_Name": "ARTStaging: state 7 (after 2020?)",
             "Start_Year": 1990,
-            "Nodeset_Config":
-            {
+            "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Event_Coordinator_Config":
-            {
+            "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config":
-                {
+                "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "ARTStaging7",
-                    "Actual_IndividualIntervention_Config":
-                    {
+                    "Trigger_Condition_List": [
+                        "ARTStaging7"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
                         "class": "HIVPiecewiseByYearAndSexDiagnostic",
-
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART" ],
-                        "Cascade_State": "ARTStaging",
-
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART"
+                        ],
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
                         "Days_To_Diagnosis": 0,
-                        "Time_Value_Map" :
-                        {
-                            "Times": [  1990,    2020 ],
-                            "Values": [ 0,       1 ]
+                        "Time_Value_Map": {
+                            "Times": [
+                                1990,
+                                2020
+                            ],
+                            "Values": [
+                                0,
+                                1
+                            ]
                         },
                         "Interpolation_Order": 0,
                         "Female_Multiplier": 1,
@@ -67,30 +77,32 @@
                 }
             }
         },
-
         {
             "class": "CampaignEventByYear",
             "Event_Name": "ARTStaging: state 9 (<40 years old?)",
             "Start_Year": 1990,
-            "Nodeset_Config":
-            {
+            "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Event_Coordinator_Config":
-            {
+            "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config":
-                {
+                "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
                     "Target_Demographic": "ExplicitGender",
                     "Target_Gender": "Male",
-                    "Trigger_Condition": "ARTStaging8",
-                    "Actual_IndividualIntervention_Config":
-                    {
+                    "Trigger_Condition_List": [
+                        "ARTStaging8"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
                         "class": "AgeDiagnostic",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART" ],
-                        "Cascade_State": "ARTStaging",
-
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART"
+                        ],
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
                         "Age_Thresholds": [
                             {
                                 "Low": 0,
@@ -107,30 +119,32 @@
                 }
             }
         },
-
         {
             "class": "CampaignEventByYear",
             "Event_Name": "ARTStaging: state 10 (<35 years old?)",
             "Start_Year": 1990,
-            "Nodeset_Config":
-            {
+            "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Event_Coordinator_Config":
-            {
+            "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config":
-                {
+                "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
                     "Target_Demographic": "ExplicitGender",
                     "Target_Gender": "Female",
-                    "Trigger_Condition": "ARTStaging8",
-                    "Actual_IndividualIntervention_Config":
-                    {
+                    "Trigger_Condition_List": [
+                        "ARTStaging8"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
                         "class": "AgeDiagnostic",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART" ],
-                        "Cascade_State": "ARTStaging",
-
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART"
+                        ],
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
                         "Age_Thresholds": [
                             {
                                 "Low": 0,

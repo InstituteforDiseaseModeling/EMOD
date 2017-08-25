@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ReportTB.h"
 #include "IndividualTB.h"
 #include "Types.h"
-static const char* _module = "ReportTB";
+#ifdef ENABLE_TBHIV
+#include "IndividualCoInfection.h"
+#endif
+
+SETUP_LOGGING( "ReportTB" )
 
 namespace Kernel
 {
@@ -163,13 +167,13 @@ namespace Kernel
         }
         else // Exposed or Infectious
         {
-            IIndividualHumanTB2* ihtbtoo = nullptr;
-            if ((const_cast<IIndividualHuman*>(individual))->QueryInterface(GET_IID(IIndividualHumanTB2), (void**)&ihtbtoo) != s_OK)
+            IIndividualHumanTB* ihtb = nullptr;
+            if ((const_cast<IIndividualHuman*>(individual))->QueryInterface(GET_IID(IIndividualHumanTB), (void**)&ihtb) != s_OK)
             {
-                LOG_ERR_F("%s: individual->QueryInterface(IIndividualHumanTB2) failed.\n", __FUNCTION__);
+                LOG_ERR_F("%s: individual->QueryInterface(IIndividualHumanTB) failed.\n", __FUNCTION__);
             }
 
-            if ((individual->GetInfectiousness() > 0.0f) || (ihtbtoo && ihtbtoo->IsExtrapulmonary()))
+            if ((individual->GetInfectiousness() > 0.0f) || (ihtb && ihtb->IsExtrapulmonary()))
             {
                 countOfInfectious += monte_carlo_weight;
             }
@@ -188,7 +192,7 @@ namespace Kernel
         ReportAirborne::LogIndividualData( individual );
 
         float monte_carlo_weight = float(individual->GetMonteCarloWeight());
-        const IndividualHumanTB* individual_tb = static_cast<const IndividualHumanTB*>(individual);
+        const IIndividualHumanTB* individual_tb = dynamic_cast<const IIndividualHumanTB*>(individual);
 
         //Immunity
         if (individual_tb->IsImmune() && !individual->IsInfected())

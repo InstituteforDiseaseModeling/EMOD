@@ -16,6 +16,10 @@
                         "Initial_Effect": 0.6, 
                         "class": "WaningEffectExponential"
                     }, 
+                    "Usage_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 1.0
+                    }, 
                     "class": "SimpleBednet"
                 }, 
                 "Target_Demographic": "Everyone", 

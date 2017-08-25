@@ -36,7 +36,7 @@ def ReadNLines(filename, n):
 def ProcessFiles(fileList, templateText):
 
     troubleFiles = []
-    skipPaths = 'cajun|dependencies|jsonspirit|rapidjson|snappy|unittest'
+    skipPaths = 'cajun|dependencies|jsonspirit|lz4|rapidjson|snappy|unittest'
     skipFiles = set(['stdafx.h', 'targetver.h', 'random.h', 'dllmain.cpp', 'stdafx.cpp', 'pdistmex.cpp', 'tarball.h', 'tarball.cpp'])
     lines = len(templateText.split('\n'))
 

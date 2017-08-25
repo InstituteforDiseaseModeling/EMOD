@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -65,6 +65,7 @@ namespace Kernel
 
         virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
         virtual json::QuickBuilder GetSchema() override;
+        virtual bool  HasValidDefault() const override { return false; }
 
         void Add( const AgeRange& rar );
         int Size() const;
@@ -117,7 +118,7 @@ namespace Kernel
 
         virtual void FindQualifyingIndividuals( INodeEventContext* pNEC, 
                                                 const DiseaseQualifications& rDisease,
-                                                PropertyRestrictions& rPropertyRestrictions );
+                                                PropertyRestrictions<IPKey, IPKeyValue, IPKeyValueContainer>& rPropertyRestrictions );
 
         virtual std::vector<IIndividualHumanEventContext*> SelectIndividuals();
 
@@ -167,6 +168,7 @@ namespace Kernel
         virtual void CreateAgeAndGenderList( const IdmDateTime& rDateTime, float dt );
 
         virtual void ScaleTargets( float popScaleFactor );
+        virtual void CheckStartDay( float campaignStartDay ) const;
 
     protected:
         virtual void AddTimeConfiguration();
@@ -186,7 +188,7 @@ namespace Kernel
         DiseaseQualifications* m_pDiseaseQualifications;
         float m_StartDay;
         float m_EndDay;
-        PropertyRestrictions m_PropertyRestrictions;
+        PropertyRestrictions<IPKey,IPKeyValue,IPKeyValueContainer> m_PropertyRestrictions;
         AgeRangeList m_AgeRangeList;
         std::vector<int> m_NumTargeted;
         std::vector<int> m_NumTargetedMales;
@@ -215,6 +217,7 @@ namespace Kernel
 
         virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
         virtual json::QuickBuilder GetSchema() override;
+        virtual bool  HasValidDefault() const override { return false; }
 
         virtual void CheckForOverlap();
         virtual void Add( TargetedDistribution* ptd );
@@ -224,6 +227,8 @@ namespace Kernel
         virtual bool IsFinished( const IdmDateTime& rDateTime, float dt );
 
         virtual void ScaleTargets( float popScaleFactor );
+
+        virtual void CheckStartDay( float campaignStartDay ) const;
 
     private:
 #pragma warning( push )
@@ -273,6 +278,7 @@ namespace Kernel
 
         // IEventCoordinator methods
         virtual void SetContextTo(ISimulationEventContext *isec) override;
+        virtual void CheckStartDay( float campaignStartDay ) const override;
         virtual void AddNode( const suids::suid& suid) override;
         virtual void Update(float dt) override;
         virtual void UpdateNodes(float dt) override;

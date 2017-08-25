@@ -1,6 +1,7 @@
+#include "Exceptions.h"
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -24,6 +25,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <Dbghelp.h> // requires Dbghelp.lib be on included as a library
 #include <winnt.h>
 #include <WinBase.h>
+
+static bool SymInitialize_has_been_called = false;
 
 #endif
 
@@ -62,10 +65,16 @@ static inline std::string dump_backtrace()
     // other than the current working directory.
     PCSTR user_search_path = nullptr ;
 
-    if( !SymInitialize( process, user_search_path, TRUE ) )
+    if( !SymInitialize_has_been_called )
     {
-        DWORD error = GetLastError();
-        return stack_trace.str() ;
+        if( !SymInitialize( process, user_search_path, TRUE ) )
+        {
+            DWORD error = GetLastError();
+            return stack_trace.str();
+        }
+
+        // GH-885 - We don't want to call SymInitialize() more than once per process.
+        SymInitialize_has_been_called = true;
     }
 
     // -----------------------
@@ -130,7 +139,12 @@ static inline std::string dump_backtrace()
         }
         else
         {
-            file_name = address ;
+            // -------------------------------------------------------------------------
+            // --- When there is not PDB file, you get here.  However, you can get here
+            // --- if the particular method's source is unknown (i.e. C++ library).
+            // --- Try just skipping lines with no information.
+            // -------------------------------------------------------------------------
+            continue;
         }
 
         // --------------------------------------------------------------------------
@@ -265,7 +279,7 @@ namespace Kernel {
         _tmp_msg << "CalculatedValueOutOfRangeException: "
                  << what()
                  << GET_VAR_NAME( var_name )
-                 << " has value "
+                 << " assigned calculated value "
                  << bad_value
                  << " that violates range constraint "
                  << range_violated;
@@ -282,7 +296,8 @@ namespace Kernel {
                  << GET_VAR_NAME(var_name)
                  << " with value " 
                  << var_value 
-                 << " out of range: " << ( (var_value<=test_value) ? "less than or equal to " : "greater than " )
+                 << " out of range: "
+                 << ( (var_value<test_value) ? "less than " : "greater than " )  //value can only be smaller or greater. Exception is only triggered when x < min or x > max
                  << test_value
                  << ".";
         _msg = _tmp_msg.str();
@@ -343,6 +358,24 @@ namespace Kernel {
         _msg = _tmp_msg.str();
     }
 
+    IncoherentConfigurationException::IncoherentConfigurationException( const char * file_name, int line_num, const char* func_name, const char* existing_label, double existing_value, const char* test_label, double test_value, const char* details )
+    : DetailedException( file_name, line_num, func_name )
+    {
+        createICEMessage( existing_label, boost::lexical_cast<std::string>(existing_value).c_str(), test_label, boost::lexical_cast<std::string>(test_value).c_str(), details );
+    }
+
+    IncoherentConfigurationException::IncoherentConfigurationException( const char * file_name, int line_num, const char* func_name, const char* existing_label, unsigned long existing_value, const char* test_label, unsigned long test_value, const char* details )
+    : DetailedException( file_name, line_num, func_name )
+    {
+        createICEMessage( existing_label, boost::lexical_cast<std::string>(existing_value).c_str(), test_label, boost::lexical_cast<std::string>(test_value).c_str(), details );
+    }
+
+    IncoherentConfigurationException::IncoherentConfigurationException( const char * file_name, int line_num, const char* func_name, const char* existing_label, signed int existing_value, const char* test_label, signed int test_value, const char* details )
+    : DetailedException( file_name, line_num, func_name )
+    {
+        createICEMessage( existing_label, boost::lexical_cast<std::string>(existing_value).c_str(), test_label, boost::lexical_cast<std::string>(test_value).c_str(), details );
+    }
+
     IncoherentConfigurationException::IncoherentConfigurationException( const char * file_name, int line_num, const char* func_name, const char* existing_label, float existing_value, const char* test_label, float test_value, const char* details )
     : DetailedException( file_name, line_num, func_name )
     {
@@ -362,6 +395,21 @@ namespace Kernel {
     : DetailedException( file_name, line_num, func_name )
     {
         createICEMessage( existing_label, existing_value, test_label, test_value, details );
+    }
+
+    IncoherentConfigurationException::IncoherentConfigurationException(
+        const char * file_name,
+        int line_num,
+        const char* func_name,
+        const char* existing_label,
+        signed int existing_value,
+        const char* test_label,
+        const char* test_value,
+        const char* details
+    )
+        : DetailedException(file_name, line_num, func_name)
+    {
+        createICEMessage(existing_label, boost::lexical_cast<std::string>(existing_value).c_str(), test_label, test_value, details);
     }
 
     void IncoherentConfigurationException::createICEMessage(
@@ -401,6 +449,16 @@ namespace Kernel {
     {
         std::ostringstream _tmp_msg;
         _tmp_msg << "InvalidInputDataException: " << what() << note << std::endl;
+        _msg = _tmp_msg.str();
+    }
+
+    InvalidInputDataException::InvalidInputDataException(const char * file_name, int line_num, const char * function_name, const std::string& config_filename, const char * note)
+    : DetailedException( file_name, line_num, function_name)
+    {
+        std::ostringstream _tmp_msg;
+        _tmp_msg << what() << std::endl;
+        _tmp_msg << "InvalidInputDataException in " << config_filename << ": " << std::endl;
+        _tmp_msg << note << std::endl;
         _msg = _tmp_msg.str();
     }
 
@@ -522,6 +580,35 @@ namespace Kernel {
         _msg = _tmp_msg.str();
     }
 
+    MissingParameterFromConfigurationException::MissingParameterFromConfigurationException(
+        const char* filename,
+        int line_num,
+        const char* function_name,
+        const char* config_file_name,
+        std::vector<std::string> param_names,
+        const char * details
+    )
+        : DetailedException(filename, line_num, function_name)
+    {
+        std::ostringstream _tmp_msg;
+        _tmp_msg << "MissingParameterFromConfigurationException: "
+            << what()
+            << "Parameters: '";
+        for( auto it = param_names.begin(); it != param_names.end(); ++it )
+        {
+            _tmp_msg << *it;
+            if( it != param_names.end()-1 )
+                _tmp_msg << ", ";
+        }
+       _tmp_msg << "' not found in input file '"
+            << config_file_name
+            << "'."
+            << details
+            << std::endl;
+        _msg = _tmp_msg.str();
+    }
+
+
     JsonTypeConfigurationException::JsonTypeConfigurationException(
         const char* filename,
         int line_num,
@@ -546,7 +633,7 @@ namespace Kernel {
         std::ostringstream _tmp_msg;
         _tmp_msg << "JsonTypeConfigurationException: "
                  << what()
-                 << "While trying to parse json data for param >>> "
+                 << "While trying to parse json data for param/key >>> "
                  << param_name
                  << " <<< in otherwise valid json segment... "
                  << std::endl

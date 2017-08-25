@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,7 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "Contexts.h"
 
-static const char * _module = "SimpleEventCoordinator";
+SETUP_LOGGING( "SimpleEventCoordinator" )
 
 namespace Kernel
 {
@@ -46,7 +46,7 @@ namespace Kernel
         bool retval = JsonConfigurable::Configure( inputJson );
         if( retval )
         {
-            InterventionValidator::ValidateIntervention( intervention_config._json );
+            InterventionValidator::ValidateIntervention( intervention_config._json, inputJson->GetDataLocation() );
         }
         return retval ;
 
@@ -60,7 +60,7 @@ namespace Kernel
     void SimpleInterventionDistributionEventCoordinator::UpdateNodes( float dt )
     {
 
-        auto qi_as_config = Configuration::CopyFromElement(intervention_config._json);
+        auto qi_as_config = Configuration::CopyFromElement(intervention_config._json,"campaign");
 
         INodeEventContext::individual_visit_function_t visit_func = 
             [this,qi_as_config](IIndividualHumanEventContext *ihec)

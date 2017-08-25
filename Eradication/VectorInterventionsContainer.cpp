@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,9 +13,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "InterventionFactory.h"
 #include "SimulationConfig.h"  // for "Human_Feeding_Mortality" parameter
+#include "IIndividualHuman.h"
+#include "NodeVectorEventContext.h"
 #include "VectorParameters.h"
+#include "VectorSpeciesParameters.h"
 
-static const char* _module = "VectorInterventionsContainer";
+SETUP_LOGGING( "VectorInterventionsContainer" )
 
 namespace Kernel
 {
@@ -27,23 +30,23 @@ namespace Kernel
         HANDLE_INTERFACE(IVectorInterventionEffectsSetter)
     END_QUERY_INTERFACE_DERIVED(VectorInterventionsContainer, InterventionsContainer)
 
-    VectorInterventionsContainer::VectorInterventionsContainer() : 
-        InterventionsContainer(), 
-        pDieBeforeFeeding(0),
-        pHostNotAvailable(0),
-        pDieDuringFeeding(.1f),
-        pDiePostFeeding(0),
-        pSuccessfulFeedAD(0),
-        pSuccessfulFeedHuman(.9f),
-        pOutdoorDieBeforeFeeding(0),
-        pOutdoorHostNotAvailable(0),
-        pOutdoorDieDuringFeeding(.1f),
-        pOutdoorDiePostFeeding(0),
-        pOutdoorSuccessfulFeedHuman(.9f),
-        blockIndoorVectorAcquire(1),
-        blockIndoorVectorTransmit(.9f),
-        blockOutdoorVectorAcquire(1),
-        blockOutdoorVectorTransmit(.9f)
+    VectorInterventionsContainer::VectorInterventionsContainer()
+        : InterventionsContainer()
+        , pDieBeforeFeeding(0)
+        , pHostNotAvailable(0)
+        , pDieDuringFeeding(.1f)
+        , pDiePostFeeding(0)
+        , pSuccessfulFeedHuman(.9f)
+        , pSuccessfulFeedAD(0)
+        , pOutdoorDieBeforeFeeding(0)
+        , pOutdoorHostNotAvailable(0)
+        , pOutdoorDieDuringFeeding(.1f)
+        , pOutdoorDiePostFeeding(0)
+        , pOutdoorSuccessfulFeedHuman(.9f)
+        , blockIndoorVectorAcquire(1)
+        , blockIndoorVectorTransmit(.9f)
+        , blockOutdoorVectorAcquire(1)
+        , blockOutdoorVectorTransmit(.9f)
     {
     }
 
@@ -150,19 +153,58 @@ namespace Kernel
         // final adjustment to product of (1-prob) accumulated over potentially multiple instances
         float p_block_housing = 1.0f - p_penetrate_housingmod;
         float p_kill_insecticidal_drug = 1.0f - p_survive_insecticidal_drug;
+        release_assert( GET_CONFIGURABLE(SimulationConfig) );
+        release_assert( GET_CONFIGURABLE(SimulationConfig)->vector_params );
+        if( GET_CONFIGURABLE(SimulationConfig)->vector_params->vector_species_names.size() == 0 )
+        {
+            return;
+        }
+        std::string species_name = (*GET_CONFIGURABLE(SimulationConfig)->vector_params->vector_species_names.begin());
+        auto m_species_params = GET_CONFIGURABLE(SimulationConfig)->vector_params->vspMap.at( species_name );
+
+        float nighttime_feeding = m_species_params->nighttime_feeding; //1.0f;  //@@@
+
         // range fix
         if(p_block_housing < 0) p_block_housing = 0;
         if(p_kill_insecticidal_drug < 0) p_kill_insecticidal_drug = 0;
+
         // adjust indoor post-feed kill to include combined probability of IRS & insectidical drug
-        p_kill_IRSpostfeed = 1.0f - ((1.0f-p_kill_IRSpostfeed)*(1.0f-p_kill_insecticidal_drug));
+
+        // Reach back into owning individual's owning node's event context to see if there's a node-wide IRS intervention
+        IIndividualHumanContext* parent = GetParent();
+        IIndividualHuman* human = nullptr;
+        if (s_OK != parent->QueryInterface(GET_IID(IIndividualHuman), (void**)&human)) {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHuman", "IIndividualHumanContext" );
+        }
+        INodeContext* node = human->GetParent();
+        INodeEventContext* context = node->GetEventContext();
+        INodeVectorInterventionEffects* effects = nullptr;
+        if (s_OK != context->QueryInterface(GET_IID(INodeVectorInterventionEffects), (void**)&effects)) {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "INodeVectorInterventionEffects", "INodeEventContext" );
+        }
+        float p_kill_IRSpostfeed_node = effects->GetIndoorKilling();
+        // Node-wide IRS intervention overrides individual intervention
+        if ( (p_kill_IRSpostfeed > 0.0f) && (p_kill_IRSpostfeed_node > 0.0f) ) {
+            LOG_WARN_F( "%s: Both node and individual have an IRS intervention. Node killing rate will be used.\n", __FUNCTION__ );
+        }
+        float p_kill_IRSpostfeed_effective = (p_kill_IRSpostfeed_node > 0) ? p_kill_IRSpostfeed_node : p_kill_IRSpostfeed;
+#if 0
+        // Someday
+        effects->Release();
+        effects = nullptr;
+        human->Release();
+        human = nullptr;
+#endif
+
+        p_kill_IRSpostfeed_effective = 1.0f - ((1.0f-p_kill_IRSpostfeed_effective)*(1.0f-p_kill_insecticidal_drug));
 
         // now get probabilities for indoor feeding outcomes
-        pDieBeforeFeeding    = p_kill_PFH+(1-p_kill_PFH)*(1-p_block_housing)*(p_kill_IRSprefeed+(1-p_kill_IRSprefeed)*(p_attraction_ADIH*(p_kill_ADIH+(1-p_kill_ADIH)*(p_kill_IRSpostfeed+(1-p_kill_IRSpostfeed)*p_kill_PFH))+(1-p_attraction_ADIH)*(p_block_net*((1-p_kill_ITN)*p_kill_PFH+p_kill_ITN)+(1.0f-p_block_net)*p_block_indrep*p_kill_PFH)));
-        pHostNotAvailable    = (1-p_kill_PFH)*(p_block_housing+(1-p_block_housing)*(1-p_kill_IRSprefeed)*(1-p_attraction_ADIH)*(p_block_net*(1-p_kill_ITN)*(1-p_kill_PFH)+(1.0f-p_block_net)*p_block_indrep*(1.0f-p_kill_PFH)));
+        pDieBeforeFeeding    = p_kill_PFH+(1-p_kill_PFH)*(1-p_block_housing)*(p_kill_IRSprefeed+(1-p_kill_IRSprefeed)*(p_attraction_ADIH*(p_kill_ADIH+(1-p_kill_ADIH)*(p_kill_IRSpostfeed_effective+(1-p_kill_IRSpostfeed_effective)*p_kill_PFH))+(1-p_attraction_ADIH)*(p_block_net*((1-p_kill_ITN*nighttime_feeding)*p_kill_PFH+p_kill_ITN*nighttime_feeding)+(1.0f-p_block_net)*p_block_indrep*p_kill_PFH)));
+        pHostNotAvailable    = (1-p_kill_PFH)*(p_block_housing+(1-p_block_housing)*(1-p_kill_IRSprefeed)*(1-p_attraction_ADIH)*(p_block_net*(1-p_kill_ITN*nighttime_feeding)*(1-p_kill_PFH)+(1.0f-p_block_net)*p_block_indrep*(1.0f-p_kill_PFH)));
         pDieDuringFeeding    = (1-p_kill_PFH)*(1-p_block_housing)*(1-p_kill_IRSprefeed) *(1-p_attraction_ADIH)*(1-p_block_net)*(1-p_block_indrep)*p_dieduringfeeding;
-        pDiePostFeeding      = (1-p_kill_PFH)*(1-p_block_housing)*(1-p_kill_IRSprefeed) *(1-p_attraction_ADIH) *(1-p_block_net)*(1-p_block_indrep)*(1-p_dieduringfeeding)*(p_kill_IRSpostfeed+(1-p_kill_IRSpostfeed)*p_kill_PFH);
-        pSuccessfulFeedHuman = (1-p_kill_PFH)*(1-p_block_housing)*(1-p_kill_IRSprefeed) *(1-p_attraction_ADIH) *(1-p_block_net)*(1-p_block_indrep)* (1-p_dieduringfeeding)*(1-p_kill_IRSpostfeed)*(1-p_kill_PFH);
-        pSuccessfulFeedAD    = (1-p_kill_PFH)*(1-p_block_housing)*(1-p_kill_IRSprefeed)*p_attraction_ADIH*(1-p_kill_ADIH)*(1-p_kill_IRSpostfeed)*(1-p_kill_PFH);
+        pDiePostFeeding      = (1-p_kill_PFH)*(1-p_block_housing)*(1-p_kill_IRSprefeed) *(1-p_attraction_ADIH) *(1-p_block_net)*(1-p_block_indrep)*(1-p_dieduringfeeding)*(p_kill_IRSpostfeed_effective+(1-p_kill_IRSpostfeed_effective)*p_kill_PFH);
+        pSuccessfulFeedHuman = (1-p_kill_PFH)*(1-p_block_housing)*(1-p_kill_IRSprefeed) *(1-p_attraction_ADIH) *(1-p_block_net)*(1-p_block_indrep)* (1-p_dieduringfeeding)*(1-p_kill_IRSpostfeed_effective)*(1-p_kill_PFH);
+        pSuccessfulFeedAD    = (1-p_kill_PFH)*(1-p_block_housing)*(1-p_kill_IRSprefeed)*p_attraction_ADIH*(1-p_kill_ADIH)*(1-p_kill_IRSpostfeed_effective)*(1-p_kill_PFH);
 
         //update intervention effect on acquisition and transmission of infection--NOTE that vector tendencies to bite an individual are already gathered into intervention_system_effects
         //gets infection for dies during feeding, dies post feeding, or successful feed, but NOT die before feeding or unable to find host

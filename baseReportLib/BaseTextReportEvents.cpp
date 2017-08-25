@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,7 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "BaseTextReportEvents.h"
 #include "NodeEventContext.h"
 
-static const char* _module = "BaseTextReportEvents";
+SETUP_LOGGING( "BaseTextReportEvents" )
 
 namespace Kernel
 {
@@ -77,11 +77,11 @@ namespace Kernel
             if( registering )
             {
                 LOG_DEBUG_F( "BaseTextReportEvents is registering to listen to event %s\n", trigger.c_str() );
-                pNTIC->RegisterNodeEventObserverByString( this, trigger );
+                pNTIC->RegisterNodeEventObserver( this, trigger );
             }
             else
             {
-                pNTIC->UnregisterNodeEventObserverByString( this, trigger );
+                pNTIC->UnregisterNodeEventObserver( this, trigger );
             }
         }
     }

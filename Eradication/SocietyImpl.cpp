@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,7 +21,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ConcurrencyParameters.h"
 
 #include "Log.h"
-static const char * _module = "SocietyImpl";
+
+SETUP_LOGGING( "SocietyImpl" )
 
 namespace Kernel {
 
@@ -104,7 +105,7 @@ namespace Kernel {
         // --------------------------------
         release_assert( config );
 
-        Configuration* concurrency_config = Configuration::CopyFromElement( (*config)[ "Concurrency_Configuration" ] );
+        Configuration* concurrency_config = Configuration::CopyFromElement( (*config)[ "Concurrency_Configuration" ], config->GetDataLocation() );
 
         p_concurrency->Initialize( concurrency_config );
 
@@ -116,9 +117,9 @@ namespace Kernel {
         for( int irel = 0; irel < RelationshipType::COUNT; irel++ )
         {
             std::string main_element_name = RelationshipType::pairs::lookup_key(irel);
-            Configuration* config_con  = Configuration::CopyFromElement( (*config)[ main_element_name ][ "Concurrency_Parameters"    ] );
-            Configuration* config_form = Configuration::CopyFromElement( (*config)[ main_element_name ][ "Pair_Formation_Parameters" ] );
-            Configuration* config_rel  = Configuration::CopyFromElement( (*config)[ main_element_name ][ "Relationship_Parameters"   ] );
+            Configuration* config_con  = Configuration::CopyFromElement( (*config)[ main_element_name ][ "Concurrency_Parameters"    ], config->GetDataLocation() );
+            Configuration* config_form = Configuration::CopyFromElement( (*config)[ main_element_name ][ "Pair_Formation_Parameters" ], config->GetDataLocation() );
+            Configuration* config_rel  = Configuration::CopyFromElement( (*config)[ main_element_name ][ "Relationship_Parameters"   ], config->GetDataLocation() );
  
             RelationshipType::Enum rel_type = (RelationshipType::Enum)irel ;
 

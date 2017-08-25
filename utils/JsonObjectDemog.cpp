@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -25,7 +25,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #pragma warning(disable : 4996) //ignore depracation warning about strcpy
 
-static const char* _module = "JsonObjectDemog";
+SETUP_LOGGING( "JsonObjectDemog" )
 
 using namespace std;
 

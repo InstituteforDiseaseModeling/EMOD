@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -25,7 +25,8 @@ namespace Kernel
     ENUM_DEFINE(SpaceSprayTarget,
         ENUM_VALUE_SPEC(SpaceSpray_FemalesOnly       , 11)
         ENUM_VALUE_SPEC(SpaceSpray_MalesOnly         , 12)
-        ENUM_VALUE_SPEC(SpaceSpray_FemalesAndMales   , 13))
+        ENUM_VALUE_SPEC(SpaceSpray_FemalesAndMales   , 13)
+        ENUM_VALUE_SPEC(SpaceSpray_Indoor            , 14))
 
     ENUM_DEFINE(ArtificialDietTarget,
         //ENUM_VALUE_SPEC(AD_WithinHouse             , 20) // to be handled as individual rather than node-targeted intervention
@@ -60,9 +61,7 @@ namespace Kernel
         float killing;
         float reduction;
         VectorHabitatType::Enum habitat_target;
-        WaningConfig   killing_config;
         IWaningEffect* killing_effect;
-        WaningConfig   blocking_config;
         IWaningEffect* blocking_effect;
          
         INodeVectorInterventionEffectsApply *invic;

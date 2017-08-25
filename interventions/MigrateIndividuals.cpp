@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 
-static const char * _module = "MigrateIndividuals";
+SETUP_LOGGING( "MigrateIndividuals" )
 
 namespace Kernel
 {
@@ -46,7 +46,7 @@ namespace Kernel
         duration_before_leaving.Configure( this, inputJson );
         duration_at_node.Configure( this, inputJson );
 
-        bool ret = JsonConfigurable::Configure( inputJson );
+        bool ret = BaseIntervention::Configure( inputJson );
 
         if( ret )
         {
@@ -58,7 +58,6 @@ namespace Kernel
 
     MigrateIndividuals::MigrateIndividuals()
         : BaseIntervention()
-        , parent( nullptr )
         , destination_external_node_id( 0 )
         , duration_before_leaving()
         , duration_at_node()
@@ -81,7 +80,6 @@ namespace Kernel
 
     MigrateIndividuals::MigrateIndividuals( const MigrateIndividuals& master )
         : BaseIntervention( master )
-        , parent( nullptr )
         , destination_external_node_id( master.destination_external_node_id )
         , duration_before_leaving( master.duration_before_leaving )
         , duration_at_node( master.duration_at_node )
@@ -91,6 +89,8 @@ namespace Kernel
 
     void MigrateIndividuals::Update( float dt )
     {
+        if( !BaseIntervention::UpdateIndividualsInterventionStatus() ) return;
+
         // expire the intervention
         expired = true;
 

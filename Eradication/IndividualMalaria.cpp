@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -22,6 +22,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "MathFunctions.h"
 #include "MalariaBarcode.h"
 #include "MalariaParameters.h"
+#include "EventTrigger.h"
 
 #ifdef randgen
 #undef randgen
@@ -31,7 +32,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Exceptions.h"
 
-static const char * _module = "IndividualMalaria";
+SETUP_LOGGING( "IndividualMalaria" )
 
 #ifndef WIN32
 #define max(a,b) ( (a>b) ? a : b )
@@ -94,7 +95,6 @@ namespace Kernel
     , m_inv_microliters_blood(INV_MICROLITERS_BLOOD_ADULT)
     , m_male_gametocytes(0)
     , m_female_gametocytes(0)
-    , m_male_gametocytes_by_strain()
     , m_female_gametocytes_by_strain()
     , m_parasites_detected_by_blood_smear(0.0)
     , m_parasites_detected_by_new_diagnostic(0.0)
@@ -112,7 +112,6 @@ namespace Kernel
     , m_inv_microliters_blood(INV_MICROLITERS_BLOOD_ADULT)
     , m_male_gametocytes(0)
     , m_female_gametocytes(0)
-    , m_male_gametocytes_by_strain()
     , m_female_gametocytes_by_strain()
     , m_parasites_detected_by_blood_smear(0.0)
     , m_parasites_detected_by_new_diagnostic(0.0)
@@ -258,7 +257,8 @@ namespace Kernel
             // choose a strain based on a weighted draw over values from all vector-to-human pools and acquire infection
             float strain_cdf_draw = randgen->e() * m_total_exposure;
             std::vector<strain_exposure_t>::iterator it = std::lower_bound( m_strain_exposure.begin(), m_strain_exposure.end(), strain_cdf_draw, compare_strain_exposure_float_less()); 
-            AcquireNewInfection(&(it->first));
+            IStrainIdentity * pSI = &(it->first);
+            AcquireNewInfection( pSI );
         }
     }
 
@@ -300,6 +300,7 @@ namespace Kernel
         if (dt > 0) // N.B. the old pattern where dt=0 was for retrieval has been superceded by GetInfectiousness.  at t=0, though, UpdateInfectivity is called with dt=0.
         {
             UpdateGametocyteCounts(dt);
+            infectiousness = 0;
         }
         if (m_female_gametocytes <= 0)
         {
@@ -328,55 +329,13 @@ namespace Kernel
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "GetInterventionsContext()", "IMalariaDrugEffects", "IIndividualHumanInterventionsContext" );
         }
 
-        // Older mature gametocytes die; then add in the newly matured ones
-        double pkill = 0;
-        double numkilled = 0;
-
         // Decay half-life--Sinden, R. E., G. A. Butcher, et al. (1996). "Regulation of Infectivity of Plasmodium to the Mosquito Vector." Advances in Parasitology 38: 53-117.
         // Smalley, M. E. and R. E. Sinden (1977). "Plasmodium falciparum gametocytes: their longevity and infectivity." Parasitology 74(01): 1-8.
-        pkill = EXPCDF(-dt * (0.277 + drugGametocyteKill));// half-life of 2.5 days corresponds to a decay time constant of 3.6 days, 0.277 = 1/3.6
+        double pkill = EXPCDF(-dt * (0.277 + drugGametocyteKill)); // half-life of 2.5 days corresponds to a decay time constant of 3.6 days, 0.277 = 1/3.6
 
         m_male_gametocytes = 0;
-        for( gametocytes_strain_map_t::iterator gc = m_male_gametocytes_by_strain.begin(); gc != m_male_gametocytes_by_strain.end(); )
-        {
-            // Gaussian approximation of binomial errors for each strain that is present
-            numkilled = (randgen->eGauss() * sqrt(pkill * gc->second * (1.0 - pkill)) + pkill * gc->second); // halflife of 2.5 days
-            numkilled = max(0.0, numkilled); //can't add by killing
-            gc->second = int64_t(gc->second - numkilled);
-            gc->second = max(0L, gc->second);
-            if ( gc->second == 0 ) 
-            {
-                gc = m_male_gametocytes_by_strain.erase(gc); // remove empty strains from map
-            }
-            else
-            {
-                m_male_gametocytes += gc->second;
-                ++gc;
-            }
-        }
-
         m_female_gametocytes = 0;
-        for( gametocytes_strain_map_t::iterator gc = m_female_gametocytes_by_strain.begin(); gc != m_female_gametocytes_by_strain.end(); )
-        {
-            numkilled = (randgen->eGauss() * sqrt(pkill * gc->second * (1.0 - pkill)) + pkill * gc->second); // halflife of 2.5 days
-            numkilled = max(0.0, numkilled); //can't add by killing
-            gc->second = int64_t(gc->second - numkilled);
-            gc->second = max(0L, gc->second);
-            if ( gc->second == 0 ) 
-            {
-                gc = m_female_gametocytes_by_strain.erase(gc); // remove empty strains from map
-            }
-            else
-            {
-                m_female_gametocytes += gc->second;
-                ++gc;
-            }
-        }
-
-        infectiousness = 0;
-        int64_t tmp_male_gametocytes = 0;
-        int64_t tmp_female_gametocytes = 0;
-        StrainIdentity tmp_strainIDs;
+        m_female_gametocytes_by_strain.clear();
 
         // Loop over infections and add newly matured male and female gametocytes by strain
         for (auto infection : infections)
@@ -387,25 +346,26 @@ namespace Kernel
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "Infection", "IInfectionMalaria", "tempinf" );
             }
-            //InfectionMalaria *tempinf = static_cast<InfectionMalaria *>(infection);
 
-            // Get gametocytes that have matured in this timestep
+            // Get mature gametocytes at this time step
             // N.B. malariaCycleGametocytes is called once per asexual cycle (several days),
-            // so the stage-5 counter is reset to avoid multiple counting.
-            tmp_male_gametocytes  =  tempinf->get_MaleGametocytes(5);
-            tempinf->reset_MaleGametocytes(/* stage */5); 
-            tmp_female_gametocytes  =  tempinf->get_FemaleGametocytes(5);
-            tempinf->reset_FemaleGametocytes(/* stage */5);
+            int64_t tmp_male_gametocytes   = tempinf->get_MaleGametocytes(   GametocyteStages::Mature );
+            int64_t tmp_female_gametocytes = tempinf->get_FemaleGametocytes( GametocyteStages::Mature );
 
-            // No new gametocytes
-            if ( tmp_male_gametocytes==0 && tmp_female_gametocytes==0 ) continue;
+            // apply kill probability to mature gametocytes, including effect of gametocytocidal drugs
+            tempinf->apply_MatureGametocyteKillProbability( pkill );
+
+            // No mature gametocytes
+            if ( (tmp_male_gametocytes == 0) && (tmp_female_gametocytes == 0) ) continue;
 
             // Add new gametocytes to those carried over (and not killed) from the previous time steps
-            infection->GetInfectiousStrainID(&tmp_strainIDs);
-            m_male_gametocytes_by_strain[tmp_strainIDs] += tmp_male_gametocytes;
-            m_male_gametocytes += tmp_male_gametocytes;
+            StrainIdentity tmp_strainIDs;
+            infection->GetInfectiousStrainID( &tmp_strainIDs );
+
             m_female_gametocytes_by_strain[tmp_strainIDs] += tmp_female_gametocytes;
             m_female_gametocytes += tmp_female_gametocytes;
+
+            m_male_gametocytes += tmp_male_gametocytes;
         }
     }
 
@@ -430,7 +390,7 @@ namespace Kernel
         LOG_DEBUG_F("Gametocytes: %lld (male) %lld (female).  Infectiousness=%0.2g\n", m_male_gametocytes, m_female_gametocytes, infectiousness);
 
         // Effects of transmission-reducing immunity.  N.B. interventions on vector success are not here, since they depend on vector-population-specific behavior
-        float modtransmit = susceptibility->GetModTransmit() * interventions->GetInterventionReducedTransmit();
+        float modtransmit = susceptibility->getModTransmit() * interventions->GetInterventionReducedTransmit();
         infectiousness *= modtransmit;
 
         // Host weight is the product of MC weighting and relative biting
@@ -492,8 +452,8 @@ namespace Kernel
     void IndividualHumanMalaria::DepositFractionalContagionByStrain(float weight, IVectorInterventionsEffects* ivie, float antigenID, float geneticID)
     {
         StrainIdentity id = StrainIdentity(antigenID, geneticID);
-        parent->DepositFromIndividual( &id, weight*ivie->GetblockIndoorVectorTransmit(), &NodeVector::human_to_vector_indoor );
-        parent->DepositFromIndividual( &id, weight*ivie->GetblockOutdoorVectorTransmit(), &NodeVector::human_to_vector_outdoor );
+        parent->DepositFromIndividual( id, weight*ivie->GetblockIndoorVectorTransmit(), &NodeVector::human_to_vector_indoor );
+        parent->DepositFromIndividual( id, weight*ivie->GetblockOutdoorVectorTransmit(), &NodeVector::human_to_vector_outdoor );
     }
 
     void IndividualHumanMalaria::ResetClinicalSymptoms()
@@ -514,11 +474,11 @@ namespace Kernel
         // Trigger observers of new clinical and severe malaria episodes
         if ( symptom == ClinicalSymptomsEnum::CLINICAL_DISEASE )
         {
-            broadcaster->TriggerNodeEventObservers( GetEventContext(), IndividualEventTriggerType::NewClinicalCase );
+            broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::NewClinicalCase );
         }
         else if ( symptom == ClinicalSymptomsEnum::SEVERE_DISEASE )
         {
-            broadcaster->TriggerNodeEventObservers( GetEventContext(), IndividualEventTriggerType::NewSevereCase );
+            broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::NewSevereCase );
         }
     }
 
@@ -675,7 +635,7 @@ namespace Kernel
             {
                 StrainIdentity* strain = const_cast<StrainIdentity*>(&entry.first);
                 ar.startObject();
-                    ar.labelElement("key"); serialize(ar, strain);
+                    ar.labelElement("key"); StrainIdentity::serialize(ar, strain);
                     ar.labelElement("value") & entry.second;
                 ar.endObject();
             }
@@ -687,7 +647,7 @@ namespace Kernel
                 StrainIdentity* strain;
                 int64_t value;
                 ar.startObject();
-                    ar.labelElement("key"); serialize(ar, strain);
+                    ar.labelElement("key"); StrainIdentity::serialize(ar, strain);
                     ar.labelElement("value") & value;
                 ar.endObject();
                 mapping[*strain] = value;
@@ -703,7 +663,6 @@ namespace Kernel
         ar.labelElement("m_inv_microliters_blood") & individual.m_inv_microliters_blood;
         ar.labelElement("m_male_gametocytes") & individual.m_male_gametocytes;
         ar.labelElement("m_female_gametocytes") & individual.m_female_gametocytes;
-        ar.labelElement("m_male_gametocytes_by_strain"); Kernel::serialize(ar, individual.m_male_gametocytes_by_strain);
         ar.labelElement("m_female_gametocytes_by_strain"); Kernel::serialize(ar, individual.m_female_gametocytes_by_strain);
         ar.labelElement("m_parasites_detected_by_blood_smear") & individual.m_parasites_detected_by_blood_smear;
         ar.labelElement("m_parasites_detected_by_new_diagnostic") & individual.m_parasites_detected_by_new_diagnostic;

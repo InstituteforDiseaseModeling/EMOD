@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,7 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "Log.h"
 
-static const char * _module = "TBDTP";
+SETUP_LOGGING( "TBDTP" )
 
 namespace Kernel
 {
@@ -48,7 +48,7 @@ namespace Kernel
         TBDrugTypeParameters* params = _new_ TBDrugTypeParameters(tb_drug_name);
         if( !JsonConfigurable::_dryrun )
         {
-            auto tmp_config = Configuration::CopyFromElement( (*EnvPtr->Config)["TB_Drug_Params"][tb_drug_name.c_str()] );
+            auto tmp_config = Configuration::CopyFromElement( (*EnvPtr->Config)["TB_Drug_Params"][tb_drug_name.c_str()], EnvPtr->Config->GetDataLocation() );
             params->Configure( tmp_config );
             delete tmp_config;
             tmp_config = nullptr;

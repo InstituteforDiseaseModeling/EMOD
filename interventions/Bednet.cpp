@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,163 +19,282 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IndividualEventContext.h"
 #include "NodeEventContext.h"
 
-static const char* _module = "SimpleBednet";
+SETUP_LOGGING( "SimpleBednet" )
 
 namespace Kernel
 {
-    BEGIN_QUERY_INTERFACE_BODY(SimpleBednet)
-        HANDLE_INTERFACE(IConfigurable)
+    // ------------------------------------------------------------------------
+    // --- AbstractBednet
+    // ------------------------------------------------------------------------
+    BEGIN_QUERY_INTERFACE_BODY( AbstractBednet )
+        HANDLE_INTERFACE( IConfigurable )
         HANDLE_INTERFACE(IDistributableIntervention)
         HANDLE_ISUPPORTS_VIA(IDistributableIntervention)
-    END_QUERY_INTERFACE_BODY(SimpleBednet)
+    END_QUERY_INTERFACE_BODY( AbstractBednet )
+
+    AbstractBednet::AbstractBednet()
+        : BaseIntervention()
+        , m_pEffectKilling( nullptr )
+        , m_pEffectBlocking( nullptr )
+        , m_pConsumer( nullptr )
+    {
+        initSimTypes( 2, "MALARIA_SIM", "VECTOR_SIM" );
+    }
+
+    AbstractBednet::AbstractBednet( const AbstractBednet& master )
+        : BaseIntervention( master )
+        , m_pEffectKilling( nullptr )
+        , m_pEffectBlocking( nullptr )
+        , m_pConsumer( nullptr )
+    {
+        if( master.m_pEffectKilling != nullptr )
+        {
+            m_pEffectKilling = master.m_pEffectKilling->Clone();
+        }
+        if( master.m_pEffectBlocking != nullptr )
+        {
+            m_pEffectBlocking = master.m_pEffectBlocking->Clone();
+        }
+    }
+
+    AbstractBednet::~AbstractBednet()
+    {
+        delete m_pEffectKilling;
+        delete m_pEffectBlocking;
+    }
+
+    bool AbstractBednet::Configure( const Configuration * inputJson )
+    {
+        bool configured = true;
+
+        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, SB_Cost_To_Consumer_DESC_TEXT, 0, 999999, 3.75 );
+
+        if( configured || JsonConfigurable::_dryrun )
+        {
+            configured = ConfigureBlockingAndKilling( inputJson );
+        }
+        if( configured || JsonConfigurable::_dryrun )
+        {
+            configured = ConfigureUsage( inputJson );
+        }
+        if( configured || JsonConfigurable::_dryrun )
+        {
+            configured = ConfigureEvents( inputJson );
+        }
+
+        return configured;
+    }
+
+    bool AbstractBednet::ConfigureBlockingAndKilling( const Configuration * inputJson )
+    {
+        WaningConfig killing_config;
+        WaningConfig blocking_config;
+        initConfigComplexType( "Killing_Config", &killing_config, SB_Killing_Config_DESC_TEXT );
+        initConfigComplexType( "Blocking_Config", &blocking_config, SB_Blocking_Config_DESC_TEXT );
+
+        bool configured = BaseIntervention::Configure( inputJson );
+
+        if( configured && !JsonConfigurable::_dryrun )
+        {
+            m_pEffectKilling = WaningEffectFactory::CreateInstance( killing_config );
+            m_pEffectBlocking = WaningEffectFactory::CreateInstance( blocking_config );
+        }
+
+        return configured;
+    }
+
+    bool AbstractBednet::Distribute( IIndividualHumanInterventionsContext *context,
+                                     ICampaignCostObserver * const pCCO )
+    {
+        if( AbortDueToDisqualifyingInterventionStatus( context->GetParent() ) )
+        {
+            return false;
+        }
+
+        std::list<IDistributableIntervention*> net_list = context->GetInterventionsByName( GetName() );
+        for( IDistributableIntervention* p_bednet : net_list )
+        {
+            p_bednet->SetExpired( true );
+        }
+
+        bool distributed = BaseIntervention::Distribute( context, pCCO );
+        if( distributed )
+        {
+            SetContextTo( context->GetParent() );
+        }
+        return distributed;
+    }
+
+    void AbstractBednet::Update( float dt )
+    {
+        if( Expired() ) return;
+
+        if( !BaseIntervention::UpdateIndividualsInterventionStatus() ) return;
+
+        UpdateUsage( dt );
+        UpdateBlockingAndKilling( dt );
+
+        if( IsUsingBednet() )
+        {
+            UseBednet();
+        }
+
+        if( CheckExpiration( dt ) )
+        {
+            SetExpired( true );
+        }
+    }
+
+    float AbstractBednet::GetEffectKilling() const
+    {
+        return m_pEffectKilling->Current();
+    }
+
+    float AbstractBednet::GetEffectBlocking() const
+    {
+        return m_pEffectBlocking->Current();
+    }
+
+    void AbstractBednet::UseBednet()
+    {
+        float current_killingrate  = GetEffectKilling();
+        float current_blockingrate = GetEffectBlocking();
+
+        m_pConsumer->UpdateProbabilityOfKilling( current_killingrate );
+        m_pConsumer->UpdateProbabilityOfBlocking( current_blockingrate  );
+    }
+
+    void AbstractBednet::UpdateBlockingAndKilling( float dt )
+    {
+        m_pEffectKilling->Update( dt );
+        m_pEffectBlocking->Update( dt );
+    }
+
+    void AbstractBednet::SetContextTo( IIndividualHumanContext *context )
+    {
+        BaseIntervention::SetContextTo( context );
+        if( s_OK != context->GetInterventionsContext()->QueryInterface( GET_IID( IBednetConsumer ), (void**)&m_pConsumer ) )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IBednetConsumer", "IIndividualHumanContext" );
+        }
+        m_pEffectKilling->SetContextTo( context );
+        m_pEffectBlocking->SetContextTo( context );
+    }
+
+    void AbstractBednet::BroadcastEvent( const EventTrigger& trigger ) const
+    {
+        if( !trigger.IsUninitialized() )
+        {
+            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
+            if( s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface( GET_IID( INodeTriggeredInterventionConsumer ), (void**)&broadcaster ) )
+            {
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
+                    "parent->GetEventContext()->GetNodeEventContext()",
+                    "INodeTriggeredInterventionConsumer",
+                    "INodeEventContext" );
+            }
+            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), trigger );
+        }
+    }
+
+    void AbstractBednet::serialize( IArchive& ar, AbstractBednet* obj )
+    {
+        BaseIntervention::serialize( ar, obj );
+        AbstractBednet& bednet = *obj;
+        ar.labelElement( "m_pEffectBlocking" ) & bednet.m_pEffectBlocking;
+        ar.labelElement( "m_pEffectKilling" ) & bednet.m_pEffectKilling;
+    }
+
+    // ------------------------------------------------------------------------
+    // --- SimpleBednet
+    // ------------------------------------------------------------------------
+    BEGIN_QUERY_INTERFACE_DERIVED( SimpleBednet, AbstractBednet )
+    END_QUERY_INTERFACE_DERIVED( SimpleBednet, AbstractBednet )
 
     IMPLEMENT_FACTORY_REGISTERED(SimpleBednet)
     
-    SimpleBednet::SimpleBednet( const SimpleBednet& master )
-    : BaseIntervention( master )
+    SimpleBednet::SimpleBednet()
+    : AbstractBednet()
+    , m_pEffectUsage( nullptr )
     {
-        killing_config  = master.killing_config;
-        blocking_config = master.blocking_config;
-
-        auto tmp_killing  = Configuration::CopyFromElement( killing_config._json  );
-        auto tmp_blocking = Configuration::CopyFromElement( blocking_config._json );
-
-        killing_effect  = WaningEffectFactory::CreateInstance( tmp_killing  );
-        blocking_effect = WaningEffectFactory::CreateInstance( tmp_blocking );
-
-        delete tmp_killing;
-        delete tmp_blocking;
-        tmp_killing  = nullptr;
-        tmp_blocking = nullptr;
     }
 
-    SimpleBednet::SimpleBednet()
-    : killing_effect( nullptr )
-    , blocking_effect( nullptr )
+    SimpleBednet::SimpleBednet( const SimpleBednet& master )
+    : AbstractBednet( master )
+    , m_pEffectUsage( nullptr )
     {
-        initSimTypes( 2, "MALARIA_SIM", "VECTOR_SIM" );
-        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, SB_Cost_To_Consumer_DESC_TEXT, 0, 999999, 3.75 );
+        if( master.m_pEffectUsage != nullptr )
+        {
+            m_pEffectUsage = master.m_pEffectUsage->Clone();
+        }
     }
 
     SimpleBednet::~SimpleBednet()
     {
-        delete killing_effect;
-        delete blocking_effect;
+        delete m_pEffectUsage;
     }
 
-    bool
-    SimpleBednet::Configure(
-        const Configuration * inputJson
-    )
+    bool SimpleBednet::ConfigureUsage( const Configuration * inputJson )
     {
-        initConfig( "Bednet_Type", bednet_type, inputJson, MetadataDescriptor::Enum("Bednet_Type", SB_Bednet_Type_DESC_TEXT, MDD_ENUM_ARGS(BednetType)) );
-        initConfigComplexType("Killing_Config",  &killing_config, SB_Killing_Config_DESC_TEXT );
-        initConfigComplexType("Blocking_Config",  &blocking_config, SB_Blocking_Config_DESC_TEXT );
-        bool configured = JsonConfigurable::Configure( inputJson );
-        if( !JsonConfigurable::_dryrun )
+        WaningConfig usage_config;
+        initConfigComplexType( "Usage_Config", &usage_config, SB_Usage_Config_DESC_TEXT );
+
+        bool configured = JsonConfigurable::Configure( inputJson ); // AbstractBednet is responsible for calling BaseIntervention::Configure()
+
+        if( configured && !JsonConfigurable::_dryrun )
         {
-            auto tmp_killing  = Configuration::CopyFromElement( killing_config._json  );
-            auto tmp_blocking = Configuration::CopyFromElement( blocking_config._json );
-
-            killing_effect  = WaningEffectFactory::CreateInstance( tmp_killing  );
-            blocking_effect = WaningEffectFactory::CreateInstance( tmp_blocking );
-
-            delete tmp_killing;
-            delete tmp_blocking;
-            tmp_killing  = nullptr;
-            tmp_blocking = nullptr;
+            m_pEffectUsage = WaningEffectFactory::CreateInstance( usage_config );
         }
+
         return configured;
     }
 
-    bool
-    SimpleBednet::Distribute(
-        IIndividualHumanInterventionsContext *context,
-        ICampaignCostObserver * const pCCO
-    )
+    bool SimpleBednet::IsUsingBednet() const
     {
-        if (s_OK != context->QueryInterface(GET_IID(IBednetConsumer), (void**)&ibc) )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IBednetConsumer", "IIndividualHumanInterventionsContext" );
-        }
-        context->PurgeExisting( typeid(*this).name() );
-        bool ret = BaseIntervention::Distribute( context, pCCO );
-        if( ret && !on_distributed_event.IsUninitialized() && (on_distributed_event != NO_TRIGGER_STR) )
-        {
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-            if (s_OK != context->GetParent()->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, 
-                                               "parent->GetEventContext()->GetNodeEventContext()", 
-                                               "INodeTriggeredInterventionConsumer", 
-                                               "INodeEventContext" );
-            }
-            broadcaster->TriggerNodeEventObserversByString( context->GetParent()->GetEventContext(), on_distributed_event );
-        }
-        return ret ;
+        // -----------------------------------------------------------------------------------
+        // --- true because we use the usage effect to adjust the killing and blocking effects
+        // -----------------------------------------------------------------------------------
+        return true;
     }
 
-    void SimpleBednet::Update( float dt )
+    void SimpleBednet::UpdateUsage( float dt )
     {
-        killing_effect->Update(dt);
-        blocking_effect->Update(dt);
-        float current_killingrate = killing_effect->Current();
-        float current_blockingrate = blocking_effect->Current();
-        LOG_DEBUG_F( "current_killingrate = %f\n", current_killingrate );
-        LOG_DEBUG_F( "current_blockingrate = %f\n", current_blockingrate );
-        ibc->UpdateProbabilityOfKilling( current_killingrate );
-        ibc->UpdateProbabilityOfBlocking( current_blockingrate );
+        m_pEffectUsage->Update( dt );
     }
 
-    void SimpleBednet::SetContextTo(
-        IIndividualHumanContext *context
-    )
+    float SimpleBednet::GetEffectKilling() const
     {
-        if (s_OK != context->GetInterventionsContext()->QueryInterface(GET_IID(IBednetConsumer), (void**)&ibc) )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IBednetConsumer", "IIndividualHumanContext" );
-        }
+        return AbstractBednet::GetEffectKilling() * GetEffectUsage();
     }
 
-/*
-    Kernel::QueryResult SimpleBednet::QueryInterface( iid_t iid, void **ppinstance )
+    float SimpleBednet::GetEffectBlocking() const
     {
-        assert(ppinstance);
+        return AbstractBednet::GetEffectBlocking() * GetEffectUsage();
+    }
 
-        if ( !ppinstance )
-            return e_NULL_POINTER;
+    float SimpleBednet::GetEffectUsage() const
+    {
+        return m_pEffectUsage->Current();
+    }
 
-        ISupports* foundInterface;
+    bool SimpleBednet::CheckExpiration( float dt )
+    {
+        return m_pEffectUsage->Expired();
+    }
 
-        if ( iid == GET_IID(IBednet))
-            foundInterface = static_cast<IBednet*>(this);
-        // -->> add support for other I*Consumer interfaces here <<--
-        else if ( iid == GET_IID(ISupports))
-            foundInterface = static_cast<ISupports*>(static_cast<IBednet*>(this));
-        else
-            foundInterface = 0;
+    void SimpleBednet::SetContextTo( IIndividualHumanContext *context )
+    {
+        AbstractBednet::SetContextTo( context );
+        m_pEffectUsage->SetContextTo( context );
+    }
 
-        QueryResult status;
-        if ( !foundInterface )
-            status = e_NOINTERFACE;
-        else
-        {
-            //foundInterface->AddRef();           // not implementing this yet!
-            status = s_OK;
-        }
-
-        *ppinstance = foundInterface;
-        return status;
-
-    }*/
 
     REGISTER_SERIALIZABLE(SimpleBednet);
 
     void SimpleBednet::serialize(IArchive& ar, SimpleBednet* obj)
     {
+        AbstractBednet::serialize( ar, obj );
         SimpleBednet& bednet = *obj;
-        ar.labelElement("blocking_effect") & bednet.blocking_effect;
-        ar.labelElement("killing_effect") & bednet.killing_effect;
-        ar.labelElement("bednet_type") & (uint32_t&)bednet.bednet_type;
+        ar.labelElement("m_pEffectUsage") & bednet.m_pEffectUsage;
     }
 }

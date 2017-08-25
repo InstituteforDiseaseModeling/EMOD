@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -46,6 +46,7 @@ namespace Kernel
         static float ART_viral_suppression_multiplier;
         static float personal_infectivity_heterogeneity;
         static float personal_infectivity_scale;
+        static float personal_infectivity_median;
         static float max_CD4_cox;
         static FerrandAgeDependentDistribution mortality_distribution_by_age;
     };
@@ -59,7 +60,7 @@ namespace Kernel
         virtual ~InfectionHIV(void);
         static InfectionHIV *CreateInfection(IIndividualHumanContext *context, suids::suid _suid);
 
-        virtual void SetParameters(StrainIdentity* infstrain=nullptr, int incubation_period_override = -1) override;
+        virtual void SetParameters( IStrainIdentity* infstrain=nullptr, int incubation_period_override = -1) override;
         virtual void Update(float dt, ISusceptibilityContext* immunity = nullptr) override;
         virtual void SetContextTo(IIndividualHumanContext* context) override;
 
@@ -79,7 +80,7 @@ namespace Kernel
         InfectionHIV();
         InfectionHIV(IIndividualHumanContext *context);
 
-        /* clorton */ virtual void Initialize(suids::suid _suid);
+        virtual void Initialize(suids::suid _suid);
 
         void SetupNonSuppressedDiseaseTimers();
         /* clorton virtual */ bool  ApplyDrugEffects(float dt, ISusceptibilityContext* immunity = nullptr);

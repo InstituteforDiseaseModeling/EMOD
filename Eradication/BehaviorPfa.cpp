@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,7 +16,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Log.h"
 #include "Debug.h"
-static const char * _module = "BehaviorPfa";
+
+SETUP_LOGGING( "BehaviorPfa" )
 
 namespace Kernel 
 {
@@ -61,11 +62,11 @@ namespace Kernel
         if (person->GetGender() == Gender::MALE)
         {
             m_all_males.remove((sti_person));
-            release_assert( RemoveFromPopulation(sti_person, m_male_population) );
+            release_assert( RemoveFromPopulation(sti_person, m_male_population, true) );
         }
         else
         {
-            release_assert( RemoveFromPopulation(sti_person, m_female_population) );
+            release_assert( RemoveFromPopulation(sti_person, m_female_population, true) );
         }
     }
 
@@ -95,7 +96,7 @@ namespace Kernel
             UpdateQueueLengths( m_QueueLengthsBefore );
 
             int total_male_queue_index = -1 ;
-            std::vector<int> male_queue_index(20,-1) ;
+            std::vector<int> male_queue_index( parameters->GetMaleAgeBinCount(), -1 );
             int new_relationships = 0;
             for (human_list_t::iterator it = m_all_males.begin(); it != m_all_males.end(); /*it++*/)
             {
@@ -159,8 +160,8 @@ namespace Kernel
                         continue;
                     }
                     LOG_DEBUG_F("%s: - new relationship (%d, %d)\n", __FUNCTION__, male->GetSuid().data, sti_female->GetSuid().data);
-                    release_assert( RemoveFromPopulation(sti_female, m_female_population) );
-                    release_assert( RemoveFromPopulation(sti_male, m_male_population) );
+                    release_assert( RemoveFromPopulation(sti_female, m_female_population, false) );
+                    release_assert( RemoveFromPopulation(sti_male, m_male_population, false) );
 
                     // Formed a relationship, remove from eligible population
                     human_list_t::iterator current = it++;
@@ -309,8 +310,7 @@ namespace Kernel
 
     bool BehaviorPfa::Configure(const Configuration *config)
     {
-        auto assort_config = Configuration::CopyFromElement( (*config)["Assortivity"] );
-        
+        auto assort_config = Configuration::CopyFromElement( (*config)["Assortivity"], config->GetDataLocation() );
         bool ret = m_pAssortivity->Configure( assort_config );
 
         delete assort_config ;
@@ -323,10 +323,24 @@ namespace Kernel
         LOG_DEBUG_F("%s( [ %d ] )\n", __FUNCTION__, sti_person->GetSuid().data);
         age_bin_list.push_back(sti_person);
         human_list_t::iterator it = age_bin_list.end();
-        m_population_map[sti_person] = map_entry_t::pair(age_bin_index, --it);
+
+        pair_t pair = pair_t::pair(age_bin_index, --it);
+
+        if (m_population_map.find(sti_person) != m_population_map.end())
+        {
+            // Found, add iterator to iterator vector
+            LOG_DEBUG_F("%s( [ %d ] ) FOUND, size is %d\n", __FUNCTION__, sti_person->GetSuid().data, m_population_map[sti_person].size());
+            m_population_map[sti_person].push_back( pair );
+        } else {
+            // Not found, create new entry.
+            LOG_DEBUG_F("%s( [ %d ] ) NOT FOUND\n", __FUNCTION__, sti_person->GetSuid().data);
+            map_entry_t map_entry;
+            map_entry.push_back( pair );
+            m_population_map[sti_person] = map_entry;
+        }
     }
 
-    bool BehaviorPfa::RemoveFromPopulation( IIndividualHumanSTI* sti_person, population_t &target_population )
+    bool BehaviorPfa::RemoveFromPopulation( IIndividualHumanSTI* sti_person, population_t &target_population, bool remove_all)
     {
         LOG_DEBUG_F("%s( [ %d ] ) - ", __FUNCTION__, sti_person->GetSuid().data);
         bool found = false;
@@ -335,9 +349,20 @@ namespace Kernel
         {
             LOG_DEBUG("found and erasing.\n");
             map_entry_t& map_entry = m_population_map.at(sti_person);
-            target_population.at(map_entry.first).erase(map_entry.second);
-            m_population_map.erase(sti_person);
-            found = true;
+
+            bool keep_going = true;
+            while( keep_going && map_entry.size() > 0 )
+            {
+                target_population.at(map_entry.back().first).erase(map_entry.back().second);
+                map_entry.pop_back();
+                found = true;
+                keep_going = remove_all;
+            }
+
+            if( map_entry.size() == 0)
+            {
+                m_population_map.erase(sti_person);
+            }
         }
         else
         {
@@ -361,7 +386,7 @@ namespace Kernel
         {
             if( rel->GetFemalePartnerId().data == person2->GetSuid().data )
             {
-                LOG_WARN_F( "PFA attempted to create duplicate relationship between male individual %d and female individual %d\n", person1->GetSuid().data, person2->GetSuid().data );
+                LOG_INFO_F( "PFA attempted to create duplicate relationship between male individual %d and female individual %d\n", person1->GetSuid().data, person2->GetSuid().data );
                 existing_relationship = true;
                 break; // preserve single exit point from function
             }

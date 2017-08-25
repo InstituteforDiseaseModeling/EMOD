@@ -80,7 +80,6 @@
         "Enable_Sexual_Combination": 0, 
         "Enable_Spatial_Output": 0, 
         "Enable_Superinfection": 1, 
-        "Enable_Temperature_Dependent_Feeding_Cycle": 0, 
         "Enable_Vector_Aging": 0, 
         "Enable_Vector_Migration": 0, 
         "Enable_Vector_Mortality": 1, 

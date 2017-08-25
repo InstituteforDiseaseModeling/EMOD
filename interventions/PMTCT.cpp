@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,7 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IHIVInterventionsContainer.h"
 #include "Contexts.h"
 
-static const char * _module = "PMTCT";
+SETUP_LOGGING( "PMTCT" )
 
 namespace Kernel
 {
@@ -31,6 +31,7 @@ namespace Kernel
     , ivc( nullptr )
     , efficacy( 0.0 )
     {
+        initSimTypes( 1, "HIV_SIM" );
     }
 
     PMTCT::PMTCT( const PMTCT& master )
@@ -51,25 +52,30 @@ namespace Kernel
     )
     {
         initConfigTypeMap("Efficacy", &efficacy, PMTCT_Efficacy_DESC_TEXT, 0.0, 1.0, 0.5 );
-        return JsonConfigurable::Configure( inputJson );
+        return BaseIntervention::Configure( inputJson );
     }
 
     bool PMTCT::Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver* const pEC)
     {
-        // Apply effect (update PMTCT) on distribute. On expiration, eliminate effect 
-        LOG_DEBUG("Distributing Prevention of Mother-To-Child Transmission drug.\n");
-        if (s_OK != context->QueryInterface(GET_IID(IHIVMTCTEffects), (void**)&ivc) )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHIVMTCTEffects", "IIndividualHumanInterventionsContext" );
-        }
-        release_assert( ivc );
-        ivc->ApplyProbMaternalTransmissionModifier( efficacy );
         bool success = BaseIntervention::Distribute( context, pEC );
+        if( success )
+        {
+            // Apply effect (update PMTCT) on distribute. On expiration, eliminate effect 
+            LOG_DEBUG("Distributing Prevention of Mother-To-Child Transmission drug.\n");
+            if (s_OK != context->QueryInterface(GET_IID(IHIVMTCTEffects), (void**)&ivc) )
+            {
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHIVMTCTEffects", "IIndividualHumanInterventionsContext" );
+            }
+            release_assert( ivc );
+            ivc->ApplyProbMaternalTransmissionModifier( efficacy );
+        }
         return success;
     }
 
     void PMTCT::SetContextTo(IIndividualHumanContext *context)
     {
+        BaseIntervention::SetContextTo( context );
+
         if (s_OK != context->GetInterventionsContext()->QueryInterface(GET_IID(IHIVMTCTEffects), (void**)&ivc) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHIVMTCTEffects", "IIndividualHumanInterventionsContext" );
@@ -80,6 +86,8 @@ namespace Kernel
     void
     PMTCT::Update( float dt )
     {
+        if( !BaseIntervention::UpdateIndividualsInterventionStatus() ) return;
+
         if( timer > dt )
         {
             timer -= dt;

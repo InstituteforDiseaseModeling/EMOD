@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,6 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include <memory> // unique_ptr
 #include "UnitTest++.h"
+#include "common.h"
 #include "NChooserEventCoordinatorHIV.h"
 #include "Node.h"
 #include "SimulationConfig.h"
@@ -19,13 +20,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IndividualHumanContextFake.h"
 #include "IndividualHumanInterventionsContextFake.h"
 #include "IdmMpi.h"
-
+#include "EventTrigger.h"
 
 using namespace std; 
 using namespace Kernel; 
-
-extern void PrintDebug( const std::string& rMessage );
-
 
 SUITE(NChooserEventCoordinatorTest)
 {
@@ -60,9 +58,6 @@ SUITE(NChooserEventCoordinatorTest)
 
             m_pSimulationConfig->sim_type = SimType::HIV_SIM;
 
-            m_pSimulationConfig->listed_events.insert( "Vaccinated" );
-            m_pSimulationConfig->listed_events.insert( "VaccineExpired" );
-
             Environment::setSimulationConfig( m_pSimulationConfig );
             IPFactory::DeleteFactory();
             IPFactory::CreateFactory();
@@ -77,11 +72,15 @@ SUITE(NChooserEventCoordinatorTest)
             income_ip_values.insert( std::make_pair( "LOW",  0.9f ) );
             income_ip_values.insert( std::make_pair( "HIGH", 0.1f ) );
 
-            IPFactory::GetInstance()->AddIP( 1, "Income", income_ip_values );
+           IPFactory::GetInstance()->AddIP( 1, "Income", income_ip_values );
+
+            EventTriggerFactory::DeleteInstance();
+            EventTriggerFactory::GetInstance()->Configure( EnvPtr->Config );
         }
 
         ~NChooserEventCoordinatorFixture()
         {
+            EventTriggerFactory::DeleteInstance();
             IPFactory::DeleteFactory();
             Environment::Finalize();
         }
@@ -111,7 +110,7 @@ SUITE(NChooserEventCoordinatorTest)
         p_human->SetHasHIV( hasHIV );
         p_human->SetIsCircumcised( isCircumcised );
         p_hic->OnTestForHIV( hasTestedPositiveForHIV );
-        p_human->GetProperties()->operator[]( rPropertyName ) = rPropertyValue ;
+        p_human->GetProperties()->Add( IPKeyValue( rPropertyName, rPropertyValue ) );
 
         return (IIndividualHumanContext*)p_human ;
     }
@@ -163,6 +162,7 @@ SUITE(NChooserEventCoordinatorTest)
     {
         INodeContextFake nc;
         INodeEventContextFake nec;
+        nec.Initialize();
 
         nec.Add( CreateHuman( &nc, &nec, Gender::FEMALE, 20*DAYSPERYEAR, false, false, false, "Location", "URBAN" ) );
         nec.Add( CreateHuman( &nc, &nec, Gender::MALE,    1*DAYSPERYEAR, false, false, true,  "Location", "URBAN" ) );
@@ -186,7 +186,7 @@ SUITE(NChooserEventCoordinatorTest)
         nec.Add( CreateHuman( &nc, &nec, Gender::MALE,   20*DAYSPERYEAR, false, false, true,  "Location", "URBAN" ) );
 
         unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/NChooserEventCoordinatorTest/TestTargetedByAgeAndGender.json" ) );
-        PropertyRestrictions pr;
+        PropertyRestrictions<IPKey, IPKeyValue, IPKeyValueContainer> pr;
         pr.ConfigureFromJsonAndKey( p_config.get(), "Property_Restrictions_Within_Node" );
 
         DiseaseQualifications disease_qual;

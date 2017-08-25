@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -54,7 +54,7 @@ namespace Kernel
 
         float rate_ratio[Gender::COUNT];
 
-        map<int, vector<float>> desired_flow;
+        std::map<int, std::vector<float>> desired_flow;
 
         DECLARE_SERIALIZABLE(FlowControllerImpl);
 #pragma warning( pop )

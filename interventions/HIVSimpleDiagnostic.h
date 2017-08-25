@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,12 +10,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #pragma once
 
 #include "Diagnostics.h"
-#include "IHIVCascadeStateIntervention.h"
 
 
 namespace Kernel
 {
-    class IDMAPI HIVSimpleDiagnostic : public SimpleDiagnostic, public IHIVCascadeStateIntervention
+    class IDMAPI HIVSimpleDiagnostic : public SimpleDiagnostic
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_FACTORY_REGISTERED(InterventionFactory, HIVSimpleDiagnostic, IDistributableIntervention)
@@ -25,30 +24,24 @@ namespace Kernel
         HIVSimpleDiagnostic( const HIVSimpleDiagnostic& );
 
         // IDistributingDistributableIntervention
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
-        virtual void Update(float dt);
-        virtual bool Configure(const Configuration* inputJson);
-        virtual bool Distribute( IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO );
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+        virtual void Update(float dt) override;
+        virtual bool Configure(const Configuration* inputJson) override;
+        virtual bool Distribute( IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO ) override;
 
         // SimpleDiagnostic
-        virtual void onNegativeTestResult();
-
-        // IHIVCascadeStateIntervention
-        virtual const std::string& GetCascadeState();
-        virtual const jsonConfigurable::tDynamicStringSet& GetAbortStates();
+        virtual void onNegativeTestResult() override;
+        virtual bool positiveTestResult() override;
 
     protected:
+
         virtual void Callback( float dt );
-        virtual bool qualifiesToGetIntervention( IIndividualHumanContext* pIndivid );
-        virtual bool AbortDueToCurrentCascadeState();
-        virtual bool UpdateCascade();
+        virtual bool UpdateIndividualsInterventionStatus() override;
         virtual void ActOnResultsIfTime();
         virtual EventOrConfig::Enum getEventOrConfig( const Configuration* );
 
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
-        jsonConfigurable::tDynamicStringSet abortStates;
-        std::string cascadeState;
         bool firstUpdate;
         bool result_of_positive_test;
         float original_days_to_diagnosis;

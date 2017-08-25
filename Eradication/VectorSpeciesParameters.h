@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -27,7 +27,8 @@ namespace Kernel
             LarvalHabitatParams() {}
             virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
             virtual json::QuickBuilder GetSchema() override;
-            std::map< VectorHabitatType::Enum, const Configuration* > habitat_map; 
+            virtual bool  HasValidDefault() const override { return false; }
+            std::map< VectorHabitatType::Enum, const Configuration* > habitat_map;
     };
 
     class IDMAPI VectorSpeciesParameters : public JsonConfigurable
@@ -35,7 +36,8 @@ namespace Kernel
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
 
     public:
-        static VectorSpeciesParameters* CreateVectorSpeciesParameters( const Configuration* inputJson, const std::string& vector_species_name );
+        static VectorSpeciesParameters* CreateVectorSpeciesParameters( const Configuration* inputJson, 
+                                                                       const std::string& vector_species_name );
         virtual ~VectorSpeciesParameters();
         bool Configure( const ::Configuration *json );
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
@@ -47,11 +49,15 @@ namespace Kernel
         float aquaticarrhenius2;
         float infectedarrhenius1;
         float infectedarrhenius2;
+        float cyclearrhenius1;
+        float cyclearrhenius2;
+        float cyclearrheniusreductionfactor;
         float immatureduration;
         float daysbetweenfeeds;
         float anthropophily;
         float eggbatchsize;
         float infectedeggbatchmod;
+        float eggsurvivalrate;
         float infectiousmortalitymod;
         float aquaticmortalityrate;
         float adultlifeexpectancy;
@@ -59,6 +65,7 @@ namespace Kernel
         float acquiremod;
         float infectioushfmortmod;
         float indoor_feeding;
+        float nighttime_feeding;
 
         // derived values (e.g. 1/daysbetweenfeeds = feedingrate)
         float feedingrate;
@@ -73,6 +80,7 @@ namespace Kernel
 
     private:
         std::string _species;
+
 #pragma warning( pop )
     };
 }

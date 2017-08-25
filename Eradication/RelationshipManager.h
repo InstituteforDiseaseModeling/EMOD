@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,6 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
+    class RelationshipGroups;
     class ReportSTI;
     class RelationshipManager : public IRelationshipManager
     {
@@ -44,9 +45,9 @@ namespace Kernel
         virtual void RemoveFromPrimaryRelationships( IRelationship* relationship );
 
         tNodeRelationshipType nodeRelationships;
-        std::map< std::string, PropertyValueList_t > relationshipListsForMP;
+        std::map< std::string, list<uint32_t> > relationshipListsForMP;
         INodeContext* _node;
-        ITransmissionGroups * nodePools;
+        RelationshipGroups * nodePools;
         std::list<IRelationshipManager::callback_t> new_relationship_observers;
         std::list<IRelationshipManager::callback_t> relationship_termination_observers;
         std::list<IRelationshipManager::callback_t> relationship_consummation_observers;

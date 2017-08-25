@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -50,13 +50,13 @@ namespace Kernel
 
         virtual void PopulateFromDemographics() override;
         virtual void SetupIntranodeTransmission() override;
-        virtual void SetParameters(NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory) override;
+        virtual void SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory, bool white_list_enabled ) override;
         virtual void updateInfectivity(float dt = 0.0f) override;
         virtual void updatePopulationStatistics(float dt = 1.0f) override;
         void         updateVectorLifecycleProbabilities(float dt);
 
         void SetVectorPopulations(void);    //default--1 population as before
-        virtual void AddVectors(std::string releasedSpecies, VectorMatingStructure _vector_genetics, uint64_t releasedNumber) override;
+        virtual void AddVectors( const std::string& releasedSpecies, const VectorMatingStructure& _vector_genetics, uint64_t releasedNumber) override;
 
         virtual void SetupMigration( IMigrationInfoFactory * migration_factory, 
                                      MigrationStructure::Enum ms,
@@ -64,7 +64,7 @@ namespace Kernel
         virtual void processImmigratingVector( VectorCohort* immigrant ) override;
         void processEmigratingVectors();
 
-        virtual VectorPopulationList_t& GetVectorPopulations() override;
+        virtual const VectorPopulationReportingList_t& GetVectorPopulationReporting() const override;
 
         static TransmissionGroupMembership_t human_to_vector_all;
         static TransmissionGroupMembership_t human_to_vector_indoor;
@@ -81,7 +81,8 @@ namespace Kernel
     protected:
 
         std::map<std::string, VectorHabitatList_t> m_larval_habitats;
-        VectorPopulationList_t  m_vectorpopulations;
+        std::list<VectorPopulation*>  m_vectorpopulations;
+        VectorPopulationReportingList_t m_VectorPopulationReportingList;
 
         VectorProbabilities* m_vector_lifecycle_probabilities;
 
@@ -94,7 +95,7 @@ namespace Kernel
 
         NodeVector();
         NodeVector(ISimulationContext *context, suids::suid node_suid);
-        /* clorton virtual */ void Initialize() /* clorton override */;
+        virtual void Initialize() override ;
 
         virtual void setupEventContextHost() override;
         virtual void InitializeVectorPopulation(VectorPopulation* vp);

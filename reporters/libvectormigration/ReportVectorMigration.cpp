@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -22,8 +22,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 // !!! If you are creating a new report by copying this one, you will need to modify 
 // !!! the values below indicated by "<<<"
 
-// Module name for logging, CustomReport.json, and DLL GetType()
-static const char * _module = "ReportVectorMigration";// <<< Name of this file
+// Name for logging, CustomReport.json, and DLL GetType()
+SETUP_LOGGING( "ReportVectorMigration" ) // <<< Name of this file
 
 namespace Kernel
 {
@@ -131,7 +131,8 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
             throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "pvc", "IMigrate", "IVectorCohort");
         }
 
-        uint64_t vci_id = pivci->GetID();
+        //uint64_t vci_id = pivci->GetID();
+        uint64_t vci_id = 0;
         int from_node_id = pSim->GetNodeExternalID( nodeSuid ) ;
         int to_node_id = pSim->GetNodeExternalID( pim->GetMigrationDestination() ) ;
         int mig_type = pim->GetMigrationType() ;

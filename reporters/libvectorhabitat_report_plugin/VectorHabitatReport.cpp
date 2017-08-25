@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -34,8 +34,8 @@ using namespace Kernel ;
 // !!! If you are creating a new report by copying this one, you will need to modify 
 // !!! the values below indicated by "<<<"
 
-// Module name for logging, CustomReport.json, and DLL GetType()
-static const char * _module = "VectorHabitatReport"; // <<< Name of this file
+// Name for logging, CustomReport.json, and DLL GetType()
+SETUP_LOGGING( "VectorHabitatReport" ) // <<< Name of this file
 
 // You can put 0 or more valid Sim types into _sim_types but has to end with nullptr.
 // "*" can be used if it applies to all simulation types.
@@ -223,7 +223,7 @@ void VectorHabitatReport::LogNodeData( INodeContext * pNC )
         throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNC->GetNodeContext()", "INodeVector", "INodeContext" );
     }
 
-    std::list<VectorPopulation*> vectorPopulations = p_node_vector->GetVectorPopulations();
+    const VectorPopulationReportingList_t& vectorPopulations = p_node_vector->GetVectorPopulationReporting();
 
     for ( auto vp : vectorPopulations )
     {

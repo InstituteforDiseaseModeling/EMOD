@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,9 +17,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionsContainer.h"
 #include "MalariaAntibody.h" // for CreateAntibody etc.
 #include "Sigmoid.h"   // for Sigmoid::basic_sigmoid
-#include "NodeDemographics.h" // for static strings e.g. MSP_mean_antibody_distribution
+#include "NodeDemographics.h"
 #include "SimulationConfig.h"
+#include "MalariaContexts.h"
+#include "NodeEventContext.h"
 #include "MalariaParameters.h"
+#include "Infection.h" // for InfectionConfig::vital_disease_mortality 
 
 #ifdef randgen
 #undef randgen
@@ -31,7 +34,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Malaria.h"
 #include "Log.h"
 
-static const char * _module = "SusceptibilityMalaria";
+SETUP_LOGGING( "SusceptibilityMalaria" )
 
 namespace Kernel
 {
@@ -155,11 +158,8 @@ namespace Kernel
         initConfigTypeMap( "Erythropoiesis_Anemia_Effect",            &erythropoiesis_anemia_effect,      Erythropoiesis_Anemia_Effect_DESC_TEXT,            0.0f, 1000.0f,    3.5f );
 
         initConfig( "Maternal_Antibodies_Type", maternal_antibodies_type, config, MetadataDescriptor::Enum("maternal_antibodies_type", Maternal_Antibodies_Type_DESC_TEXT, MDD_ENUM_ARGS(MaternalAntibodiesType)) );
-        if ( maternal_antibodies_type != MaternalAntibodiesType::OFF || JsonConfigurable::_dryrun )
-        {
-            initConfigTypeMap( "Maternal_Antibody_Protection",        &maternal_antibody_protection,      Maternal_Antibody_Protection_DESC_TEXT,            0.0f, 1.0f,       0.1f );
-            initConfigTypeMap( "Maternal_Antibody_Decay_Rate",        &maternal_antibody_decay_rate,      Maternal_Antibody_Decay_Rate_DESC_TEXT,            0.0f, FLT_MAX,    0.01f );
-        }
+        initConfigTypeMap( "Maternal_Antibody_Protection",        &maternal_antibody_protection,      Maternal_Antibody_Protection_DESC_TEXT,            0.0f, 1.0f,       0.1f, "Maternal_Antibodies_Type", "SIMPLE_WANING,CONSTANT_INITIAL_IMMUNITY" );
+        initConfigTypeMap( "Maternal_Antibody_Decay_Rate",        &maternal_antibody_decay_rate,      Maternal_Antibody_Decay_Rate_DESC_TEXT,            0.0f, FLT_MAX,    0.01f, "Maternal_Antibodies_Type", "SIMPLE_WANING,CONSTANT_INITIAL_IMMUNITY" );
 
         initConfig( "Innate_Immune_Variation_Type", innate_immune_variation_type, config, MetadataDescriptor::Enum("innate_immune_variation_type", Innate_Immune_Variation_Type_DESC_TEXT, MDD_ENUM_ARGS(InnateImmuneVariationType)) );
         initConfigTypeMap( "Pyrogenic_Threshold", &pyrogenic_threshold, Pyrogenic_Threshold_DESC_TEXT, 0.1f, 20000.0f, 1000.0f );
@@ -253,18 +253,24 @@ namespace Kernel
 
         if( params()->immunity_initialization_distribution_type == DistributionType::DISTRIBUTION_COMPLEX )
         {
+            INodeMalaria* p_node_malaria = nullptr;
+            if (parent->GetEventContext()->GetNodeEventContext()->GetNodeContext()->QueryInterface( GET_IID( INodeMalaria ), (void**)&p_node_malaria ) != s_OK)
+            {
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()->GetNodeContext()", "INodeMalaria", "INodeContext" );
+            }
+
             float rand = randgen->eGauss();
             // -- MSP --
-            float msp_mean_antibody_fraction = parent->GetDemographicsDistribution(NodeDemographicsDistribution::MSP_mean_antibody_distribution)->DrawResultValue(age);
-            float msp_variance_antibody_fraction = parent->GetDemographicsDistribution(NodeDemographicsDistribution::MSP_variance_antibody_distribution)->DrawResultValue(age);
+            float msp_mean_antibody_fraction     = p_node_malaria->GetMSP_mean_antibody_distribution()->DrawResultValue(age);
+            float msp_variance_antibody_fraction = p_node_malaria->GetMSP_variance_antibody_distribution()->DrawResultValue(age);
             InitializeAntibodyVariants(MalariaAntibodyType::MSP1, msp_mean_antibody_fraction + rand*msp_variance_antibody_fraction);
             // -- non-spec PfEMP-1 minor epitopes --
-            float nonspec_mean_antibody_fraction = parent->GetDemographicsDistribution(NodeDemographicsDistribution::nonspec_mean_antibody_distribution)->DrawResultValue(age);
-            float nonspec_variance_antibody_fraction = parent->GetDemographicsDistribution(NodeDemographicsDistribution::nonspec_variance_antibody_distribution)->DrawResultValue(age);
+            float nonspec_mean_antibody_fraction     = p_node_malaria->GetNonspec_mean_antibody_distribution()->DrawResultValue(age);
+            float nonspec_variance_antibody_fraction = p_node_malaria->GetNonspec_variance_antibody_distribution()->DrawResultValue(age);
             InitializeAntibodyVariants(MalariaAntibodyType::PfEMP1_minor, nonspec_mean_antibody_fraction + rand*nonspec_variance_antibody_fraction);
             // -- major PfEMP-1 epitopes
-            float pfemp1_mean_antibody_fraction = parent->GetDemographicsDistribution(NodeDemographicsDistribution::PfEMP1_mean_antibody_distribution)->DrawResultValue(age);
-            float pfemp1_variance_antibody_fraction = parent->GetDemographicsDistribution(NodeDemographicsDistribution::PfEMP1_variance_antibody_distribution)->DrawResultValue(age);
+            float pfemp1_mean_antibody_fraction     = p_node_malaria->GetPfEMP1_mean_antibody_distribution()->DrawResultValue(age);
+            float pfemp1_variance_antibody_fraction = p_node_malaria->GetPfEMP1_variance_antibody_distribution()->DrawResultValue(age);
             InitializeAntibodyVariants(MalariaAntibodyType::PfEMP1_major, pfemp1_mean_antibody_fraction + rand*pfemp1_variance_antibody_fraction);
         }
     }
@@ -300,7 +306,7 @@ namespace Kernel
 
     void SusceptibilityMalaria::Update(float dt)
     {
-        //LOG_VALID("\n--------------------------------------------------\n\n");
+        LOG_VALID("\n--------------------------------------------------\n\n");
         release_assert( params() );
 
         age += dt;
@@ -312,20 +318,20 @@ namespace Kernel
         {
             // This is the amount of "erythropoietin", assume absolute amounts of erythropoietin correlate linearly with absolute increases in hemoglobin
             float anemia_erythropoiesis_multiplier = exp( SusceptibilityMalariaConfig::erythropoiesis_anemia_effect * (1 - get_RBC_availability()) );
-            //LOG_VALID_F( "Anemia erythropoiesis multiplier = %f at RBC availability of %f.\n", anemia_erythropoiesis_multiplier, get_RBC_availability() );
+            LOG_VALID_F( "Anemia erythropoiesis multiplier = %f at RBC availability of %f.\n", anemia_erythropoiesis_multiplier, get_RBC_availability() );
             m_RBC = int64_t(m_RBC - (m_RBC * .00833 - m_RBCproduction * anemia_erythropoiesis_multiplier) * dt); // *.00833 ==/120 (AVERAGE_RBC_LIFESPAN)
         }
         else
         {
             m_RBC = int64_t(m_RBC - (m_RBC * .00833 - m_RBCproduction) * dt); // *.00833 ==/120 (AVERAGE_RBC_LIFESPAN)
         }
-        //LOG_VALID_F( "I have %lld red blood cells\n", m_RBC );
+        LOG_VALID_F( "I have %lld red blood cells\n", m_RBC );
 
         // Cytokines decay with time constant of 12 hours
         m_cytokines -= (m_cytokines * 2 * dt);
         if (m_cytokines < 0) { m_cytokines = 0; }
 
-        //LOG_VALID_F( "fever = %0.9f  cytokines = %0.9f\n", get_fever(), m_cytokines );
+        LOG_VALID_F( "fever = %0.9f  cytokines = %0.9f\n", get_fever(), m_cytokines );
 
         // Reset parasite density
         m_parasite_density = 0; // this is accumulated in updateImmunityPfEMP1Minor
@@ -352,14 +358,14 @@ namespace Kernel
         {
             // Update antigen-antibody reactions for MSP and PfEMP1 minor/major epitopes, including cytokine stimulation
             float temp_cytokine_stimulation = 0; // used to track total stimulation of cytokines due to rupturing schizonts
-            //LOG_VALID("update MSP\n");
+            LOG_VALID("update MSP\n");
             updateImmunityMSP(dt, temp_cytokine_stimulation);
-            //LOG_VALID("update PfEMP1 minor\n");
+            LOG_VALID("update PfEMP1 minor\n");
             updateImmunityPfEMP1Minor(dt);
-            //LOG_VALID("update PfEMP1 major\n");
+            LOG_VALID("update PfEMP1 major\n");
             updateImmunityPfEMP1Major(dt);
 
-            //LOG_VALID_F( "cytokine stimulation: %0.9f (MSP)   %0.9f (PfEMP)\n", temp_cytokine_stimulation, m_cytokine_stimulation );
+            LOG_VALID_F( "cytokine stimulation: %0.9f (MSP)   %0.9f (PfEMP)\n", temp_cytokine_stimulation, m_cytokine_stimulation );
 
             // inflammatory immune response--Stevenson, M. M. and E. M. Riley (2004). "Innate immunity to malaria." Nat Rev Immunol 4(3): 169-180.
             // now let cytokine be increased in response to IRBCs and ruptured schizonts, if any
@@ -368,7 +374,7 @@ namespace Kernel
             m_cytokines = float(m_cytokines + CYTOKINE_STIMULATION_SCALE * Sigmoid::basic_sigmoid(m_ind_pyrogenic_threshold, temp_cytokine_stimulation));//one time spike for rupturing schizonts
             m_cytokine_stimulation = 0; // and reset for next time step
 
-            //LOG_VALID_F( "m_cytokines: %0.9f\n", m_cytokines );
+            LOG_VALID_F( "m_cytokines: %0.9f\n", m_cytokines );
 
             // reset antigenic presence and IRBC counters
             m_antigenic_flag = 0;
@@ -391,7 +397,7 @@ namespace Kernel
         // Determine the disease state (symptomatic, severe, or fatal) of current clinical incident
         updateClinicalStates(dt);
 
-        //LOG_VALID( "END Update\n" );
+        LOG_VALID( "END Update\n" );
     }
 
     void SusceptibilityMalaria::UpdateInfectionCleared()
@@ -481,7 +487,7 @@ namespace Kernel
                 continue;
             }
 
-            //LOG_VALID_F( "\tPfEMP1 major (before): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", antibody->GetAntibodyCapacity(), antibody->GetAntibodyConcentration(), antibody->GetAntigenCount() );
+            LOG_VALID_F( "\tPfEMP1 major (before): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", antibody->GetAntibodyCapacity(), antibody->GetAntibodyConcentration(), antibody->GetAntigenCount() );
 
             // Cytokines released at low antibody concentration (if capacity hasn't switched into high proliferation rate yet)
             if ( antibody->GetAntibodyCapacity() <= 0.4 )
@@ -492,7 +498,7 @@ namespace Kernel
             antibody->UpdateAntibodyCapacity( dt, m_inv_microliters_blood );
             antibody->UpdateAntibodyConcentration( dt );
 
-            //LOG_VALID_F( "\t    (after): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", antibody->GetAntibodyCapacity(), antibody->GetAntibodyConcentration(), antibody->GetAntigenCount() );
+            LOG_VALID_F( "\t    (after): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", antibody->GetAntibodyCapacity(), antibody->GetAntibodyConcentration(), antibody->GetAntigenCount() );
         }
     }
 
@@ -642,7 +648,7 @@ namespace Kernel
             }
             if ( rand < prob_fatal * idvie->GetInterventionReducedMortality() )
             {
-                if ( params()->vital_disease_mortality )
+                if ( InfectionConfig::vital_disease_mortality )
                 { 
                     parent->GetEventContext()->Die( HumanStateChange::KilledByInfection ); // set the individual's HumanStateChange to KilledByInfection
 

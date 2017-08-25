@@ -1,0 +1,38 @@
+{
+    "Default_Config_Path": "defaults/generic_default_config.json", 
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Population_Scale_Type": "FIXED_SCALING", 
+            "Birth_Rate_Dependence": "POPULATION_DEP_RATE", 
+            "Enable_Demographics_Reporting": 1, 
+            "MORTALITY": {
+                "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF"
+            }, 
+            "IMMUNITY": {
+                "Immunity_Acquisition_Factor": 1.0, 
+                "Enable_Immune_Decay": 0
+            }, 
+            "Demographics_Filenames": ["../00_Generic_Default/demographics.json"],
+            "Enable_Vital_Dynamics": 0, 
+            "SAMPLING": {
+                "Sample_Rate_Birth": 1
+            }
+        }, 
+        "DISEASE": {
+            "INFECTIOUSNESS": {
+                "Base_Infectivity": 1e-10, 
+                "Infectious_Period_Distribution": "FIXED_DURATION", 
+                "Base_Infectious_Period": 1
+            }, 
+            "INCUBATION": {
+                "Base_Incubation_Period": 0
+            }
+        }, 
+        "PRIMARY": {
+            "Run_Number": 1, 
+            "Simulation_Duration": 60, 
+            "Config_Name": "42_Generic_ImmunityRespectingOutbreakIndividual", 
+            "Geography": ""
+        }
+    }
+}

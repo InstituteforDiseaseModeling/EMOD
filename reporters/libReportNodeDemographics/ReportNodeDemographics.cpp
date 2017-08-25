@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,14 +18,15 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IIndividualHuman.h"
 #include "ReportUtilities.h"
 #include "Properties.h"
+#include "NodeProperties.h"
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!! CREATING NEW REPORTS
 // !!! If you are creating a new report by copying this one, you will need to modify 
 // !!! the values below indicated by "<<<"
 
-// Module name for logging, CustomReport.json, and DLL GetType()
-static const char * _module = "ReportNodeDemographics";// <<< Name of this file
+// Name for logging, CustomReport.json, and DLL GetType()
+SETUP_LOGGING( "ReportNodeDemographics" ) // <<< Name of this file
 
 namespace Kernel
 {
@@ -86,6 +87,8 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
 
     ReportNodeDemographics::ReportNodeDemographics()
         : BaseTextReport( "ReportNodeDemographics.csv" )
+        , m_StratifyByGender(true)
+        , m_StratifyByAge(true)
         , m_AgeYears()
         , m_IPKeyToCollect()
         , m_IPValuesList()
@@ -108,7 +111,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         initConfigTypeMap( "IP_Key_To_Collect", &m_IPKeyToCollect, "Name of the key to add a column for.", "" );
         if( inputJson->Exist("Age_Bins") )
         {
-            initConfigTypeMap("Age_Bins", &m_AgeYears, "Age Bins (in years) to aggregate within and report");
+            initConfigTypeMap("Age_Bins", &m_AgeYears, "Age Bins (in years) to aggregate within and report, empty array implies do not stratify by age");
         }
         else
         {
@@ -116,6 +119,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
             m_AgeYears.push_back( 80.0 );
             m_AgeYears.push_back( 125.0 );
         }
+        initConfigTypeMap( "Stratify_By_Gender", &m_StratifyByGender, "1 (default) implies stratify by gender, 0 implies do not", true );
         bool ret = JsonConfigurable::Configure( inputJson );
         
         if( ret )
@@ -128,7 +132,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
     {
         if( !m_IPKeyToCollect.empty() )
         {
-            std::list<std::string> ip_value_list = IPFactory::GetInstance()->GetIP( m_IPKeyToCollect )->GetValues().GetValuesToList();
+            std::list<std::string> ip_value_list = IPFactory::GetInstance()->GetIP( m_IPKeyToCollect )->GetValues<IPKeyValueContainer>().GetValuesToList();
             for( auto val : ip_value_list )
             {
                 m_IPValuesList.push_back( val );
@@ -139,8 +143,16 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
             m_IPValuesList.push_back( "<no ip>" ); // need at least one in the list
         }
 
+        if( m_AgeYears.size() == 0 ) // implies don't stratify by years
+        {
+            m_AgeYears.push_back( 125.0 );
+            m_StratifyByAge = false;
+        }
+
+        int num_genders = m_StratifyByGender ? 2 : 1; // 1 implies not stratifying by gender
+
         // initialize the counters so that they can be indexed by gender and age
-        for( int g = 0 ; g < 2 ; g++ )
+        for( int g = 0 ; g < num_genders ; g++ )
         {
             m_Data.push_back( std::vector<std::vector<NodeData>>() );
             for( int a = 0 ; a < m_AgeYears.size() ; a++ )
@@ -159,19 +171,29 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
     std::string ReportNodeDemographics::GetHeader() const
     {
         std::stringstream header ;
-        header << "Time"             << ", "
-               << "NodeID"           << ", "
-               << "Gender"           << ", "
-               << "AgeYears"         << ", " ;
-
+        header <<         "Time" 
+               << ", " << "NodeID" ;
+        if( m_StratifyByGender )
+        {
+            header << ", " << "Gender" ;
+        }
+        if( m_StratifyByAge )
+        {
+            header << ", " << "AgeYears" ;
+        }
         if( !m_IPKeyToCollect.empty() )
         {
-            header << "IPKey=" << m_IPKeyToCollect << ", ";
+            header << ", IndividualProp=" << m_IPKeyToCollect;
         }
 
-        header << "NumIndividuals"   << ", "
-               << "NumInfected"
+        header << ", " << "NumIndividuals" 
+               << ", " << "NumInfected"
                ;
+
+        for( auto pnp : NPFactory::GetInstance()->GetNPList() )
+        {
+            header << ", NodeProp=" << pnp->GetKey<NPKey>().ToString();
+        }
 
         return header.str();
     }
@@ -183,7 +205,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
 
     void ReportNodeDemographics::LogIndividualData( IIndividualHuman* individual ) 
     {
-        int gender_index  = (int)(individual->GetGender());
+        int gender_index  = m_StratifyByGender ? (int)(individual->GetGender()) : 0;
         int age_bin_index = ReportUtilities::GetAgeBin( individual->GetAge(), m_AgeYears );
         int ip_index      = GetIPIndex( individual->GetProperties() );
 
@@ -199,35 +221,46 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
     {
         float time = pNC->GetTime().time;
         auto node_id = pNC->GetExternalID();
+        NPKeyValueContainer& np_values = pNC->GetNodeProperties();
 
-        for( int g = 0 ; g < 2 ; g++ )
+        int num_genders = m_StratifyByGender ? 2 : 1; // 1 implies not stratifying by gender
+        for( int g = 0 ; g < num_genders ; g++ )
         {
-            char* gender = "M" ;
-            if( g == 1 )
-            {
-                gender = "F";
-            }
+            char* gender = (g == 0) ? "M" : "F"  ;
+
             for( int a = 0 ; a < m_AgeYears.size() ; a++ )
             {
                 for( int i = 0 ; i < m_IPValuesList.size() ; ++i )
                 {
                     GetOutputStream() << time
-                               << "," << node_id
-                               << "," << gender 
-                               << "," << m_AgeYears[ a ] ;
+                               << "," << node_id;
+                    if( m_StratifyByGender )
+                    {
+                        GetOutputStream() << "," << gender;
+                    }
+                    if( m_StratifyByAge )
+                    {
+                        GetOutputStream() << "," << m_AgeYears[ a ];
+                    }
                     if( !m_IPKeyToCollect.empty() )
                     {
                         GetOutputStream() << ", " << m_IPValuesList[ i ] ;
                     }
                     GetOutputStream() << "," << m_Data[ g ][ a ][ i ].num_people
-                                      << "," << m_Data[ g ][ a ][ i ].num_infected
-                                      << std::endl;
+                                      << "," << m_Data[ g ][ a ][ i ].num_infected;
+
+                    for( auto pnp : NPFactory::GetInstance()->GetNPList() )
+                    {
+                        NPKeyValue kv = np_values.Get( pnp->GetKey<NPKey>() );
+                        GetOutputStream() << "," << kv.GetValueAsString();
+                    }
+                    GetOutputStream() << std::endl;
                 }
             }
         }
 
         // Reset the counters for the next node
-        for( int g = 0 ; g < 2 ; g++ )
+        for( int g = 0 ; g < num_genders ; g++ )
         {
             for( int a = 0 ; a < m_AgeYears.size() ; a++ )
             {
@@ -240,12 +273,12 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         }
     }
 
-    int ReportNodeDemographics::GetIPIndex( tProperties* pProps ) const
+    int ReportNodeDemographics::GetIPIndex( IPKeyValueContainer* pProps ) const
     {
         int index = 0;
         if( !m_IPKeyToCollect.empty() )
         {
-            std::string value = pProps->at( m_IPKeyToCollect );
+            std::string value = pProps->Get( IPKey(m_IPKeyToCollect) ).GetValueAsString();
 
             index = std::find( m_IPValuesList.cbegin(), m_IPValuesList.cend(), value ) - m_IPValuesList.cbegin();
         }

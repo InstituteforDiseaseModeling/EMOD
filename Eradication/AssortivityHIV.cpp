@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IndividualEventContext.h"
 #include "SimulationConfig.h"
 
-static const char * _module = "AssortivityHIV";
+SETUP_LOGGING( "AssortivityHIV" )
 
 namespace Kernel 
 {
@@ -57,10 +57,16 @@ namespace Kernel
                                                         "Simulation_Type", sim_type_str,
                                                         detail.str().c_str() );
             }
-            if( GetGroup() == AssortivityGroup::HIV_RECEIVED_RESULTS_STATUS )
+            if (GetGroup() == AssortivityGroup::HIV_RECEIVED_RESULTS_STATUS)
+            {
                 CheckAxesForReceivedResults();
+                SortMatrixReceivedResults();
+            }
             else
+            {
                 CheckAxesForTrueFalse();
+                SortMatrixFalseTrue();
+            }
         }
     }
 
@@ -97,17 +103,55 @@ namespace Kernel
         }
     }
 
-    std::string GetStringValueHIV( const Assortivity* pAssortivity, const IIndividualHumanSTI* pIndividual )
+    void SwapRows( std::vector<std::vector<float>>& rWeightingMatrix, int aRowIndex, int bRowIndex )
+    {
+        for( int col_index = 0 ; col_index < rWeightingMatrix[aRowIndex].size() ; ++col_index )
+        {
+            float tmp = rWeightingMatrix[ aRowIndex ][ col_index ];
+            rWeightingMatrix[ aRowIndex ][ col_index ] = rWeightingMatrix[ bRowIndex ][ col_index ];
+            rWeightingMatrix[ bRowIndex ][ col_index ] = tmp;
+        }
+    }
+
+    void SwapColumns( std::vector<std::vector<float>>& rWeightingMatrix, int aColIndex, int bColIndex )
+    {
+        for( int row_index = 0 ; row_index < rWeightingMatrix.size() ; ++row_index )
+        {
+            float tmp = rWeightingMatrix[ row_index ][ aColIndex ];
+            rWeightingMatrix[ row_index ][ aColIndex ] = rWeightingMatrix[ row_index ][ bColIndex ];
+            rWeightingMatrix[ row_index ][ bColIndex ] = tmp;
+        }
+    }
+
+    void AssortivityHIV::SortMatrixReceivedResults()
+    {
+        for( int result_index = 0 ; result_index < ReceivedTestResultsType::pairs::count() ; ++result_index )
+        {
+            std::string type_name = ReceivedTestResultsType::pairs::get_keys()[ result_index ];
+            int actual_index = GetIndex( type_name );
+            if( result_index != actual_index )
+            {
+                SwapRows( m_WeightingMatrix, result_index, actual_index );
+                SwapColumns( m_WeightingMatrix, result_index, actual_index );
+
+                std::string tmp = m_Axes[ actual_index ];
+                m_Axes[ actual_index ] = m_Axes[ result_index ];
+                m_Axes[ result_index ] = tmp;
+            }
+        }
+    }
+
+    int GetIndexHIV( const Assortivity* pAssortivity, const IIndividualHumanSTI* pIndividual )
     {
         IIndividualHumanHIV * p_partner_hiv = nullptr;
         if (s_OK != (const_cast<IIndividualHumanSTI*>(pIndividual))->QueryInterface(GET_IID(IIndividualHumanHIV), (void**)&p_partner_hiv) )
         {
             throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "p_partner_hiv", "IIndividualHumanHIV", "IIndividualHumanSTI");
         }
-        return (p_partner_hiv->HasHIV() ? std::string("TRUE") : std::string("FALSE")) ;
+        return (p_partner_hiv->HasHIV() ? 1 : 0) ;
     }
 
-    std::string GetStringValueHIVTestedPositive( const Assortivity* pAssortivity, const IIndividualHumanSTI* pIndividual )
+    int GetIndexHIVTestedPositive( const Assortivity* pAssortivity, const IIndividualHumanSTI* pIndividual )
     {
         IIndividualHumanHIV * p_partner_hiv = nullptr;
         if (s_OK != (const_cast<IIndividualHumanSTI*>(pIndividual))->QueryInterface(GET_IID(IIndividualHumanHIV), (void**)&p_partner_hiv) )
@@ -119,10 +163,10 @@ namespace Kernel
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pIndividual", "IHIVMedicalHistory", "IHIVInterventionsContainer" );
         }
-        return (p_med_history->EverTestedHIVPositive() ? std::string("TRUE") : std::string("FALSE")) ;
+        return (p_med_history->EverTestedHIVPositive() ? 1 : 0) ;
     }
 
-    std::string GetStringValueHIVReceivedResults( const Assortivity* pAssortivity, const IIndividualHumanSTI* pIndividual )
+    int GetIndexHIVReceivedResults( const Assortivity* pAssortivity, const IIndividualHumanSTI* pIndividual )
     {
         IIndividualHumanHIV * p_partner_hiv = nullptr;
         if (s_OK != (const_cast<IIndividualHumanSTI*>(pIndividual))->QueryInterface(GET_IID(IIndividualHumanHIV), (void**)&p_partner_hiv) )
@@ -135,27 +179,26 @@ namespace Kernel
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "p_partner_hiv->GetHIVInterventionsContainer()", "IHIVMedicalHistory", "IHIVInterventionsContainer" );
         }
         ReceivedTestResultsType::Enum results_enum = p_med_history->ReceivedTestResultForHIV();
-        std::string results_str = ReceivedTestResultsType::pairs::lookup_key( results_enum );
-        return results_str ;
+        return int( results_enum );
     }
 
     IIndividualHumanSTI* AssortivityHIV::SelectPartnerForExtendedGroups( AssortivityGroup::Enum group,
-                                                                         const IIndividualHumanSTI* pPartnerA,
+                                                                         IIndividualHumanSTI* pPartnerA,
                                                                          const list<IIndividualHumanSTI*>& potentialPartnerList )
     {
         IIndividualHumanSTI* p_partner_B = nullptr ;
         switch( group )
         {
             case AssortivityGroup::HIV_INFECTION_STATUS:
-                p_partner_B = FindPartner( pPartnerA, potentialPartnerList, GetStringValueHIV );
+                p_partner_B = FindPartner( pPartnerA, potentialPartnerList, GetIndexHIV );
                 break;
 
             case AssortivityGroup::HIV_TESTED_POSITIVE_STATUS:
-                p_partner_B = FindPartner( pPartnerA, potentialPartnerList, GetStringValueHIVTestedPositive );
+                p_partner_B = FindPartner( pPartnerA, potentialPartnerList, GetIndexHIVTestedPositive );
                 break;
 
             case AssortivityGroup::HIV_RECEIVED_RESULTS_STATUS:
-                p_partner_B = FindPartner( pPartnerA, potentialPartnerList, GetStringValueHIVReceivedResults );
+                p_partner_B = FindPartner( pPartnerA, potentialPartnerList, GetIndexHIVReceivedResults );
                 break;
 
             default:

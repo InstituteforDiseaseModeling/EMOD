@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,11 +17,13 @@ namespace Kernel {
 
     CountdownTimer::CountdownTimer()
     : NonNegativeFloat( 0 ) // need diff base class (RangedFloat?) if we want to init with -1
+    , dead( false )
     {
     }
 
     CountdownTimer::CountdownTimer( float initValue )
     : NonNegativeFloat( initValue )
+    , dead( false )
     {
     }
 
@@ -39,12 +41,17 @@ namespace Kernel {
     {
         if( expired() )
         {
-            handle( dt );
+            if( !dead ) // only handle once
+            {
+                handle( dt );
+            }
+            dead = true;
         }
         else
         {
             _value -= dt;
         }
+
     }
 
     bool CountdownTimer::expired() const

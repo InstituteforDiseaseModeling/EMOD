@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -28,7 +28,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "RANDOM.h"
 #define randgen (m_context->GetRng())
 
-static const char * _module = "VectorPopulationIndividual";
+SETUP_LOGGING( "VectorPopulationIndividual" )
 
 // VectorPopulationIndividual handles treatment of Vector population as an ensemble
 // of individual vectors, although it is possible to run the code with each vector
@@ -51,19 +51,19 @@ namespace Kernel
     }
 
     void VectorPopulationIndividual::InitializeVectorQueues(unsigned int adults, unsigned int _infectious)
-    { 
+    {
         adult      = adults;
         infectious = _infectious;
 
         uint32_t adjusted_population; // = 0;
 
         if (adult > 0)
-        { 
+        {
             adjusted_population = adults / m_mosquito_weight;
             for (uint32_t i = 0; i < adjusted_population; i++)
-            { 
+            {
                 // adult initialized at age 0
-                this->AdultQueues.push_front( VectorCohortIndividual::CreateCohort( VectorStateEnum::STATE_ADULT, 0, 0, m_mosquito_weight, VectorMatingStructure( VectorGender::VECTOR_FEMALE ), species_ID ) );
+                this->AdultQueues.push_back(VectorCohortIndividual::CreateCohort(VectorStateEnum::STATE_ADULT, 0, 0, m_mosquito_weight, VectorMatingStructure(VectorGender::VECTOR_FEMALE), &species_ID));
             }
 
             // and a population of males as well
@@ -72,18 +72,18 @@ namespace Kernel
         }
 
         if (infectious > 0)
-        { 
+        {
             adjusted_population = _infectious / m_mosquito_weight;
             for (uint32_t i = 0; i < adjusted_population; i++)
             { 
                 // infectious initialized at age 20
-                AdultQueues.push_front( VectorCohortIndividual::CreateCohort( VectorStateEnum::STATE_INFECTIOUS, 20, 0, m_mosquito_weight, VectorMatingStructure( VectorGender::VECTOR_FEMALE ), species_ID ) );
+                AdultQueues.push_back(VectorCohortIndividual::CreateCohort(VectorStateEnum::STATE_INFECTIOUS, 20, 0, m_mosquito_weight, VectorMatingStructure(VectorGender::VECTOR_FEMALE), &species_ID));
             }
         }
     }
 
     VectorPopulationIndividual *VectorPopulationIndividual::CreatePopulation(INodeContext *context, std::string species_name, int32_t adult, int32_t infectious, uint32_t mosquito_weight)
-    { 
+    {
         VectorPopulationIndividual *newpopulation = _new_ VectorPopulationIndividual(mosquito_weight);
         newpopulation->Initialize(context, species_name, adult, infectious);
 
@@ -91,24 +91,24 @@ namespace Kernel
     }
 
     VectorPopulationIndividual::~VectorPopulationIndividual()
-    { 
+    {
     }
 
     void VectorPopulationIndividual::Update_Infectious_Queue( float dt )
-    { 
+    {
         // just reset counter, all entries are in Adult_Queue for Vector_pop_individual
         infectious = 0;
     }
 
     void VectorPopulationIndividual::Update_Infected_Queue( float dt )
-    { 
+    {
         // no queue entries, since all entries are in the Adult_Queue
         // only need to reset counter
         infected = 0;
     }
 
     void VectorPopulationIndividual::Update_Adult_Queue( float dt )
-    { 
+    {
         adult = 0; // other counters were reset in other functions
         double temperature = m_context->GetLocalWeather()->airtemperature();
 
@@ -125,48 +125,49 @@ namespace Kernel
         m_average_oviposition_killing /= total_larval_capacity;
 
         // Use the verbose "foreach" construct here because empty queues (i.e. dead individuals) will be removed
-        for ( VectorCohortList_t::iterator iList = AdultQueues.begin(); iList != AdultQueues.end(); )
-        { 
-            IVectorCohortIndividual *tempentry2 = nullptr;
-            if( (*iList)->QueryInterface( GET_IID( IVectorCohortIndividual ), (void**)&tempentry2 ) != s_OK )
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "(*iList)", "IVectorCohortIndividual", "VectorCohort" );
-            }
-            current_vci = tempentry2;
-            VectorCohortList_t::iterator iCurrent = iList++;
+        for (size_t iCohort = 0; iCohort < AdultQueues.size(); /* increment in loop */)
+        {
+            // static cast is _much_ faster than QI and we _must_ have an IVectorCohortIndividual here.
+            IVectorCohort* cohort = AdultQueues[iCohort];
+            IVectorCohortIndividual* tempentry2 = current_vci = static_cast<IVectorCohortIndividual*>(static_cast<VectorCohortIndividual*>(static_cast<VectorCohort*>(cohort)));
 
             // Increment age of individual mosquitoes
-            tempentry2->IncreaseAge( dt );
+            VectorCohortIndividual* pvci = static_cast<VectorCohortIndividual*>(static_cast<VectorCohort*>(cohort));
+            pvci->VectorCohortAging::IncreaseAge(dt);
 
-            // Process feeding cycle
-            ProcessFeedingCycle( dt, *iCurrent, tempentry2->GetState() );
+            ProcessFeedingCycle( dt, cohort, tempentry2->GetState()) ;
 
             // Progress with sporogony in infected mosquitoes
             if(tempentry2->GetState() == VectorStateEnum::STATE_INFECTED )
             {
-                (*iCurrent)->IncreaseProgress( (species()->infectedarrhenius1 * exp(-species()->infectedarrhenius2 / (temperature + float(CELSIUS_TO_KELVIN)))) * dt );
+                cohort->IncreaseProgress((species()->infectedarrhenius1 * exp(-species()->infectedarrhenius2 / (temperature + float(CELSIUS_TO_KELVIN)))) * dt);
 
-                if( (*iCurrent)->GetProgress() >=1 && (*iCurrent)->GetPopulation() > 0 )
+                if ( (cohort->GetProgress() >= 1) && (cohort->GetPopulation() > 0) )
                 {
                     // change state to INFECTIOUS
                     tempentry2->SetState( VectorStateEnum::STATE_INFECTIOUS );
 
                     // update INFECTIOUS counters
-                    queueIncrementTotalPopulation( *iCurrent, VectorStateEnum::STATE_INFECTIOUS );
+                    queueIncrementTotalPopulation( cohort, VectorStateEnum::STATE_INFECTIOUS );
+                    ++iCohort;
                     continue;
                 }
             }
 
             // Remove empty cohorts (i.e. dead mosquitoes)
-            if ((*iCurrent)->GetPopulation() <= 0)
-            { 
-                AdultQueues.erase(iCurrent);
-                delete tempentry2;
+            if ( cohort->GetPopulation() <= 0 )
+            {
+                AdultQueues[iCohort] = AdultQueues.back();
+                AdultQueues.pop_back();
+                VectorCohortIndividual::reclaim(tempentry2);
+
+                // !! Don't increment iCohort. !!
             }
             else
             {
                 // Increment counters
-                queueIncrementTotalPopulation( *iCurrent, tempentry2->GetState() );
+                queueIncrementTotalPopulation( cohort, tempentry2->GetState() );
+                ++iCohort;
             }
         }
 
@@ -334,8 +335,14 @@ namespace Kernel
                     indoorinfectiousbites += cohort->GetPopulation(); 
 
                     // deposit indoor contagion into vector-to-human pool
-                    StrainIdentity *strain = const_cast<StrainIdentity *>(tempentry2->GetStrainIdentity());
-                    m_transmissionGroups->DepositContagion(strain, cohort->GetPopulation()  * species()->transmissionmod, &NodeVector::vector_to_human_indoor);
+                    const IStrainIdentity& strain = tempentry2->GetStrainIdentity();
+
+                    LOG_DEBUG_F( "Vector->Human [indoor] infectiousness (aka bite) of strain %d, 'population' %d, xmod %f.\n",
+                                 strain.GetAntigenID(),
+                                 cohort->GetPopulation(),
+                                 species()->transmissionmod );
+
+                    m_transmissionGroups->DepositContagion( strain, cohort->GetPopulation()  * species()->transmissionmod, &NodeVector::vector_to_human_indoor );
                 }
 
                 // update human biting rate as well
@@ -397,8 +404,14 @@ namespace Kernel
                     outdoorinfectiousbites += cohort->GetPopulation(); 
 
                     // deposit outdoor contagion into vector-to-human pool
-                    StrainIdentity *strain = const_cast<StrainIdentity *>(tempentry2->GetStrainIdentity());
-                    m_transmissionGroups->DepositContagion(strain, cohort->GetPopulation() * species()->transmissionmod, &NodeVector::vector_to_human_outdoor);
+                    const IStrainIdentity& strain = tempentry2->GetStrainIdentity();
+
+                    LOG_DEBUG_F( "Vector->Human [outdoor] infectiousness (aka bite) of strain %d, 'population' %d, xmod %f.\n",
+                                 strain.GetAntigenID(),
+                                 cohort->GetPopulation(),
+                                 species()->transmissionmod ); 
+
+                    m_transmissionGroups->DepositContagion( strain, cohort->GetPopulation() * species()->transmissionmod, &NodeVector::vector_to_human_outdoor );
                 }
 
                 // update human biting rate as well
@@ -469,12 +482,12 @@ namespace Kernel
             if ( randgen->e() < ( mean_cycle_duration - int(mean_cycle_duration) ) )
             {
                 mosquito->SetOvipositionTimer ( int(mean_cycle_duration) + 1.0f );
-                LOG_DEBUG_F("Reset oviposition timer by %d days.\n", int(mean_cycle_duration) + 1);
+                //LOG_DEBUG_F("Reset oviposition timer by %d days.\n", int(mean_cycle_duration) + 1);
             }
             else
             {
                 mosquito->SetOvipositionTimer( int(mean_cycle_duration) );
-                LOG_DEBUG_F("Reset oviposition timer by %d days.\n", int(mean_cycle_duration));
+                //LOG_DEBUG_F("Reset oviposition timer by %d days.\n", int(mean_cycle_duration));
             }
         }
 
@@ -540,17 +553,17 @@ namespace Kernel
                                     }
                                     else
                                     {
-                                        tempentrynew = VectorCohortIndividual::CreateCohort(VectorStateEnum::STATE_ADULT, 0, 0, m_mosquito_weight, tempentry1->GetVectorGenetics(), species_ID);
+                                        tempentrynew = VectorCohortIndividual::CreateCohort(VectorStateEnum::STATE_ADULT, 0, 0, m_mosquito_weight, tempentry1->GetVectorGenetics(), &species_ID);
                                         ApplyMatingGenetics(tempentrynew, VectorMatingStructure(gender_mating_males.begin()->first));
-                                        AdultQueues.push_front(tempentrynew);
+                                        AdultQueues.push_back(tempentrynew);
                                         queueIncrementTotalPopulation(tempentrynew, VectorStateEnum::STATE_ADULT);//to keep accounting consistent with non-aging version
                                     }
                                 }
                                 else
                                 {
-                                    tempentrynew = VectorCohortIndividual::CreateCohort(VectorStateEnum::STATE_ADULT, 0, 0, m_mosquito_weight, tempentry1->GetVectorGenetics(), species_ID);
+                                    tempentrynew = VectorCohortIndividual::CreateCohort(VectorStateEnum::STATE_ADULT, 0, 0, m_mosquito_weight, tempentry1->GetVectorGenetics(), &species_ID);
                                     ApplyMatingGenetics(tempentrynew, VectorMatingStructure(gender_mating_males.begin()->first));
-                                    AdultQueues.push_front(tempentrynew);
+                                    AdultQueues.push_back(tempentrynew);
                                     queueIncrementTotalPopulation(tempentrynew, VectorStateEnum::STATE_ADULT);//to keep accounting consistent with non-aging version
                                 }
                             }
@@ -576,17 +589,17 @@ namespace Kernel
                                         }
                                         else
                                         {
-                                            tempentrynew = VectorCohortIndividual::CreateCohort(VectorStateEnum::STATE_ADULT, 0, 0, m_mosquito_weight, tempentry1->GetVectorGenetics(), species_ID);
+                                            tempentrynew = VectorCohortIndividual::CreateCohort(VectorStateEnum::STATE_ADULT, 0, 0, m_mosquito_weight, tempentry1->GetVectorGenetics(), &species_ID);
                                             ApplyMatingGenetics(tempentrynew, VectorMatingStructure(maletypes.first));
-                                            AdultQueues.push_front(tempentrynew);
+                                            AdultQueues.push_back(tempentrynew);
                                             queueIncrementTotalPopulation(tempentrynew, VectorStateEnum::STATE_ADULT);//to keep accounting consistent with non-aging version
                                         }
                                     }
                                     else
                                     {
-                                        tempentrynew = VectorCohortIndividual::CreateCohort(VectorStateEnum::STATE_ADULT, 0, 0, m_mosquito_weight, tempentry1->GetVectorGenetics(), species_ID);
+                                        tempentrynew = VectorCohortIndividual::CreateCohort(VectorStateEnum::STATE_ADULT, 0, 0, m_mosquito_weight, tempentry1->GetVectorGenetics(), &species_ID);
                                         ApplyMatingGenetics(tempentrynew, VectorMatingStructure(maletypes.first));
-                                        AdultQueues.push_front(tempentrynew);
+                                        AdultQueues.push_back(tempentrynew);
                                         queueIncrementTotalPopulation(tempentrynew, VectorStateEnum::STATE_ADULT);//to keep accounting consistent with non-aging version
                                     }
                                 }
@@ -649,7 +662,7 @@ namespace Kernel
         }
     }
 
-    void VectorPopulationIndividual::AddVectors(VectorMatingStructure _vector_genetics, uint64_t releasedNumber)
+    void VectorPopulationIndividual::AddVectors( const VectorMatingStructure& _vector_genetics, uint64_t releasedNumber )
     {
         VectorCohortIndividual* tempentry;
         VectorCohortAging* tempentrym;
@@ -668,8 +681,8 @@ namespace Kernel
                 // already mated, so go in AdultQueues
                 for (uint32_t i = 0; i < temppop; i++)
                 {
-                    tempentry = VectorCohortIndividual::CreateCohort(VectorStateEnum::STATE_ADULT, 0, 0, m_mosquito_weight, _vector_genetics, species_ID);
-                    AdultQueues.push_front(tempentry);
+                    tempentry = VectorCohortIndividual::CreateCohort(VectorStateEnum::STATE_ADULT, 0, 0, m_mosquito_weight, _vector_genetics, &species_ID);
+                    AdultQueues.push_back(tempentry);
                     queueIncrementTotalPopulation(tempentry, VectorStateEnum::STATE_ADULT);
                 }
             }
@@ -718,10 +731,11 @@ namespace Kernel
         }
     }
 
-    void VectorPopulationIndividual::ExposeCohortList( const IContagionPopulation* cp, VectorCohortList_t& list, float success_prob, float infection_prob )
+    void VectorPopulationIndividual::ExposeCohortList( const IContagionPopulation* cp, VectorCohortVector_t& list, float success_prob, float infection_prob )
     {
         StrainIdentity strainID;
-        strainID.SetAntigenID(cp->GetAntigenId());
+        strainID.SetAntigenID(cp->GetAntigenID());
+
         float x_infectionWolbachia = 1.0;
         for (auto exposed : list)
         {
@@ -730,10 +744,11 @@ namespace Kernel
                 x_infectionWolbachia = params()->vector_params->WolbachiaInfectionModification;
             }
             // Determine if there is a new infection
-            if ( randgen->e() < species()->acquiremod * x_infectionWolbachia * infection_prob / success_prob )
+            if( randgen->e() < species()->acquiremod * x_infectionWolbachia * infection_prob / success_prob )
             {
+                LOG_DEBUG_F( "(individual) VECTOR (%d) acquired infection from HUMAN.\n", exposed->GetPopulation() );
                 // Draw weighted random strain from ContagionPopulation
-                cp->ResolveInfectingStrain(&strainID);
+                cp->ResolveInfectingStrain( &strainID );
 
                 // Set state to STATE_INFECTED and store strainID
                 IVectorCohortIndividual *vci = nullptr;
@@ -741,7 +756,7 @@ namespace Kernel
                 {
                     throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "exposed", "IVectorCohortIndividual", "VectorCohort" );
                 }
-                vci->AcquireNewInfection(&strainID);
+                vci->AcquireNewInfection( &strainID );
 
                 // Adjust population-level counters
                 adult    -= exposed->GetPopulation();
@@ -750,16 +765,15 @@ namespace Kernel
         }
     }
 
-    void VectorPopulationIndividual::Vector_Migration( IMigrationInfo* pMigInfo, VectorCohortList_t* pMigratingQueue )
+    void VectorPopulationIndividual::Vector_Migration(IMigrationInfo* pMigInfo, VectorCohortVector_t* pMigratingQueue)
     {
         release_assert( pMigInfo );
         release_assert( pMigratingQueue );
 
         // Use the verbose "for" construct here because we may be modifying the list and need to protect the iterator.
-        for (VectorCohortList_t::iterator iList = AdultQueues.begin(); iList != AdultQueues.end(); /* iList++ */)
-        { 
-            IVectorCohort* tempentry = *iList;
-            VectorCohortList_t::iterator iCurrent = iList++;
+        for (size_t iCohort = 0; iCohort < AdultQueues.size(); /* increment in loop */)
+        {
+            IVectorCohort* tempentry = AdultQueues[iCohort];
 
             suids::suid destination = suids::nil_suid();
             MigrationType::Enum mig_type = MigrationType::NO_MIGRATION;
@@ -768,20 +782,24 @@ namespace Kernel
 
             // test if each vector will migrate this time step
             if( !destination.is_nil() && (time <= 1.0) )
-            { 
-                AdultQueues.erase(iCurrent);
+            {
+                AdultQueues[iCohort] = AdultQueues.back();
+                AdultQueues.pop_back();
 
+                // Used to use dynamic_cast here which is _very_ slow.
                 IMigrate* emigre = tempentry->GetIMigrate();
                 emigre->SetMigrating( destination, mig_type, 0.0, 0.0, false );
-                pMigratingQueue->push_front( tempentry );
+                pMigratingQueue->push_back(tempentry);
+            }
+            else
+            {
+                ++iCohort;
             }
         }
-
     }
 
-
     // receives a rate, and sends that fraction of mosquitoes to other communities
-    uint64_t VectorPopulationIndividual::Vector_Migration(float migrate, VectorCohortList_t *Migration_Queue)
+    uint64_t VectorPopulationIndividual::Vector_Migration(float migrate, VectorCohortVector_t *Migration_Queue)
     { 
         uint64_t migrating_vectors = 0;
 
@@ -789,25 +807,75 @@ namespace Kernel
 
         // check for valid Migration_Queue
         if (Migration_Queue)
-        { 
-
+        {
             // Use the verbose "for" construct here because we may be modifying the list and need to protect the iterator.
-            for (VectorCohortList_t::iterator iList = AdultQueues.begin(); iList != AdultQueues.end(); /* iList++ */)
-            { 
-                IVectorCohort* tempentry = *iList;
-                VectorCohortList_t::iterator iCurrent = iList++;
+            for (size_t iCohort = 0; iCohort < AdultQueues.size(); /* increment in loop */)
+            {
+                IVectorCohort* tempentry = AdultQueues[iCohort];
 
                 // test if each vector will migrate this time step
                 if (randgen->e() < migrate)
-                { 
-                    AdultQueues.erase(iCurrent);
-                    Migration_Queue->push_front(tempentry);
+                {
+                    AdultQueues[iCohort] = AdultQueues.back();
+                    AdultQueues.pop_back();
+                    Migration_Queue->push_back(tempentry);
                     migrating_vectors++;//increment the number in Migration_Queue
+                }
+                else
+                {
+                    ++iCohort;
                 }
             }
         }
 
         return migrating_vectors;
+    }
+
+    std::vector<int> VectorPopulationIndividual::GetNewlyInfectedSuids() const
+    {
+        std::vector<int> suids;
+        for (auto cohort : AdultQueues)
+        {
+            IVectorCohortIndividual* ivci = NULL;
+            if (s_OK != cohort->QueryInterface(GET_IID(IVectorCohortIndividual), (void**)&ivci) )
+            {
+                throw QueryInterfaceException(
+                    __FILE__, __LINE__, __FUNCTION__,
+                    "cohort", "IVectorCohortIndividual", "VectorCohort");
+            }
+
+            if (ivci->GetState() != VectorStateEnum::STATE_INFECTED)
+                continue;
+
+            if (cohort->GetProgress() == 0)
+            {
+                suids.push_back(ivci->GetID());
+            }
+        }
+
+        return suids;
+    }
+
+    std::vector<int> VectorPopulationIndividual::GetInfectiousSuids() const
+    {
+        std::vector<int> suids;
+        for (auto cohort : AdultQueues)
+        {
+            IVectorCohortIndividual* ivci = NULL;
+            if (s_OK != cohort->QueryInterface(GET_IID(IVectorCohortIndividual), (void**)&ivci) )
+            {
+                throw QueryInterfaceException(
+                    __FILE__, __LINE__, __FUNCTION__,
+                    "cohort", "IVectorCohortIndividual", "VectorCohort");
+            }
+
+            if (ivci->GetState() != VectorStateEnum::STATE_INFECTIOUS)
+                continue;
+
+            suids.push_back(ivci->GetID());
+        }
+
+        return suids;
     }
 
     REGISTER_SERIALIZABLE(VectorPopulationIndividual);

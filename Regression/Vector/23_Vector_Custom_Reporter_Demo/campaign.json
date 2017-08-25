@@ -1,0 +1,109 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.5, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 8.0, 
+                    "class": "SimpleHousingModification",
+                    "Killing_Config": {
+                        "Box_Duration": 3650, 
+                        "Initial_Effect": 0.6, 
+                        "class": "WaningEffectBox"
+                    },
+                    "Blocking_Config": {
+                        "Box_Duration": 3650, 
+                        "Initial_Effect": 0.0, 
+                        "class": "WaningEffectBox"
+                    } 
+                }, 
+                "Target_Demographic": "Everyone", 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 140, 
+            "class": "CampaignEvent"
+        }, 
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.5, 
+                "Intervention_Config": {
+                    "Blocking_Config": {
+                        "Box_Duration": 3650, 
+                        "Initial_Effect": 1, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "Cost_To_Consumer": 3.75, 
+                    "Killing_Config": {
+                        "Box_Duration": 3650, 
+                        "Initial_Effect": 0.7, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "Usage_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 1.0
+                    }, 
+                    "class": "SimpleBednet"
+                }, 
+                "Target_Demographic": "Everyone", 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 140, 
+            "class": "CampaignEvent"
+        }, 
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.5, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 10.0, 
+                    "Reduced_Transmit": 0, 
+                    "Vaccine_Take": 1, 
+                    "Vaccine_Type": "AcquisitionBlocking", 
+                    "Waning_Config": {
+                        "Box_Duration": 3650, 
+                        "Initial_Effect": 1, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "class": "SimpleVaccine"
+                }, 
+                "Target_Demographic": "Everyone", 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 0, 
+            "class": "CampaignEvent"
+        }, 
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.5, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 10, 
+                    "Reduced_Acquire": 0, 
+                    "Vaccine_Take": 1, 
+                    "Vaccine_Type": "TransmissionBlocking", 
+                    "Waning_Config": {
+                        "Box_Duration": 3650, 
+                        "Initial_Effect": 1.0, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "class": "SimpleVaccine"
+                }, 
+                "Target_Demographic": "Everyone", 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 10000, 
+            "class": "CampaignEvent"
+        }
+    ], 
+    "Use_Defaults": 1
+}

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,8 +11,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ISupports.h"
 #include "BaseEventReport.h"
 #include "NodeEventContext.h"
+#include "EventTrigger.h"
 
-static const char * _module = "BaseEventReport";
+SETUP_LOGGING( "BaseEventReport" )
 
 namespace Kernel
 {
@@ -58,41 +59,20 @@ namespace Kernel
             pNodeSet = new NodeSetAll();
         }
 
-        // -------------------------------------------------------------------------------
-        // --- Listed_Events - This code is somewhat duplicated from SimulationConfig.
-        // --- We don't want to use SimulationConfig here because the custom reports would
-        // --- need to include SimulationConfig and it brings along too much baggage.
-        // -------------------------------------------------------------------------------
-        std::vector<std::string> listed_events_list = GET_CONFIG_VECTOR_STRING( EnvPtr->Config, "Listed_Events" );
-        jsonConfigurable::tDynamicStringSet listed_events;
-        for( auto event_str : listed_events_list )
+        if( inputJson->Exist( "Event_Trigger_List" ) )
         {
-            listed_events.insert( event_str );
-        }
-        // Add Built-in Events
-        for( int i = 0 ; i < IndividualEventTriggerType::pairs::count()-2 ; i++ )
-        {
-            auto trigger = IndividualEventTriggerType::pairs::lookup_key( i );
-            if( trigger != nullptr )
-            {
-                listed_events.insert( trigger );
-            }
+            initConfigTypeMap( "Event_Trigger_List", &eventTriggerList, Event_Report_Event_Trigger_List_DESC_TEXT );
         }
 
-
-        initConfigTypeMap( "Event_Trigger_List", &eventTriggerList, Event_Report_Event_Trigger_List_DESC_TEXT, "<configuration>:Listed_Events.*", listed_events );
         bool retValue = JsonConfigurable::Configure( inputJson );
         if( eventTriggerList.size() == 0 )
         {
-            for( auto &trigger: listed_events )
-            {
-                eventTriggerList.push_back( trigger );
-            }
+            eventTriggerList = EventTriggerFactory::GetInstance()->GetAllEventTriggers();
         }
 
         if( retValue && (pNodeSet == nullptr) )
         {
-            auto tmp = Configuration::CopyFromElement( nodesetConfig._json );
+            auto tmp = Configuration::CopyFromElement( nodesetConfig._json, inputJson->GetDataLocation() );
             pNodeSet = NodeSetFactory::CreateInstance( tmp );
             delete tmp;
         }
@@ -111,6 +91,21 @@ namespace Kernel
 
     void BaseEventReport::Initialize( unsigned int nrmSize )
     {
+    }
+
+    void BaseEventReport::CheckForValidNodeIDs(const std::vector<ExternalNodeId_t>& nodeIds_demographics)
+    {
+        std::vector<ExternalNodeId_t> nodes_missing_in_demographics = pNodeSet->IsSubset(nodeIds_demographics);
+        if (!nodes_missing_in_demographics.empty())
+        {
+            std::stringstream nodes_missing_in_demographics_str;
+            std::copy(nodes_missing_in_demographics.begin(), nodes_missing_in_demographics.end(), ostream_iterator<int>(nodes_missing_in_demographics_str, " "));  // list of missing nodes
+
+            std::stringstream error_msg;
+            error_msg <<"Found NodeIDs in " << GetReportName().c_str() << " that are missing in demographics: ";
+            error_msg << nodes_missing_in_demographics_str.str() << ". Only nodes configured in demographics can be used in a report.";
+            throw InvalidInputDataException(__FILE__, __LINE__, __FUNCTION__, error_msg.str().c_str());
+        }
     }
 
     void BaseEventReport::UpdateEventRegistration( float currentTime,
@@ -200,7 +195,7 @@ namespace Kernel
         return durationDays;
     }
 
-    const std::vector< std::string >&
+    const std::vector< EventTrigger >&
     BaseEventReport::GetEventTriggerList() const
     {
         return eventTriggerList;
@@ -217,7 +212,7 @@ namespace Kernel
         for( auto trigger : eventTriggerList )
         {
             LOG_DEBUG_F( "BaseEventReport is registering to listen to event %s\n", trigger.c_str() );
-            pNTIC->RegisterNodeEventObserverByString( this, trigger );
+            pNTIC->RegisterNodeEventObserver( this, trigger );
         }
         nodeEventContextList.push_back( pNEC );
         events_registered = true ;
@@ -230,7 +225,7 @@ namespace Kernel
         for( auto trigger : eventTriggerList )
         {
             LOG_DEBUG_F( "BaseEventReport is unregistering to listen to event %s\n", trigger.c_str() );
-            pNTIC->UnregisterNodeEventObserverByString( this, trigger );
+            pNTIC->UnregisterNodeEventObserver( this, trigger );
         }
         events_unregistered = true ;
     }

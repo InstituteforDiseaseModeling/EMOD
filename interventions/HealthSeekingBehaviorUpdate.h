@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -32,22 +32,21 @@ namespace Kernel
         DECLARE_FACTORY_REGISTERED(InterventionFactory, HealthSeekingBehaviorUpdate, IDistributableIntervention)
 
     public: 
-        bool Configure( const Configuration * config );
         HealthSeekingBehaviorUpdate();
-
-        // factory method
         virtual ~HealthSeekingBehaviorUpdate() { };
+
+        virtual bool Configure( const Configuration * config ) override;
 
         // We inherit AddRef/Release abstractly through IHealthSeekBehavior,
         // even though BaseIntervention has a non-abstract version.
-        virtual int32_t AddRef() { return BaseIntervention::AddRef(); }
-        virtual int32_t Release() { return BaseIntervention::Release(); }
+        virtual int32_t AddRef() override { return BaseIntervention::AddRef(); }
+        virtual int32_t Release() override { return BaseIntervention::Release(); }
 
         // IDistributableIntervention
-        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pCCO );
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
-        virtual void SetContextTo(IIndividualHumanContext *context);
-        virtual void Update(float dt);
+        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pCCO ) override;
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+        virtual void SetContextTo(IIndividualHumanContext *context) override;
+        virtual void Update(float dt) override;
 
     protected:
         float new_probability_of_seeking;

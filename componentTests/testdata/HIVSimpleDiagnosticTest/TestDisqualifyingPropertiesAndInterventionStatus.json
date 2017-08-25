@@ -1,0 +1,15 @@
+{
+    "Event_Or_Config"          : "Event",
+    "Dont_Allow_Duplicates"    : 0,
+    "Positive_Diagnosis_Event" : "Births",
+    "Base_Specificity"         : 0,
+    "Base_Sensitivity"         : 0,
+    "Treatment_Fraction"       : 0,
+    "Cost_To_Consumer"         : 0,
+    "Days_To_Diagnosis"        : 2,
+    "Disqualifying_Properties" : [ "InterventionStatus:abort_state_1","InterventionStatus:abort_state_2","InterventionStatus:abort_state_3" ],
+    "New_Property_Value"       : "InterventionStatus:non_abort_state",
+    "Retest_Until_Positive"    : 0,
+    "Absolute_Duration"        : 5,
+    "Negative_Diagnosis_Event" : "NonDiseaseDeaths"
+}

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,13 +19,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"
 #include "SimulationConfig.h"
 #include "Drugs.h"
+#include "EventTrigger.h"
 
 // In this solution, the HIVInterventionsContainer, which owns all ART-specific business knowledge,
 // notifies the immune system of the "ART event". Not sure I like that.
 // The Immunity/Susceptibility responds to ART by boosting CD4, but it puts it in a new CD4 
 // trajectory.
 
-static const char * _module = "HIVInterventionsContainer";
+SETUP_LOGGING( "HIVInterventionsContainer" )
 
 namespace Kernel
 {
@@ -43,7 +44,6 @@ namespace Kernel
         HANDLE_INTERFACE(IHIVDrugEffectsApply)
         HANDLE_INTERFACE(IHIVInterventionsContainer)
         HANDLE_INTERFACE(IHIVMedicalHistory)
-        HANDLE_INTERFACE(IHIVCascadeOfCare)
         HANDLE_INTERFACE(IHIVCampaignSemaphores)
         HANDLE_INTERFACE(ISTICoInfectionStatusChangeApply)
         HANDLE_INTERFACE(IHIVMTCTEffects)
@@ -60,7 +60,6 @@ namespace Kernel
         , m_suppression_failure_timer(INACTIVE_DURATION)
         , hiv_parent(nullptr)
         , maternal_transmission_suppression(0.0f)
-        , cascade_state("")
         , campaign_semaphores()
 
         // medical chart - DJK shouldn't this live at the HIVindividual or "healthcare system" level?
@@ -152,21 +151,21 @@ namespace Kernel
 
     // campaign semaphore interface (IIndividualHumanHIV)
     bool
-    HIVInterventionsContainer::SemaphoreExists(std::string counter)
+    HIVInterventionsContainer::SemaphoreExists( const std::string& counter )
     const
     {
         return (campaign_semaphores.find(counter) != campaign_semaphores.end());
     }
 
     void
-    HIVInterventionsContainer::SemaphoreInit(std::string counter, int value)
+    HIVInterventionsContainer::SemaphoreInit( const std::string& counter, int value )
     {
         value = value < 0 ? 0 : value;
         campaign_semaphores[counter] = value;
     }
 
     int
-    HIVInterventionsContainer::SemaphoreIncrement(std::string counter)
+    HIVInterventionsContainer::SemaphoreIncrement( const std::string& counter )
     {
         if (!SemaphoreExists(counter))
         {
@@ -179,7 +178,7 @@ namespace Kernel
     }
 
     bool
-    HIVInterventionsContainer::SemaphoreDecrement(std::string counter)
+    HIVInterventionsContainer::SemaphoreDecrement( const std::string& counter )
     {
         if (!SemaphoreExists(counter))
         {
@@ -228,22 +227,7 @@ namespace Kernel
     HIVInterventionsContainer::OnPreART()
     const
     {
-        //return (ART_status == ARTStatus::ON_PRE_ART);
-        //return strcmpi("OnPreART", cascade_state.c_str()) == 0;
         return on_PreART;
-    }
-
-    void
-    HIVInterventionsContainer::setCascadeState(std::string state)
-    {
-        cascade_state = state;
-    }
-
-    std::string
-    HIVInterventionsContainer::getCascadeState()
-    const
-    {
-        return cascade_state;
     }
 
     void HIVInterventionsContainer::OnTestForHIV(bool test_result)
@@ -260,7 +244,7 @@ namespace Kernel
                                                "INodeEventContext" );
             }
 
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), IndividualEventTriggerType::HIVNewlyDiagnosed );
+            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::HIVNewlyDiagnosed );
         }
 
         ever_tested = true;
@@ -276,9 +260,9 @@ namespace Kernel
     void HIVInterventionsContainer::OnReceivedTestResultForHIV(bool test_result)
     {
         if( test_result )
-            received_HIV_test_results = ReceivedTestResultsType::POSITIVE ;
+            received_HIV_test_results = ReceivedTestResultsType::POSITIVE;
         else
-            received_HIV_test_results = ReceivedTestResultsType::NEGATIVE ;
+            received_HIV_test_results = ReceivedTestResultsType::NEGATIVE;
 
         float t = parent->GetEventContext()->GetNodeEventContext()->GetTime().time;
         time_last_seen_by_healthcare = t;
@@ -540,7 +524,7 @@ namespace Kernel
                                            "INodeEventContext" );
         }
 
-        broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), IndividualEventTriggerType::StoppedART );
+        broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::StoppedART );
     }
 
     void HIVInterventionsContainer::ApplyDrugConcentrationAction( std::string , float current_concentration )
@@ -563,12 +547,12 @@ namespace Kernel
         if( OnPreART() )
         {
             // broadcast HIVPreARTToART
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), IndividualEventTriggerType::HIVPreARTToART );
+            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::HIVPreARTToART );
         }
         else
         {
             // broadcast HIVPreARTToART
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), IndividualEventTriggerType::HIVNonPreARTToART );
+            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::HIVNonPreARTToART );
         }
 
         release_assert( hiv_parent );
@@ -610,7 +594,7 @@ namespace Kernel
 
         days_since_most_recent_ART_start = 0.0f;
 
-        broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), IndividualEventTriggerType::StartedART );
+        broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::StartedART );
         LOG_DEBUG_F( "Individual %d is now on ART.\n", parent->GetSuid().data );
 
         // If not going to achieve viral suppression, stop here so as to 1) avoid computing failure and 2) skip maternal transmission mod
@@ -763,7 +747,6 @@ namespace Kernel
         ar.labelElement("days_since_most_recent_ART_start" ) & container.days_since_most_recent_ART_start;
         ar.labelElement("m_suppression_failure_timer"      ) & container.m_suppression_failure_timer;
         ar.labelElement("maternal_transmission_suppression") & container.maternal_transmission_suppression;
-        ar.labelElement("cascade_state"                    ) & container.cascade_state;
         ar.labelElement("campaign_semaphores"              ) & container.campaign_semaphores;
         ar.labelElement("on_PreART"                        ) & container.on_PreART;
         ar.labelElement("ever_tested_HIV_positive"         ) & container.ever_tested_HIV_positive;
@@ -788,4 +771,25 @@ namespace Kernel
 
         //hiv_parent set in SetContextTo
     }
+
+    void HIVInterventionsContainer::BroadcastNewHIVInfection()
+    {
+        //function called when we externally put in HIV infections through AcquireInfectionHIV
+        //first get the pointer to the person, parent is the generic individual
+        release_assert(parent);
+
+        IIndividualHumanEventContext * HIVEventContext = NULL;
+        if (s_OK != parent->QueryInterface(GET_IID(IIndividualHumanEventContext), (void**)&HIVEventContext))
+        {
+            throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext");
+        }
+
+        INodeTriggeredInterventionConsumer* broadcaster = nullptr;
+        if (s_OK != HIVEventContext->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
+        {
+            throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "HIVEventContext-->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext");
+        }
+        broadcaster->TriggerNodeEventObservers(parent->GetEventContext(), EventTrigger::NewExternalHIVInfection);
+    }
+
 }

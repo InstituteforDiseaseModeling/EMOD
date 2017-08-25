@@ -18,14 +18,8 @@
                     "Days_To_Diagnosis": 1,
                     "Probability_Received_Result" : 0.9,
 
-                    "Abort_States": [
-                        "OnART",
-                        "LinkingToART",
-                        "OnPreART",
-                        "LinkingToPreART",
-                        "ARTStaging"
-                        ],
-                    "Cascade_State": "HCTTestingLoop",
+                    "Disqualifying_Properties": [ ],
+                    "New_Property_Value": "",
 
                     "Positive_Diagnosis_Event": "HCTTestingLoop2",
                     "Negative_Diagnosis_Event": "HCTTestingLoop3"

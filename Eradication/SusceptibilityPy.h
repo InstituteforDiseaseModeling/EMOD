@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,12 +10,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #pragma once
 
 #include "Susceptibility.h"
-#include "StrainIdentity.h"
 
 #ifdef ENABLE_PYTHON
 
 namespace Kernel
 {
+    class StrainIdentity;
+
     class SusceptibilityPyConfig: public JsonConfigurable
     {
         GET_SCHEMA_STATIC_WRAPPER(SusceptibilityPyConfig)
@@ -56,19 +57,12 @@ namespace Kernel
         static SusceptibilityPy *CreateSusceptibility(IIndividualHumanContext *context, float age, float immmod, float riskmod);
         void Initialize(float _age, float _immmod, float _riskmod);
         SusceptibilityPy(IIndividualHumanContext *context);
-	SusceptibilityPy() {}
+    SusceptibilityPy() {}
         virtual ~SusceptibilityPy(void);
 
         virtual void Update(float dt = 0.0);
 
     private:
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-        friend class boost::serialization::access;
-	/*
-        template<class Archive>
-        friend void serialize(Archive & ar, SusceptibilityPy&, const unsigned int  file_version );
-	*/
-#endif
     };
 }
 #endif

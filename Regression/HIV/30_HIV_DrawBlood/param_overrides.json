@@ -6,12 +6,11 @@
 		"Base_Year": 1990,
 		"Simulation_Duration": 30, 
 		"Simulation_Timestep": 1,
-                "Valid_Cascade_States" : [
-                    "CascadeState_1",
-                    "CascadeState_2",
-                    "CascadeState_3",
-                    "CascadeState_4"
-                ],
+        "Demographics_Filenames": [
+            "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json", 
+            "../input/InterventionStatus_test_overlay.json",
+            "../input/PFA_overlay.json"
+        ], 
 		
 		"____________INTRAHOST___________": "",
 

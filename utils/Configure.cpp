@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,8 +16,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Log.h"
 #include "Debug.h"
 #include "Properties.h"
+#include "NodeProperties.h"
+#include "EventTrigger.h"
 
-static const char * _module = "JsonConfigurable";
+#ifndef WIN32
+#include <cxxabi.h>
+#endif
+
+SETUP_LOGGING( "JsonConfigurable" )
 
 namespace Kernel
 {
@@ -87,8 +93,6 @@ namespace Kernel
 
     bool check_condition( const json::QuickInterpreter& schema, const json::QuickInterpreter * pJson )
     {
-        //return false;// hack for testing
-
         if( schema.Exist( "depends-on" ) )
         {
             auto condition = json_cast<const json::Object&>(schema["depends-on"]);
@@ -107,10 +111,12 @@ namespace Kernel
             }
 
             if( check_condition( pJson, condition_key.c_str(), condition_value ) )
-            {
-                return true;
+            { 
+                if( check_condition( EnvPtr->Config, condition_key.c_str(), condition_value ) )
+                {
+                    return true;
+                }
             }
-
         }
         else
         {
@@ -149,7 +155,7 @@ namespace Kernel
     {
         if( !inputJson->Exist( key ) )
         {
-            throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, "campaign.json", key.c_str() );
+            throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, inputJson->GetDataLocation().c_str(), key.c_str() );
         }
 
         _json = (*inputJson)[key];
@@ -176,7 +182,7 @@ namespace Kernel
     {
         if( !inputJson->Exist( key ) )
         {
-            throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, "campaign.json", key.c_str() );
+            throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, inputJson->GetDataLocation().c_str(), key.c_str() );
         }
         _json = (*inputJson)[key];
         //std::cout << "EventConfig::Configure called with json blob." << std::endl;
@@ -217,7 +223,7 @@ namespace Kernel
     {
         if( !inputJson->Exist( key ) )
         {
-            throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, "campaign.json", key.c_str() );
+            throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, inputJson->GetDataLocation().c_str(), key.c_str() );
         }
         // we need to set _json to inputJson
         _json = (*inputJson)[key];
@@ -260,12 +266,6 @@ namespace Kernel
         }
 #endif
     }
-
-// clorton    template < class Archive >
-// clorton    void serialize( Archive &ar, InterventionConfig& config, unsigned int file_version )
-// clorton    {
-// clorton        ar & config._json;
-// clorton    }
 
     IndividualInterventionConfig::IndividualInterventionConfig()
     {
@@ -326,7 +326,7 @@ namespace Kernel
     {
         if( !inputJson->Exist( key ) )
         {
-            throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, "campaign.json", key.c_str() );
+            throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, inputJson->GetDataLocation().c_str(), key.c_str() );
         }
         _json = (*inputJson)[key];
         //std::cout << "WaningConfig::Configure called with json blob." << std::endl;
@@ -337,7 +337,12 @@ namespace Kernel
 
     namespace jsonConfigurable
     {
-        ConstrainedString::ConstrainedString( std::string &init_str )
+        ConstrainedString::ConstrainedString()
+        :constraint_param(nullptr)
+        {
+        }
+
+        ConstrainedString::ConstrainedString( const std::string &init_str )
         : constraint_param(nullptr)
         {
             *((std::string*)(this)) = init_str;
@@ -411,6 +416,17 @@ namespace Kernel
         // --- some subclasses are copied a lot and this causes this memory to be
         // --- created a lot when it is not needed.
         // -----------------------------------------------------------------------
+    }
+
+    JsonConfigurable::JsonConfigurable( const JsonConfigurable& rConfig )
+    : IConfigurable()
+    , m_pData( nullptr ) // !!! Don't copy stuff
+    , jsonSchemaBase( rConfig.jsonSchemaBase )
+    {
+        if( rConfig.m_pData != nullptr )
+        {
+            release_assert( false );
+        }
     }
 
     JsonConfigurable::~JsonConfigurable()
@@ -681,18 +697,18 @@ namespace Kernel
     }
 
     void
-    JsonConfigurable::initConfigTypeMap(
-        const char* paramName,
-        std::vector< float > * pVariable,
-        const char* description,
-        float min, float max, float defaultvalue,
-        const char* condition_key, const char* condition_value
-    )
+        JsonConfigurable::initConfigTypeMap(
+            const char* paramName,
+            std::vector< float > * pVariable,
+            const char* description,
+            float min, float max, float defaultvalue, bool ascending,
+            const char* condition_key, const char* condition_value
+        )
     {
-        LOG_DEBUG_F( "initConfigTypeMap<vector<float>>: %s\n", paramName);
-        GetConfigData()->vectorFloatConfigTypeMap[ paramName ] = pVariable;
+        LOG_DEBUG_F("initConfigTypeMap<vector<float>>: %s\n", paramName);
+        GetConfigData()->vectorFloatConfigTypeMap[paramName] = pVariable;
         json::Object newVectorFloatSchema;
-        if ( _dryrun )
+        if (_dryrun)
         {
             newVectorFloatSchema["description"] = json::String(description);
             newVectorFloatSchema["type"] = json::String("Vector Float");
@@ -700,7 +716,8 @@ namespace Kernel
         newVectorFloatSchema["min"] = json::Number(min);
         newVectorFloatSchema["max"] = json::Number(max);
         newVectorFloatSchema["default"] = json::Number(defaultvalue);
-        updateSchemaWithCondition( newVectorFloatSchema, condition_key, condition_value );
+        newVectorFloatSchema["ascending"] = json::Number(ascending ? 1 : 0);
+        updateSchemaWithCondition(newVectorFloatSchema, condition_key, condition_value);
         jsonSchemaBase[paramName] = newVectorFloatSchema;
     }
 
@@ -913,6 +930,10 @@ namespace Kernel
         // --- Get the type of variable and declare it an "idmType"
         // --------------------------------------------------------
         std::string variable_type = typeid(*pVariable).name() ;
+#ifndef WIN32
+        variable_type = abi::__cxa_demangle( variable_type.c_str(), 0, 0, nullptr );
+        variable_type = variable_type.substr( 8 ); // remove "Kernel::"
+#endif
         if( variable_type.find( "class Kernel::" ) == 0 )
         {
             variable_type = variable_type.substr( 14 );
@@ -982,7 +1003,7 @@ namespace Kernel
     }
 
     void
-    JsonConfigurable::handleMissingParam( const std::string& key )
+    JsonConfigurable::handleMissingParam( const std::string& key, const std::string& rDataLocation )
     {
         if( _track_missing )
         {
@@ -990,7 +1011,17 @@ namespace Kernel
         }
         else
         {
-            throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, "N/A", key.c_str() );
+            std::string class_name = typeid(*this).name();
+#ifdef WIN32
+            class_name = class_name.substr( 14 ); // remove "class Kernel::"
+#else
+            class_name = abi::__cxa_demangle( class_name.c_str(), 0, 0, nullptr );
+            class_name = class_name.substr( 8 ); // remove "Kernel::"
+#endif
+
+            std::stringstream ss;
+            ss << key << " of " << class_name;
+            throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, rDataLocation.c_str(), ss.str().c_str() );
         }
     }
 
@@ -1003,8 +1034,12 @@ namespace Kernel
     {
         LOG_DEBUG_F( "initConfigTypeMap<IPKey>: %s\n", paramName);
         json::Object newIPKeySchema;
-        newIPKeySchema["description"] = json::String(description);
-        newIPKeySchema["type"] = json::String("IPKey");
+        if( _dryrun )
+        {
+            newIPKeySchema["description"] = json::String(description);
+            newIPKeySchema["type"] = json::String("Constrained String");
+            newIPKeySchema[ "value_source" ] = json::String( IPKey::GetConstrainedStringConstraintKey() );
+        }
         GetConfigData()->ipKeyTypeMap[ paramName ] = pVariable;
         jsonSchemaBase[paramName] = newIPKeySchema;
 
@@ -1021,10 +1056,14 @@ namespace Kernel
         const char * description
     )
     {
-        LOG_DEBUG_F( "initConfigTypeMap<IPKey>: %s\n", paramName);
+        LOG_DEBUG_F( "initConfigTypeMap<IPKeyValue>: %s\n", paramName);
         json::Object newIPKeyValueSchema;
-        newIPKeyValueSchema["description"] = json::String(description);
-        newIPKeyValueSchema["type"] = json::String("IPKeyValue");
+        if( _dryrun )
+        {
+            newIPKeyValueSchema["description"] = json::String(description);
+            newIPKeyValueSchema[ "type" ] = json::String( "Constrained String" );
+            newIPKeyValueSchema[ "value_source" ] = json::String( IPKey::GetConstrainedStringConstraintKeyValue() );
+        }
         GetConfigData()->ipKeyValueTypeMap[ paramName ] = pVariable;
         jsonSchemaBase[paramName] = newIPKeyValueSchema;
 
@@ -1032,6 +1071,112 @@ namespace Kernel
         {
             pVariable->SetParameterName( paramName );
         }
+    }
+
+    void
+    JsonConfigurable::initConfigTypeMap(
+        const char* paramName,
+        NPKey * pVariable,
+        const char * description
+    )
+    {
+        LOG_DEBUG_F( "initConfigTypeMap<NPKey>: %s\n", paramName);
+        json::Object newNPKeySchema;
+        if( _dryrun )
+        {
+            newNPKeySchema["description"] = json::String(description);
+            newNPKeySchema[ "type" ] = json::String( "Constrained String" );
+            newNPKeySchema[ "value_source" ] = json::String( NPKey::GetConstrainedStringConstraintKey() );
+        }
+        GetConfigData()->npKeyTypeMap[ paramName ] = pVariable;
+        jsonSchemaBase[paramName] = newNPKeySchema;
+
+        if( pVariable->GetParameterName().empty() )
+        {
+            pVariable->SetParameterName( paramName );
+        }
+    }
+
+    void
+    JsonConfigurable::initConfigTypeMap(
+        const char* paramName,
+        NPKeyValue * pVariable,
+        const char * description
+    )
+    {
+        LOG_DEBUG_F( "initConfigTypeMap<NPKeyValue>: %s\n", paramName);
+        json::Object newNPKeyValueSchema;
+        if( _dryrun )
+        {
+            newNPKeyValueSchema["description"] = json::String(description);
+            newNPKeyValueSchema[ "type" ] = json::String( "Constrained String" );
+            newNPKeyValueSchema[ "value_source" ] = json::String( NPKey::GetConstrainedStringConstraintKeyValue() );
+        }
+        GetConfigData()->npKeyValueTypeMap[ paramName ] = pVariable;
+        jsonSchemaBase[paramName] = newNPKeyValueSchema;
+
+        if( pVariable->GetParameterName().empty() )
+        {
+            pVariable->SetParameterName( paramName );
+        }
+    }
+
+    void
+        JsonConfigurable::initConfigTypeMap(
+            const char* paramName,
+            EventTrigger * pVariable,
+            const char * description,
+            const char* condition_key,
+            const char* condition_value
+        )
+    {
+        LOG_DEBUG_F( "initConfigTypeMap<EventTrigger>: %s\n", paramName );
+        json::Object newTriggerSchema;
+        json::QuickBuilder qb( newTriggerSchema );
+        if( _dryrun )
+        {
+            qb[ "type" ] = json::String( "Constrained String" );
+            qb[ "default" ] = json::String( EventTrigger::NoTrigger.ToString() );
+            qb[ "description" ] = json::String( description );
+            qb[ "value_source" ] = json::String( EventTriggerFactory::CONSTRAINT_SCHEMA_STRING );
+            const std::vector<std::string>& built_in_names = EventTriggerFactory::GetInstance()->GetBuiltInNames();
+            for( int i = 0; i < built_in_names.size(); ++i )
+            {
+                qb[ "Built-in" ][ i ] = json::String( built_in_names[ i ] );
+            }
+            updateSchemaWithCondition( newTriggerSchema, condition_key, condition_value );
+        }
+        GetConfigData()->eventTriggerTypeMap[ paramName ] = pVariable;
+        jsonSchemaBase[ paramName ] = newTriggerSchema;
+    }
+
+    void
+        JsonConfigurable::initConfigTypeMap(
+            const char* paramName,
+            std::vector<EventTrigger> * pVariable,
+            const char * description,
+            const char* condition_key,
+            const char* condition_value
+        )
+    {
+        LOG_DEBUG_F( "initConfigTypeMap<std::vector<EventTrigger>>: %s\n", paramName );
+        json::Object newTriggerSchema;
+        json::QuickBuilder qb( newTriggerSchema );
+        if( _dryrun )
+        {
+            qb[ "type" ] = json::String( "Vector String" );
+            qb[ "default" ] = json::String( EventTrigger::NoTrigger.ToString() );
+            qb[ "description" ] = json::String( description );
+            qb[ "value_source" ] = json::String( EventTriggerFactory::CONSTRAINT_SCHEMA_STRING );
+            const std::vector<std::string>& built_in_names = EventTriggerFactory::GetInstance()->GetBuiltInNames();
+            for( int i = 0 ; i < built_in_names.size() ; ++i )
+            {
+                qb[ "Built-in" ][ i ] = json::String( built_in_names[ i ] );
+            }
+            updateSchemaWithCondition( newTriggerSchema, condition_key, condition_value );
+        }
+        GetConfigData()->eventTriggerVectorTypeMap[ paramName ] = pVariable;
+        jsonSchemaBase[ paramName ] = newTriggerSchema;
     }
 
     bool JsonConfigurable::Configure( const Configuration* inputJson )
@@ -1090,7 +1235,7 @@ namespace Kernel
                 }
                 else
                 {
-                    handleMissingParam( key );
+                    handleMissingParam( key, inputJson->GetDataLocation() );
                 }
             }
 
@@ -1138,7 +1283,7 @@ namespace Kernel
                 }
                 else // not in config, not using defaults, no depends-on, just plain missing
                 {
-                    handleMissingParam( key );
+                    handleMissingParam( key, inputJson->GetDataLocation() );
                 }
             }
 
@@ -1177,7 +1322,7 @@ namespace Kernel
                 }
                 else // not in config, not using defaults, no depends-on, just plain missing
                 {
-                    handleMissingParam( key );
+                    handleMissingParam( key, inputJson->GetDataLocation() );
                 }
             }
 
@@ -1215,7 +1360,7 @@ namespace Kernel
                 }
                 else 
                 {
-                    handleMissingParam( key );
+                    handleMissingParam( key, inputJson->GetDataLocation() );
                 }
             }
             LOG_DEBUG_F("the key %s = double %f\n", key.c_str(), *(entry.second));
@@ -1254,7 +1399,7 @@ namespace Kernel
                 }
                 else 
                 {
-                    handleMissingParam( key );
+                    handleMissingParam( key, inputJson->GetDataLocation() );
                 }
             }
 
@@ -1293,7 +1438,7 @@ namespace Kernel
                 }
                 else 
                 {
-                    handleMissingParam( key );
+                    handleMissingParam( key, inputJson->GetDataLocation() );
                 }
             }
 
@@ -1326,7 +1471,7 @@ namespace Kernel
                 }
                 else
                 {
-                    handleMissingParam( key );
+                    handleMissingParam( key, inputJson->GetDataLocation() );
                 }
             }
         }
@@ -1356,7 +1501,7 @@ namespace Kernel
                 }
                 else
                 {
-                    handleMissingParam( key );
+                    handleMissingParam( key, inputJson->GetDataLocation() );
                 }
             }
         }
@@ -1385,7 +1530,7 @@ namespace Kernel
                 }
                 else
                 {
-                    handleMissingParam( key );
+                    handleMissingParam( key, inputJson->GetDataLocation() );
                 }
             }
         }
@@ -1412,7 +1557,7 @@ namespace Kernel
                     LOG_INFO_F( "Using the default value ( \"%s\" : <empty string vector> ) for unspecified string vector parameter.\n", key.c_str() );
                 }
 
-                handleMissingParam( key );
+                handleMissingParam( key, inputJson->GetDataLocation() );
             }
 
             auto allowed_values = GetConfigData()->vectorStringConstraintsTypeMap[ key ];
@@ -1455,7 +1600,7 @@ namespace Kernel
                     LOG_INFO_F( "Using the default value ( \"%s\" : <empty string Vector2D> ) for unspecified string Vector2D parameter.\n", key.c_str() );
                 }
 
-                handleMissingParam( key );
+                handleMissingParam( key, inputJson->GetDataLocation() );
             }
             auto allowed_values = GetConfigData()->vector2dStringConstraintsTypeMap[ key ];
             for( auto &candidate_vector : *(entry.second) )
@@ -1497,7 +1642,7 @@ namespace Kernel
             }
             else if( !_useDefaults )
             {
-                handleMissingParam( key );
+                handleMissingParam( key, inputJson->GetDataLocation() );
             }
         }
 
@@ -1520,7 +1665,7 @@ namespace Kernel
             }
             else if( !_useDefaults )
             {
-                handleMissingParam( key );
+                handleMissingParam( key, inputJson->GetDataLocation() );
             }
         }
 
@@ -1546,7 +1691,7 @@ namespace Kernel
             }
             else if( !_useDefaults )
             {
-                handleMissingParam( key );
+                handleMissingParam( key, inputJson->GetDataLocation() );
             }
         }
 
@@ -1572,7 +1717,7 @@ namespace Kernel
             }
             else if( !_useDefaults )
             {
-                handleMissingParam( key );
+                handleMissingParam( key, inputJson->GetDataLocation() );
             }
         }
 /////////////////// END FIX BOUNDARY
@@ -1587,9 +1732,9 @@ namespace Kernel
             {
                 pJc->ConfigureFromJsonAndKey( inputJson, key );
             }
-            else if( !_useDefaults )
+            else if( !_useDefaults || !(pJc->HasValidDefault()) )
             {
-                handleMissingParam( key );
+                handleMissingParam( key, inputJson->GetDataLocation() );
             }
         }
 
@@ -1638,7 +1783,7 @@ namespace Kernel
 
             if( inputJson->Exist( key ) )
             {
-                Configuration * p_config = Configuration::CopyFromElement( (*inputJson)[key] );
+                Configuration * p_config = Configuration::CopyFromElement( (*inputJson)[key], inputJson->GetDataLocation() );
 
                 pJc->Configure( p_config );
 
@@ -1647,7 +1792,7 @@ namespace Kernel
             }
             else if( !_useDefaults )
             {
-                handleMissingParam( key );
+                handleMissingParam( key, inputJson->GetDataLocation() );
             }
         }
 
@@ -1657,17 +1802,17 @@ namespace Kernel
         {
             const std::string& param_key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[param_key];
-            if ( !inputJson->Exist(param_key) && _useDefaults )
+            if ( inputJson->Exist(param_key) )
             {
-                LOG_INFO_F( "Using the default value ( \"%s\" : \"\" ) for unspecified parameter.\n", param_key.c_str() );
-                if( _track_missing )
+                std::string tmp = (std::string) GET_CONFIG_STRING( inputJson, (entry.first).c_str() );
+                if( !tmp.empty() )
                 {
-                    missing_parameters_set.insert(param_key);
+                    *(entry.second) = tmp;
                 }
             }
-            else
+            else if( !_useDefaults )
             {
-                *(entry.second) = (std::string) GET_CONFIG_STRING( inputJson, (entry.first).c_str() );
+                handleMissingParam( param_key, inputJson->GetDataLocation() );
             }
         }
 
@@ -1676,24 +1821,145 @@ namespace Kernel
         {
             const std::string& param_key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[param_key];
-            IPKeyValue val ;
-            if ( !inputJson->Exist(param_key) && _useDefaults )
+            if ( inputJson->Exist(param_key) )
             {
-                LOG_INFO_F( "Using the default value ( \"%s\" : \"\" ) for unspecified parameter.\n", param_key.c_str() );
-                if( _track_missing )
+                std::string tmp = (std::string) GET_CONFIG_STRING( inputJson, (entry.first).c_str() );
+                if( !tmp.empty() )
                 {
-                    missing_parameters_set.insert(param_key);
+                    *(entry.second) = tmp;
+                }
+            }
+            else if( !_useDefaults )
+            {
+                handleMissingParam( param_key, inputJson->GetDataLocation() );
+            }
+        }
+
+        // ---------------------------------- NPKey ------------------------------------
+        for( auto& entry : GetConfigData()->npKeyTypeMap )
+        {
+            const std::string& param_key = entry.first;
+            json::QuickInterpreter schema = jsonSchemaBase[ param_key ];
+            if( inputJson->Exist( param_key ) )
+            {
+                std::string tmp = (std::string) GET_CONFIG_STRING( inputJson, (entry.first).c_str() );
+                if( !tmp.empty() )
+                {
+                    *(entry.second) = tmp;
+                }
+            }
+            else if( !_useDefaults )
+            {
+                handleMissingParam( param_key, inputJson->GetDataLocation() );
+            }
+        }
+
+        // ---------------------------------- NPKeyValue ------------------------------------
+        for( auto& entry : GetConfigData()->npKeyValueTypeMap )
+        {
+            const std::string& param_key = entry.first;
+            json::QuickInterpreter schema = jsonSchemaBase[ param_key ];
+            if( inputJson->Exist( param_key ) )
+            {
+                std::string tmp = (std::string) GET_CONFIG_STRING( inputJson, (entry.first).c_str() );
+                if( !tmp.empty() )
+                {
+                    *(entry.second) = tmp;
+                }
+            }
+            else if( !_useDefaults )
+            {
+                handleMissingParam( param_key, inputJson->GetDataLocation() );
+            }
+        }
+
+        // ---------------------------------- EventTrigger  ------------------------------------
+        for( auto& entry : GetConfigData()->eventTriggerTypeMap )
+        {
+            const std::string& param_key = entry.first;
+            json::QuickInterpreter schema = jsonSchemaBase[ param_key ];
+            if( !inputJson->Exist( param_key ) && _useDefaults )
+            {
+                if( _useDefaults )
+                {
+                    LOG_INFO_F( "Using the default value ( \"%s\" : \"%s\" ) for unspecified parameter.\n", param_key.c_str(), EventTrigger::NoTrigger.c_str() );
+                    *(entry.second) = EventTrigger::NoTrigger;
+                }
+                else
+                {
+                    handleMissingParam( param_key, inputJson->GetDataLocation() );
                 }
             }
             else
             {
-                val = (std::string) GET_CONFIG_STRING( inputJson, (entry.first).c_str() );
+                std::string candidate = (std::string) GET_CONFIG_STRING( inputJson, (entry.first).c_str() );
+                if( EventTriggerFactory::GetInstance()->IsValidEvent( candidate ) )
+                {
+                    *(entry.second) = candidate;
+                }
+                else
+                {
+                    std::ostringstream msg;
+                    msg << "EventTrigger with specified value "
+                        << candidate
+                        << " is invalid. Possible values are: ";
+                    for( auto value : EventTriggerFactory::GetInstance()->GetAllEventTriggers() )
+                    {
+                        msg << value.ToString() << "...";
+                    }
+                    throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+                }
             }
-            *(entry.second) = val;
+        }
+
+        // ---------------------------------- EventTriggerVector  ------------------------------------
+        for( auto& entry : GetConfigData()->eventTriggerVectorTypeMap )
+        {
+            const std::string& param_key = entry.first;
+            json::QuickInterpreter schema = jsonSchemaBase[ param_key ];
+            if( !inputJson->Exist( param_key ) && _useDefaults )
+            {
+                LOG_INFO_F( "Using the default value ( \"%s\" : \"\" ) for unspecified parameter.\n", param_key.c_str() );
+                handleMissingParam( param_key, inputJson->GetDataLocation() );
+            }
+            else
+            {
+                std::vector<std::string> candidate_list = GET_CONFIG_VECTOR_STRING( inputJson, (entry.first).c_str() );
+                for( auto candidate : candidate_list )
+                {
+                    if( EventTriggerFactory::GetInstance()->IsValidEvent( candidate ) )
+                    {
+                        (*(entry.second)).push_back( EventTrigger( candidate ) );
+                    }
+                    else
+                    {
+                        std::ostringstream msg;
+                        msg << "EventTrigger with specified value "
+                            << candidate
+                            << " is invalid. Possible values are: ";
+                        for( auto value : EventTriggerFactory::GetInstance()->GetAllEventTriggers() )
+                        {
+                            msg << value.ToString() << "...";
+                        }
+                        throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+                    }
+                }
+            }
         }
 
         delete m_pData;
         m_pData = nullptr;
+
+        if( jsonSchemaBase.Exist( "Sim_Types" ) )
+        {
+            json::Element sim_types = jsonSchemaBase[ "Sim_Types" ];
+            jsonSchemaBase.Clear();
+            jsonSchemaBase[ "Sim_Types" ] = sim_types;
+        }
+        else
+        {
+            jsonSchemaBase.Clear();
+        }
 
         return true;
     }
@@ -1718,18 +1984,3 @@ namespace Kernel
         get_registration_map()[ stored_class_name ] = gs_callback;
     }
 }
-
-#if 0
-namespace Kernel
-{
-    namespace jsonConfigurable
-    {
-        template <class Archive>
-        void serialize( Archive &ar, Kernel::jsonConfigurable::ConstrainedString& cs, const unsigned int file_version )
-        {
-          ar & cs.constraints;
-          ar & cs.constraint_param;
-        }
-    }
-}
-#endif

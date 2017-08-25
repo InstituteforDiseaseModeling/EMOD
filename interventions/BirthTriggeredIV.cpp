@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,14 +14,16 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Log.h"
 #include "Debug.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
+#include "EventTrigger.h"
 
-static const char * _module = "BirthTriggeredIV";
+SETUP_LOGGING( "BirthTriggeredIV" )
 
 namespace Kernel
 {
     BEGIN_QUERY_INTERFACE_BODY(BirthTriggeredIV)
         HANDLE_INTERFACE(IConfigurable)
         HANDLE_INTERFACE(INodeDistributableIntervention)
+        HANDLE_INTERFACE(IBaseIntervention)
         HANDLE_INTERFACE(IIndividualEventObserver)
         //HANDLE_INTERFACE(INodeDistributableInterventionParameterSetterInterface)
         HANDLE_ISUPPORTS_VIA(INodeDistributableIntervention)
@@ -30,8 +32,7 @@ namespace Kernel
     IMPLEMENT_FACTORY_REGISTERED(BirthTriggeredIV)
 
     BirthTriggeredIV::BirthTriggeredIV()
-        : parent(nullptr) 
-        , duration(0)
+        : duration(0)
         , max_duration(0)
         , demographic_restrictions(false,TargetDemographicType::Everyone)
         , actual_intervention_config()
@@ -52,11 +53,11 @@ namespace Kernel
 
         demographic_restrictions.ConfigureRestrictions( this, inputJson );
 
-        bool ret = JsonConfigurable::Configure( inputJson );
+        bool ret = BaseNodeIntervention::Configure( inputJson );
         if( ret )
         {
             demographic_restrictions.CheckConfiguration();
-            InterventionValidator::ValidateIntervention( actual_intervention_config._json );
+            InterventionValidator::ValidateIntervention( actual_intervention_config._json, inputJson->GetDataLocation() );
         }
         return ret ;
     }
@@ -67,30 +68,26 @@ namespace Kernel
         IEventCoordinator2 *pEC
     )
     {
-        LOG_DEBUG_F("Distributed birth-triggered intervention to NODE: %d\n", pNodeEventContext->GetId().data);
-
-        // QI to register ourself as a birth observer
-        INodeTriggeredInterventionConsumer * pNTIC = nullptr;
-        if (s_OK != pNodeEventContext->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&pNTIC) )
+        bool was_distributed = BaseNodeIntervention::Distribute(pNodeEventContext, pEC);
+        if (was_distributed)
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNodeEventContext", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-        }
-        release_assert( pNTIC );
-        pNTIC->RegisterNodeEventObserver( this, IndividualEventTriggerType::Births );
+            LOG_DEBUG_F("Distributed birth-triggered intervention to NODE: %d\n", pNodeEventContext->GetId().data);
 
-        // We can QI NEC to get the campaign cost observer (it's just the node!)
-        ICampaignCostObserver *iCCO;
-        if (s_OK != parent->QueryInterface(GET_IID(ICampaignCostObserver), (void**)&iCCO))
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "ICampaignCostObserver", "INodeEventContext" );
+            // QI to register ourself as a birth observer
+            INodeTriggeredInterventionConsumer * pNTIC = nullptr;
+            if (s_OK != pNodeEventContext->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&pNTIC))
+            {
+                throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "pNodeEventContext", "INodeTriggeredInterventionConsumer", "INodeEventContext");
+            }
+            release_assert(pNTIC);
+            pNTIC->RegisterNodeEventObserver(this, EventTrigger::Births);
         }
-        assert( iCCO );
-        return true;
+        return was_distributed;
     }
 
     bool BirthTriggeredIV::notifyOnEvent(
         IIndividualHumanEventContext *pIndiv,
-        const std::string& StateChange
+        const EventTrigger& trigger
     )
     {
         LOG_DEBUG("A baby was born, distribute actual_intervention (conditionally)\n");
@@ -132,7 +129,7 @@ namespace Kernel
             throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "The pointer to IInterventionFactory object is not valid (could be DLL specific)" );
         }
 
-        auto tmp_config = Configuration::CopyFromElement( actual_intervention_config._json );
+        auto tmp_config = Configuration::CopyFromElement( actual_intervention_config._json, "campaign" );
         IDistributableIntervention *di = const_cast<IInterventionFactory*>(ifobj)->CreateIntervention( tmp_config ); 
         delete tmp_config;
         tmp_config = nullptr;
@@ -149,41 +146,33 @@ namespace Kernel
         return false;
     }
 
+    void BirthTriggeredIV::Unregister()
+    {
+        // unregister ourself as a birth observer
+        INodeTriggeredInterventionConsumer * pNTIC = nullptr;
+        if (s_OK != parent->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&pNTIC))
+        {
+            throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualTriggeredInterventionConsumer", "INodeEventContext");
+        }
+
+        release_assert(pNTIC);
+        pNTIC->UnregisterNodeEventObserver(this, EventTrigger::Births);
+        SetExpired( true );
+    }
+
     void BirthTriggeredIV::Update( float dt )
     {
+        if (!BaseNodeIntervention::UpdateNodesInterventionStatus())
+        {
+            Unregister();
+            return;
+        }
+
         duration += dt;
         LOG_DEBUG_F("[BirthTriggeredIV], Updating: duration = %f, max_duration = %f.\n", duration, max_duration);
         if( max_duration >= 0 && duration > max_duration )
         {
-            // QI to register ourself as a birth observer
-            INodeTriggeredInterventionConsumer * pNTIC = nullptr;
-            if (s_OK == parent->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&pNTIC) )
-            {
-                release_assert( pNTIC );
-                pNTIC->UnregisterNodeEventObserver( this, IndividualEventTriggerType::Births );
-            }
-            else
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualTriggeredInterventionConsumer", "INodeEventContext" );
-            }
+            Unregister();
         }
     }
-
-    void BirthTriggeredIV::SetContextTo(INodeEventContext *context) 
-    { 
-        parent = context; 
-    }
 }
-
-#if 0
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, BirthTriggeredIV& iv, const unsigned int v)
-    {
-        ar & iv.actual_intervention_config;
-        ar & iv.efficacy;
-        ar & iv.max_duration;
-        ar & iv.demographic_restrictions;
-    }
-}
-#endif

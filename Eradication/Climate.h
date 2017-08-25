@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -60,7 +60,7 @@ namespace Kernel
         bool           enable_climate_stochasticity;
         float          airtemperature_variance;
         float          landtemperature_variance;
-        bool           rainfall_variance;
+        bool           rainfall_variance_enabled;
         float          humidity_variance;
 
         inline float airtemperature()       const { return m_airtemperature; }
@@ -72,7 +72,7 @@ namespace Kernel
         float m_airtemperature;
         float m_landtemperature;
         float m_accumulated_rainfall;
-        float m_humidity; 
+        float m_humidity;
         float resolution_correction;
 
         static const float min_airtemp;
@@ -96,7 +96,7 @@ namespace Kernel
 
         Climate(ClimateUpdateResolution::Enum update_resolution = ClimateUpdateResolution::CLIMATE_UPDATE_DAY, INodeContext * _parent = nullptr);
 
-        virtual void AddStochasticity(float airtemp_variance, float landtemp_variance, bool rainfall_variance, float humidity_variance);
+        virtual void AddStochasticity(float airtemp_variance, float landtemp_variance, bool rainfall_variance_enabled, float humidity_variance);
 
         virtual bool IsPlausible() = 0;
     };
@@ -110,7 +110,7 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
         bool Configure( const Configuration* config );
 
-        static ClimateFactory* CreateClimateFactory(boost::bimap<uint32_t, suids::suid> * nodeid_suid_map, const ::Configuration *config, const std::string idreference);
+        static ClimateFactory* CreateClimateFactory(boost::bimap<ExternalNodeId_t, suids::suid> * nodeid_suid_map, const ::Configuration *config, const std::string idreference);
         ~ClimateFactory();
 
         Climate* CreateClimate(INodeContext *parent_node, float altitude, float latitude);
@@ -118,13 +118,13 @@ namespace Kernel
         static ClimateStructure::Enum climate_structure;
 
     private:
-        ClimateFactory(boost::bimap<uint32_t, suids::suid> * nodeid_suid_map);
+        ClimateFactory(boost::bimap<ExternalNodeId_t, suids::suid> * nodeid_suid_map);
         ClimateFactory(){} // just for GetSchema
         bool Initialize(const ::Configuration *config, const std::string idreference);
         bool ParseMetadataForFile(std::string data_filepath, std::string idreference, ClimateUpdateResolution::Enum * const update_resolution, int * const num_datavalues, int * const num_nodes, std::unordered_map<uint32_t, uint32_t> &node_offsets);
         bool OpenClimateFile(std::string filepath, uint32_t expected_size, std::ifstream &file);
 
-        boost::bimap<uint32_t, suids::suid> * nodeid_suid_map;
+        boost::bimap<ExternalNodeId_t, suids::suid> * nodeid_suid_map;
 
         std::string climate_airtemperature_filename;
         std::string climate_koppen_filename;

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -26,11 +26,11 @@ namespace Kernel
         HIVRapidHIVDiagnostic( const HIVRapidHIVDiagnostic& );
 
         // IDistributingDistributableIntervention
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
 
     protected:
-        virtual void onNegativeTestResult();
-        virtual void positiveTestDistribute();
+        virtual void onNegativeTestResult() override;
+        virtual void positiveTestDistribute() override;
         virtual void onReceivedResult( IHIVMedicalHistory* pMedHistory, bool resultIsHivPositive );
 
         float m_ProbReceivedResults;

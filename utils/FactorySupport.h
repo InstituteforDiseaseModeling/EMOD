@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,6 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IdmApi.h"
 #include <string>
 #include <functional>
+#include <map>
 #include "ISupports.h"  
 #include "Configuration.h"
 #include "Sugar.h"
@@ -42,7 +43,23 @@ namespace Kernel
     template <class ReturnTypeT>
     ReturnTypeT* CreateInstanceFromSpecs(const Configuration* config, support_spec_map_t &specs, bool query_for_return_interface = true)
     {
-        string classname = GET_CONFIG_STRING(config, "class");
+        string classname = "PREPARSED_CLASSNAME";
+        try {
+            classname = GET_CONFIG_STRING(config, "class");
+        }
+        catch( JsonTypeConfigurationException& except )
+        {
+            std::ostringstream errMsg;
+            string templateClassName = typeid(ReturnTypeT).name();
+            templateClassName = templateClassName.substr( templateClassName.find_last_of("::")+1 );
+            errMsg << templateClassName 
+                   << " could not instantiate object from json because class was not specified as required. Details from caught exception: "
+                   << std::endl
+                   << except.GetMsg()
+                   << std::endl;
+            throw FactoryCreateFromJsonException( __FILE__, __LINE__, __FUNCTION__, errMsg.str().c_str() );
+        }
+
         ISupports* obj = nullptr;
 
         map<string, instantiator_function_t>::iterator it = specs.find(classname);

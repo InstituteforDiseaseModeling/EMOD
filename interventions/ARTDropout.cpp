@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,7 +17,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Debug.h"                  // for IIndividualHumanContext, IIndividualHumanInterventionsContext
 #include "IHIVInterventionsContainer.h"  // for IHIVDrugEffectsApply methods
 
-static const char* _module = "ARTDropout";
+SETUP_LOGGING( "ARTDropout" )
 
 namespace Kernel
 {
@@ -30,7 +30,7 @@ namespace Kernel
     : GenericDrug()
     , itbda(nullptr)
     {
-        initSimTypes( 1, "HIV_SIM" );
+        initSimTypes( 2, "HIV_SIM", "TBHIV_SIM" );
     }
 
     ARTDropout::~ARTDropout()
@@ -38,7 +38,7 @@ namespace Kernel
     }
 
     std::string
-    ARTDropout::GetDrugName()
+    ARTDropout::GetDrugName() const
     {
         return std::string("ART");
     }
@@ -50,7 +50,7 @@ namespace Kernel
     {
         initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, DRUG_Cost_To_Consumer_DESC_TEXT, 0, 99999);
         // Skip GenericDrug (base class) Configure (to avoid picking up all those parameters). Connection with GenericDrug is fairly loose.
-        return JsonConfigurable::Configure( inputJson );
+        return BaseIntervention::Configure( inputJson );
     }
 
     bool

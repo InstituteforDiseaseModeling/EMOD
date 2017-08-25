@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ConfigurationImpl.h"
 #include "IArchive.h"
 
-static const char* _module = "WaningEffectMapAbstract";
+SETUP_LOGGING( "WaningEffectMapAbstract" )
 
 namespace Kernel
 {
@@ -23,14 +23,25 @@ namespace Kernel
     // ------------------------------------------------------------------------
     IMPL_QUERY_INTERFACE2(WaningEffectMapAbstract, IWaningEffect, IConfigurable)
 
-    WaningEffectMapAbstract::WaningEffectMapAbstract()
-    : IWaningEffect()
+    WaningEffectMapAbstract::WaningEffectMapAbstract( float maxTime )
+    : WaningEffectConstant()
     , m_Expired(false)
     , m_EffectOriginal(0.0)
-    , m_EffectCurrent(0.0)
     , m_ExpireAtDurationMapEnd(false)
     , m_TimeSinceStart(0.0)
-    , m_DurationMap()
+    , m_DurationMap( 0.0, maxTime )
+    , m_RefTime(0)
+    {
+    }
+
+    WaningEffectMapAbstract::WaningEffectMapAbstract( const WaningEffectMapAbstract& rOrig )
+    : WaningEffectConstant( rOrig )
+    , m_Expired( rOrig.m_Expired )
+    , m_EffectOriginal( rOrig.m_EffectOriginal )
+    , m_ExpireAtDurationMapEnd( rOrig.m_ExpireAtDurationMapEnd )
+    , m_TimeSinceStart( rOrig.m_TimeSinceStart )
+    , m_DurationMap( rOrig.m_DurationMap )
+    , m_RefTime( rOrig.m_RefTime )
     {
     }
 
@@ -38,32 +49,55 @@ namespace Kernel
     {
     }
 
-
     bool WaningEffectMapAbstract::Configure( const Configuration * pInputJson )
     {
-        initConfigTypeMap( "Initial_Effect",               &m_EffectCurrent,          WEE_Initial_Effect_DESC_TEXT,                0, 1, 1);
-        initConfigTypeMap( "Expire_At_Durability_Map_End", &m_ExpireAtDurationMapEnd, WEM_Expire_At_Durability_Map_End_DESC_TEXT, false );
+        bool configured = ConfigureExpiration( pInputJson );
 
-        initConfigComplexType( "Durability_Map", &m_DurationMap, WEM_Durability_Map_End_DESC_TEXT );
-
-        bool ret = JsonConfigurable::Configure(pInputJson);
-        if( ret && !JsonConfigurable::_dryrun )
+        if( configured || JsonConfigurable::_dryrun )
         {
-            m_EffectOriginal = m_EffectCurrent;
+            initConfigComplexType( "Durability_Map", &m_DurationMap, WEM_Durability_Map_End_DESC_TEXT );
 
-            if( m_DurationMap.size() == 0 )
+            configured = WaningEffectConstant::Configure( pInputJson );
+            if( configured && !JsonConfigurable::_dryrun )
             {
-                throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "Durability_Map has no values.  Please add values to the map." );
+                m_EffectOriginal = currentEffect;
+
+                if( m_DurationMap.size() == 0 )
+                {
+                    throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "Durability_Map has no values.  Please add values to the map." );
+                }
             }
         }
-        return ret;
+        return configured;
+    }
+
+    bool WaningEffectMapAbstract::ConfigureExpiration( const Configuration * pInputJson )
+    {
+        initConfigTypeMap( "Expire_At_Durability_Map_End", &m_ExpireAtDurationMapEnd, WEM_Expire_At_Durability_Map_End_DESC_TEXT, false );
+        initConfigTypeMap( "Reference_Timer",              &m_RefTime,                WEM_Reference_Time_DESC_TEXT, 0 );
+
+        return true;
+    }
+
+    void WaningEffectMapAbstract::SetCurrentTime(float current_time)
+    {
+        // We want to "fast-forward" the time-since-start for birth-triggered individuals so the map catches up
+        // to what it would have been if they'd been alive. In limit, if born on same day as distribution (ref-time)
+        // current_time == ref_time and time-since-start = 0; if born at t=inf, time-since-start = inf.
+        if( m_RefTime > 0 )
+        {
+            m_TimeSinceStart = current_time - m_RefTime + 1; // GH issue jgauld/DtkTrunk/issues/187, off-by-one error
+            LOG_DEBUG_F( "m_TimeSinceStart set to %f after offset of current_time %f and m_RefTime of %d.\n", float(m_TimeSinceStart), current_time, float(m_RefTime) );
+            release_assert( m_TimeSinceStart  > 0.0f );
+        }
     }
 
     void  WaningEffectMapAbstract::Update(float dt)
     {
         float multiplier = GetMultiplier( m_TimeSinceStart );
 
-        m_EffectCurrent = multiplier * m_EffectOriginal;
+        currentEffect = multiplier * m_EffectOriginal;
+        LOG_DEBUG_F( "currentEffect = %f.\n", currentEffect );
 
         if( m_ExpireAtDurationMapEnd )
         {
@@ -72,22 +106,22 @@ namespace Kernel
         m_TimeSinceStart += dt;
     }
 
-    float WaningEffectMapAbstract::Current() const
-    {
-        return m_EffectCurrent;
-    }
-
     bool WaningEffectMapAbstract::Expired() const
     {
         return m_Expired;
     }
 
+    void WaningEffectMapAbstract::SetInitial(float newVal)
+    {
+        m_EffectOriginal = newVal;
+    }
+
     void WaningEffectMapAbstract::serialize( IArchive& ar, WaningEffectMapAbstract* obj )
     {
+        WaningEffectConstant::serialize( ar, obj );
         WaningEffectMapAbstract& effect = *obj;
         ar.labelElement( "m_Expired"                ) & effect.m_Expired;
         ar.labelElement( "m_EffectOriginal"         ) & effect.m_EffectOriginal;
-        ar.labelElement( "m_EffectCurrent"          ) & effect.m_EffectCurrent;
         ar.labelElement( "m_ExpireAtDurationMapEnd" ) & effect.m_ExpireAtDurationMapEnd;
         ar.labelElement( "m_TimeSinceStart"         ) & effect.m_TimeSinceStart;
         ar.labelElement( "m_DurationMap"            ) & effect.m_DurationMap;
@@ -104,13 +138,23 @@ namespace Kernel
     REGISTER_SERIALIZABLE(WaningEffectMapLinear);
 
 
-    WaningEffectMapLinear::WaningEffectMapLinear()
-    : WaningEffectMapAbstract()
+    WaningEffectMapLinear::WaningEffectMapLinear( float maxTime )
+    : WaningEffectMapAbstract( maxTime )
     {
     }
 
     WaningEffectMapLinear::~WaningEffectMapLinear()
     {
+    }
+
+    WaningEffectMapLinear::WaningEffectMapLinear( const WaningEffectMapLinear& rOrig )
+    : WaningEffectMapAbstract( rOrig )
+    {
+    }
+
+    IWaningEffect* WaningEffectMapLinear::Clone()
+    {
+        return new WaningEffectMapLinear( *this );
     }
 
     float WaningEffectMapLinear::GetMultiplier( float timeSinceStart ) const
@@ -141,6 +185,16 @@ namespace Kernel
 
     WaningEffectMapPiecewise::~WaningEffectMapPiecewise()
     {
+    }
+
+    WaningEffectMapPiecewise::WaningEffectMapPiecewise( const WaningEffectMapPiecewise& rOrig )
+    : WaningEffectMapAbstract( rOrig )
+    {
+    }
+
+    IWaningEffect* WaningEffectMapPiecewise::Clone()
+    {
+        return new WaningEffectMapPiecewise( *this );
     }
 
     float WaningEffectMapPiecewise::GetMultiplier( float timeSinceVaccination ) const

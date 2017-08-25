@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,45 +11,60 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "StrainIdentity.h"
 #include "Log.h"
 
-Kernel::StrainIdentity::StrainIdentity(void)
-{
-    antigenID = 0;
-    geneticID = 0;
-}
+SETUP_LOGGING( "StrainIdentity" )
 
-Kernel::StrainIdentity::StrainIdentity(int initial_antigen, int initial_genome)
-{
-    antigenID = initial_antigen;
-    geneticID = initial_genome;
-}
+namespace Kernel {
 
-Kernel::StrainIdentity::~StrainIdentity(void)
-{
-}
+    StrainIdentity::StrainIdentity(void)
+    {
+        antigenID = 0;
+        geneticID = 0;
+    }
 
-int Kernel::StrainIdentity::GetAntigenID(void) const
-{
-    return antigenID;
-}
+    StrainIdentity::StrainIdentity(int initial_antigen, int initial_genome)
+    {
+        antigenID = initial_antigen;
+        geneticID = initial_genome;
+    }
 
-int Kernel::StrainIdentity::GetGeneticID(void) const
-{
-    return geneticID;
-}
+    StrainIdentity::StrainIdentity( const IStrainIdentity *copy )
+    {
+        antigenID = copy->GetAntigenID();
+        geneticID = copy->GetGeneticID();
+        LOG_DEBUG_F( "New infection with antigen id %d and genetic id %d\n", antigenID, geneticID );
+    }
 
-void Kernel::StrainIdentity::SetAntigenID(int in_antigenID)
-{
-    antigenID = in_antigenID;
-}
+    StrainIdentity::~StrainIdentity(void)
+    {
+    }
 
-void Kernel::StrainIdentity::SetGeneticID(int in_geneticID)
-{
-    geneticID = in_geneticID;
-}
+    int StrainIdentity::GetAntigenID(void) const
+    {
+        return antigenID;
+    }
 
-namespace Kernel
-{
-    IArchive& serialize(IArchive& ar, StrainIdentity*& ptr)
+    int StrainIdentity::GetGeneticID(void) const
+    {
+        return geneticID;
+    }
+
+    void StrainIdentity::SetAntigenID(int in_antigenID)
+    {
+        antigenID = in_antigenID;
+    }
+
+    void StrainIdentity::SetGeneticID(int in_geneticID)
+    {
+        geneticID = in_geneticID;
+    }
+
+    void StrainIdentity::ResolveInfectingStrain( IStrainIdentity* strainId ) const
+    {
+        strainId->SetAntigenID(antigenID);
+        strainId->SetGeneticID(geneticID);
+    }
+
+    IArchive& StrainIdentity::serialize(IArchive& ar, StrainIdentity*& ptr)
     {
         if (!ar.IsWriter())
         {
@@ -58,6 +73,13 @@ namespace Kernel
 
         StrainIdentity& strain = *ptr;
 
+        serialize( ar, strain );
+
+        return ar;
+    }
+
+    IArchive& StrainIdentity::serialize(IArchive& ar, StrainIdentity& strain)
+    {
         ar.startObject();
             ar.labelElement("antigenID") & strain.antigenID;
             ar.labelElement("geneticID") & strain.geneticID;

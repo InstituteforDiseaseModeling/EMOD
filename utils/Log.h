@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,12 +16,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Sugar.h"
 
-#define ENABLE_LOG_VALID 1  // clorton
-
 namespace Logger
 {
     typedef enum {
-        CRITICAL,
+        CRITICAL = 0,
         _ERROR, // ERROR breaks on msvc!
         WARNING,
         INFO,
@@ -30,11 +28,17 @@ namespace Logger
     } tLevel;
 };
 
-// EVIL MACROS COMING UP! Idea here is that folks can log with 1 parameter (the string).
-// Except for debug builds, LOG_VALID will compile to noop
+#define NUM_LOG_LEVELS (6)
 
-#define LOG_LVL(lvl, x)          do { if((EnvPtr !=nullptr) && (EnvPtr->Log != nullptr) && EnvPtr->Log->CheckLogLevel(Logger::lvl, _module))  EnvPtr->Log->Log(Logger::lvl, _module, x); } while(0)
-#define LOG_LVL_F(lvl, x, ...)   do { if((EnvPtr !=nullptr) && (EnvPtr->Log != nullptr) && EnvPtr->Log->CheckLogLevel(Logger::lvl, _module))  EnvPtr->Log->LogF(Logger::lvl, _module, x, ##__VA_ARGS__); } while(0)
+// EVIL MACROS COMING UP! Idea here is that folks can log with 1 parameter (the string).
+
+#define SETUP_LOGGING(moduleName)\
+static const char * _module = moduleName;\
+static bool* _log_level_enabled_array = nullptr;
+
+
+#define LOG_LVL(lvl, x)          do { if( SimpleLogger::IsLoggingEnabled( Logger::lvl, _module, _log_level_enabled_array ) )  EnvPtr->Log->Log( Logger::lvl, _module, x); } while(0)
+#define LOG_LVL_F(lvl, x, ...)   do { if( SimpleLogger::IsLoggingEnabled( Logger::lvl, _module, _log_level_enabled_array ) )  EnvPtr->Log->LogF(Logger::lvl, _module, x, ##__VA_ARGS__); } while(0)
 
 #define LOG_LEVEL(lvl)          ((EnvPtr != nullptr) ? EnvPtr->Log->CheckLogLevel(Logger::lvl, _module) : false)
 
@@ -44,15 +48,20 @@ namespace Logger
 #define LOG_WARN_F(x, ...)    LOG_LVL_F( WARNING, x, ##__VA_ARGS__ )
 #define LOG_INFO(x)           LOG_LVL( INFO, x )
 #define LOG_INFO_F(x, ...)    LOG_LVL_F( INFO, x, ##__VA_ARGS__ )
-#define LOG_DEBUG(x)          LOG_LVL( DEBUG, x )
-#define LOG_DEBUG_F(x, ...)   LOG_LVL_F( DEBUG, x, ##__VA_ARGS__ )
+
+
+// NOTE: LOG_DEBUG is disabled with LOG_VALID for performance reasons - 2-4%.
 #if defined(_DEBUG) || defined(ENABLE_LOG_VALID)
-#define LOG_VALID(x)          LOG_LVL( VALIDATION, x )
-#define LOG_VALID_F(x, ...)   LOG_LVL_F( VALIDATION, x, ##__VA_ARGS__ )
+    #define LOG_DEBUG(x)          LOG_LVL( DEBUG, x )
+    #define LOG_DEBUG_F(x, ...)   LOG_LVL_F( DEBUG, x, ##__VA_ARGS__ )
+    #define LOG_VALID(x)          LOG_LVL( VALIDATION, x )
+    #define LOG_VALID_F(x, ...)   LOG_LVL_F( VALIDATION, x, ##__VA_ARGS__ )
 #else
-#define LOG_VALID(x)
-#define LOG_VALID_F(x, ...)
-#endif
+    #define LOG_DEBUG(X)
+    #define LOG_DEBUG_F(X, ...)
+    #define LOG_VALID(X)
+    #define LOG_VALID_F(X, ...)
+#endif // _DEBUG
 
 namespace json
 {
@@ -74,6 +83,26 @@ struct cmp_str
 class IDMAPI SimpleLogger
 {
 public:
+    static inline bool IsLoggingEnabled( Logger::tLevel log_level, const char* module, bool*& logLevelEnabledArray )
+    {
+        if( logLevelEnabledArray == nullptr )
+        {
+            if( EnvPtr == nullptr ) return false;
+            if( EnvPtr->Log == nullptr ) return false;
+
+            logLevelEnabledArray = (bool*)malloc( sizeof( bool )*NUM_LOG_LEVELS );
+
+            for( int i = 0 ; i < NUM_LOG_LEVELS ; ++i )
+            {
+                Logger::tLevel lvl = Logger::tLevel( i );
+                logLevelEnabledArray[ i ] = EnvPtr->Log->CheckLogLevel( lvl, module );
+            }
+        }
+
+        return logLevelEnabledArray[ log_level ];
+    }
+
+
     SimpleLogger();
     SimpleLogger( Logger::tLevel syslevel );
     void Init( const json::QuickInterpreter * configJson );

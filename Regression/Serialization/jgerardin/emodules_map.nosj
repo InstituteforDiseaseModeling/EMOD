@@ -1,0 +1,9 @@
+{
+    "disease_plugins": [], 
+    "interventions": [], 
+    "reporter_plugins": [
+        "\\\\idmppfil01\\IDM\\home\\jgerardin\\emodules\\reporter_plugins\\6bce348edee2acb3f73b0d2fce3d6b87\\libmalariasummary_report_plugin.dll", 
+        "\\\\idmppfil01\\IDM\\home\\jgerardin\\emodules\\reporter_plugins\\5110129647d0523392947dbd0a45e8f9\\libReportMalariaFiltered.dll", 
+        "\\\\idmppfil01\\IDM\\home\\jgerardin\\emodules\\reporter_plugins\\821d792262b355f7cb34c02d0c9762b1\\libhumanmigrationtracking.dll"
+    ]
+}

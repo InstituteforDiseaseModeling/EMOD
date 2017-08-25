@@ -40,11 +40,9 @@
 
 		"Male_To_Female_Relative_Infectivity_Ages": [ 15, 25, 35 ],
 		"Male_To_Female_Relative_Infectivity_Multipliers": [ 5, 1, 0.5 ],
-		"STI_Coinfection_Multiplier": 10,
+		"STI_Coinfection_Acquisition_Multiplier": 10,
+		"STI_Coinfection_Transmission_Multiplier": 10,
 		"STI_Coinfection_Probability": 0.05,
-
-		"Heterogeneous_Infectiousness_Weibull_Heterogeneity": 0,
-		"Heterogeneous_Infectiousness_Weibull_Scale": 1,
 
 		"____________TRANSMISSION___________": "",
 		"Condom_Transmission_Blocking_Probability": 0.90,
@@ -71,7 +69,7 @@
         "Sexual_Debut_Age_Min": 13,
 
 		"____________REPORTING___________": "",
-		"Custom_Reports_Filename" : "NoCustomReports",
+		"Custom_Reports_Filename" : "",
 		"Enable_Default_Reporting" : 1,
 		"Enable_Timestep_Channel_In_Report": 0,
 		"Enable_Demographics_Reporting": 0,
@@ -86,6 +84,9 @@
 		"Report_Coital_Acts": 0,
 
 		"____________RARELY_CHANGED___________": "",
+        "Memory_Usage_Warning_Threshold_Working_Set_MB" : 3500,
+        "Memory_Usage_Halting_Threshold_Working_Set_MB" : 4000,
+
 		"Config_Name": "STI_South_Africa",
 		"Geography": "SouthAfrica",
 		"Acquisition_Blocking_Immunity_Decay_Rate": 1,

@@ -2,23 +2,10 @@
     "Default_Config_Path": "defaults/hiv_default_config.json", 
     "parameters": {
         "Config_Name": "41_HIV_HIVSimpleDiagnostic", 
-        "Valid_Cascade_States": [
-            "", 
-            "Test_State_For_Abort_Testing", 
-            "Test_State_Never_Get_Here", 
-            "Test_State_For_Single_Negative_Test_Then_Expire", 
-            "Test_State_For_Recurrent_Testing_Till_Positive", 
-            "ARTStaging", 
-            "LinkingToART", 
-            "LinkingToPreART", 
-            "OnART", 
-            "OnPreART", 
-            "HCTTestingLoop", 
-            "HCTUptakeAtDebut", 
-            "HCTUptakePostDebut", 
-            "TestingOnANC", 
-            "TestingOnChild6w", 
-            "TestingOnSymptomatic"
+        "Demographics_Filenames": [
+            "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json", 
+            "../input/PFA_overlay.json",
+            "TestState_overlay.json"
         ], 
         "Simulation_Duration": 50, 
         "Run_Number": 2,
@@ -26,8 +13,7 @@
         "Listed_Events": [
             "Tested_Negative_Because_No_Oubreak_Yet", 
             "So_Far_So_Good", 
-            "There_It_Is", 
-            "OnART1"
+            "There_It_Is"
         ]
     }
 }

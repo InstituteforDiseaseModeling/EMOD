@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,7 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 using namespace std;
 #pragma warning(disable : 4996)
 
-static const char* _module = "Log";
+SETUP_LOGGING("Log")
 
 // standard tags
 const char * LogLevel::Valid =      "V";
@@ -52,6 +52,7 @@ tLogLevel init_full_string_loglevel_map()
 
 static std::map< Logger::tLevel, std::string > logLevelStrMap     = init_loglevel_map();
 static std::map< Logger::tLevel, std::string > logLevelFullStrMap = init_full_string_loglevel_map();
+
 
 SimpleLogger::SimpleLogger()
     : _systemLogLevel(Logger::INFO),
@@ -283,6 +284,7 @@ void
 SimpleLogger::Flush()
 {
     std::cout.flush();
+    std::cerr.flush();
 }
 
 void 

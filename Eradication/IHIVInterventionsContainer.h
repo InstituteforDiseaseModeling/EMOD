@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -74,20 +74,13 @@ namespace Kernel
         virtual NonNegativeFloat GetYearsSinceLatestARTInit() const = 0;
     };
 
-    // interface for cascade of care related (medical charts) inquiries
-    struct IHIVCascadeOfCare : public ISupports
-    {
-        virtual std::string getCascadeState() const = 0;
-        virtual void setCascadeState(std::string state) = 0;
-    };
-
     // interface for campaign semaphores
     struct IHIVCampaignSemaphores : public ISupports
     {
-        virtual bool SemaphoreExists(std::string counter) const = 0;
-        virtual void SemaphoreInit(std::string counter, int value) = 0;
-        virtual int SemaphoreIncrement(std::string counter) = 0;
-        virtual bool SemaphoreDecrement(std::string counter) = 0;
+        virtual bool SemaphoreExists( const std::string& counter) const = 0;
+        virtual void SemaphoreInit( const std::string& counter, int value) = 0;
+        virtual int SemaphoreIncrement( const std::string& counter ) = 0;
+        virtual bool SemaphoreDecrement( const std::string& counter ) = 0;
     };
 
     struct IHIVDrugEffectsApply : public ISupports
@@ -121,5 +114,6 @@ namespace Kernel
         virtual const ProbabilityNumber GetInfectivitySuppression() const = 0;
         virtual float GetDurationSinceLastStartingART() const = 0;
         virtual const ProbabilityNumber& GetProbMaternalTransmissionModifier() const = 0;
+        virtual void BroadcastNewHIVInfection() = 0;
     };
 }

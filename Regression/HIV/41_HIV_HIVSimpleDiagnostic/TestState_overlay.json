@@ -1,0 +1,39 @@
+
+{ 
+    "Metadata": 
+    { 
+        "DateCreated": "Fri Oct 7, 2016",
+        "Tool": "notepad",
+        "Author": "Daniel Bridenbecker",
+        "IdReference": "0",
+        "NodeCount" : 1
+    },
+    "Defaults": 
+    { 
+        "IndividualProperties": [ 
+            { 
+                "Property": "InterventionStatus",
+                "Values": [
+                    "None", 
+                    "Test_Status_For_Abort_Testing", 
+                    "Test_Status_Never_Get_Here", 
+                    "Test_Status_For_Single_Negative_Test_Then_Expire", 
+                    "Test_Status_For_Recurrent_Testing_Till_Positive"
+                ],
+                "Initial_Distribution": [ 
+                    1, 
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "Transitions": []
+            }
+        ]
+    },
+    "Nodes": [
+        {
+            "NodeID": 1
+        }
+    ]
+}

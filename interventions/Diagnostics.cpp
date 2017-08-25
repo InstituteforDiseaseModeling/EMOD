@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 
-static const char * _module = "SimpleDiagnostic";
+SETUP_LOGGING( "SimpleDiagnostic" )
 
 namespace Kernel
 {
@@ -32,9 +32,9 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        EventOrConfig::Enum use_event_or_config;
-        initConfig( "Event_Or_Config", use_event_or_config, inputJson, MetadataDescriptor::Enum("EventOrConfig", Event_Or_Config_DESC_TEXT, MDD_ENUM_ARGS( EventOrConfig ) ) );
-        return use_event_or_config;
+        EventOrConfig::Enum event_or_config;
+        initConfig( "Event_Or_Config", event_or_config, inputJson, MetadataDescriptor::Enum("EventOrConfig", Event_Or_Config_DESC_TEXT, MDD_ENUM_ARGS( EventOrConfig ) ) );
+        return event_or_config;
     }
 
     // This is deliberately broken out into separate function so that derived classes can invoke
@@ -43,7 +43,7 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        EventOrConfig::Enum use_event_or_config = getEventOrConfig( inputJson );
+        use_event_or_config = getEventOrConfig( inputJson );
 
         if( use_event_or_config == EventOrConfig::Event || JsonConfigurable::_dryrun )
         {
@@ -65,15 +65,15 @@ namespace Kernel
        
         initConfigTypeMap("Treatment_Fraction", &treatment_fraction, SD_Treatment_Fraction_DESC_TEXT, 0, 1);
 
-        bool ret = JsonConfigurable::Configure( inputJson );
+        bool ret = BaseIntervention::Configure( inputJson );
         LOG_DEBUG_F( "Base_Sensitivity = %f, Base_Specificity = %f\n", (float) base_sensitivity, (float) base_specificity );
         LOG_DEBUG_F( "Days_To_Diagnosis = %f\n", (float) days_to_diagnosis );
-        EventOrConfig::Enum use_event_or_config = getEventOrConfig( inputJson );
+        use_event_or_config = getEventOrConfig( inputJson );
         if( ret )
         {
             if( use_event_or_config == EventOrConfig::Config || JsonConfigurable::_dryrun )
             {
-                InterventionValidator::ValidateIntervention( positive_diagnosis_config._json );
+                InterventionValidator::ValidateIntervention( positive_diagnosis_config._json, inputJson->GetDataLocation() );
             }
 
             CheckPostiveEventConfig();
@@ -94,12 +94,13 @@ namespace Kernel
 
 
     SimpleDiagnostic::SimpleDiagnostic()
-    : parent(nullptr)
+    : BaseIntervention()
     , diagnostic_type(0)
     , base_specificity(0)
     , base_sensitivity(0)
     , treatment_fraction(1.0f)
     , days_to_diagnosis(0)
+    , use_event_or_config( EventOrConfig::Event )
     , positive_diagnosis_config()
     , positive_diagnosis_event()
     {
@@ -113,13 +114,13 @@ namespace Kernel
     }
 
     SimpleDiagnostic::SimpleDiagnostic( const SimpleDiagnostic& master )
-        :BaseIntervention( master )
-        , parent(nullptr)
+        : BaseIntervention( master )
         , diagnostic_type(master.diagnostic_type)
         , base_specificity(master.base_specificity)
         , base_sensitivity(master.base_sensitivity)
         , treatment_fraction(master.treatment_fraction)
         , days_to_diagnosis(master.days_to_diagnosis)
+        , use_event_or_config(master.use_event_or_config)
         , positive_diagnosis_config(master.positive_diagnosis_config)
         , positive_diagnosis_event(master.positive_diagnosis_event)
     {
@@ -131,6 +132,14 @@ namespace Kernel
         ICampaignCostObserver * const pICCO
     )
     {
+        // ----------------------------------------------------------------------------------
+        // --- Putting this here because we don't want anything to happen if we are aborting
+        // ----------------------------------------------------------------------------------
+        if( AbortDueToDisqualifyingInterventionStatus( context->GetParent() ) )
+        {
+            return false;
+        }
+
         parent = context->GetParent();
         LOG_DEBUG_F( "Individual %d is getting tested and positive_diagnosis_event = %s.\n", parent->GetSuid().data, positive_diagnosis_event.c_str() );
 
@@ -148,9 +157,9 @@ namespace Kernel
                     //positiveTestDistribute(); // since there is no waiting time, distribute intervention right now
                     Callback( 0 ); // since there is no waiting time, distribute intervention right now
                 }
-			}
-			else
-			{
+            }
+            else
+            {
                 onPatientDefault();
                 expired = true;         // this person doesn't get the intervention despite the positive test
             }
@@ -173,6 +182,8 @@ namespace Kernel
         {
             return; // don't give expired intervention.  should be cleaned up elsewhere anyways, though.
         }
+
+        if( !BaseIntervention::UpdateIndividualsInterventionStatus() ) return;
 
         // Count down the time until a positive test result comes back
         days_to_diagnosis.Decrement( dt );
@@ -216,7 +227,7 @@ namespace Kernel
     void
     SimpleDiagnostic::broadcastEvent( const EventTrigger& event )
     {
-        if( (event != NO_TRIGGER_STR) && !event.IsUninitialized() )
+        if( !event.IsUninitialized() )
         {
             INodeTriggeredInterventionConsumer* broadcaster = nullptr;
             if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
@@ -224,7 +235,7 @@ namespace Kernel
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
             }
             LOG_DEBUG_F( "SimpleDiagnostic broadcasting event = %s.\n", event.c_str() );
-            broadcaster->TriggerNodeEventObserversByString( parent->GetEventContext(), event );
+            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), event );
         }
     }
 
@@ -240,7 +251,7 @@ namespace Kernel
 
         // Next alternative is that we were configured to broadcast a raw event string. In which case the value will not
         // the "uninitialized" value.
-        if( !positive_diagnosis_event.IsUninitialized() )
+        if( use_event_or_config == EventOrConfig::Event )
         {
             broadcastEvent( positive_diagnosis_event );
         }
@@ -260,7 +271,7 @@ namespace Kernel
             }
 
             // Distribute the test-positive intervention
-            auto config = Configuration::CopyFromElement( positive_diagnosis_config._json );
+            auto config = Configuration::CopyFromElement( positive_diagnosis_config._json, "campaign" );
             IDistributableIntervention *di = const_cast<IInterventionFactory*>(ifobj)->CreateIntervention( config );
 
             ICampaignCostObserver* pICCO;
@@ -277,7 +288,7 @@ namespace Kernel
             delete config;
             config = nullptr;
         }
-        // this is the right thing to do but we need to deal with HIVRandomChoice and HIVSetCascadeState
+        // this is the right thing to do but we need to deal with HIVRandomChoice
         //else
         //{
         //    throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "neither event or config defined" );
@@ -296,21 +307,8 @@ namespace Kernel
         ar.labelElement("base_sensitivity"); diagnostic.base_sensitivity.serialize(ar);
         ar.labelElement("treatment_fraction"); diagnostic.treatment_fraction.serialize(ar);
         ar.labelElement("days_to_diagnosis") & diagnostic.days_to_diagnosis;
+        ar.labelElement("use_event_or_config") & (uint32_t&)diagnostic.use_event_or_config;
         ar.labelElement("positive_diagnosis_config") & diagnostic.positive_diagnosis_config;
-// Remove after testing (implemented above)
-// clorton        if ( ar.IsWriter() )
-// clorton        {
-// clorton            std::ostringstream string_stream;
-// clorton            json::Writer::Write( diagnostic.positive_diagnosis_config._json, string_stream );
-// clorton            ar & string_stream.str();
-// clorton        }
-// clorton        else
-// clorton        {
-// clorton            std::string json;
-// clorton            ar & json;
-// clorton            std::istringstream string_stream( json );
-// clorton            json::Reader::Read( diagnostic.positive_diagnosis_config._json, string_stream );
-// clorton        }
         ar.labelElement("positive_diagnosis_event") & diagnostic.positive_diagnosis_event;
     }
 }

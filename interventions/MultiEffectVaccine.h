@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -27,6 +27,7 @@ namespace Kernel
 
         // IDistributableIntervention
         virtual void Update(float dt) override;
+        virtual void SetContextTo( IIndividualHumanContext *context ) override;
 
         // ISupports
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
@@ -36,14 +37,8 @@ namespace Kernel
         // context for this intervention--does not need to be reset upon migration, it is just for GiveVaccine()
         IIndividualHumanContext *parent;
 
-        float current_reducedacquire;
-        float current_reducedtransmit;
-        float current_reducedmortality;
-        WaningConfig   acquire_config;
         IWaningEffect* acquire_effect;
-        WaningConfig   transmit_config;
         IWaningEffect* transmit_effect;
-        WaningConfig   mortality_config;
         IWaningEffect* mortality_effect;
 
         DECLARE_SERIALIZABLE(MultiEffectVaccine);

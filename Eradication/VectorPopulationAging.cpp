@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -24,7 +24,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "RANDOM.h"
 #define randgen (m_context->GetRng())
 
-static const char * _module = "VectorPopulationAging";
+SETUP_LOGGING( "VectorPopulationAging" )
 
 namespace Kernel
 { 
@@ -44,9 +44,9 @@ namespace Kernel
         if (adult > 0)
         { 
             // adult initialized at age 0
-            AdultQueues.push_front( VectorCohortAging::CreateCohort( 0, 0, adult, VectorMatingStructure( VectorGender::VECTOR_FEMALE ) ) );
+            AdultQueues.push_back(VectorCohortAging::CreateCohort(0, 0, adult, VectorMatingStructure(VectorGender::VECTOR_FEMALE)));
             MaleQueues.push_front( VectorCohortAging::CreateCohort( 0, 0, adult, VectorMatingStructure( VectorGender::VECTOR_MALE ) ) );
-            males = (int32_t)adult;
+            males = int32_t(adult);
         }
 
         if (infectious > 0)
@@ -112,7 +112,7 @@ namespace Kernel
 
             // increment age and progress of sporogeny; calculate age-dependent mortality
             tempentry->IncreaseAge( dt );
-            tempentry->IncreaseProgress( ( species()->infectedarrhenius1 * exp( -species()->infectedarrhenius2 / ( temperature + (float)CELSIUS_TO_KELVIN ) ) ) * dt );
+            tempentry->IncreaseProgress( ( species()->infectedarrhenius1 * exp( -species()->infectedarrhenius2 / ( temperature + float(CELSIUS_TO_KELVIN) ) ) ) * dt );
             localadultmortality = dryheatmortality + species()->adultmortality + mortalityFromAge(tempentry->GetAge());
 
             ProcessFeedingCycle(dt, tempentry, VectorStateEnum::STATE_INFECTED);
@@ -140,11 +140,11 @@ namespace Kernel
     { 
         adult = 0;
         // Use the verbose "foreach" construct here because empty adult cohorts (e.g. old vectors) will be removed
-        for ( VectorCohortList_t::iterator iList = AdultQueues.begin(); iList != AdultQueues.end(); )
-        { 
-            VectorCohortAging *tempentry = static_cast<VectorCohortAging *>(*iList);
+        for (size_t iCohort = 0; iCohort < AdultQueues.size(); /* increment in loop */)
+        {
+            IVectorCohort* cohort = AdultQueues[iCohort];
+            VectorCohortAging *tempentry = static_cast<VectorCohortAging *>(cohort);
             release_assert( tempentry );
-            VectorCohortList_t::iterator iCurrent = iList++;
 
             // increment age and calculate age-dependent mortality
             tempentry->IncreaseAge( dt );
@@ -152,7 +152,7 @@ namespace Kernel
 
             //uint32_t newinfected = min( ProcessFeedingCycle(dt, tempentry, STATE_ADULT), (uint32_t) tempentry->GetPopulation() );
             uint32_t newinfected = ProcessFeedingCycle(dt, tempentry, VectorStateEnum::STATE_ADULT);
-            if (newinfected > (uint32_t)tempentry->GetPopulation()) { newinfected = tempentry->GetPopulation(); } // correct for too high
+            if (newinfected > uint32_t(tempentry->GetPopulation())) { newinfected = tempentry->GetPopulation(); } // correct for too high
 
             if (newinfected > 0)
             { 
@@ -163,13 +163,18 @@ namespace Kernel
             }
        
             if (tempentry->GetPopulation() <= 0)
-            { 
-                AdultQueues.erase(iCurrent);
+            {
+                AdultQueues[iCohort] = AdultQueues.back();
+                AdultQueues.pop_back();
                 delete tempentry;
+
+                // !! Don't increment iCohort. !!
             }
             else
             { 
                 queueIncrementTotalPopulation(tempentry, VectorStateEnum::STATE_ADULT); // update ADULT counters
+
+                ++iCohort;
             }
         }
     }
@@ -184,7 +189,7 @@ namespace Kernel
         localadultmortality = dryheatmortality + species()->adultmortality;
 
         // calculate local mortality, includes outdoor area killling, converting rates to probabilities
-        p_local_mortality = (float)(1.0f - exp(-dt * localadultmortality));
+        p_local_mortality = float(1.0f - exp(-dt * localadultmortality));
         p_local_mortality = p_local_mortality + (1.0f - p_local_mortality) * probs()->outdoorareakilling;
 
         // Use the verbose "for" construct here because we may be modifying the list and need to protect the iterator.
@@ -196,7 +201,7 @@ namespace Kernel
 
             tempentry1->IncreaseProgress( dt * species()->immaturerate ); // introduce climate dependence here if we can figure it out
             localadultmortality = dryheatmortality + species()->adultmortality;
-            tempentry1->SetPopulation( (int32_t)(tempentry1->GetPopulation() - randgen->binomial_approx(tempentry1->GetPopulation(), p_local_mortality)) );
+            tempentry1->SetPopulation( int32_t(tempentry1->GetPopulation() - randgen->binomial_approx(tempentry1->GetPopulation(), p_local_mortality)) );
             if (tempentry1->GetProgress() >= 1 || tempentry1->GetPopulation() <= 0)
             { 
                 if (tempentry1->GetPopulation() > 0)
@@ -213,7 +218,7 @@ namespace Kernel
                         {
                             ApplyMatingGenetics(tempentry1, VectorMatingStructure(gender_mating_males.begin()->first));
                             queueIncrementTotalPopulation(tempentry1, VectorStateEnum::STATE_ADULT);
-                            AdultQueues.push_front(VectorCohortAging::CreateCohort(0, 0, tempentry1->GetPopulation(), tempentry1->GetVectorGenetics()));
+                            AdultQueues.push_back(VectorCohortAging::CreateCohort(0, 0, tempentry1->GetPopulation(), tempentry1->GetVectorGenetics()));
                         }
                         else
                         {
@@ -225,7 +230,7 @@ namespace Kernel
                                 VectorCohortAging* tempentrynew = VectorCohortAging::CreateCohort(0, 0, tempPop, tempentry1->GetVectorGenetics());
                                 ApplyMatingGenetics(tempentrynew, VectorMatingStructure(maletypes.first));
                                 queueIncrementTotalPopulation(tempentrynew, VectorStateEnum::STATE_ADULT);
-                                AdultQueues.push_front(tempentrynew);
+                                AdultQueues.push_back(tempentrynew);
                             }
                         }
                     }
@@ -262,13 +267,13 @@ namespace Kernel
             localadultmortality = dryheatmortality + species()->adultmortality + mortalityFromAge(tempentry->GetAge());
 
             // Convert mortality rates to mortality probability (can make age dependent)
-            float p_local_male_mortality = (float)EXPCDF(-dt * localadultmortality);
+            float p_local_male_mortality = float(EXPCDF(-dt * localadultmortality));
             p_local_male_mortality = p_local_male_mortality + (1.0f - p_local_male_mortality) * probs()->outdoorareakilling_male;
 
             // adults die
             if ((*iCurrent)->GetPopulation() > 0)
             {
-                (*iCurrent)->SetPopulation(  (int32_t)((*iCurrent)->GetPopulation() - randgen->binomial_approx((*iCurrent)->GetPopulation(), p_local_male_mortality)) );
+                (*iCurrent)->SetPopulation(  int32_t((*iCurrent)->GetPopulation() - randgen->binomial_approx((*iCurrent)->GetPopulation(), p_local_male_mortality)) );
             }
 
             if ((*iCurrent)->GetPopulation() <= 0)
@@ -283,7 +288,7 @@ namespace Kernel
         }
     }
 
-    void VectorPopulationAging::AddVectors(VectorMatingStructure _vector_genetics, uint64_t releasedNumber)
+    void VectorPopulationAging::AddVectors( const VectorMatingStructure& _vector_genetics, uint64_t releasedNumber )
     {
         VectorCohortAging* tempentry;
         
@@ -299,7 +304,7 @@ namespace Kernel
             { 
                 // already mated, so go in AdultQueues
                 tempentry = VectorCohortAging::CreateCohort(0, 0, releasedNumber, _vector_genetics);
-                AdultQueues.push_front(tempentry);
+                AdultQueues.push_back(tempentry);
                 queueIncrementTotalPopulation(tempentry, VectorStateEnum::STATE_ADULT);//update counter
             }
         }

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,24 +9,28 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #pragma once
 
-#include "Random.h"
+#include "RANDOM.h"
 
 class RandomFake : public RANDOMBASE
 {
 public:
     RandomFake()
-        : RANDOMBASE(0)
+        : RANDOMBASE(0, 8)
         , m_UL(0)
     {
     }
 
-    virtual __ULONG ul() { return m_UL; };   // Returns a random 32 bit number.
-
-    void SetUL( unsigned int ul )
+    void SetUL( uint32_t ul )
     {
         m_UL = ul ;
+        fill_bits();
+        bits_to_float();
+        index = 0;
     }
 
+protected:
+    virtual void fill_bits() override { for (size_t i = 0; i < cache_count; ++i) random_bits[i] = m_UL; }
+
 private:
-    __ULONG m_UL ;
+    uint32_t m_UL ;
 };

@@ -1,0 +1,15 @@
+{
+     "Default_Config_Path": "defaults/generic_default_config.json", 
+     "parameters": {
+          "DEMOGRAPHICS": {
+               "Demographics_Filenames": ["demog/Namawala_single_node_demographics.properties.json"]
+          }, 
+          "PRIMARY": {
+               "Config_Name": "13_Generic_Individual_Properties", 
+               "Geography": "Namawala", 
+               "Run_Number": 1, 
+               "Simulation_Duration": 180
+          },
+	  "Disable_IP_Whitelist": 1
+     }
+}

@@ -1,0 +1,20 @@
+{
+     "Default_Config_Path": "defaults/generic_default_config.json", 
+     "parameters": {
+          "DEMOGRAPHICS": {
+               "Demographics_Filenames": [ "Namawala_single_node_demographics.json", "Namawala_regression_property_overlay.json" ],
+               "Disable_IP_Whitelist": 1
+          }, 
+          "PRIMARY": {
+               "Config_Name": "37_Generic_Namawala_Property_Restrictions_NLHTI", 
+               "Geography": "Namawala", 
+               "Run_Number": 1, 
+               "Simulation_Duration": 180
+          },
+          "REPORTING":
+          {
+              "Enable_Demographics_Reporting": 0, 
+              "Enable_Property_Output": 1
+          }
+     }
+}

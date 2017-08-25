@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,10 +19,10 @@ namespace Kernel
     struct IVectorCohort;
     class  VectorHabitat;
     class  VectorMatingStructure;
-    class  VectorPopulation;
+    struct IVectorPopulationReporting;
     class  VectorProbabilities;
 
-    typedef std::list<VectorPopulation *> VectorPopulationList_t;
+    typedef std::list<IVectorPopulationReporting *> VectorPopulationReportingList_t;
 
     struct IVectorSimulationContext : public ISupports
     {
@@ -43,8 +43,8 @@ namespace Kernel
     class INodeVector : public ISupports
     {
     public:
-        virtual const VectorPopulationList_t& GetVectorPopulations() = 0;
-        virtual void AddVectors(std::string releasedSpecies, VectorMatingStructure _vector_genetics, uint64_t releasedNumber) = 0;
+        virtual const VectorPopulationReportingList_t& GetVectorPopulationReporting() const = 0;
+        virtual void AddVectors( const std::string& releasedSpecies, const VectorMatingStructure& _vector_genetics, uint64_t releasedNumber ) = 0;
         virtual void processImmigratingVector( VectorCohort* immigrant ) = 0;
     };
 
@@ -92,5 +92,23 @@ namespace Kernel
         virtual float GetOviTrapKilling(VectorHabitatType::Enum) = 0;
         virtual float GetAnimalFeedKilling() = 0;
         virtual float GetOutdoorRestKilling() = 0;
+        virtual float GetIndoorKilling() = 0;
+    };
+
+    struct IVectorPopulationReporting : ISupports
+    {
+        virtual float GetEIRByPool(VectorPoolIdEnum::Enum pool_id) const = 0;
+        virtual float GetHBRByPool(VectorPoolIdEnum::Enum pool_id) const = 0;
+        virtual int32_t getAdultCount()                            const = 0;
+        virtual int32_t getInfectedCount()                         const = 0;
+        virtual int32_t getInfectiousCount()                       const = 0;
+        virtual int32_t getMaleCount()                             const = 0;
+        virtual int32_t getNewEggsCount()                          const = 0;
+        virtual double  getInfectivity()                           const = 0;
+        virtual const std::string& get_SpeciesID()                 const = 0;
+        virtual const VectorHabitatList_t& GetHabitats()           const = 0;
+
+        virtual std::vector<int> GetNewlyInfectedSuids() const = 0;
+        virtual std::vector<int> GetInfectiousSuids() const = 0;
     };
 }

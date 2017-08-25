@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,12 +14,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "NodeMalariaEventContext.h"  // for ISporozoiteChallengeConsumer methods
 
-static const char * _module = "MalariaChallenge";
+SETUP_LOGGING( "MalariaChallenge" )
 
 namespace Kernel
 {
     BEGIN_QUERY_INTERFACE_BODY(MalariaChallenge)
         HANDLE_INTERFACE(IConfigurable)
+        HANDLE_INTERFACE(IBaseIntervention)
         HANDLE_INTERFACE(INodeDistributableIntervention)
         HANDLE_ISUPPORTS_VIA(INodeDistributableIntervention)
     END_QUERY_INTERFACE_BODY(MalariaChallenge)
@@ -73,31 +74,34 @@ namespace Kernel
             initConfigTypeMap( "Sporozoite_Count", &n_challenged_objects, MC_Sporozoite_Count_DESC_TEXT, 0, 1000, 1 );
         }
 
-        JsonConfigurable::Configure( inputJson );
-        return true;
+        return BaseNodeIntervention::Configure( inputJson );
     }
 
     bool MalariaChallenge::Distribute(INodeEventContext *context, IEventCoordinator2* pEC)
     {
-        bool wasDistributed = false;
+        parent = context;
+
+        if( AbortDueToDisqualifyingInterventionStatus( context ) )
+        {
+            return false;
+        }
 
         ISporozoiteChallengeConsumer *iscc;
-        if (s_OK == context->QueryInterface(GET_IID(ISporozoiteChallengeConsumer), (void**)&iscc))
+        if (s_OK != context->QueryInterface(GET_IID(ISporozoiteChallengeConsumer), (void**)&iscc))
         {
-            if(this->challenge_type == MalariaChallengeType::InfectiousBites)
-            {
-                iscc->ChallengeWithInfectiousBites(n_challenged_objects, coverage);
-                wasDistributed = true;
-            }
-            else if(this->challenge_type == MalariaChallengeType::Sporozoites)
-            {
-                iscc->ChallengeWithSporozoites(n_challenged_objects, coverage);
-                wasDistributed = true;
-            }
+            throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "iscc", "ISporozoiteChallengeConsumer", "INodeEventContext");
         }
-        else
+
+        bool wasDistributed = false;
+        if(this->challenge_type == MalariaChallengeType::InfectiousBites)
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "iscc", "ISporozoiteChallengeConsumer", "INodeEventContext" );
+            iscc->ChallengeWithInfectiousBites(n_challenged_objects, coverage);
+            wasDistributed = true;
+        }
+        else if(this->challenge_type == MalariaChallengeType::Sporozoites)
+        {
+            iscc->ChallengeWithSporozoites(n_challenged_objects, coverage);
+            wasDistributed = true;
         }
 
         return wasDistributed;
@@ -105,7 +109,7 @@ namespace Kernel
 
     void MalariaChallenge::Update( float dt )
     {
-        LOG_WARN("updating malaria challenge (?!?)\n");
         // Distribute() doesn't call GiveIntervention() for this intervention, so it isn't added to the NodeEventContext's list of NDI
+        throw IllegalOperationException(__FILE__, __LINE__, __FUNCTION__, "MalariaChallenge::Update() should not be called.");
     }
 }

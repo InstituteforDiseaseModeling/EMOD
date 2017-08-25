@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "MalariaContexts.h"     // for BoostAntibody method
 
-static const char * _module = "RTSSVaccine";
+SETUP_LOGGING( "RTSSVaccine" )
 
 namespace Kernel
 {
@@ -41,7 +41,7 @@ namespace Kernel
     )
     {
         initConfig( "Antibody_Type", antibody_type, inputJson, MetadataDescriptor::Enum("Antibody_Type", RV_Antibody_Type_DESC_TEXT, MDD_ENUM_ARGS(MalariaAntibodyType)) );
-        return JsonConfigurable::Configure( inputJson );
+        return BaseIntervention::Configure( inputJson );
     }
 
     bool
@@ -50,27 +50,28 @@ namespace Kernel
         ICampaignCostObserver * const pCCO
     )
     {
-        IMalariaHumanContext * imhc = nullptr;
-        if (s_OK != context->GetParent()->QueryInterface(GET_IID(IMalariaHumanContext), (void**)&imhc) )
+        bool distributed = BaseIntervention::Distribute( context, pCCO );
+        if( distributed )
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "imhc", "IMalariaHumanContext", "IIndividualHumanContext" );
+            IMalariaHumanContext * imhc = nullptr;
+            if (s_OK != context->GetParent()->QueryInterface(GET_IID(IMalariaHumanContext), (void**)&imhc) )
+            {
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "imhc", "IMalariaHumanContext", "IIndividualHumanContext" );
+            }
+
+            imhc->GetMalariaSusceptibilityContext()->BoostAntibody( antibody_type, antibody_variant, boosted_antibody_concentration );
         }
-
-        imhc->GetMalariaSusceptibilityContext()->BoostAntibody( antibody_type, antibody_variant, boosted_antibody_concentration );
-
-        return BaseIntervention::Distribute( context, pCCO );
+        return distributed;
     }
 
     void RTSSVaccine::Update( float dt )
     {
         // Nothing to do for this intervention, which doesn't have ongoing effects after an initial boosting
-    }
 
-    void RTSSVaccine::SetContextTo(
-        IIndividualHumanContext *context
-    )
-    {
-        // Nothing to do for this intervention, which doesn't have ongoing effects after an initial boosting
+        // I would add the logic to expire if an abort state were encountered
+        // but I'm not sure that is the right behavior here.  I'm not sure why
+        // this intervention was not set to expire after it was distributed
+        // since it doesn't do anything.
     }
 
     REGISTER_SERIALIZABLE(RTSSVaccine);

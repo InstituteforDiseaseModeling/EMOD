@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -39,7 +39,7 @@ namespace FileSystem
     // directory name, the method will return false.
     bool IDMAPI MakeDirectory( const std::string& rDirName );
 
-    // Return the concatinated directory and filename.  This method attempts to make sure the path
+    // Return the concatenated directory and filename.  This method attempts to make sure the path
     // uses the correct file separators for the given OS.  It will make sure that there is only one
     // separator between the given directory and filename.
     template <class T>

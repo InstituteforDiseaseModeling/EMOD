@@ -10,9 +10,9 @@
             "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "HIVSetCascadeState",
-                    "Demographic_Coverage": 1.0,
-                    "Cascade_State": "Test_State_For_Abort_Testing"
+                    "class": "PropertyValueChanger",
+                    "Target_Property_Key": "InterventionStatus",
+                    "Target_Property_Value": "Test_Status_For_Abort_Testing"
                 }
             }
         },
@@ -26,8 +26,8 @@
                 "Intervention_Config": {
                     "class": "HIVSimpleDiagnostic",
                     "Demographic_Coverage": 1.0,
-                    "Abort_States": [ "Test_State_For_Abort_Testing" ],
-                    "Cascade_State": "Test_State_Never_Get_Here"
+                    "Disqualifying_Properties": [ "InterventionStatus:Test_Status_For_Abort_Testing" ],
+                    "New_Property_Value": "InterventionStatus:Test_Status_Never_Get_Here"
                 }
             }
         },
@@ -41,8 +41,8 @@
                 "Intervention_Config": {
                     "class": "HIVSimpleDiagnostic",
                     "Demographic_Coverage": 1.0,
-                    "Abort_States": [],
-                    "Cascade_State": "Test_State_For_Single_Negative_Test_Then_Expire",
+                    "Disqualifying_Properties": [],
+                    "New_Property_Value": "InterventionStatus:Test_Status_For_Single_Negative_Test_Then_Expire",
                     "Negative_Diagnosis_Event": "Tested_Negative_Because_No_Oubreak_Yet"
                 }
             }
@@ -58,6 +58,7 @@
                 "Target_Demographic": "Everyone",
                 "Intervention_Config": {
                     "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0,
                     "Outbreak_Source": "PrevalenceIncrease"
                 }
             }
@@ -72,8 +73,8 @@
                 "Intervention_Config": {
                     "class": "HIVSimpleDiagnostic",
                     "Demographic_Coverage": 1.0,
-                    "Abort_States": [],
-                    "Cascade_State": "Test_State_For_Recurrent_Testing_Till_Positive",
+                    "Disqualifying_Properties": [],
+                    "New_Property_Value": "InterventionStatus:Test_Status_For_Recurrent_Testing_Till_Positive",
                     "Negative_Diagnosis_Event": "So_Far_So_Good",
                     "Positive_Diagnosis_Event": "There_It_Is"
                 }

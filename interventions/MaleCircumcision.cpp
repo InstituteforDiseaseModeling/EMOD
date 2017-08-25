@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,12 +18,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ISTIInterventionsContainer.h"
 #include "IIndividualHumanSTI.h"
 
-static const char * _module = "MaleCircumcision";
+SETUP_LOGGING( "MaleCircumcision" )
 
 namespace Kernel
 {
     BEGIN_QUERY_INTERFACE_BODY(MaleCircumcision)
-        HANDLE_INTERFACE(IConfigurable)
+        HANDLE_INTERFACE( ICircumcision )
+        HANDLE_INTERFACE( IConfigurable )
         HANDLE_INTERFACE(IDistributableIntervention)
         HANDLE_ISUPPORTS_VIA(IDistributableIntervention)
     END_QUERY_INTERFACE_BODY(MaleCircumcision)
@@ -34,7 +35,7 @@ namespace Kernel
     : BaseIntervention()
     , m_ReducedAcquire(1.0)
     , m_ApplyIfHigherReducedAcquire(false)
-    , m_DistrbutedEventTrigger(NO_TRIGGER_STR)
+    , m_DistrbutedEventTrigger()
     , m_pCircumcisionConsumer(nullptr)
     , has_been_applied(false)
     {
@@ -48,10 +49,9 @@ namespace Kernel
 
         initConfigTypeMap( "Distributed_Event_Trigger",
                            &m_DistrbutedEventTrigger,
-                           Male_Circumcision_Distributed_Event_Trigger_DESC_TEXT,
-                           NO_TRIGGER_STR );
+                           Male_Circumcision_Distributed_Event_Trigger_DESC_TEXT );
 
-        return JsonConfigurable::Configure( inputJson );
+        return BaseIntervention::Configure( inputJson );
     }
 
     bool MaleCircumcision::Distribute( IIndividualHumanInterventionsContext *context,
@@ -115,23 +115,25 @@ namespace Kernel
         // ----------------------------------------------------------------------------------
         // --- If the user defines a trigger, broadcast that the circumcision was distributed
         // ----------------------------------------------------------------------------------
-        if( ret && (m_DistrbutedEventTrigger != NO_TRIGGER_STR) )
+        if( ret && !m_DistrbutedEventTrigger.IsUninitialized() )
         {
             INodeTriggeredInterventionConsumer* broadcaster = nullptr;
             if (s_OK != context->GetParent()->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
             }
-            broadcaster->TriggerNodeEventObserversByString( context->GetParent()->GetEventContext(), m_DistrbutedEventTrigger );
+            broadcaster->TriggerNodeEventObservers( context->GetParent()->GetEventContext(), m_DistrbutedEventTrigger );
         }
         return ret;
     }
 
     void MaleCircumcision::Update( float dt )
     {
+        if( !BaseIntervention::UpdateIndividualsInterventionStatus() ) return;
+
         if( !has_been_applied )
         {
-        m_pCircumcisionConsumer->ApplyCircumcision( m_ReducedAcquire );
+            m_pCircumcisionConsumer->ApplyCircumcision( m_ReducedAcquire );
             has_been_applied = true;
         }
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -144,6 +146,7 @@ namespace Kernel
 
     void MaleCircumcision::SetContextTo( IIndividualHumanContext *context )
     {
+        BaseIntervention::SetContextTo( context );
         // ------------------------------------------
         // --- Get the CircumcisionConumer for later
         // ------------------------------------------

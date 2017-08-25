@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -22,7 +22,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Serializer.h"
 
-static const char * _module = "Configuration";
+SETUP_LOGGING( "Configuration" )
 
 //////////////////////////////////////////////////////////////////////////
 // Implementation of basic Configuration wrapper
@@ -50,6 +50,21 @@ void JsonUtility::logJsonException( const json::ScanException &se, std::string& 
     errMsgStream << "Char " << se.m_locError.m_nLineOffset<< "," << endl;
     errMsgStream << se.what() << endl;
     err_msg = errMsgStream.str();
+}
+
+Configuration::Configuration()
+    : QuickInterpreter( json::Element() )
+    , pElement( nullptr )
+    , data_location("serialization")
+{
+    // this ctor only for serialization, the base class will be initialized to an invalid state which deserialization must repair
+}
+
+Configuration::Configuration( json::Element* element, const std::string& rDataLocation ) 
+    : QuickInterpreter( *element )
+    , pElement( element )
+    , data_location( rDataLocation )
+{
 }
 
 bool Configuration::CheckElementByName(const std::string& elementName) const
@@ -134,7 +149,7 @@ Configuration* Configuration::Load( std::istream& rInputStream, const std::strin
     std::ostringstream final_msg;
     try 
     {
-        conf = loadInternal(rInputStream);
+        conf = loadInternal( rInputStream, rDataLocation );
     }
     catch (json::ParseException &pe)
     {
@@ -187,7 +202,7 @@ Configuration* Configuration::loadInternalWrapper( std::istream &config_file )
 */
 
 
-Configuration* Configuration::loadInternal( istream &is_config_file )
+Configuration* Configuration::loadInternal( istream &is_config_file, const std::string& rDataLocation )
 {
     using namespace json;
 
@@ -199,16 +214,16 @@ Configuration* Configuration::loadInternal( istream &is_config_file )
     // this constructor and base class constructor have no logic, so we shouldn't have any exceptions
     // we would need to clean up after
 
-    Configuration* conf = _new_ Configuration(elemRootFile); 
+    Configuration* conf = _new_ Configuration( elemRootFile, rDataLocation );
     // (we keep a handle to the elemRootFile object in the instance object and clean it up when we're done)
 
     return conf;
 }
 
-Configuration* Configuration::CopyFromElement( const json::Element &elem )
+Configuration* Configuration::CopyFromElement( const json::Element &elem, const std::string& rDataLocation )
 {
     Element *elem_copy = _new_ Element(elem);
-    return _new_ Configuration(elem_copy);
+    return _new_ Configuration( elem_copy, rDataLocation );
 }
 
 #if 0
@@ -650,41 +665,3 @@ double GET_CONFIG_DOUBLE(
 
     return (d == 1.0);
 }*/
-
-
-namespace Kernel
-{
-
-    //////////////////////////////////////////////////////////////////////////
-    // Implementation support for Configurable functionality
-
-
-    void ConfigurationImpl::get_config_enum_value( const Configuration* config, string name, int *value, MetadataDescriptor::Enum &enum_md )
-    {
-        string enum_value_string = boost::to_lower_copy(GET_CONFIG_STRING(config, name));
-        
-        bool found = false;
-
-        for (auto& vs : enum_md.enum_value_specs)
-        {
-            if (boost::to_lower_copy(vs.first) == enum_value_string)
-            {
-                *value = vs.second; found = true; break;
-            }
-        }
-
-
-        if (!found)
-        {
-            string full_description = "Error parsing enum field '" + name + "'; value '" + enum_value_string + "' not recognized.\n";
-            full_description+="Valid values are: ";
-            for (auto& vs : enum_md.enum_value_specs)
-            {
-                full_description += vs.first + " ";
-            }
-            full_description += "\n";
-
-            throw Kernel::GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, full_description.c_str() );
-        }
-    }
-}

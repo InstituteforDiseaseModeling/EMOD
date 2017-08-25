@@ -26,8 +26,8 @@ PROGRESS = 25
 
 globals = {}
 # the entries in 'directory_whitelist' should all be lower case (regardless of the directory name casing on disk)
-globals['directory_whitelist'] = [ '.git', 'basereportlib', 'cajun', 'campaign', 'componenttests', 'dependencies', 'eradication', 'interventions', 'jsonspirit', 'quickstart', 'rapidjson', 'regression', 'reporters', 'scripts', 'snappy', 'unittest++', 'utils' ]
-globals['directory_blacklist'] = [ '.svn', 'cajun/test', 'quickstart', 'Regression/reports', 'Regression/Polio', 'Regression/NotreDame', 'Regression/Serious_Gaming' ]
+globals['directory_whitelist'] = [ '.git', 'basereportlib', 'cajun', 'campaign', 'componenttests', 'dependencies', 'eradication', 'interventions', 'jsonspirit', 'quickstart', 'lz4', 'rapidjson', 'regression', 'reporters', 'scripts', 'snappy', 'unittest++', 'utils' ]
+globals['directory_blacklist'] = [ '.svn', 'cajun/test', 'quickstart', 'Regression/reports', 'Regression/Dengue', 'Regression/Environmental', 'Regression/Polio', 'Regression/TBHIV', 'Regression/Typhoid' ]
 # the entries in 'reporter_whitelist' should be tuples of solution files, the associated directory, the project file, and the SConscript file
 globals['reporter_whitelist'] = [
     ('TBCustomReporterRelease.sln', 'lib_custom_tb_reporter_Scenarios',     'lib_custom_tb_reporter_Scenarios.vcxproj',     'SConscript_TB_ReportScenarios'),
@@ -43,18 +43,23 @@ globals['reporter_whitelist'] = [
     ('MalariaCustomReporters.sln',  'libmalariasurveyJSON_analyzer_plugin', 'libmalariasurveyJSON_analyzer_plugin.vcxproj', 'SConscript_Malaria_Survey'),       # AllCustomReporters.sln
     ('AllCustomReporters.sln',      'libhumanmigrationtracking',            'libhumanmigrationtracking.vcxproj',            'SConscript_Generic_HumanMigrationTracking'),
     ('VectorCustomReporters.sln',   'libvectorhabitat_report_plugin',       'libvectorhabitat_report_plugin.vcxproj',       'SConscript_Vector_VectorHabitat'), # AllCustomReporters.sln
-    ('AllCustomReporters.sln',      'libvectormigration',                   'libvectormigration.vcxproj',                   'SConscript_Vector_VectorMigration')]
+    ('AllCustomReporters.sln',      'libvectormigration',                   'libvectormigration.vcxproj',                   'SConscript_Vector_VectorMigration'),
+    ('AllCustomReporters.sln',      'libReportRelationshipCensus',          'libReportRelationshipCensus.vcxproj',          'SConscript_STI_RelationshipCensus')
+    ]
 # the entries in 'file_whitelist' and 'file_blacklist' should all be lower case (regardless of the file name casing on disk)
-globals['file_whitelist'] = [ '.git', '.gitattributes', '.gitignore', 'eradicationkernel.sln', 'license.txt', 'notices.txt', 'readme.md', 'sconscript', 'sconstruct', 'msvcsconscript' ]  # Sometimes .git is a file instead of a directory
-globals['file_blacklist'] = [ 'status.txt', 'time.txt', 'transitions.json' ]
-globals['project_filter_exclude'] = set(['environmental', 'polio', 'tbhiv', 'hivtb'])
-globals['excluded_preprocessor_defines'] = set(['ENABLE_POLIO', 'ENABLE_TBHIV'])
-globals['regression_directory_file_whitelist'] = [ 'generic.json', 'hiv.json', 'households.json', 'linux_release.json', 'malaria.json', 'multicore.json', 'multicore_nosibe_all.json', 'param_sweep.json', 'plotallcharts.py',
-   'plotnewinfectionsbypool.py', 'plotsirchannels.py', 'prettyprintjson.py',
-   'primaryscenarios.json', 'py.json',
-   'regression_clg.py', 'regression_hpc_monitor.py', 'regression_local_monitor.py', 'regression_report.py' ,'regression_runner.py', 'regression_runtime_params.py', 'regression_test.cfg', 'regression_test.py', 'regression_utils.py',
-   'samples.json', 'sanity.json', 'sti.json', 'sti_hiv_samples.json', 'tb_all.json', 'tb_samples.json', 'update_baselines.py',
-   'vector.json', 'warning.txt', 'win_release.json' ]
+globals['file_whitelist'] = [ '.git', '.gitattributes', '.gitignore', 'eradicationkernel.sln', 'license.txt', 'notices.txt', 'readme.md', 'sconscript', 'sconstruct' ]  # Sometimes .git is a file instead of a directory
+globals['file_blacklist'] = [ 'status.txt', 'time.txt', 'transitions.json',
+                              'reportrelationshipmigrationtracking.csv', 'tbpatientreport.json', 'relationshipqueuereporter.csv', 'ageatinfectionreport.json', 'ageatinfectionhistogramreport.json', 'report_hiv_who2015.csv',   # These reports are filtered out.
+                              'infected.kml', 'statistical population.kml', 'reportbynode_infected.csv', 'reportbynode_statistical_population.csv',
+                              'dengue_default_config.json', 'polio_default_config.json', 'tbhiv_default_config.json', 'typhoid_default_config.json' ]   # These regression scenarios are filtered out.
+globals['project_filter_exclude'] = set(['environmental', 'polio', 'tbhiv', 'hivtb', 'typhoid', 'dengue'])
+globals['excluded_preprocessor_defines'] = set(['ENABLE_POLIO', 'ENABLE_TBHIV', 'DISABLE_MALARIA', 'DISABLE_VECTOR', 'ENABLE_ENVIRONMENTAL', 'ENABLE_TYPHOID', 'DISABLE_STI', 'DISABLE_HIV', 'ENABLE_DENGUE'])
+globals['included_preprocessor_defines'] = set(['DISABLE_AIRBORNE', 'ENABLE_TB', 'ENABLE_PYTHON_FEVER', 'ENABLE_PYTHON'])
+globals['regression_directory_file_whitelist'] = ['airborne.json', 'generic.json', 'generic_science.json', 'generic_singlecore.json', 'hiv.json', 'hiv_science.json',
+                                                  'malaria.json', 'multicore_nosibe.json', 'param_sweep.json', 'py.json', 'samples.json', 'sanity.json', 'sti.json', 'tb.json', 'vector.json',
+                                                  'plotAllCharts.py', 'plotSIRChannels.py', 'plotSomeChannels.py', 'prettyprintjson.py',
+                                                  'regression_clg.py', 'regression_hpc_monitor.py', 'regression_local_monitor.py', 'regression_report.py', 'regression_runner.py', 'regression_runtime_params.py',
+                                                  'regression_test.cfg', 'regression_test.py', 'regression_utils.py', 'WARNING.TXT']
 globals['allowed_sim_types'] = [ 'GENERIC_SIM', 'VECTOR_SIM', 'MALARIA_SIM', 'AIRBORNE_SIM', 'TB_SIM', 'STI_SIM', 'HIV_SIM', 'PY_SIM' ]
 
 
@@ -249,7 +254,14 @@ def update_project_files(project_files):
                     definitions.remove(define)
                     update = True
                 else:
-                    logging.getLogger(__name__).debug("'{0}' not found in preprocessor definitions '{1}'".format(define, element.text))
+                    logging.getLogger(__name__).debug("Excluded define, '{0}', not found in preprocessor definitions '{1}'".format(define, element.text))
+
+            for define in globals['included_preprocessor_defines']:
+                if define not in definitions:
+                    logging.getLogger(__name__).info("Adding '{0}' to preprocessor definitions '{1}'".format(define, element.text))
+                    update = True
+                else:
+                    logging.getLogger(__name__).debug("Desired define, '{0}', found in preprocessor definitions '{1}'".format(define, element.text))
 
             element.text = ';'.join(definitions)
 

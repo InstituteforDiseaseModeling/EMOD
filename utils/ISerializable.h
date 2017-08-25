@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -93,7 +93,6 @@ namespace Kernel {
         static std::stack<T*> _pool;
     };
 
-#if defined(WIN32)
 #define DECLARE_SERIALIZABLE(classname)                                             \
     private:                                                                        \
         virtual const char* GetClassName() override { return _class_name; }         \
@@ -103,21 +102,11 @@ namespace Kernel {
         friend PoolManager<classname>; \
         static ISerializable* construct() { return dynamic_cast<ISerializable*>(PoolManager<classname>::_allocate()); }    \
         virtual void Recycle() override { PoolManager<classname>::_recycle(this); } \
-    protected: \
-        static void serialize(IArchive&, classname*);                               
+    protected:\
+        static void serialize(IArchive&, classname*);                               \
 
 #define REGISTER_SERIALIZABLE(classname)                                                     \
     char* classname::_class_name = #classname;                                               \
     SerializationRegistrationCaller<classname> classname::serialization_registration_caller; \
-    std::stack<classname*> PoolManager<classname>::_pool;                                    
-#else
-#define DECLARE_SERIALIZABLE(classname)                                             \
-    protected:                                                                      \ 
-        static void serialize(IArchive&, classname*);                               
-#define REGISTER_SERIALIZABLE(classname)                                                     
-    /*char* classname::_class_name = #classname;                                               \
-    SerializationRegistrationCaller<classname> classname::serialization_registration_caller; \
-    template<> std::stack< classname* > PoolManager< classname >::_pool;                     \
-    */
-#endif
+    template<> std::stack<classname*> PoolManager<classname>::_pool = std::stack<classname*>();                                   
 }

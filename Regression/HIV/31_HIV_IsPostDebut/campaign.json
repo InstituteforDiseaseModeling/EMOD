@@ -1,27 +1,22 @@
 {
     "Use_Defaults": 1,
-    "Campaign_Name": "STIIsPostDebut validation", 
+    "Campaign_Name": "STIIsPostDebut validation",
     "Events": [
         {
             "class": "CampaignEvent",
             "Event_Name": "Distribute STIIsPostDebut diagnostic designed to be negative for all recipients",
             "Start_Day": 1,
-
-            "Nodeset_Config":
-            {
+            "Nodeset_Config": {
                 "class": "NodeSetAll"
-            }, 
-
-            "Event_Coordinator_Config": 
-            {
+            },
+            "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
                 "Demographic_Coverage": 1,
                 "Target_Demographic": "ExplicitAgeRanges",
                 "Target_Age_Min": 0,
                 "Target_Age_Max": 5,
-                "Intervention_Config":
-                {
-                    "class": "STIIsPostDebut", 
+                "Intervention_Config": {
+                    "class": "STIIsPostDebut",
                     "Event_Or_Config": "Event",
                     "Positive_Diagnosis_Event": "Yikes_Toddler_Is_Post_Debut",
                     "Negative_Diagnosis_Event": "Phew_Toddler_Is_Not_Post_Debut"
@@ -32,22 +27,17 @@
             "class": "CampaignEvent",
             "Event_Name": "Distribute STIIsPostDebut diagnostic designed to be positive for some recipients",
             "Start_Day": 10,
-
-            "Nodeset_Config":
-            {
+            "Nodeset_Config": {
                 "class": "NodeSetAll"
-            }, 
-
-            "Event_Coordinator_Config": 
-            {
+            },
+            "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
                 "Demographic_Coverage": 1,
                 "Target_Demographic": "ExplicitAgeRanges",
                 "Target_Age_Min_In_Years": 14,
                 "Target_Age_Max_In_Years": 18,
-                "Intervention_Config":
-                {
-                    "class": "STIIsPostDebut", 
+                "Intervention_Config": {
+                    "class": "STIIsPostDebut",
                     "Days_To_Diagnosis": 0,
                     "Event_Or_Config": "Event",
                     "Positive_Diagnosis_Event": "Teen_Is_Post_Debut",
@@ -59,25 +49,18 @@
             "class": "CampaignEvent",
             "Event_Name": "Distribute STIIsPostDebut diagnostic designed to be positive for all recipients",
             "Start_Day": 20,
-
-            "Nodeset_Config":
-            {
+            "Nodeset_Config": {
                 "class": "NodeSetAll"
-            }, 
-
-            "Event_Coordinator_Config": 
-            {
+            },
+            "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config":
-                {
+                "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "TriggerList",
                     "Trigger_Condition_List": [
                         "STIDebut"
                     ],
-                    "Actual_IndividualIntervention_Config": 
-                    {
-                        "class": "STIIsPostDebut", 
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "STIIsPostDebut",
                         "Days_To_Diagnosis_NOTE": "Seems to be some kind of bug where DTD can now default to 1?",
                         "Days_To_Diagnosis": 0,
                         "Event_Or_Config": "Event",
@@ -87,6 +70,5 @@
                 }
             }
         }
-
     ]
 }

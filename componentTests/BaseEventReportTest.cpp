@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,6 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContextHost.h"
 #include "SimulationConfig.h"
 #include "IdmMpi.h"
+#include "EventTrigger.h"
 
 using namespace Kernel; 
 using namespace std; 
@@ -40,17 +41,17 @@ public:
     }
 
     virtual bool notifyOnEvent( Kernel::IIndividualHumanEventContext *context, 
-                                const std::string& StateChange) override
+                                const EventTrigger& trigger) override
     {
         if( HaveUnregisteredAllEvents() )
         {
             return false ;
         }
-        else if( StateChange == "Births" )
+        else if( trigger == EventTrigger::Births )
         {
             m_NumBirthEvents++ ;
         }
-        else if( StateChange == "NonDiseaseDeaths" )
+        else if( trigger == EventTrigger::NonDiseaseDeaths )
         {
             m_NumDeathEvents++ ;
         }
@@ -85,7 +86,7 @@ public:
 
     virtual void Update(float dt) override
     {
-        m_pNTIC->TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::NonDiseaseDeaths );
+        m_pNTIC->TriggerNodeEventObservers( nullptr, EventTrigger::NonDiseaseDeaths );
     };
 
     virtual INodeDistributableIntervention* Clone() override { return nullptr; };
@@ -93,6 +94,8 @@ public:
     virtual bool Distribute(INodeEventContext *context, IEventCoordinator2* pEC = nullptr ) override { assert( false ); return false; };
     virtual void SetContextTo(INodeEventContext *context) override {};
     virtual void ValidateSimType( const std::string& simTypeStr ) override {};
+    virtual bool Expired() override { return false; };
+    virtual void SetExpired( bool ) override {};
     virtual QueryResult QueryInterface(iid_t iid, void** pinstance) override { return Kernel::e_NOINTERFACE; };
     virtual int32_t AddRef() override { return 0 ;};
     virtual int32_t Release() override { return 0 ;};
@@ -131,8 +134,12 @@ SUITE(BaseEventReportTest)
             Environment::Initialize( m_pMpi, nullptr, configFilename, inputPath, outputPath, /*statePath, */dllPath, false);
 
             Environment::setSimulationConfig( m_pSimulationConfig );
-            m_pSimulationConfig->listed_events.insert("Births"          );
-            m_pSimulationConfig->listed_events.insert("NonDiseaseDeaths");
+
+            EventTriggerFactory::DeleteInstance();
+
+            json::Object fakeConfigJson;
+            Configuration * fakeConfigValid = Environment::CopyFromElement( fakeConfigJson );
+            EventTriggerFactory::GetInstance()->Configure( fakeConfigValid );
         }
 
         ~ReportFixture()
@@ -140,6 +147,7 @@ SUITE(BaseEventReportTest)
             delete m_pMpi;
             delete m_pSimulationConfig;
             Environment::setSimulationConfig( nullptr );
+            Environment::Finalize();
         }
     };
 
@@ -167,8 +175,8 @@ SUITE(BaseEventReportTest)
         CHECK_EQUAL(      5, report.GetReportValue() );
 
         CHECK_EQUAL( 2, report.GetEventTriggerList().size() );
-        CHECK_EQUAL( "Births",           report.GetEventTriggerList()[0] );
-        CHECK_EQUAL( "NonDiseaseDeaths", report.GetEventTriggerList()[1] );
+        CHECK_EQUAL( EventTrigger::Births.ToString(),           report.GetEventTriggerList()[0].ToString() );
+        CHECK_EQUAL( EventTrigger::NonDiseaseDeaths.ToString(), report.GetEventTriggerList()[1].ToString() );
     }
 
     TEST_FIXTURE(ReportFixture, TestEvents)
@@ -202,9 +210,9 @@ SUITE(BaseEventReportTest)
         // -------------------------------------------------------------------------
         report.UpdateEventRegistration( 122.0, 1.0, nec_list );
         nec.UpdateInterventions( 1.0 );
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::Births );
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::NonDiseaseDeaths );
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::EveryUpdate ); // not listening for
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::Births );
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::NonDiseaseDeaths );
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
 
         CHECK( !report.HaveRegisteredAllEvents() );
         CHECK( !report.HaveUnregisteredAllEvents() );
@@ -217,9 +225,9 @@ SUITE(BaseEventReportTest)
         // --------------------------------------------------------------------------------------
         report.UpdateEventRegistration( 123.0, 1.0, nec_list );
         nec.UpdateInterventions( 1.0 ); // a NonDiseaseDeaths from MyIntervention
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::Births );
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::NonDiseaseDeaths );
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::EveryUpdate ); // not listening for
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::Births );
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::NonDiseaseDeaths );
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
 
         CHECK(  report.HaveRegisteredAllEvents() );
         CHECK( !report.HaveUnregisteredAllEvents() );
@@ -232,10 +240,10 @@ SUITE(BaseEventReportTest)
         // ------------------------------------------
         report.UpdateEventRegistration( 124.0, 1.0, nec_list );
         nec.UpdateInterventions( 1.0 ); // a NonDiseaseDeaths from MyIntervention
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::Births );
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::Births );
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::NonDiseaseDeaths );
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::EveryUpdate ); // not listening for
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::Births );
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::Births );
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::NonDiseaseDeaths );
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
 
         CHECK(  report.HaveRegisteredAllEvents() );
         CHECK( !report.HaveUnregisteredAllEvents() );
@@ -248,9 +256,9 @@ SUITE(BaseEventReportTest)
         // ------------------
         report.UpdateEventRegistration( 125.0, 1.0, nec_list );
         nec.UpdateInterventions( 1.0 ); // a NonDiseaseDeaths from MyIntervention
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::Births );
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::NonDiseaseDeaths );
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::EveryUpdate ); // not listening for
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::Births );
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::NonDiseaseDeaths );
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
 
         CHECK(  report.HaveRegisteredAllEvents() );
         CHECK( !report.HaveUnregisteredAllEvents() );
@@ -263,9 +271,9 @@ SUITE(BaseEventReportTest)
         // ----------------------------------------------------------
         report.UpdateEventRegistration( 126.0, 1.0, nec_list );
         nec.UpdateInterventions( 1.0 ); // a NonDiseaseDeaths from MyIntervention
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::Births );
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::NonDiseaseDeaths );
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::EveryUpdate ); // not listening for
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::Births );
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::NonDiseaseDeaths );
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
 
         CHECK(  report.HaveRegisteredAllEvents() );
         CHECK( !report.HaveUnregisteredAllEvents() );
@@ -281,9 +289,9 @@ SUITE(BaseEventReportTest)
         // --------------------------------------------------------------------------------------------
         report.UpdateEventRegistration( 127.0, 1.0, nec_list );
         nec.UpdateInterventions( 1.0 ); // see note above
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::Births );
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::NonDiseaseDeaths );
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::EveryUpdate ); // not listening for
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::Births );
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::NonDiseaseDeaths );
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
 
         // --------------------------------------------------
         // --- Notice that the numbers have not been updated
@@ -299,9 +307,9 @@ SUITE(BaseEventReportTest)
         // -------------------------------------------------------
         report.UpdateEventRegistration( 128.0, 1.0, nec_list );
         nec.UpdateInterventions( 1.0 );
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::Births );
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::NonDiseaseDeaths );
-        nec.TriggerNodeEventObservers( nullptr, IndividualEventTriggerType::EveryUpdate ); // not listening for
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::Births );
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::NonDiseaseDeaths );
+        nec.TriggerNodeEventObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
 
         CHECK(  report.HaveRegisteredAllEvents() );
         CHECK(  report.HaveUnregisteredAllEvents() );

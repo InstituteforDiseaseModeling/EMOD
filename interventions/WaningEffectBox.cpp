@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,7 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "CajunIncludes.h"
 #include "ConfigurationImpl.h"
 
-static const char* _module = "WaningEffectBox";
+SETUP_LOGGING( "WaningEffectBox" )
 
 namespace Kernel
 {
@@ -21,11 +21,30 @@ namespace Kernel
     IMPLEMENT_FACTORY_REGISTERED(WaningEffectBox)
     IMPL_QUERY_INTERFACE2(WaningEffectBox, IWaningEffect, IConfigurable)
 
+    WaningEffectBox::WaningEffectBox()
+    : WaningEffectConstant()
+    , boxDuration( 0.0f )
+    {
+    }
+
+    WaningEffectBox::WaningEffectBox( const WaningEffectBox& rOrig )
+    : WaningEffectConstant( rOrig )
+    , boxDuration( rOrig.boxDuration )
+    {
+    }
+
+    IWaningEffect* WaningEffectBox::Clone()
+    {
+        return new WaningEffectBox( *this );
+    }
+
     bool WaningEffectBox::Configure( const Configuration * pInputJson )
     {
-        initConfigTypeMap("Initial_Effect", &currentEffect, WEB_Initial_Effect_DESC_TEXT, 0, 1,      1);
         initConfigTypeMap("Box_Duration",   &boxDuration,   WEB_Box_Duration_DESC_TEXT,   0, 100000, 100);
-        return JsonConfigurable::Configure(pInputJson);
+
+        bool ret = WaningEffectConstant::Configure(pInputJson);
+        LOG_VALID_F( "WaningEffectBox configured and initialized with effect = %f and boxDuration = %f.\n", currentEffect, boxDuration );
+        return ret;
     }
 
     void  WaningEffectBox::Update(float dt)
@@ -35,19 +54,15 @@ namespace Kernel
         {
             currentEffect = 0;
         }
-    }
-
-    float WaningEffectBox::Current() const
-    {
-        return currentEffect;
+        LOG_VALID_F( "boxDuration = %f, currentEffect = %f.\n", boxDuration, currentEffect );
     }
 
     REGISTER_SERIALIZABLE(WaningEffectBox);
 
     void WaningEffectBox::serialize(IArchive& ar, WaningEffectBox* obj)
     {
+        WaningEffectConstant::serialize( ar, obj );
         WaningEffectBox& effect = *obj;
-        ar.labelElement("currentEffect") & effect.currentEffect;
         ar.labelElement("boxDuration") & effect.boxDuration;
     }
 }

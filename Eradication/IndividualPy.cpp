@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -24,6 +24,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IdmString.h"
 #include "SimulationConfig.h"
 #include "PythonSupport.h"
+#include "StrainIdentity.h"
 
 #ifndef WIN32
 #include <sys/time.h>
@@ -31,7 +32,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #pragma warning(disable: 4244)
 
-static const char * _module = "IndividualPy";
+SETUP_LOGGING( "IndividualPy" )
 
 #define UNINIT_TIMER (-100.0f)
 
@@ -156,7 +157,7 @@ namespace Kernel
             // pass individual id AND dt
             static PyObject * vars = PyTuple_New(4);
 
-            vars = Py_BuildValue( "llls", GetSuid().data, int(cp->GetTotalContagion()), int(dt), PyLong_FromLong( transmission_route == TransmissionRoute::TRANSMISSIONROUTE_ENVIRONMENTAL ? 0 : 1 ) ); 
+            vars = Py_BuildValue( "lfls", GetSuid().data, cp->GetTotalContagion(), int(dt), PyLong_FromLong( transmission_route == TransmissionRoute::TRANSMISSIONROUTE_ENVIRONMENTAL ? 0 : 1 ) ); 
             PyObject * retVal = PyObject_CallObject( pFunc, vars );
             if( retVal == nullptr )
             {
@@ -212,7 +213,7 @@ namespace Kernel
                 if( val > 0 )
                 {
                     LOG_DEBUG_F("Depositing %f to route %s: (antigen=%d, substain=%d)\n", val, route.c_str(), tmp_strainID.GetAntigenID(), tmp_strainID.GetGeneticID());
-                    parent->DepositFromIndividual( &tmp_strainID, (float) val, &transmissionGroupMembershipByRoute.at( route ) );
+                    parent->DepositFromIndividual( tmp_strainID, (float) val, &transmissionGroupMembershipByRoute.at( route ) );
                 }
 #if !defined(_WIN32) || !defined(_DEBUG)
                 Py_DECREF( retVal );
@@ -251,12 +252,23 @@ namespace Kernel
             }
             else
             {
+                PyErr_Print();
+                ostringstream msg;
+                msg << "Failed to call python function 'update'. ";
+                throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
                 state_to_report = "D";
             }
 #if !defined(_WIN32) || !defined(_DEBUG)
             Py_DECREF(pyVal);
 #endif
             PyErr_Print();
+        }
+        else
+        {
+            PyErr_Print();
+            ostringstream msg;
+            msg << "Failed to call python function 'update'. ";
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
         }
         LOG_DEBUG_F( "state_to_report for individual %d = %s; Infected = %d, change = %d.\n", GetSuid().data, state_to_report.c_str(), IsInfected(), state_changed );
 
@@ -281,7 +293,7 @@ namespace Kernel
         return IndividualHuman::Update( currenttime, dt);
     }
 
-    void IndividualHumanPy::AcquireNewInfection(StrainIdentity *infstrain, int incubation_period_override )
+    void IndividualHumanPy::AcquireNewInfection( const IStrainIdentity *infstrain, int incubation_period_override )
     {
         LOG_DEBUG_F("AcquireNewInfection: route %d\n", _routeOfInfection);
         IndividualHuman::AcquireNewInfection( infstrain, incubation_period_override );
@@ -322,7 +334,7 @@ namespace Kernel
 
     void IndividualHumanPy::UpdateGroupMembership()
     {
-        tProperties* properties = GetProperties();
+        tProperties properties = GetProperties()->GetOldVersion();
         const RouteList_t& routes = parent->GetTransmissionRoutes();
         LOG_DEBUG_F( "Updating transmission group membership for individual %d for %d routes (first route is %s).\n", this->GetSuid().data, routes.size(), routes[ 0 ].c_str() );
 
@@ -331,7 +343,7 @@ namespace Kernel
             LOG_DEBUG_F( "Updating for Route %s.\n", route.c_str() );
             RouteList_t single_route;
             single_route.push_back( route );
-            parent->GetGroupMembershipForIndividual( single_route, properties, &transmissionGroupMembershipByRoute[ route ] );
+            parent->GetGroupMembershipForIndividual( single_route, &properties, &transmissionGroupMembershipByRoute[ route ] );
         }
         IndividualHuman::UpdateGroupMembership();
     }

@@ -18,10 +18,10 @@ version_string = None
 def recursive_json_overrider( ref_json, flat_input_json ):
     for val in ref_json:
         #if not leaf, call recursive_json_leaf_reader
-        if json.dumps( ref_json[val] ).startswith( "{" ) and val != "Vector_Species_Params" and val != "Malaria_Drug_Params" and val != "TB_Drug_Params" and val != "HIV_Drug_Params" and val != "STI_Network_Params_By_Property":
+        if json.dumps( ref_json[val] ).startswith( "{" ) and val != "Vector_Species_Params" and val != "Malaria_Drug_Params" and val != "TB_Drug_Params" and val != "HIV_Drug_Params" and val != "STI_Network_Params_By_Property" and val != "TBHIV_Drug_Params":
             recursive_json_overrider( ref_json[val], flat_input_json )
-        # do VSP and MDP as special case. Sigh sigh sigh
-        elif val == "Vector_Species_Params" or val == "Malaria_Drug_Params" or val == "TB_Drug_Params" or val == "HIV_Drug_Params" or val == "STI_Network_Params_By_Property":
+        # do VSP and MDP as special case. Sigh sigh sigh. Also TBHIV params now, also sigh.
+        elif val == "Vector_Species_Params" or val == "Malaria_Drug_Params" or val == "TB_Drug_Params" or val == "HIV_Drug_Params" or val == "STI_Network_Params_By_Property" or val == "TBHIV_Drug_Params" :
             # could "genericize" this if we need to... happens to work for now, since both VSP and MDP are 3-levels deep...
             if val not in flat_input_json:
                 flat_input_json[val] = { }
@@ -62,8 +62,12 @@ def flattenConfig( configjson_path ):
     if "Default_Config_Path" in configjson_flat:
         default_config_path = configjson_flat["Default_Config_Path"]
 
-        with open( os.path.join( ".", default_config_path ) ) as handle:
-            default_config_json = json.load( handle )
+        try:
+            with open( os.path.join( ".", default_config_path ) ) as handle:
+                default_config_json = json.load( handle ) 
+        except Exception as ex:
+            print( "Exception opening default config: " + str( ex ) )
+            raise ex
 
         recursive_json_overrider( default_config_json, configjson_flat )
     else:
@@ -79,10 +83,6 @@ def flattenConfig( configjson_path ):
     if "Default_Config_Path" in configjson["parameters"]:
         configjson["parameters"].pop("Default_Config_Path")
 
-    # any last minute modifications
-    # print( "Running with serialization OFF!" )
-    # configjson["parameters"]["Serialization_Test_Cycles"] = 0
-
     # let's write out a flat version in case someone wants
     # to use regression examples as configs for debug mode
     with open( configjson_path.replace( "param_overrides", "config" ), 'w' ) as handle:
@@ -92,30 +92,25 @@ def flattenConfig( configjson_path ):
 
 
 def md5_hash(handle):
+
     handle.seek(0)
     md5calc = md5()
-    while True:
-        data = handle.read( 10240 ) # reasonable value from examples
-        if len(data) == 0:
-            break;
+
+    data = handle.read( 1048576 )
+    while data:
         md5calc.update(data)
+        data = handle.read( 1048576 )
     hash = md5calc.hexdigest()
-    return hash
-        
-def md5_hash_of_file( filename ):
-    #print( "Getting md5 for " + filename )
-    file_handle = open( filename )
-    hash = md5_hash( file_handle )
-    #md5calc = md5()
-    #while True:
-        #file_bytes = file_handle.read( 10240 ) # value picked from example!
-        #if len(file_bytes) == 0:
-            #break
-        #md5calc.update( file_bytes )
-    file_handle.close()
-    #hash = md5calc.hexdigest()
+
     return hash
 
+
+def md5_hash_of_file( filename ):
+
+    with open(filename, 'rb') as handle:
+        hash = md5_hash(handle)
+
+    return hash
 
 
 def areTheseJsonFilesTheSame( file1, file2, key = None ):

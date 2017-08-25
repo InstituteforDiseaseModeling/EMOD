@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,7 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationConfig.h"
 #include "MathFunctions.h"
 
-static const char* _module = "NodeMalaria";
+SETUP_LOGGING( "NodeMalaria" )
 
 namespace Kernel
 {
@@ -44,18 +44,25 @@ namespace Kernel
         NodeMalaria::setupEventContextHost();    // This is marked as a virtual function, but isn't virtualized here because we're still in the ctor.
     }
 
-    NodeMalaria::NodeMalaria(ISimulationContext *simulation, suids::suid suid) : NodeVector(simulation, suid),
-        m_Parasite_positive(0),
-        m_Log_parasites(0),
-        m_Fever_positive(0),
-        m_New_Clinical_Cases(0),
-        m_New_Severe_Cases(0),
-        m_Parasite_Prevalence(0),
-        m_New_Diagnostic_Positive(0),
-        m_New_Diagnostic_Prevalence(0),
-        m_Geometric_Mean_Parasitemia(0),
-        m_Fever_Prevalence(0),
-        m_Maternal_Antibody_Fraction(0)
+    NodeMalaria::NodeMalaria(ISimulationContext *simulation, suids::suid suid) 
+    : NodeVector(simulation, suid)
+    , m_Parasite_positive(0)
+    , m_Log_parasites(0)
+    , m_Fever_positive(0)
+    , m_New_Clinical_Cases(0)
+    , m_New_Severe_Cases(0)
+    , m_Parasite_Prevalence(0)
+    , m_New_Diagnostic_Positive(0)
+    , m_New_Diagnostic_Prevalence(0)
+    , m_Geometric_Mean_Parasitemia(0)
+    , m_Fever_Prevalence(0)
+    , m_Maternal_Antibody_Fraction(0)
+    , MSP_mean_antibody_distribution(nullptr)
+    , nonspec_mean_antibody_distribution( nullptr )
+    , PfEMP1_mean_antibody_distribution( nullptr )
+    , MSP_variance_antibody_distribution( nullptr )
+    , nonspec_variance_antibody_distribution( nullptr )
+    , PfEMP1_variance_antibody_distribution( nullptr )
     {
         delete event_context_host;
         NodeMalaria::setupEventContextHost();    // This is marked as a virtual function, but isn't virtualized here because we're still in the ctor.
@@ -83,6 +90,13 @@ namespace Kernel
     {
         // individual deletion done by ~Node
         // vectorpopulation deletion handled at _Vector level
+
+        //delete MSP_mean_antibody_distribution;
+        //delete nonspec_mean_antibody_distribution;
+        //delete PfEMP1_mean_antibody_distribution;
+        //delete MSP_variance_antibody_distribution;
+        //delete nonspec_variance_antibody_distribution;
+        //delete PfEMP1_variance_antibody_distribution;
     }
 
     IIndividualHuman* NodeMalaria::createHuman( suids::suid suid, float monte_carlo_weight, float initial_age, int gender, float poverty_level)
@@ -92,20 +106,18 @@ namespace Kernel
 
     IIndividualHuman* NodeMalaria::addNewIndividual( float monte_carlo_weight, float initial_age, int gender, int initial_infection_count, float immparam, float riskparam, float mighet, float init_poverty)
     {
-        //VALIDATE(boost::format("NodeMalaria::addNewIndividual(%f, %f, %d, %d, %f)") % monte_carlo_weight % initial_age % gender % initial_infection_count % init_poverty);
-
         // just the base class for now
         return NodeVector::addNewIndividual(monte_carlo_weight, initial_age, gender, initial_infection_count, immparam, riskparam, mighet, init_poverty);
     }
 
     void NodeMalaria::LoadImmunityDemographicsDistribution()
     {
-        demographic_distributions[NodeDemographicsDistribution::MSP_mean_antibody_distribution]         = NodeDemographicsDistribution::CreateDistribution(demographics["MSP_mean_antibody_distribution"],         "age");
-        demographic_distributions[NodeDemographicsDistribution::nonspec_mean_antibody_distribution]     = NodeDemographicsDistribution::CreateDistribution(demographics["nonspec_mean_antibody_distribution"],     "age");
-        demographic_distributions[NodeDemographicsDistribution::PfEMP1_mean_antibody_distribution]      = NodeDemographicsDistribution::CreateDistribution(demographics["PfEMP1_mean_antibody_distribution"],      "age");
-        demographic_distributions[NodeDemographicsDistribution::MSP_variance_antibody_distribution]     = NodeDemographicsDistribution::CreateDistribution(demographics["MSP_variance_antibody_distribution"],     "age");
-        demographic_distributions[NodeDemographicsDistribution::nonspec_variance_antibody_distribution] = NodeDemographicsDistribution::CreateDistribution(demographics["nonspec_variance_antibody_distribution"], "age");
-        demographic_distributions[NodeDemographicsDistribution::PfEMP1_variance_antibody_distribution]  = NodeDemographicsDistribution::CreateDistribution(demographics["PfEMP1_variance_antibody_distribution"],  "age");
+        MSP_mean_antibody_distribution         = NodeDemographicsDistribution::CreateDistribution(demographics["MSP_mean_antibody_distribution"],         "age");
+        nonspec_mean_antibody_distribution     = NodeDemographicsDistribution::CreateDistribution(demographics["nonspec_mean_antibody_distribution"],     "age");
+        PfEMP1_mean_antibody_distribution      = NodeDemographicsDistribution::CreateDistribution(demographics["PfEMP1_mean_antibody_distribution"],      "age");
+        MSP_variance_antibody_distribution     = NodeDemographicsDistribution::CreateDistribution(demographics["MSP_variance_antibody_distribution"],     "age");
+        nonspec_variance_antibody_distribution = NodeDemographicsDistribution::CreateDistribution(demographics["nonspec_variance_antibody_distribution"], "age");
+        PfEMP1_variance_antibody_distribution  = NodeDemographicsDistribution::CreateDistribution(demographics["PfEMP1_variance_antibody_distribution"],  "age");
     }
 
     float NodeMalaria::drawInitialImmunity(float ind_init_age)
@@ -115,7 +127,7 @@ namespace Kernel
         case DistributionType::DISTRIBUTION_COMPLEX:
         case DistributionType::DISTRIBUTION_OFF:
             // For MALARIA_SIM, ImmunityDistributionFlag, ImmunityDistribution1, ImmunityDistribution2 map to Innate_Immune_Variation (e.g. variable pyrogenic threshold, cytokine killing)
-            return float(Probability::getInstance()->fromDistribution(immunity_dist_type, immunity_dist1, immunity_dist2, 1.0));
+            return float(Probability::getInstance()->fromDistribution(immunity_dist_type, immunity_dist1, immunity_dist2, 0.0, 1.0));
 
         case DistributionType::DISTRIBUTION_SIMPLE:
             throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Immunity_Initialization_Distribution_Type", "DISTRIBUTION_SIMPLE", "Simulation_Type", "MALARIA_SIM");
@@ -260,5 +272,12 @@ namespace Kernel
         ar.labelElement("m_Geometric_Mean_Parasitemia") & node.m_Geometric_Mean_Parasitemia;
         ar.labelElement("m_Fever_Prevalence") & node.m_Fever_Prevalence;
         ar.labelElement("m_Maternal_Antibody_Fraction") & node.m_Maternal_Antibody_Fraction;
+
+        //ar.labelElement( "MSP_mean_antibody_distribution" ) & node.MSP_mean_antibody_distribution;
+        //ar.labelElement( "nonspec_mean_antibody_distribution" ) & node.nonspec_mean_antibody_distribution;
+        //ar.labelElement( "PfEMP1_mean_antibody_distribution" ) & node.PfEMP1_mean_antibody_distribution;
+        //ar.labelElement( "MSP_variance_antibody_distribution" ) & node.MSP_variance_antibody_distribution;
+        //ar.labelElement( "nonspec_variance_antibody_distribution" ) & node.nonspec_variance_antibody_distribution;
+        //ar.labelElement( "PfEMP1_variance_antibody_distribution" ) & node.PfEMP1_variance_antibody_distribution;
     }
 }

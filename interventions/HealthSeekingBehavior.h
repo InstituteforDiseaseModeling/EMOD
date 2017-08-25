@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -37,24 +37,25 @@ namespace Kernel
 
         // We inherit AddRef/Release abstractly through IHealthSeekBehavior,
         // even though BaseIntervention has a non-abstract version.
-        virtual int32_t AddRef() { return BaseIntervention::AddRef(); }
-        virtual int32_t Release() { return BaseIntervention::Release(); }
+        virtual int32_t AddRef() override { return BaseIntervention::AddRef(); }
+        virtual int32_t Release() override { return BaseIntervention::Release(); }
 
-        virtual bool Configure( const Configuration* config );
+        virtual bool Configure( const Configuration* config ) override;
 
         // IDistributingDistributableIntervention
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
-        virtual void SetContextTo(IIndividualHumanContext *context);
-        virtual void Update(float dt);
-        virtual void Expire();
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+        virtual void SetContextTo(IIndividualHumanContext *context) override;
+        virtual void Update(float dt) override;
+
+        //virtual void Expire();
 
     protected:
 
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
         ICampaignCostObserver * m_pCCO;
-        IIndividualHumanContext *parent;
         float probability_of_seeking;
+        EventOrConfig::Enum use_event_or_config;
         IndividualInterventionConfig actual_intervention_config;
         EventTrigger actual_intervention_event;
         bool single_use;

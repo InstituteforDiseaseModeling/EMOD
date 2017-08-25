@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -32,6 +32,24 @@ namespace Kernel
         virtual float GetGeometricMeanParasitemia() const = 0;
         virtual float GetFeverPrevalence()          const = 0;
         virtual float GetMaternalAntibodyFraction() const = 0;
+
+        virtual const NodeDemographicsDistribution* GetMSP_mean_antibody_distribution()              const = 0;
+        virtual const NodeDemographicsDistribution* GetNonspec_mean_antibody_distribution()          const = 0;
+        virtual const NodeDemographicsDistribution* GetPfEMP1_mean_antibody_distribution()           const = 0;
+        virtual const NodeDemographicsDistribution* GetMSP_variance_antibody_distribution()          const = 0;
+        virtual const NodeDemographicsDistribution* GetNonspec_variance_antibody_distribution()      const = 0;
+        virtual const NodeDemographicsDistribution* GetPfEMP1_variance_antibody_distribution()       const = 0;
+    };
+
+    class IInfectionMalaria : public ISupports
+    {
+    public:
+        virtual int64_t get_MaleGametocytes(int stage) const = 0;
+        virtual int64_t get_FemaleGametocytes(int stage) const = 0;
+        virtual void apply_MatureGametocyteKillProbability(float pkill) = 0;
+
+        virtual float get_asexual_density() const = 0;
+        virtual float get_mature_gametocyte_density() const = 0;
     };
 
     struct IMalariaSusceptibility : public ISupports

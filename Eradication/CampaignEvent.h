@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -70,6 +70,7 @@ namespace Kernel
         float GetStartDay() const;
         int   GetEventIndex() const;
         void  SetEventIndex(int index);
+        void CheckForValidNodeIDs(const std::vector<ExternalNodeId_t>& demographic_node_ids);
         float GetDistributionDuration() const;
 
         void Dispatch(ISimulationEventContext *isec); // called when the event is to happen

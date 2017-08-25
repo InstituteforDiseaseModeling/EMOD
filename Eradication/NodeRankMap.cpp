@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -24,7 +24,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Debug.h"
 #include "IdmMpi.h"
 
-static const char * _module = "NodeRankMap";
+SETUP_LOGGING( "NodeRankMap" )
+
 namespace Kernel 
 {
     NodeRankMap::NodeRankMap()
@@ -34,6 +35,7 @@ namespace Kernel
         , nodes_in_my_rank()
         , m_Buffer(nullptr)
         , m_BufferSize(0)
+        , nodesBySuid()
     { 
     }
 
@@ -44,7 +46,7 @@ namespace Kernel
 
         for( auto entry : rankMap )
         {
-            delete entry.second ;
+            delete entry.second;
         }
         rankMap.clear();
 
@@ -54,6 +56,7 @@ namespace Kernel
         free( m_Buffer );
     }
 
+/* TODO
     std::string NodeRankMap::ToString()
     {
         std::stringstream strstr;
@@ -65,6 +68,7 @@ namespace Kernel
         strstr << "}" << std::endl;
         return strstr.str();
     }
+*/
 
     bool NodeRankMap::MergeMaps()
     {
@@ -86,11 +90,11 @@ namespace Kernel
                 {
                     INodeInfo* pni = entry.second;
                     writer.startObject();
-                        // ---------------------------------------------------------------
-                        // --- true => write all of the data about the node since this is
-                        // --- the first time and the other nodes will need it
-                        // ---------------------------------------------------------------
-                        writer.labelElement( "value" ); pni->serialize( writer, true );
+                    // ---------------------------------------------------------------
+                    // --- true => write all of the data about the node since this is
+                    // --- the first time and the other nodes will need it
+                    // ---------------------------------------------------------------
+                    writer.labelElement("value"); pni->serialize(writer, true);
                     writer.endObject();
                 }
                 writer.endArray();
@@ -100,7 +104,7 @@ namespace Kernel
                     if (rank == EnvPtr->MPI.Rank)
                     {
                         const char* buffer = writer.GetBuffer();
-                        uint32_t size = writer.GetBufferSize();
+                        size_t size = writer.GetBufferSize();
                         LOG_VALID_F( "Broadcasting serialized map (%d bytes)\n", size );
                         EnvPtr->MPI.p_idm_mpi->PostChars( const_cast<char*>(buffer), size, rank );
                     }
@@ -110,7 +114,6 @@ namespace Kernel
                         EnvPtr->MPI.p_idm_mpi->GetChars( received, rank );
                         auto json_reader = new JsonRawReader( received.data() );
                         IArchive& reader = *static_cast<IArchive*>(json_reader);
-                        size_t count;
                         reader.startArray( count );
                             LOG_VALID_F( "Merging %d suid-rank map entries from rank %d\n", count, rank );
                             for (size_t i = 0; i < count; ++i)
@@ -127,7 +130,6 @@ namespace Kernel
                             }
                         reader.endArray();
                         delete json_reader;
-                        //delete [] buffer;
                     }
                 }
 
@@ -145,12 +147,20 @@ namespace Kernel
         // --- Save a list of INodeInfo objects that are hosted on this core.
         // --- We need to send this list to the other cores each time step.
         // ---------------------------------------------------------------------
-        for( auto entry : rankMap )
+        for( auto& entry : rankMap )
         {
-            if( entry.second->GetRank() == EnvPtr->MPI.Rank )
+            if ( entry.second->GetRank() == EnvPtr->MPI.Rank )
             {
                 nodes_in_my_rank.push_back( entry.second );
             }
+
+            const suids::suid& suid = entry.first;
+            INodeInfo* ini = entry.second;
+            int32_t rank = ini->GetRank();
+            if (suid.data >= nodesBySuid.size()) nodesBySuid.resize(suid.data + 1);
+            nodesBySuid.data()[suid.data] = ini;
+            if (suid.data >= ranksBySuid.size()) ranksBySuid.resize(suid.data + 1);
+            ranksBySuid.data()[suid.data] = rank;
         }
         return true;
     }
@@ -182,7 +192,7 @@ namespace Kernel
 
         char* buffer_temp = const_cast<char*>(writer->GetBuffer());
         unsigned char* buffer = (unsigned char*)buffer_temp;
-        int buffer_size = writer->GetBufferSize();
+        size_t buffer_size = writer->GetBufferSize();
 
         // -----------------------------------------------------
         // --- Define functions to be called by MpiDataExchanger
@@ -250,8 +260,8 @@ namespace Kernel
                     // --- for the nodes on the other cores, we only need to read 
                     // --- the data that has changed.
                     // ----------------------------------------------------------
-                    converter->labelElement("key") & id.data;
-                    INodeInfo* pni = rankMap[ id ] ;
+                    converter->labelElement("key") & id;
+                    INodeInfo* pni = rankMap.at( id );
                     converter->labelElement( "value" ); pni->serialize( *converter, false );
                 converter->endObject();
             }
@@ -265,51 +275,52 @@ namespace Kernel
     }
 
     void NodeRankMap::SetInitialLoadBalanceScheme( IInitialLoadBalanceScheme *ilbs ) 
-    { 
+    {
         initialLoadBalanceScheme = ilbs; 
-    } 
+    }
 
     void NodeRankMap::SetNodeInfoFactory( INodeInfoFactory* pnif )
     {
         pNodeInfoFactory = pnif ;
     }
 
-    int NodeRankMap::GetRankFromNodeSuid(suids::suid node_id) 
-    { 
-        return rankMap[node_id]->GetRank(); 
-    } 
+    int NodeRankMap::GetRankFromNodeSuid(suids::suid node_id)
+    {
+        int rank = ranksBySuid.data()[node_id.data];
+        return rank;
+    }
 
-    size_t NodeRankMap::Size() 
-    { 
+    size_t NodeRankMap::Size()
+    {
         return rankMap.size();
     }
 
-    void NodeRankMap::Add( int rank, INodeContext* pNC  ) 
-    { 
+    void NodeRankMap::Add( int rank, INodeContext* pNC )
+    {
         INodeInfo* pni = pNodeInfoFactory->CreateNodeInfo( rank, pNC );
-        rankMap.insert( RankMapEntry_t( pNC->GetSuid(), pni ) ); 
+        suids::suid suid = pNC->GetSuid();
+        rankMap.insert(RankMapEntry_t(suid, pni));
+        if (suid.data >= nodesBySuid.size()) nodesBySuid.resize(suid.data + 1);
+        nodesBySuid.data()[suid.data] = pni;
+        if (suid.data >= ranksBySuid.size()) ranksBySuid.resize(suid.data + 1);
+        ranksBySuid.data()[suid.data] = rank;
     }
 
     void NodeRankMap::Update( INodeContext* pNC )
     {
-        rankMap[ pNC->GetSuid() ]->Update( pNC );
+        rankMap.at( pNC->GetSuid() )->Update( pNC );
     }
 
     INodeInfo& NodeRankMap::GetNodeInfo( const suids::suid& node_suid )
     {
-        if( rankMap.count( node_suid ) == 0 )
-        {
-            std::ostringstream msg;
-            msg << "Could not find internal node id = " << node_suid.data ;
-            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-        }
-        return *(rankMap.at( node_suid )) ;
+        INodeInfo* ptr = nodesBySuid.data()[node_suid.data];
+        return *ptr;
     }
 
     const NodeRankMap::RankMap_t&
     NodeRankMap::GetRankMap() const 
     { 
-        return rankMap; 
+        return rankMap;
     }
 
     int NodeRankMap::GetInitialRankFromNodeId( ExternalNodeId_t node_id )
@@ -328,9 +339,9 @@ namespace Kernel
     {
         for( auto entry : rankMap )
         {
-            if( entry.second->GetExternalID() == externalNodeId )
+            if ( entry.second->GetExternalID() == externalNodeId )
             {
-                return entry.second->GetSuid() ;
+                return entry.second->GetSuid();
             }
         }
         std::ostringstream msg;
@@ -357,13 +368,13 @@ namespace Kernel
 
         for (auto& entry : x)
         {
-            if(!(mergedMap.insert(entry).second))
+            if (!(mergedMap.insert(entry).second))
                 throw(merge_duplicate_key_exception());
         }
 
         for (auto& entry : y)
         {
-            if(!(mergedMap.insert(entry).second)) // .second is false if the key already existed
+            if (!(mergedMap.insert(entry).second)) // .second is false if the key already existed
                 throw(merge_duplicate_key_exception());
         }
 

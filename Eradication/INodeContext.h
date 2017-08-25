@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,6 +17,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "TransmissionGroupMembership.h"
 #include "ITransmissionGroups.h"
 #include "SimulationEnums.h"
+#include "EventTrigger.h"
 
 namespace Kernel
 {
@@ -30,6 +31,7 @@ namespace Kernel
     struct INodeEventContext;
     struct IIndividualHuman;
     struct ISimulationContext;
+    class NPKeyValueContainer;
 
     typedef uint32_t ExternalNodeId_t;
 
@@ -60,8 +62,9 @@ namespace Kernel
 
         virtual void SetContextTo( ISimulationContext* ) = 0;
         virtual void SetMonteCarloParameters(float indsamplerate =.05, int nummininf = 0) = 0;
-        virtual void SetParameters(NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory) = 0;
+        virtual void SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory, bool white_list_enabled ) = 0;
         virtual void PopulateFromDemographics() = 0;
+        virtual void InitializeTransmissionGroupPopulations() = 0;
 
         virtual suids::suid GetNextInfectionSuid() = 0;
         virtual ::RANDOMBASE* GetRng() = 0; 
@@ -71,9 +74,11 @@ namespace Kernel
 
         // heterogeneous intra-node transmission
         virtual void ExposeIndividual(IInfectable* candidate, const TransmissionGroupMembership_t* individual, float dt) = 0;
-        virtual void DepositFromIndividual(StrainIdentity* strain_IDs, float contagion_quantity, const TransmissionGroupMembership_t* individual) = 0;
+        virtual void DepositFromIndividual( const IStrainIdentity& strain_IDs, float contagion_quantity, const TransmissionGroupMembership_t* individual) = 0;
         virtual void GetGroupMembershipForIndividual(const RouteList_t& route, tProperties* properties, TransmissionGroupMembership_t* membershipOut ) = 0;
+        //virtual float GetMaxInfectionProb( TransmissionRoute::Enum tx_route )             const = 0;
         virtual void UpdateTransmissionGroupPopulation(const TransmissionGroupMembership_t* membership, float size_changes,float mc_weight) = 0;
+        virtual std::map< std::string, float > GetTotalContagion() const = 0; // developed for Typhoid
         virtual float GetTotalContagion(const TransmissionGroupMembership_t* membership) = 0;
         virtual const RouteList_t& GetTransmissionRoutes( ) const = 0;
         
@@ -85,8 +90,8 @@ namespace Kernel
 
         virtual IMigrationInfo* GetMigrationInfo() = 0;
         virtual const NodeDemographics* GetDemographics() const = 0;
-        virtual const NodeDemographicsDistribution* GetDemographicsDistribution(std::string) const = 0;
         virtual std::vector<bool> GetMigrationTypeEnabledFromDemographics() const = 0 ;
+        virtual NPKeyValueContainer& GetNodeProperties() = 0;
 
         // reporting interfaces
         virtual IdmDateTime GetTime()          const = 0;
@@ -111,7 +116,7 @@ namespace Kernel
 
         // for interventions
         virtual INodeEventContext* GetEventContext() = 0;
-        virtual void AddEventsFromOtherNodes( const std::vector<std::string>& rEventNameList ) = 0;
+        virtual void AddEventsFromOtherNodes( const std::vector<EventTrigger>& rTriggerList ) = 0;
 
         virtual bool IsEveryoneHome() const = 0;
         virtual void SetWaitingForFamilyTrip( suids::suid migrationDestination, 
@@ -122,6 +127,13 @@ namespace Kernel
 
         virtual float GetBasePopulationScaleFactor() const = 0;
         virtual ProbabilityNumber GetProbMaternalTransmission() const = 0;
+
+        virtual const NodeDemographicsDistribution* GetImmunityDistribution()        const = 0;
+        virtual const NodeDemographicsDistribution* GetFertilityDistribution()       const = 0;
+        virtual const NodeDemographicsDistribution* GetMortalityDistribution()       const = 0;
+        virtual const NodeDemographicsDistribution* GetMortalityDistributionMale()   const = 0;
+        virtual const NodeDemographicsDistribution* GetMortalityDistributionFemale() const = 0;
+        virtual const NodeDemographicsDistribution* GetAgeDistribution()             const = 0;
     };
 }
 

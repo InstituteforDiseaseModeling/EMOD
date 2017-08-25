@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,14 +10,21 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 
 #include "StrainAwareTransmissionGroups.h"
+#include "Exceptions.h"
 
 // These includes are required to bring in randgen
 #include "Environment.h"
 #include "Contexts.h"
 #include "RANDOM.h"
-#include "Log.h"
 
-static const char* _module = "StrainAwareTransmissionGroups";
+#include "Log.h"
+#include "Debug.h"
+#include "StrainIdentity.h"
+#include "SimulationConfig.h"
+
+SETUP_LOGGING( "StrainAwareTransmissionGroups" )
+
+static map< unsigned int, Kernel::TransmissionRoute::Enum > routeIndex2EnumMap;
 
 namespace Kernel
 {
@@ -55,10 +62,16 @@ namespace Kernel
             LOG_DEBUG_F("For Route %d, Group size = %d\n", i, getGroupCountForRoute(i));
         }
         LOG_DEBUG_F("Built groups with %d strains and %d substrains.\n", numberOfStrains, numberOfSubstrains);
+        if(routeIndex2EnumMap.size() == 0 )
+        {
+            routeIndex2EnumMap.insert( std::make_pair( 0, Kernel::TransmissionRoute::TRANSMISSIONROUTE_CONTACT ) );
+            routeIndex2EnumMap.insert( std::make_pair( 1, Kernel::TransmissionRoute::TRANSMISSIONROUTE_ENVIRONMENTAL ) );
+        }
     }
 
     void StrainAwareTransmissionGroups::AllocateAccumulators( int routeCount, int numberOfStrains, int numberOfSubstrains )
     {
+        LOG_VALID_F( "AllocateAccumulators called with routeCount = %d.\n", routeCount );
         antigenCount = numberOfStrains;
         substrainCount = numberOfSubstrains;
 
@@ -92,11 +105,12 @@ namespace Kernel
         populationSizeByRoute.resize(routeCount);
     }
 
-    void StrainAwareTransmissionGroups::DepositContagion(const StrainIdentity* strain, float amount, const TransmissionGroupMembership_t* transmissionGroupMembership)
+    void StrainAwareTransmissionGroups::DepositContagion(const IStrainIdentity& strain, float amount, const TransmissionGroupMembership_t* transmissionGroupMembership)
     {
-        int antigenIndex   = strain->GetAntigenID();
-        int substrainIndex = strain->GetGeneticID();
+        int antigenIndex   = strain.GetAntigenID();
+        int substrainIndex = strain.GetGeneticID();
         LOG_DEBUG_F("antigenIndex = %d, substrainIndex = %d\n", antigenIndex, substrainIndex);
+
         antigenWasShed[antigenIndex]                   = true;
         substrainWasShed[antigenIndex].insert(substrainIndex);
 
@@ -105,6 +119,9 @@ namespace Kernel
             RouteIndex routeIndex = entry.first;
             GroupIndex groupIndex = entry.second;
             newInfectivityByAntigenRouteGroup[antigenIndex][routeIndex][groupIndex] += amount;
+            //release_assert( newInfectivityByAntigenRouteGroupSubstrain[antigenIndex].size() >= routeIndex+1 );
+            //release_assert( newInfectivityByAntigenRouteGroupSubstrain[antigenIndex][routeIndex].size() >= groupIndex+1 );
+            //release_assert( newInfectivityByAntigenRouteGroupSubstrain[antigenIndex][routeIndex][groupIndex].size() >= substrainIndex+1 );
             newInfectivityByAntigenRouteGroupSubstrain[antigenIndex][routeIndex][groupIndex][substrainIndex] += amount;
 
             if (amount > 0)
@@ -128,15 +145,18 @@ namespace Kernel
             {
                 routeIndex  = entry.first;
                 groupIndex  = entry.second;
-                forceOfInfection += forceOfInfectionForRouteAndGroup[routeIndex][groupIndex];
+                forceOfInfection = forceOfInfectionForRouteAndGroup[routeIndex][groupIndex];
                 substrainDistributions.push_back(&sumInfectivityByAntigenRouteGroupSubstrain[iAntigen][routeIndex][groupIndex]);
-            }
 
-            if ((forceOfInfection > 0) && (candidate != nullptr))
-            {
-                LOG_DEBUG_F("ExposureToContagion: [Antigen:%d] Route:%d, Group:%d, exposure qty = %f\n", iAntigen, routeIndex, groupIndex, forceOfInfection );
-                SubstrainPopulationImpl contagionPopulation(iAntigen, forceOfInfection, substrainDistributions);
-                candidate->Expose((IContagionPopulation*)&contagionPopulation, deltaTee, Kernel::TransmissionRoute::TRANSMISSIONROUTE_ALL);
+                if ((forceOfInfection > 0) && (candidate != nullptr))
+                {
+                    LOG_DEBUG_F("ExposureToContagion: [Antigen:%d] Route:%d, Group:%d, exposure qty = %f\n", iAntigen, routeIndex, groupIndex, forceOfInfection );
+                    SubstrainPopulationImpl contagionPopulation(iAntigen, forceOfInfection, substrainDistributions);
+                    // need a map from route index to enum
+                    auto txroute = routeIndex2EnumMap.at( routeIndex );
+                    candidate->Expose((IContagionPopulation*)&contagionPopulation, deltaTee, txroute );
+                }
+                substrainDistributions.clear();
             }
         }
     }
@@ -164,37 +184,34 @@ namespace Kernel
 
     void StrainAwareTransmissionGroups::CorrectInfectivityByGroup(float infectivityCorrection, const TransmissionGroupMembership_t* transmissionGroupMembership)
     {
-        if (infectivityCorrection != 1.0f)
+        //by antigen total
+        for (int iAntigen = 0; iAntigen < antigenCount; iAntigen++)
         {
-            //by antigen total
-            for (int iAntigen = 0; iAntigen < antigenCount; iAntigen++)
+            for (const auto& entry : (*transmissionGroupMembership))
             {
-                for (const auto& entry : (*transmissionGroupMembership))
-                {
-                    int routeIndex = entry.first;
-                    int groupIndex = entry.second;
-                    LOG_DEBUG_F("CorrectInfectivityByGroup: [Antigen:%d] Route:%d, Group:%d, ContagionBefore = %f, infectivityCorrection = %f\n", iAntigen, routeIndex, groupIndex, newInfectivityByAntigenRouteGroup[iAntigen][routeIndex][groupIndex], infectivityCorrection);
-                    newInfectivityByAntigenRouteGroup[iAntigen][routeIndex][groupIndex] *= infectivityCorrection;
-                    LOG_DEBUG_F("CorrectInfectivityByGroup: [Antigen:%d] Route:%d, Group:%d, ContagionAfter = %f\n", iAntigen, routeIndex, groupIndex, newInfectivityByAntigenRouteGroup[iAntigen][routeIndex][groupIndex]);
-                }
+                int routeIndex = entry.first;
+                int groupIndex = entry.second;
+                LOG_DEBUG_F("CorrectInfectivityByGroup: [Antigen:%d] Route:%d, Group:%d, ContagionBefore = %f, infectivityCorrection = %f\n", iAntigen, routeIndex, groupIndex, newInfectivityByAntigenRouteGroup[iAntigen][routeIndex][groupIndex], infectivityCorrection);
+                newInfectivityByAntigenRouteGroup[iAntigen][routeIndex][groupIndex] *= infectivityCorrection;
+                LOG_DEBUG_F("CorrectInfectivityByGroup: [Antigen:%d] Route:%d, Group:%d, ContagionAfter = %f\n", iAntigen, routeIndex, groupIndex, newInfectivityByAntigenRouteGroup[iAntigen][routeIndex][groupIndex]);
             }
+        }
 
-            //by substrain
-            for (int iAntigen = 0; iAntigen < antigenCount; iAntigen++)
+        //by substrain
+        for (int iAntigen = 0; iAntigen < antigenCount; iAntigen++)
+        {
+            RouteGroupSubstrainMap_t& shedAntigen = newInfectivityByAntigenRouteGroupSubstrain[iAntigen];
+            for (const auto& membership : *transmissionGroupMembership)
             {
-                RouteGroupSubstrainMap_t& shedAntigen = newInfectivityByAntigenRouteGroupSubstrain[iAntigen];
-                for (const auto& membership : *transmissionGroupMembership)
-                {
-                    int routeIndex = membership.first;
-                    int groupIndex = membership.second;
+                int routeIndex = membership.first;
+                int groupIndex = membership.second;
 
-                    for (auto& entry : shedAntigen[routeIndex][groupIndex])
-                    {
-                        unsigned int iSubstrain = entry.first;
-                        LOG_DEBUG_F("CorrectInfectivityByGroup: [Antigen:%d][Route:%d][Group:%d][Substrain:%d], ContagionBefore = %f, infectivityCorrection = %f\n", iAntigen, routeIndex, groupIndex, iSubstrain, shedAntigen[routeIndex][groupIndex][iSubstrain], infectivityCorrection);
-                        entry.second *= infectivityCorrection;
-                        LOG_DEBUG_F("CorrectInfectivityByGroup: [Antigen:%d][Route:%d][Group:%d][Substrain:%d], ContagionAfter  = %f\n", iAntigen, routeIndex, groupIndex, iSubstrain, shedAntigen[routeIndex][groupIndex][iSubstrain]);
-                    }
+                for (auto& entry : shedAntigen[routeIndex][groupIndex])
+                {
+                    unsigned int iSubstrain = entry.first;
+                    LOG_DEBUG_F("CorrectInfectivityByGroup: [Antigen:%d][Route:%d][Group:%d][Substrain:%d], ContagionBefore = %f, infectivityCorrection = %f\n", iAntigen, routeIndex, groupIndex, iSubstrain, shedAntigen[routeIndex][groupIndex][iSubstrain], infectivityCorrection);
+                    entry.second *= infectivityCorrection;
+                    LOG_DEBUG_F("CorrectInfectivityByGroup: [Antigen:%d][Route:%d][Group:%d][Substrain:%d], ContagionAfter  = %f\n", iAntigen, routeIndex, groupIndex, iSubstrain, shedAntigen[routeIndex][groupIndex][iSubstrain]);
                 }
             }
         }
@@ -244,6 +261,11 @@ namespace Kernel
                 {
                     memset(forceOfInfectionForAntigenAndRoute.data(), 0, groupCount * sizeof(float));
                 }
+
+                for( auto element : forceOfInfectionForAntigenAndRoute )
+                {
+                    LOG_VALID_F( "foi for route %d (antigen=%d)= %f\n", iRoute, iAntigen, element );
+                }
             }
         }
 
@@ -283,38 +305,38 @@ namespace Kernel
                 auto& substrainShedding = substrainWasShed[iAntigen];
                 for(auto iSubstrain : substrainShedding)
                 {
-                        ContagionAccumulator_t newInfectivityForSubstrainByGroup;
+                    ContagionAccumulator_t newInfectivityForSubstrainByGroup;
 
-                        for (int iRoute = 0; iRoute < routeCount; iRoute++)
+                    for (int iRoute = 0; iRoute < routeCount; iRoute++)
+                    {
+                        vector<SubstrainMap_t>& newInfectivityByGroupSubstrain = newInfectivityByRouteGroupSubstrain[iRoute];
+                        int groupCount = getGroupCountForRoute(iRoute);
+                        newInfectivityForSubstrainByGroup.resize(groupCount);
+                        for (int iGroup = 0; iGroup < groupCount; iGroup++)
                         {
-                            vector<SubstrainMap_t>& newInfectivityByGroupSubstrain = newInfectivityByRouteGroupSubstrain[iRoute];
-                            int groupCount = getGroupCountForRoute(iRoute);
-                            newInfectivityForSubstrainByGroup.resize(groupCount);
-                            for (int iGroup = 0; iGroup < groupCount; iGroup++)
+                            SubstrainMap_t::iterator it = newInfectivityByGroupSubstrain[iGroup].find(iSubstrain);
+                            if(it != newInfectivityByGroupSubstrain[iGroup].end())
                             {
-                                SubstrainMap_t::iterator it = newInfectivityByGroupSubstrain[iGroup].find(iSubstrain);
-                                if(it != newInfectivityByGroupSubstrain[iGroup].end())
-                                {
-                                    newInfectivityForSubstrainByGroup[iGroup] = newInfectivityByGroupSubstrain[iGroup][iSubstrain];
-                                    newInfectivityByGroupSubstrain[iGroup].erase(it);
-                                }
-                            }
-
-                            vector<SubstrainMap_t>& sumSubstrainInfectivity = sumInfectivity[iRoute];
-
-                            const ScalingMatrix_t& scalingMatrix = scalingMatrices[iRoute];
-                            for (int iSink = 0; iSink < groupCount; iSink++)
-                            {
-                                const MatrixRow_t& contactScaling = scalingMatrix[iSink];
-                                float deposit = VectorDotProduct(newInfectivityForSubstrainByGroup, contactScaling);
-                                deposit *= infectivityCorrection;
-                                if (deposit > 0.0f)
-                                {
-                                    sumSubstrainInfectivity[iSink][iSubstrain] += deposit;
-                                    LOG_DEBUG_F( "exposureBySubstrain for substrain %d now = %f\n", iSubstrain, sumInfectivityByAntigenRouteGroupSubstrain[iAntigen][iRoute][iSink][iSubstrain] );
-                                }
+                                newInfectivityForSubstrainByGroup[iGroup] = newInfectivityByGroupSubstrain[iGroup][iSubstrain];
+                                newInfectivityByGroupSubstrain[iGroup].erase(it);
                             }
                         }
+
+                        vector<SubstrainMap_t>& sumSubstrainInfectivity = sumInfectivity[iRoute];
+
+                        const ScalingMatrix_t& scalingMatrix = scalingMatrices[iRoute];
+                        for (int iSink = 0; iSink < groupCount; iSink++)
+                        {
+                            const MatrixRow_t& contactScaling = scalingMatrix[iSink];
+                            float deposit = VectorDotProduct(newInfectivityForSubstrainByGroup, contactScaling);
+                            deposit *= infectivityCorrection;
+                            if (deposit > 0.0f)
+                            {
+                                sumSubstrainInfectivity[iSink][iSubstrain] += deposit;
+                                LOG_DEBUG_F( "exposureBySubstrain for substrain %d now = %f\n", iSubstrain, sumInfectivityByAntigenRouteGroupSubstrain[iAntigen][iRoute][iSink][iSubstrain] );
+                            }
+                        }
+                    }
                 }
 
                 // Reset for next cycle.
@@ -322,14 +344,40 @@ namespace Kernel
                 antigenWasShed[iAntigen] = false;
             }
         }
+        for (int iAntigen = 0; iAntigen < antigenCount; iAntigen++)
+        {
+            for (int iRoute = 0; iRoute < routeCount; iRoute++)
+            {
+                vector<float>& forceOfInfectionForAntigenAndRoute = forceOfInfectionByAntigenRouteGroup[iAntigen][iRoute];
+                for( auto element : forceOfInfectionForAntigenAndRoute )
+                {
+                    LOG_VALID_F( "foi for route %d (antigen=%d)= %f\n", iRoute, iAntigen, element );
+                }
+            }
+        }
     }
 
     BEGIN_QUERY_INTERFACE_BODY(StrainAwareTransmissionGroups::SubstrainPopulationImpl)
     END_QUERY_INTERFACE_BODY(StrainAwareTransmissionGroups::SubstrainPopulationImpl)
 
-    AntigenId StrainAwareTransmissionGroups::SubstrainPopulationImpl::GetAntigenId( void ) const
+    StrainAwareTransmissionGroups::SubstrainPopulationImpl::SubstrainPopulationImpl(int _antigenId, float _quantity, const vector<const SubstrainMap_t*>& _substrainDistributions)
+    : antigenId(_antigenId)
+    , contagionQuantity(_quantity)
+    , substrainDistributions(_substrainDistributions)
     {
-        return AntigenId(antigenId);
+        //release_assert( antigenId );
+    }
+
+    AntigenId StrainAwareTransmissionGroups::SubstrainPopulationImpl::GetAntigenID( void ) const
+    {
+        return (AntigenId)antigenId;
+    }
+
+    // This function is stupid because only needed so I can make IStrainIdentity a base class of IContagionPopulation
+    AntigenId StrainAwareTransmissionGroups::SubstrainPopulationImpl::GetGeneticID( void ) const
+    {
+        // Never valid code path, have to implement this method due to interface.
+        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__ );
     }
 
     float StrainAwareTransmissionGroups::SubstrainPopulationImpl::GetTotalContagion( void ) const
@@ -337,8 +385,9 @@ namespace Kernel
         return contagionQuantity;
     }
 
-    void StrainAwareTransmissionGroups::SubstrainPopulationImpl::ResolveInfectingStrain( StrainIdentity* strainId ) const
+    void StrainAwareTransmissionGroups::SubstrainPopulationImpl::ResolveInfectingStrain( IStrainIdentity* strainId ) const
     {
+        LOG_VALID_F( "%s\n", __FUNCTION__ );
         float totalRawContagion = 0.0f;
         int routeCount = substrainDistributions.size();
         for (int iRoute = 0; iRoute < routeCount; iRoute++)
@@ -359,6 +408,8 @@ namespace Kernel
         float contagionSeen = 0.0f;
         int substrainId = 0;
 
+        strainId->SetAntigenID(antigenId);
+
         for (int iRoute = 0; iRoute < routeCount; iRoute++)
         {
             const SubstrainMap_t& distribution = *(substrainDistributions[iRoute]);
@@ -372,7 +423,7 @@ namespace Kernel
                     if (contagionSeen >= target)
                     {
                         LOG_DEBUG_F( "Selected strain id %d\n", substrainId );
-                        strainId->SetGeneticID(substrainId);
+                        strainId->SetGeneticID(substrainId); // ????
                         return;
                     }
                 }

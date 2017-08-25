@@ -32,8 +32,8 @@
         }, 
         "____________SIMULATION___________": {
             "Simulation_Timestep": 30, 
-            "Valid_Cascade_States": [
-                "", 
+            "Valid_Intervention_States": [
+                "None", 
                 "ARTStaging", 
                 "ARTStagingDiagnosticTest", 
                 "LinkingToART", 

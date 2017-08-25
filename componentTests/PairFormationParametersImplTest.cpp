@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -252,7 +252,7 @@ SUITE(PairFormationParametersImplTest)
     TEST(TestBadMaleBinCount)
     {
         TestHelper_Exception( __LINE__, "testdata/PairFormationParametersTest/TestBadMaleBinCount.json",
-            "Configuration variable Number_Age_Bins_Male with value 0 out of range: less than or equal to 1.\nWas reading values for TRANSITORY." ) ;
+            "Configuration variable Number_Age_Bins_Male with value 0 out of range: less than 1.\nWas reading values for TRANSITORY." ) ;
     }
 
     TEST(TestBadFemaleBinCount)
@@ -264,13 +264,13 @@ SUITE(PairFormationParametersImplTest)
     TEST(TestMissingFemaleBinCount)
     {
         TestHelper_Exception( __LINE__, "testdata/PairFormationParametersTest/TestMissingFemaleBinCount.json",
-            "Parameter 'Number_Age_Bins_Female' not found in input file 'N/A'.\n\nWas reading values for TRANSITORY." ) ;
+            "Parameter 'Number_Age_Bins_Female of PairFormationParametersImpl' not found in input file 'testdata/PairFormationParametersTest/TestMissingFemaleBinCount.json'.\n\nWas reading values for TRANSITORY." ) ;
     }
 
     TEST(TestBadMarginalProbabilityValue)
     {
         TestHelper_Exception( __LINE__, "testdata/PairFormationParametersTest/TestBadMarginalProbabilityValue.json",
-            "Configuration variable Joint_Probabilities with value -99.0078 out of range: less than or equal to 0.\nWas reading values for TRANSITORY." ) ;
+            "Configuration variable Joint_Probabilities with value -99.0078 out of range: less than 0.\nWas reading values for TRANSITORY." ) ;
     }
 
     TEST(TestMissingMarginalProbabilityValuesInThirdRow)

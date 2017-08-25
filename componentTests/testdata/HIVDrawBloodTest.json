@@ -7,8 +7,8 @@
     "Treatment_Fraction"       : 1.00,
     "Cost_To_Consumer"         : 0,
     "Days_To_Diagnosis"        : 0,
-    "Abort_States"             : [ "abort_state_1","abort_state_2","abort_state_3" ],
-    "Cascade_State"            : "non_abort_state",
+    "Invalid_Intervention_States"             : [ "abort_state_1","abort_state_2","abort_state_3" ],
+    "Intervention_State"            : "non_abort_state",
     "Retest_Until_Positive"    : 0,
     "Absolute_Duration"        : 5,
     "Negative_Diagnosis_Event" : "NoTrigger"

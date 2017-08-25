@@ -13,88 +13,40 @@
 #pragma once
 
 #include <stdint.h>
+#include <vector>
+#ifndef WIN32
+#include<emmintrin.h> // for __m128i
+#endif
 
 #include "IdmApi.h"
-#include "BoostLibWrapper.h"
 
-// helper macros for verifying 
-
-#define RNG_VALIDATE(call) RNG_VALIDATE_BLOCK(#call, call)
-
-#define RNG_VALIDATE_BLOCK(name, block)\
-    VALIDATE(boost::format(">%1%: %2%") % name % randgen->LastUL());\
-    block;\
-    VALIDATE(boost::format("<%1%: %2%") % name % randgen->LastUL());\
-
-#define RNG_CHECK(call) RNG_CHECK_BLOCK(#call, call)
-
-#define RNG_CHECK_BLOCK(name,block) block;
-    //LOG_INFO_F("RNG_CHECK: %d Before     %s\n", randgen->ul(), name);\
-    //block;\
-    //LOG_INFO_F("RNG_CHECK: %d After      %s\n", randgen->ul(), name);
-
-#define XRNG_CHECK_BLOCK(name, block) block;
-#define XRNG_CHECK(block) block;
-
-#define __ULONG     uint32_t
-#define __UINT      uint32_t
-#define __BOOL      bool
-#define __USHORT    uint16_t
-#define __ULONGLONG uint64_t
+#define PRNG_COUNT  (1<<20) // Let's start with ~1 million
 
 class IDMAPI RANDOMBASE
 {
 public:
 
-    RANDOMBASE(__ULONG iSequence) :
-        iSeq(iSequence),
-        bSeq(true),
-        last_ul(0),
-        bWrite(false),
-        bGauss(false)
-    {
-    }
-
-    RANDOMBASE();
+    RANDOMBASE(uint32_t iSequence = 0, size_t nCache = PRNG_COUNT);
     virtual ~RANDOMBASE();
 
-    __ULONG iSequence() { return iSeq; }
-
-    virtual __ULONG ul() = 0;   // Returns a random 32 bit number.
-    __ULONG LastUL()   { return last_ul; }
+    uint32_t ul();  // Returns a random 32 bit number.
+    float e();      // Returns a randmon float between 0 and 1.
 
     // i(N) - Returns a random USHORT less than N.
-    __USHORT i(__USHORT N)
+    uint16_t i(uint16_t N)
     {
-        __ULONG ulA = ul();
-        __ULONG ll = (ulA & 0xFFFFL) * N;
+        uint32_t ulA = ul();
+        uint32_t ll = (ulA & 0xFFFFL) * N;
         ll >>= 16;
         ll += (ulA >> 16) * N;
-        return (__USHORT) (ll >> 16);
+        return (uint16_t) (ll >> 16);
     }
 
     // Finds an uniformally distributed number between 0 and N
-    __ULONG uniformZeroToN( __ULONG N );
-
+    uint32_t uniformZeroToN(uint32_t N );
 
 #define FLOAT_EXP   8
 #define DOUBLE_EXP 11
-
-//#define CHECK_RNG_SEQUENCE // debug option to make it easy to visualize the random number sequence
-
-    // e() - Returns a random float between 0 and 1.
-    float e()
-    {
-        union {float e; __ULONG ul;} e_ul;
-        
-        e_ul.e = 1.0f;
-        e_ul.ul += (ul() >> (FLOAT_EXP+1)) | 1;
-        float _e =  e_ul.e - 1.0f;
-#ifdef CHECK_RNG_SEQUENCE
-        LOG_INFO_F("e() = %f\n", _e);
-#endif
-        return _e;
-    }
 
     double ee();
     
@@ -104,8 +56,8 @@ public:
     // Or equivalently, takes in rate*time and returns number of events in that time
     // Poisson uses a Gaussian approximation for large lambda, while Poisson_true is the fully accurate Poisson
     // expdist takes in a rate and returns the sample from an exponential distribution
-    unsigned long long int Poisson(double=1.0);
-    unsigned long int Poisson_true(double=1.0);
+    uint64_t Poisson(double=1.0);
+    uint32_t Poisson_true(double=1.0);
     double expdist(double=1.0);
     double Weibull(double lambda=1.0, double kappa=1.0);
     double Weibull2(float lambda=1.0, float inv_kappa=1.0);
@@ -125,19 +77,24 @@ public:
     double get_cdf_random_num_precision();
 
     /* Unused
-    void  vShuffleFloats(float *pe,__USHORT N); // Shuffles a list of N floats.
+    void  vShuffleFloats(float *pe,uint16_t N); // Shuffles a list of N floats.
     */
 
 protected:
-    __ULONG iSeq;
-    __BOOL  bSeq;
-    __ULONG last_ul;
+
+    virtual void fill_bits();
+    void bits_to_float();
+
+    uint32_t iSeq;
+
+    uint32_t* random_bits;
+    float*    random_floats;
+    size_t    index;
+    size_t    cache_count;
 
 private:
-    __BOOL  bWrite;
-    __BOOL  bGauss;
-    double  eGauss_;
-    static int cReg;
+    bool   bGauss;
+    double eGauss_;
 
     // precision of gamma-distributed random number
     static double cdf_random_num_precision;
@@ -151,7 +108,6 @@ void serialize(Archive & ar, RANDOMBASE &rng, const unsigned int /* file_version
 {
     ar & rng.iSeq;
     ar & rng.bSeq;
-    ar & rng.bWrite;
     ar & rng.bGauss;
     ar & rng.eGauss_;
 }
@@ -160,11 +116,13 @@ void serialize(Archive & ar, RANDOMBASE &rng, const unsigned int /* file_version
 class IDMAPI RANDOM : public RANDOMBASE
 {
 public:
-    RANDOM(__ULONG iSequence) : RANDOMBASE(iSequence) {}
+    RANDOM(uint32_t iSequence, size_t nCache = PRNG_COUNT) : RANDOMBASE(iSequence, nCache), bSeq(true) {
+// clorton        assert(false); // LCG not supported yet
+    }
         
-    RANDOM() : RANDOMBASE()
+    RANDOM() : RANDOMBASE(), bSeq(false)
     {
-        assert(false); // LCG not supported yet
+// clorton        assert(false); // LCG not supported yet
         if (!bSeq)
         {
             iSeq = 0x31415926;
@@ -173,39 +131,29 @@ public:
     }
 
    ~RANDOM() {}
-    
-    __ULONG ul();
+
+protected:
+
+    virtual void fill_bits() override;
+
+    bool     bSeq;
 };
 
 // Numerical Recipes in C, 2nd ed. Press, William H. et. al, 1992.
 class IDMAPI PSEUDO_DES : public RANDOMBASE
 {
-    __ULONG   iNum;
-
 public:
-    PSEUDO_DES(__ULONG iSequence) : RANDOMBASE(iSequence)
+    PSEUDO_DES(uint32_t iSequence = 0, size_t nCache = PRNG_COUNT) : RANDOMBASE(iSequence, nCache), iNum(0)
     {
-        iNum = 0;
-    }
-        
-    PSEUDO_DES() : RANDOMBASE()
-    {
-        if (!bSeq)
-        {
-            iSeq = 0;
-            bSeq = true;
-        }
-        iNum = 0;
     }
 
-    __ULONG get_iNum() { return iNum; }
+    ~PSEUDO_DES() { }
 
-   ~PSEUDO_DES()
-    {
-        iSeq++;
-    }
-    
-    __ULONG ul();
+protected:
+
+    virtual void fill_bits() override;
+
+    uint32_t iNum;
 };
 
 #if 0
@@ -217,14 +165,28 @@ void serialize(Archive & ar, PSEUDO_DES& rng, const unsigned int /* file_version
 }
 #endif
 
-union __ULONGLONG_
-{
-    struct 
-    {
-        __ULONG Low;
-        __ULONG High;
-    };
-    __ULONGLONG Quad;
-};
+#ifdef WIN32
+#define ALIGN16  __declspec (align(16))
+#else
+#define ALIGN16  __attribute__ ((aligned(16)))
+#endif
 
-void IntializeRNG( int RANDOM_TYPE, int Run_Number, int rank );
+typedef struct KEY_SCHEDULE {
+    ALIGN16 __m128i KEY[15];
+    unsigned int nr;
+} AES_KEY;
+
+class IDMAPI AES_COUNTER : public RANDOMBASE
+{
+public:
+    AES_COUNTER(uint32_t iSequence, uint32_t rank, size_t nCache = PRNG_COUNT);
+    ~AES_COUNTER();
+
+protected:
+    virtual void fill_bits() override;
+
+private:
+    AES_KEY     m_keySchedule;
+    uint64_t    m_nonce;
+    uint32_t    m_iteration;
+};

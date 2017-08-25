@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -48,6 +48,8 @@ public:
     void* SimConfig;
     void* pPythonSupport;
     void* pIPFactory;
+    void* pNPFactory;
+    void* pEventTriggerFactory;
     StatusReporter * Status_Reporter;
     
 #pragma warning( push )
@@ -80,7 +82,7 @@ public:
     static void Finalize();
 
     static const Configuration* getConfiguration();
-    static Configuration* CopyFromElement( const json::Element& rElement );
+    static Configuration* CopyFromElement( const json::Element& rElement, const std::string& rDataLocation = "Unknown" );
     static Configuration* LoadConfigurationFile( const std::string& rFileName );
 
     static Environment* getInstance();
@@ -91,6 +93,11 @@ public:
     static StatusReporter * getStatusReporter();
     static void setIPFactory( void* pipf );
     static void* getIPFactory();
+    static void setNPFactory( void* pnpf );
+    static void* getNPFactory();
+
+    static const void* getEventTriggerFactory();
+    static void setEventTriggerFactory( void* pFactory );
 
     // Return path to specified file according to the following order of preference:
     // (1) in current working directory, (2) in specified InputPath

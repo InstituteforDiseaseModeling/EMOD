@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -30,6 +30,7 @@ namespace Kernel
     struct NodeDemographics;
     struct NodeDemographicsDistribution;
     struct INodeQualifier;
+    class EventTrigger;
 
     ////////////////////////////////////////////////////////////////////////
     /* Design pattern for allowing access of child objects to methods of Simulation
@@ -75,7 +76,7 @@ namespace Kernel
         virtual bool CanSupportFamilyTrips() const = 0;
 
         // events
-        virtual void DistributeEventToOtherNodes( const std::string& rEventName, INodeQualifier* pQualifier ) = 0;
+        virtual void DistributeEventToOtherNodes( const EventTrigger& rEventTrigger, INodeQualifier* pQualifier ) = 0;
         virtual void UpdateNodeEvents() = 0;
 
         // reporting
@@ -104,8 +105,7 @@ namespace Kernel
         virtual ISusceptibilityContext *GetSusceptibilityContext() const = 0;              // access to immune attributes useful for infection, interventions, reporting, etc.
 
         virtual const NodeDemographics* GetDemographics() const = 0;
-        virtual const NodeDemographicsDistribution* GetDemographicsDistribution(std::string) const = 0;
-        
+
         virtual void UpdateGroupMembership() = 0;
         virtual void UpdateGroupPopulation(float size_changes) = 0;
 

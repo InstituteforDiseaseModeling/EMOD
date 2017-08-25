@@ -12,4 +12,3 @@ then
 fi
 $EMOD_ROOT/build/x64/Release/Eradication/Eradication -C config.json -O testing -I $EMOD_ROOT/InputData/$geog
 python $EMOD_ROOT/Regression/plotAllCharts.py output/InsetChart.json testing/InsetChart.json $config_name
-

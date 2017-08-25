@@ -15,10 +15,33 @@
             "logLevel_Simulation": "INFO",
             "logLevel_default": "WARNING",
 
-            "Valid_Cascade_States": [ "", "ARTStaging", "ARTStagingDiagnosticTest", "LinkingToART", "LinkingToPreART", "OnART", "OnPreART", "HCTTestingLoop", "HCTUptakeAtDebut", "HCTUptakePostDebut", "TestingOnANC", "TestingOnChild6w", "TestingOnSymptomatic", "LostForever" ],
-
-
-            "Listed_Events": [ "NoTrigger", "Births", "EveryUpdate", "EveryTimeStep", "NewInfectionEvent", "TBActivation", "NewClinicalCase", "NewSevereCase", "DiseaseDeaths", "NonDiseaseDeaths", "TBActivationSmearPos", "TBActivationSmearNeg", "TBActivationExtrapulm", "TBActivationPostRelapse", "TBPendingRelapse", "TBActivationPresymptomatic", "TestPositiveOnSmear", "ProviderOrdersTBTest", "TBTestPositive", "TBTestNegative", "TBTestDefault", "TBRestartHSB", "TBMDRTestPositive", "TBMDRTestNegative", "TBMDRTestDefault", "TBFailedDrugRegimen", "TBRelapseAfterDrugRegimen", "TBStartDrugRegimen", "TBStopDrugRegimen", "PropertyChange", "STIDebut", "StartedART", "StoppedART", "CascadeStateAborted", "HIVNewlyDiagnosed", "HIVNeedsHIVTest", "HIVPositiveHIVTest", "HIVNegativeHIVTest", "HIVDiagnosedEligibleForART", "HIVSymptomatic", "HIVLinkToPreART", "HIVPreARTToART", "HIVNonPreARTToART", "TwelveWeeksPregnant", "FourteenWeeksPregnant", "SixWeeksOld", "EighteenMonthsOld", "HIVNeedsMaleCircumcision", "HCTUptakeAtDebut0", "HCTUptakeAtDebut1", "HCTUptakeAtDebut2", "HCTUptakeAtDebut3", "HCTUptakeAtDebut4", "HCTUptakeAtDebut5", "HCTUptakeAtDebut6", "HCTUptakeAtDebut7", "HCTUptakeAtDebut8", "HCTUptakeAtDebut9", "HCTUptakePostDebut0", "HCTUptakePostDebut1", "HCTUptakePostDebut2", "HCTUptakePostDebut3", "HCTUptakePostDebut4", "HCTUptakePostDebut5", "HCTUptakePostDebut6", "HCTUptakePostDebut7", "HCTUptakePostDebut8", "HCTUptakePostDebut9", "HCTTestingLoop0", "HCTTestingLoop1", "HCTTestingLoop2", "HCTTestingLoop3", "HCTTestingLoop4", "HCTTestingLoop5", "HCTTestingLoop6", "HCTTestingLoop7", "HCTTestingLoop8", "HCTTestingLoop9", "TestingOnSymptomatic0", "TestingOnSymptomatic1", "TestingOnSymptomatic2", "TestingOnSymptomatic3", "TestingOnSymptomatic4", "TestingOnSymptomatic5", "TestingOnSymptomatic6", "TestingOnSymptomatic7", "TestingOnSymptomatic8", "TestingOnSymptomatic9", "TestingOnANC0", "TestingOnANC1", "TestingOnANC2", "TestingOnANC3", "TestingOnANC4", "TestingOnANC5", "TestingOnANC6", "TestingOnANC7", "TestingOnANC8", "TestingOnANC9", "TestingOnChild6w0", "TestingOnChild6w1", "TestingOnChild6w2", "TestingOnChild6w3", "TestingOnChild6w4", "TestingOnChild6w5", "TestingOnChild6w6", "TestingOnChild6w7", "TestingOnChild6w8", "TestingOnChild6w9", "ARTStaging0", "ARTStaging1", "ARTStaging2", "ARTStaging3", "ARTStaging4", "ARTStaging5", "ARTStaging6", "ARTStaging7", "ARTStaging8", "ARTStaging9", "ARTStaging10", "ARTStaging11", "ARTStaging12", "ARTStaging13", "ARTStaging14", "ARTStaging15", "ARTStaging16", "ARTStaging17", "ARTStaging18", "ARTStaging19", "LinkingToPreART0", "LinkingToPreART1", "LinkingToPreART2", "LinkingToPreART3", "LinkingToPreART4", "LinkingToPreART5", "LinkingToPreART6", "LinkingToPreART7", "LinkingToPreART8", "LinkingToPreART9", "OnPreART0", "OnPreART1", "OnPreART2", "OnPreART3", "OnPreART4", "OnPreART5", "OnPreART6", "OnPreART7", "OnPreART8", "OnPreART9", "OnPreART10", "OnPreART11", "OnPreART12", "OnPreART13", "OnPreART14", "OnPreART15", "OnPreART16", "OnPreART17", "OnPreART18", "OnPreART19", "LinkingToART0", "LinkingToART1", "LinkingToART2", "LinkingToART3", "LinkingToART4", "LinkingToART5", "LinkingToART6", "LinkingToART7", "LinkingToART8", "LinkingToART9", "OnART0", "OnART1", "OnART2", "OnART3", "OnART4", "OnART5", "OnART6", "OnART7", "OnART8", "OnART9", "LTFU0", "LTFU1", "LTFU2", "LTFU3", "LTFU4", "LTFU5", "LTFU6", "LTFU7", "LTFU8", "LTFU9", "LTFU10", "LTFU11", "LTFU12", "LTFU13", "LTFU14", "LTFU15", "LTFU16", "LTFU17", "LTFU18", "LTFU19", "LostForever0", "LostForever1", "LostForever2", "LostForever3", "LostForever4", "LostForever5", "LostForever6", "LostForever7", "LostForever8", "LostForever9", "CD4Measured0", "CD4Measured1", "CD4Measured2", "CD4Measured3", "CD4Measured4", "CD4Measured5", "CD4Measured6", "CD4Measured7", "CD4Measured8", "CD4Measured9", "AgeMeasured0", "AgeMeasured1", "AgeMeasured2", "AgeMeasured3", "AgeMeasured4", "AgeMeasured5", "AgeMeasured6", "AgeMeasured7", "AgeMeasured8", "AgeMeasured9", "Needs_PMTCT_Diagnostic_Test", "HIV_Positive_at_ANC", "Needs_sdNVP_PMTCT", "Needs_Combination_PMTCT", "Needs_Option_A", "Needs_Option_B"]
+            "Listed_Events": [ 
+                "HIVNeedsMaleCircumcision", 
+                "HCTUptakeAtDebut0", "HCTUptakeAtDebut1", "HCTUptakeAtDebut2", "HCTUptakeAtDebut3", "HCTUptakeAtDebut4", "HCTUptakeAtDebut5", "HCTUptakeAtDebut6", "HCTUptakeAtDebut7", "HCTUptakeAtDebut8", "HCTUptakeAtDebut9",
+                "HCTUptakePostDebut0", "HCTUptakePostDebut1", "HCTUptakePostDebut2", "HCTUptakePostDebut3", "HCTUptakePostDebut4", "HCTUptakePostDebut5", "HCTUptakePostDebut6", "HCTUptakePostDebut7", "HCTUptakePostDebut8", "HCTUptakePostDebut9", 
+                "HCTTestingLoop0", "HCTTestingLoop1", "HCTTestingLoop2", "HCTTestingLoop3", "HCTTestingLoop4", "HCTTestingLoop5", "HCTTestingLoop6", "HCTTestingLoop7", "HCTTestingLoop8", "HCTTestingLoop9", 
+                "TestingOnSymptomatic0", "TestingOnSymptomatic1", "TestingOnSymptomatic2", "TestingOnSymptomatic3", "TestingOnSymptomatic4", "TestingOnSymptomatic5", "TestingOnSymptomatic6", "TestingOnSymptomatic7", "TestingOnSymptomatic8", "TestingOnSymptomatic9", 
+                "TestingOnANC0", "TestingOnANC1", "TestingOnANC2", "TestingOnANC3", "TestingOnANC4", "TestingOnANC5", "TestingOnANC6", "TestingOnANC7", "TestingOnANC8", "TestingOnANC9", 
+                "TestingOnChild6w0", "TestingOnChild6w1", "TestingOnChild6w2", "TestingOnChild6w3", "TestingOnChild6w4", "TestingOnChild6w5", "TestingOnChild6w6", "TestingOnChild6w7", "TestingOnChild6w8", "TestingOnChild6w9", 
+                "ARTStaging0", "ARTStaging1", "ARTStaging2", "ARTStaging3", "ARTStaging4", "ARTStaging5", "ARTStaging6", "ARTStaging7", "ARTStaging8", "ARTStaging9", 
+                "ARTStaging10", "ARTStaging11", "ARTStaging12", "ARTStaging13", "ARTStaging14", "ARTStaging15", "ARTStaging16", "ARTStaging17", "ARTStaging18", "ARTStaging19", 
+                "LinkingToPreART0", "LinkingToPreART1", "LinkingToPreART2", "LinkingToPreART3", "LinkingToPreART4", "LinkingToPreART5", "LinkingToPreART6", "LinkingToPreART7", "LinkingToPreART8", "LinkingToPreART9", 
+                "OnPreART0", "OnPreART1", "OnPreART2", "OnPreART3", "OnPreART4", "OnPreART5", "OnPreART6", "OnPreART7", "OnPreART8", "OnPreART9", 
+                "OnPreART10", "OnPreART11", "OnPreART12", "OnPreART13", "OnPreART14", "OnPreART15", "OnPreART16", "OnPreART17", "OnPreART18", "OnPreART19", 
+                "LinkingToART0", "LinkingToART1", "LinkingToART2", "LinkingToART3", "LinkingToART4", "LinkingToART5", "LinkingToART6", "LinkingToART7", "LinkingToART8", "LinkingToART9", 
+                "OnART0", "OnART1", "OnART2", "OnART3", "OnART4", "OnART5", "OnART6", "OnART7", "OnART8", "OnART9", 
+                "LTFU0", "LTFU1", "LTFU2", "LTFU3", "LTFU4", "LTFU5", "LTFU6", "LTFU7", "LTFU8", "LTFU9", 
+                "LTFU10", "LTFU11", "LTFU12", "LTFU13", "LTFU14", "LTFU15", "LTFU16", "LTFU17", "LTFU18", "LTFU19", 
+                "LostForever0", "LostForever1", "LostForever2", "LostForever3", "LostForever4", "LostForever5", "LostForever6", "LostForever7", "LostForever8", "LostForever9", 
+                "CD4Measured0", "CD4Measured1", "CD4Measured2", "CD4Measured3", "CD4Measured4", "CD4Measured5", "CD4Measured6", "CD4Measured7", "CD4Measured8", "CD4Measured9", 
+                "AgeMeasured0", "AgeMeasured1", "AgeMeasured2", "AgeMeasured3", "AgeMeasured4", "AgeMeasured5", "AgeMeasured6", "AgeMeasured7", "AgeMeasured8", "AgeMeasured9", 
+                "Needs_PMTCT_Diagnostic_Test", 
+                "HIV_Positive_at_ANC", 
+                "Needs_sdNVP_PMTCT", 
+                "Needs_Combination_PMTCT", 
+                "Needs_Option_A", 
+                "Needs_Option_B"
+            ]
         },
 
         "DEMOGRAPHICS": {
@@ -62,7 +85,8 @@
             "Male_To_Female_Relative_Infectivity_Ages": [ 0, 15, 25 ],
             "Male_To_Female_Relative_Infectivity_Multipliers": [ 4, 4, 1.5 ],
 
-            "STI_Coinfection_Multiplier": 10,
+            "STI_Coinfection_Acquisition_Multiplier": 10,
+            "STI_Coinfection_Transmission_Multiplier": 10,
 
             "Days_Between_Symptomatic_And_Death_Weibull_Heterogeneity": 0.5,
             "Days_Between_Symptomatic_And_Death_Weibull_Scale": 618.341625,
@@ -72,8 +96,7 @@
             "CD4_At_Death_LogLogistic_Heterogeneity": 0,
             "CD4_At_Death_LogLogistic_Scale": 31.63,
 
-            "Heterogeneous_Infectiousness_Weibull_Heterogeneity": 0,
-            "Heterogeneous_Infectiousness_Weibull_Scale": 1,
+            "Heterogeneous_Infectiousness_LogNormal_Scale": 0,
             "ART_CD4_at_Initiation_Saturating_Reduction_in_Mortality": 350,
 
             "HIV_Child_Survival_Rapid_Progressor_Fraction": 0.57,
@@ -114,7 +137,7 @@
         },
 
         "REPORTING": {
-            "Custom_Reports_Filename" : "NoCustomReports",
+            "Custom_Reports_Filename" : "",
             "Enable_Default_Reporting": 1,
 
             "Enable_Timestep_Channel_In_Report": 0,
@@ -131,12 +154,29 @@
             "Report_HIV_ByAgeAndGender": 1,
             "Report_HIV_ByAgeAndGender_Start_Year": 1980,
             "Report_HIV_ByAgeAndGender_Stop_Year": 2100,
-            "Report_HIV_ByAgeAndGender_Collect_Circumcision_Data" : 0,
-            "Report_HIV_ByAgeAndGender_Collect_IP_Data" : 0,
-            "Report_HIV_ByAgeAndGender_Collect_HIV_Data" : 0,
+            "Report_HIV_ByAgeAndGender_Collect_Gender_Data" : 1,
+            "Report_HIV_ByAgeAndGender_Collect_Age_Bins_Data" : [
+                 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
+                10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+                20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+                30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+                40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+                50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+                60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+                70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
+                80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+                90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+            ],
+            "Report_HIV_ByAgeAndGender_Collect_HIV_Data"           : 0,
+            "Report_HIV_ByAgeAndGender_Collect_On_Art_Data"        : 0,
+            "Report_HIV_ByAgeAndGender_Collect_Circumcision_Data"  : 0,
+            "Report_HIV_ByAgeAndGender_Collect_IP_Data"            : [],
+            "Report_HIV_ByAgeAndGender_Collect_Intervention_Data"  : [],
+            "Report_HIV_ByAgeAndGender_Add_Transmitters"           : 0,
+            "Report_HIV_ByAgeAndGender_Add_Relationships"          : 0,
+            "Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4"   : 0,
             "Report_HIV_ByAgeAndGender_Has_Intervention_With_Name" : "",
-            "Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4": 0,
-            "Report_HIV_ByAgeAndGender_Event_Counter_List" : [],
+            "Report_HIV_ByAgeAndGender_Event_Counter_List"         : [],
             "Report_HIV_Infection": 0,
             "Report_HIV_Mortality": 0,
             "Report_HIV_Period": 365,
@@ -146,6 +186,9 @@
         },
 
         "RARELY_CHANGED": {
+            "Memory_Usage_Warning_Threshold_Working_Set_MB" : 3500,
+            "Memory_Usage_Halting_Threshold_Working_Set_MB" : 4000,
+
             "Config_Name": "Baseline",
             "Scenario": "Baseline",
             "Geography": "SamplesInput",

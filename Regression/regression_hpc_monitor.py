@@ -12,13 +12,13 @@ import regression_utils as ru
 import regression_clg as clg
 
 class HpcMonitor(regression_local_monitor.Monitor):
-    def __init__(self, sim_id, config_id, report, params, suffix, config_json=None, compare_results_to_baseline=True):
-        #super(regression_local_monitor.Monitor,self).__init__( sim_id, config_id, report, params, config_json, compare_results_to_baseline )
-        regression_local_monitor.Monitor.__init__( self, sim_id, config_id, report, params, config_json, compare_results_to_baseline )
+    def __init__(self, sim_id, scenario_path, report, params, suffix, config_json=None, scenario_type='tests'):
+        #super(regression_local_monitor.Monitor,self).__init__( sim_id, scenario_path, report, params, config_json, scenario_type )
+        regression_local_monitor.Monitor.__init__( self, sim_id, scenario_path, report, params, config_json, scenario_type )
         #print "Running DTK execution and monitor thread for HPC commissioning."
         self.sim_root = self.params.sim_root # override base Monitor which uses local sim directory
         self.config_json = config_json
-        self.config_id = config_id
+        self.scenario_path = scenario_path
         self.suffix = suffix
 
     def run(self):
@@ -29,7 +29,7 @@ class HpcMonitor(regression_local_monitor.Monitor):
             if ('parameters' in some_json) and ('Num_Cores' in some_json['parameters']):
                 num_cores = some_json['parameters']['Num_Cores']
             else:
-               print( "Didn't find key 'parameters/Num_Cores' in '{0}'. Using 1.".format( self.config_id ) )
+               print( "Didn't find key 'parameters/Num_Cores' in '{0}'. Using 1.".format( self.scenario_path ) )
                
             return int(num_cores)
     
@@ -88,13 +88,17 @@ class HpcMonitor(regression_local_monitor.Monitor):
         jobsubmit_options['/scheduler:'] = self.params.hpc_head_node
         jobsubmit_options['/nodegroup:'] = self.params.hpc_node_group
         jobsubmit_options['/user:'] = self.params.hpc_user
-        if self.params.hpc_password != '':
-            jobsubmit_options['/password:'] = self.params.hpc_password
+        #if self.params.hpc_password != '':
+            #jobsubmit_options['/password:'] = self.params.hpc_password
         jobsubmit_options['/jobname:'] = job_name
         jobsubmit_options[hpc_resource_option] = hpc_resource_count
         if self.params.measure_perf:
             jobsubmit_options['/exclusive'] = ' '
-        jobsubmit_options['/stdout:'] = 'StdOut.txt'
+        if self.scenario_type == 'tests':
+            jobsubmit_options['/stdout:'] = 'StdOut.txt'
+        else:
+            print( "Going to redirect stdout, not using parameter." )
+            #jobsubmit_options['/stdout:'] = 'Test.txt'
         jobsubmit_options['/stderr:'] = 'StdErr.txt'
         jobsubmit_options['/priority:'] = 'Lowest'
         jobsubmit_params = [mpi_command.Commandline]
@@ -105,6 +109,8 @@ class HpcMonitor(regression_local_monitor.Monitor):
         #print 'job submit command line:', jobsubmit_command.Commandline
 
         hpc_command_line = jobsubmit_command.Commandline
+        if self.scenario_type != 'tests':
+            hpc_command_line = hpc_command_line  + " ^> Test.txt"
 
         job_id = -1
         num_retries = -1
@@ -113,7 +119,9 @@ class HpcMonitor(regression_local_monitor.Monitor):
             num_retries += 1
             #print "executing hpc_command_line: " + hpc_command_line + "\n"
 
-            p = subprocess.Popen( hpc_command_line.split(), shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
+            #p = subprocess.Popen( hpc_command_line.split(), shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
+            #p = subprocess.Popen( hpc_command_line.split(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
+            p = subprocess.Popen( hpc_command_line, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
             [hpc_pipe_stdout, hpc_pipe_stderr] = p.communicate()
             #print "Trying to read hpc response..."
             #print hpc_pipe_stdout
@@ -122,20 +130,20 @@ class HpcMonitor(regression_local_monitor.Monitor):
             if p.returncode == 0:
                 job_id = line.split( ' ' )[-1].strip().rstrip('.')
                 if str.isdigit(job_id) and job_id > 0:
-                    print( self.config_id + " submitted (as job_id " + str(job_id) + ")\n" )
+                    print( self.scenario_path + " submitted (as job_id " + str(job_id) + ")\n" )
                 else:
                     print( "ERROR: What happened here?  Please send this to Jeff:\n" )
                     print( hpc_pipe_stdout )
                     print( hpc_pipe_stderr )
                     job_id = -1
             else:
-                print( "ERROR: job submit of " + self.config_id + " failed!" )
+                print( "ERROR: job submit of " + self.scenario_path + " failed!" )
                 print( hpc_pipe_stdout )
                 print( hpc_pipe_stderr )
 
             if job_id == -1 and num_retries >= 5 and self.params.hide_graphs:
-                print( "Job submission failed multiple times for " + self.config_id + ".  Aborting this test and logging error." )
-                self.report.addErroringTest( self.config_id, "", sim_dir )
+                print( "Job submission failed multiple times for " + self.scenario_path + ".  Aborting this test and logging error." )
+                self.report.addErroringTest( self.scenario_path, "", sim_dir, self.scenario_type )
                 return
 
         monitor_cmd_line = "job view /scheduler:" + self.params.hpc_head_node + " " + str(job_id)
@@ -157,9 +165,9 @@ class HpcMonitor(regression_local_monitor.Monitor):
                     state = res[1].strip()
                     if state == "Failed":
                         self.__class__.completed = self.__class__.completed + 1
-                        print( self.config_id + " FAILED!" )
+                        print( self.scenario_path + " FAILED!" )
                         check_status = False
-                        self.report.addErroringTest( self.config_id, "", sim_dir )
+                        self.report.addErroringTest( self.scenario_path, "", sim_dir, self.scenario_type )
                         #self.finish(sim_dir, False)
                     if state == "Canceled":
                         self.__class__.completed = self.__class__.completed + 1
@@ -178,15 +186,18 @@ class HpcMonitor(regression_local_monitor.Monitor):
                                 self.duration = datetime.timedelta(hours=int(time_split[0]), minutes=int(time_split[1]), seconds=int(time_split[2]))
                                 break
 
-                        if self.compare_results_to_baseline:
+                        if self.scenario_type == 'tests':
                             if self.params.all_outputs == False:
                             # Following line is for InsetChart.json only
                                 self.verify(sim_dir)
                             else:
                                 # Every .json file in output (not hidden with . prefix) will be used for validation
-                                for file in os.listdir( os.path.join( self.config_id, "output" ) ):
-                                    if ( file.endswith( ".json" ) or file.endswith( ".csv" ) or file.endswith( ".kml" ) or file.endswith( ".bin" ) ) and file[0] != "." and file != "transitions.json" and "linux" not in file:
+                                for file in os.listdir( os.path.join( self.scenario_path, "output" ) ):
+                                    if ( file.endswith( ".json" ) or file.endswith( ".csv" ) or file.endswith( ".kml" ) or file.endswith( ".bin" ) or file.endswith( ".h5" ) or file.endswith( ".db" ) ) and file[0] != "." and file != "transitions.json" and "linux" not in file:
                                         self.verify( sim_dir, file, "Channels" )
+                        elif self.scenario_type == 'science':   # self.report <> None:
+                            self.science_verify( sim_dir )
+
                     break
             time.sleep(5)
         self.__class__.sems.release()

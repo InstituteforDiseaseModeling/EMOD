@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -47,8 +47,6 @@ namespace Kernel
             *value = GET_CONFIG_INTEGER(config, name);
         }
 
-        static void get_config_enum_value(const Configuration* config, std::string name, int *value, MetadataDescriptor::Enum &enum_md);
-
         static void get_config_value(const Configuration* config, std::string name, IConfigurable *value)
         {
             // TODO: error handling here?...could also pass back return codes
@@ -70,7 +68,7 @@ namespace Kernel
             // TODO: error handling here?...could also pass back return codes
             // need to catch json lookup exceptions here and report errors
 
-            *pp_cached_config = Configuration::CopyFromElement((*config)[name]);
+            *pp_cached_config = Configuration::CopyFromElement( (*config)[name], config->GetDataLocation() );
         }
 
         /*

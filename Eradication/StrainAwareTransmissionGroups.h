@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -43,17 +43,16 @@ namespace Kernel
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
         public:
-            SubstrainPopulationImpl(int _antigenId, float _quantity, const vector<const SubstrainMap_t*>& _substrainDistributions)
-                : antigenId(_antigenId)
-                , contagionQuantity(_quantity)
-                , substrainDistributions(_substrainDistributions)
-            {}
-
+            SubstrainPopulationImpl(int _antigenId, float _quantity, const vector<const SubstrainMap_t*>& _substrainDistributions);
+                
         private:
             // IContagionPopulation implementation
-            virtual AntigenId GetAntigenId( void ) const;
+            virtual AntigenId GetAntigenID( void ) const;
+            virtual AntigenId GetGeneticID( void ) const;
+            virtual void SetAntigenID(int in_antigenID) {}; // Hmm.... not sure about this
+            virtual void SetGeneticID(int in_geneticID) {}; // Hmm.... not sure about this
             virtual float GetTotalContagion( void ) const;
-            virtual void ResolveInfectingStrain( StrainIdentity* strainId ) const;
+            virtual void ResolveInfectingStrain( IStrainIdentity* strainId ) const;
 
             int antigenId;
             float contagionQuantity;
@@ -69,7 +68,7 @@ namespace Kernel
         // Same as MultiRouteTransmissionGroups
         // virtual const TransmissionGroupMembership_t* GetGroupMembershipForProperties(const tProperties* properties) const;
         // virtual void UpdatePopulationSize(const TransmissionGroupMembership_t* transmissionGroupMembership, float size_changes, float mc_weight);
-        virtual void DepositContagion(const StrainIdentity* strain, float amount, const TransmissionGroupMembership_t* transmissionGroupMembership);
+        virtual void DepositContagion(const IStrainIdentity& strain, float amount, const TransmissionGroupMembership_t* transmissionGroupMembership);
         virtual void ExposeToContagion(IInfectable* candidate, const TransmissionGroupMembership_t* transmissionGroupMembership, float deltaTee) const;
         virtual float GetTotalContagion(const TransmissionGroupMembership_t* transmissionGroupMembership);
         virtual void CorrectInfectivityByGroup(float infectivityCorrection, const TransmissionGroupMembership_t* transmissionGroupMembership);

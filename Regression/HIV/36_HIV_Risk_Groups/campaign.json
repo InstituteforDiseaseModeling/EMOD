@@ -20,8 +20,8 @@
                 { 
                     "class": "HIVDelayedIntervention",
                     "Muxer_Name": "HIVDelayedIntervention",
-                    "Abort_States": [ ],
-                    "Cascade_State": "",
+                    "Disqualifying_Properties": [ ],
+                    "New_Property_Value": "",
                     "Delay_Distribution": "FIXED_DURATION",
                     "Delay_Period": 8,
                     "Expiration_Period": 9,
@@ -45,8 +45,8 @@
                 { 
                     "class": "HIVDelayedIntervention",
                     "Muxer_Name": "HIVDelayedIntervention",
-                    "Abort_States": [ ],
-                    "Cascade_State": "",
+                    "Disqualifying_Properties": [ ],
+                    "New_Property_Value": "",
                     "Delay_Distribution": "FIXED_DURATION",
                     "Delay_Period": 8,
                     "Expiration_Period": 7,

@@ -27,18 +27,7 @@
                     "arabiensis",
                     "funestus",
                     "gambiae"
-                ],
-                "Vector_Species_Params": {
-                    "arabiensis": {
-                        "Immature_Duration": 2
-                    },
-                    "funestus": {
-                        "Immature_Duration": 2
-                    },
-                    "gambiae": {
-                        "Immature_Duration": 2
-                    }
-                }
+                ]
             },
             "Vector_Sampling_Type": "TRACK_ALL_VECTORS"
         }

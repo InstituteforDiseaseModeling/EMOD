@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -8,7 +8,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 ***************************************************************************************************/
 
 #pragma once
-#ifdef ENABLE_TB
+#if defined(ENABLE_TB) || defined(ENABLE_TBHIV)
 #include "InfectionAirborne.h"
 
 #include "TBInterventionsContainer.h"
@@ -21,7 +21,7 @@ namespace Kernel
     ENUM_DEFINE(TBInfectionDrugResistance,
         ENUM_VALUE_SPEC(DrugSensitive           , 0)
         ENUM_VALUE_SPEC(FirstLineResistant      , 1))
-    class IIndividualHumanCoinfection;
+    class IIndividualHumanCoInfection;
 
     class IInfectionTB : public ISupports
     {
@@ -35,6 +35,11 @@ namespace Kernel
         virtual bool IsSymptomatic() const = 0;
         virtual bool IsActive() const = 0;
         virtual bool IsExtrapulmonary() const = 0; 
+        virtual bool IsFastProgressor() const = 0;
+        virtual float GetDurationSinceInitialInfection() const = 0; 
+        virtual bool EvolvedResistance() const = 0;
+        virtual bool IsPendingRelapse() const = 0;
+        virtual void ExogenousLatentSlowToFast() = 0;
     };
 
     class InfectionTBConfig : public InfectionAirborneConfig
@@ -76,7 +81,6 @@ namespace Kernel
 
         static vector <float> TB_cd4_activation_vec;
         static vector <float> CD4_strata_act_vec;
-
     };
 
     //---------------------------- InfectionTB ----------------------------------------
@@ -89,7 +93,7 @@ namespace Kernel
         virtual ~InfectionTB(void);
         static InfectionTB *CreateInfection(IIndividualHumanContext *context, suids::suid _suid);
 
-        virtual void SetParameters(StrainIdentity* infstrain=nullptr, int incubation_period_override = -1) override;
+        virtual void SetParameters(IStrainIdentity* infstrain=nullptr, int incubation_period_override = -1) override;
         virtual void Update(float dt, ISusceptibilityContext* immunity = nullptr) override;
         virtual void InitInfectionImmunology(ISusceptibilityContext* _immunity) override;
 
@@ -99,23 +103,27 @@ namespace Kernel
         //TB-specific
         virtual bool IsSmearPositive() const override;
         virtual bool IsExtrapulmonary() const override;
-        bool IsFastProgressor() const;
+        virtual bool IsFastProgressor() const override;
         virtual bool IsMDR() const override;
-        bool EvolvedResistance() const;
-        bool IsPendingRelapse() const;
+        virtual bool EvolvedResistance() const override;
+        virtual bool IsPendingRelapse() const override;
         virtual bool IsSymptomatic() const override;
         virtual void SetIncubationTimer (float new_timer) override;
         virtual float GetLatentCureRate() const override;
         virtual void ResetRecoverFraction(float new_fraction) override;
         virtual void ResetDuration() override;
-        float GetDurationSinceInitialInfection() const; 
+        virtual float GetDurationSinceInitialInfection() const override; 
+
+        // Exogenous re-infection
+        virtual void ModifyInfectionStrain(IStrainIdentity * exog_strain_id); 
+        virtual void ExogenousLatentSlowToFast();
 
     protected:
         InfectionTB();
         InfectionTB(IIndividualHumanContext *context);
 
         // For disease progression and MDR evolution, virtual functions are inherited from base class Infection
-        /* clorton */ virtual void Initialize(suids::suid _suid);
+        virtual void Initialize(suids::suid _suid);
         void  InitializeLatentInfection(ISusceptibilityContext* immunity);
         void  InitializeActivePresymptomaticInfection(ISusceptibilityContext* immunity);
         void  InitializeActiveInfection(ISusceptibilityContext* immunity);
@@ -128,7 +136,8 @@ namespace Kernel
 
         // additional TB infection members
         // This chunk gets serialized.
-        IIndividualHumanCoinfection* human_coinf; //  = nullptr;
+
+        IIndividualHumanCoInfection* human_coinf;
         bool  m_is_active;
         float m_recover_fraction;
         float m_death_fraction;

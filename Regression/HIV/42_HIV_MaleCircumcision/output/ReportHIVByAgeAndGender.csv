@@ -1,4 +1,4 @@
-Year, NodeId, Gender, Age, Population, Infected, Newly Infected, On_ART, Died, Died_from_HIV, Tested Past Year or On_ART, Tested Ever HIVPos, Tested Ever HIVNeg, Tested Positive, Tested Negative,Reduced_Acquire_Lowest,Reduced_Acquire_Medium,Reduced_Acquire_Low,Reduced_Acquire_Highest_Not_Duplicated
+Year, NodeId, Gender, Age, Population, Infected, Newly Infected, On_ART, Died, Died_from_HIV, Tested Past Year or On_ART, Tested Ever, Diagnosed, Newly Tested Positive, Newly Tested Negative,Reduced_Acquire_Lowest,Reduced_Acquire_Medium,Reduced_Acquire_Low,Reduced_Acquire_Highest_Not_Duplicated
 1962.47,1,0,0,15,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 1962.47,1,0,1,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 1962.47,1,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

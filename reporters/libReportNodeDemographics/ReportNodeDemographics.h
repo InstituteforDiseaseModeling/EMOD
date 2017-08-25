@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,10 +11,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #pragma once
 
 #include "BaseTextReport.h"
-#include "PropertiesString.h"
 
 namespace Kernel
 {
+    class IPKeyValueContainer;
+
     struct NodeData
     {
         NodeData()
@@ -43,8 +44,10 @@ namespace Kernel
         virtual void LogNodeData( INodeContext* pNC ) override;
 
     private:
-        int GetIPIndex( tProperties* pProps ) const;
+        int GetIPIndex( IPKeyValueContainer* pProps ) const;
 
+        bool m_StratifyByGender;
+        bool m_StratifyByAge;
         std::vector<float> m_AgeYears;
         std::string m_IPKeyToCollect;
         std::vector<std::string> m_IPValuesList;

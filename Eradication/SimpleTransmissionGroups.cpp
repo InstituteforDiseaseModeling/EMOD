@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Debug.h"  // release_assert
 #include "Log.h"
 
-static const char* _module = "SimpleTransmissionGroups";
+SETUP_LOGGING( "SimpleTransmissionGroups" )
 
 namespace Kernel
 {
@@ -156,7 +156,7 @@ namespace Kernel
         return currentContagion[groupIndex];
     }
 
-    void SimpleTransmissionGroups::DepositContagion( const StrainIdentity* strain, float amount, const TransmissionGroupMembership_t* transmissionGroupMembership )
+    void SimpleTransmissionGroups::DepositContagion( const IStrainIdentity& strain, float amount, const TransmissionGroupMembership_t* transmissionGroupMembership )
     {
         GroupIndex groupIndex = transmissionGroupMembership->at(0);
         shedContagion[groupIndex] += amount;

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,15 +10,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #pragma once
 
 #include <string>
-#include <list>
-#include <vector>
 
 #include "Interventions.h"
 #include "InterventionEnums.h"
 #include "InterventionsContainer.h"
 #include "VectorContexts.h"
-
-#include "BoostLibWrapper.h"
 
 namespace Kernel
 {
@@ -65,46 +61,46 @@ namespace Kernel
         VectorInterventionsContainer();
         virtual ~VectorInterventionsContainer();
 
-        virtual QueryResult QueryInterface(iid_t iid, void** pinstance);
-        virtual int AddRef();
-        virtual int Release();
+        virtual QueryResult QueryInterface(iid_t iid, void** pinstance) override;
+        virtual int AddRef() override;
+        virtual int Release() override;
 
         // IBednetConsumer
-        virtual void UpdateProbabilityOfBlocking( float prob );
-        virtual void UpdateProbabilityOfKilling( float prob );
+        virtual void UpdateProbabilityOfBlocking( float prob ) override;
+        virtual void UpdateProbabilityOfKilling( float prob ) override;
 
         // IHousingModificationConsumer
-        virtual void ApplyHouseBlockingProbability( float prob );
-        virtual void UpdateProbabilityOfScreenKilling( float prob );
+        virtual void ApplyHouseBlockingProbability( float prob ) override;
+        virtual void UpdateProbabilityOfScreenKilling( float prob ) override;
 
         // IIndividualRepellentConsumer
-        virtual void UpdateProbabilityOfIndRepBlocking( float prob );
-        virtual void UpdateProbabilityOfIndRepKilling( float prob );
+        virtual void UpdateProbabilityOfIndRepBlocking( float prob ) override;
+        virtual void UpdateProbabilityOfIndRepKilling( float prob ) override;
 
         // IVectorInterventionEffectsSetter
-        virtual void UpdatePhotonicFenceKillingRate( float rate );
-        virtual void UpdateArtificialDietAttractionRate( float rate );
-        virtual void UpdateArtificialDietKillingRate( float rate );
-        virtual void UpdateInsecticidalDrugKillingProbability( float prob );
+        virtual void UpdatePhotonicFenceKillingRate( float rate ) override;
+        virtual void UpdateArtificialDietAttractionRate( float rate ) override;
+        virtual void UpdateArtificialDietKillingRate( float rate ) override;
+        virtual void UpdateInsecticidalDrugKillingProbability( float prob ) override;
 
-        virtual void Update(float dt); // example of intervention timestep update
+        virtual void Update(float dt) override; // example of intervention timestep update
 
         // IVectorInterventionEffects
-        virtual float GetDieBeforeFeeding();
-        virtual float GetHostNotAvailable();
-        virtual float GetDieDuringFeeding();
-        virtual float GetDiePostFeeding();
-        virtual float GetSuccessfulFeedHuman();
-        virtual float GetSuccessfulFeedAD();
-        virtual float GetOutdoorDieBeforeFeeding();
-        virtual float GetOutdoorHostNotAvailable();
-        virtual float GetOutdoorDieDuringFeeding();
-        virtual float GetOutdoorDiePostFeeding();
-        virtual float GetOutdoorSuccessfulFeedHuman();
-        virtual float GetblockIndoorVectorAcquire();
-        virtual float GetblockIndoorVectorTransmit();
-        virtual float GetblockOutdoorVectorAcquire();
-        virtual float GetblockOutdoorVectorTransmit();
+        virtual float GetDieBeforeFeeding() override;
+        virtual float GetHostNotAvailable() override;
+        virtual float GetDieDuringFeeding() override;
+        virtual float GetDiePostFeeding() override;
+        virtual float GetSuccessfulFeedHuman() override;
+        virtual float GetSuccessfulFeedAD() override;
+        virtual float GetOutdoorDieBeforeFeeding() override;
+        virtual float GetOutdoorHostNotAvailable() override;
+        virtual float GetOutdoorDieDuringFeeding() override;
+        virtual float GetOutdoorDiePostFeeding() override;
+        virtual float GetOutdoorSuccessfulFeedHuman() override;
+        virtual float GetblockIndoorVectorAcquire() override;
+        virtual float GetblockIndoorVectorTransmit() override;
+        virtual float GetblockOutdoorVectorAcquire() override;
+        virtual float GetblockOutdoorVectorTransmit() override;
 
     protected:
         // These are calculated from the values set by the interventions and returned to the model

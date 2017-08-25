@@ -1,124 +1,130 @@
 {
     "Events": [
         {
-               "Event_Coordinator_Config": {
-                    "Demographic_Coverage": 1, 
-                    "Include_Arrivals": 0, 
-                    "Include_Departures": 0, 
-                    "Intervention_Config": {
-                         "Antigen": 0, 
-                         "Genome": 0, 
-                         "Outbreak_Source": "PrevalenceIncrease", 
-                         "class": "OutbreakIndividual"
-                    }, 
-                    "Number_Repetitions": 1, 
-                    "Target_Demographic": "Everyone", 
-					"Property_Restrictions": [  ],
-                    "class": "StandardInterventionDistributionEventCoordinator"
-               }, 
-               "Event_Name": "Outbreak", 
-               "Nodeset_Config": {
-                    "class": "NodeSetAll"
-               }, 
-               "Start_Day": 1, 
-               "class": "CampaignEvent"
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1,
+                "Include_Arrivals": 0,
+                "Include_Departures": 0,
+                "Intervention_Config": {
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "class": "OutbreakIndividual"
+                },
+                "Number_Repetitions": 1,
+                "Target_Demographic": "Everyone",
+                "Property_Restrictions": [],
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Outbreak",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
         },
         {
-               "Event_Coordinator_Config": {
-                    "Demographic_Coverage": 1, 
-                    "Intervention_Config": {
-                         "Actual_IndividualIntervention_Config": {
-							"Actual_IndividualIntervention_Configs": [
-							{
-								"Cost_To_Consumer": 1,
-								"Drug_Type": "FirstLineCombo",
-								"Durability_Profile": "FIXED_DURATION_CONSTANT_EFFECT",
-								"Dose_Interval": 1,
-								"Fraction_Defaulters":0,
-								"Primary_Decay_Time_Constant": 50,
-								"Remaining_Doses": 1,
-								"Reduced_Transmit":1,
-								"TB_Drug_Clearance_Rate": 0.1,
-								"TB_Drug_Inactivation_Rate":1e-9,
-								"TB_Drug_Resistance_Rate": 1e-9,
-								"TB_Drug_Relapse_Rate": 1e-9,
-								"TB_Drug_Mortality_Rate": 1e-9,
-								"class": "AntiTBDrug"
-							}],
-							"Coverage": 1,
-							"Delay_Period": 100,
-							"Delay_Distribution": "FIXED_DURATION",
-							"class": "DelayedIntervention"
-                         }, 
-						 "Property_Restrictions_Within_Node":[
-                             {
-                                 "QualityOfCare":"Public"
-                             }
-                         ],
-						"Demographic_Coverage": 1,
-                         "Trigger_Condition": "TBActivation", 
-                         "class": "NodeLevelHealthTriggeredIV"
-                    }, 
-                    "Number_Repetitions": 1, 
-					"Property_Restrictions": [ ],
-                    "Target_Demographic": "Everyone", 
-                    "class": "StandardInterventionDistributionEventCoordinator"
-               }, 
-               "Event_Name": "Drugs after TB activation", 
-               "Nodeset_Config": {
-                    "class": "NodeSetAll"
-               }, 
-               "Start_Day": 1, 
-               "class": "CampaignEvent"
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "Actual_IndividualIntervention_Configs": [
+                            {
+                                "Cost_To_Consumer": 1,
+                                "Drug_Type": "FirstLineCombo",
+                                "Durability_Profile": "FIXED_DURATION_CONSTANT_EFFECT",
+                                "Dose_Interval": 1,
+                                "Fraction_Defaulters": 0,
+                                "Primary_Decay_Time_Constant": 50,
+                                "Remaining_Doses": 1,
+                                "Reduced_Transmit": 1,
+                                "TB_Drug_Clearance_Rate": 0.1,
+                                "TB_Drug_Inactivation_Rate": 1e-09,
+                                "TB_Drug_Resistance_Rate": 1e-09,
+                                "TB_Drug_Relapse_Rate": 1e-09,
+                                "TB_Drug_Mortality_Rate": 1e-09,
+                                "class": "AntiTBDrug"
+                            }
+                        ],
+                        "Coverage": 1,
+                        "Delay_Period": 100,
+                        "Delay_Distribution": "FIXED_DURATION",
+                        "class": "DelayedIntervention"
+                    },
+                    "Property_Restrictions_Within_Node": [
+                        {
+                            "QualityOfCare": "Public"
+                        }
+                    ],
+                    "Demographic_Coverage": 1,
+                    "Trigger_Condition_List": [
+                        "TBActivation"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Drugs after TB activation",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
         },
-		{
-               "Event_Coordinator_Config": {
-                    "Demographic_Coverage": 1, 
-                    "Intervention_Config": {
-                         "Actual_IndividualIntervention_Config": {
-							"Actual_IndividualIntervention_Configs": [
-							{
-								"Cost_To_Consumer": 1,
-								"Drug_Type": "FirstLineCombo",
-								"Durability_Profile": "FIXED_DURATION_CONSTANT_EFFECT",
-								"Dose_Interval": 1,
-								"Fraction_Defaulters":0,
-								"Primary_Decay_Time_Constant":50,
-								"Remaining_Doses": 1,
-								"Reduced_Transmit":1,
-								"TB_Drug_Clearance_Rate": 1e-9,
-								"TB_Drug_Inactivation_Rate":1e-9,
-								"TB_Drug_Resistance_Rate": 1e-9,
-								"TB_Drug_Relapse_Rate": 0.1,
-								"TB_Drug_Mortality_Rate": 1e-9,
-								"class": "AntiTBDrug"
-							}],
-							"Coverage": 1,
-							"Delay_Period": 100,
-							"Delay_Distribution": "FIXED_DURATION",
-							"class": "DelayedIntervention"
-                         }, 
-						 "Duration":-1,
-						 "Property_Restrictions_Within_Node":[
-                             {
-                                 "QualityOfCare": "Private"
-                             }
-                         ],
-                         "Trigger_Condition": "TBActivation", 
-                         "class": "NodeLevelHealthTriggeredIV"
-                    }, 
-                    "Number_Repetitions": 1, 
-					"Property_Restrictions": [  ],
-                    "Target_Demographic": "Everyone", 
-                    "class": "StandardInterventionDistributionEventCoordinator"
-               }, 
-               "Event_Name": "Drugs after TB activation", 
-               "Nodeset_Config": {
-                    "class": "NodeSetAll"
-               }, 
-               "Start_Day": 1, 
-               "class": "CampaignEvent"
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "Actual_IndividualIntervention_Configs": [
+                            {
+                                "Cost_To_Consumer": 1,
+                                "Drug_Type": "FirstLineCombo",
+                                "Durability_Profile": "FIXED_DURATION_CONSTANT_EFFECT",
+                                "Dose_Interval": 1,
+                                "Fraction_Defaulters": 0,
+                                "Primary_Decay_Time_Constant": 50,
+                                "Remaining_Doses": 1,
+                                "Reduced_Transmit": 1,
+                                "TB_Drug_Clearance_Rate": 1e-09,
+                                "TB_Drug_Inactivation_Rate": 1e-09,
+                                "TB_Drug_Resistance_Rate": 1e-09,
+                                "TB_Drug_Relapse_Rate": 0.1,
+                                "TB_Drug_Mortality_Rate": 1e-09,
+                                "class": "AntiTBDrug"
+                            }
+                        ],
+                        "Coverage": 1,
+                        "Delay_Period": 100,
+                        "Delay_Distribution": "FIXED_DURATION",
+                        "class": "DelayedIntervention"
+                    },
+                    "Duration": -1,
+                    "Property_Restrictions_Within_Node": [
+                        {
+                            "QualityOfCare": "Private"
+                        }
+                    ],
+                    "Trigger_Condition_List": [
+                        "TBActivation"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Drugs after TB activation",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
         }
-    ], 
+    ],
     "Use_Defaults": 1
 }

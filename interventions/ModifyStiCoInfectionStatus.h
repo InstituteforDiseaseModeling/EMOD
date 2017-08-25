@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -28,9 +28,8 @@ namespace Kernel
         virtual ~ModifyStiCoInfectionStatus() { }
 
         // INodeDistributableIntervention
-        virtual bool Distribute( IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pCCO );
-        virtual void SetContextTo(IIndividualHumanContext *context) { /* not needed for this intervention */ }
-        virtual void Update(float dt);
+        virtual bool Distribute( IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pCCO ) override;
+        virtual void Update(float dt) override;
 
     protected:
         bool set_flag_to;

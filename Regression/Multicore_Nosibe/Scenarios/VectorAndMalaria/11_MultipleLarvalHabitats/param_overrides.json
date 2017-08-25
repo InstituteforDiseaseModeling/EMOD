@@ -51,7 +51,7 @@
                }, 
                "SEA": {
                     "Enable_Sea_Migration": 0, 
-                    "Sea_Migration_Filename": "Madagascar_Nosibe_2.5arcmin_sea_migration.bin"
+                    "Sea_Migration_Filename": ""
                }
         }, 
         "PRIMARY": {
@@ -72,14 +72,7 @@
                         "Larval_Habitat_Types": {
                             "TEMPORARY_RAINFALL": 11250000000, 
                             "WATER_VEGETATION": 6000000000
-                        }, 
-                        "Immature_Duration": 2
-                    },
-                    "funestus": {
-                        "Immature_Duration": 2
-                    },
-                    "gambiae": {
-                        "Immature_Duration": 2
+                        }
                     }
                 }
             },

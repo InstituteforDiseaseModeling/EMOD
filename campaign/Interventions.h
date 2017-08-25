@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,8 +16,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "ISupports.h"
 #include "Configure.h"                 // for JsonConfigurable
-#include "InterventionEnums.h"         // for IndividualEventTriggerType enum
+#include "InterventionEnums.h"
 #include "InterventionValidator.h"
+#include "Properties.h"
+#include "NodeProperties.h"
+
 
 #include "ISerializable.h"
 #include "IArchive.h"
@@ -32,6 +35,7 @@ namespace Kernel
 {
     struct IIndividualHumanContext;
     struct IIndividualHumanEventContext;
+    class EventTrigger;
 
     struct IDMAPI ICampaignCostObserver : ISupports
     {
@@ -53,6 +57,7 @@ namespace Kernel
         virtual void SetContextTo(IIndividualHumanContext *context) = 0;
         virtual void Update(float dt) = 0;
         virtual bool Expired() = 0;
+        virtual void SetExpired( bool isExpired ) = 0;
         virtual void ValidateSimType( const std::string& simTypeStr ) = 0;
         virtual IDistributableIntervention * Clone()  = 0;
 
@@ -70,6 +75,8 @@ namespace Kernel
         virtual std::list<void*>                       GetInterventionsByInterface( iid_t iid ) = 0;
         virtual void PurgeExisting( const std::string &iv_name ) = 0;
         virtual bool ContainsExisting( const std::string &iv_name ) = 0;
+        virtual bool ContainsExistingByName( const std::string &name ) = 0;
+        virtual void ChangeProperty( const char *property, const char* new_value ) = 0;
 
         virtual ~IIndividualHumanInterventionsContext() {}
     };
@@ -85,6 +92,8 @@ namespace Kernel
         virtual bool Distribute(INodeEventContext *context, IEventCoordinator2* pEC = nullptr ) = 0;
         virtual void SetContextTo(INodeEventContext *context) = 0;
         virtual void Update(float dt) = 0;
+        virtual bool Expired() = 0;
+        virtual void SetExpired( bool isExpired ) = 0;
         virtual void ValidateSimType( const std::string& simTypeStr ) = 0;
         virtual INodeDistributableIntervention * Clone()  = 0;
 
@@ -114,25 +123,35 @@ namespace Kernel
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
 
         virtual const std::string& GetName() const override { return name; };
+        virtual void SetContextTo(IIndividualHumanContext *context) override;
         virtual float GetCostPerUnit() const override { return cost_per_unit; }
         virtual bool Expired() override ;
+        virtual void SetExpired( bool isExpired ) override;
         virtual void ValidateSimType( const std::string& simTypeStr ) override;
 
     protected:
         BaseIntervention();
         BaseIntervention( const BaseIntervention& );
         virtual ~BaseIntervention();
+        virtual bool Configure(const Configuration* inputJson) override;
         virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO ) override;
+
+        virtual bool AbortDueToDisqualifyingInterventionStatus( IIndividualHumanContext* pHuman );
+        virtual bool UpdateIndividualsInterventionStatus();
 
         static void serialize( IArchive& ar, BaseIntervention* obj );
 
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
+        IIndividualHumanContext *parent;
         std::string name;
         float cost_per_unit;
         bool expired;
         bool dont_allow_duplicates ;
-#pragma warning( pop )
+        bool first_time;
+        IPKeyValueContainer disqualifying_properties;
+        IPKeyValue status_property;
+#pragma warning(pop)
     };
 
     struct BaseNodeIntervention : IBaseIntervention, JsonConfigurable, INodeDistributableIntervention
@@ -140,34 +159,41 @@ namespace Kernel
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
 
     public:
+        virtual bool Configure( const Configuration* inputJson ) override;
         virtual const std::string& GetName() const override { return name; };
         virtual float GetCostPerUnit() const override { return cost_per_unit; }
-        virtual bool Expired();
+        virtual bool Expired() override;
+        virtual void SetExpired( bool isExpired ) override;
         virtual void ValidateSimType( const std::string& simTypeStr ) override;
+        virtual void SetContextTo( INodeEventContext *context ) override;
 
     protected:
         BaseNodeIntervention();
         virtual bool Distribute(INodeEventContext *context, IEventCoordinator2* pEC = nullptr ) override;
 
+        virtual bool AbortDueToDisqualifyingInterventionStatus( INodeEventContext* context );
+        virtual bool UpdateNodesInterventionStatus();
+
+        INodeEventContext *parent;
         std::string name;
         float cost_per_unit;
         bool expired;
+        bool first_time;
+        NPKeyValueContainer disqualifying_properties;
+        NPKeyValue status_property;
     };
 
     struct IDMAPI IIndividualEventObserver : ISupports
     {
         virtual ~IIndividualEventObserver() { }; // for cleanup via interface pointer
-        virtual bool notifyOnEvent(IIndividualHumanEventContext *context, const std::string& StateChange) = 0;
+        virtual bool notifyOnEvent(IIndividualHumanEventContext *context, const EventTrigger& trigger ) = 0;
     };
 
     // We're not liking these names anymore. TODO: Change to something more semantically useful
     struct IDMAPI INodeTriggeredInterventionConsumer : ISupports
     {
-        virtual void RegisterNodeEventObserver(IIndividualEventObserver* NodeEventObserver, const IndividualEventTriggerType::Enum &trigger ) = 0;
-        virtual void UnregisterNodeEventObserver(IIndividualEventObserver* NodeEventObserver, const IndividualEventTriggerType::Enum &trigger ) = 0;
-        virtual void TriggerNodeEventObservers(IIndividualHumanEventContext* pIndiv, const IndividualEventTriggerType::Enum &StateChange) = 0;
-        virtual void RegisterNodeEventObserverByString( IIndividualEventObserver *pIEO, const std::string &trigger ) = 0;
-        virtual void UnregisterNodeEventObserverByString( IIndividualEventObserver *pIEO, const std::string &trigger ) = 0;
-        virtual void TriggerNodeEventObserversByString( IIndividualHumanEventContext *ihec, const std::string &trigger ) = 0;
+        virtual void RegisterNodeEventObserver(IIndividualEventObserver* NodeEventObserver, const EventTrigger& trigger ) = 0;
+        virtual void UnregisterNodeEventObserver(IIndividualEventObserver* NodeEventObserver, const EventTrigger& trigger ) = 0;
+        virtual void TriggerNodeEventObservers(IIndividualHumanEventContext* pIndiv, const EventTrigger& trigger ) = 0;
     };
 }

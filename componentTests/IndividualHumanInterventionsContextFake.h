@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,7 +16,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 using namespace Kernel;
 
 class IndividualHumanInterventionsContextFake : public IIndividualHumanInterventionsContext,
-                                                public IHIVCascadeOfCare,
                                                 public IInterventionConsumer,
                                                 public IHIVMedicalHistory
 {
@@ -24,7 +23,6 @@ public:
     IndividualHumanInterventionsContextFake()
         : IIndividualHumanInterventionsContext()
         , m_Parent(nullptr)
-        , m_CascadeState("")
         , m_CD4Count(0.0)
         , m_CD4CountLowest(FLT_MAX)
         , m_ReceivedCD4(false)
@@ -53,27 +51,41 @@ public:
 
     virtual std::list<IDistributableIntervention*> GetInterventionsByType(const std::string &type_name)
     {
-        throw std::exception("The method or operation is not implemented.");
+        throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
 
     virtual std::list<IDistributableIntervention*> GetInterventionsByName(const std::string &intervention_name)
     { 
-        throw std::exception("The method or operation is not implemented.");
+        throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
 
     virtual std::list<void*> GetInterventionsByInterface( iid_t iid )
     { 
-        throw std::exception("The method or operation is not implemented."); 
+        throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); 
     }
 
     virtual void PurgeExisting( const std::string &iv_name )
     {
-        throw std::exception("The method or operation is not implemented.");
+        throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
 
     virtual bool ContainsExisting( const std::string &iv_name )
     {
-        throw std::exception("The method or operation is not implemented.");
+        throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
+    }
+
+    virtual void ChangeProperty( const char *property, const char* new_value ) override
+    {
+        if( m_Parent != nullptr )
+        {
+            IPKeyValue kv( property, new_value );
+            m_Parent->GetEventContext()->GetProperties()->Set( kv );
+        }
+    }
+
+    virtual bool ContainsExistingByName( const std::string &name )
+    {
+        throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." );
     }
 
     virtual void CheckSTINetworkParams(const char *prop = nullptr, const char* new_value = nullptr) {}
@@ -84,9 +96,7 @@ public:
     virtual QueryResult QueryInterface(iid_t iid, void **ppvObject)
     {
         *ppvObject = nullptr ;
-        if ( iid == GET_IID(IHIVCascadeOfCare)) 
-            *ppvObject = static_cast<IHIVCascadeOfCare*>(this);
-        else if ( iid == GET_IID(IInterventionConsumer)) 
+        if ( iid == GET_IID(IInterventionConsumer)) 
             *ppvObject = static_cast<IInterventionConsumer*>(this);
         else if ( iid == GET_IID(IHIVMedicalHistory)) 
             *ppvObject = static_cast<IHIVMedicalHistory*>(this);
@@ -101,24 +111,11 @@ public:
 
     virtual int32_t AddRef()
     {
-        throw std::exception("The method or operation is not implemented.");
+        throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
     virtual int32_t Release()
     {
-        throw std::exception("The method or operation is not implemented.");
-    }
-
-    // ------------------------------
-    // --- IHIVCascadeOfCare Methods
-    // ------------------------------
-    virtual std::string getCascadeState() const
-    {
-        return m_CascadeState ;
-    }
-
-    virtual void setCascadeState(std::string state)
-    {
-        m_CascadeState = state ;
+        throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
 
     // ------------------------------
@@ -194,7 +191,7 @@ public:
         return m_HasTested ;
     }
 
-    virtual bool EverTestedPastYear() const { throw std::exception("The method or operation is not implemented."); }
+    virtual bool EverTestedPastYear() const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
     virtual bool EverTestedHIVPositive() const
     {
@@ -223,29 +220,28 @@ public:
             m_ReceivedTestResultForHIV = ReceivedTestResultsType::NEGATIVE ;
     }
 
-    virtual void OnBeginART()                     { throw std::exception("The method or operation is not implemented."); }
-    virtual void OnBeginPreART()                  { throw std::exception("The method or operation is not implemented."); }
-    virtual void OnEndPreART()                    { throw std::exception("The method or operation is not implemented."); }
+    virtual void OnBeginART()                     { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual void OnBeginPreART()                  { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual void OnEndPreART()                    { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
-    virtual bool EverBeenOnPreART()      const { throw std::exception("The method or operation is not implemented."); }
-    virtual bool EverBeenOnART()         const { throw std::exception("The method or operation is not implemented."); }
+    virtual bool EverBeenOnPreART()      const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual bool EverBeenOnART()         const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
-    virtual float TimeOfMostRecentTest()      const { throw std::exception("The method or operation is not implemented."); }
-    virtual float TimeOfMostRecentCD4()       const { throw std::exception("The method or operation is not implemented."); }
-    virtual float TimeLastSeenByHealthcare()  const { throw std::exception("The method or operation is not implemented."); }
-    virtual float TimeFirstStartedART()       const { throw std::exception("The method or operation is not implemented."); }
-    virtual float TimeLastStartedART()        const { throw std::exception("The method or operation is not implemented."); }
-    virtual float TotalTimeOnART()            const { throw std::exception("The method or operation is not implemented."); }
-    virtual unsigned int NumTimesStartedART() const { throw std::exception("The method or operation is not implemented."); }
+    virtual float TimeOfMostRecentTest()      const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual float TimeOfMostRecentCD4()       const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual float TimeLastSeenByHealthcare()  const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual float TimeFirstStartedART()       const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual float TimeLastStartedART()        const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual float TotalTimeOnART()            const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual unsigned int NumTimesStartedART() const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
-    virtual NaturalNumber    GetTotalARTInitiations()     const { throw std::exception("The method or operation is not implemented."); }
-    virtual NonNegativeFloat GetTotalYearsOnART()         const { throw std::exception("The method or operation is not implemented."); }
-    virtual NonNegativeFloat GetYearsSinceFirstARTInit()  const { throw std::exception("The method or operation is not implemented."); }
-    virtual NonNegativeFloat GetYearsSinceLatestARTInit() const { throw std::exception("The method or operation is not implemented."); }
+    virtual NaturalNumber    GetTotalARTInitiations()     const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual NonNegativeFloat GetTotalYearsOnART()         const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual NonNegativeFloat GetYearsSinceFirstARTInit()  const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual NonNegativeFloat GetYearsSinceLatestARTInit() const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
 private:
     IIndividualHumanContext* m_Parent ;
-    std::string m_CascadeState ;
     float m_CD4Count ;
     float m_CD4CountLowest ;
     bool m_ReceivedCD4 ;

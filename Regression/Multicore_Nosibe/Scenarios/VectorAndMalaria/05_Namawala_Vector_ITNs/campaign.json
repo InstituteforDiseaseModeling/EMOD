@@ -16,6 +16,10 @@
                         "Decay_Time_Constant": 730,
                         "class": "WaningEffectExponential"
                     },
+                    "Usage_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 1.0
+                    }, 
                     "class": "SimpleBednet"
                 },
                 "Target_Demographic": "Everyone",

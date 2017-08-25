@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -238,25 +238,25 @@ SUITE(ConcurrencyParametersTest)
     TEST_FIXTURE(ConcurrencyParametersFixture, TestBadConfigMissingPropertyValue)
     {
         TestHelper_Exception( __LINE__, "testdata/ConcurrencyParametersTest/TestBadConfigMissingPropertyValue.json",
-            "Parameter 'LOW' not found in input file 'N/A'.\n Occured while reading 'Concurrency_Configuration' from the demographics." );
+            "Parameter 'LOW of ConcurrencyConfiguration' not found in input file 'Unknown'.\n Occured while reading 'Concurrency_Configuration' from the demographics." );
     }
 
     TEST_FIXTURE(ConcurrencyParametersFixture, TestBadConfigMissingSuperSpreader)
     {
         TestHelper_Exception( __LINE__, "testdata/ConcurrencyParametersTest/TestBadConfigMissingSuperSpreader.json",
-            "Parameter 'Probability_Person_Is_Behavioral_Super_Spreader' not found in input file 'N/A'.\n Occured while reading 'Concurrency_Configuration' from the demographics." );
+            "Parameter 'Probability_Person_Is_Behavioral_Super_Spreader of ConcurrencyConfiguration' not found in input file 'Unknown'.\n Occured while reading 'Concurrency_Configuration' from the demographics." );
     }
 
     TEST_FIXTURE(ConcurrencyParametersFixture, TestBadConfigInvalidSuperSpreader)
     {
         TestHelper_Exception( __LINE__, "testdata/ConcurrencyParametersTest/TestBadConfigInvalidSuperSpreader.json",
-            "Configuration variable Probability_Person_Is_Behavioral_Super_Spreader with value -0.77 out of range: less than or equal to 0. Occured while reading 'Concurrency_Configuration' from the demographics." );
+            "Configuration variable Probability_Person_Is_Behavioral_Super_Spreader with value -0.77 out of range: less than 0. Occured while reading 'Concurrency_Configuration' from the demographics." );
     }
 
     TEST_FIXTURE(ConcurrencyParametersFixture, TestBadConfigMissingExtraRelFlag)
     {
         TestHelper_Exception( __LINE__, "testdata/ConcurrencyParametersTest/TestBadConfigMissingExtraRelFlag.json",
-            "While trying to parse json data for param >>> Extra_Relational_Flag_Type <<< in otherwise valid json segment..." );
+            "While trying to parse json data for param/key >>> Extra_Relational_Flag_Type <<< in otherwise valid json segment..." );
     }
 
     TEST_FIXTURE(ConcurrencyParametersFixture, TestBadConfigInvalidExtraRelFlag)
@@ -286,18 +286,18 @@ SUITE(ConcurrencyParametersTest)
     TEST_FIXTURE(ConcurrencyParametersFixture, TestBadConcurrMissingPropertyValue)
     {
         TestHelper_Exception( __LINE__, "testdata/ConcurrencyParametersTest/TestBadConcurrMissingPropertyValue.json",
-            "Parameter 'HIGH' not found in input file 'N/A'.\n Occured while reading the 'Concurrency_Parameters' in 'TRANSITORY' from the demographics." );
+            "Parameter 'HIGH of ConcurrencyParameters' not found in input file 'Unknown'.\n Occured while reading the 'Concurrency_Parameters' in 'TRANSITORY' from the demographics." );
     }
 
     TEST_FIXTURE(ConcurrencyParametersFixture, TestBadConcurrMissingMax)
     {
         TestHelper_Exception( __LINE__, "testdata/ConcurrencyParametersTest/TestBadConcurrMissingMax.json",
-            "Parameter 'Max_Simultaneous_Relationships_Male' not found in input file 'N/A'.\n Occured while reading the 'Concurrency_Parameters' in 'TRANSITORY' from the demographics." );
+            "Parameter 'Max_Simultaneous_Relationships_Male of ConcurrencyByProperty' not found in input file 'Unknown'.\n Occured while reading the 'Concurrency_Parameters' in 'TRANSITORY' from the demographics." );
     }
 
     TEST_FIXTURE(ConcurrencyParametersFixture, TestBadConcurrInvalidMax)
     {
         TestHelper_Exception( __LINE__, "testdata/ConcurrencyParametersTest/TestBadConcurrInvalidMax.json",
-            "Configuration variable Max_Simultaneous_Relationships_Male with value -9 out of range: less than or equal to 0. Occured while reading the 'Concurrency_Parameters' in 'TRANSITORY' from the demographics." );
+            "Configuration variable Max_Simultaneous_Relationships_Male with value -9 out of range: less than 0. Occured while reading the 'Concurrency_Parameters' in 'TRANSITORY' from the demographics." );
     }
 }

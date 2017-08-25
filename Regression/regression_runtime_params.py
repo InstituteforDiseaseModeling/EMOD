@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from __future__ import print_function
 import os
 import ConfigParser
 import pdb
@@ -29,6 +30,46 @@ class RuntimeParameters:
         self.config.set('ENVIRONMENT', 'username', os.environ[username_key])
         self._use_user_input_root = False
         self.PSP = None
+        self.display()
+
+    def display(self):
+        print( "[arg] Suite:                      ", self.suite )
+        print( "[arg] Executable path:            ", self.executable_path )
+        print( "[arg] Run in perf mode:           ", self.measure_perf )
+        print( "[arg] Hide graphs on mismatch:    ", self.hide_graphs )
+        print( "[arg] Debug:                      ", self.debug )
+        print( "[arg] Quickstart:                 ", self.quick_start )
+        print( "[arg] Use DLLs:                   ", self.use_dlls )
+        print( "[arg] SCons:                      ", self.scons )
+        print( "[arg] Job name suffix:            ", self.label )
+        print( "[arg] Config file:                ", self.regression_config )
+        print( "[arg] Compare all outputs:        ", self.all_outputs )
+        print( "[arg] Disable schema test:        ", self.disable_schema_test )
+        print( "[arg] Component tests:            ", self.component_tests )
+        print( "[arg] Component tests show output:", self.component_tests_show_output )
+        print( "[arg] Skip emodule test:          ", self.sec )
+        print( "[arg] Config constraints:         ", self.constraints_dict )
+        print( "[arg] Run sims locally:           ", self.local_execution )
+        # print( "", self.config )
+        print( "[cfg] HPC head node/group:         {0} / {1}".format(self.hpc_head_node, self.hpc_node_group) )
+        print( "[cfg] HPC user/password:           {0} / {1}".format(self.hpc_user, self.hpc_password if self.hpc_password else 'empty') )
+        print( "[cfg] Cores per node/socket:       {0} / {1}".format(self.cores_per_node, self.cores_per_socket) )
+
+        print( "[cfg] Bin root:                   ", self.bin_root )
+        print( "[cfg] DLL root:                   ", self.dll_root )
+        print( "[cfg] Input root:                 ", self.input_root )
+        print( "[cfg] Shared input:               ", self.shared_input )
+        print( "[cfg] User input:                 ", self.user_input )
+        print( "[cfg] Use user input:             ", self.use_user_input_root )
+        print( "[cfg] Python input:               ", self.py_input )
+        print( "[cfg] Sim root:                   ", self.sim_root )
+
+        print( "[cfg] Local bin root:             ", self.local_bin_root )
+        print( "[cfg] Local input path:           ", self.input_path )
+        print( "[cfg] Local sim root:             ", self.local_sim_root )
+        print( "[cfg] DLL path:                   ", self.dll_path )
+        print( "[cfg] Source root:                ", self.src_root )
+        return
     
     @property
     def suite(self):
@@ -36,7 +77,24 @@ class RuntimeParameters:
         
     @property
     def executable_path(self):
-        return self.args.exe_path
+        path = self.args.exe_path
+        if not path:
+            if self.scons:
+                if self.debug:
+                    path = "../build/x64/Debug/Eradication/Eradication"
+                else:
+                    path = "../build/x64/Release/Eradication/Eradication"
+
+                if os.name == "nt":
+                    path += ".exe"
+
+            else:
+                if self.debug:
+                    path = "../Eradication/x64/Debug/Eradication.exe"
+                else:
+                    path = "../Eradication/x64/Release/Eradication.exe"
+
+        return path
     
     @property
     def measure_perf(self):
@@ -140,7 +198,10 @@ class RuntimeParameters:
         
     @property
     def py_input(self):
-        return self.config.get('ENVIRONMENT', 'py_input')
+        if self.local_execution or os.name=="posix":
+            return self.config.get(self.os_type, 'py_input')
+        else:
+            return self.config.get('ENVIRONMENT', 'py_input')
         
     @property
     def use_user_input_root(self):
@@ -188,9 +249,17 @@ class RuntimeParameters:
         return self.args.all_outputs
         
     @property
-    def dts(self):
+    def disable_schema_test(self):
         return self.args.disable_schema_test
         
+    @property
+    def component_tests(self):
+        return self.args.component_tests
+
+    @property
+    def component_tests_show_output(self):
+        return self.args.component_tests_show_output
+
     @property
     def sec(self):
         return self.args.skip_emodule_check
@@ -199,14 +268,13 @@ class RuntimeParameters:
     def constraints_dict(self):
         constraints_list = self.args.config_constraints
         constraints_dict = {}
-        for raw_nvp in constraints_list:
-            nvp = raw_nvp.split(":")
-            constraints_dict[ nvp[0] ] = nvp[1]
+        if constraints_list:
+            #constraints_list = constraints_list_tmp # .split(",") # NOT SURE ABOUT THIS YET
+            for raw_nvp in constraints_list:
+                nvp = raw_nvp.split(":")
+                constraints_dict[ nvp[0] ] = nvp[1]
         return constraints_dict
     
     @property
     def local_execution(self):
         return self.args.local
-
-
-

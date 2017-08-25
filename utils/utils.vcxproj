@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version='1.0' encoding='utf-8'?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="14.0">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -44,13 +44,13 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='QuickStart|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -71,6 +71,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(IDM_BOOST_PATH);..\Dependencies\ComputeClusterPack\Include;..\cajun\Include;..\Eradication\;..\campaign;..\rapidjson\include;..\rapidjson\modp</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,6 +142,7 @@
     <ClCompile Include="Coredump.cpp" />
     <ClCompile Include="DurationDistribution.cpp" />
     <ClCompile Include="Environment.cpp" />
+    <ClCompile Include="EventTrigger.cpp" />
     <ClCompile Include="Exceptions.cpp" />
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="IArchive.cpp" />
@@ -160,9 +162,12 @@
     <ClCompile Include="JsonRawWriter.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="MathFunctions.cpp" />
+    <ClCompile Include="Memory.cpp" />
+    <ClCompile Include="NodeProperties.cpp" />
     <ClCompile Include="ProgramOptions.cpp" />
     <ClCompile Include="ProgVersion.cpp" />
     <ClCompile Include="Properties.cpp" />
+    <ClCompile Include="BaseProperties.cpp" />
     <ClCompile Include="RANDOM.cpp" />
     <ClCompile Include="RapidJsonImpl.cpp" />
     <ClCompile Include="Serialization.cpp" />
@@ -201,6 +206,7 @@
     <ClInclude Include="..\rapidjson\include\rapidjson\stringbuffer.h" />
     <ClInclude Include="..\rapidjson\include\rapidjson\writer.h" />
     <ClInclude Include="..\rapidjson\modp\modp_numtoa.h" />
+    <ClInclude Include="BasePropertiesTemplates.h" />
     <ClInclude Include="BinaryArchiveReader.h" />
     <ClInclude Include="BinaryArchiveWriter.h" />
     <ClInclude Include="BoostLibWrapper.h" />
@@ -213,6 +219,7 @@
     <ClInclude Include="DurationDistribution.h" />
     <ClInclude Include="EnumSupport.h" />
     <ClInclude Include="Environment.h" />
+    <ClInclude Include="EventTrigger.h" />
     <ClInclude Include="Exceptions.h" />
     <ClInclude Include="FactorySupport.h" />
     <ClInclude Include="IArchive.h" />
@@ -232,10 +239,13 @@
     <ClInclude Include="JsonRawWriter.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="MathFunctions.h" />
+    <ClInclude Include="Memory.h" />
+    <ClInclude Include="NodeProperties.h" />
     <ClInclude Include="Profile.h" />
     <ClInclude Include="ProgramOptions.h" />
     <ClInclude Include="ProgVersion.h" />
     <ClInclude Include="Properties.h" />
+    <ClInclude Include="BaseProperties.h" />
     <ClInclude Include="PropertiesString.h" />
     <ClInclude Include="RANDOM.h" />
     <ClInclude Include="RapidJsonImpl.h" />

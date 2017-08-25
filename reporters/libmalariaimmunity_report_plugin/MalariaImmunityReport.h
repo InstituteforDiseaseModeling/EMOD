@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,6 +19,30 @@ namespace Kernel
     typedef std::vector<double> agebinned_t;
     typedef std::vector<agebinned_t> PfPRbinned_t;
 
+    class ImmunityData : public IIntervalData
+    {
+    public:
+        ImmunityData();
+        virtual ~ImmunityData();
+
+        // IIntervalData methods
+        virtual void Clear() override;
+        virtual void Update( const IIntervalData& rOther ) override;
+        virtual void Serialize( IJsonObjectAdapter& rjoa, JSerializer& js ) override;
+        virtual void Deserialize( IJsonObjectAdapter& rjoa ) override;
+
+        // other
+        void SetVectorSize( int size );
+
+        agebinned_t sum_population_by_agebin;
+        agebinned_t sum_MSP_by_agebin;
+        agebinned_t sum_nonspec_by_agebin;
+        agebinned_t sum_pfemp1_by_agebin;
+        agebinned_t sumsqr_MSP_by_agebin;
+        agebinned_t sumsqr_nonspec_by_agebin;
+        agebinned_t sumsqr_pfemp1_by_agebin;
+    };
+
     class MalariaImmunityReport : public BaseEventReportIntervalOutput
     {
     public:
@@ -27,27 +51,19 @@ namespace Kernel
 
         //BaseEventReportIntervalOutput
         virtual bool Configure( const Configuration * inputJson ) override;
-        virtual void EndTimestep( float currentTime, float dt ) override;
-        virtual bool notifyOnEvent( IIndividualHumanEventContext *context, const std::string& StateChange ) override;
+        virtual bool notifyOnEvent( IIndividualHumanEventContext *context, const EventTrigger& trigger ) override;
 
     protected:
         // BaseEventReportIntervalOutput
-        virtual void WriteOutput( float currentTime ) override;
+        virtual void AccumulateOutput() override;
+        virtual void SerializeOutput( float currentTime, IJsonObjectAdapter& output, JSerializer& js ) override;
 
     private:
-        void AccumulateOutput();
         
-        bool m_has_data ;
         std::vector<float> ages;
 
         // accumulated on each timestep, reset on reporting interval
-        agebinned_t sum_population_by_agebin;
-        agebinned_t sum_MSP_by_agebin;
-        agebinned_t sum_nonspec_by_agebin;
-        agebinned_t sum_pfemp1_by_agebin;
-        agebinned_t sumsqr_MSP_by_agebin;
-        agebinned_t sumsqr_nonspec_by_agebin;
-        agebinned_t sumsqr_pfemp1_by_agebin;
+        ImmunityData* m_pImmunityData;
 
         // accumulated on each reporting interval, written to output
         std::vector<agebinned_t> MSP_mean_by_agebin;

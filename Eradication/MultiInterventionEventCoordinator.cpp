@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,7 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "MultiInterventionEventCoordinator.h"
 #include "InterventionFactory.h"
 
-static const char * _module = "MultiInterventionEventCoordinator";
+SETUP_LOGGING( "MultiInterventionEventCoordinator" )
 
 namespace Kernel
 {
@@ -21,6 +21,7 @@ namespace Kernel
 
     MultiInterventionEventCoordinator::MultiInterventionEventCoordinator()
     : StandardInterventionDistributionEventCoordinator()
+    , m_IndividualInterventions()
     {
     }
 
@@ -31,134 +32,137 @@ namespace Kernel
         initConfigComplexType("Intervention_Configs", &intervention_config, MIEC_Intervention_Configs_DESC_TEXT );
     }
 
-    void MultiInterventionEventCoordinator::validateInterventionConfig( const json::Element& rElement )
+    void MultiInterventionEventCoordinator::validateInterventionConfig( const json::Element& rElement, const std::string& rDataLocation )
     {
-        InterventionValidator::ValidateInterventionArray( intervention_config._json );
+        InterventionValidator::ValidateInterventionArray( intervention_config._json, rDataLocation );
     }
 
     bool MultiInterventionEventCoordinator::HasNodeLevelIntervention() const
     {
         bool has_node_level_intervention = false;
+        bool has_individual_level_intervention = false;
 
         const json::Array & interventions_array = json::QuickInterpreter( intervention_config._json ).As<json::Array>();
         LOG_DEBUG_F("interventions array size = %d\n", interventions_array.Size());
-        for( int idx = 0; !has_node_level_intervention && (idx < interventions_array.Size()); idx++ )
+        for( int idx = 0; idx < interventions_array.Size(); idx++ )
         {
             const json::Object& actualIntervention = json_cast<const json::Object&>(interventions_array[idx]);
-            auto qi_as_config = Configuration::CopyFromElement( actualIntervention );
-            INodeDistributableIntervention *ndi = InterventionFactory::getInstance()->CreateNDIIntervention(qi_as_config);
+            auto config = Configuration::CopyFromElement( actualIntervention, "campaign" );
+            INodeDistributableIntervention *ndi = InterventionFactory::getInstance()->CreateNDIIntervention(config);
             if( ndi != nullptr )
             {
                 has_node_level_intervention = true;
                 ndi->Release();
             }
-            delete qi_as_config;
-            qi_as_config = nullptr;
+            else
+            {
+                has_individual_level_intervention = true;
+            }
+            delete config;
+            config = nullptr;
+        }
+
+        if( has_node_level_intervention && has_individual_level_intervention )
+        {
+            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "You cannot mix individual and nodel-level interventions." );
         }
 
         return has_node_level_intervention;
     }
 
-
-    // copy/paste to remove single-intervention-specific logging
-    // TODO: could be handled more gracefully
-    // also not robust in case of array containing NTI not just ITI
-    void MultiInterventionEventCoordinator::UpdateNodes( float dt )
+    void MultiInterventionEventCoordinator::ExtractInterventionNameForLogging()
     {
-        // Only call VisitNodes on first call and if countdown == 0
-        if( tsteps_since_last != tsteps_between_reps )
-        {
-            return;
-        }
+        // Don't do anything
+    }
 
-        int grandTotal = 0;
-        int limitPerNode = -1;
-
-        LOG_DEBUG_F("[UpdateNodes] limitPerNode = %d\n", limitPerNode);
-        for (auto nec : cached_nodes)
+    void MultiInterventionEventCoordinator::InitializeInterventions()
+    {
+        if( !has_node_level_intervention && m_IndividualInterventions.empty() )
         {
-            try
+            const json::Array & interventions_array = json::QuickInterpreter( intervention_config._json ).As<json::Array>();
+            LOG_DEBUG_F("interventions array size = %d\n", interventions_array.Size());
+            for( int idx = 0; idx < interventions_array.Size(); idx++ )
             {
-                // For now, distribute evenly across nodes. 
-                int totalIndivGivenIntervention = nec->VisitIndividuals( this, limitPerNode );
-                grandTotal += totalIndivGivenIntervention;
-                LOG_INFO_F( "UpdateNodes() gave out %d interventions at node %d\n", totalIndivGivenIntervention, nec->GetId().data );
-            }
-            catch(json::Exception &e)
-            {
-                // ERROR: not ITI???
-                // ERROR: ::cerr << "exception casting intervention_config to array! " << e.what() << std::endl;
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, e.what() ); // ( "Intervention_Configs json problem: intervention_config is valid json but needs to be an array." );
-            }
-        }
+                const json::Object& actualIntervention = json_cast<const json::Object&>(interventions_array[ idx ]);
+                Configuration * config = Configuration::CopyFromElement( actualIntervention );
+                assert( config );
 
-        tsteps_since_last = 0;
-        num_repetitions--;
-        if( num_repetitions == 0 )
-        {
-            distribution_complete = true; // we're done, signal disposal ok
+                LOG_DEBUG_F( "Attempting to instantiate intervention of class %s\n", std::string( (*config)[ "class" ].As<json::String>() ).c_str() );
+                IDistributableIntervention *di = InterventionFactory::getInstance()->CreateIntervention( config );
+                assert( di );
+
+                m_IndividualInterventions.push_back( di );
+
+                delete config;
+                config = nullptr;
+            }
         }
     }
 
-    bool
-    MultiInterventionEventCoordinator::visitIndividualCallback( 
-        IIndividualHumanEventContext *ihec,
-        float & incrementalCostOut,
-        ICampaignCostObserver * pICCO
-    )
+    void MultiInterventionEventCoordinator::DistributeInterventionsToNodes( INodeEventContext* event_context )
     {
-        // Less of this would need to be copied from the base class with a more thoughtful encapsulation of functions
-        // In particular, only the give-intervention(s)-to-individual stuff inside the try statement is different.
-        if( qualifiesDemographically( ihec ) == false )
+        const json::Array & interventions_array = json::QuickInterpreter( intervention_config._json ).As<json::Array>();
+        LOG_DEBUG_F( "interventions array size = %d\n", interventions_array.Size() );
+        for( int idx = 0; idx < interventions_array.Size(); idx++ )
         {
-            LOG_DEBUG("Individual not given intervention because not in target demographic\n");
-            return false;
-        }
-        LOG_DEBUG("Individual meets demographic targeting criteria\n");
+            const json::Object& actualIntervention = json_cast<const json::Object&>(interventions_array[ idx ]);
+            Configuration * config = Configuration::CopyFromElement( actualIntervention );
+            assert( config );
 
-        if (!TargetedIndividualIsCovered(ihec))
-        {
-            incrementalCostOut = 0;
-            return false;
-        }
-        else
-        {
-            incrementalCostOut = 0;
+            LOG_DEBUG_F( "Attempting to instantiate intervention of class %s\n",
+                std::string( (*config)[ "class" ].As<json::String>() ).c_str() );
 
-            try
+            INodeDistributableIntervention *ndi = InterventionFactory::getInstance()->CreateNDIIntervention( config );
+            if( ndi == nullptr )
             {
-                const json::Array & interventions_array = json::QuickInterpreter( intervention_config._json ).As<json::Array>();
-                LOG_DEBUG_F("interventions array size = %d\n", interventions_array.Size());
-                for( int idx=0; idx<interventions_array.Size(); idx++ )
-                {
-                    const json::Object& actualIntervention = json_cast<const json::Object&>(interventions_array[idx]);
-                    Configuration * tmpConfig = Configuration::CopyFromElement(actualIntervention);
-                    assert( tmpConfig );
-
-                    // instantiate and distribute intervention
-                    LOG_DEBUG_F( "Attempting to instantiate intervention of class %s\n", std::string((*tmpConfig)["class"].As<json::String>()).c_str() );
-                    IDistributableIntervention *di = InterventionFactory::getInstance()->CreateIntervention(tmpConfig);
-                    assert(di);
-                    delete tmpConfig;
-                    tmpConfig = nullptr;
-                    if (di)
-                    {
-                        if (!di->Distribute( ihec->GetInterventionsContext(), pICCO ) )
-                        {
-                            di->Release(); // a bit wasteful for now, could cache it for the next fellow
-                        }
-
-                        LOG_DEBUG_F("Distributed an intervention %p to individual %d at a cost of %f\n", di, ihec->GetSuid().data, incrementalCostOut);
-                    }
-                }
+                throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "Should have constructed a node-level intervention." );
             }
-            catch(json::Exception &e)
+            if( ndi->Distribute( event_context, this ) )
             {
-                // ERROR: ::cerr << "exception casting intervention_config to array! " << e.what() << std::endl;
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, e.what() ); // ( "InterventionConfigs json problem: intervention_config is valid json but needs to be an array." );
+                LOG_INFO_F( "UpdateNodes() distributed '%s' intervention to node %d\n", ndi->GetName().c_str(), event_context->GetId().data );
             }
+            ndi->Release();
 
+            delete config;
+            config = nullptr;
         }
-        return true;
+    }
+
+    void MultiInterventionEventCoordinator::DistributeInterventionsToIndividuals( INodeEventContext* event_context )
+    {
+        // For now, distribute evenly across nodes. 
+        int limitPerNode = -1;
+
+        int totalIndivGivenIntervention = event_context->VisitIndividuals( this, limitPerNode );
+
+        LOG_INFO_F( "UpdateNodes() gave out %d interventions at node %d\n", totalIndivGivenIntervention, event_context->GetId().data );
+    }
+
+    bool MultiInterventionEventCoordinator::DistributeInterventionsToIndividual( IIndividualHumanEventContext *ihec,
+                                                                                 float & incrementalCostOut,
+                                                                                 ICampaignCostObserver * pICCO )
+    {
+        bool all_distributed = true;
+        for( auto di_master : m_IndividualInterventions )
+        {
+            // instantiate and distribute intervention
+            LOG_DEBUG_F( "Attempting to instantiate intervention of class %s\n", std::string( json::QuickInterpreter( intervention_config._json )[ "class" ].As<json::String>() ).c_str() );
+
+            IDistributableIntervention* di_clone = di_master->Clone();
+            release_assert( di_clone );
+            di_clone->AddRef();
+
+            if( !di_clone->Distribute( ihec->GetInterventionsContext(), pICCO ) )
+            {
+                di_clone->Release(); // a bit wasteful for now, could cache it for the next fellow
+                LOG_DEBUG_F( "Distributed an intervention %s to individual %d at a cost of %f\n",
+                        di_clone->GetName().c_str(), ihec->GetSuid().data, incrementalCostOut );
+            }
+            else
+            {
+                all_distributed = false;
+            }
+        }
+        return all_distributed;
     }
 }

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -25,8 +25,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 // !!! If you are creating a new report by copying this one, you will need to modify 
 // !!! the values below indicated by "<<<"
 
-// Module name for logging, CustomReport.json, and DLL GetType()
-static const char * _module = "MalariaImmunityReport"; // <<< Name of this file
+// Name for logging, CustomReport.json, and DLL GetType()
+SETUP_LOGGING( "MalariaImmunityReport" ) // <<< Name of this file
 
 namespace Kernel
 {
@@ -82,20 +82,91 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
 #endif
 
 // ----------------------------------------
+// --- ImmunityData Methods
+// ----------------------------------------
+
+    ImmunityData::ImmunityData()
+    : IIntervalData()
+    , sum_population_by_agebin()
+    , sum_MSP_by_agebin()
+    , sum_nonspec_by_agebin()
+    , sum_pfemp1_by_agebin()
+    , sumsqr_MSP_by_agebin()
+    , sumsqr_nonspec_by_agebin()
+    , sumsqr_pfemp1_by_agebin()
+    {
+    }
+
+    ImmunityData::~ImmunityData()
+    {
+    }
+
+    void ImmunityData::SetVectorSize( int size )
+    {
+        sum_population_by_agebin.resize( size, 0 );
+        sum_MSP_by_agebin.resize(        size, 0 );
+        sum_nonspec_by_agebin.resize(    size, 0 );
+        sum_pfemp1_by_agebin.resize(     size, 0 );
+        sumsqr_MSP_by_agebin.resize(     size, 0 );
+        sumsqr_nonspec_by_agebin.resize( size, 0 );
+        sumsqr_pfemp1_by_agebin.resize(  size, 0 );
+    }
+
+    void ImmunityData::Clear()
+    {
+        std::fill( sum_population_by_agebin.begin(), sum_population_by_agebin.end(), 0 );
+        std::fill( sum_MSP_by_agebin.begin(),        sum_MSP_by_agebin.end(),        0 );
+        std::fill( sum_nonspec_by_agebin.begin(),    sum_nonspec_by_agebin.end(),    0 );
+        std::fill( sum_pfemp1_by_agebin.begin(),     sum_pfemp1_by_agebin.end(),     0 );
+        std::fill( sumsqr_MSP_by_agebin.begin(),     sumsqr_MSP_by_agebin.end(),     0 );
+        std::fill( sumsqr_nonspec_by_agebin.begin(), sumsqr_nonspec_by_agebin.end(), 0 );
+        std::fill( sumsqr_pfemp1_by_agebin.begin(),  sumsqr_pfemp1_by_agebin.end(),  0 );
+    }
+
+    void ImmunityData::Update( const IIntervalData& rOtherData )
+    {
+        const ImmunityData& rOther = static_cast<const ImmunityData&>(rOtherData);
+
+        ReportUtilities::AddVector( this->sum_population_by_agebin , rOther.sum_population_by_agebin );
+        ReportUtilities::AddVector( this->sum_MSP_by_agebin        , rOther.sum_MSP_by_agebin        );
+        ReportUtilities::AddVector( this->sum_nonspec_by_agebin    , rOther.sum_nonspec_by_agebin    );
+        ReportUtilities::AddVector( this->sum_pfemp1_by_agebin     , rOther.sum_pfemp1_by_agebin     );
+        ReportUtilities::AddVector( this->sumsqr_MSP_by_agebin     , rOther.sumsqr_MSP_by_agebin     );
+        ReportUtilities::AddVector( this->sumsqr_nonspec_by_agebin , rOther.sumsqr_nonspec_by_agebin );
+        ReportUtilities::AddVector( this->sumsqr_pfemp1_by_agebin  , rOther.sumsqr_pfemp1_by_agebin  );
+    }
+
+    void ImmunityData::Serialize( IJsonObjectAdapter& root, JSerializer& js )
+    {
+        ReportUtilities::SerializeVector( root, js, "sum_population" , sum_population_by_agebin );
+        ReportUtilities::SerializeVector( root, js, "sum_MSP"        , sum_MSP_by_agebin        );
+        ReportUtilities::SerializeVector( root, js, "sum_nonspec"    , sum_nonspec_by_agebin    );
+        ReportUtilities::SerializeVector( root, js, "sum_pfemp1"     , sum_pfemp1_by_agebin     );
+        ReportUtilities::SerializeVector( root, js, "sumsqr_MSP"     , sumsqr_MSP_by_agebin     );
+        ReportUtilities::SerializeVector( root, js, "sumsqr_nonspec" , sumsqr_nonspec_by_agebin );
+        ReportUtilities::SerializeVector( root, js, "sumsqr_pfemp1"  , sumsqr_pfemp1_by_agebin  );
+    }
+
+    void ImmunityData::Deserialize( IJsonObjectAdapter& root )
+    {
+        ReportUtilities::DeserializeVector( root, true, "sum_population" , sum_population_by_agebin );
+        ReportUtilities::DeserializeVector( root, true, "sum_MSP"        , sum_MSP_by_agebin        );
+        ReportUtilities::DeserializeVector( root, true, "sum_nonspec"    , sum_nonspec_by_agebin    );
+        ReportUtilities::DeserializeVector( root, true, "sum_pfemp1"     , sum_pfemp1_by_agebin     );
+        ReportUtilities::DeserializeVector( root, true, "sumsqr_MSP"     , sumsqr_MSP_by_agebin     );
+        ReportUtilities::DeserializeVector( root, true, "sumsqr_nonspec" , sumsqr_nonspec_by_agebin );
+        ReportUtilities::DeserializeVector( root, true, "sumsqr_pfemp1"  , sumsqr_pfemp1_by_agebin  );
+    }
+
+
+// ----------------------------------------
 // --- MalariaImmunityReport Methods
 // ----------------------------------------
 
     MalariaImmunityReport::MalariaImmunityReport() 
-        : BaseEventReportIntervalOutput( _module )
-        , m_has_data(false)
+        : BaseEventReportIntervalOutput( _module, false, new ImmunityData(), new ImmunityData() ) //false => only one file
         , ages()
-        , sum_population_by_agebin()
-        , sum_MSP_by_agebin()
-        , sum_nonspec_by_agebin()
-        , sum_pfemp1_by_agebin()
-        , sumsqr_MSP_by_agebin()
-        , sumsqr_nonspec_by_agebin()
-        , sumsqr_pfemp1_by_agebin()
+        , m_pImmunityData(nullptr)
         , MSP_mean_by_agebin()
         , MSP_std_by_agebin()
         , nonspec_mean_by_agebin()
@@ -113,7 +184,6 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         }
         else
         {
-            ages.push_back(    0.0f );
             ages.push_back(   10.0f );
             ages.push_back(   20.0f );
             ages.push_back(   30.0f );
@@ -129,65 +199,23 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
 
         bool configured = BaseEventReportIntervalOutput::Configure( inputJson );
 
-        sum_population_by_agebin.resize( ages.size(), 0);
-        sum_MSP_by_agebin.resize(        ages.size(), 0);
-        sum_nonspec_by_agebin.resize(    ages.size(), 0);
-        sum_pfemp1_by_agebin.resize(     ages.size(), 0);
-        sumsqr_MSP_by_agebin.resize(     ages.size(), 0);
-        sumsqr_nonspec_by_agebin.resize( ages.size(), 0);
-        sumsqr_pfemp1_by_agebin.resize(  ages.size(), 0);
+        if( configured )
+        {
+            static_cast<ImmunityData*>(m_pIntervalData         )->SetVectorSize( ages.size() );
+            static_cast<ImmunityData*>(m_pMulticoreDataExchange)->SetVectorSize( ages.size() );
+            m_pImmunityData = static_cast<ImmunityData*>(m_pIntervalData);
+        }
 
         return configured;
     }
 
     MalariaImmunityReport::~MalariaImmunityReport()
     {
-        if( m_has_data )
-        {
-            LOG_WARN("Summary report not written yet, but the simulation is over.  Writing now...\n");
-            AccumulateOutput();
-            WriteOutput(-999.0);
-        }
-        ClearOutputData();
     }
 
-    void MalariaImmunityReport::EndTimestep( float currentTime, float dt )
+    bool MalariaImmunityReport::notifyOnEvent( IIndividualHumanEventContext *context, const EventTrigger& trigger )
     {
-        if( HaveUnregisteredAllEvents() )
-        {
-            // --------------------------------------------------------------------------------
-            // --- If we have either not registered or unregistered listening for events, then
-            // --- we don't want to consider outputing data.
-            // --------------------------------------------------------------------------------
-            return;
-        }
-        else if( HaveRegisteredAllEvents() )
-        {
-            m_interval_timer++;
-
-            LOG_DEBUG_F("m_interval_timer=%d, m_reporting_interval=%d\n",m_interval_timer,m_reporting_interval);
-            if ( m_interval_timer >= m_reporting_interval )
-            {
-                m_report_count++;
-                AccumulateOutput();
-
-                LOG_DEBUG_F("Resetting %s reporting interval timer...\n", GetReportName().c_str());
-                m_interval_timer = 0 ;
-
-                if ( m_report_count >= m_max_number_reports )
-                {
-                    WriteOutput( currentTime );
-                    UnregisterAllNodes();
-                    ClearOutputData();
-                    m_has_data = false ;
-                }
-            }
-        }
-    }
-
-    bool MalariaImmunityReport::notifyOnEvent( IIndividualHumanEventContext *context, const std::string& StateChange )
-    {
-        LOG_DEBUG_F( "MalariaSummaryReport notified of event by %d-year old individual.\n", (int) (context->GetAge() / DAYSPERYEAR) );
+        LOG_DEBUG_F( "MalariaImmunityReport notified of event by %d-year old individual.\n", (int) (context->GetAge() / DAYSPERYEAR) );
 
         // individual context for suid
         IIndividualHumanContext * iindividual = NULL;
@@ -202,7 +230,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         double age       = context->GetAge();
         int    agebin    = ReportUtilities::GetAgeBin( (float)age, ages );
 
-        sum_population_by_agebin.at(agebin) += mc_weight;
+        m_pImmunityData->sum_population_by_agebin.at(agebin) += mc_weight;
 
         // get malaria contexts
         IMalariaHumanContext * individual_malaria = NULL;
@@ -213,17 +241,33 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         IMalariaSusceptibility* susceptibility_malaria = individual_malaria->GetMalariaSusceptibilityContext();
 
         // push back fraction of immune variants to which individual has been exposed
-        float msp = susceptibility_malaria->get_fraction_of_variants_with_antibodies(Kernel::MalariaAntibodyType::MSP1);
-        sum_MSP_by_agebin.at(agebin) += mc_weight * msp;
-        sumsqr_MSP_by_agebin.at(agebin) += mc_weight * msp * msp;
-        float nonspec = susceptibility_malaria->get_fraction_of_variants_with_antibodies(Kernel::MalariaAntibodyType::PfEMP1_minor);
-        sum_nonspec_by_agebin.at(agebin) += mc_weight * nonspec;
-        sumsqr_nonspec_by_agebin.at(agebin) += mc_weight * nonspec * nonspec;
-        float pfemp1 = susceptibility_malaria->get_fraction_of_variants_with_antibodies(Kernel::MalariaAntibodyType::PfEMP1_major);
-        sum_pfemp1_by_agebin.at(agebin) += mc_weight * pfemp1;
-        sumsqr_pfemp1_by_agebin.at(agebin) += mc_weight * pfemp1 * pfemp1;
+        double msp = susceptibility_malaria->get_fraction_of_variants_with_antibodies(Kernel::MalariaAntibodyType::MSP1);
+        double mspw = mc_weight * msp;
+        m_pImmunityData->sum_MSP_by_agebin.at(agebin)    += mspw;
+        m_pImmunityData->sumsqr_MSP_by_agebin.at(agebin) += mspw * mspw;
+
+        double nonspec = susceptibility_malaria->get_fraction_of_variants_with_antibodies(Kernel::MalariaAntibodyType::PfEMP1_minor);
+        double nonspecw = mc_weight * nonspec;
+        m_pImmunityData->sum_nonspec_by_agebin.at(agebin)    += nonspecw;
+        m_pImmunityData->sumsqr_nonspec_by_agebin.at(agebin) += nonspecw * nonspecw;
+
+        double pfemp1 = susceptibility_malaria->get_fraction_of_variants_with_antibodies(Kernel::MalariaAntibodyType::PfEMP1_major);
+        double pfemp1w = mc_weight * pfemp1;
+        m_pImmunityData->sum_pfemp1_by_agebin.at(agebin)    += pfemp1w;
+        m_pImmunityData->sumsqr_pfemp1_by_agebin.at(agebin) += pfemp1w * pfemp1w;
 
         return true;
+    }
+
+    double CalcStdDev( double sumsqr, double num, double mean )
+    {
+        double var = (sumsqr / num) - (mean * mean);
+        double std_dev = 0.0;
+        if( var > 0.0 )
+        {
+            std_dev = sqrt( var );
+        }
+        return std_dev;
     }
 
     void MalariaImmunityReport::AccumulateOutput()
@@ -240,19 +284,21 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
 
         for(int i = 0; i<ages.size(); i++)
         {
-            if (sum_population_by_agebin.at(i) > 0)
+            double sum_pop = m_pImmunityData->sum_population_by_agebin.at(i);
+            if( sum_pop > 0 )
             {
-                double mean_msp     = sum_MSP_by_agebin.at(i)     / sum_population_by_agebin.at(i) ;
-                double mean_nonspec = sum_nonspec_by_agebin.at(i) / sum_population_by_agebin.at(i) ;
-                double mean_pfemp1  = sum_pfemp1_by_agebin.at(i)  / sum_population_by_agebin.at(i) ;
+
+                double mean_msp     = m_pImmunityData->sum_MSP_by_agebin.at(i)     / sum_pop;
+                double mean_nonspec = m_pImmunityData->sum_nonspec_by_agebin.at(i) / sum_pop;
+                double mean_pfemp1  = m_pImmunityData->sum_pfemp1_by_agebin.at(i)  / sum_pop;
 
                 msp_means.push_back(     mean_msp     );
                 nonspec_means.push_back( mean_nonspec );
                 pfemp1_means.push_back(  mean_pfemp1  );
 
-                msp_stds.push_back(     sqrt( (sumsqr_MSP_by_agebin.at(i)     / sum_population_by_agebin.at(i)) - (mean_msp     * mean_msp    ) ) );
-                nonspec_stds.push_back( sqrt( (sumsqr_nonspec_by_agebin.at(i) / sum_population_by_agebin.at(i)) - (mean_nonspec * mean_nonspec) ) );
-                pfemp1_stds.push_back(  sqrt( (sumsqr_pfemp1_by_agebin.at(i)  / sum_population_by_agebin.at(i)) - (mean_pfemp1  * mean_pfemp1 ) ) );
+                msp_stds.push_back(     CalcStdDev( m_pImmunityData->sumsqr_MSP_by_agebin.at(i),     sum_pop, mean_msp     ) );
+                nonspec_stds.push_back( CalcStdDev( m_pImmunityData->sumsqr_nonspec_by_agebin.at(i), sum_pop, mean_nonspec ) );
+                pfemp1_stds.push_back(  CalcStdDev( m_pImmunityData->sumsqr_pfemp1_by_agebin.at(i),  sum_pop, mean_pfemp1  ) );
             }
             else
             {
@@ -272,61 +318,17 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         MSP_std_by_agebin.push_back(      msp_stds      );
         nonspec_std_by_agebin.push_back(  nonspec_stds  );
         PfEMP1_std_by_agebin.push_back(   pfemp1_stds   );
-
-        std::fill( sum_population_by_agebin.begin(), sum_population_by_agebin.end(), 0);
-        std::fill( sum_MSP_by_agebin.begin(),        sum_MSP_by_agebin.end(),        0);
-        std::fill( sumsqr_MSP_by_agebin.begin(),     sumsqr_MSP_by_agebin.end(),     0);
-        std::fill( sum_nonspec_by_agebin.begin(),    sum_nonspec_by_agebin.end(),    0);
-        std::fill( sumsqr_nonspec_by_agebin.begin(), sumsqr_nonspec_by_agebin.end(), 0);
-        std::fill( sum_pfemp1_by_agebin.begin(),     sum_pfemp1_by_agebin.end(),     0);
-        std::fill( sumsqr_pfemp1_by_agebin.begin(),  sumsqr_pfemp1_by_agebin.end(),  0);
-
     }
 
-    void MalariaImmunityReport::WriteOutput( float currentTime )
+    void MalariaImmunityReport::SerializeOutput( float currentTime, IJsonObjectAdapter& output, JSerializer& js )
     {
-        std::stringstream output_file_name;
-        output_file_name << GetBaseOutputFilename() << ".json";
-        LOG_INFO_F( "Writing file: %s\n", output_file_name.str().c_str() );
+        ReportUtilities::SerializeVector( output, js, "Age Bins" , ages );
 
-        Element elementRoot = String();
-        QuickBuilder qb(elementRoot);
-
-        for (int i = 0; i < ages.size(); i++)
-        {
-            qb["Age Bins"][i] = Number(ages.at(i));
-        }
-
-        for (int n = 0; n < MSP_mean_by_agebin.size(); n++)
-        {
-            for (int i = 0; i < ages.size(); i++)
-            {
-                qb[ "MSP Mean by Age Bin"            ][n][i] = Number( MSP_mean_by_agebin.at(n).at(i));
-                qb[ "Non-Specific Mean by Age Bin"   ][n][i] = Number( nonspec_mean_by_agebin.at(n).at(i));
-                qb[ "PfEMP1 Mean by Age Bin"         ][n][i] = Number( PfEMP1_mean_by_agebin.at(n).at(i));
-                qb[ "MSP StdDev by Age Bin"          ][n][i] = Number( MSP_std_by_agebin.at(n).at(i));
-                qb[ "Non-Specific StdDev by Age Bin" ][n][i] = Number( nonspec_std_by_agebin.at(n).at(i));
-                qb[ "PfEMP1 StdDev by Age Bin"       ][n][i] = Number( PfEMP1_std_by_agebin.at(n).at(i));
-            }
-        }
-
-        // write to an internal buffer first... if we write directly to the network share, performance is slow
-        // (presumably because it's doing a bunch of really small writes of all the JSON elements instead of one
-        // big write)
-        ostringstream oss;
-        Writer::Write(elementRoot, oss);
-
-        ofstream report_json;
-        report_json.open(FileSystem::Concat( EnvPtr->OutputPath, output_file_name.str() ).c_str());
-
-        if (report_json.is_open())
-        {
-            report_json << oss.str();
-            report_json.close();
-        }
-        else
-        {
-            throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, output_file_name.str().c_str() );
-        }
+        ReportUtilities::SerializeVector2D( output, js, "MSP Mean by Age Bin"            , MSP_mean_by_agebin     );
+        ReportUtilities::SerializeVector2D( output, js, "Non-Specific Mean by Age Bin"   , nonspec_mean_by_agebin );
+        ReportUtilities::SerializeVector2D( output, js, "PfEMP1 Mean by Age Bin"         , PfEMP1_mean_by_agebin  );
+        ReportUtilities::SerializeVector2D( output, js, "MSP StdDev by Age Bin"          , MSP_std_by_agebin      );
+        ReportUtilities::SerializeVector2D( output, js, "Non-Specific StdDev by Age Bin" , nonspec_std_by_agebin  );
+        ReportUtilities::SerializeVector2D( output, js, "PfEMP1 StdDev by Age Bin"       , PfEMP1_std_by_agebin   );
     }
 }

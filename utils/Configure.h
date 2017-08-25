@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -31,6 +31,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <map>
 #include <set>
 #include <vector>
+#include <algorithm>
 
 #ifndef WIN32
 #include <limits>
@@ -44,11 +45,15 @@ namespace Kernel
 {
     class IPKey;
     class IPKeyValue;
+    class NPKey;
+    class NPKeyValue;
+    class EventTrigger;
 
     struct IDMAPI IComplexJsonConfigurable
     {
         virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) = 0;
         virtual json::QuickBuilder GetSchema() = 0;
+        virtual bool  HasValidDefault() const = 0;
     };
 
 #define FIXED_STRING_SET_LABEL "Fixed String Set"
@@ -117,11 +122,9 @@ namespace Kernel
         class ConstrainedString : public std::string
         {
             public:
-                ConstrainedString()
-                :constraint_param(nullptr)
-                {};
+                ConstrainedString();
 
-                ConstrainedString( std::string &init_str );
+                ConstrainedString( const std::string &init_str );
                 ConstrainedString( const char *init_str );
 
                 virtual const ConstrainedString& operator=( const std::string& new_value );
@@ -169,6 +172,10 @@ namespace Kernel
         typedef std::map< std::string, IComplexJsonConfigurable * > tComplexJsonConfigurableMapType;
         typedef std::map< std::string, IPKey * > tIPKeyMapType;
         typedef std::map< std::string, IPKeyValue * > tIPKeyValueMapType;
+        typedef std::map< std::string, NPKey * > tNPKeyMapType;
+        typedef std::map< std::string, NPKeyValue * > tNPKeyValueMapType;
+        typedef std::map< std::string, EventTrigger * > tEventTriggerMapType;
+        typedef std::map< std::string, std::vector<EventTrigger> * > tEventTriggerVectorMapType;
 
     public:
 
@@ -221,6 +228,10 @@ namespace Kernel
             tComplexJsonConfigurableMapType complexTypeMap;
             tIPKeyMapType ipKeyTypeMap ;
             tIPKeyValueMapType ipKeyValueTypeMap;
+            tNPKeyMapType npKeyTypeMap ;
+            tNPKeyValueMapType npKeyValueTypeMap;
+            tEventTriggerMapType eventTriggerTypeMap ;
+            tEventTriggerVectorMapType eventTriggerVectorTypeMap ;
 
         };
     private:
@@ -237,6 +248,7 @@ namespace Kernel
 #pragma warning( pop )
 
         JsonConfigurable();
+        JsonConfigurable( const JsonConfigurable& rConfig );
         virtual ~JsonConfigurable();
 
         static const char * default_description;
@@ -331,7 +343,7 @@ namespace Kernel
             const char* paramName,
             std::vector< float > * pVariable,
             const char* description = default_description,
-            float min = -FLT_MAX, float max = FLT_MAX, float defaultvalue = 1.0,
+            float min = -FLT_MAX, float max = FLT_MAX, float defaultvalue = 1.0, bool ascending = false,
             const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
@@ -429,12 +441,45 @@ namespace Kernel
             const char* defaultDesc
        );
 
-        template< typename T >
+       void
+       initConfigTypeMap(
+            const char* paramName,
+            NPKey * pVariable,
+            const char* defaultDesc
+       );
+
+       void
+       initConfigTypeMap(
+            const char* paramName,
+            NPKeyValue * pVariable,
+            const char* defaultDesc
+       );
+
+       void
+           initConfigTypeMap(
+               const char* paramName,
+               EventTrigger * pVariable,
+               const char* defaultDesc,
+               const char* condition_key = nullptr,
+               const char* condition_value = nullptr
+           );
+
+       void
+           initConfigTypeMap(
+               const char* paramName,
+               std::vector<EventTrigger> * pVariable,
+               const char* defaultDesc,
+               const char* condition_key = nullptr,
+               const char* condition_value = nullptr
+           );
+
+       template< typename T >
         void EnforceParameterRange( const std::string& key, T value, json::QuickInterpreter& jsonObj )
         {
             T min = (T)jsonObj["min"].As<json::Number>();
             T max = (T)jsonObj["max"].As<json::Number>();
 
+            // min and max values are included in the range of valid numbers 
             if ( value > max )
             {
                 throw Kernel::ConfigurationRangeException( __FILE__, __LINE__, __FUNCTION__, key.c_str(), value, max );
@@ -447,11 +492,26 @@ namespace Kernel
         }
 
         template< typename T >
+        void EnforceParameterAscending(const std::string& key, std::vector<T> values, json::QuickInterpreter& jsonObj)
+        {
+            if (!std::is_sorted(values.begin(), values.end(), [](const T & next, const T & prev)->bool {return next <= prev; }))
+            {
+                std::string error_string = "The values in " + key + " must be unique and in ascending order.";
+                throw InvalidInputDataException(__FILE__, __LINE__, __FUNCTION__, error_string.c_str());
+            }
+        }
+
+        template< typename T >
         void EnforceVectorParameterRanges( const std::string& key, std::vector<T> values, json::QuickInterpreter& jsonObj )
         {
             for (T& value : values)
             {
                 EnforceParameterRange<T>(key, value, jsonObj);
+            }
+
+            if (jsonObj.Exist("ascending") && jsonObj["ascending"].As<json::Number>())
+            {
+                EnforceParameterAscending<T>(key, values, jsonObj);
             }
         }
 
@@ -493,11 +553,15 @@ namespace Kernel
 
             if (pJson && pJson->Exist(key) == false && _useDefaults )
             {
-                if( (EnvPtr != nullptr) && EnvPtr->Log->CheckLogLevel(Logger::INFO, "JsonConfigurable"))
+                if( _useDefaults )
                 {
-                    EnvPtr->Log->LogF(Logger::INFO, "JsonConfigurable", "Using the default value ( \"%s\" : \"%s\" ) for unspecified parameter.\n", key, enum_md.enum_value_specs[0].first.c_str() );
+                    if( (EnvPtr != nullptr) && EnvPtr->Log->CheckLogLevel(Logger::INFO, "JsonConfigurable"))
+                    {
+                        EnvPtr->Log->LogF(Logger::INFO, "JsonConfigurable", "Using the default value ( \"%s\" : \"%s\" ) for unspecified parameter.\n", key, enum_md.enum_value_specs[0].first.c_str() );
+                    }
+                    thevar = (myclass) enum_md.enum_value_specs[0].second;
                 }
-                thevar = (myclass) enum_md.enum_value_specs[0].second;
+
                 if( _track_missing )
                 {
                     missing_parameters_set.insert(key);
@@ -506,13 +570,16 @@ namespace Kernel
                 return false;
             }
 
-            std::string enum_value_string = boost::to_lower_copy(GET_CONFIG_STRING(pJson, key));
+            std::string enum_value_string(GET_CONFIG_STRING(pJson, key));
+            std::transform(enum_value_string.begin(), enum_value_string.end(), enum_value_string.begin(), ::toupper);
 
             bool found = false;
 
             for (auto& vs : enum_md.enum_value_specs)
             {
-                if (boost::to_lower_copy(vs.first) == enum_value_string)
+                string copy(vs.first);
+                std::transform(copy.begin(), copy.end(), copy.begin(), ::toupper);
+                if (copy == enum_value_string)
                 {
                     thevar = (myclass) vs.second;
                     found = true;
@@ -588,11 +655,15 @@ namespace Kernel
             // parsing: specified case
             for (auto& enum_value_string : enum_value_strings)
             {
+                string lower(enum_value_string);
+                std::transform(lower.begin(), lower.end(), lower.begin(), ::toupper);
                 bool found = false;
 
                 for (auto& vs : enum_md.enum_value_specs)
                 {
-                    if ( boost::to_lower_copy(vs.first) == boost::to_lower_copy(enum_value_string) )
+                    string copy(vs.first);
+                    std::transform(copy.begin(), copy.end(), copy.begin(), ::toupper);
+                    if (copy == lower)
                     {
                         thevector.push_back( (myclass) vs.second );
                         found = true;
@@ -645,7 +716,7 @@ namespace Kernel
 
         static const char * _typename_label() { return "type_name"; }
         static const char * _typeschema_label()  { return "type_schema"; }
-        void handleMissingParam( const std::string& key );
+        void handleMissingParam( const std::string& key, const std::string& rDataLocation );
     };
 
     // No, we don't need everything from JsonConfigurable. No, this is not the final solution.
@@ -660,6 +731,7 @@ namespace Kernel
             InterventionConfig(json::QuickInterpreter* qi);
             virtual json::QuickBuilder GetSchema() override;
             virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
+            virtual bool  HasValidDefault() const override { return false; }
             json::Element _json;
             //json::QuickInterpreter _qi;
 
@@ -688,6 +760,7 @@ namespace Kernel
             NodeSetConfig(json::QuickInterpreter* qi);
             virtual json::QuickBuilder GetSchema() override;
             virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
+            virtual bool  HasValidDefault() const override { return false; }
             json::Element _json;
     };
 
@@ -700,6 +773,7 @@ namespace Kernel
             EventConfig(json::QuickInterpreter* qi);
             json::QuickBuilder GetSchema() override;
             virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
+            virtual bool  HasValidDefault() const override { return false; }
             json::Element _json;
     };
 
@@ -712,19 +786,20 @@ namespace Kernel
             WaningConfig(json::QuickInterpreter* qi);
             json::QuickBuilder GetSchema() override;
             virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
+            virtual bool  HasValidDefault() const override { return false; }
             json::Element _json;
     };
 
     #define GET_SCHEMA_STATIC_WRAPPER(x)\
     static json::QuickBuilder GetSchemaImpl() \
     { \
-        _dryrun = true; \
+        JsonConfigurable::_dryrun = true; \
         x * newInst = new x(); \
         newInst->Configure(nullptr); \
         return newInst->GetSchema(); \
     } \
     private: \
-    static Registrator registrator;
+    static JsonConfigurable::Registrator registrator;
 
     #define GET_SCHEMA_STATIC_WRAPPER_IMPL(x,y) \
     JsonConfigurable::Registrator y::registrator( #x, &y::GetSchemaImpl );

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IIndividualHumanHIV.h"
 #include "SusceptibilityHIV.h"
 
-static const char * _module = "AgeDiagnostic";
+SETUP_LOGGING( "AgeDiagnostic" )
 
 namespace Kernel
 {
@@ -35,7 +35,7 @@ namespace Kernel
             {
                 EventTrigger signal;
                 initConfigTypeMap( "Event", &signal, HIV_Age_Diagnostic_Event_Name_DESC_TEXT );
-                auto obj = Configuration::CopyFromElement((threshJson)[idx]);
+                auto obj = Configuration::CopyFromElement( (threshJson)[idx], inputJson->GetDataLocation() );
                 JsonConfigurable::Configure( obj );
                 delete obj;
                 obj = nullptr;
@@ -147,7 +147,12 @@ namespace Kernel
     )
     {
         initConfigComplexType("Age_Thresholds", &age_thresholds, HIV_Age_Thresholds_DESC_TEXT );
-        return JsonConfigurable::Configure(inputJson);
+        // --------------------------------------------------------------------------------------------------
+        // --- Do NOT configure SimpleDiagnostic.
+        // --- This does not use the parameters defined in Configure()
+        // --- i.e. Treatment_Fraction, Event_Or_Config, Positive_Diagnosis_Event, Positive_Diagnosis_Config.
+        // ---------------------------------------------------------------------------------------------------
+        return BaseIntervention::Configure(inputJson);
     }
 
     AgeDiagnostic::AgeDiagnostic() : SimpleDiagnostic()
@@ -195,7 +200,7 @@ namespace Kernel
                     throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
                 }
                 LOG_DEBUG_F("SimpleHealthSeekingBehavior is broadcasting the actual intervention event to individual %d.\n", parent->GetSuid().data );
-                broadcaster->TriggerNodeEventObserversByString( parent->GetEventContext(), age_thresholds.thresh_events[ thresh_event_counter ] );
+                broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), age_thresholds.thresh_events[ thresh_event_counter ] );
                 test_pos = true;
             }
             thresh_event_counter++;

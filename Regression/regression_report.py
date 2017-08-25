@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import json
 import os
 import xml.dom.minidom
 
@@ -40,28 +41,32 @@ class Report:
         prop_els.appendChild(nodegroup_el)
 
         self.suite_el.appendChild(prop_els)
-        self.schema = "not done"
-        
-    def addPassingTest(self, name, time):
+        self.schema = "skipped"
+
+        self._test_failures = set()
+        self._science_failures = set()
+
+    def addPassingTest(self, name, time, insetchart_path):
         testcase_el = self.doc.createElement("testcase")
         testcase_el.setAttribute("name", name)
         testcase_el.setAttribute("time", str(time.total_seconds()))
+        testcase_el.setAttribute("message", name + " PASSED, result data found at " + insetchart_path)
         
         self.suite_el.appendChild(testcase_el)
         
         self.num_tests += 1
     
-    def addFailingTest(self, name, failure_txt, insetchart_path):
+    def addFailingTest(self, scenario_path, failure_txt, insetchart_path, scenario_type):
         testcase_el = self.doc.createElement("testcase")
-        testcase_el.setAttribute("name", name)
+        testcase_el.setAttribute("name", scenario_path)
         testcase_el.setAttribute("time", "-1")
         
         failure_el = self.doc.createElement("failure")
         failure_el.setAttribute("type", "Validation failure")
-        failure_el.setAttribute("message", name + " failed validation!  Result data can be found at " + insetchart_path)
+        failure_el.setAttribute("message", scenario_path + " failed validation!  Result data can be found at " + insetchart_path)
         
-        #failure_txt_el = self.doc.createTextNode(failure_txt)
-        #failure_el.appendChild(failure_txt_el)
+        failure_txt_el = self.doc.createTextNode(failure_txt)
+        failure_el.appendChild(failure_txt_el)
         
         sysout_el = self.doc.createElement("system-out")
         sysout_txt = self.doc.createTextNode("n/a") # could fill this out more in the future, but not right now...
@@ -80,14 +85,19 @@ class Report:
         self.num_tests += 1
         self.num_failures += 1
 
-    def addErroringTest(self, name, error_txt, simulation_path):
+        if scenario_type == 'tests':
+            self._test_failures.add(scenario_path)
+        elif scenario_type == 'science':
+            self._science_failures.add(scenario_path)
+
+    def addErroringTest(self, scenario_path, error_txt, simulation_path, scenario_type):
         testcase_el = self.doc.createElement("testcase")
-        testcase_el.setAttribute("name", name)
+        testcase_el.setAttribute("name", scenario_path)
         testcase_el.setAttribute("time", "-1")
         
         error_el = self.doc.createElement("error")
-        error_el.setAttribute("type", "Functional failure")
-        error_el.setAttribute("message", name + " exited unexpectedly!  Simulation output can be found at " + simulation_path)
+        error_el.setAttribute("type", "FUNCTIONAL FAILURE")
+        error_el.setAttribute("message", scenario_path + " EXITED UNEXPECTEDLY!  Simulation output can be found at " + simulation_path)
         
         error_txt_el = self.doc.createTextNode(error_txt)
         error_el.appendChild(error_txt_el)
@@ -96,8 +106,16 @@ class Report:
         sysout_txt = self.doc.createTextNode("n/a") # could fill this out more in the future, but not right now...
         sysout_el.appendChild(sysout_txt)
 
+        stderr_filename = simulation_path + "/StdErr.txt"
+        stderr_txt = "n/a"
+        if( os.path.exists( stderr_filename ) ):
+            stderr_file = open( stderr_filename, "r" )
+            stderr_txt = "\n"
+            stderr_txt += stderr_file.read()
+            stderr_file.close()
+            
         syserr_el = self.doc.createElement("system-err")
-        syserr_txt = self.doc.createTextNode("n/a") # could fill this out more in the future, but not right now...
+        syserr_txt = self.doc.createTextNode(stderr_txt)
         syserr_el.appendChild(syserr_txt)
 
         testcase_el.appendChild(error_el)
@@ -108,7 +126,12 @@ class Report:
         
         self.num_tests += 1
         self.num_errors += 1
-    
+
+        if scenario_type == 'tests':
+            self._test_failures.add(scenario_path)
+        elif scenario_type == 'science':
+            self._science_failures.add(scenario_path)
+
     def write(self, filename, time):
         self.suite_el.setAttribute("name", self.params.suite + " regression suite")
         self.suite_el.setAttribute("tests", str(self.num_tests))
@@ -118,8 +141,27 @@ class Report:
         
         if not os.path.exists("reports"):
             os.makedirs("reports")
-        report_file = open( filename, "a" )
-        report_file.write(self.doc.toprettyxml())
+        with open( filename, "a" ) as report_file:
+            report_file.write(self.doc.toprettyxml())
+
+        def failure_file_name(filename, key):
+            prefix = filename.replace("report_", "failed_{0}_".format(key))
+            suffix = prefix.replace("xml", "json")
+
+            return suffix
+
+        def write_failed_file(failures, key):
+            with open( failure_file_name(filename, key), 'w') as failure_file:
+                failures_json = {key: [{"path": s} for s in sorted(failures)]}
+                json.dump(failures_json, failure_file, indent=2, separators=(',',':'))
+
+        if len(self._test_failures) > 0:
+            write_failed_file(self._test_failures, 'tests')
+
+        if len(self._science_failures) > 0:
+            write_failed_file(self._science_failures, 'science')
+
+        return
 
     @property
     def Summary(self):

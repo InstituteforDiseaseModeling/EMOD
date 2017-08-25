@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -50,7 +50,7 @@ namespace Kernel
         virtual float GetCircumcisedReducedAcquire() const override;
         virtual void ApplyCircumcision( float reduceAcquire ) override;
 
-        // IPropertyValueChangerEffects
+        // IIndividualHumanInterventionsContext
         virtual void ChangeProperty( const char *property, const char* new_value) override;
 
         virtual void Update(float dt) override; // hook to update interventions if they need it

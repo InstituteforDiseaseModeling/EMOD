@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Node.h"
 #include "SimulationConfig.h"
 
-static const char * _module = "Assortivity";
+SETUP_LOGGING( "Assortivity" )
 
 namespace Kernel 
 {
@@ -131,6 +131,7 @@ namespace Kernel
                                                             "STI_INFECTION_STATUS is only valid with STI_SIM." );
                 }
                 CheckAxesForTrueFalse();
+                SortMatrixFalseTrue();
             }
             else if( m_Group == AssortivityGroup::INDIVIDUAL_PROPERTY )
             {
@@ -179,7 +180,7 @@ namespace Kernel
         IPKeyValueContainer property_values ;
         try
         {
-            property_values = IPFactory::GetInstance()->GetIP( m_PropertyKey.ToString() )->GetValues();
+            property_values = IPFactory::GetInstance()->GetIP( m_PropertyKey.ToString() )->GetValues<IPKeyValueContainer>();
         }
         catch( DetailedException& )
         {
@@ -249,43 +250,40 @@ namespace Kernel
         }
     }
 
-    std::string GetStringValueSTI( const Assortivity* pAssortivity, const IIndividualHumanSTI* pIndividual )
+    void Assortivity::SortMatrixFalseTrue()
     {
-        return (pIndividual->IsInfected() ? std::string("TRUE") : std::string("FALSE")) ; 
+        if (m_Axes[0] == "TRUE")
+        {
+            m_Axes[0] = "FALSE";
+            m_Axes[1] = "TRUE";
+
+            float tmp = m_WeightingMatrix[0][0];
+            m_WeightingMatrix[0][0] = m_WeightingMatrix[1][1];
+            m_WeightingMatrix[1][1] = tmp;
+
+            tmp = m_WeightingMatrix[0][1];
+            m_WeightingMatrix[0][1] = m_WeightingMatrix[1][0];
+            m_WeightingMatrix[1][0] = tmp;
+        }
     }
 
-    std::string GetStringValueStiCoInfection( const Assortivity* pAssortivity, const IIndividualHumanSTI* pIndividual )
+    int GetIndexSTI( const Assortivity* pAssortivity, const IIndividualHumanSTI* pIndividual )
     {
-        return (pIndividual->HasSTICoInfection() ? std::string("TRUE") : std::string("FALSE")) ; 
+        return (pIndividual->IsInfected() ? 1 : 0) ; 
+    }
+
+    int GetIndexStiCoInfection( const Assortivity* pAssortivity, const IIndividualHumanSTI* pIndividual )
+    {
+        return (pIndividual->HasSTICoInfection() ? 1 : 0) ; 
     }
 
     std::string GetStringValueIndividualProperty( const Assortivity* pAssortivity, const IIndividualHumanSTI* pIndividual )
     {
-        IIndividualHumanEventContext * p_hec = nullptr;
-        if (s_OK != (const_cast<IIndividualHumanSTI*>(pIndividual))->QueryInterface(GET_IID(IIndividualHumanEventContext), (void**)&p_hec) )
-        {
-            throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "p_hec", "IIndividualHumanEventContext", "IIndividualHumanSTI");
-        }
-        std::string prop_name = pAssortivity->GetPropertyKey().ToString();
-        if( p_hec->GetProperties()->count( prop_name ) <= 0 )
-        {
-            std::stringstream ss ;
-            ss << "Individual did not have a property with the name " << prop_name ;
-            throw GeneralConfigurationException(__FILE__, __LINE__, __FUNCTION__,  ss.str().c_str() );
-        }
-        return p_hec->GetProperties()->at(prop_name) ;
-
-        //IPKey key = pAssortivity->GetPropertyKey();
-        //if( !(p_hec->GetProperties()->Contains( key )) )
-        //{
-        //    std::stringstream ss ;
-        //    ss << "Individual did not have a property with the name " << key.ToString() ;
-        //    throw GeneralConfigurationException(__FILE__, __LINE__, __FUNCTION__,  ss.str().c_str() );
-        //}
-        //return p_hec->GetProperties()->Get( key ).GetValueAsString() ;
+        IPKey key = pAssortivity->GetPropertyKey();
+        return pIndividual->GetPropertiesConst().Get( key ).GetValueAsString() ;
     }
 
-    IIndividualHumanSTI* Assortivity::SelectPartner( const IIndividualHumanSTI* pPartnerA,
+    IIndividualHumanSTI* Assortivity::SelectPartner( IIndividualHumanSTI* pPartnerA,
                                                      const list<IIndividualHumanSTI*>& potentialPartnerList )
     {
         release_assert( pPartnerA != nullptr );
@@ -305,20 +303,16 @@ namespace Kernel
                 break;
 
             case AssortivityGroup::STI_INFECTION_STATUS:
-                p_partner_B = FindPartner( pPartnerA, potentialPartnerList, GetStringValueSTI );
+                p_partner_B = FindPartner( pPartnerA, potentialPartnerList, GetIndexSTI );
                 break;
 
             case AssortivityGroup::INDIVIDUAL_PROPERTY:
-                p_partner_B = FindPartner( pPartnerA, potentialPartnerList, GetStringValueIndividualProperty );
+                p_partner_B = FindPartnerIP( pPartnerA, potentialPartnerList, GetStringValueIndividualProperty );
                 break;
 
             case AssortivityGroup::STI_COINFECTION_STATUS:
-
-                p_partner_B = FindPartner( pPartnerA, potentialPartnerList, GetStringValueStiCoInfection );
-
+                p_partner_B = FindPartner( pPartnerA, potentialPartnerList, GetIndexStiCoInfection );
                 break;
-
-
 
             default:
                 p_partner_B = SelectPartnerForExtendedGroups( group,  pPartnerA, potentialPartnerList );
@@ -328,7 +322,7 @@ namespace Kernel
     }
 
     IIndividualHumanSTI* Assortivity::SelectPartnerForExtendedGroups( AssortivityGroup::Enum group,
-                                                                      const IIndividualHumanSTI* pPartnerA,
+                                                                      IIndividualHumanSTI* pPartnerA,
                                                                       const list<IIndividualHumanSTI*>& potentialPartnerList )
     {
         throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "group", group, AssortivityGroup::pairs::lookup_key( group ) );
@@ -359,53 +353,126 @@ namespace Kernel
         PartnerScore( IIndividualHumanSTI* p, float s ) : pPartner(p), score(s) {};
     };
 
-    bool PartnerScoreSort( PartnerScore ps_a, PartnerScore ps_b )
-    {
-        return ps_a.score > ps_b.score;
-    }
+#define PS_MAX_LIST (50000)
+    static PartnerScore* PS_list = nullptr;
+    static int PS_size = -1;
 
-    IIndividualHumanSTI* Assortivity::FindPartner( const IIndividualHumanSTI* pPartnerA,
+    IIndividualHumanSTI* Assortivity::FindPartner( IIndividualHumanSTI* pPartnerA,
                                                    const list<IIndividualHumanSTI*>& potentialPartnerList,
-                                                   tGetStringValueFunc func )
+                                                   tGetIndexFunc func)
     {
+        if (PS_size == -1)
+        {
+            PS_list = (PartnerScore*)malloc( PS_MAX_LIST * sizeof( PartnerScore ) );
+            memset( PS_list, 0, PS_MAX_LIST * sizeof( PartnerScore ) );
+            PS_size = 0;
+        }
+
         // --------------------------------------------------------------
         // --- Get the index into the matrix for the male/partnerA based 
         // --- on his attribute and the axes that the attribute is in
         // --------------------------------------------------------------
-        int a_index = GetIndex( func( this, pPartnerA ) );
+        int a_index = func(this, pPartnerA);
 
         // -----------------------------------------------------------------------
         // --- Find the score for each female/partnerB given this particular male
         // -----------------------------------------------------------------------
-        std::vector<PartnerScore> partner_score_list ;
-        float total_score = 0.0f ;
-        for( auto p_partner_B : potentialPartnerList )
+        PS_size = 0;
+        float total_score = 0.0f;
+        for (auto p_partner_B : potentialPartnerList)
         {
-            int b_index = GetIndex( func( this, p_partner_B ) );
-            float score = m_WeightingMatrix[ a_index ][ b_index ];
-            if( score > 0.0 )
+            int b_index = func(this, p_partner_B);
+            float score = m_WeightingMatrix[a_index][b_index];
+            if( (score > 0.0) && (PS_size < PS_MAX_LIST) )
             {
-                partner_score_list.push_back( PartnerScore( p_partner_B, score ) );
-                total_score += score ;
+                PS_list[PS_size].pPartner = p_partner_B;
+                PS_list[PS_size].score = score;
+                ++PS_size;
+                total_score += score;
             }
         }
 
         // -------------------------------------------------------------------------
         // --- Select the partner based on their score/probability of being selected
         // -------------------------------------------------------------------------
-        release_assert( m_pRNG != nullptr );
-        float ran_score = m_pRNG->e() * total_score ;
-        float cum_score = 0.0 ;
-        for( auto entry : partner_score_list )
+        release_assert(m_pRNG != nullptr);
+        float ran_score = m_pRNG->e() * total_score;
+        float cum_score = 0.0;
+        for (int i = 0; i < PS_size; ++i)
         {
-            cum_score += entry.score ;
-            if( cum_score > ran_score )
+            cum_score += PS_list[i].score;
+            if (cum_score > ran_score)
             {
-                return entry.pPartner ;
+                return PS_list[i].pPartner;
             }
         }
 
-        return nullptr ;
+        return nullptr;
+    }
+
+    //static std::vector<PartnerScore> partner_score_list;
+    IIndividualHumanSTI* Assortivity::FindPartnerIP( IIndividualHumanSTI* pPartnerA,
+                                                     const list<IIndividualHumanSTI*>& potentialPartnerList,
+                                                     tGetStringValueFunc func)
+    {
+        if( PS_size == -1 )
+        {
+            PS_list = (PartnerScore*)malloc( PS_MAX_LIST * sizeof( PartnerScore ) );
+            memset( PS_list, 0, PS_MAX_LIST * sizeof( PartnerScore ) );
+            PS_size = 0;
+        }
+
+        // --------------------------------------------------------------
+        // --- Get the index into the matrix for the male/partnerA based 
+        // --- on his attribute and the axes that the attribute is in
+        // --------------------------------------------------------------
+        int a_index = pPartnerA->GetAssortivityIndex(m_RelType);
+        if (a_index == -1)
+        {
+            a_index = GetIndex(func(this, pPartnerA));
+            pPartnerA->SetAssortivityIndex(m_RelType, a_index);
+        }
+
+        // -----------------------------------------------------------------------
+        // --- Find the score for each female/partnerB given this particular male
+        // -----------------------------------------------------------------------
+        PS_size = 0;
+        float total_score = 0.0f;
+        for (auto p_partner_B : potentialPartnerList)
+        {
+            int b_index = p_partner_B->GetAssortivityIndex(m_RelType);
+            if (b_index == -1)
+            {
+                b_index = GetIndex(func(this, p_partner_B));
+                p_partner_B->SetAssortivityIndex(m_RelType, b_index);
+            }
+            float score = m_WeightingMatrix[a_index][b_index];
+            if( (score > 0.0) && (PS_size < PS_MAX_LIST) )
+            {
+                PS_list[ PS_size ].pPartner = p_partner_B;
+                PS_list[ PS_size ].score    = score;
+                ++PS_size;
+
+                total_score += score;
+            }
+        }
+
+        // -------------------------------------------------------------------------
+        // --- Select the partner based on their score/probability of being selected
+        // -------------------------------------------------------------------------
+        release_assert(m_pRNG != nullptr);
+        float ran_score = m_pRNG->e() * total_score;
+        float cum_score = 0.0;
+        for( int i = 0 ; i < PS_size ; ++i )
+        {
+            cum_score += PS_list[ i ].score;
+            if (cum_score > ran_score)
+            {
+                return PS_list[i].pPartner;
+            }
+        }
+
+        return nullptr;
     }
 
     int Assortivity::GetIndex( const std::string& rStringValue )

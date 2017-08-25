@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -20,9 +20,9 @@ namespace Kernel
         DECLARE_FACTORY_REGISTERED(InterventionFactory, AntiTBDrug, IDistributableIntervention);
 
     public:
-        bool Configure( const Configuration * );
         AntiTBDrug();
         virtual ~AntiTBDrug() {};
+        virtual bool Configure( const Configuration * ) override;
 
         // ISupports
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
@@ -41,14 +41,14 @@ namespace Kernel
     protected:
 
         // These have same names as analogous methods on container but are internal for this drug itself.
-        float GetDrugInactivationRate() const;
-        float GetDrugClearanceRate() const;
-        float GetDrugResistanceRate() const;
-        float GetDrugRelapseRate() const;
-        float GetDrugMortalityRate() const;
+        virtual float GetDrugInactivationRate() const;
+        virtual float GetDrugClearanceRate() const;
+        virtual float GetDrugResistanceRate() const;
+        virtual float GetDrugRelapseRate() const;
+        virtual float GetDrugMortalityRate() const;
 
         // inherited from base class Drugs.cpp
-        virtual void ApplyEffects();
+        virtual void ApplyEffects() override;
 
         float TB_drug_inactivation_rate;
         float TB_drug_clearance_rate;

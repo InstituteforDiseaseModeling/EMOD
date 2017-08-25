@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,15 +11,30 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "DurationDistribution.h"
 #include "IArchive.h"
 
+
+SETUP_LOGGING( "DurationDistribution" )
+
 namespace Kernel
 {
     DurationDistribution::DurationDistribution( DistributionFunction::Enum defaultType )
     : m_Type(defaultType)
     , m_Param1(0.0f)
     , m_Param2(0.0f)
+    , m_Param3(0.0f)
     , m_TypeName()
     , m_TypeDesc()
     , m_SupportedParameterInfoMap()
+    {
+    }
+
+    DurationDistribution::DurationDistribution( const DurationDistribution& master )
+    : m_Type( master.m_Type )
+    , m_Param1( master.m_Param1 )
+    , m_Param2( master.m_Param2 )
+    , m_Param3( master.m_Param3 )
+    , m_TypeName() // don't copy - only used during configure
+    , m_TypeDesc() // don't copy - only used during configure
+    , m_SupportedParameterInfoMap() // don't copy - only used during configure
     {
     }
 
@@ -47,7 +62,8 @@ namespace Kernel
 
     void DurationDistribution::AddSupportedType( DistributionFunction::Enum supportedType,
                                                  const char* pParamName_1, const char* pParamDesc_1,
-                                                 const char* pParamName_2, const char* pParamDesc_2 )
+                                                 const char* pParamName_2, const char* pParamDesc_2,
+                                                 const char* pParamName_3, const char* pParamDesc_3 )
     {
         release_assert( pParamName_1 != nullptr );
         release_assert( pParamDesc_1 != nullptr );
@@ -66,6 +82,11 @@ namespace Kernel
         info.m_ParamDesc_1 = pParamDesc_1 ;
         info.m_ParamName_2 = pParamName_2 ;
         info.m_ParamDesc_2 = pParamDesc_2 ;
+        if( (pParamName_3 != nullptr) && (pParamDesc_3 != nullptr) )
+        {
+            info.m_ParamName_3 = pParamName_3;
+            info.m_ParamDesc_3 = pParamDesc_3;
+        }
         m_SupportedParameterInfoMap.insert( std::make_pair( supportedType, info ) );
     }
 
@@ -125,8 +146,16 @@ namespace Kernel
         if( IncludeParameters( DistributionFunction::WEIBULL_DURATION ) )
         {
             ParameterInfo& info = m_SupportedParameterInfoMap[ DistributionFunction::WEIBULL_DURATION ];
-            pParent->initConfigTypeMap( info.m_ParamName_1.c_str(), &m_Param1, info.m_ParamDesc_1.c_str(), 0.0f, 50.0f, 16.0f, m_TypeName.c_str(), "WEIBULL_DURATION" ); // scale-lambda
-            pParent->initConfigTypeMap( info.m_ParamName_2.c_str(), &m_Param2, info.m_ParamDesc_2.c_str(), 0.0f, 50.0f, 20.0f, m_TypeName.c_str(), "WEIBULL_DURATION" ); // heterogeneity-inv_kappa
+            pParent->initConfigTypeMap( info.m_ParamName_1.c_str(), &m_Param1, info.m_ParamDesc_1.c_str(), 0.0f, FLT_MAX, 16.0f, m_TypeName.c_str(), "WEIBULL_DURATION" ); // scale (lambda)
+            pParent->initConfigTypeMap( info.m_ParamName_2.c_str(), &m_Param2, info.m_ParamDesc_2.c_str(), 0.0f, FLT_MAX, 20.0f, m_TypeName.c_str(), "WEIBULL_DURATION" ); // shape (kappa)
+        }
+
+        if( IncludeParameters( DistributionFunction::DUAL_TIMESCALE_DURATION ) )
+        {
+            ParameterInfo& info = m_SupportedParameterInfoMap[ DistributionFunction::DUAL_TIMESCALE_DURATION ];
+            pParent->initConfigTypeMap( info.m_ParamName_1.c_str(), &m_Param1, info.m_ParamDesc_1.c_str(), 0.0f, FLT_MAX, 6.0f, m_TypeName.c_str(), "DUAL_TIMESCALE_DURATION" ); // decay length time scale #1
+            pParent->initConfigTypeMap( info.m_ParamName_2.c_str(), &m_Param2, info.m_ParamDesc_2.c_str(), 0.0f, FLT_MAX, 6.0f, m_TypeName.c_str(), "DUAL_TIMESCALE_DURATION" ); // decay length time scale #2
+            pParent->initConfigTypeMap( info.m_ParamName_3.c_str(), &m_Param3, info.m_ParamDesc_3.c_str(), 0.0f,    1.0f, 0.5f, m_TypeName.c_str(), "DUAL_TIMESCALE_DURATION" ); // percentage of distribution that is time scale #1
         }
 
         if( !JsonConfigurable::_dryrun && (m_SupportedParameterInfoMap.count( m_Type ) == 0) )
@@ -192,7 +221,19 @@ namespace Kernel
                 else
                     throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, m_TypeName.c_str(), type_str, info.m_ParamName_2.c_str(), "0" );
             }
+            else if( (m_Type == DistributionFunction::DUAL_TIMESCALE_DURATION) && ((m_Param1 <= 0.0) || (m_Param2 <= 0.0) || (m_Param3 < 0.0) || (m_Param3 > 1.0)) )
+            {
+                if( m_Param1 <= 0.0 )
+                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, m_TypeName.c_str(), type_str, info.m_ParamName_1.c_str(), "0" );
+                else if( m_Param2 <= 0.0 )
+                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, m_TypeName.c_str(), type_str, info.m_ParamName_2.c_str(), "0" );
+                else if( m_Param3 < 0.0 )
+                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, m_TypeName.c_str(), type_str, info.m_ParamName_3.c_str(), "0" );
+                else
+                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, m_TypeName.c_str(), type_str, info.m_ParamName_3.c_str(), "1" );
+            }
         }
+        m_SupportedParameterInfoMap.clear();
     }
 
     float DurationDistribution::CalculateDuration()
@@ -203,15 +244,17 @@ namespace Kernel
         // -----------------------------------------------------------------------
         double p1 = m_Param1;
         double p2 = m_Param2;
+        double p3 = m_Param3;
         if( m_Type == DistributionFunction::EXPONENTIAL_DURATION )
         {
             p1 = 1.0/p1;// data entered as period, but need as rate
         }
-        else if( m_Type == DistributionFunction::WEIBULL_DURATION )
+        else if( m_Type == DistributionFunction::DUAL_TIMESCALE_DURATION )
         {
-            p2 = 1.0/p2; // data entered as inverse kappa, but need kappa
+            p1 = 1.0 / p1;// data entered as period, but need as rate
+            p2 = 1.0 / p2;// data entered as period, but need as rate
         }
-        float duration = Probability::getInstance()->fromDistribution( m_Type, p1, p2, 0.0 );
+        float duration = Probability::getInstance()->fromDistribution( m_Type, p1, p2, p3, 0.0 );
         return duration;
     }
 
@@ -228,6 +271,11 @@ namespace Kernel
     float DurationDistribution::GetParam2() const
     {
         return m_Param2;
+    }
+
+    float DurationDistribution::GetParam3() const
+    {
+        return m_Param3;
     }
 
     void DurationDistribution::serialize_map( IArchive& ar, std::map< DistributionFunction::Enum, ParameterInfo >& map )
@@ -247,7 +295,9 @@ namespace Kernel
                     //ar.labelElement("value.m_ParamDesc_1") & value.m_ParamDesc_1;
                     ar.labelElement("value.m_ParamName_2") & value.m_ParamName_2;
                     //ar.labelElement("value.m_ParamDesc_2") & value.m_ParamDesc_2;
-                ar.endObject();
+                    ar.labelElement( "value.m_ParamName_3" ) & value.m_ParamName_3;
+                    //ar.labelElement("value.m_ParamDesc_3") & value.m_ParamDesc_3;
+                    ar.endObject();
             }
         }
         else
@@ -262,7 +312,9 @@ namespace Kernel
                     //ar.labelElement("value.m_ParamDesc_1") & value.m_ParamDesc_1;
                     ar.labelElement("value.m_ParamName_2") & value.m_ParamName_2;
                     //ar.labelElement("value.m_ParamDesc_2") & value.m_ParamDesc_2;
-                ar.endObject();
+                    ar.labelElement( "value.m_ParamName_3" ) & value.m_ParamName_3;
+                    //ar.labelElement("value.m_ParamDesc_3") & value.m_ParamDesc_3;
+                    ar.endObject();
                 map[key] = value;
             }
         }
@@ -274,7 +326,8 @@ namespace Kernel
         ar.startObject();
         ar.labelElement("m_Type"    ) & (uint32_t&)dd.m_Type;
         ar.labelElement("m_Param1"  ) & dd.m_Param1;
-        ar.labelElement("m_Param2"  ) & dd.m_Param2;
+        ar.labelElement( "m_Param2" ) & dd.m_Param2;
+        ar.labelElement( "m_Param3" ) & dd.m_Param3;
         // I don't think we need to serialize the following.
         //ar.labelElement("m_TypeName") & dd.m_TypeName;
         //ar.labelElement("m_TypeDesc") & dd.m_TypeDesc;

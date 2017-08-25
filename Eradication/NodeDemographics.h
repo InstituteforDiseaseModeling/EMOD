@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -49,14 +49,16 @@ namespace Kernel
         double   AsDouble() const ;
         int      AsInt()    const ;
         bool     AsBool()   const ;
+        uint32_t AsUint()   const ;
         uint64_t AsUint64() const ;
         string   AsString() const ;
 
         void SetContext(const DemographicsContext *context, INodeContext *parent);
-        uint32_t GetNodeID() const { return nodeID; };
+        ExternalNodeId_t GetNodeID() const { return nodeID; };
 
         // Return the key/string used in the demographics file for this value
         std::string GetJsonKey() const { return valueKey; } // !!! See comment on get_array() !!!
+        const JsonObjectDemog& GetJsonObject() const { return jsonValue; }
 
         // These operators were initially created for testing.
         bool operator==( const NodeDemographics& rThat ) const ;
@@ -64,7 +66,6 @@ namespace Kernel
 
         std::string ToString() const { return jsonValue.ToString(); }
         bool IsObject() const { return jsonValue.IsObject(); }
-        const JsonObjectDemog& GetJsonObject() const { return jsonValue; }
 
     protected:
         friend class NodeDemographicsFactory;
@@ -84,7 +85,7 @@ namespace Kernel
         NodeDemographics( const JsonObjectDemog& v,
                           std::map<std::string, std::string> *s, 
                           INodeContext *p, 
-                          uint32_t nodeid,
+                          ExternalNodeId_t nodeid,
                           const std::string& rValueKey,
                           const std::string& rParentKey )
             : jsonValue(v)
@@ -115,7 +116,7 @@ namespace Kernel
         JsonObjectDemog jsonValue;
         std::map<std::string,std::string> * string_table;
         INodeContext * parent;
-        uint32_t nodeID ; // external ID of the node
+        ExternalNodeId_t nodeID ; // external ID of the node
         std::string valueKey ; // The key/string used in the demographics file for this value/object
         std::string parentKey ; // The key/string used in the demographics file for the parent i.e. demographics[ parentKey ][ valueKey ]
 #pragma warning( pop )
@@ -130,7 +131,7 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
 
     public:
-        static NodeDemographicsFactory* CreateNodeDemographicsFactory( boost::bimap<uint32_t, suids::suid> * nodeid_suid_map,  
+        static NodeDemographicsFactory* CreateNodeDemographicsFactory( boost::bimap<ExternalNodeId_t, suids::suid> * nodeid_suid_map,
                                                                        const ::Configuration *config,
                                                                        bool isDataInFiles, 
                                                                        uint32_t torusSize, 
@@ -145,12 +146,16 @@ namespace Kernel
         static NodeDemographics* CreateNodeDemographics( JsonObjectDemog pValue,
                                                          std::map<std::string, std::string> *pStringTable, 
                                                          INodeContext *pParentNode, 
-                                                         uint32_t nodeid,
+                                                         ExternalNodeId_t nodeid,
                                                          const std::string& rValueKey,
                                                          const std::string& rParentKey );
 
-        const std::vector<uint32_t>& GetNodeIDs() { return nodeIDs; }
+        const std::vector<ExternalNodeId_t>& GetNodeIDs() { return nodeIDs; }
         const std::string& GetIdReference() { return idreference; }
+
+        const JsonObjectDemog& GetNodePropertiesJson() { return node_properties; }
+
+        JsonObjectDemog GetJsonForNode( ExternalNodeId_t externalNodeId );
 
         // If the user selected to use the default demographics, this routine can be used
         // to write the demographics to a file once the demographics have been initialized.
@@ -173,45 +178,50 @@ namespace Kernel
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
         static const std::string default_node_demographics_str;
 
-        boost::bimap<uint32_t, suids::suid> * nodeid_suid_map;
-        std::vector<uint32_t> nodeIDs; // sucks to have to keep an extra copy of these; I guess we could expose through an iterator, but for now, I prefer this...
+        boost::bimap<ExternalNodeId_t, suids::suid> * nodeid_suid_map;
+        std::vector<ExternalNodeId_t> nodeIDs; // sucks to have to keep an extra copy of these; I guess we could expose through an iterator, but for now, I prefer this...
         std::string idreference;
 
         std::map<std::string, std::string> * full_string_table;
 
         // per-layer data
         std::vector<std::string> demographics_filenames;
+        JsonObjectDemog node_properties;
         std::vector<JsonObjectDemog> layer_defaults;
         std::vector<std::map<std::string, std::string>> layer_string_sub_tables;
         std::vector<std::map<std::string, std::string>> layer_string_value2key_tables;
 
         // node-id to raw data from demographics file for each layer
         // NOTE: we don't want to use unordered_map here because we want the order maintained.
-        std::vector<std::map<uint32_t,JsonObjectDemog>> nodedata_maps ;
+        std::vector<std::map<ExternalNodeId_t,JsonObjectDemog>> nodedata_maps ;
 
         // values used when generating the default geography
         uint32_t torus_size;
         uint32_t default_population;
+
         int default_torus_size;
         int default_node_population;
+        bool allow_nodeid_zero;
 
         static std::vector<std::string> demographics_filenames_list;
 
 #pragma warning( pop )
 
         NodeDemographicsFactory() : nodeid_suid_map(), nodeIDs(), idreference(), full_string_table( nullptr ), demographics_filenames(), layer_defaults(), layer_string_sub_tables(), layer_string_value2key_tables(), nodedata_maps() { };
-        NodeDemographicsFactory(boost::bimap<uint32_t, suids::suid> * nodeid_suid_map)
+        NodeDemographicsFactory(boost::bimap<ExternalNodeId_t, suids::suid> * nodeid_suid_map)
             : nodeid_suid_map( nodeid_suid_map )
             , nodeIDs()
             , idreference()
             , full_string_table( nullptr )
             , demographics_filenames()
+            , node_properties()
             , layer_defaults()
             , layer_string_sub_tables()
             , layer_string_value2key_tables()
             , nodedata_maps()
             , torus_size(10)
             , default_population(1000)
+            , allow_nodeid_zero(false)
         { 
         };
         void Initialize( const ::Configuration *config, bool isDataInFiles, uint32_t torusSize, uint32_t defaultPopulation );
@@ -219,7 +229,7 @@ namespace Kernel
         virtual bool Configure( const Configuration* config ) override;
 
         // Create json object of the data that is unique for this default node.
-        JsonObjectDemog CreateDefaultNodeDemograhics( uint32_t nodeid );
+        JsonObjectDemog CreateDefaultNodeDemograhics( ExternalNodeId_t nodeid );
 
         std::vector<std::string> GetDemographicFileNames(const ::Configuration* config);
 
@@ -282,41 +292,6 @@ namespace Kernel
         bool operator==( const NodeDemographicsDistribution& rThat ) const ;
         bool operator!=( const NodeDemographicsDistribution& rThat ) const ;
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
-        // A step towards limiting the lookup in Node for demographic_distributions by arbitrary keys
-        // -- General --
-        static const std::string ImmunityDistribution;
-        static const std::string FertilityDistribution;
-        static const std::string MortalityDistribution;
-        static const std::string MortalityDistributionMale;
-        static const std::string MortalityDistributionFemale;
-        static const std::string AgeDistribution;
-
-        static const std::string HIVCoinfectionDistribution;
-        static const std::string HIVMortalityDistribution;
-
-        // -- Polio --
-        static const std::string maternal_antibody_distribution1;
-        static const std::string maternal_antibody_distribution2;
-        static const std::string maternal_antibody_distribution3;
-        static const std::string mucosal_memory_distribution1;
-        static const std::string mucosal_memory_distribution2;
-        static const std::string mucosal_memory_distribution3;
-        static const std::string humoral_memory_distribution1;
-        static const std::string humoral_memory_distribution2;
-        static const std::string humoral_memory_distribution3;
-        static const std::string fake_time_since_last_infection_distribution;
-
-        // -- Malaria --
-        static const std::string MSP_mean_antibody_distribution;
-        static const std::string nonspec_mean_antibody_distribution;
-        static const std::string PfEMP1_mean_antibody_distribution;
-        static const std::string MSP_variance_antibody_distribution;
-        static const std::string nonspec_variance_antibody_distribution;
-        static const std::string PfEMP1_variance_antibody_distribution;
-#pragma warning( pop )
-
         // -----------------------------
         // --- Methods only for testing
         // -----------------------------
@@ -335,7 +310,7 @@ namespace Kernel
         // the correct number of dimensions.
         static void CheckArraySize( bool isCheckingDistributionValues,
                                     const std::string& rDistName, 
-                                    uint32_t nodeID, 
+                                    ExternalNodeId_t nodeID,
                                     const std::string& rArrayName,
                                     const std::vector<int>& rNumPopGroups, 
                                     int depth,
@@ -344,7 +319,7 @@ namespace Kernel
                                     const JsonObjectDemog& rJsonArray );
 
 
-        NodeDemographicsDistribution() { } // default constructor for serialization of demographic_distributions by Node
+        NodeDemographicsDistribution() { } 
         NodeDemographicsDistribution( const NodeDemographics &nd,
                                       int _num_axes, 
                                       std::vector<int> &_num_pop_groups,

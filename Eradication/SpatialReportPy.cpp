@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -29,7 +29,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 using namespace std;
 
-static const char * _module = "SpatialReportPy";
+SETUP_LOGGING( "SpatialReportPy" )
 
 namespace Kernel {
 
@@ -88,18 +88,6 @@ SpatialReportPy::postProcessAccumulatedData()
     // pass through normalization
     // order matters, since we're changing channels in place (not like old way)
 }
-
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(SpatialReport)
-template<class Archive>
-void serialize(Archive &ar, SpatialReportPy& report, const unsigned int v)
-{
-    boost::serialization::void_cast_register<SpatialReportPy,IReport>();
-    ar & report.timesteps_reduced;
-    ar & report.channelDataMap;
-    ar & report._nrmSize;
-}
-#endif
 
 }
 

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,7 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "SusceptibilityPy.h"
 
-static const char * _module = "SusceptibilityPy";
+SETUP_LOGGING( "SusceptibilityPy" )
 
 #ifdef ENABLE_PYTHON
 
@@ -70,19 +70,5 @@ namespace Kernel
         age += dt; // tracks age for immune purposes
     }
 }
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::SusceptibilityPy)
-
-namespace Kernel {
-/*
-    template<class Archive>
-    void serialize(Archive & ar, SusceptibilityPy &sus, const unsigned int  file_version )
-    {
-        ar & boost::serialization::base_object<SusceptibilityEnvironmental>(sus);
-}
-*/
-}
-#endif
 
 #endif // ENABLE_PYTHON

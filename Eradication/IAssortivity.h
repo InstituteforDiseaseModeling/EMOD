@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -34,7 +34,7 @@ namespace Kernel
         // select a partner from the potentialPartnerList.
         // Return nullptr if a suitable partner was not found.
         // nullptr can be returned even if the list is not empty.
-        virtual IIndividualHumanSTI* SelectPartner( const IIndividualHumanSTI* pPartnerA,
+        virtual IIndividualHumanSTI* SelectPartner( IIndividualHumanSTI* pPartnerA,
                                                     const list<IIndividualHumanSTI*>& potentialPartnerList ) = 0;
 
         // used when deserializing an object to get it configured properly

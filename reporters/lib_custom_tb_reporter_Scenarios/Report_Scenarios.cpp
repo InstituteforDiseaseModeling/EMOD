@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -30,8 +30,8 @@ using namespace json;
 // !!! If you are creating a new report by copying this one, you will need to modify 
 // !!! the values below indicated by "<<<"
 
-// Module name for logging, CustomReport.json, and DLL GetType()
-static const char * _module = "Report_Scenarios"; // <<< Name of this file
+// Name for logging, CustomReport.json, and DLL GetType()
+SETUP_LOGGING( "Report_Scenarios" ) // <<< Name of this file
 
 namespace Kernel{
 // You can put 0 or more valid Sim types into _sim_types but has to end with nullptr.
@@ -228,6 +228,8 @@ Report_Scenarios::Report_Scenarios()
 , _countupToNextPeriodicTarget( REPORTING_PERIOD_IN_TSTEPS ) //it accumulates data every timestep, if you want a yearly report use countupToNextPeriodicReport = DAYSPERYEAR
 , countupToNextPeriodicReport( REPORTING_START_TIME ) // start counting time from 1 (the increment is below)
 , ntic_list()
+, m_QualityOfCareKey()
+, m_AccessEarlyKeyValue()
 {
     LOG_DEBUG( "Report_Scenarios ctor\n" );
     report_name = _report_name;
@@ -392,6 +394,23 @@ Report_Scenarios::~Report_Scenarios()
 }
 
 
+void Report_Scenarios::Initialize( unsigned int nrmSize )
+{
+    BaseChannelReport::Initialize( nrmSize );
+
+    IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( "QualityOfCare", "", false );
+    if( p_ip != nullptr )
+    {
+        m_QualityOfCareKey = p_ip->GetKey<IPKey>();
+    }
+    p_ip = IPFactory::GetInstance()->GetIP( "Access", "", false );
+    if( p_ip != nullptr )
+    {
+        m_AccessEarlyKeyValue = p_ip->GetValues<IPKeyValueContainer>().Get( "Access:Early" );
+    }
+}
+
+
 /////////////////////////
 // steady-state methods
 /////////////////////////
@@ -433,16 +452,16 @@ Report_Scenarios::LogNodeData(
         }
         release_assert( pNTIC );
 
-        pNTIC->RegisterNodeEventObserver( this, IndividualEventTriggerType::TBActivation         );
-        pNTIC->RegisterNodeEventObserver( this, IndividualEventTriggerType::ProviderOrdersTBTest );
-        pNTIC->RegisterNodeEventObserver( this, IndividualEventTriggerType::TBTestDefault        );
-        pNTIC->RegisterNodeEventObserver( this, IndividualEventTriggerType::TBTestNegative       );
-        pNTIC->RegisterNodeEventObserver( this, IndividualEventTriggerType::TBTestPositive       );
-        pNTIC->RegisterNodeEventObserver( this, IndividualEventTriggerType::TBMDRTestDefault     );
-        pNTIC->RegisterNodeEventObserver( this, IndividualEventTriggerType::TBMDRTestNegative    );
-        pNTIC->RegisterNodeEventObserver( this, IndividualEventTriggerType::TBMDRTestPositive    );
-        pNTIC->RegisterNodeEventObserver( this, IndividualEventTriggerType::TBStartDrugRegimen   );
-        pNTIC->RegisterNodeEventObserver( this, IndividualEventTriggerType::TBFailedDrugRegimen  );
+        pNTIC->RegisterNodeEventObserver( this, EventTrigger::TBActivation         );
+        pNTIC->RegisterNodeEventObserver( this, EventTrigger::ProviderOrdersTBTest );
+        pNTIC->RegisterNodeEventObserver( this, EventTrigger::TBTestDefault        );
+        pNTIC->RegisterNodeEventObserver( this, EventTrigger::TBTestNegative       );
+        pNTIC->RegisterNodeEventObserver( this, EventTrigger::TBTestPositive       );
+        pNTIC->RegisterNodeEventObserver( this, EventTrigger::TBMDRTestDefault     );
+        pNTIC->RegisterNodeEventObserver( this, EventTrigger::TBMDRTestNegative    );
+        pNTIC->RegisterNodeEventObserver( this, EventTrigger::TBMDRTestPositive    );
+        pNTIC->RegisterNodeEventObserver( this, EventTrigger::TBStartDrugRegimen   );
+        pNTIC->RegisterNodeEventObserver( this, EventTrigger::TBFailedDrugRegimen  );
 
         ntic_list.push_back( pNTIC );
      }
@@ -508,19 +527,15 @@ Report_Scenarios::LogIndividualData(
     }
     release_assert( individual_tb_direct );
 
-    // ------------------------------------------------------------------------------
-    // --- We are making pProp const because we do not want to change its value.
-    // --- This will keep us from using the "[]" operator which has the side affect
-    // --- of modifying the propeties.  We need the "count" check before access since
-    // --- ".at" will throw an exception if the value is not found in the map.
-    // ------------------------------------------------------------------------------
-    const tProperties* pProp = individual->GetEventContext()->GetProperties();
     float age = float(individual->GetAge());
     float age_limit = TB_REPORTING_AGE_LIMIT;
 
-    // string literals used more than once get a variable
-    const std::string qoc_prop_key = "QualityOfCare";
-    std::string qoc_prop_str = ((*pProp).count( qoc_prop_key ) > 0) ? (*pProp).at( qoc_prop_key ) : "-none-" ; 
+    IPKeyValueContainer* p_props = individual->GetEventContext()->GetProperties();
+    std::string qoc_prop_str = "-none-";
+    if( m_QualityOfCareKey.IsValid() )
+    {
+        qoc_prop_str = p_props->Get( m_QualityOfCareKey ).GetValueAsString();
+    }
     LOG_DEBUG_F( "Person is %f, QualityOfCare %s\n", age, qoc_prop_str.c_str() );
 
     std::string agegroups_bin_name = "";
@@ -534,7 +549,7 @@ Report_Scenarios::LogIndividualData(
     }
 
     std::string demog_bin_name = "";
-    if( ((*pProp).count("Access") > 0) && ((*pProp).at("Access") == std::string("Early")) )
+    if( m_AccessEarlyKeyValue.IsValid() && p_props->Contains( m_AccessEarlyKeyValue ) )
     {
         if ( age > age_limit * DAYSPERYEAR ) 
         {
@@ -757,16 +772,16 @@ Report_Scenarios::Finalize()
 {
     for( auto p_ntic : ntic_list )
     {
-        p_ntic->UnregisterNodeEventObserver( this, IndividualEventTriggerType::TBActivation         );
-        p_ntic->UnregisterNodeEventObserver( this, IndividualEventTriggerType::ProviderOrdersTBTest );
-        p_ntic->UnregisterNodeEventObserver( this, IndividualEventTriggerType::TBTestDefault        );
-        p_ntic->UnregisterNodeEventObserver( this, IndividualEventTriggerType::TBTestNegative       );
-        p_ntic->UnregisterNodeEventObserver( this, IndividualEventTriggerType::TBTestPositive       );
-        p_ntic->UnregisterNodeEventObserver( this, IndividualEventTriggerType::TBMDRTestDefault     );
-        p_ntic->UnregisterNodeEventObserver( this, IndividualEventTriggerType::TBMDRTestNegative    );
-        p_ntic->UnregisterNodeEventObserver( this, IndividualEventTriggerType::TBMDRTestPositive    );
-        p_ntic->UnregisterNodeEventObserver( this, IndividualEventTriggerType::TBStartDrugRegimen   );
-        p_ntic->UnregisterNodeEventObserver( this, IndividualEventTriggerType::TBFailedDrugRegimen  );
+        p_ntic->UnregisterNodeEventObserver( this, EventTrigger::TBActivation         );
+        p_ntic->UnregisterNodeEventObserver( this, EventTrigger::ProviderOrdersTBTest );
+        p_ntic->UnregisterNodeEventObserver( this, EventTrigger::TBTestDefault        );
+        p_ntic->UnregisterNodeEventObserver( this, EventTrigger::TBTestNegative       );
+        p_ntic->UnregisterNodeEventObserver( this, EventTrigger::TBTestPositive       );
+        p_ntic->UnregisterNodeEventObserver( this, EventTrigger::TBMDRTestDefault     );
+        p_ntic->UnregisterNodeEventObserver( this, EventTrigger::TBMDRTestNegative    );
+        p_ntic->UnregisterNodeEventObserver( this, EventTrigger::TBMDRTestPositive    );
+        p_ntic->UnregisterNodeEventObserver( this, EventTrigger::TBStartDrugRegimen   );
+        p_ntic->UnregisterNodeEventObserver( this, EventTrigger::TBFailedDrugRegimen  );
     }
 
     LOG_INFO( "WriteData\n" );
@@ -1008,7 +1023,7 @@ Report_Scenarios::EndTimestep( float currentTime, float dt )
 bool
 Report_Scenarios::notifyOnEvent(
     IIndividualHumanEventContext *context,
-    const std::string& StateChange
+    const EventTrigger& trigger
 )
 { 
     // get pointer to IIndividualHumanTB2 (full TB interface) and the person's SusceptibilityTB
@@ -1024,42 +1039,42 @@ Report_Scenarios::notifyOnEvent(
     LOG_DEBUG_F( "Individual %d with weight %f experienced event %s\n",
                  context->GetSuid().data,
                  mc_weight,
-                 StateChange.c_str()
+                 trigger.c_str()
                );
 
-    if( StateChange == "TBActivation" )
+    if( trigger == EventTrigger::TBActivation )
     {
         Accumulate( _num_tbactivation_label, mc_weight );
     }
-    else if( StateChange == "ProviderOrdersTBTest" )
+    else if( trigger == EventTrigger::ProviderOrdersTBTest )
     {
         Accumulate( _num_providerorderstbtest_label, mc_weight );
     }
-    else if( StateChange == "TBTestDefault" )
+    else if( trigger == EventTrigger::TBTestDefault )
     {
         Accumulate( _num_tbtestdefault_label, mc_weight );
     }
-    else if( StateChange == "TBTestNegative" )
+    else if( trigger == EventTrigger::TBTestNegative )
     {
         Accumulate( _num_tbtestnegative_label, mc_weight );
     }
-    else if( StateChange == "TBTestPositive" )
+    else if( trigger == EventTrigger::TBTestPositive )
     {
         Accumulate( _num_tbtestpositive_label, mc_weight );
     }
-    else if( StateChange == "TBMDRTestDefault" )
+    else if( trigger == EventTrigger::TBMDRTestDefault )
     {
         Accumulate( _num_tbmdrtestdefault_label, mc_weight );
     }
-    else if( StateChange == "TBMDRTestNegative" )
+    else if( trigger == EventTrigger::TBMDRTestNegative )
     {
         Accumulate( _num_tbmdrtestnegative_label, mc_weight );
     }
-    else if( StateChange == "TBMDRTestPositive" )
+    else if( trigger == EventTrigger::TBMDRTestPositive )
     {
         Accumulate( _num_tbmdrtestpositive_label, mc_weight );
     }
-    else if( StateChange == "TBStartDrugRegimen" )
+    else if( trigger == EventTrigger::TBStartDrugRegimen )
     {
         Accumulate( _num_tbstartdrugregimen_label, mc_weight );
         if ( individual_tb->IsTreatmentNaive() ) //note the flag for m_is_tb_tx_naive_TBIVC = false is set after the broadcasting event, so that's why this works
@@ -1071,13 +1086,13 @@ Report_Scenarios::notifyOnEvent(
             Accumulate( _num_retx_tbstartdrugregimen_label, mc_weight );
         }
     }
-    else if( StateChange == "TBFailedDrugRegimen" )
+    else if( trigger == EventTrigger::TBFailedDrugRegimen )
     {
         Accumulate( _num_tbfaileddrugregimen_label, mc_weight );
     }
     else
     {
-        LOG_DEBUG_F( "Un-handled event: %s\n", StateChange.c_str() );
+        LOG_DEBUG_F( "Un-handled event: %s\n", trigger.c_str() );
     }
     return true;
 }

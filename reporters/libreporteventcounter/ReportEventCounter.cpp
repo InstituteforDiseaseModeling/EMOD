@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,8 +18,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 // !!! If you are creating a new report by copying this one, you will need to modify 
 // !!! the values below indicated by "<<<"
 
-// Module name for logging, CustomReport.json, and DLL GetType()
-static const char * _module = "ReportEventCounter";// <<< Name of this file
+// Name for logging, CustomReport.json, and DLL GetType()
+SETUP_LOGGING( "ReportEventCounter" ) // <<< Name of this file
 
 namespace Kernel
 {
@@ -101,11 +101,11 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
 
         if( ret )
         {
-            const std::vector< std::string >& trigger_list = GetEventTriggerList();
-            for( auto channel_name : trigger_list )
+            const std::vector< EventTrigger >& trigger_list = GetEventTriggerList();
+            for( auto trigger : trigger_list )
             {
-                unitsMap[ channel_name ] = "" ;
-                channelDataMap.AddChannel( channel_name );
+                unitsMap[ trigger.ToString() ] = "" ;
+                channelDataMap.AddChannel( trigger.ToString() );
             }
         }
         return ret;
@@ -130,14 +130,14 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
     }
 
     bool ReportEventCounter::notifyOnEvent( IIndividualHumanEventContext *context, 
-                                            const std::string& StateChange )
+                                            const EventTrigger& trigger )
     {
         if( HaveUnregisteredAllEvents() )
         {
             return false ;
         }
 
-        channelDataMap.Accumulate( StateChange, 1.0 );
+        channelDataMap.Accumulate( trigger.ToString(), 1.0 );
 
         return true ;
     }

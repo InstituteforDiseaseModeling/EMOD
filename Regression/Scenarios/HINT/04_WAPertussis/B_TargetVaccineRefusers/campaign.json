@@ -230,7 +230,8 @@
                     "Antigen": 0,
                     "Genome": 0,
                     "Outbreak_Source": "PrevalenceIncrease",
-                    "class": "OutbreakIndividual"
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0
                 },
                 "Number_Repetitions": 1,
                 "Property_Restrictions": [
@@ -257,7 +258,8 @@
                     "Antigen": 0,
                     "Genome": 0,
                     "Outbreak_Source": "PrevalenceIncrease",
-                    "class": "OutbreakIndividual"
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0
                 },
                 "Number_Repetitions": 1,
                 "Property_Restrictions": [

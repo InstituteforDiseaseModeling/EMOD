@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,7 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "ISTIInterventionsContainer.h"
 
-static const char * _module = "ModifyStiCoInfectionStatus";
+SETUP_LOGGING( "ModifyStiCoInfectionStatus" )
 
 // Important: Use the instance method to obtain the intervention factory obj instead of static method to cross the DLL boundary
 // NO USAGE like this:  GET_CONFIGURABLE(SimulationConfig)->number_substrains in DLL
@@ -30,6 +30,8 @@ namespace Kernel
     IMPLEMENT_FACTORY_REGISTERED(ModifyStiCoInfectionStatus)
 
     ModifyStiCoInfectionStatus::ModifyStiCoInfectionStatus()
+        : BaseIntervention()
+        , set_flag_to( false )
     {
         initSimTypes( 2, "STI_SIM", "HIV_SIM" );
         initConfigTypeMap( "New_STI_CoInfection_Status", &set_flag_to, MSCIS_New_STI_Co_Status_DESC_TEXT, false );
@@ -40,6 +42,10 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
+        // -----------------------------------------------------------
+        // --- Do not use the BaseIntervention::Configure()
+        // --- because we don't want to support those attributes here
+        // -----------------------------------------------------------
         return JsonConfigurable::Configure( inputJson );
     }
 
@@ -69,6 +75,7 @@ namespace Kernel
 
     void ModifyStiCoInfectionStatus::Update( float dt )
     {
+        expired = true;
     }
 
     REGISTER_SERIALIZABLE(ModifyStiCoInfectionStatus);

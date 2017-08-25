@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -98,7 +98,7 @@ SUITE(RelationshipParametersTest)
     TEST(TestMigrationActionsDistributionLessThanZero)
     {
         TestHelper_Exception( __LINE__, "testdata/RelationshipParametersTest/TestMigrationActionsDistributionLessThanZero.json",
-            "Configuration variable Migration_Actions_Distribution with value -0.2 out of range: less than or equal to 0." );
+            "Configuration variable Migration_Actions_Distribution with value -0.2 out of range: less than 0." );
     }
 
     TEST(TestMigrationActionsDistributionNotEqualToOne)

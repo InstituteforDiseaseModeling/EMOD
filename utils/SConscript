@@ -42,6 +42,7 @@ else:
     os.system(version_info)
 
 utilsSrcFiles = [
+    "BaseProperties.cpp",
     "BinaryArchiveReader.cpp",
     "BinaryArchiveWriter.cpp",
     "Configuration.cpp",
@@ -49,6 +50,7 @@ utilsSrcFiles = [
     "Coredump.cpp",
     "DurationDistribution.cpp",
     "Environment.cpp",
+    "EventTrigger.cpp",
     "Exceptions.cpp",
     "FileSystem.cpp",
     "IArchive.cpp",
@@ -65,7 +67,9 @@ utilsSrcFiles = [
     "JsonRawWriter.cpp",
     "Log.cpp",
     "MathFunctions.cpp",
+    "Memory.cpp",
     "../rapidjson/modp/modp_numtoa.cpp",
+    "NodeProperties.cpp",
     "ProgramOptions.cpp",
     "ProgVersion.cpp",
     "Properties.cpp",
@@ -82,6 +86,8 @@ utilsSrcFiles = [
 ]
 
 utilsIncFiles = [
+    'BaseProperties.h',
+    'BasePropertiesTemplates.h',
     'BoostLibWrapper.h',
     'Configuration.h',
     'ConfigurationImpl.h',
@@ -93,6 +99,7 @@ utilsIncFiles = [
     'ISupports.h',
     'Log.h',
     'MathFunctions.h',
+    'Memory.h',
     'Profile.h',
     'ProgVersion.h',
     'Properties.h',

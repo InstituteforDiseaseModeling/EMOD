@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -72,7 +72,7 @@ namespace Kernel
         virtual bool SetNewInfectionState(InfectionStateChange::_enum inf_state_change) override;
 
         //event observers for reporting
-        std::set < IInfectionIncidenceObserver * > infectionIncidenceObservers;
+        std::vector < IInfectionIncidenceObserver * > infectionIncidenceObservers;
         virtual void onInfectionIncidence() override;
         virtual void onInfectionMDRIncidence() override;
 

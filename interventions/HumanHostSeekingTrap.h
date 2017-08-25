@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -35,23 +35,20 @@ namespace Kernel
         DECLARE_FACTORY_REGISTERED(InterventionFactory, HumanHostSeekingTrap, IDistributableIntervention)
 
     public:
-        bool Configure( const Configuration * config );
         HumanHostSeekingTrap();
         HumanHostSeekingTrap( const HumanHostSeekingTrap& );
         virtual ~HumanHostSeekingTrap();
 
+        virtual bool Configure( const Configuration * config ) override;
+
         // IDistributableIntervention
-        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pCCO );
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
-        virtual void SetContextTo(IIndividualHumanContext *context);
-        virtual void Update(float dt);
+        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pCCO ) override;
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+        virtual void SetContextTo(IIndividualHumanContext *context) override;
+        virtual void Update(float dt) override;
 
     protected:
-        float current_attractrate;
-        float current_killingrate;
-        WaningConfig   killing_config;
         IWaningEffect* killing_effect;
-        WaningConfig   attract_config;
         IWaningEffect* attract_effect;
         IVectorInterventionEffectsSetter *ivies;
 

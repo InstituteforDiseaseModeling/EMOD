@@ -1,0 +1,95 @@
+{
+    "Use_Defaults": 1,
+    "Campaign_Name": "Illustration of NodeLevelScaleUp: Outbreak to smear- and smear+ at day 100, then diagnostic and treatment of only smear+ cases at day 200",
+    "Events": [
+        {
+            "Event_Name": "Outbreak",
+            "class": "CampaignEvent",
+            "Start_Day": 100,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Include_Arrivals": 0,
+                "Include_Departures": 0,
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "Outbreak_Source": "PrevalenceIncrease"
+                }
+            }
+        },
+        {
+            "Event_Name": "Test-and-treat of smear+ only",
+            "class": "CampaignEvent",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 110,
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Number_Repetitions": -1,
+                "Property_Restrictions": [],
+                "Target_Demographic": "Everyone",
+                "Timesteps_Between_Repetitions": 30,
+                "Intervention_Config": {
+                    "class": "SmearDiagnostic",
+                    "Base_Sensitivity": 1,
+                    "Base_Specificity": 1,
+                    "Cost_To_Consumer": 10,
+                    "Days_To_Diagnosis": 0,
+                    "Treatment_Fraction": 1,
+                    "Event_Or_Config": "Event",
+                    "Positive_Diagnosis_Event": "TestPositiveOnSmear"
+                }
+            }
+        },
+        {
+            "Event_Name": "when someone broadcasts a positive test using smear, give them the drug",
+            "class": "CampaignEvent",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 99,
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Include_Arrivals": 0,
+                "Include_Departures": 0,
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Demographic": "Everyone",
+                "Timesteps_Between_Repetitions": -1,
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIVScaleUpSwitch",
+                    "Trigger_Condition_List": [
+                        "TestPositiveOnSmear"
+                    ],
+                    "Demographic_Coverage": 1,
+                    "Demographic_Coverage_Time_Profile": "Linear",
+                    "Initial_Demographic_Coverage": 0,
+                    "Primary_Time_Constant": 150,
+                    "Property_Restrictions_Within_Node": [],
+                    "Not_Covered_IndividualIntervention_Configs": [],
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "AntiTBDrug",
+                        "Cost_To_Consumer": 90,
+                        "Drug_Type": "FirstLineCombo",
+                        "Durability_Profile": "FIXED_DURATION_CONSTANT_EFFECT",
+                        "Primary_Decay_Time_Constant": 180,
+                        "Remaining_Doses": 1,
+                        "TB_Drug_Clearance_Rate": 0.5,
+                        "TB_Drug_Inactivation_Rate": 0
+                    }
+                }
+            }
+        }
+    ]
+}

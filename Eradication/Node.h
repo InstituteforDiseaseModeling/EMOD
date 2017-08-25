@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -26,6 +26,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IInfectable.h"
 #include "MathFunctions.h"
 #include "Serialization.h"
+#include "NodeProperties.h"
 
 class RANDOMBASE;
 
@@ -68,13 +69,13 @@ namespace Kernel
         virtual suids::suid   GetSuid() const override;
         virtual suids::suid   GetNextInfectionSuid() override;
         virtual ::RANDOMBASE* GetRng() override;
-        virtual void AddEventsFromOtherNodes( const std::vector<std::string>& rEventNameList ) override;
+        virtual void AddEventsFromOtherNodes( const std::vector<EventTrigger>& rTriggerList ) override;
 
 
         virtual IMigrationInfo*   GetMigrationInfo() override;
         virtual const NodeDemographics* GetDemographics()  const override;
-        virtual const NodeDemographicsDistribution* GetDemographicsDistribution(std::string key) const override;
         virtual std::vector<bool> GetMigrationTypeEnabledFromDemographics() const override;
+        virtual NPKeyValueContainer& GetNodeProperties() override;
 
         virtual INodeEventContext* GetEventContext() override;
 
@@ -87,8 +88,9 @@ namespace Kernel
         // Initialization
         virtual void SetContextTo(ISimulationContext* context) override;
         virtual void SetMonteCarloParameters(float indsamplerate =.05, int nummininf = 0) override;
-        virtual void SetParameters(NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory) override;
+        virtual void SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory, bool white_list_enabled ) override;
         virtual void PopulateFromDemographics() override;
+        virtual void InitializeTransmissionGroupPopulations() override;
 
         // Campaign event-related
         bool IsInPolygon(float* vertex_coords, int numcoords); // might want to create a real polygon object at some point
@@ -117,7 +119,7 @@ namespace Kernel
 
         // Heterogeneous intra-node transmission
         virtual void ExposeIndividual(IInfectable* candidate, const TransmissionGroupMembership_t* individual, float dt) override;
-        virtual void DepositFromIndividual(StrainIdentity* strain_IDs, float contagion_quantity, const TransmissionGroupMembership_t* individual) override;
+        virtual void DepositFromIndividual( const IStrainIdentity& strain_IDs, float contagion_quantity, const TransmissionGroupMembership_t* individual) override;
         virtual void GetGroupMembershipForIndividual(const RouteList_t& route, tProperties* properties, TransmissionGroupMembership_t* membershipOut) override;
         virtual void UpdateTransmissionGroupPopulation(const TransmissionGroupMembership_t* membership, float size_changes,float mc_weight) override;
         virtual void SetupIntranodeTransmission();
@@ -132,10 +134,12 @@ namespace Kernel
         virtual void ValidateIntranodeTransmissionConfiguration();
 
         virtual float GetTotalContagion(const TransmissionGroupMembership_t* membership) override;
+        virtual std::map< std::string, float > GetTotalContagion() const;
         virtual const RouteList_t& GetTransmissionRoutes() const override;
         //Methods for implementing time dependence in various quantities; infectivity, birth rate, migration rate
         virtual float getSinusoidalCorrection(float sinusoidal_amplitude, float sinusoidal_phase) const override;
         virtual float getBoxcarCorrection(float boxcar_amplitude, float boxcar_start_time, float boxcar_end_time) const override;
+        virtual float getExponentialCorrection(float baseline, float rate, float delay);
 
         // These methods are not const because they will extract the value from the demographics
         // if it has not been done yet.
@@ -149,14 +153,40 @@ namespace Kernel
                                               float timeAtDestination,
                                               bool isDestinationNewHome ) override;
 
-        virtual ProbabilityNumber GetProbMaternalTransmission() const;
+        virtual ProbabilityNumber GetProbMaternalTransmission() const override;
+
+        virtual const NodeDemographicsDistribution* GetImmunityDistribution()        const override { return ImmunityDistribution; }
+        virtual const NodeDemographicsDistribution* GetFertilityDistribution()       const override { return FertilityDistribution; }
+        virtual const NodeDemographicsDistribution* GetMortalityDistribution()       const override { return MortalityDistribution; }
+        virtual const NodeDemographicsDistribution* GetMortalityDistributionMale()   const override { return MortalityDistributionMale; }
+        virtual const NodeDemographicsDistribution* GetMortalityDistributionFemale() const override { return MortalityDistributionFemale; }
+        virtual const NodeDemographicsDistribution* GetAgeDistribution()             const override { return AgeDistribution; }
 
         virtual void ManageFamilyTrip( float currentTime, float dt );
 
+        /*virtual float GetMaxInfectionProb( TransmissionRoute::Enum route ) const
+        {
+            return maxInfectionProb[ route ];
+        }*/
+
     private:
+
+    protected:
+
+
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
+        
         SerializationFlags serializationMask;
+
+        NodeDemographicsDistribution* ImmunityDistribution;
+        NodeDemographicsDistribution* FertilityDistribution;
+        NodeDemographicsDistribution* MortalityDistribution;
+        NodeDemographicsDistribution* MortalityDistributionMale;
+        NodeDemographicsDistribution* MortalityDistributionFemale;
+        NodeDemographicsDistribution* AgeDistribution;
+
+    private:
 
         // Do not access these directly but use the access methods above.
         float _latitude;
@@ -203,14 +233,14 @@ namespace Kernel
         Climate *localWeather;
         IMigrationInfo *migration_info;
         NodeDemographics demographics;
-        std::map<std::string, NodeDemographicsDistribution*> demographic_distributions;
         ExternalNodeId_t externalId; // DON'T USE THIS EXCEPT FOR INPUT/OUTPUT PURPOSES!
+        NPKeyValueContainer node_properties;
 
         // Event handling
         friend class NodeEventContextHost;
         friend class Simulation; // so migration can call configureAndAdd?????
         NodeEventContextHost *event_context_host;
-        std::vector<std::string> events_from_other_nodes ;
+        std::vector<EventTrigger> events_from_other_nodes ;
 
         //  Counters (some for reporting, others also for internal calculations)
         float statPop;
@@ -275,11 +305,12 @@ namespace Kernel
 
         RouteList_t routes;
 
-        /* clorton virtual */ void Initialize() /* clorton override */;
+        virtual void Initialize();
         virtual void setupEventContextHost();
         virtual bool Configure( const Configuration* config ) override;
         void ExtractDataFromDemographics();
         virtual void LoadImmunityDemographicsDistribution();
+        virtual void LoadOtherDiseaseSpecificDistributions() {};
 
         // Updates
         virtual void updateInfectivity(float dt = 0.0f);
@@ -318,7 +349,6 @@ namespace Kernel
         double calculateInitialAge( double temp_age );
         Fraction adjustSamplingRateByImmuneState( Fraction sampling_rate, bool is_immune ) const;
         Fraction adjustSamplingRateByAge( Fraction sampling_rate, double age ) const;
-        virtual void EraseAndDeleteDemographicsDistribution(std::string key); // for removing distributions used only in initialization
 
         // Reporting
         virtual void resetNodeStateCounters(void);
@@ -343,12 +373,21 @@ namespace Kernel
         float infectivity_boxcar_forcing_amplitude;     // Only for Infectivity_Scale_Type = ANNUAL_BOXCAR_FUNCTION
         float infectivity_boxcar_start_time;            // Only for Infectivity_Scale_Type = ANNUAL_BOXCAR_FUNCTION
         float infectivity_boxcar_end_time;              // Only for Infectivity_Scale_Type = ANNUAL_BOXCAR_FUNCTION
+        float infectivity_exponential_baseline;         // Only for Infectivity_Scale_Type = EXPONENTIAL_FUNCTION_OF_TIME
+        float infectivity_exponential_rate;             // Only for Infectivity_Scale_Type = EXPONENTIAL_FUNCTION_OF_TIME
+        float infectivity_exponential_delay;            // Only for Infectivity_Scale_Type = EXPONENTIAL_FUNCTION_OF_TIME
 
         float birth_rate_sinusoidal_forcing_amplitude;  // Only for Birth_Rate_Time_Dependence = SINUSOIDAL_FUNCTION_OF_TIME
         float birth_rate_sinusoidal_forcing_phase;      // Only for Birth_Rate_Time_Dependence = SINUSOIDAL_FUNCTION_OF_TIME
         float birth_rate_boxcar_forcing_amplitude;      // Only for Birth_Rate_Time_Dependence = ANNUAL_BOXCAR_FUNCTION
         float birth_rate_boxcar_start_time;             // Only for Birth_Rate_Time_Dependence = ANNUAL_BOXCAR_FUNCTION
         float birth_rate_boxcar_end_time;               // Only for Birth_Rate_Time_Dependence = ANNUAL_BOXCAR_FUNCTION
+
+        /*int calcGap( float maxInfectionProb );
+        bool bSkipping; // for skip exposure
+        int gap;
+        std::map< TransmissionRoute::Enum, float > maxInfectionProb; // set to 1.0 if not defined
+        float computeMaxInfectionProb( float dt ) const;*/
 
         DECLARE_SERIALIZABLE(Node);
 

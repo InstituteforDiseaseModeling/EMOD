@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,6 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include "suids.hpp"
 #include "IdmApi.h"
 
@@ -219,7 +220,7 @@ namespace Kernel
         virtual bool HasError() = 0;
         virtual bool IsWriter() = 0;
         bool IsReader() { return !IsWriter(); }
-        virtual uint32_t GetBufferSize() = 0;
+        virtual size_t GetBufferSize() = 0;
         virtual const char* GetBuffer() = 0;
     };
 }

@@ -7,14 +7,14 @@
     <ProjectHome />
     <StartupFile>externalReleaseFilter.py</StartupFile>
     <SearchPath />
-    <WorkingDirectory>c:\src\dtk\filterSource</WorkingDirectory>
+    <WorkingDirectory>e:\src\ifdm\2.13-release</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <InterpreterId>{9a7a9026-48c1-4688-9d5d-e5699d47d074}</InterpreterId>
     <InterpreterVersion>2.7</InterpreterVersion>
     <IsWindowsApplication>False</IsWindowsApplication>
-    <CommandLineArguments>-d c:\src\dtk\filterSource -l c:\temp\1p8Filter.txt -v DEBUG</CommandLineArguments>
+    <CommandLineArguments>-d e:\src\ifdm\2.13-release -l c:\temp\2.13-filter.log -v DEBUG</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
@@ -25,7 +25,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="externalReleaseFilter.py" />
-    <Compile Include="fixupSolution.py" />
     <Compile Include="solutionFilter.py" />
   </ItemGroup>
   <ItemGroup>

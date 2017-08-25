@@ -9,10 +9,8 @@ then
 fi
 
 echo "Running YAML demo."
-$EMOD_ROOT/build/x64/Release/Eradication/Eradication -C config.yaml -O testing_json -I $EMOD_ROOT/Regression/Scenarios/InputFiles -P .
+$EMOD_ROOT/build/x64/Release/Eradication/Eradication -C config.yaml -O testing_json -I $EMOD_ROOT/Scenarios/InputFiles -P .
 echo "Running multi-json demo."
-$EMOD_ROOT/build/x64/Release/Eradication/Eradication -C config_lite.json -O testing_json -I $EMOD_ROOT/Regression/Scenarios/InputFiles -P .
+$EMOD_ROOT/build/x64/Release/Eradication/Eradication -C config_lite.json -O testing_json -I $EMOD_ROOT/Scenarios/InputFiles -P .
 echo "Running MS Excel demo."
-$EMOD_ROOT/build/x64/Release/Eradication/Eradication -C config.xlsx -O testing_json -I $EMOD_ROOT/Regression/Scenarios/InputFiles -P .
-
-
+$EMOD_ROOT/build/x64/Release/Eradication/Eradication -C config.xlsx -O testing_json -I $EMOD_ROOT/Scenarios/InputFiles -P .

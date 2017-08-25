@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -58,12 +58,11 @@ namespace Kernel
         virtual bool  ApplyVaccineTake( IIndividualHumanContext* pihc ); 
 
     protected:
-        // context for this intervention--does not need to be reset upon migration, it is just for GiveVaccine()
-        IIndividualHumanContext *parent;
+
         int   vaccine_type;
         float vaccine_take;
         bool  vaccine_took;
-        WaningConfig   waning_config;
+        bool efficacy_is_multiplicative;
         IWaningEffect* waning_effect;
         IVaccineConsumer * ivc; // interventions container
 

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,31 +21,25 @@ namespace Kernel
 
     class  INodeVector;
     struct IIndividualHumanEventContext;
-    class MalariaSummaryReport : public BaseEventReportIntervalOutput
+    struct IJsonObjectAdapter;
+    class JSerializer;
+
+
+    class ReportIntervalData : public IIntervalData
     {
     public:
-        MalariaSummaryReport();
-        virtual ~MalariaSummaryReport();
+        ReportIntervalData();
+        virtual ~ReportIntervalData();
 
-        // BaseEventReportIntervalOutput
-        virtual bool Configure( const Configuration* config ) override;
-        virtual bool notifyOnEvent( IIndividualHumanEventContext *context, const std::string& StateChange ) override;
-        virtual void EndTimestep( float currentTime, float dt ) override;
-        virtual void Finalize() override;
+        // IIntervalData methods
+        virtual void Clear() override;
+        virtual void Update( const IIntervalData& rOther ) override;
+        virtual void Serialize( IJsonObjectAdapter& rjoa, JSerializer& js ) override;
+        virtual void Deserialize( IJsonObjectAdapter& rjoa ) override;
 
-    protected:
-        // BaseEventReportIntervalOutput
-        void WriteOutput( float currentTime );
+        // other methods
+        void SetVectorSize( int age_size, int PfPR_size );
 
-        void AccumulateOutput();
-        int  GetPfPRBin(float parasite_count);
-
-        bool m_has_data ;
-        INodeVector* node_vector;
-        bool expired ;
-
-        // accumulated on each timestep, reset on reporting interval
-        std::vector<float> ages;
         double sum_EIR;
         double sum_population_2to10;
         double sum_parasite_positive_2to10;
@@ -63,11 +57,39 @@ namespace Kernel
         agebinned_t sum_severe_cases_by_parasites_by_agebin;
         agebinned_t sum_severe_cases_by_fever_by_agebin;
         PfPRbinned_t sum_binned_PfPR_by_agebin;
-		PfPRbinned_t sum_binned_PfgamPR_by_agebin;
-		double sum_no_infected_days;
+        PfPRbinned_t sum_binned_PfgamPR_by_agebin;
+        double sum_no_infected_days;
         double sum_days_under_1pct_infected;
+    };
+
+
+    class MalariaSummaryReport : public BaseEventReportIntervalOutput
+    {
+    public:
+        MalariaSummaryReport();
+        virtual ~MalariaSummaryReport();
+
+        // BaseEventReportIntervalOutput
+        virtual bool Configure( const Configuration* config ) override;
+        virtual bool notifyOnEvent( IIndividualHumanEventContext *context, const EventTrigger& trigger ) override;
+        virtual void EndTimestep( float currentTime, float dt ) override;
+
+    protected:
+        // BaseEventReportIntervalOutput
+        virtual void AccumulateOutput() override;
+        virtual void SerializeOutput( float currentTime, IJsonObjectAdapter& output, JSerializer& js ) override;
+
+        int  GetPfPRBin(float parasite_count);
+
+        INodeVector* node_vector;
+        std::vector<float> ages;
+        std::vector<float> PfPRbins;
+
+        // accumulated on each timestep, reset on reporting interval
+        ReportIntervalData* m_pReportData;
 
         // accumulated on each reporting interval, written to output
+        std::vector<float> time_of_report;
         std::vector<double> annual_EIRs;
         std::vector<double> PfPRs_2to10;
         std::vector<agebinned_t> PfPRs_by_agebin;

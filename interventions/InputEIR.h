@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -32,6 +32,7 @@ namespace Kernel
             InputEIRConfig() : std::vector<float>(MONTHSPERYEAR) {}
             virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key );
             virtual json::QuickBuilder GetSchema();
+            virtual bool  HasValidDefault() const override { return false; }
     };
 
     class InputEIR : public BaseNodeIntervention
@@ -46,12 +47,12 @@ namespace Kernel
         virtual ~InputEIR() { }
 
         // INodeDistributableIntervention
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
-        virtual void SetContextTo(INodeEventContext *context);
-        virtual void Update(float dt);
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+        virtual void Update(float dt) override;
 
+        // IBaseIntervention
+        virtual float GetCostPerUnit() const override;
     protected:
-        INodeEventContext* parent;
         AgeDependentBitingRisk::Enum age_dependence;
         InputEIRConfig monthly_EIR; // 12 values of EIR by month
         float today;

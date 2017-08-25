@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -26,19 +26,19 @@ namespace Kernel
     public:
         DiagnosticTreatNeg();
         DiagnosticTreatNeg( const DiagnosticTreatNeg& master );
-        virtual bool Configure( const Configuration* pConfig );
         virtual ~DiagnosticTreatNeg();// { }
+        virtual bool Configure( const Configuration* pConfig ) override;
 
-        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO );
-        virtual void Update(float dt);
+        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO ) override;
+        virtual void Update(float dt) override;
 
-        virtual bool positiveTestResult();
+        virtual bool positiveTestResult() override;
 
         void onDiagnosisComplete( float dt );
-        virtual void onNegativeTestResult();
+        virtual void onNegativeTestResult() override;
         virtual void negativeTestDistribute();
 
-        virtual void onPatientDefault();
+        virtual void onPatientDefault() override;
 
         virtual float getTreatmentFractionNegative() const;
 

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -90,7 +90,6 @@ namespace Kernel
         // ...and by strain
         typedef std::map< StrainIdentity, int64_t > gametocytes_strain_map_t;
         typedef gametocytes_strain_map_t::value_type  gametocytes_strain_t;
-        gametocytes_strain_map_t m_male_gametocytes_by_strain;
         gametocytes_strain_map_t m_female_gametocytes_by_strain;
 
         float m_parasites_detected_by_blood_smear;

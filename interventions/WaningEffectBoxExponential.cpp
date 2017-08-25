@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,7 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "CajunIncludes.h"
 #include "ConfigurationImpl.h"
 
-static const char* _module = "WaningEffectBoxExponential";
+SETUP_LOGGING( "WaningEffectBoxExponential" )
 
 namespace Kernel
 {
@@ -21,12 +21,30 @@ namespace Kernel
     IMPLEMENT_FACTORY_REGISTERED(WaningEffectBoxExponential)
     IMPL_QUERY_INTERFACE2(WaningEffectBoxExponential, IWaningEffect, IConfigurable)
 
+    WaningEffectBoxExponential::WaningEffectBoxExponential()
+    : WaningEffectConstant()
+    , boxDuration( 0.0f )
+    , decayTimeConstant( 0.0f )
+    {
+    }
+
+    WaningEffectBoxExponential::WaningEffectBoxExponential( const WaningEffectBoxExponential& rOrig )
+    : WaningEffectConstant( rOrig )
+    , boxDuration( rOrig.boxDuration )
+    , decayTimeConstant( rOrig.decayTimeConstant )
+    {
+    }
+
+    IWaningEffect* WaningEffectBoxExponential::Clone()
+    {
+        return new WaningEffectBoxExponential( *this );
+    }
+
     bool WaningEffectBoxExponential::Configure( const Configuration * pInputJson )
     {
-        initConfigTypeMap("Initial_Effect",      &currentEffect,     WEBE_Initial_Effect_DESC_TEXT,      0, 1, 1);
         initConfigTypeMap("Box_Duration",        &boxDuration,       WEBE_Box_Duration_DESC_TEXT,        0, 100000, 100);
         initConfigTypeMap("Decay_Time_Constant", &decayTimeConstant, WEBE_Decay_Time_Constant_DESC_TEXT, 0, 100000, 100);
-        return JsonConfigurable::Configure(pInputJson);
+        return WaningEffectConstant::Configure( pInputJson );
     }
 
     void  WaningEffectBoxExponential::Update(float dt)
@@ -45,18 +63,13 @@ namespace Kernel
         }
     }
 
-    float WaningEffectBoxExponential::Current() const
-    {
-        return currentEffect;
-    }
-
     REGISTER_SERIALIZABLE(WaningEffectBoxExponential);
 
     void WaningEffectBoxExponential::serialize(IArchive& ar, WaningEffectBoxExponential* obj)
     {
+        WaningEffectConstant::serialize( ar, obj );
         WaningEffectBoxExponential& effect = *obj;
-        ar.labelElement("currentEffect") & effect.currentEffect;
-        ar.labelElement("boxDuration") & effect.boxDuration;
-        ar.labelElement("decayTimeConstant") & effect.decayTimeConstant;
+        ar.labelElement( "boxDuration"       ) & effect.boxDuration;
+        ar.labelElement( "decayTimeConstant" ) & effect.decayTimeConstant;
     }
 }

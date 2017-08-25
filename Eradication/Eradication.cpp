@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -32,28 +32,17 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ControllerFactory.h"
 #include "StatusReporter.h"
 #include "PythonSupport.h"
+#include "Memory.h"
+#include "IdmMpi.h"
+#include "IdmString.h"
+#include "Schema.h"
+#include "SimulationConfig.h"
 
 #include "Exceptions.h"
 
 // Version info extraction for both program and dlls
 #include "ProgVersion.h"
-#include "SimulationConfig.h"
-#include "InterventionFactory.h"
-#include "EventCoordinator.h"
-#include "IWaningEffect.h"
-#include "CampaignEvent.h"
-#include "StandardEventCoordinator.h"
 #include "DllLoader.h"
-#include "IdmMpi.h"
-#include "IdmString.h"
-
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!! By creating an instance of this object, we ensure that the linker does not optimize it away.
-// !!! This allows the componentTests to test these classes even though they are mostly used by DLLs.
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#include "BaseEventReportIntervalOutput.h"
-Kernel::BaseEventReportIntervalOutput junk("");  // make linker keep
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 using namespace std;
@@ -67,51 +56,13 @@ void setStackSize();
 void setStackSize();
 #endif
 
-static const char* _module = "Eradication";
+SETUP_LOGGING( "Eradication" )
 
 void Usage(char* cmd)
 {
     LOG_INFO_F("For full usage, run: %s --help\n", cmd);
     exit(1);
 }
-
-    const std::vector<std::string> 
-    getSimTypeList()
-    {
-    const char * simTypeListC[] = { "GENERIC_SIM"
-#ifndef DISABLE_VECTOR
-        , "VECTOR_SIM"
-#endif
-#ifndef DISABLE_MALARIA
-            , "MALARIA_SIM"
-#endif
-#ifndef DISABLE_AIRBORNE
-            , "AIRBORNE_SIM"
-#endif
-#ifdef ENABLE_POLIO
-            , "POLIO_SIM"
-#endif
-#ifdef ENABLE_TB
-            , "TB_SIM"
-#endif
-#ifdef ENABLE_TBHIV
-            , "TBHIV_SIM"
-#endif
-#ifndef DISABLE_STI
-            , "STI_SIM"
-#endif
-#ifndef DISABLE_HIV
-            , "HIV_SIM"
-#endif
-#ifdef ENABLE_PYTHON_FEVER
-            , "PY_SIM"
-#endif
-    };
-
-#define KNOWN_SIM_COUNT (sizeof(simTypeListC)/sizeof(simTypeListC[0]))
-    std::vector<std::string> simTypeList( simTypeListC, simTypeListC + KNOWN_SIM_COUNT );
-    return simTypeList;
-    }
 
 int main(int argc, char* argv[])
 {
@@ -239,127 +190,6 @@ int MPIInitWrapper( int argc, char* argv[])
     {
         LOG_ERR_F("Error in MPIInitWrapper: %s\n", e.what());
         return -1;
-    }
-}
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-// access to input schema embedding
-
-void IDMAPI writeInputSchemas(
-    const char* dll_path,
-    const char* output_path
-)
-{
-    std::ofstream schema_ostream_file;
-    json::Object fakeJsonRoot;
-    json::QuickBuilder total_schema( fakeJsonRoot );
-
-    // Get DTK version into schema
-    json::Object vsRoot;
-    json::QuickBuilder versionSchema( vsRoot );
-    ProgDllVersion pv;
-    versionSchema["DTK_Version"] = json::String( pv.getVersion() );
-    versionSchema["DTK_Branch"] = json::String( pv.getSccsBranch() );
-    versionSchema["DTK_Build_Date"] = json::String( pv.getBuildDate() );
-    total_schema["Version"] = versionSchema.As<json::Object>();
-
-    std::string szOutputPath = std::string( output_path );
-    if( szOutputPath != "stdout" )
-    {
-        // Attempt to open output path
-        schema_ostream_file.open( output_path, std::ios::out );
-        if( schema_ostream_file.fail() )
-        {
-            LOG_ERR_F( "Failed to open: %s\n", output_path );
-            return;
-        }
-    }
-    std::ostream &schema_ostream = ( ( szOutputPath == "stdout" ) ? std::cout : schema_ostream_file );
-
-    DllLoader dllLoader;
-    std::map< std::string, createSim > createSimFuncPtrMap;
-
-    if( dllLoader.LoadDiseaseDlls(createSimFuncPtrMap) )
-    {
-        //LOG_DEBUG( "Calling GetDiseaseDllSchemas\n" );
-        json::Object diseaseSchemas = dllLoader.GetDiseaseDllSchemas();
-        total_schema[ "config:emodules" ] = diseaseSchemas;
-    }
-
-    // Intervention dlls don't need any schema printing, just loading them
-    // through DllLoader causes them to all get registered with exe's Intervention
-    // Factory, which makes regular GetSchema pathway work. This still doesn't solve
-    // the problem of reporting in the schema output what dll they came from, if we
-    // even want to.
-    dllLoader.LoadInterventionDlls();
-
-    Kernel::JsonConfigurable::_dryrun = true;
-    std::ostringstream oss;
-
-    
-    json::Object configSchemaAll;
-    for (auto& sim_type : getSimTypeList())
-    {
-        json::Object fakeSimTypeConfigJson;
-        fakeSimTypeConfigJson["Simulation_Type"] = json::String(sim_type);
-        Configuration * fakeConfig = Configuration::CopyFromElement( fakeSimTypeConfigJson );
-        Kernel::SimulationConfig * pConfig = Kernel::SimulationConfigFactory::CreateInstance(fakeConfig);
-        release_assert( pConfig );
-
-        json::QuickBuilder config_schema = pConfig->GetSchema();
-        configSchemaAll[sim_type] = config_schema;
-
-        delete fakeConfig;
-        fakeConfig = nullptr;
-    }
-
-    for (auto& entry : Kernel::JsonConfigurable::get_registration_map())
-    {
-        const std::string& classname = entry.first;
-        json::QuickBuilder config_schema = ((*(entry.second))());
-        configSchemaAll[classname] = config_schema;
-    }
-
-    total_schema[ "config" ] = configSchemaAll;
-
-    if( !Kernel::InterventionFactory::getInstance() )
-    {
-        throw Kernel::InitializationException( __FILE__, __LINE__, __FUNCTION__, "Kernel::InterventionFactory::getInstance(" );
-    }
-
-    json::QuickBuilder ces_schema = Kernel::CampaignEventFactory::getInstance()->GetSchema();
-    json::QuickBuilder ecs_schema = Kernel::EventCoordinatorFactory::getInstance()->GetSchema();
-    json::QuickBuilder ivs_schema = Kernel::InterventionFactory::getInstance()->GetSchema();
-    json::QuickBuilder ns_schema  = Kernel::NodeSetFactory::getInstance()->GetSchema();
-    json::QuickBuilder we_schema  = Kernel::WaningEffectFactory::getInstance()->GetSchema();
-
-    json::Object objRoot;
-    json::QuickBuilder camp_schema( objRoot );
-
-    json::Object useDefaultsRoot;
-    json::QuickBuilder udSchema( useDefaultsRoot );
-    udSchema["type"] = json::String( "bool" );
-    udSchema["default"] = json::Number( 0 );
-    udSchema["description"] = json::String( CAMP_Use_Defaults_DESC_TEXT );
-    camp_schema["Use_Defaults"] = udSchema.As<json::Object>();
-
-    camp_schema["Events"][0] = json::String( "idmType:CampaignEvent" );
-
-    camp_schema["idmTypes" ][ "idmType:CampaignEvent" ] = ces_schema.As<json::Object>();
-    camp_schema["idmTypes" ][ "idmType:EventCoordinator" ] = ecs_schema.As<json::Object>();
-    camp_schema["idmTypes" ][ "idmType:Intervention"] = ivs_schema.As<json::Object>();
-    camp_schema["idmTypes" ][ "idmType:NodeSet"] = ns_schema[ "schema" ].As<json::Object>();
-    camp_schema["idmTypes" ][ "idmType:WaningEffect"] = we_schema[ "schema" ].As<json::Object>();
-
-    total_schema[ "interventions" ] = camp_schema.As< json::Object> ();
-    json::Writer::Write( total_schema, schema_ostream );
-    schema_ostream_file.close();
-
-    // PythonSupportPtr can be null during componentTests
-    if( (szOutputPath != "stdout") && (PythonSupportPtr != nullptr) )
-    {
-        PythonSupportPtr->RunPostProcessSchemaScript( output_path );
     }
 }
 
@@ -612,6 +442,17 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
         LOG_INFO( "Loaded Configuration...\n" ); 
         //LOG_INFO_F( "Name: %s\n", GET_CONFIGURABLE(SimulationConfig)->ConfigName.c_str() );  // can't get ConfigName because we haven't initialized SimulationConfig yet...
         LOG_INFO_F( "%d parameters found.\n", (EnvPtr->Config)->As<json::Object>().Size() );
+
+        Kernel::SimulationConfig* SimConfig = Kernel::SimulationConfigFactory::CreateInstance(EnvPtr->Config);
+        if (SimConfig)
+        {
+            Environment::setSimulationConfig(SimConfig);
+        }
+        else
+        {
+            throw Kernel::InitializationException(__FILE__, __LINE__, __FUNCTION__, "Failed to create SimulationConfig instance");
+        }
+        LOG_DEBUG("Initialize with config\n");
 
         // override controller selection if unit tests requested on command line
         LOG_INFO("Initializing Controller...\n");

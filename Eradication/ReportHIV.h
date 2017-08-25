@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -37,7 +37,7 @@ namespace Kernel
 
         // for IIndividualEventObserver
         virtual bool notifyOnEvent( IIndividualHumanEventContext *context, 
-                                    const std::string& StateChange ) override;
+                                    const EventTrigger& trigger ) override;
 
         // ISupports
         virtual Kernel::QueryResult QueryInterface(Kernel::iid_t iid, void **ppvObject) override { return Kernel::e_NOINTERFACE; }
@@ -56,8 +56,9 @@ namespace Kernel
         float num_on_ART;
         float num_ART_dropouts;
         unsigned int num_events ;
-        std::map< std::string, unsigned int> event_to_counter_map ;
-        std::vector< std::string > eventTriggerList ;
+        bool counting_all_events;
+        std::vector<uint32_t> event_counter_vector; // indexed by EventTrigger index
+        std::vector< EventTrigger > eventTriggerList ;
         std::vector<INodeTriggeredInterventionConsumer*> ntic_list ;
     };
 }

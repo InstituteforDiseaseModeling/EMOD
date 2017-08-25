@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -36,24 +36,10 @@ namespace Kernel
     {
     };
 
-    struct IVectorReportingOperations : ISupports
-    {
-        virtual float GetEIRByPool(VectorPoolIdEnum::Enum pool_id) const = 0;
-        virtual float GetHBRByPool(VectorPoolIdEnum::Enum pool_id) const = 0;
-        virtual int32_t getAdultCount()                            const = 0;
-        virtual int32_t getInfectedCount()                         const = 0;
-        virtual int32_t getInfectiousCount()                       const = 0;
-        virtual int32_t getMaleCount()                             const = 0;
-        virtual int32_t getNewEggsCount()                          const = 0;
-        virtual double  getInfectivity()                           const = 0;
-        virtual std::string get_SpeciesID()                        const = 0;
-        virtual const VectorHabitatList_t& GetHabitats()           const = 0;
-    };
-
     class IndividualHumanVector;
     class VectorCohortWithHabitat;
 
-    class VectorPopulation : public IVectorPopulation, public IInfectable, public IVectorReportingOperations
+    class VectorPopulation : public IVectorPopulation, public IInfectable, public IVectorPopulationReporting
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
@@ -70,15 +56,15 @@ namespace Kernel
         virtual void UpdateVectorPopulation(float dt);
 
         // For NodeVector to calculate # of migrating vectors (processEmigratingVectors) and put them in new node (processImmigratingVector)
-        virtual void Vector_Migration( IMigrationInfo* pMigInfo, VectorCohortList_t* pMigratingQueue );
-        virtual uint64_t Vector_Migration(float = 0, VectorCohortList_t * = nullptr);
-        void AddAdults(VectorCohort *adults) { AdultQueues.push_front(adults); }
-        virtual void AddVectors(VectorMatingStructure _vector_genetics, uint64_t releasedNumber);
+        virtual void Vector_Migration( IMigrationInfo* pMigInfo, VectorCohortVector_t* pMigratingQueue );
+        virtual uint64_t Vector_Migration(float = 0, VectorCohortVector_t* = nullptr);
+        void AddAdults(VectorCohort *adults) { AdultQueues.push_back(adults); }
+        virtual void AddVectors( const VectorMatingStructure& _vector_genetics, uint64_t releasedNumber );
 
         // IInfectable
         virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route ) override;
 
-        // IVectorReportingOperations
+        // IVectorPopulationReporting
         virtual float  GetEIRByPool(VectorPoolIdEnum::Enum pool_id) const override;
         virtual float  GetHBRByPool(VectorPoolIdEnum::Enum pool_id) const override;
         virtual int32_t getAdultCount()                             const override;
@@ -87,8 +73,10 @@ namespace Kernel
         virtual int32_t getMaleCount()                              const override;
         virtual int32_t getNewEggsCount()                           const override;
         virtual double  getInfectivity()                            const override;
-        virtual std::string get_SpeciesID()                         const override;
+        virtual const std::string& get_SpeciesID()                  const override;
         virtual const VectorHabitatList_t& GetHabitats()            const override;
+        virtual std::vector<int> GetNewlyInfectedSuids()            const override;
+        virtual std::vector<int> GetInfectiousSuids()               const override;
 
         virtual const infection_list_t& GetInfections()             const override;
         virtual float GetInterventionReducedAcquire()               const override;
@@ -105,7 +93,9 @@ namespace Kernel
 
         // This is the senescence equation for adult mortality in Ae aegypti as measured in lab experiments (Styer et al 2007)
         // Here this becomes an additional aging mortality superimposed on the specified realworld mosquito mortality in the field
-        inline static float mortalityFromAge(float age) { return (0.006f * exp(0.2f * age) / (1.0f + (0.006f * 1.5f / 0.2f * (exp(0.2f * age) - 1.0f)))); }
+        // inline static float mortalityFromAge(float age) { return (0.006f * exp(0.2f * age) / (1.0f + (0.006f * 1.5f / 0.2f * (exp(0.2f * age) - 1.0f)))); }
+        // You would think that the compile would optimize the above code, but it appears that it does not, so we hand code the following:
+        inline static float mortalityFromAge(float age) { float e = exp(0.2f*age); return (0.006f * e / (1.0f + (0.0449999981f * (e - 1)))); }
 
         // High temperatures and low humidity can decrease vector life expectancy
         // Craig, M. H., R. W. Snow, et al. (1999). "A climate-based distribution model of malaria transmission in sub-Saharan Africa." Parasitol Today 15(3): 105-111.
@@ -130,14 +120,16 @@ namespace Kernel
         float GetFeedingCycleDurationByTemperature() const;
 
         // Calculation of mated females based on gender_mating characteristics of male/female populations
-        virtual void ApplyMatingGenetics( IVectorCohort* cohort, VectorMatingStructure male_vector_genetics );
+        virtual void ApplyMatingGenetics( IVectorCohort* cohort, const VectorMatingStructure& male_vector_genetics );
+
         // Helper functions for egg calculations
-        void CreateEggCohortOfType( IVectorHabitat*, uint32_t, VectorMatingStructure );
-        void CreateEggCohortAlleleSorting( IVectorHabitat*, uint32_t, VectorMatingStructure );
-        void CreateEggCohortHEGSorting( IVectorHabitat*, uint32_t, VectorMatingStructure );
+        void CreateEggCohortOfType(        IVectorHabitat*, uint32_t, const VectorMatingStructure& ); // don't need to copy
+        void CreateEggCohortAlleleSorting( IVectorHabitat*, uint32_t, VectorMatingStructure ); //need to copy VectorMatingStructure
+        void CreateEggCohortHEGSorting(    IVectorHabitat*, uint32_t, VectorMatingStructure ); //need to copy VectorMatingStructure
 
         // Seek a compatible (same gender mating type) queue in specified list (e.g. AdultQueues, InfectiousQueues) and increase its population.
-        virtual void MergeProgressedCohortIntoCompatibleQueue(VectorCohortList_t &queues, int32_t population, VectorMatingStructure _vector_genetics);
+        virtual void MergeProgressedCohortIntoCompatibleQueue( VectorCohortList_t   &queues, int32_t population, const VectorMatingStructure& _vector_genetics);
+        virtual void MergeProgressedCohortIntoCompatibleQueue( VectorCohortVector_t &queues, int32_t population, const VectorMatingStructure& _vector_genetics );
 
         // Helpers to access information from VectorHabitat to return information about larva
         float GetLarvalDevelopmentProgress (float dt, IVectorCohortWithHabitat* larva) const;
@@ -196,7 +188,7 @@ namespace Kernel
         VectorCohortList_t EggQueues;
         VectorCohortList_t LarvaQueues;
         VectorCohortList_t ImmatureQueues;
-        VectorCohortList_t AdultQueues;
+        VectorCohortVector_t AdultQueues;
         VectorCohortList_t InfectedQueues;
         VectorCohortList_t InfectiousQueues;
         VectorCohortList_t MaleQueues;

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "TBContexts.h" //for querying to IIndividualHumanTB
 
-static const char * _module = "GroupEventCoordinator";
+SETUP_LOGGING( "GroupEventCoordinator" )
 
 
 namespace Kernel
@@ -58,20 +58,13 @@ namespace Kernel
     {
         bool retQualifies = true;
 
-        IIndividualHumanTB* tb_ind = nullptr;
-        if(const_cast<IIndividualHumanEventContext*>(pIndividual)->QueryInterface( GET_IID( IIndividualHumanTB ), (void**)&tb_ind ) != s_OK)
-        { //error here
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pIndividual", "IIndividualHumanTB", "IIndividualHumanEventContext" );
-        }
-
-
         if( demographic_restrictions.GetTargetDemographic() == TargetDemographicType::ExplicitDiseaseState )
         {
             //TB SPECIFIC DISEASE STATES
-            IIndividualHumanTB2* tb_ind = nullptr;
-            if(const_cast<IIndividualHumanEventContext*>(pIndividual)->QueryInterface( GET_IID( IIndividualHumanTB2 ), (void**)&tb_ind ) != s_OK)
+            IIndividualHumanTB* tb_ind = nullptr;
+            if(const_cast<IIndividualHumanEventContext*>(pIndividual)->QueryInterface( GET_IID( IIndividualHumanTB ), (void**)&tb_ind ) != s_OK)
             { 
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pIndividual", "IIndividualHumanTB2", "IIndividualHumanEventContext" );
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pIndividual", "IIndividualHumanTB", "IIndividualHumanEventContext" );
             }
 
             if ( target_disease_state == TargetGroupType::Infected )
@@ -114,17 +107,4 @@ namespace Kernel
 
 }
 
-#if 0
-namespace Kernel
-{
-    template<class Archive>
-    void serialize(Archive &ar, GroupInterventionDistributionEventCoordinator &ec, const unsigned int v)
-    {
-        ar & ec.target_disease_state;
 
-        ar & ec.node_suids;
-
-        ar & boost::serialization::base_object<StandardInterventionDistributionEventCoordinator>(ec);
-    }
-}
-#endif

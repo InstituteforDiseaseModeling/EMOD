@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,7 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #pragma once
 
 
-#ifdef ENABLE_TB
+#if defined(ENABLE_TB) || defined(ENABLE_TBHIV)
 #include "Interventions.h"
 #include "InterventionsContainer.h"
 #include "TBDrugTypeParameters.h"
@@ -44,7 +44,7 @@ namespace Kernel
         virtual void ApplyDrugVaccineReducedAcquireEffect( float rate ) = 0;
         virtual void ApplyDrugVaccineReducedTransmitEffect( float rate ) = 0;
         virtual void ApplyTBDrugEffects( TBDrugEffects_t effects, TBDrugType::Enum drug_type ) = 0;
-        virtual void UpdateTreatmentStatus( IndividualEventTriggerType::Enum new_treatment_status ) = 0;
+        virtual void UpdateTreatmentStatus( const EventTrigger& new_treatment_status ) = 0;
         virtual ~ITBDrugEffectsApply() { }
     };
 
@@ -83,7 +83,7 @@ namespace Kernel
         virtual void ApplyDrugVaccineReducedAcquireEffect( float rate );
         virtual void ApplyDrugVaccineReducedTransmitEffect( float rate );
         virtual void ApplyTBDrugEffects( TBDrugEffects_t effects, TBDrugType::Enum drug_type );
-        virtual void UpdateTreatmentStatus( IndividualEventTriggerType::Enum new_treatment_status );
+        virtual void UpdateTreatmentStatus( const EventTrigger& new_treatment_status );
         
         virtual void Update(float dt); // hook to update interventions if they need it
 

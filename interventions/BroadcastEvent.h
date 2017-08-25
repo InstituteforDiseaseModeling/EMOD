@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -34,18 +34,16 @@ namespace Kernel
         BroadcastEvent();
         BroadcastEvent( const BroadcastEvent& master );
         virtual ~BroadcastEvent() {  }
-        bool Configure( const Configuration* pConfig );
+        bool Configure( const Configuration* pConfig ) override;
 
         // IDistributingDistributableIntervention
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
-        virtual void SetContextTo(IIndividualHumanContext *context) { parent = context; } // for rng
-        virtual void Update(float dt);
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+        virtual void Update(float dt) override;
 
     protected:
 
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
-        IIndividualHumanContext *parent;
         EventTrigger broadcast_event;
 
         DECLARE_SERIALIZABLE(BroadcastEvent);

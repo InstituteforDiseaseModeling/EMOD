@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,10 +15,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionEnums.h"
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
-#include "IHIVInterventionsContainer.h" // for time-date util function and access into IHIVCascadeOfCare and IHIVMedicalHistory
+#include "IHIVInterventionsContainer.h" // for time-date util function and access into IHIVMedicalHistory
 #include "Relationship.h"   // for discordant checking
 
-static const char * _module = "HIVARTStagingAbstract";
+SETUP_LOGGING( "HIVARTStagingAbstract" )
 
 #define DEFAULT_STRING "UNINITIALIZED"
 
@@ -80,27 +80,10 @@ namespace Kernel
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IHIVMedicalChart", "IIndividualHumanContext" );
         }
 
-        //bool has_active_tb = false ;
-        //if( ip_tb_value_expected.IsValid() )
-        //{
-        //    has_active_tb = parent->GetEventContext()->GetProperties()->Contains( ip_tb_value_expected );
-        //}
-        // ---------------------------------------------------------
-        // --- Get the value of the IndividualProperty if it exists.
-        // ---------------------------------------------------------
-        std::string ip_tb_value_expected_str = "<NA>" ;
-
         bool has_active_tb = false;
         if( ip_tb_value_expected.IsValid() )
         {
-            std::string ip_tb_key = ip_tb_value_expected.GetKey().ToString();
-            std::string ip_tb_value_actual = "<NA>";
-            const auto* p_props = parent->GetEventContext()->GetProperties();
-            if( p_props->find( ip_tb_key ) != p_props->end() )
-            {
-                ip_tb_value_actual = p_props->at( ip_tb_key );
-            }
-            has_active_tb = (ip_tb_value_actual == ip_tb_value_expected.GetValueAsString()) ;
+            has_active_tb = parent->GetEventContext()->GetProperties()->Contains( ip_tb_value_expected );
         }
 
         float year         = parent->GetEventContext()->GetNodeEventContext()->GetTime().Year();

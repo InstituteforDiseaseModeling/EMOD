@@ -2,229 +2,243 @@
     "Events": [
         {
             "Event_Coordinator_Config": {
-                "Demographic_Coverage": 1, 
-                "Include_Arrivals": 0, 
-                "Include_Departures": 0, 
+                "Demographic_Coverage": 1,
+                "Include_Arrivals": 0,
+                "Include_Departures": 0,
                 "Intervention_Config": {
-                    "Antigen": 0, 
-                    "Genome": 0, 
-                    "Outbreak_Source": "PrevalenceIncrease", 
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "Outbreak_Source": "PrevalenceIncrease",
                     "class": "OutbreakIndividual"
-                }, 
-                "Number_Repetitions": 1, 
-                "Property_Restrictions": [], 
-                "Target_Demographic": "Everyone", 
+                },
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Demographic": "Everyone",
                 "class": "StandardInterventionDistributionEventCoordinator"
-            }, 
-            "Event_Name": "Outbreak", 
+            },
+            "Event_Name": "Outbreak",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
-            }, 
-            "Start_Day": 1, 
+            },
+            "Start_Day": 1,
             "class": "CampaignEvent"
-        }, 
+        },
         {
             "Event_Coordinator_Config": {
-                "Demographic_Coverage": 1, 
+                "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Event_Or_Config": "Event",
-                        "Actual_IndividualIntervention_Event": "ProviderOrdersTBTest", 
-                        "Single_Use": 1, 
-                        "Tendency": 0.05, 
+                        "Actual_IndividualIntervention_Event": "ProviderOrdersTBTest",
+                        "Single_Use": 1,
+                        "Tendency": 0.05,
                         "class": "SimpleHealthSeekingBehavior"
-                    }, 
-                    "Demographic_Coverage": 1, 
-                    "Property_Restrictions_Within_Node": [], 
-                    "Trigger_Condition": "TBActivation", 
+                    },
+                    "Demographic_Coverage": 1,
+                    "Property_Restrictions_Within_Node": [],
+                    "Trigger_Condition_List": [
+                        "TBActivation"
+                    ],
                     "class": "NodeLevelHealthTriggeredIV"
-                }, 
-                "Number_Repetitions": 1, 
-                "Property_Restrictions": [], 
-                "Target_Demographic": "Everyone", 
+                },
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Demographic": "Everyone",
                 "class": "StandardInterventionDistributionEventCoordinator"
-            }, 
-            "Event_Name": "Drugs after TB activation", 
+            },
+            "Event_Name": "Drugs after TB activation",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
-            }, 
-            "Start_Day": 1, 
+            },
+            "Start_Day": 1,
             "class": "CampaignEvent"
-        }, 
+        },
         {
             "Event_Coordinator_Config": {
-                "Demographic_Coverage": 1, 
-                "Include_Arrivals": 0, 
-                "Include_Departures": 0, 
+                "Demographic_Coverage": 1,
+                "Include_Arrivals": 0,
+                "Include_Departures": 0,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Base_Sensitivity": 1, 
-                        "Base_Specificity": 1, 
-                        "Cost_To_Consumer": 10, 
-                        "Days_To_Diagnosis": 45, 
+                        "Base_Sensitivity": 1,
+                        "Base_Specificity": 1,
+                        "Cost_To_Consumer": 10,
+                        "Days_To_Diagnosis": 45,
                         "Event_Or_Config": "Event",
-                        "Defaulters_Event": "TBTestDefault", 
-                        "Negative_Diagnosis_Event": "TBTestNegative", 
-                        "Positive_Diagnosis_Event": "TBTestPositive", 
-                        "Treatment_Fraction": 0.5, 
+                        "Defaulters_Event": "TBTestDefault",
+                        "Negative_Diagnosis_Event": "TBTestNegative",
+                        "Positive_Diagnosis_Event": "TBTestPositive",
+                        "Treatment_Fraction": 0.5,
                         "class": "DiagnosticTreatNeg"
-                    }, 
-                    "Demographic_Coverage": 1, 
-                    "Duration": -1, 
-                    "Property_Restrictions_Within_Node": [], 
-                    "Trigger_Condition": "ProviderOrdersTBTest", 
+                    },
+                    "Demographic_Coverage": 1,
+                    "Duration": -1,
+                    "Property_Restrictions_Within_Node": [],
+                    "Trigger_Condition_List": [
+                        "ProviderOrdersTBTest"
+                    ],
                     "class": "NodeLevelHealthTriggeredIV"
-                }, 
-                "Number_Repetitions": 1, 
-                "Property_Restrictions": [], 
-                "Target_Demographic": "Everyone", 
-                "Timesteps_Between_Repetitions": -1, 
+                },
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Demographic": "Everyone",
+                "Timesteps_Between_Repetitions": -1,
                 "class": "StandardInterventionDistributionEventCoordinator"
-            }, 
-            "Event_Name": "when a provider orders a test, the patient can default or get the intervention appropriate to test result", 
+            },
+            "Event_Name": "when a provider orders a test, the patient can default or get the intervention appropriate to test result",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
-            }, 
-            "Start_Day": 1, 
+            },
+            "Start_Day": 1,
             "class": "CampaignEvent"
         },
         {
             "Event_Coordinator_Config": {
-                "Demographic_Coverage": 1, 
-                "Include_Arrivals": 0, 
-                "Include_Departures": 0, 
+                "Demographic_Coverage": 1,
+                "Include_Arrivals": 0,
+                "Include_Departures": 0,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Event_Or_Config": "Event",
-                        "Actual_IndividualIntervention_Event": "ProviderOrdersTBTest", 
-                        "Single_Use": 1, 
-                        "Tendency": 5e-06, 
+                        "Actual_IndividualIntervention_Event": "ProviderOrdersTBTest",
+                        "Single_Use": 1,
+                        "Tendency": 5e-06,
                         "class": "HealthSeekingBehaviorUpdateable"
-                    }, 
-                    "Demographic_Coverage": 1, 
-                    "Property_Restrictions_Within_Node": [], 
-                    "Trigger_Condition": "TBTestDefault", 
+                    },
+                    "Demographic_Coverage": 1,
+                    "Property_Restrictions_Within_Node": [],
+                    "Trigger_Condition_List": [
+                        "TBTestDefault"
+                    ],
                     "class": "NodeLevelHealthTriggeredIV"
-                }, 
-                "Number_Repetitions": 1, 
-                "Property_Restrictions": [], 
-                "Target_Demographic": "Everyone", 
-                "Timesteps_Between_Repetitions": -1, 
+                },
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Demographic": "Everyone",
+                "Timesteps_Between_Repetitions": -1,
                 "class": "StandardInterventionDistributionEventCoordinator"
-            }, 
-            "Event_Name": "if you default after taking the diagnostic, start your HSB over again", 
+            },
+            "Event_Name": "if you default after taking the diagnostic, start your HSB over again",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
-            }, 
-            "Start_Day": 1, 
+            },
+            "Start_Day": 1,
             "class": "CampaignEvent"
         },
         {
             "Event_Coordinator_Config": {
-                "Demographic_Coverage": 1, 
-                "Include_Arrivals": 0, 
-                "Include_Departures": 0, 
+                "Demographic_Coverage": 1,
+                "Include_Arrivals": 0,
+                "Include_Departures": 0,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Cost_To_Consumer": 1, 
-                        "Drug_Type_by_Property": [ {
-                            "QualityOfCare:Public": "CDCDrug"
-                        } ], 
-                        "Durability_Profile": "FIXED_DURATION_CONSTANT_EFFECT", 
-                        "Enable_State_Specific_Treatment": 1, 
-                        "Primary_Decay_Time_Constant": 50, 
-                        "Remaining_Doses": 1, 
+                        "Cost_To_Consumer": 1,
+                        "Drug_Type_by_Property": [
+                            {
+                                "QualityOfCare:Public": "CDCDrug"
+                            }
+                        ],
+                        "Durability_Profile": "FIXED_DURATION_CONSTANT_EFFECT",
+                        "Enable_State_Specific_Treatment": 1,
+                        "Primary_Decay_Time_Constant": 50,
+                        "Remaining_Doses": 1,
                         "class": "AntiTBPropDepDrug"
-                    }, 
-                    "Demographic_Coverage": 1, 
-                    "Duration": -1, 
-                    "Trigger_Condition": "TBTestPositive", 
+                    },
+                    "Demographic_Coverage": 1,
+                    "Duration": -1,
+                    "Trigger_Condition_List": [
+                        "TBTestPositive"
+                    ],
                     "class": "NodeLevelHealthTriggeredIV"
-                }, 
-                "Number_Repetitions": 1, 
-                "Property_Restrictions": [], 
-                "Target_Demographic": "Everyone", 
-                "Timesteps_Between_Repetitions": -1, 
+                },
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Demographic": "Everyone",
+                "Timesteps_Between_Repetitions": -1,
                 "class": "StandardInterventionDistributionEventCoordinator"
-            }, 
-            "Event_Name": "when someone broadcasts a positive  test, give them drugs ", 
+            },
+            "Event_Name": "when someone broadcasts a positive  test, give them drugs ",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
-            }, 
-            "Start_Day": 1, 
+            },
+            "Start_Day": 1,
             "class": "CampaignEvent"
         },
         {
             "Event_Coordinator_Config": {
-                "Demographic_Coverage": 1, 
-                "Include_Arrivals": 0, 
-                "Include_Departures": 0, 
+                "Demographic_Coverage": 1,
+                "Include_Arrivals": 0,
+                "Include_Departures": 0,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Cost_To_Consumer": 1, 
-                        "Dose_Interval": 1, 
-                        "Drug_Type": "EmpiricTreatment", 
-                        "Durability_Profile": "FIXED_DURATION_CONSTANT_EFFECT", 
-                        "Fraction_Defaulters": 0, 
-                        "Primary_Decay_Time_Constant": 50, 
-                        "Reduced_Transmit": 1, 
-                        "Remaining_Doses": 1, 
-                        "TB_Drug_Clearance_Rate": 1e-09, 
-                        "TB_Drug_Inactivation_Rate": 1e-09, 
-                        "TB_Drug_Mortality_Rate": 1e-09, 
-                        "TB_Drug_Relapse_Rate": 1e-09, 
-                        "TB_Drug_Resistance_Rate": 1e-09, 
+                        "Cost_To_Consumer": 1,
+                        "Dose_Interval": 1,
+                        "Drug_Type": "EmpiricTreatment",
+                        "Durability_Profile": "FIXED_DURATION_CONSTANT_EFFECT",
+                        "Fraction_Defaulters": 0,
+                        "Primary_Decay_Time_Constant": 50,
+                        "Reduced_Transmit": 1,
+                        "Remaining_Doses": 1,
+                        "TB_Drug_Clearance_Rate": 1e-09,
+                        "TB_Drug_Inactivation_Rate": 1e-09,
+                        "TB_Drug_Mortality_Rate": 1e-09,
+                        "TB_Drug_Relapse_Rate": 1e-09,
+                        "TB_Drug_Resistance_Rate": 1e-09,
                         "class": "AntiTBDrug"
-                    }, 
-                    "Demographic_Coverage": 1, 
-                    "Duration": -1, 
-                    "Trigger_Condition": "TBTestNegative", 
+                    },
+                    "Demographic_Coverage": 1,
+                    "Duration": -1,
+                    "Trigger_Condition_List": [
+                        "TBTestNegative"
+                    ],
                     "class": "NodeLevelHealthTriggeredIV"
-                }, 
-                "Number_Repetitions": 1, 
-                "Property_Restrictions": [], 
-                "Target_Demographic": "Everyone", 
-                "Timesteps_Between_Repetitions": -1, 
+                },
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Demographic": "Everyone",
+                "Timesteps_Between_Repetitions": -1,
                 "class": "StandardInterventionDistributionEventCoordinator"
-            }, 
-            "Event_Name": "when someone broadcasts a negative test, they get empirical treatment which does not work", 
+            },
+            "Event_Name": "when someone broadcasts a negative test, they get empirical treatment which does not work",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
-            }, 
-            "Start_Day": 1, 
+            },
+            "Start_Day": 1,
             "class": "CampaignEvent"
         },
         {
             "Event_Coordinator_Config": {
-                "Demographic_Coverage": 1, 
-                "Include_Arrivals": 0, 
-                "Include_Departures": 0, 
+                "Demographic_Coverage": 1,
+                "Include_Arrivals": 0,
+                "Include_Departures": 0,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Event_Or_Config": "Event",
-                        "Actual_IndividualIntervention_Event": "ProviderOrdersTBTest", 
-                        "Single_Use": 1, 
-                        "Tendency": 5e-06, 
+                        "Actual_IndividualIntervention_Event": "ProviderOrdersTBTest",
+                        "Single_Use": 1,
+                        "Tendency": 5e-06,
                         "class": "HealthSeekingBehaviorUpdateable"
-                    }, 
-                    "Demographic_Coverage": 1, 
-                    "Property_Restrictions_Within_Node": [], 
-                    "Trigger_Condition": "TBFailedDrugRegimen", 
+                    },
+                    "Demographic_Coverage": 1,
+                    "Property_Restrictions_Within_Node": [],
+                    "Trigger_Condition_List": [
+                        "TBFailedDrugRegimen"
+                    ],
                     "class": "NodeLevelHealthTriggeredIV"
-                }, 
-                "Number_Repetitions": 1, 
-                "Property_Restrictions": [], 
-                "Target_Demographic": "Everyone", 
-                "Timesteps_Between_Repetitions": -1, 
+                },
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Demographic": "Everyone",
+                "Timesteps_Between_Repetitions": -1,
                 "class": "StandardInterventionDistributionEventCoordinator"
-            }, 
-            "Event_Name": "if you failed the drug, start your HSB over again", 
+            },
+            "Event_Name": "if you failed the drug, start your HSB over again",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
-            }, 
-            "Start_Day": 1, 
+            },
+            "Start_Day": 1,
             "class": "CampaignEvent"
         }
-    ], 
+    ],
     "Use_Defaults": 1
 }

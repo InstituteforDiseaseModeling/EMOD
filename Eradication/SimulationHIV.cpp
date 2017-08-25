@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,11 +15,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ReportHIV.h"
 #include "SimulationConfig.h"
 #include "HivObjectFactory.h"
-#include "IHIVCascadeStateIntervention.h"
 #include "HIVReportEventRecorder.h"
 #include "IndividualHIV.h"
+#include "JsonObject.h"
 
-static const char * _module = "SimulationHIV";
+SETUP_LOGGING( "SimulationHIV" )
 
 namespace Kernel
 {
@@ -34,14 +34,12 @@ namespace Kernel
     , report_hiv_infection(false)
     , report_hiv_mortality(false)
     , report_hiv_period(DAYSPERYEAR)
-    , valid_cascade_states()
     {
         initConfigTypeMap( "Report_HIV_ByAgeAndGender",     &report_hiv_by_age_and_gender,   Report_HIV_ByAgeAndGender_DESC_TEXT,  false);
         initConfigTypeMap( "Report_HIV_ART",                &report_hiv_ART,                 Report_HIV_ART_DESC_TEXT,  false);
         initConfigTypeMap( "Report_HIV_Infection",          &report_hiv_infection,           Report_HIV_Infection_DESC_TEXT,  false);
         initConfigTypeMap( "Report_HIV_Mortality",          &report_hiv_mortality,           Report_HIV_Mortality_DESC_TEXT,  false);
         initConfigTypeMap( "Report_HIV_Period",             &report_hiv_period,              Report_HIV_Period_DESC_TEXT,     30.0, 36500.0, 730.0);
-        initConfigTypeMap( "Valid_Cascade_States",          &valid_cascade_states,           Report_HIV_Valid_Cascade_States_DESC_TEXT);
 
         reportClassCreator = ReportHIV::CreateReport;
         eventReportClassCreator = HIVReportEventRecorder::CreateReport;
@@ -57,8 +55,6 @@ namespace Kernel
         SimulationHIV *newsimulation = _new_ SimulationHIV();
         newsimulation->Initialize();
 
-        InterventionValidator::SetDiseaseSpecificValidator( newsimulation );
-
         return newsimulation;
     }
 
@@ -67,8 +63,6 @@ namespace Kernel
         SimulationHIV *newsimulation = _new_ SimulationHIV();
         if (newsimulation)
         {
-            InterventionValidator::SetDiseaseSpecificValidator( newsimulation );
-
             // This sequence is important: first
             // Creation-->Initialization-->Validation
             newsimulation->Initialize(config);
@@ -176,63 +170,17 @@ namespace Kernel
         return true;
     }
 
-    void SimulationHIV::addNewNodeFromDemographics(suids::suid node_suid, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory)
+    void SimulationHIV::addNewNodeFromDemographics( suids::suid node_suid,
+                                                    NodeDemographicsFactory *nodedemographics_factory,
+                                                    ClimateFactory *climate_factory,
+                                                    bool white_list_enabled )
     {
         NodeHIV *node = NodeHIV::CreateNode(this, node_suid);
-        addNode_internal(node, nodedemographics_factory, climate_factory);
-    }
-
-    void SimulationHIV::Validate( const std::string& rClassName,
-                                  IDistributableIntervention* pInterventionToValidate )
-    {
-        IHIVCascadeStateIntervention* pInterventionWithStates = nullptr;
-        if (pInterventionToValidate->QueryInterface(GET_IID(IHIVCascadeStateIntervention), (void**)&pInterventionWithStates) == s_OK)
-        {
-            Validate( rClassName, pInterventionWithStates );
-        }
-    }
-
-    void SimulationHIV::Validate( const std::string& rClassName,
-                                  INodeDistributableIntervention* pInterventionToValidate )
-    {
-        IHIVCascadeStateIntervention* pInterventionWithStates = nullptr;
-        if (pInterventionToValidate->QueryInterface(GET_IID(IHIVCascadeStateIntervention), (void**)&pInterventionWithStates) == s_OK)
-        {
-            Validate( rClassName, pInterventionWithStates );
-        }
-    }
-
-    void SimulationHIV::Validate( const std::string& rClassName,
-                                  IHIVCascadeStateIntervention* pInterventionWithStates )
-    {
-        // Validate Intervention's Cascade State
-        const std::string& r_cascade_state = pInterventionWithStates->GetCascadeState();
-        CheckState( rClassName, "Cascade", r_cascade_state );
-
-        // Validate Interventions Abort States
-        const auto& r_abort_states = pInterventionWithStates->GetAbortStates();
-        for( auto& r_state : r_abort_states )
-        {
-            CheckState( rClassName, "Abort", r_state );
-        }
-    }
-
-    void SimulationHIV::CheckState( const std::string& rClassName,
-                                    const char* pVarName,
-                                    const std::string& rState )
-    {
-        if( !((valid_cascade_states.size() <= 0) && rState.empty()) && 
-             (valid_cascade_states.find( rState ) == valid_cascade_states.end()) )
-        {
-            std::stringstream ss ;
-            ss << "Error creating the intervention '" << rClassName << "'.  " ;
-            ss << "The " << pVarName << " State (" << rState << ") is not a valid state." ;
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
-        }
+        addNode_internal( node, nodedemographics_factory, climate_factory, white_list_enabled );
     }
 
     void SimulationHIV::AddDataToHeader( IJsonObjectAdapter* pIJsonObj )
     {
-        pIJsonObj->Insert("Base_Year", SimulationSTI::base_year);
+        pIJsonObj->Insert("Base_Year", Simulation::base_year);
     }
 }

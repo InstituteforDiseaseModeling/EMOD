@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "TBInterventionsContainer.h"  // for IHealthSeekingBehaviorEffectsUpdate
 
 
-static const char * _module = "HealthSeekingBehaviorUpdate";
+SETUP_LOGGING( "HealthSeekingBehaviorUpdate" )
 
 namespace Kernel
 {
@@ -30,7 +30,7 @@ namespace Kernel
     :new_probability_of_seeking(0.0f)
     , ihsbuea(nullptr)
     {
-        initSimTypes( 1, "TB_SIM" );
+        initSimTypes( 2, "TB_SIM", "TBHIV_SIM" );
     }
 
     bool
@@ -39,7 +39,7 @@ namespace Kernel
     )
     {
         initConfigTypeMap("New_Tendency", &new_probability_of_seeking, HSB_Update_New_Tendency_DESC_TEXT );
-        return JsonConfigurable::Configure( inputJson );
+        return BaseIntervention::Configure( inputJson );
     }
 
     bool
@@ -65,6 +65,8 @@ namespace Kernel
 
     void HealthSeekingBehaviorUpdate::Update( float dt )
     {
+        if( !BaseIntervention::UpdateIndividualsInterventionStatus() ) return;
+
         ihsbuea->UpdateHealthSeekingBehaviors( new_probability_of_seeking );
         LOG_DEBUG_F( "Update the HSB tendency with value %f\n", new_probability_of_seeking );
         expired = true;
@@ -74,6 +76,7 @@ namespace Kernel
         IIndividualHumanContext *context
     )
     {
+        BaseIntervention::SetContextTo( context );
         if (s_OK != context->GetInterventionsContext()->QueryInterface(GET_IID(IHealthSeekingBehaviorUpdateEffectsApply), (void**)&ihsbuea) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHealthSeekingBehaviorUpdateEffectsApply", "IIndividualHumanContext" );

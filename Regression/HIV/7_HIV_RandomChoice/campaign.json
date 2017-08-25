@@ -24,8 +24,8 @@
                     "Days_To_Diagnosis": 0,
                     "Event_Or_Config" : "Event",
 
-                    "Abort_States": [],
-                    "Cascade_State": "",
+                    "Disqualifying_Properties": [],
+                    "New_Property_Value": "InterventionStatus:None",
 
                     "Choices": {
                         "OnART1": 0.1,

@@ -1,0 +1,57 @@
+
+{ 
+    "Metadata": 
+    { 
+        "DateCreated": "Fri Oct 7, 2016",
+        "Tool": "notepad",
+        "Author": "Daniel Bridenbecker",
+        "IdReference": "0",
+        "NodeCount" : 1
+    },
+    "Defaults": 
+    { 
+        "IndividualProperties": [ 
+            { 
+                "Property": "InterventionStatus",
+                "Values": [
+                    "None", 
+                    "ARTStaging", 
+                    "ARTStagingDiagnosticTest", 
+                    "LinkingToART", 
+                    "LinkingToPreART", 
+                    "OnART", 
+                    "OnPreART", 
+                    "HCTTestingLoop", 
+                    "HCTUptakeAtDebut", 
+                    "HCTUptakePostDebut", 
+                    "TestingOnANC", 
+                    "TestingOnChild6w", 
+                    "TestingOnSymptomatic", 
+                    "LostForever"
+                ],
+                "Initial_Distribution": [ 
+                    1, 
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "Transitions": []
+            }
+        ]
+    },
+    "Nodes": [
+        {
+            "NodeID": 1
+        }
+    ]
+}

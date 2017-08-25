@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -54,7 +54,7 @@ namespace Kernel
     protected:
         SusceptibilityVector();
         SusceptibilityVector(IIndividualHumanContext *context);
-        /* clorton virtual */ void Initialize(float _age, float immmod, float riskmod) /* clorton override */;
+        virtual void Initialize(float _age, float immmod, float riskmod) override;
         /* clorton virtual */ const SimulationConfig *params() /* clorton override */;
         float BitingRiskAgeFactor(float _age);
 

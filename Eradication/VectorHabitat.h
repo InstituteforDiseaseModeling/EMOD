@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -23,7 +23,7 @@ namespace Kernel
     struct INodeContext;
     class  SimulationConfig;
 
-    class VectorHabitat : public JsonConfigurable, public IVectorHabitat
+    class VectorHabitat : public JsonConfigurable, public IVectorHabitat 
     {
     public:
         static IVectorHabitat* CreateHabitat( VectorHabitatType::Enum type, const Configuration* inputJson );
@@ -33,8 +33,8 @@ namespace Kernel
         virtual bool Configure( const Configuration* inputJson ) override;
 
         virtual VectorHabitatType::Enum  GetVectorHabitatType()                   const override;
-        virtual float                    GetMaximumLarvalCapacity()               const override;
-        virtual float                    GetCurrentLarvalCapacity()               const override;
+        virtual NonNegativeFloat         GetMaximumLarvalCapacity()               const override;
+        virtual NonNegativeFloat         GetCurrentLarvalCapacity()               const override;
         virtual int32_t                  GetTotalLarvaCount(TimeStepIndex index)  const override;
 
         virtual void                     AddLarva(int32_t larva, float progress) override;
@@ -45,8 +45,8 @@ namespace Kernel
         virtual float                    GetArtificialLarvalMortality()  const override;
         virtual float                    GetLarvicideHabitatScaling()    const override;
         virtual float                    GetRainfallMortality()          const override;
-        virtual float                    GetEggCrowdingCorrection()      const override;
 
+        virtual float GetEggCrowdingCorrection( bool refresh = false ) override;
         virtual float GetLocalLarvalGrowthModifier() const override;
         virtual float GetLocalLarvalMortality(float species_aquatic_mortality, float progress) const override;
 
@@ -128,6 +128,27 @@ namespace Kernel
         BrackishSwampHabitat();
     protected:
         DECLARE_SERIALIZABLE(BrackishSwampHabitat);
+    };
+
+    class MarshyStreamHabitat : public VectorHabitat
+    {
+    public:
+        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
+        MarshyStreamHabitat();
+
+    protected:
+
+        static const float rainfall_to_fill;
+        static const float water_table_outflow_days;
+        static const float stream_outflow_days;
+        static const float stream_outflow_threshold;
+        static const float evaporation_days;
+        static const float permeability;
+
+        float water_table;
+        float stream_level;
+
+        DECLARE_SERIALIZABLE(MarshyStreamHabitat);
     };
 
     class LinearSplineHabitat : public VectorHabitat

@@ -37,20 +37,22 @@ def setup():
 
     # non-main module code starts here
     parser = argparse.ArgumentParser()
-    parser.add_argument("suite", help="JSON test-suite to run - e.g. full.json, sanity (converted to sanity.json), 25 (just run 25_Vector_Madagascar)")
-    parser.add_argument("exe_path", metavar="exe-path", help="Path to the Eradication.exe binary to run")
+    parser.add_argument("suite", help="JSON test-suite to run - e.g. full.json, sanity (converted to sanity.json) - one or more comma separated values")
+    parser.add_argument("exe_path", metavar="exe-path", nargs="?", default="", help="Path to the Eradication.exe binary to run.  Default is where the executable is normally built depending on --scons, --debug, and the OS.")
     parser.add_argument("--perf", action="store_true", default=False, help="Run for performance measurement purposes")
     parser.add_argument("--hidegraphs", action="store_true", default=False, help="Suppress pop-up graphs in case of validation failure")
     parser.add_argument("--debug", action="store_true", default=False, help="Use debug path for emodules")
     parser.add_argument("--quick-start", action="store_true", default=False, help="Use QuickStart path for emodules")
     parser.add_argument("--label", help="Custom suffix for HPC job name")
     parser.add_argument("--config", default="regression_test.cfg", help="Regression test configuration [regression_test.cfg]")
-    parser.add_argument("--disable-schema-test", action="store_false", default=True, help="Test schema (true by default, use to suppress schema testing)")
+    parser.add_argument("--disable-schema-test", action="store_true", default=False, help="Disable schema test (testing is on by default, use to suppress schema testing)")
+    parser.add_argument("--component-tests", action="store_true", default=False, help="Run the componentTests if the executable exists")
+    parser.add_argument("--component-tests-show-output", action="store_true", default=False, help="Show the output of the componentTests")
     parser.add_argument("--use-dlls", action="store_true", default=False, help="Use emodules/DLLs when running tests")
     parser.add_argument("--all-outputs", action="store_true", default=False, help="Use all output .json files for validation, not just InsetChart.json")
     parser.add_argument("--dll-path", help="Path to the root directory of the DLLs to use (e.g. contains reporter_plugins)")
-    parser.add_argument("--skip-emodule-check", action="store_true", default=False, help="Use this to skip sometimes slow check that EMODules on cluster are up-to-date.")
-    parser.add_argument("--config-constraints", default=[], action="append", help="Use this to skip sometimes slow check that EMODules on cluster are up-to-date.")
+    parser.add_argument("--skip-emodule-check", action="store_true", default=False, help="Use this to skip the sometimes slow check that EMODules on cluster are up to date.")
+    parser.add_argument("--config-constraints", nargs='+', help="key:value pair(s) which are used to filter the scenario list (the given key and value must be in the config.json), pairs are separated by commas")
     parser.add_argument("--scons", action="store_true", default=False, help="Indicates scons build so look for custom DLLs in the build/64/Release directory.")
     parser.add_argument('--local', default=False, action='store_true', help='Run all simulations locally.')
 
@@ -59,40 +61,52 @@ def setup():
     params = regression_runtime_params.RuntimeParameters(args)
     return params
 
-
-
 def main():
     params = setup()
     runner = regression_runner.MyRegressionRunner(params)
 
     reglistjson = None
-    if(str.isdigit(params.suite)):
-        # Special shortcut if you just want to run a single regression with a number prefix
-        dirs = glob.glob(params.suite + "_*")
-        for dir in dirs:
-            if os.path.isdir(dir):
-                print("Executing single test: " + dir)
-                reglistjson = { "tests" : [ { "path" : dir } ] }
-    elif os.path.isdir( params.suite ) and os.path.exists( os.path.join( params.suite, "param_overrides.json" ) ):
-        print( "You specified a directory." )
-        reglistjson = { "tests" : [ { "path" : params.suite } ] }
-    else:
-        if params.suite.endswith(".json"):
-            # regular case
-            params.suite = params.suite.replace(".json", "")
-        # handle comma-separated list of suites
-        reglistjson = json.loads( open( params.suite.split(',')[0] + ".json" ).read() )
-        if "tests" in reglistjson and len( params.suite.split(',') ) > 1:
-            for suite in params.suite.split(',')[1:]:
-                data = json.loads( open( suite + ".json" ).read() )
+    entries = params.suite.split( "," )
+    reglistjson = { }
+    for entry in entries: 
+        if os.path.isdir( entry ) and os.path.exists( os.path.join( entry, "param_overrides.json" ) ):
+            print( "You specified a directory." )
+            if len(reglistjson) == 0:
+                reglistjson = { "tests" : [ ] }
+            reglistjson[ "tests" ].extend( [ { "path" : entry } ] )
+        else:
+            if entry.endswith(".json"):
+                # regular case
+                entry = entry.replace(".json", "")
+
+            # handle comma-separated list of suites
+            reglistjson_new = json.loads( open( entry + ".json" ).read() )
+            if "science" in reglistjson_new.keys():
+                #reglistjson = json.loads( open( entry + ".json" ).read() )
+                data = json.loads( open( entry + ".json" ).read() )
+                if "science" in data:
+                    if len(reglistjson) == 0:
+                        reglistjson = { "science" : [ ] }
+                    reglistjson[ "science" ].extend( data["science"] )
+                else:
+                    print( suite + " does not appear to be a suite, missing key 'science'" )
+            
+            if "tests" in reglistjson_new: # and len( entry.split(',') ) > 1:
+                data = json.loads( open( entry + ".json" ).read() )
                 if "tests" in data:
+                    if len(reglistjson) == 0:
+                        reglistjson = { "tests" : [ ] }
                     reglistjson[ "tests" ].extend( data["tests"] )
                 else:
                     print( suite + " does not appear to be a suite, missing key 'tests'" )
+            elif "sweep" in reglistjson_new:
+                data = json.loads( open( entry + ".json" ).read() )
+                if "sweep" in data:
+                    reglistjson[ "sweep" ] = data["sweep"]
 
     report = None
     regression_id = None
-    if "tests" in reglistjson:
+    if "tests" in reglistjson or "science" in reglistjson:
         p = subprocess.Popen( (params.executable_path + " -v").split(), shell=False, stdout=subprocess.PIPE )
         [pipe_stdout, pipe_stderr] = p.communicate()
         ru.version_string = re.search('[0-9]+.[0-9]+.[0-9]+.[0-9]+', pipe_stdout).group(0)
@@ -100,8 +114,26 @@ def main():
         starttime = datetime.datetime.now()
         report = regression_report.Report(params, ru.version_string)
 
+        suite_type = "tests"
+        if "science" in reglistjson:
+            suite_type = "science"
+            if os.environ.has_key( "HOME" ):
+                homepath = os.getenv( "HOME" )
+            elif params.local_execution:
+                homepath = os.path.join( os.getenv( "HOMEDRIVE" ), os.getenv( "HOMEPATH" ) )
+            else: #cluster/HPC
+                homepath = os.path.join( params.sim_root, ".." )
+
+            flag = os.path.join( homepath, ".rt_show.sft" )
+            if os.path.exists( flag ):
+                os.remove( flag )
+            if params.hide_graphs == False:
+                #print ("Should find way to tell SFT's not to display graphs." )
+                open(flag, 'w').close()  # this seems like lame way to touch a file, but works on windows. blech.
+
         print( "Running regression...\n" )
-        for simcfg in reglistjson["tests"]:
+        for simcfg in reglistjson[ suite_type ]:
+            configjson = None
             os.chdir(ru.cache_cwd)
             sim_timestamp = str(datetime.datetime.now()).replace('-', '_' ).replace( ' ', '_' ).replace( ':', '_' ).replace( '.', '_' )
             if regression_id == None:
@@ -109,9 +141,13 @@ def main():
 
             try:
                 #print "flatten config: " + os.path.join( simcfg["path"],"param_overrides.json" )
-                configjson = ru.flattenConfig( os.path.join( simcfg["path"],"param_overrides.json" ) )
-            except:
-                report.addErroringTest(simcfg["path"], "Error flattening config.", "(no simulation directory created).")
+                if os.path.exists( os.path.join( simcfg["path"],"param_overrides.json" ) ):
+                    configjson = ru.flattenConfig( os.path.join( simcfg["path"],"param_overrides.json" ) )
+                else:
+                    configjson = json.loads( open( os.path.join( simcfg["path"],"config.json" ) ).read() )
+            except Exception as ex:
+                print( str( ex ) )
+                report.addErroringTest(simcfg["path"], "Error flattening config.", "(no simulation directory created).", suite_type)
                 configjson = None
 
             campaign_override_fn = os.path.join( simcfg["path"],"campaign_overrides.json" )
@@ -121,7 +157,7 @@ def main():
                 campjson = ru.flattenCampaign( campaign_override_fn, False )
             except:
                 print "failed to flatten campaign: " + campaign_override_fn
-                report.addErroringTest(simcfg["path"], "Failed flattening campaign.", "(no simulation directory created).")
+                report.addErroringTest(simcfg["path"], "Failed flattening campaign.", "(no simulation directory created).", suite_type)
                 campjson = None
 
             if configjson is None:
@@ -132,11 +168,14 @@ def main():
             constraints_satisfied = True
             if len(params.constraints_dict) != 0:
                 real_params = configjson["parameters"]
-                cons = params.constraints_dict
-                for key in cons:
-                    val = cons[key]
-                    if key not in real_params.keys() or str(real_params[ key ]) != val:
-                        print( "Scenario configuration did not satisfy constraint: {0} == {1} but must == {2}.".format( key, str(real_params[ key ]), val ) )
+                constraints = params.constraints_dict
+                for constraint_param in constraints:
+                    constraint_value = constraints[constraint_param]
+                    if constraint_param not in real_params.keys() or str(real_params[ constraint_param ]) != constraint_value:
+                        if constraint_param in real_params.keys():
+                            print( "Scenario configuration did not satisfy constraint: {0} == {1} but must == {2}.".format( constraint_param, str(real_params[ constraint_param ]), constraint_value ) )
+                        else:
+                            print( "Scenario configuration did not satisfy constraint(s). Key not present." )
                         constraints_satisfied = False
                         continue
 
@@ -144,10 +183,16 @@ def main():
                 continue
 
             if campjson is None:
-                # Try loading directly from file
-                campjson_file = open( os.path.join( simcfg["path"],"campaign.json" ) )
-                campjson = json.loads( campjson_file.read().replace( "u'", "'" ).replace( "'", '"' ).strip( '"' ) )
-                campjson_file.close()
+                if configjson["parameters"]["Enable_Interventions"] == 1:
+                    # Try loading directly from file
+                    alt = glob.glob(os.path.join(simcfg["path"], "campaign*.json"))[0]
+                    runner.campaign_filename = os.path.basename(alt)
+                    campjson_file = open(os.path.join(simcfg["path"], runner.campaign_filename))
+                    campjson = json.loads( campjson_file.read().replace( "u'", "'" ).replace( "'", '"' ).strip( '"' ) )
+                    campjson_file.close()
+                else:
+                    campjson = dict()
+                    campjson["Events"] = []
 
             # add campaign to config
             configjson["campaign_json"] = str(campjson)
@@ -162,10 +207,11 @@ def main():
             else:
                 configjson["custom_reports_json"] = None
 
-            thread = runner.commissionFromConfigJson( sim_timestamp, configjson, simcfg["path"], report )
+            thread = runner.commissionFromConfigJson( sim_timestamp, configjson, simcfg["path"], report, suite_type )
             ru.reg_threads.append( thread )
+
         # do a schema test also
-        if params.dts == True:
+        if not params.disable_schema_test:
             report.schema = runner.doSchemaTest()
 
     elif "sweep" in reglistjson:
@@ -205,7 +251,7 @@ def main():
             else:
                 configjson["custom_reports_json"] = None
 
-            thread = runner.commissionFromConfigJson( sim_timestamp, configjson, reglistjson["sweep"]["path"], None, False )
+            thread = runner.commissionFromConfigJson( sim_timestamp, configjson, reglistjson["sweep"]["path"], None, 'sweep' )
             ru.reg_threads.append( thread )
     else:
         print "Unknown state"
@@ -216,17 +262,58 @@ def main():
         thr.join()
         #print str(thr.sim_timestamp) + " is done."
 
+    component_tests_passed = True
+    if( params.component_tests ):
+        if( params.scons or (os.sys.platform != 'win32') ):
+            component_test_path = "../build/x64/Release/componentTests/componentTests"
+        else:
+            component_test_path = "../x64/Release/componentTests"
+
+        if os.sys.platform == 'win32':
+            component_test_path += ".exe"
+
+        os.chdir( "../componentTests" )
+        if( os.path.exists( component_test_path ) ):
+            #print("+++++++++++++++++++++++ componentTests - Begin +++++++++++++++++++++++")
+            sys.stdout.flush()
+
+            ret = None
+            if( params.component_tests_show_output ):
+                stderr_file = open("StdErr.txt","w")
+                ret = subprocess.call( [ component_test_path ], stderr=stderr_file )
+                stderr_file.close()
+                os.remove("StdErr.txt")
+            else:
+                stdout_file = open("StdOut.txt","w")
+                ret = subprocess.call( [ component_test_path ], stdout=stdout_file )
+                stdout_file.close()
+                if( ret == 0 ):
+                    os.remove("StdOut.txt")
+
+            if ret != 0:
+                component_tests_passed = False
+                print >> sys.stderr, "Component tests failed!"
+
+            #print("+++++++++++++++++++++++ componentTests - End +++++++++++++++++++++++")
+            sys.stdout.flush()
+
     if report is not None:
         endtime = datetime.datetime.now()
         report.write(os.path.join("reports", "report_" + regression_id + ".xml"), endtime - starttime)
         print '========================================'
         print 'Elapsed time: ', endtime - starttime
         print '%(tests)3d tests total, %(passed)3d passed, %(failed)3d failed, %(errors)3d errors, schema: %(schema)s.' % report.Summary
+        print '========================================'
 
     if ru.final_warnings is not "":
-        print("----------------\n" + ru.final_warnings)
+        print("----------------")
+        print(ru.final_warnings)
+        print("----------------")
         #raw_input("Press Enter to continue...")
 
+    if not component_tests_passed:
+        sys.exit(1)
+        
     # if doing sweep, call plotAllCharts.py with all sim_timestamps on command line.
     if "sweep" in reglistjson:
         print( "Plot sweep results...\n" )
@@ -256,7 +343,6 @@ def main():
         plotAllCharts.plotBunch( all_data, plot_title, ref_json )
         if os.path.exists( ref_path_prop ) == True:
             plotAllCharts.plotBunch( all_data_prop, plot_title, ref_json_prop )
-        time.sleep(1)
         
     return
 

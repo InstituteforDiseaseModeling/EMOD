@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -8,7 +8,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 ***************************************************************************************************/
 
 #include "stdafx.h"
-#include <cstdlib>
+#include <iomanip>
 #include <stdio.h>
 #include "Climate.h"
 #include "ClimateKoppen.h"
@@ -27,6 +27,19 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 using namespace std;
 using namespace json;
 
+SETUP_LOGGING( "Climate" )
+
+// Used with ParseMetadataForFile
+#define METADATA            "Metadata"
+#define ID_REFERENCE        "IdReference"
+#define UPDATE_RESOLUTION   "UpdateResolution"
+#define DATAVALUE_COUNT     "DatavalueCount"
+#define SCHEMA_VERSION      "WeatherSchemaVersion"
+#define CELL_COUNT          "WeatherCellCount"
+#define NODE_COUNT          "NodeCount"
+#define DTK_NODE_COUNT      "NumberDTKNodes"
+#define NODE_OFFSETS        "NodeOffsets"
+
 namespace Kernel {
 
     const float Climate::min_airtemp  = -55;      // Celsius
@@ -36,7 +49,6 @@ namespace Kernel {
     const float Climate::max_rainfall =  0.150F;  // meters/day
 
     ClimateStructure::Enum ClimateFactory::climate_structure = ClimateStructure::CLIMATE_OFF;
-    static const char * _module = "Climate";
 
     bool
     Climate::Configure(
@@ -50,7 +62,7 @@ namespace Kernel {
         initConfigTypeMap( "Enable_Climate_Stochasticity", &enable_climate_stochasticity, Enable_Climate_Stochasticity_DESC_TEXT, false, "Climate_Model", "CLIMATE_CONSTANT,CLIMATE_BY_DATA" );
         initConfigTypeMap( "Air_Temperature_Variance", &airtemperature_variance, Air_Temperature_Variance_DESC_TEXT, 0.0f, 5.0f, 2.0f, "Enable_Climate_Stochasticity" );
         initConfigTypeMap( "Land_Temperature_Variance", &landtemperature_variance, Land_Temperature_Variance_DESC_TEXT, 0.0f, 7.0f, 2.0f, "Enable_Climate_Stochasticity" );
-        initConfigTypeMap( "Enable_Rainfall_Stochasticity", &rainfall_variance, Enable_Rainfall_Stochasticity_DESC_TEXT, true, "Enable_Climate_Stochasticity" );
+        initConfigTypeMap( "Enable_Rainfall_Stochasticity", &rainfall_variance_enabled, Enable_Rainfall_Stochasticity_DESC_TEXT, true, "Enable_Climate_Stochasticity" );
         initConfigTypeMap( "Relative_Humidity_Variance", &humidity_variance, Relative_Humidity_Variance_DESC_TEXT, 0.0f, 0.12f, 0.05f, "Enable_Climate_Stochasticity" );
 
         bool bRet = JsonConfigurable::Configure( config );
@@ -64,7 +76,26 @@ namespace Kernel {
     BEGIN_QUERY_INTERFACE_BODY(ClimateFactory)
     END_QUERY_INTERFACE_BODY(ClimateFactory)
 
-    Climate::Climate(ClimateUpdateResolution::Enum update_resolution, INodeContext * _parent) : parent(_parent)
+    Climate::Climate(ClimateUpdateResolution::Enum update_resolution, INodeContext * _parent)
+        : climate_update_resolution(update_resolution)
+        , base_airtemperature(-FLT_MAX)
+        , base_landtemperature(-FLT_MAX)
+        , base_rainfall(-FLT_MAX)
+        , base_humidity(-FLT_MAX)
+        , airtemperature_offset(-FLT_MAX)
+        , landtemperature_offset(-FLT_MAX)
+        , rainfall_scale_factor(FLT_MIN)
+        , humidity_scale_factor(FLT_MIN)
+        , enable_climate_stochasticity(false)
+        , airtemperature_variance(FLT_MAX)
+        , landtemperature_variance(FLT_MAX)
+        , rainfall_variance_enabled(false)
+        , humidity_variance(FLT_MAX)
+        , m_airtemperature(-FLT_MAX)
+        , m_landtemperature(-FLT_MAX)
+        , m_accumulated_rainfall(FLT_MAX)
+        , m_humidity(-FLT_MAX)
+        , parent(_parent)
     {
         switch(update_resolution)
         {
@@ -80,7 +111,7 @@ namespace Kernel {
     void Climate::UpdateWeather(float time, float dt)
     {
         if(enable_climate_stochasticity)
-            AddStochasticity(airtemperature_variance, landtemperature_variance, rainfall_variance, humidity_variance);
+            AddStochasticity(airtemperature_variance, landtemperature_variance, rainfall_variance_enabled, humidity_variance);
 
         // cap values to within physically-possible bounds
         if(m_humidity > 1)
@@ -92,29 +123,29 @@ namespace Kernel {
             m_accumulated_rainfall = 0;
     }
 
-    void Climate::AddStochasticity(float airtemp_variance, float landtemp_variance, bool rainfall_variance, float humidity_variance)
+    void Climate::AddStochasticity(float airtemp_variance, float landtemp_variance, bool rainfall_variance_enabled, float humidity_variance)
     {
         release_assert(randgen);
         // air-temp
         if(airtemp_variance != 0.0)
-            m_airtemperature += (float)(randgen->eGauss() * airtemp_variance); // varies as a Gaussian with stdev as specified in degree C
+            m_airtemperature += float(randgen->eGauss() * airtemp_variance); // varies as a Gaussian with stdev as specified in degree C
 
         // land-temp
         if(landtemp_variance != 0.0)
-            m_landtemperature += (float)(randgen->eGauss() * landtemp_variance); // varies as a Gaussian with stdev as specified in degree C
+            m_landtemperature += float(randgen->eGauss() * landtemp_variance); // varies as a Gaussian with stdev as specified in degree C
 
         //rainfall
-        if(rainfall_variance)
+        if(rainfall_variance_enabled)
             if(m_accumulated_rainfall > 0.0)
-                m_accumulated_rainfall = (float)(randgen->expdist(1.0 / m_accumulated_rainfall)); // varies over exponential distribution with mean of calculated rainfall value
+                m_accumulated_rainfall = float(randgen->expdist(1.0 / m_accumulated_rainfall)); // varies over exponential distribution with mean of calculated rainfall value
 
         // humidity
         if(humidity_variance != 0.0)
-            m_humidity += (float)(randgen->eGauss() * humidity_variance); // varies as a Gaussian with stdev as specified in %
+            m_humidity += float(randgen->eGauss() * humidity_variance); // varies as a Gaussian with stdev as specified in %
     }
 
     ClimateFactory *
-    ClimateFactory::CreateClimateFactory(boost::bimap<uint32_t, suids::suid> * nodeid_suid_map, const ::Configuration *config, const string idreference)
+    ClimateFactory::CreateClimateFactory(boost::bimap<ExternalNodeId_t, suids::suid> * nodeid_suid_map, const ::Configuration *config, const string idreference)
     {
         ClimateFactory* factory = _new_ ClimateFactory(nodeid_suid_map);
         if(!factory->Initialize(config, idreference))
@@ -126,13 +157,16 @@ namespace Kernel {
         return factory;
     }
 
-    ClimateFactory::ClimateFactory(
-        boost::bimap<uint32_t, suids::suid> * nodeid_suid_map
-    )
-    : climate_airtemperature_filename( "" )
-    , climate_landtemperature_filename( "" )
-    , climate_rainfall_filename( "" )
-    , climate_relativehumidity_filename( "" )
+    ClimateFactory::ClimateFactory( boost::bimap<ExternalNodeId_t, suids::suid> * nodeid_suid_map )
+        : climate_airtemperature_filename( "" )
+        , climate_landtemperature_filename( "" )
+        , climate_rainfall_filename( "" )
+        , climate_relativehumidity_filename( "" )
+        , climate_update_resolution(ClimateUpdateResolution::CLIMATE_UPDATE_DAY)
+        , num_datavalues(0)
+        , num_nodes(0)
+        , num_badnodes(-1)
+        , start_time(-1.0f)
     {
         num_badnodes = 0;
         this->nodeid_suid_map = nodeid_suid_map;
@@ -148,18 +182,14 @@ namespace Kernel {
 
         initConfig( "Climate_Model", climate_structure, config, MetadataDescriptor::Enum("climate_structure", Climate_Model_DESC_TEXT, MDD_ENUM_ARGS(ClimateStructure)) );
 
-        if(climate_structure != ClimateStructure::CLIMATE_OFF || JsonConfigurable::_dryrun)
-            initConfig( "Climate_Update_Resolution", climate_update_resolution, config, MetadataDescriptor::Enum("climate_update_resolution", Climate_Update_Resolution_DESC_TEXT, MDD_ENUM_ARGS(ClimateUpdateResolution)) );
+        initConfig( "Climate_Update_Resolution", climate_update_resolution, config, MetadataDescriptor::Enum("climate_update_resolution", Climate_Update_Resolution_DESC_TEXT, MDD_ENUM_ARGS(ClimateUpdateResolution)), "Climate_Model", "CLIMATE_CONSTANT,CLIMATE_BY_DATA,CLIMATE_KOPPEN" );
 
         initConfigTypeMap( "Air_Temperature_Filename", &climate_airtemperature_filename, Air_Temperature_Filename_DESC_TEXT, "air_temp.json", "Climate_Model", "CLIMATE_BY_DATA" );
         initConfigTypeMap( "Land_Temperature_Filename", &climate_landtemperature_filename, Land_Temperature_Filename_DESC_TEXT, "land_temp.json", "Climate_Model", "CLIMATE_BY_DATA" );
         initConfigTypeMap( "Rainfall_Filename", &climate_rainfall_filename, Rainfall_Filename_DESC_TEXT, "rainfall.json", "Climate_Model", "CLIMATE_BY_DATA" );
         initConfigTypeMap( "Relative_Humidity_Filename", &climate_relativehumidity_filename, Relative_Humidity_Filename_DESC_TEXT, "rel_hum.json", "Climate_Model", "CLIMATE_BY_DATA" );
 
-        if(climate_structure == ClimateStructure::CLIMATE_KOPPEN || JsonConfigurable::_dryrun)
-        {
-            initConfigTypeMap( "Koppen_Filename", &climate_koppen_filename, Koppen_Filename_DESC_TEXT );
-        }
+        initConfigTypeMap( "Koppen_Filename", &climate_koppen_filename, Koppen_Filename_DESC_TEXT, "Climate_Model", "CLIMATE_KOPPEN" );
 
         return JsonConfigurable::Configure( config );
     }
@@ -176,8 +206,8 @@ namespace Kernel {
 
             if((!GET_CONFIGURABLE(SimulationConfig)->demographics_initial) && climate_structure != ClimateStructure::CLIMATE_CONSTANT)
             {
-                // ERROR: ("CLIMATE_STRUCTURE must be set to CLIMATE_CONSTANT (and associated constant climate parameters set) if running with DEMOGRAPHICS_INITIAL disabled\n");
-                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "demographics_initial", GET_CONFIGURABLE(SimulationConfig)->demographics_initial, "climate_structure", climate_structure );
+                // ERROR: ("CLIMATE_STRUCTURE must be set to CLIMATE_CONSTANT (and associated constant climate parameters set) if running with DEMOGRAPHICS_INITIAL disabled\n");                
+                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Enable_Demographics_Builtin", !(GET_CONFIGURABLE(SimulationConfig)->demographics_initial), "Climate_Model", ClimateStructure::pairs::lookup_key(climate_structure));
             }
 
             // store start_time so we can initialize Climates when they're created
@@ -197,7 +227,7 @@ namespace Kernel {
 
                 if( climate_koppen_filename == "" )
                 {
-                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "climate_structure", "ClimateStructure::CLIMATE_KOPPEN:", "climate_koppen_filename", "<empty>" );
+                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Climate_Model", "ClimateStructure::CLIMATE_KOPPEN:", "climate_koppen_filename", "<empty>" );
                 }
                 string koppen_filepath = FileSystem::Concat( EnvPtr->InputPath, climate_koppen_filename );
                 ParseMetadataForFile(koppen_filepath, idreference, nullptr, nullptr, &num_nodes, koppentype_offsets);
@@ -227,28 +257,28 @@ namespace Kernel {
 
                 if( climate_airtemperature_filename == "" )
                 {
-                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "climate_structure", "ClimateStructure::CLIMATE_BY_DATA:", "climate_airtemperature_filename", "<empty>" );
+                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Climate_Model", "ClimateStructure::CLIMATE_BY_DATA:", "climate_airtemperature_filename", "<empty>" );
                 }
                 string airtemp_filepath = FileSystem::Concat( EnvPtr->InputPath, climate_airtemperature_filename );
                 ParseMetadataForFile(airtemp_filepath, idreference, &climate_update_resolution, &num_datavalues, &num_airtemp_entries, airtemperature_offsets);
 
                 if( climate_landtemperature_filename == "" )
                 {
-                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "climate_structure", "ClimateStructure::CLIMATE_BY_DATA:", "climate_landtemperature_filename", "<empty>" );
+                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Climate_Model", "ClimateStructure::CLIMATE_BY_DATA:", "climate_landtemperature_filename", "<empty>" );
                 }
                 string landtemp_filepath = FileSystem::Concat( EnvPtr->InputPath, climate_landtemperature_filename );
                 ParseMetadataForFile(landtemp_filepath, idreference, &climate_update_resolution, &num_datavalues, &num_landtemp_entries, landtemperature_offsets);
 
                 if( climate_rainfall_filename == "" )
                 {
-                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "climate_structure", "ClimateStructure::CLIMATE_BY_DATA:", "climate_rainfall_filename", "<empty>" );
+                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Climate_Model", "ClimateStructure::CLIMATE_BY_DATA:", "climate_rainfall_filename", "<empty>" );
                 }
                 string rainfall_filepath = FileSystem::Concat( EnvPtr->InputPath, climate_rainfall_filename );
                 ParseMetadataForFile(rainfall_filepath, idreference, &climate_update_resolution, &num_datavalues, &num_rainfall_entries, rainfall_offsets);
 
                 if( climate_relativehumidity_filename == "" )
                 {
-                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "climate_structure", "ClimateStructure::CLIMATE_BY_DATA:", "climate_relativehumidity_filename", "<empty>" );
+                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Climate_Model", "ClimateStructure::CLIMATE_BY_DATA:", "climate_relativehumidity_filename", "<empty>" );
                 }
                 string humidity_filepath = FileSystem::Concat( EnvPtr->InputPath, climate_relativehumidity_filename );
                 ParseMetadataForFile(humidity_filepath, idreference, &climate_update_resolution, &num_datavalues, &num_humidity_entries, humidity_offsets);
@@ -267,8 +297,7 @@ namespace Kernel {
                 break;
 
                 default:
-                // ERROR ("Invalid climate structure specified; \"%d\" isn't valid", climate_structure); // can we even reach here anymore?
-                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "climate_structure", climate_structure, ClimateStructure::pairs::lookup_key( climate_structure ) );
+                    throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "Climate_Model", climate_structure, ClimateStructure::pairs::lookup_key( climate_structure ) );
             }
         }
         catch (Exception &e)
@@ -279,6 +308,60 @@ namespace Kernel {
         }
 
         return true;
+    }
+
+    int ReadIntegerFromConfig( const json::QuickInterpreter& json, const char* key, const string& filename )
+    {
+        int value = 0;
+
+        if ( json.Exist(key) )
+        {
+            try
+            {
+                value = int( json[key].As<json::Number>() );
+            }
+            catch (json::Exception&)
+            {
+                std::ostringstream msg;
+                msg << "Value for key '" << key << "' in file '" << filename.c_str() << "' should be numeric.";
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            }
+        }
+        else
+        {
+            std::ostringstream msg;
+            msg << "Key \"" << key << "\" not found in file '" << filename.c_str() << "'" << std::endl;
+            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+        }
+
+        return value;
+    }
+
+    string ReadStringFromConfig( const json::QuickInterpreter& json, const char* key, const string& filename )
+    {
+        string value;
+
+        if ( json.Exist(key) )
+        {
+            try
+            {
+                value = json[key].As<json::String>();
+            }
+            catch (json::Exception&)
+            {
+                std::ostringstream msg;
+                msg << "Value for key '" << key << "' in file '" << filename.c_str() << "' should be a string.";
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            }
+        }
+        else
+        {
+            std::ostringstream msg;
+            msg << "Key \"" << key << "\" not found in file '" << filename.c_str() << "'" << std::endl;
+            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+        }
+
+        return value;
     }
 
     bool ClimateFactory::ParseMetadataForFile(
@@ -302,7 +385,13 @@ namespace Kernel {
             throw FileIOException( __FILE__, __LINE__, __FUNCTION__, metadata_filepath.c_str() );
         }
 
-        if(!boost::iequals(string((*config)["Metadata"]["IdReference"].As<json::String>()), idreference))
+        auto metadata = (*config)[METADATA];
+
+        string json_id_reference( ReadStringFromConfig( metadata, ID_REFERENCE, metadata_filepath ) );
+        string idreference_lower(idreference);  // Make a copy to transform so we do not modify the original.
+        std::transform(idreference_lower.begin(), idreference_lower.end(), idreference_lower.begin(), ::tolower);
+        std::transform(json_id_reference.begin(), json_id_reference.end(), json_id_reference.begin(), ::tolower);
+        if (json_id_reference != idreference_lower)
         {
             std::ostringstream msg;
             msg << "IdReference used to generate climate file " << data_filepath << " doesn't match the IdReference used for the demographics" << std::endl;
@@ -311,7 +400,7 @@ namespace Kernel {
 
         if(update_resolution != nullptr)
         {
-            string str_clim_res = string((*config)["Metadata"]["UpdateResolution"].As<json::String>());
+            string str_clim_res( ReadStringFromConfig( metadata, UPDATE_RESOLUTION, metadata_filepath ));
             int md_updateres = ClimateUpdateResolution::pairs::lookup_value(str_clim_res.c_str());
 
             if(md_updateres == -1 || (*update_resolution != ClimateUpdateResolution::Enum(md_updateres)))
@@ -322,31 +411,52 @@ namespace Kernel {
 
         if(pNumDatavalues != nullptr)
         {
-            int md_datavalues = int((*config)["Metadata"]["DatavalueCount"].As<json::Number>());
+            int md_datavalues = ReadIntegerFromConfig( metadata, DATAVALUE_COUNT, metadata_filepath );
 
             if(*pNumDatavalues == -1)
                 *pNumDatavalues = md_datavalues;
             else if(*pNumDatavalues != md_datavalues)
             {
-                //std::cerr << "Number of data-values per node in climate file " << data_filepath << " doesn't match expected value: " << *pNumDatavalues << std::endl;
                 throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "num_datavalues", *pNumDatavalues, "md_datavalues", md_datavalues );
             }
         }
 
-        // ***** TODO ***** We need to have version numbers on the JSON metadata
-        // files so that we can correctly interpret "NodeCount" and "NumberDTKNodes"
-        // Proposal - switch to "ClimateCellCount" and "OffsetEntryCount" to differentiate
-        // between the number of entries expected in the binary (ClimateCellCount)
-        // and the number of entries expected in the NodeOffsets string (OffsetEntryCount).
+        // Look for "Metadata" : { "WeatherSchemaVersion" } key. If present, use "WeatherCellCount" for md_num_entries
+        // and "NumberDTKNodes" for md_num_offsets.
 
-        int md_num_entries = int((*config)["Metadata"]["NodeCount"].As<json::Number>());
-        int md_num_offsets = md_num_entries;
+        int md_num_entries = -1;
+        int md_num_offsets = -1;
 
-        // "Slim" climate files map multiple DTK nodes to a single climate cell (node).
-        // "NodeCount" gives the number of climate cells (nodes).
-        // "NumberDTKNodes" (if present) gives the number of entries in the NodeOffsets string.
-        if ((*config)["Metadata"].Exist("NumberDTKNodes")) {
-            md_num_offsets = int((*config)["Metadata"]["NumberDTKNodes"].As<json::Number>());
+        if ( (*config)[METADATA].Exist(SCHEMA_VERSION) )
+        {
+            std::string schema_version( ReadStringFromConfig( metadata, SCHEMA_VERSION, metadata_filepath ) );
+            if ( schema_version == "2.0" )
+            {
+                LOG_INFO( "Found 'WeatherSchemaVersion' \"2.0\" in climate file metadata. Using 'WeatherCellCount' and 'NumberDTKNodes'\n" );
+                md_num_entries = ReadIntegerFromConfig( metadata, CELL_COUNT, metadata_filepath );
+                md_num_offsets = ReadIntegerFromConfig( metadata, DTK_NODE_COUNT, metadata_filepath );
+            }
+            else
+            {
+                // Could use GeneralConfigurationException here, perhaps.
+                std::ostringstream msg;
+                msg << "Unsupported 'WeatherSchemaVersion': " << schema_version;
+                throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            }
+        }
+        else // Fallback to "original" behavior.
+        {
+            LOG_WARN( "No 'WeatherSchemaVersion' found in climate file metadata. Falling back to 'NodeCount' and 'NumberDTKNodes'\n" );
+            md_num_entries = ReadIntegerFromConfig( metadata, NODE_COUNT, metadata_filepath );
+            md_num_offsets = md_num_entries;
+
+            // "Slim" climate files map multiple DTK nodes to a single climate cell (node).
+            // "NodeCount" gives the number of climate cells (nodes).
+            // NumberDTKNodes (if present) gives the number of entries in the NodeOffsets string.
+            // Could use try/catch here, but lacking the NumberDTKNodes (DTK_NODE_COUNT) key is allowed (i.e. not an exception).
+            if ((*config)[METADATA].Exist(DTK_NODE_COUNT)) {
+                md_num_offsets = ReadIntegerFromConfig( metadata, DTK_NODE_COUNT, metadata_filepath );
+            }
         }
 
         if (*pNumEntries == -1)
@@ -354,12 +464,10 @@ namespace Kernel {
             *pNumEntries = md_num_entries;
         }
 
-        string offsets_str = string((*config)["NodeOffsets"].As<json::String>());
+        string offsets_str = ReadStringFromConfig( *config, NODE_OFFSETS, metadata_filepath );
         if ( offsets_str.length() / 16 < md_num_offsets)
         {
-            //std::cerr << "Format error encountered loading climate metadata file: " << metadata_filepath << endl; 
-            //std::cerr << "Length of NodeOffsets isn't consistent with \"NodeCount\" attribute" << endl;
-            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "offsets_str.length() / 16", offsets_str.length() / 16, "*md_num_offsets", md_num_offsets);
+            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "offsets_str.length() / 16", int( offsets_str.length() / 16 ), "*md_num_offsets", md_num_offsets);
         }
 
         uint32_t nodeid = 0, offset = 0;
@@ -390,16 +498,25 @@ namespace Kernel {
             throw FileIOException( __FILE__, __LINE__, __FUNCTION__, filepath.c_str() );
         }
 
+        // "Slim" climate files point several nodes to the same data, thus the size may be less than
+        // expected_size (generally num_datavalues * num_nodes * sizeof(float)).
+        /*
         file.seekg(0, ios::end);
         int filelen = (int)file.tellg();
 
         if(filelen != expected_size)
         {
-            // ERROR: ("Detected wrong size for climate data file: %s\n", filepath.c_str());
-            throw FileIOException( __FILE__, __LINE__, __FUNCTION__, filepath.c_str() );
+            ostringstream msg;
+            msg << "Expected climate file '"
+                << filepath.c_str()
+                << "' to be "
+                << expected_size << " bytes but is actually "
+                << filelen << " bytes long.";
+            throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
         }
 
         file.seekg(0, ios::beg);
+        */
 
         return true;
     }
@@ -458,7 +575,18 @@ namespace Kernel {
                     LOG_INFO_F( "landtemperature_offsets.count(nodeid) = %d, airtemperature_offsets.count(nodeid) = %d, rainfall_offsets.count(nodeid) = %d, humidity_offsets.count(nodeid) = %d\n",
                                 landtemperature_offsets.count(nodeid), airtemperature_offsets.count(nodeid), rainfall_offsets.count(nodeid), humidity_offsets.count(nodeid)
                               );
-                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "xxx_offsets.count(nodeid)", 0, "nodeid", (float) nodeid );
+                    ostringstream msg;
+                    msg << "Didn't find data for demographics node "
+                        << nodeid
+                        << " ("
+                        << std::hex << std::uppercase << std::setfill('0') << setw(8) << nodeid << std::dec
+                        << ") in the following file(s):"
+                        << endl;
+                    if (airtemperature_offsets.count(nodeid) == 0)  { msg << "\tair temperature" << endl; }
+                    if (landtemperature_offsets.count(nodeid) == 0) { msg << "\tland temperature" << endl; }
+                    if (rainfall_offsets.count(nodeid) == 0)        { msg << "\trainfall" << endl; }
+                    if (humidity_offsets.count(nodeid) == 0)        { msg << "\trelative humidity" << endl; }
+                    throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
                 }
 
                 climate_airtemperature_file.seekg(airtemperature_offsets[nodeid], std::ios::beg);
@@ -474,7 +602,7 @@ namespace Kernel {
             {
                 // climate_structure not one of the recognized (non-off) types... why is this being called??
                 //std::cerr << "Error: CreateClimate() was called for an invalid climate-structure: " << climate_structure << std::endl;
-                //throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "climate_structure", climate_structure, ClimateStructure::pairs::lookup_key(climate_structure) );
+                //throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "Climate_Model", climate_structure, ClimateStructure::pairs::lookup_key(climate_structure) );
             }
         }
 

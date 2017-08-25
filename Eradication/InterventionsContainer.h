@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,7 +11,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include <list>
 
-#include "BoostLibWrapper.h"
 #include "Interventions.h"
 #include "Contexts.h"
 
@@ -23,9 +22,9 @@ namespace Kernel
 
     struct IVaccineConsumer : public ISupports
     {
-        virtual void UpdateVaccineAcquireRate( float acq )    = 0;
-        virtual void UpdateVaccineTransmitRate( float xmit )  = 0;
-        virtual void UpdateVaccineMortalityRate( float mort ) = 0;
+        virtual void UpdateVaccineAcquireRate(   float acq,  bool isMultiplicative = true ) = 0;
+        virtual void UpdateVaccineTransmitRate(  float xmit, bool isMultiplicative = true ) = 0;
+        virtual void UpdateVaccineMortalityRate( float mort, bool isMultiplicative = true ) = 0;
     };
 
     struct IDrugVaccineInterventionEffects : public ISupports
@@ -36,17 +35,10 @@ namespace Kernel
         virtual ~IDrugVaccineInterventionEffects() { }
     };
 
-    struct IPropertyValueChangerEffects : public ISupports
-    {
-        virtual void ChangeProperty( const char *property, const char* new_value) = 0;
-        virtual ~IPropertyValueChangerEffects() { }
-    };
-    
     class InterventionsContainer : public IIndividualHumanInterventionsContext, 
                                    public IVaccineConsumer,
                                    public IInterventionConsumer,
-                                   public IDrugVaccineInterventionEffects,
-                                   public IPropertyValueChangerEffects
+                                   public IDrugVaccineInterventionEffects
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
 
@@ -62,23 +54,22 @@ namespace Kernel
         virtual std::list<void*>                       GetInterventionsByInterface( iid_t iid ) override;
         virtual void PurgeExisting( const std::string& iv_name ) override;
         virtual bool ContainsExisting( const std::string &iv_name ) override;
+        virtual bool ContainsExistingByName( const std::string &name ) override;
+        virtual void ChangeProperty( const char *property, const char* new_value ) override;
 
         // IUnknown
         virtual QueryResult QueryInterface(iid_t iid, void** pinstance) override;
 
         // IVaccineConsumer
-        virtual void UpdateVaccineAcquireRate( float acq ) override;
-        virtual void UpdateVaccineTransmitRate( float xmit ) override;
-        virtual void UpdateVaccineMortalityRate( float mort ) override;
+        virtual void UpdateVaccineAcquireRate(   float acq,  bool isMultiplicative = true ) override;
+        virtual void UpdateVaccineTransmitRate(  float xmit, bool isMultiplicative = true ) override;
+        virtual void UpdateVaccineMortalityRate( float mort, bool isMultiplicative = true ) override;
 
         // IDrugVaccineInterventionEffects
         virtual float GetInterventionReducedAcquire()   const override;
         virtual float GetInterventionReducedTransmit()  const override;
         virtual float GetInterventionReducedMortality() const override;
 
-
-        // IPropertyValueChangerEffects
-        virtual void ChangeProperty( const char *property, const char* new_value) override;
 
         virtual bool GiveIntervention( IDistributableIntervention * pIV ) override;
 

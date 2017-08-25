@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,7 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"
 #include "IIndividualHumanSTI.h"
 
-static const char* _module = "RelationshipStartReporter";
+SETUP_LOGGING( "RelationshipStartReporter" )
 
 using namespace std;
 
@@ -113,7 +113,7 @@ namespace Kernel
             info.participant_a.relationships_in_last_six_months  = male_partner->GetLast6MonthRels();
             info.participant_a.extrarelational_flags             = male_partner->GetExtrarelationalFlags();
             info.participant_a.is_circumcised                    = male_partner->IsCircumcised();
-            /*TODO*/ info.participant_a.has_sti                  = (male_partner->GetCoInfectiveFactor() > 1.0f);
+            info.participant_a.has_sti                           = male_partner->HasSTICoInfection();
             info.participant_a.is_superspreader                  = male_partner->IsBehavioralSuperSpreader();
 
 
@@ -143,7 +143,7 @@ namespace Kernel
             info.participant_b.relationships_in_last_six_months  = female_partner->GetLast6MonthRels();
             info.participant_b.extrarelational_flags             = female_partner->GetExtrarelationalFlags();
             info.participant_b.is_circumcised                    = female_partner->IsCircumcised();
-            /*TODO*/ info.participant_b.has_sti                  = (female_partner->GetCoInfectiveFactor() > 1.0f);
+            info.participant_b.has_sti                           = female_partner->HasSTICoInfection();
             info.participant_b.is_superspreader                  = female_partner->IsBehavioralSuperSpreader();
 
             CollectOtherData( info.id, male_partner, female_partner );
@@ -287,11 +287,12 @@ namespace Kernel
 
     std::string StiRelationshipStartReporter::GetPropertyString( IIndividualHumanEventContext* individual )
     {
-        std::string propertyString ;
-        for (const auto& entry : *(individual->GetProperties()) )
+        std::string propertyString;
+        IPKeyValueContainer* p_props = individual->GetProperties();
+        for( auto kv : *p_props )
         {
-            const std::string& key   = entry.first;
-            const std::string& value = entry.second;
+            const std::string& key   = kv.GetKeyAsString();
+            const std::string& value = kv.GetValueAsString();
 
             // ------------------------------------------------------------------
             // --- Do not include the auto-generated Relationship property.

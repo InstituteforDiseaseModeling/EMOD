@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,6 +19,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorParameters.h"
 #include "VectorSpeciesParameters.h"
 #include "VectorCohortWithHabitat.h"
+#include "StrainIdentity.h"
 
 #ifdef randgen
 #undef randgen
@@ -26,7 +27,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "RANDOM.h"
 #define randgen (m_context->GetRng())
 
-static const char * _module = "VectorPopulation";
+SETUP_LOGGING( "VectorPopulation" )
 
 namespace Kernel
 {
@@ -37,7 +38,7 @@ namespace Kernel
     BEGIN_QUERY_INTERFACE_BODY(VectorPopulation)
         HANDLE_INTERFACE(IVectorPopulation)
         HANDLE_INTERFACE(IInfectable)
-        HANDLE_INTERFACE(IVectorReportingOperations)
+        HANDLE_INTERFACE(IVectorPopulationReporting)
         HANDLE_ISUPPORTS_VIA(IVectorPopulation)
     END_QUERY_INTERFACE_BODY(VectorPopulation)
 
@@ -95,7 +96,7 @@ namespace Kernel
         infectious = _infectious;
         males      = adults;
 
-        AdultQueues.push_front( VectorCohort::CreateCohort( 0, adults, VectorMatingStructure( VectorGender::VECTOR_FEMALE ) ) );
+        AdultQueues.push_back(VectorCohort::CreateCohort(0, adults, VectorMatingStructure(VectorGender::VECTOR_FEMALE)));
         InfectiousQueues.push_front( VectorCohort::CreateCohort( 0, infectious, VectorMatingStructure( VectorGender::VECTOR_FEMALE ) ) );
         MaleQueues.push_front( VectorCohort::CreateCohort( 0, males, VectorMatingStructure( VectorGender::VECTOR_MALE ) ) );
     }
@@ -376,8 +377,11 @@ namespace Kernel
         // calculate local mortality, convert rate to probability
         float p_local_mortality = float(EXPCDF(-dt * localadultmortality * x_mortalityWolbachia));
 
-        // calculate feeding rate, either by temperature or by species parameter
-        float feedingrate = (params()->vector_params->temperature_dependent_feeding_cycle) ? 1.0f / GetFeedingCycleDurationByTemperature() : species()->feedingrate;
+        float feedingrate = species()->feedingrate;
+        if( params()->vector_params->temperature_dependent_feeding_cycle != TemperatureDependentFeedingCycle::NO_TEMPERATURE_DEPENDENCE )
+        {
+            feedingrate  = 1.0f / GetFeedingCycleDurationByTemperature();
+        }
 
         // die before human feeding
         uint64_t remainingPop = initPop;
@@ -466,11 +470,10 @@ namespace Kernel
             outdoorinfectiousbites += human_outdoor_feed;
 
             // deposit indoor and outdoor contagion into vector-to-human group
-            StrainIdentity* strain = const_cast<StrainIdentity*>(cohort->GetStrainIdentity());
+            const IStrainIdentity& strain = cohort->GetStrainIdentity();
 
             m_context->DepositFromIndividual( strain, attempt_indoor_feed  * species()->transmissionmod, &NodeVector::vector_to_human_indoor );
             m_context->DepositFromIndividual( strain, human_outdoor_feed * species()->transmissionmod, &NodeVector::vector_to_human_outdoor );
-            delete strain;
         }
 
         // update human biting rate
@@ -609,8 +612,17 @@ namespace Kernel
 
         // Whole temperature-dependent distribution can be shifted by changing
         // "Days_Between_Feeds" parameter, which is always the value at 30 degrees C.
-        float mean_cycle_duration = (airtemp > 15) ? 1.0f + 37.0f * ( (species()->daysbetweenfeeds - 1.0f) / 2.0f ) / ( airtemp - 11.5f ) : 10.0f;
-        LOG_VALID_F("Mean gonotrophic cycle duration = %0.2f days at %0.2f degrees C.\n", mean_cycle_duration, airtemp);
+        float mean_cycle_duration = 0.0f;
+        if (params()->vector_params->temperature_dependent_feeding_cycle == TemperatureDependentFeedingCycle::BOUNDED_DEPENDENCE)
+        {
+            mean_cycle_duration = (airtemp > 15) ? 1.0f + 37.0f * ( (species()->daysbetweenfeeds - 1.0f) / 2.0f ) / ( airtemp - 11.5f ) : 10.0f;
+        }
+        if (params()->vector_params->temperature_dependent_feeding_cycle == TemperatureDependentFeedingCycle::ARRHENIUS_DEPENDENCE)
+        {
+            mean_cycle_duration = 1/( species()->cyclearrhenius1 * exp(-species()->cyclearrhenius2 / (airtemp + CELSIUS_TO_KELVIN)) );// * dt;  ( 4.090579e+10 * exp(-7.740230e+03 / (airtemp + CELSIUS_TO_KELVIN)) );
+        }
+
+        LOG_VALID_F("Mean gonotrophic cycle duration = %0.5f days at %0.2f degrees C.\n", mean_cycle_duration, airtemp);
 
         return mean_cycle_duration;
     }
@@ -683,7 +695,7 @@ namespace Kernel
         }
     }
 
-    void VectorPopulation::ApplyMatingGenetics( IVectorCohort* cohort, VectorMatingStructure male_vector_genetics )
+    void VectorPopulation::ApplyMatingGenetics( IVectorCohort* cohort, const VectorMatingStructure& male_vector_genetics )
     {
         // (1) Determine female fertility
         if( cohort->GetVectorGenetics().GetSterility() == VectorSterility::VECTOR_STERILE )
@@ -712,7 +724,7 @@ namespace Kernel
 
     // Seek a compatible (same gender-mating type) queue in specified list (e.g. AdultQueues, InfectiousQueues) and increase its population.
     // EAW: If we have to do this a lot, then we might consider a different type of container (e.g. map instead of list).
-    void VectorPopulation::MergeProgressedCohortIntoCompatibleQueue(VectorCohortList_t &queues, int32_t population, VectorMatingStructure vector_genetics)
+    void VectorPopulation::MergeProgressedCohortIntoCompatibleQueue(VectorCohortList_t &queues, int32_t population, const VectorMatingStructure& vector_genetics)
     {
         VectorCohortList_t::iterator it = std::find_if( queues.begin(), queues.end(), [vector_genetics](IVectorCohort* cohort){ return cohort->GetVectorGenetics() == vector_genetics; } );
         if ( it != queues.end() ) 
@@ -731,6 +743,28 @@ namespace Kernel
                          VectorAllele::pairs::lookup_key(vector_genetics.GetHEG().second) );
 
             queues.push_front(VectorCohort::CreateCohort(0, population, vector_genetics));
+        }
+    }
+
+    void VectorPopulation::MergeProgressedCohortIntoCompatibleQueue( VectorCohortVector_t &queues, int32_t population, const VectorMatingStructure& vector_genetics)
+    {
+        VectorCohortVector_t::iterator it = std::find_if(queues.begin(), queues.end(), [vector_genetics](IVectorCohort* cohort) { return cohort->GetVectorGenetics() == vector_genetics; });
+        if (it != queues.end())
+        {
+            (*it)->SetPopulation((*it)->GetPopulation() + population);
+        }
+        else
+        {
+            LOG_DEBUG_F("Creating new '%s' VectorCohort with population %d for type: %s, %s, %s, pesticide-resistance: %s-%s, HEG: %s-%s. \n", species_ID.c_str(), population,
+                VectorGender::pairs::lookup_key(vector_genetics.GetGender()),
+                VectorSterility::pairs::lookup_key(vector_genetics.GetSterility()),
+                VectorWolbachia::pairs::lookup_key(vector_genetics.GetWolbachia()),
+                VectorAllele::pairs::lookup_key(vector_genetics.GetPesticideResistance().first),
+                VectorAllele::pairs::lookup_key(vector_genetics.GetPesticideResistance().second),
+                VectorAllele::pairs::lookup_key(vector_genetics.GetHEG().first),
+                VectorAllele::pairs::lookup_key(vector_genetics.GetHEG().second));
+
+            queues.push_back(VectorCohort::CreateCohort(0, population, vector_genetics));
         }
     }
 
@@ -902,7 +936,7 @@ namespace Kernel
         }
     }
 
-    void VectorPopulation::CreateEggCohortOfType(IVectorHabitat* habitat, uint32_t eggs_to_lay, VectorMatingStructure vms_egg)
+    void VectorPopulation::CreateEggCohortOfType(IVectorHabitat* habitat, uint32_t eggs_to_lay, const VectorMatingStructure& vms_egg)
     {
         // Find if there is a compatible existing cohort of eggs
         VectorCohortList_t::iterator itEggs = std::find_if( EggQueues.begin(), EggQueues.end(), [vms_egg, habitat](IVectorCohort* cohort) -> bool 
@@ -1082,11 +1116,20 @@ namespace Kernel
     void VectorPopulation::Update_Egg_Hatching( float dt )
     {
         // Calculate egg-hatch delay factor
-        float eggHatchDelayFactor = 1.0;
-        if ( params()->vector_params->egg_hatch_delay_dist != EggHatchDelayDist::NO_DELAY && params()->vector_params->meanEggHatchDelay > 0 )
+        Fraction eggHatchDelayFactor = dt;
+        Fraction localdensdephatchmod = 1.0;
+        NonNegativeFloat temperature = m_context->GetLocalWeather()->airtemperature();
+
+        // These options are mutually exclusive
+        if(params()->vector_params->temperature_dependent_egg_hatching)
         {
-            eggHatchDelayFactor = dt / params()->vector_params->meanEggHatchDelay;
-            eggHatchDelayFactor = min(eggHatchDelayFactor, 1.0); // correct to avoid too many eggs
+            Fraction tempdephatch = ( params()->vector_params->eggarrhenius1 * exp(-params()->vector_params->eggarrhenius2 / (temperature + CELSIUS_TO_KELVIN)) );
+            eggHatchDelayFactor *= tempdephatch;
+        }
+        else if( params()->vector_params->egg_hatch_delay_dist != EggHatchDelayDist::NO_DELAY && params()->vector_params->meanEggHatchDelay > 0 )
+        {
+            eggHatchDelayFactor /= params()->vector_params->meanEggHatchDelay;
+            eggHatchDelayFactor = min(float(eggHatchDelayFactor), 1.0f); // correct to avoid too many eggs
         }
 
         // Now process remaining eggs
@@ -1105,10 +1148,78 @@ namespace Kernel
             // float egg_survival_weight = GetRelativeSurvivalWeight(habitat);
 
             // Calculate egg-crowding correction for these eggs based on habitat and decrease population
-            float egg_crowding_correction = habitat->GetEggCrowdingCorrection();
-            (*iCurrent)->SetPopulation( int32_t((*iCurrent)->GetPopulation() * egg_crowding_correction) );
+            if (params()->vector_params->delayed_hatching_when_habitat_dries_up)  // if delayed hatching is given, we need them to survive upon drought, thus only adjust population when there is water
+            {
+                if( habitat->GetCurrentLarvalCapacity() >= 1 ) // no drought
+                {
+                    NonNegativeFloat egg_crowding_correction = habitat->GetEggCrowdingCorrection( true );
+                    uint32_t nowPop = (*iCurrent)->GetPopulation();
+                    uint32_t newPop = uint32_t( nowPop * egg_crowding_correction );
+                    LOG_VALID_F( "Updating egg population from %d to %d with egg_crowding_correction of %f\n",
+                         nowPop, newPop, float( egg_crowding_correction ) );
+                    (*iCurrent)->SetPopulation( newPop );
+                }
+                // else do nothing (in case of drought, with the dhwhdr param set, don't reduce eggs with egg_crowding_correction)
 
-            uint32_t hatched = eggHatchDelayFactor * (*iCurrent)->GetPopulation();
+            }
+            else   // otherwise, use original 'anopheles implementation'
+            {
+                NonNegativeFloat egg_crowding_correction = habitat->GetEggCrowdingCorrection();
+                uint32_t nowPop = (*iCurrent)->GetPopulation();
+                uint32_t newPop = uint32_t( nowPop * egg_crowding_correction );
+                LOG_VALID_F( "Updating egg population from %d to %d with egg_crowding_correction of %f\n",
+                        nowPop, newPop, float( egg_crowding_correction ) );
+                (*iCurrent)->SetPopulation( newPop );
+            }
+
+            // Include a daily egg mortality to prevent perfect hybernation
+            if (params()->vector_params->egg_mortality)
+            {
+                int32_t currPop = (*iCurrent)->GetPopulation();
+                int32_t newerPop = int32_t( currPop * species()->eggsurvivalrate );
+                (*iCurrent)->SetPopulation( newerPop ); // (default 0.99 is based on Focks 1993)
+                LOG_VALID_F( "Updating egg population due to egg mortality: old_pop = %d, new_pop = %d.\n", currPop, newerPop );
+            }
+
+            if (params()->vector_params->delayed_hatching_when_habitat_dries_up)
+            {
+                if (habitat->GetCurrentLarvalCapacity() < 1)
+                {
+                    LOG_VALID_F( "Multiplying eggHatchDelayFactor (%f) by drought delay factor from config (%f)\n", float( eggHatchDelayFactor ), params()->vector_params->droughtEggHatchDelay );
+                    eggHatchDelayFactor *= params()->vector_params->droughtEggHatchDelay; //  (should be , default 1/3 is based on Focks 1993)
+                }
+            }
+
+            // Get local density dependence hatching modifier, which depends on larval crowding
+            // if density dependent delay, slow growth
+            if (params()->vector_params->egg_hatch_density_dependence == EggHatchDensityDependence::DENSITY_DEPENDENCE)
+            {
+                if (habitat->GetCurrentLarvalCapacity() < 1)
+                {
+                    localdensdephatchmod = habitat->GetLocalLarvalGrowthModifier();
+                    if (params()->vector_params->delayed_hatching_when_habitat_dries_up)
+                    {
+                        localdensdephatchmod = max(params()->vector_params->droughtEggHatchDelay,float(localdensdephatchmod));
+                    }
+                    LOG_VALID_F( "localdensdephatchmod set to %f due to egg_hatch_density_dependence = %s, larval CC = %f, larval growth mod = %f, and configurable dought egg hatch delay factor = %f.\n",
+                                 float( localdensdephatchmod ),
+                                 EggHatchDensityDependence::pairs::lookup_key( params()->vector_params->egg_hatch_density_dependence ),
+                                 float( habitat->GetCurrentLarvalCapacity() ),
+                                 float( habitat->GetLocalLarvalGrowthModifier() ),
+                                 params()->vector_params->droughtEggHatchDelay
+                               );
+                }
+            }
+
+            //}  NOTE: For now without if statement. Need to include a seperate parameter to address this.  
+            uint32_t hatched = eggHatchDelayFactor * localdensdephatchmod * (*iCurrent)->GetPopulation();
+            LOG_VALID_F( "temperature = %f, local density dependence modifier is %f, egg hatch delay factor is %f, current population is %d, hatched is %d.\n",
+                         float(temperature),
+                         float(localdensdephatchmod),
+                         float(eggHatchDelayFactor),
+                         (*iCurrent)->GetPopulation(),
+                         hatched
+                     );
 
             if( hatched > 0 )
             {
@@ -1189,7 +1300,7 @@ namespace Kernel
         }
     }
 
-    void VectorPopulation::AddVectors(VectorMatingStructure _vector_genetics, uint64_t releasedNumber)
+    void VectorPopulation::AddVectors( const VectorMatingStructure& _vector_genetics, uint64_t releasedNumber )
     {
         VectorCohort* tempentry;
         
@@ -1207,7 +1318,7 @@ namespace Kernel
             { 
                 // already mated, so go in AdultQueues
                 tempentry = VectorCohort::CreateCohort(0, releasedNumber, _vector_genetics);
-                AdultQueues.push_front(tempentry);
+                AdultQueues.push_back(tempentry);
                 queueIncrementTotalPopulation(tempentry, VectorStateEnum::STATE_ADULT);//update counter
             }
         }
@@ -1228,12 +1339,12 @@ namespace Kernel
                     VectorAllele::pairs::lookup_key(_vector_genetics.GetHEG().second) );
     }
 
-    void VectorPopulation::Vector_Migration( IMigrationInfo* pMigInfo, VectorCohortList_t* pMigratingQueue )
+    void VectorPopulation::Vector_Migration(IMigrationInfo* pMigInfo, VectorCohortVector_t* pMigratingQueue)
     {
         throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Vector migration only currently supported for individual (not cohort) model." );
     }
 
-    uint64_t VectorPopulation::Vector_Migration(float migrate, VectorCohortList_t *Migration_Queue)
+    uint64_t VectorPopulation::Vector_Migration(float migrate, VectorCohortVector_t *Migration_Queue)
     {
         throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Vector migration only currently supported for individual (not cohort) model." );
     }
@@ -1301,7 +1412,8 @@ namespace Kernel
     int32_t VectorPopulation::getMaleCount()        const  { return males; }
     int32_t VectorPopulation::getNewEggsCount()     const  { return neweggs; }
     double  VectorPopulation::getInfectivity()      const  { return infectivity; }
-    std::string VectorPopulation::get_SpeciesID()   const  { return species_ID; }
+
+    const std::string& VectorPopulation::get_SpeciesID() const { return species_ID; }
 
     const VectorHabitatList_t& VectorPopulation::GetHabitats() const  { return (*m_larval_habitats); }
     
@@ -1339,6 +1451,16 @@ namespace Kernel
             auto with_habitat = dynamic_cast<IVectorCohortWithHabitat*>(cohort);
             with_habitat->SetHabitat( ivnc->GetVectorHabitatBySpeciesAndType( species_ID, with_habitat->GetHabitatType(), nullptr ) );
         }
+    }
+
+    std::vector<int> VectorPopulation::GetNewlyInfectedSuids() const
+    {
+        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__ );
+    }
+
+    std::vector<int> VectorPopulation::GetInfectiousSuids() const
+    {
+        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__ );
     }
 
     const SimulationConfig* VectorPopulation::params()  const { return GET_CONFIGURABLE(SimulationConfig); }

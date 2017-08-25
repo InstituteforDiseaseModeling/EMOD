@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,37 +12,36 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <string>
 #include <map>
 
-#include "IWaningEffect.h"
-#include "ISerializable.h"
-#include "Configuration.h"
-#include "Configure.h"
-#include "FactorySupport.h"
+#include "WaningEffect.h"
 #include "InterpolatedValueMap.h"
 
 namespace Kernel
 {
-    class IDMAPI WaningEffectMapAbstract : public IWaningEffect, public JsonConfigurable
+    class IDMAPI WaningEffectMapAbstract : public WaningEffectConstant
     {
     public:
-        DECLARE_CONFIGURED(WaningEffectExponential)
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
 
-        WaningEffectMapAbstract();
         virtual ~WaningEffectMapAbstract();
+        virtual bool Configure( const Configuration *config ) override;
         virtual void  Update(float dt) override;
-        virtual float Current() const override;
+        virtual void  SetCurrentTime(float dt) override; // 'fast-forward'
         virtual bool  Expired() const override;
+        virtual void  SetInitial(float newVal) override;
 
         virtual float GetMultiplier( float timeSinceStart ) const = 0;
 
     protected:
+        WaningEffectMapAbstract( float maxTime = 999999.0f );
+        WaningEffectMapAbstract( const WaningEffectMapAbstract& rOrig );
+
+        virtual bool ConfigureExpiration( const Configuration* config );
 
         bool  m_Expired;
         float m_EffectOriginal;
-        float m_EffectCurrent;
         bool  m_ExpireAtDurationMapEnd;
-        float m_TimeSinceStart;
+        NonNegativeFloat m_TimeSinceStart;
+        int   m_RefTime;
         InterpolatedValueMap m_DurationMap;
 
         static void serialize( IArchive&, WaningEffectMapAbstract*);
@@ -51,10 +50,13 @@ namespace Kernel
     class IDMAPI WaningEffectMapLinear : public WaningEffectMapAbstract
     {
         DECLARE_FACTORY_REGISTERED_EXPORT(WaningEffectFactory, WaningEffectMapLinear, IWaningEffect)
-        DECLARE_QUERY_INTERFACE()
     public:
-        WaningEffectMapLinear();
+        DECLARE_QUERY_INTERFACE()
+
+        WaningEffectMapLinear( float maxTime = 999999.0f );
+        WaningEffectMapLinear( const WaningEffectMapLinear& rOrig );
         virtual ~WaningEffectMapLinear();
+        virtual IWaningEffect* Clone() override;
 
         virtual float GetMultiplier( float timeSinceStart ) const override;
 
@@ -71,7 +73,9 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
     public:
         WaningEffectMapPiecewise();
+        WaningEffectMapPiecewise( const WaningEffectMapPiecewise& rOrig );
         virtual ~WaningEffectMapPiecewise();
+        virtual IWaningEffect* Clone() override;
 
         virtual float GetMultiplier( float timeSinceStart ) const override;
 

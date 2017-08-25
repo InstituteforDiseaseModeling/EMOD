@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,7 +16,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "SimulationConfig.h"
 
-static const char * _module = "ClimateConstant";
+SETUP_LOGGING( "ClimateConstant" )
 
 namespace Kernel {
     GET_SCHEMA_STATIC_WRAPPER_IMPL(Climate.Constant,ClimateConstant)
@@ -70,8 +70,8 @@ namespace Kernel {
             return false;
         }
 
-        if((rainfall_variance && (EXPCDF(-1 /base_rainfall * max_rainfall) < 0.975)) ||
-            (!rainfall_variance && base_rainfall > max_rainfall))
+        if((rainfall_variance_enabled && (EXPCDF(-1 /base_rainfall * max_rainfall) < 0.975)) ||
+            (!rainfall_variance_enabled && base_rainfall > max_rainfall))
         {
             LOG_DEBUG( "IsPlausible returning false\n" );
             return false;

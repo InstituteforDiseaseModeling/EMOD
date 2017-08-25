@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,12 +13,16 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    JsonFullWriter::JsonFullWriter()
+    JsonFullWriter::JsonFullWriter(bool object_by_default)
         : m_buffer(new rapidjson::StringBuffer())
         , m_writer(new rapidjson::Writer<rapidjson::StringBuffer>(*m_buffer,false))
         , m_closed(false)
+        , m_object_by_default(object_by_default)
     {
-        m_writer->StartObject();
+        if (m_object_by_default)
+        {
+            m_writer->StartObject();
+        }
     }
 
     IArchive& JsonFullWriter::startClass(std::string& class_name)
@@ -133,17 +137,20 @@ namespace Kernel
 
     bool JsonFullWriter::IsWriter() { return true; }
 
-    uint32_t JsonFullWriter::GetBufferSize()
+    size_t JsonFullWriter::GetBufferSize()
     {
         GetBuffer(); // RapidJson will ensure that there's a terminating null ('\0')
-        return uint32_t(m_buffer->Size());
+        return m_buffer->Size();
     }
 
     const char* JsonFullWriter::GetBuffer()
     {
         if (!m_closed)
         {
-            m_writer->EndObject();
+            if (m_object_by_default)
+            {
+                m_writer->EndObject();
+            }
             m_closed = true;
         }
 

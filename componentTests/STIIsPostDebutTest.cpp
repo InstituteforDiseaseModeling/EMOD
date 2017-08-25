@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -46,11 +46,27 @@ SUITE(StiIsPostDebutTest)
             Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
             Environment::setSimulationConfig( m_pSimulationConfig );
 
-            m_InterventionsContext.setCascadeState( "not_set" );
             m_InterventionsContext.SetContextTo( &m_Human );
 
-            m_pSimulationConfig->listed_events.insert( "Births"   );
-            m_pSimulationConfig->listed_events.insert( "NonDiseaseDeaths" );
+            std::map<std::string, float> ip_values_state ;
+            ip_values_state.insert( std::make_pair( "abort_state_1", 0.0f ) );
+            ip_values_state.insert( std::make_pair( "abort_state_2", 0.0f ) );
+            ip_values_state.insert( std::make_pair( "abort_state_3", 0.0f ) );
+            ip_values_state.insert( std::make_pair( "non_abort_state", 0.0f ) );
+            ip_values_state.insert( std::make_pair( "no_state", 1.0f ) );
+
+            IPFactory::DeleteFactory();
+            IPFactory::CreateFactory();
+            IPFactory::GetInstance()->AddIP( 1, "InterventionStatus", ip_values_state );
+
+            m_Human.GetProperties()->Add( IPKeyValue( "InterventionStatus:no_state" ) );
+
+            EventTriggerFactory::DeleteInstance();
+
+            json::Object fakeConfigJson;
+            Configuration * fakeConfigValid = Environment::CopyFromElement( fakeConfigJson );
+            EventTriggerFactory::GetInstance()->Configure( fakeConfigValid );
+            m_NEC.Initialize();
 
             m_pDiag = new STIIsPostDebut();
             m_pDiag->SetContextTo( &m_Human );
@@ -58,7 +74,6 @@ SUITE(StiIsPostDebutTest)
 
         ~DiagnosticFixture()
         {
-            m_pSimulationConfig->listed_events.clear();
             delete m_pSimulationConfig;
             Environment::Finalize();
             delete m_pDiag;
@@ -77,7 +92,7 @@ SUITE(StiIsPostDebutTest)
 
         m_Human.SetAge( 25.0*365.0 );
 
-        CHECK_EQUAL( IndividualEventTriggerType::NoTrigger, m_NEC.GetTriggeredEvent() ) ;
+        CHECK( m_NEC.GetTriggeredEvent().IsUninitialized() ) ;
         CHECK( !m_pDiag->Expired() );
 
         ICampaignCostObserverFake cco_fake ;
@@ -87,7 +102,7 @@ SUITE(StiIsPostDebutTest)
 
         m_pDiag->Update( 1.0 );
 
-        CHECK_EQUAL( IndividualEventTriggerType::Births, m_NEC.GetTriggeredEvent() ) ;
+        CHECK_EQUAL( EventTrigger::Births.ToString(), m_NEC.GetTriggeredEvent().ToString() ) ;
     }
 
     TEST_FIXTURE(DiagnosticFixture, TestPostDebutNo)
@@ -102,14 +117,14 @@ SUITE(StiIsPostDebutTest)
 
         m_Human.SetAge( 1.0*365.0 );
 
-        CHECK_EQUAL( IndividualEventTriggerType::NoTrigger, m_NEC.GetTriggeredEvent() ) ;
+        CHECK( m_NEC.GetTriggeredEvent().IsUninitialized() ) ;
         CHECK( !m_pDiag->Expired() );
 
         ICampaignCostObserverFake cco_fake ;
         bool distributed = m_pDiag->Distribute( &m_InterventionsContext, &cco_fake );
         CHECK( distributed );
 
-        CHECK_EQUAL( IndividualEventTriggerType::NonDiseaseDeaths, m_NEC.GetTriggeredEvent() ) ;
+        CHECK_EQUAL( EventTrigger::NonDiseaseDeaths.ToString(), m_NEC.GetTriggeredEvent().ToString() ) ;
         CHECK( m_pDiag->Expired() );
     }
 

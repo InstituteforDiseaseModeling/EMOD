@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -26,7 +26,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 using namespace Kernel;
 
-static const char* _module = "NodePy";
+SETUP_LOGGING( "NodePy" )
 
 #define ENABLE_PYTHON_FEVER 1
 namespace Kernel
@@ -221,18 +221,6 @@ namespace Kernel
         }
         return returnThis;
     }
-
-#if USE_BOOST_SERIALIZATION
-    BOOST_CLASS_EXPORT(NodePy)
-    namespace Kernel {
-        template<class Archive>
-        void serialize(Archive & ar, NodePy& node, const unsigned int /* file_version */)
-        { 
-            ar.template register_type<IndividualHumanPy>();
-            ar & boost::serialization::base_object<Node>(node);
-        }
-    }
-#endif
 
     NodePyTest *
     NodePyTest::CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid)

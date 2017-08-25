@@ -1,7 +1,7 @@
 { 
-	"parameters": 
-	{ 
-		"____________SIMULATION___________": {
+    "parameters": 
+    { 
+        "____________SIMULATION___________": {
             "Base_Year": 1960.5,
             "Run_Number": 1,
             "Campaign_Filename": "campaign.json",
@@ -14,68 +14,7 @@
             "logLevel_default": "WARNING",
             "logLevel_Simulation": "INFO",
 
-            "Valid_Cascade_States" : [
-                "",
-                "ARTStaging",
-                "LinkingToART",
-                "LinkingToPreART",
-                "OnART",
-                "OnPreART",
-                "HCTTestingLoop",
-                "HCTUptakeAtDebut",
-                "HCTUptakePostDebut",
-                "TestingOnANC",
-                "TestingOnChild6w",
-                "TestingOnSymptomatic"
-            ],
             "Listed_Events": [
-                "NoTrigger",
-                "Births",
-                "EveryUpdate",
-                "EveryTimeStep",
-                "NewInfectionEvent",
-                "TBActivation",
-                "NewClinicalCase",
-                "NewSevereCase",
-                "DiseaseDeaths",
-                "NonDiseaseDeaths",
-                "TBActivationSmearPos",
-                "TBActivationSmearNeg",
-                "TBActivationExtrapulm",
-                "TBActivationPostRelapse",
-                "TBPendingRelapse",
-                "TBActivationPresymptomatic",
-                "TestPositiveOnSmear",
-                "ProviderOrdersTBTest",
-                "TBTestPositive",
-                "TBTestNegative",
-                "TBTestDefault",
-                "TBRestartHSB",
-                "TBMDRTestPositive",
-                "TBMDRTestNegative",
-                "TBMDRTestDefault",
-                "TBFailedDrugRegimen",
-                "TBRelapseAfterDrugRegimen",
-                "TBStartDrugRegimen",
-                "TBStopDrugRegimen",
-                "PropertyChange",
-                "STIDebut",
-                "StartedART",
-                "StoppedART",
-                "CascadeStateAborted",
-                "HIVNewlyDiagnosed",
-                "HIVNeedsHIVTest",
-                "HIVPositiveHIVTest",
-                "HIVNegativeHIVTest",
-                "HIVDiagnosedEligibleForART",
-                "HIVSymptomatic",
-                "HIVLinkToPreART",
-                "HIVPreARTToART",
-                "HIVNonPreARTToART",
-                "TwelveWeeksPregnant",
-                "FourteenWeeksPregnant",
-                "SixWeeksOld",
-                "EighteenMonthsOld",
                 "HIVNeedsMaleCircumcision",
                 "HCTUptakeAtDebut0",
                 "HCTUptakeAtDebut1",
@@ -266,7 +205,7 @@
             ]
         },
 
-		"____________DEMOGRAPHICS___________": {
+        "____________DEMOGRAPHICS___________": {
             "Age_Initialization_Distribution_Type": "DISTRIBUTION_COMPLEX",
             "Base_Population_Scale_Factor": 0.001,
             "Base_Individual_Sample_Rate": 1,
@@ -292,7 +231,7 @@
             "x_Other_Mortality": 0.85
         },
 
-		"____________INTRAHOST___________": {
+        "____________INTRAHOST___________": {
             "Base_Infectivity": 0.001,
 
             "Acute_Duration_In_Months": 2.9,
@@ -304,7 +243,8 @@
             "ART_Viral_Suppression_Multiplier": 0.08,
             "Male_To_Female_Relative_Infectivity_Ages": [ 15, 25, 35 ],
             "Male_To_Female_Relative_Infectivity_Multipliers": [ 5, 1, 0.5 ],
-            "STI_Coinfection_Multiplier": 10,
+            "STI_Coinfection_Acquisition_Multiplier": 10,
+            "STI_Coinfection_Transmission_Multiplier": 10,
 
             "Days_Between_Symptomatic_And_Death_Weibull_Heterogeneity": 0.5, 
             "Days_Between_Symptomatic_And_Death_Weibull_Scale": 618.341625, 
@@ -314,8 +254,7 @@
             "CD4_At_Death_LogLogistic_Scale": 31.63,
             "CD4_At_Death_LogLogistic_Heterogeneity": 0.0,
 
-            "Heterogeneous_Infectiousness_Weibull_Heterogeneity": 0,
-            "Heterogeneous_Infectiousness_Weibull_Scale": 1,
+            "Heterogeneous_Infectiousness_LogNormal_Scale": 0,
 
             "HIV_Child_Survival_Rapid_Progressor_Rate"     : 1.52,
             "HIV_Child_Survival_Slow_Progressor_Shape"     : 2.7,
@@ -328,7 +267,7 @@
             "HIV_Adult_Survival_Shape_Parameter"           : 2.0
         },
 
-		"____________TRANSMISSION___________": {
+        "____________TRANSMISSION___________": {
             "Condom_Transmission_Blocking_Probability": 0.90,
             "Enable_Maternal_Transmission": 1,
             "Maternal_Transmission_ART_Multiplier": 0.03334,
@@ -340,7 +279,7 @@
             "Coital_Dilution_Factor_4_Plus_Partners": 0.45
         },
 
-		"____________NETWORK___________": {
+        "____________NETWORK___________": {
             "Min_Days_Between_Adding_Relationships": 60,
 
             "PFA_Burnin_Duration_In_Days": 5475,
@@ -353,8 +292,8 @@
             "Sexual_Debut_Age_Min": 13
         },
 
-		"____________REPORTING___________": {
-            "Custom_Reports_Filename" : "NoCustomReports",
+        "____________REPORTING___________": {
+            "Custom_Reports_Filename" : "",
             "Enable_Default_Reporting" : 1,
             "Report_HIV_Event_Channels_List" : [],
             "Enable_Demographics_Reporting": 0,
@@ -368,12 +307,29 @@
             "Report_HIV_ByAgeAndGender": 0,
             "Report_HIV_ByAgeAndGender_Start_Year": 1980,
             "Report_HIV_ByAgeAndGender_Stop_Year": 2200,
-            "Report_HIV_ByAgeAndGender_Collect_Circumcision_Data" : 0,
-            "Report_HIV_ByAgeAndGender_Collect_IP_Data" : 0,
-            "Report_HIV_ByAgeAndGender_Collect_HIV_Data" : 0,
+            "Report_HIV_ByAgeAndGender_Collect_Gender_Data" : 1,
+            "Report_HIV_ByAgeAndGender_Collect_Age_Bins_Data" : [
+                 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
+                10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+                20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+                30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+                40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+                50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+                60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+                70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
+                80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+                90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+            ],
+            "Report_HIV_ByAgeAndGender_Collect_HIV_Data"           : 0,
+            "Report_HIV_ByAgeAndGender_Collect_On_Art_Data"        : 0,
+            "Report_HIV_ByAgeAndGender_Collect_Circumcision_Data"  : 0,
+            "Report_HIV_ByAgeAndGender_Collect_IP_Data"            : [],
+            "Report_HIV_ByAgeAndGender_Collect_Intervention_Data"  : [],
+            "Report_HIV_ByAgeAndGender_Add_Transmitters"           : 0,
+            "Report_HIV_ByAgeAndGender_Add_Relationships"          : 0,
+            "Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4"   : 0,
             "Report_HIV_ByAgeAndGender_Has_Intervention_With_Name" : "",
-            "Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4": 0,
-            "Report_HIV_ByAgeAndGender_Event_Counter_List" : [],
+            "Report_HIV_ByAgeAndGender_Event_Counter_List"         : [],
             "Report_HIV_Period": 365,
             "Report_Relationship_End": 0,
             "Report_Relationship_Start": 0,
@@ -385,7 +341,9 @@
             "Report_HIV_Mortality": 0
         },
 
-		"____________RARELY_CHANGED___________": {
+        "____________RARELY_CHANGED___________": {
+            "Memory_Usage_Warning_Threshold_Working_Set_MB" : 3500,
+            "Memory_Usage_Halting_Threshold_Working_Set_MB" : 4000,
             "Config_Name": "Config_Name_NOT_SET",
             "Geography": "SamplesInput",
             "Acquisition_Blocking_Immunity_Decay_Rate": 1,
@@ -429,5 +387,5 @@
             "Transmission_Blocking_Immunity_Duration_Before_Decay": 2,
             "x_Population_Immunity": 1
         }
-	}
+    }
 }

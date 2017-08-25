@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -25,12 +25,15 @@ namespace Kernel
         ReferenceTrackingEventCoordinator();
         virtual ~ReferenceTrackingEventCoordinator() { } 
 
-        virtual void Update(float dt);
-        virtual void preDistribute();
+        virtual void Update(float dt) override;
+        virtual void preDistribute() override;
+        virtual void CheckStartDay( float campaignStartDay ) const override;
 
     protected:
+        virtual bool TargetedIndividualIsCovered(IIndividualHumanEventContext *ihec);
         InterpolatedValueMap year2ValueMap;
         Fraction target_coverage;
         float end_year;
+        std::vector< suids::suid_data_t > haves;
     };
 }

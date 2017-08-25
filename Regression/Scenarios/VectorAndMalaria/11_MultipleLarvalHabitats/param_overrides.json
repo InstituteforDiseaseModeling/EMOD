@@ -31,14 +31,7 @@
                         "Larval_Habitat_Types": {
                             "TEMPORARY_RAINFALL": 11250000000, 
                             "WATER_VEGETATION": 6000000000
-                        }, 
-                        "Immature_Duration": 2
-                    },
-                    "funestus": {
-                        "Immature_Duration": 2
-                    },
-                    "gambiae": {
-                        "Immature_Duration": 2
+                        }
                     }
                 }
             },

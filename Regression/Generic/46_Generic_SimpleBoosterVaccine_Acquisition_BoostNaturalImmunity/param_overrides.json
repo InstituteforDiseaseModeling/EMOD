@@ -1,0 +1,31 @@
+{
+    "Default_Config_Path": "defaults/generic_default_config.json", 
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Population_Scale_Type": "FIXED_SCALING", 
+            "IMMUNITY": {
+                "Immunity_Acquisition_Factor": 0.8
+            }, 
+            "Demographics_Filenames": ["../00_Generic_Default/demographics.json"]
+        }, 
+        "DISEASE": {
+            "INFECTIOUSNESS": {
+                "Base_Infectivity": 1e-06, 
+                "Infectious_Period_Distribution": "FIXED_DURATION", 
+                "Base_Infectious_Period": 2
+            }, 
+            "INCUBATION": {
+                "Base_Incubation_Period": 0
+            }
+        }, 
+        "PRIMARY": {
+            "Run_Number": 1, 
+            "Simulation_Duration": 10, 
+            "Config_Name": "46_Generic_SimpleBoosterVaccine_Acquisition_BoostNaturalImmunity", 
+            "Geography": "Namawala"
+        }, 
+        "INTRANODE_TRANSMISSION": {
+            "Enable_Heterogeneous_Intranode_Transmission": 1
+        }
+    }
+}

@@ -277,7 +277,7 @@ def WriteBinFileGender( bin_file, json_data, summary, rates_key ):
                 index += 1
 
             # Format data into binary
-            bin_data_id = struct.pack( 'L'*len(array_id), *array_id )
+            bin_data_id = struct.pack( 'I'*len(array_id), *array_id )
             bin_data_rt = struct.pack( 'd'*len(array_rt), *array_rt )
 
             bin_file.write( bin_data_id )

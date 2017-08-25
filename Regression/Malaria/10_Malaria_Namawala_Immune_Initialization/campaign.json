@@ -1,0 +1,91 @@
+{
+    "Campaign_Name": "ITN (+ birth-triggered) and chloroquine MDA", 
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.8, 
+                "Intervention_Config": {
+                    "Blocking_Config": {
+                        "Box_Duration": 3650, 
+                        "Initial_Effect": 0.9, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "Cost_To_Consumer": 3.75, 
+                    "Killing_Config": {
+                        "Box_Duration": 3650, 
+                        "Initial_Effect": 0.6, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "Usage_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 1.0
+                    }, 
+                    "class": "SimpleBednet"
+                }, 
+                "Number_Repetitions": 1, 
+                "Target_Demographic": "Everyone", 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 365, 
+            "class": "CampaignEvent"
+        }, 
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "Blocking_Rate": 0.9, 
+                        "Cost_To_Consumer": 3.75, 
+			"Blocking_Config": {
+				"Box_Duration": 3650, 
+				"Initial_Effect": 0.9, 
+				"class": "WaningEffectBox"
+			}, 
+			"Killing_Config": {
+				"Box_Duration": 3650, 
+				"Initial_Effect": 0.6, 
+				"class": "WaningEffectBox"
+			},
+                        "Usage_Config": {
+                            "class": "WaningEffectConstant",
+                            "Initial_Effect": 1.0
+                        }, 
+                        "class": "SimpleBednet"
+                    }, 
+                    "Demographic_Coverage": 0.8, 
+                    "class": "BirthTriggeredIV"
+                }, 
+                "Number_Repetitions": 1, 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 365, 
+            "class": "CampaignEvent"
+        }, 
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.8, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 3.75, 
+                    "Dosing_Type": "FullTreatmentParasiteDetect", 
+                    "Drug_Type": "Chloroquine", 
+                    "class": "AntimalarialDrug"
+                }, 
+                "Number_Repetitions": 9, 
+                "Target_Demographic": "Everyone", 
+                "Timesteps_Between_Repetitions": 60, 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 1095, 
+            "class": "CampaignEvent"
+        }
+    ], 
+    "Use_Defaults": 1
+}

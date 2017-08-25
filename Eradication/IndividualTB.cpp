@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,8 +18,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SusceptibilityTB.h"
 #include "TBInterventionsContainer.h"
 #include "TBContexts.h"
+#include "StrainIdentity.h"
 
-static const char* _module = "IndividualHumanTB";
+SETUP_LOGGING( "IndividualTB" )
 
 namespace Kernel
 {
@@ -59,8 +60,8 @@ namespace Kernel
 
         if(Environment::getInstance()->Log->CheckLogLevel(Logger::DEBUG, "EEL"))
         {
-            tProperties* pProp = GetEventContext()->GetProperties();
-            Environment::getInstance()->Log->LogF(Logger::DEBUG, "EEL","t=%d,hum_id=%d,new_hum_state=%d,Props=%s \n", int(parent->GetTime().time), GetSuid().data, 0,  (*pProp)[ "QualityOfCare" ].c_str() );
+            const std::string& value = GetEventContext()->GetProperties()->Get( IPKey( "QualityOfCare" ) ).GetValueAsString();
+            Environment::getInstance()->Log->LogF(Logger::DEBUG, "EEL","t=%d,hum_id=%d,new_hum_state=%d,Props=%s \n", int(parent->GetTime().time), GetSuid().data, 0, value.c_str() );
         }
     }
 
@@ -81,12 +82,12 @@ namespace Kernel
         for (auto infection : infections)
         {
             infectiousness += infection->GetInfectiousness();
-            float tmp_infectiousness =  m_mc_weight * infection->GetInfectiousness() * susceptibility->GetModTransmit() * interventions->GetInterventionReducedTransmit();
+            float tmp_infectiousness =  m_mc_weight * infection->GetInfectiousness() * susceptibility->getModTransmit() * interventions->GetInterventionReducedTransmit();
             StrainIdentity tmp_strainIDs;
             infection->GetInfectiousStrainID(&tmp_strainIDs);
             if ( tmp_infectiousness )
             {
-                parent->DepositFromIndividual(&tmp_strainIDs, tmp_infectiousness, &transmissionGroupMembership);
+                parent->DepositFromIndividual( tmp_strainIDs, tmp_infectiousness, &transmissionGroupMembership);
             }
             if(infectiousness > 0) break; // TODO: reconsider only counting FIRST active infection in container
         }
@@ -95,11 +96,11 @@ namespace Kernel
         // TODO: if we want to actually truncate infectiousness at some maximum value, then QueueDepositContagion will have to be postponed as in IndividualVector
         if (infectiousness > 1)
         {
-            infectiousness *= susceptibility->GetModTransmit() * interventions->GetInterventionReducedTransmit();
+            infectiousness *= susceptibility->getModTransmit() * interventions->GetInterventionReducedTransmit();
         }
         else
         {
-            infectiousness *= susceptibility->GetModTransmit() * interventions->GetInterventionReducedTransmit();
+            infectiousness *= susceptibility->getModTransmit() * interventions->GetInterventionReducedTransmit();
         }
 
     }
@@ -125,7 +126,7 @@ namespace Kernel
         }
         else if ( inf_state_change == InfectionStateChange::TBActivationPresymptomatic )   //  Latent infection that became active
         {
-            //broadcaster->TriggerNodeEventObservers(GetEventContext(), IndividualEventTriggerType::TBActivationPresymptomatic);
+            //broadcaster->TriggerNodeEventObservers(GetEventContext(), EventTrigger::TBActivationPresymptomatic);
         }        
         else if ( inf_state_change == InfectionStateChange::TBActivation )   //  Latent infection that became active
         {
@@ -163,14 +164,26 @@ namespace Kernel
         IInfectionIncidenceObserver * pObserver 
     )
     {
-        infectionIncidenceObservers.insert( pObserver );
+        infectionIncidenceObservers.push_back( pObserver );
     }
 
     void IndividualHumanTB::UnRegisterAllObservers(
         IInfectionIncidenceObserver * pObserver 
     )
     {
-        infectionIncidenceObservers.erase( pObserver );
+        // -----------------------------------------------------------------------------------
+        // --- infectionIncidenceObservers used to be a std::set but in TB tests 29, 31, & 32
+        // --- switching to a vector was much faster.
+        // -----------------------------------------------------------------------------------
+        for( int i = 0 ; i < infectionIncidenceObservers.size() ; ++i )
+        {
+            if( infectionIncidenceObservers[ i ] == pObserver )
+            {
+                infectionIncidenceObservers[ i ] = infectionIncidenceObservers.back();
+                infectionIncidenceObservers.pop_back();
+                return;
+            }
+        }
     }
 
     void IndividualHumanTB::onInfectionIncidence() // TBD: use map later so we can have many different types of observers separated into their own list

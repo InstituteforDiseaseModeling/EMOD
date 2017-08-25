@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -49,7 +49,10 @@ namespace Kernel
         virtual float GetAvailableLarvalHabitat( const suids::suid& nodeSuid, const std::string& rSpeciesID ) override;
 
         // Allows correct type of community to be added by derived class Simulations
-        virtual void addNewNodeFromDemographics(suids::suid node_suid, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory) override;
+        virtual void addNewNodeFromDemographics( suids::suid node_suid,
+                                                 NodeDemographicsFactory *nodedemographics_factory,
+                                                 ClimateFactory *climate_factory,
+                                                 bool white_list_enabled ) override;
         virtual int  populateFromDemographics(const char* campaign_filename, const char* loadbalance_filename) override;
 
         // Creates reporters.  Specifies vector-species-specific reporting in addition to base reporting
@@ -79,6 +82,8 @@ namespace Kernel
 
         virtual void resolveMigration() override;
         virtual void setupMigrationQueues() override;
+
+        DECLARE_SERIALIZABLE(SimulationVector);
 
     private:
 

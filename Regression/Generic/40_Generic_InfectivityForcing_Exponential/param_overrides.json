@@ -1,0 +1,36 @@
+{
+    "Default_Config_Path": "defaults/generic_default_config.json", 
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Population_Scale_Type": "FIXED_SCALING", 
+            "Birth_Rate_Dependence": "POPULATION_DEP_RATE", 
+            "MORTALITY": {
+                "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF"
+            }, 
+            "Demographics_Filenames": ["../00_Generic_Default/demographics.json"], 
+            "Enable_Vital_Dynamics": 0, 
+            "SAMPLING": {
+                "Sample_Rate_Birth": 1
+            }
+        }, 
+        "DISEASE": {
+            "INFECTIOUSNESS": {
+                "Infectious_Period_Distribution": "FIXED_DURATION", 
+                "Infectivity_Scale_Type": "EXPONENTIAL_FUNCTION_OF_TIME",
+                "Base_Infectious_Period": 400, 
+                "Infectivity_Exponential_Baseline": 0.1, 
+                "Infectivity_Exponential_Delay": 90, 
+                "Infectivity_Exponential_Rate": 45
+            }, 
+            "INCUBATION": {
+                "Base_Incubation_Period": 0
+            }
+        }, 
+        "PRIMARY": {
+            "Run_Number": 1, 
+            "Simulation_Duration": 400, 
+            "Config_Name": "40_Generic_InfectivityForcing_Exponential", 
+            "Geography": ""
+        }
+    }
+}

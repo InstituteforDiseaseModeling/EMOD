@@ -1,0 +1,42 @@
+{
+     "CLIMATE": {
+          "FILENAMES": {
+               "Air_Temperature_Filename": "Namawala_single_node_air_temperature_daily.bin", 
+               "Land_Temperature_Filename": "Namawala_single_node_land_temperature_daily.bin", 
+               "Rainfall_Filename": "Namawala_single_node_rainfall_daily.bin", 
+               "Relative_Humidity_Filename": "Namawala_single_node_relative_humidity_daily.bin"
+          }
+     }, 
+     "DEMOGRAPHICS": {
+          "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE", 
+          "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER",
+          "Demographics_Filenames": ["Namawala_single_node_demographics.json"], 
+          "Enable_Birth": 1, 
+          "Population_Scale_Type": "FIXED_SCALING"
+     }, 
+     "Default_Config_Path": "defaults/malaria_default_config.json", 
+     "GENERAL_DISEASE": {
+          "Infection_Updates_Per_Timestep": 24
+     }, 
+     "MALARIA": {
+          "Malaria_Strain_Model": "FALCIPARUM_STRAIN_GENERATOR", 
+          "Min_Adapted_Response": 0.01
+     }, 
+     "PRIMARY": {
+          "Config_Name": "8_Malaria_Namawala_LargeVectorCampaign_StrainGenerator", 
+          "Geography": "Namawala", 
+          "Run_Number": 1, 
+          "Simulation_Duration": 730
+     }, 
+     "Vector_Species_Params": {
+          "arabiensis": {
+               "Acquire_Modifier": 0.2
+          }, 
+          "funestus": {
+               "Acquire_Modifier": 0.2
+          }, 
+          "gambiae": {
+               "Acquire_Modifier": 0.2
+          }
+     }
+}

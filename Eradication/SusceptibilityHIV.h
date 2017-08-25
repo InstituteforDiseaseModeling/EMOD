@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -8,8 +8,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 ***************************************************************************************************/
 
 #pragma once
-#include "SusceptibilitySTI.h"
-
+#include "SusceptibilitySTI.h" 
+#include "HIVEnums.h"
 #include "Types.h"
 
 namespace Kernel
@@ -21,7 +21,7 @@ namespace Kernel
     public:
         // disease specific functions go here
         virtual float        GetCD4count() const = 0;
-        virtual void         Generate_forward_CD4() = 0;
+        virtual vector <float>         Generate_forward_CD4(bool ARTOnoff) = 0;
         virtual void         FastForward( const IInfectionHIV * const, float dt ) = 0;
         virtual void         ApplyARTOnset() = 0;
         virtual ProbabilityNumber GetPrognosisCompletedFraction() const = 0;
@@ -45,8 +45,11 @@ namespace Kernel
         static float post_infection_CD4_inverse_kappa;
         static float disease_death_CD4_alpha;
         static float disease_death_CD4_inverse_beta;
+
+        // TBHIV
         static float days_between_symptomatic_and_death_lambda;
         static float days_between_symptomatic_and_death_inv_kappa;
+
     };
 
     //---------------------------- SusceptibilityHIV ----------------------------------------
@@ -67,7 +70,7 @@ namespace Kernel
 
         // disease specific functions 
         virtual float GetCD4count() const override;
-        virtual void  Generate_forward_CD4() override;
+        virtual std::vector <float> Generate_forward_CD4(bool ARTYesNo) override;
         virtual void  FastForward( const IInfectionHIV * const, float dt ) override;
         virtual void  ApplyARTOnset() override;
         virtual ProbabilityNumber GetPrognosisCompletedFraction() const override;
@@ -81,7 +84,7 @@ namespace Kernel
         void setCD4Rate(const IInfectionHIV * const pInf);
         IIndividualHumanHIV * hiv_parent;
 
-        /* clorton virtual */ void Initialize(float age, float immmod, float riskmod) /* clorton override */;
+        virtual void Initialize(float age, float immmod, float riskmod) override;
         void UpdateSymptomaticPresentationTime();
 
         // additional members of SusceptibilityHIV (params)

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -22,7 +22,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Types.h" // for ProbabilityNumber and NaturalNumber
 #include "Debug.h" // for release_assert
 
-static const char * _module = "InfectionHIV";
+SETUP_LOGGING( "InfectionHIV" )
 
 namespace Kernel
 {
@@ -34,8 +34,8 @@ namespace Kernel
     float InfectionHIVConfig::acute_stage_infectivity_multiplier = 0.0f;
     float InfectionHIVConfig::AIDS_stage_infectivity_multiplier = 0.0f;
     float InfectionHIVConfig::ART_viral_suppression_multiplier = 0.0f;
-    float InfectionHIVConfig::personal_infectivity_heterogeneity = 0.0f;
     float InfectionHIVConfig::personal_infectivity_scale = 0.0f;
+    float InfectionHIVConfig::personal_infectivity_median = 0.0f;
     float InfectionHIVConfig::max_CD4_cox = 0.0f;
     FerrandAgeDependentDistribution InfectionHIVConfig::mortality_distribution_by_age;
 
@@ -58,8 +58,7 @@ namespace Kernel
         initConfigTypeMap( "Acute_Stage_Infectivity_Multiplier", &acute_stage_infectivity_multiplier, HIV_Acute_Stage_Infectivity_Multiplier_DESC_TEXT, 1.0f, 100.0f, 26.0f );
         initConfigTypeMap( "AIDS_Stage_Infectivity_Multiplier", &AIDS_stage_infectivity_multiplier, HIV_AIDS_Stage_Infectivity_Multiplier_DESC_TEXT, 1.0f, 100.0f, 10.0f );
         initConfigTypeMap( "ART_Viral_Suppression_Multiplier", &ART_viral_suppression_multiplier, HIV_ART_Viral_Suppression_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.08f );
-        initConfigTypeMap( "Heterogeneous_Infectiousness_Weibull_Heterogeneity", &personal_infectivity_heterogeneity, HIV_Heterogeneous_Infectiousness_Weibull_Heterogeneity_DESC_TEXT, 0.0f, 0.3f, 0.0f );
-        initConfigTypeMap( "Heterogeneous_Infectiousness_Weibull_Scale", &personal_infectivity_scale, HIV_Heterogeneous_Infectiousness_Weibull_Scale_DESC_TEXT, 0.1f, 10.0f, 1.0f );
+        initConfigTypeMap( "Heterogeneous_Infectiousness_LogNormal_Scale", &personal_infectivity_scale, HIV_Heterogeneous_Infectiousness_LogNormal_Scale_DESC_TEXT, 0.0f, 10.0f, 0.0f, "Simulation_Type", "HIV_SIM" );
         initConfigTypeMap( "ART_CD4_at_Initiation_Saturating_Reduction_in_Mortality", &max_CD4_cox, ART_CD4_at_Initiation_Saturating_Reduction_in_Mortality_DESC_TEXT, 0.0f, FLT_MAX, 350.0f );
 
         bool ret = JsonConfigurable::Configure( config );
@@ -67,6 +66,10 @@ namespace Kernel
         {
             ret = mortality_distribution_by_age.Configure( config );
         }
+
+        // median = exp(mu), where mu=-sigma^2/2
+        personal_infectivity_median = exp(-InfectionHIVConfig::personal_infectivity_scale * InfectionHIVConfig::personal_infectivity_scale / 2.0);
+
         return ret ;
     }
 
@@ -86,14 +89,20 @@ namespace Kernel
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanHIV", "IndividualHuman" );
         }
-        
+
         // Initialization of HIV infection members, start with constant-ish values
         ViralLoad = INITIAL_VIRAL_LOAD;
 
         SetupNonSuppressedDiseaseTimers();
 
-        // calculate individual infectivity multiplier based on Weibull draw.
-        m_hetero_infectivity_multiplier = Environment::getInstance()->RNG->Weibull2(InfectionHIVConfig::personal_infectivity_scale, InfectionHIVConfig::personal_infectivity_heterogeneity );
+        // calculate individual infectivity multiplier based on Log-Normal draw.
+        m_hetero_infectivity_multiplier = 1;
+        if (InfectionHIVConfig::personal_infectivity_scale > 0) {
+            m_hetero_infectivity_multiplier = Probability::getInstance()->fromDistribution(DistributionFunction::LOG_NORMAL_DURATION, 
+                // First argument is the median = exp(mu), where mu=-sigma^2/2, second arg is scale
+                InfectionHIVConfig::personal_infectivity_median, InfectionHIVConfig::personal_infectivity_scale  );
+        }
+        //m_hetero_infectivity_multiplier = Environment::getInstance()->RNG->Weibull2(InfectionHIVConfig::personal_infectivity_scale, InfectionHIVConfig::personal_infectivity_heterogeneity);
 
         LOG_DEBUG_F( "Individual %d just entered (started) HIV Acute stage, heterogeneity multiplier = %f.\n", parent->GetSuid().data, m_hetero_infectivity_multiplier );
     }
@@ -205,8 +214,9 @@ namespace Kernel
                    );
     }
 
-    void InfectionHIV::SetParameters(StrainIdentity* infstrain, int incubation_period_override)
+    void InfectionHIV::SetParameters( IStrainIdentity* infstrain, int incubation_period_override)
     {
+        LOG_DEBUG_F( "New HIV infection for individual %d; incubation_period_override = %d.\n", parent->GetSuid().data, incubation_period_override );
         InfectionSTI::SetParameters( infstrain, incubation_period_override );
         CreateInfectionStrain(infstrain);
 

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,6 +9,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #pragma once
 #include "SusceptibilityAirborne.h"
+#include "SimulationEnums.h"
 
 namespace Kernel
 {
@@ -33,6 +34,12 @@ namespace Kernel
         static float TB_smear_positive_fraction_adult;
         static float TB_extrapulmonary_fraction_child;
         static float TB_extrapulmonary_fraction_adult;
+        static TBFastProgressorType::Enum TB_fast_progressor_fraction_type;
+        static float TB_fast_progressor_fraction_above_poverty;
+        static float TB_fast_progressor_fraction_below_poverty;
+        static float TB_fast_progressor_fraction;
+        static float TB_susceptibility_multiplier_below_poverty;
+
     };
 
     
@@ -45,6 +52,9 @@ namespace Kernel
         virtual float GetCoughInfectiousness() = 0;
         virtual bool GetCD4ActFlag() const = 0;
         virtual void SetCD4ActFlag( bool bin) = 0;
+        virtual float GetProgressionRiskModulator() const = 0;
+        virtual void SetModAcquire( float new_mod_acquire ) =0;
+        virtual float GetModAcquire() const = 0;
     };
 
     class SusceptibilityTB : public SusceptibilityAirborne, public ISusceptibilityTB
@@ -68,17 +78,23 @@ namespace Kernel
         virtual float GetCoughInfectiousness() override;
         virtual bool GetCD4ActFlag() const override;
         virtual void SetCD4ActFlag(bool bin) override;
+        virtual float GetProgressionRiskModulator() const override;
+        virtual void SetModAcquire( float new_mod_acquire ) override;
+        virtual float GetModAcquire() const override;
+        virtual float getModTransmit() const override;
+
 
     protected:
         bool  Flag_use_CD4_for_act;
         SusceptibilityTB();
         SusceptibilityTB(IIndividualHumanContext *context);
 
-        /* clorton virtual */ void Initialize(float age, float immmod, float riskmod) /* clorton override */;
+        virtual void Initialize(float age, float immmod, float riskmod) override;
 
         // additional members of SusceptibilityTB
         bool m_is_immune_competent;
         bool m_is_immune;
+        float m_fast_progression_modulator_immmod;
 
         // keeping count of current infections to know when to begin immunity loss.  
         // TODO: alternatively, could add an interface, ITBHumanContext, with a function checking if infected?

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,7 +16,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 //////////////////////////////////////////////////////////////////////////
 // Implementation of basic JsonSerializer class that bridges between
 // clientèle serialization and the underlying JSON
-static const char* _module = "JsonSerializer";
+SETUP_LOGGING( "JsonSerializer" )
 
 using namespace std;
 
@@ -147,40 +147,6 @@ namespace Kernel
         jsArrayRoot->EndArray();
     }
 
-    void JSerializer::JSerialize( const char* key, const IJsonSerializable* object, IJsonObjectAdapter* root )
-    {
-        root->Insert(key);
-        object->JSerialize(root, this);
-    }
-
-#if 0
-    void JSerializer::JSerializeToString(IJsonSerializable* clientObj, string& jsStr)
-    {
-        IJsonObjectAdapter* jsRoot = CreateJsonObjAdapter();
-        if (!clientObj || !jsRoot)
-        {
-            LOG_INFO("Nothing to serialize because input serializable clientObj or underlying Json object is NULL\n"); 
-            return;
-        }
-        clientObj->JSerialize( jsRoot, this );
-        jsStr = jsRoot->ToString();
-        delete jsRoot;
-    }
-
-    void JSerializer::JDeserializeFromString(IJsonSerializable* clientObj, string& jsStr)
-    {
-        IJsonObjectAdapter* jsRoot = CreateJsonObjAdapter();
-        if (!clientObj)
-        {
-            LOG_INFO("Nothing to deserialize because input serializable clientObj or the underlying Json object is NULL\n"); 
-            return;
-        }
-        jsRoot->Parse(jsStr);
-        clientObj->JDeserialize( jsRoot, this );
-        delete jsRoot;
-    }
-#endif
-
     void JSerializer::GetFormattedOutput(const IJsonObjectAdapter* jsObject, const char*& jsStr)
     {
         jsStr = jsObject->ToString();
@@ -189,12 +155,6 @@ namespace Kernel
     void JSerializer::GetPrettyFormattedOutput(const IJsonObjectAdapter* jsObject, char*& jsStr)
     {
         jsStr = jsObject->ToPrettyString();
-    }
-
-    void JSerializer::JDeserialize( IJsonSerializable* object, IJsonObjectAdapter* root, bool delete_root )
-    {
-        object->JDeserialize(root, this);
-        if (delete_root) delete root;
     }
 
     void JSerializer::JDeserialize( map<string, string>& map_string_string, IJsonObjectAdapter* root, bool delete_root )

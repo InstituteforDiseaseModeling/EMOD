@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -41,28 +41,38 @@ namespace Kernel
 
     IArchive& JsonFullReader::startObject()
     {
-        m_value_stack.push(m_json);
-        if (isObject)
+        if (label.size() > 0)
         {
-            m_json = &(*m_json)[label.c_str()];
+            m_value_stack.push(m_json);
+
+            if (isObject)
+            {
+                m_json = &(*m_json)[label.c_str()];
+            }
+            else
+            {
+                m_json = &(*m_json)[m_index++];
+                isObject = true;
+            }
         }
-        else
-        {
-            m_json = &(*m_json)[m_index++];
-            isObject = true;
-        }
+
         if( !m_json->IsObject() )
         {
             throw SerializationException( __FILE__, __LINE__, __FUNCTION__, "Expected to starting reading an object and it is not an object." );
         }
+
         return *this;
     }
 
     IArchive& JsonFullReader::endObject()
     {
-        m_json = m_value_stack.top();
-        m_value_stack.pop();
-        isObject = (*m_json).IsObject();
+        if (m_value_stack.size() > 0)
+        {
+            m_json = m_value_stack.top();
+            m_value_stack.pop();
+            isObject = (*m_json).IsObject();
+        }
+
         return *this;
     }
 
@@ -218,7 +228,7 @@ namespace Kernel
 
     bool JsonFullReader::IsWriter() { return false; }
 
-    uint32_t JsonFullReader::GetBufferSize()
+    size_t JsonFullReader::GetBufferSize()
     {
         throw "JsonFullReader doesn't implement GetBufferSize().";
     }

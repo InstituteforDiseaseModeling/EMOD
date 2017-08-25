@@ -6,7 +6,9 @@
             "Description": "Initial HIV outbreak",
             "class": "CampaignEvent",
             "Start_Day": 3,
-            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
             "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
                 "Demographic_Coverage": 0.05,
@@ -16,6 +18,7 @@
                 "Travel_Linked": 0,
                 "Intervention_Config": {
                     "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0,
                     "Outbreak_Source": "PrevalenceIncrease"
                 }
             }
@@ -24,15 +27,18 @@
             "Description": "New infections get immediate ART",
             "class": "CampaignEvent",
             "Start_Day": 1,
-            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
             "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "NewInfectionEvent",
+                    "Trigger_Condition_List": [
+                        "NewInfectionEvent"
+                    ],
                     "Demographic_Coverage": 1.0,
-                    "Actual_IndividualIntervention_Config":
-                    {
+                    "Actual_IndividualIntervention_Config": {
                         "class": "ARTBasic"
                     }
                 }

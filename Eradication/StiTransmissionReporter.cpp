@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,9 +14,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IIndividualHumanSTI.h"
 #include "IRelationship.h"
 #include "IInfection.h"
+#include "ReportUtilitiesSTI.h"
 #include "IndividualEventContext.h"
+#include "StrainIdentity.h"
 
-static const char* _module = "StiTransmissionReporter";
+SETUP_LOGGING( "StiTransmissionReporter" )
 
 namespace Kernel
 {
@@ -36,7 +38,7 @@ namespace Kernel
     {
     }
 
-    bool StiTransmissionReporter::notifyOnEvent( IIndividualHumanEventContext *context, const std::string& StateChange )
+    bool StiTransmissionReporter::notifyOnEvent( IIndividualHumanEventContext *context, const EventTrigger& trigger )
     {
         LOG_DEBUG_F( "transmission event for individual %d\n", context->GetSuid().data );
         StiTransmissionInfo info;
@@ -53,105 +55,62 @@ namespace Kernel
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndividualHumanSTI", "IIndividualHuman" );
         }
 
-        // Let's figure out who the Infector was. This info is stored in the HIVInfection's strainidentity object
-        //auto infections = dynamic_cast<IInfectable*>(individual)->GetInfections();
-        IInfectable* individual_infectable = nullptr;
-        if (individual->QueryInterface(GET_IID(IInfectable), (void**)&individual_infectable) != s_OK)
+        IIndividualHumanSTI* p_sti_source = ReportUtilitiesSTI::GetTransmittingPartner( individual->GetEventContext() );
+        if( p_sti_source == nullptr )
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IInfectable", "IIndividualHuman" );
-        }
-        auto infections = individual_infectable->GetInfections();
-        if( infections.size() == 0 )
-        {
-            // This person cleared their infection on this timestep already! Nothing to report.
-            return true;
-        }
-        release_assert( infections.size() > 0 );
-        auto infection = infections.front(); // Assuming no super-infections here obviously.
-        StrainIdentity si;
-        infection->GetInfectiousStrainID(&si);
-        // NOTE: Right now we re-use the Generic StrainIdentity object and store 
-        // the InfectorID as the AntigenID (which is really just the arbitrary 
-        // major id of the strain to my thinking). In the future, each disease 
-        // could sub-class StrainIdentity (like we do with other major classes)
-        // and put InfectorID in it's own field for HIV's purposes.
-        auto infector = si.GetAntigenID();
-        LOG_DEBUG_F( "Infector ID = %d\n", infector );
-        if( infector == 0 )
-        {
-            // presumably from outbreak!?!?
+            // no partner implies infection was result of outbreak or maternal transmission
             return true;
         }
 
-        bool found = false;
+        IIndividualHuman* partner = nullptr;
+        if (p_sti_source->QueryInterface(GET_IID(IIndividualHuman), (void**)&partner) != s_OK)
+        {
+            throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "p_sti_source", "IIndividualHuman", "IIndividualHumanSTI");
+        }
 
         auto& relationships = p_sti_dest->GetRelationships();
         if( (individual->GetStateChange() == HumanStateChange::DiedFromNaturalCauses) ||
             (individual->GetStateChange() == HumanStateChange::KilledByCoinfection  ) ||
             (individual->GetStateChange() == HumanStateChange::KilledByInfection    ) )
         {
-             relationships = p_sti_dest->GetRelationshipsAtDeath();
+            relationships = p_sti_dest->GetRelationshipsAtDeath();
         }
         release_assert( relationships.size() );
 
-        IIndividualHumanSTI* p_sti_source = nullptr ;
-
+        IRelationship* p_rel = nullptr;
         for (auto relationship : relationships)
         {
-            // ------------------------------------------------------------------------------------
-            // --- The partner could be null when the relationship is paused and the individual has
-            // --- moved nodes.  We don't want to check RelationshipState because the couple could
-            // --- have consumated and then had one of the partners decide to move/migrate.
-            // ------------------------------------------------------------------------------------
-            auto sti_partner = relationship->GetPartner(p_sti_dest);
-            if (sti_partner)
+            if( relationship->GetPartner( p_sti_dest ) == p_sti_source )
             {
-                LOG_DEBUG_F( "infector=%d - checking partner with id %d\n", infector,relationship->GetPartnerId( p_sti_dest->GetSuid() ).data );
-                if( relationship->GetPartnerId( p_sti_dest->GetSuid() ).data == infector )
-                {
-                    p_sti_source = sti_partner ;
-
-                    IIndividualHuman* partner = nullptr;
-                    if (sti_partner->QueryInterface(GET_IID(IIndividualHuman), (void**)&partner) != s_OK)
-                    {
-                        throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "sti_partner", "IIndividualHuman", "IIndividualHumanSTI");
-                    }
-
-                    info.rel_id                                     = relationship->GetSuid().data;
-                    info.source_id                                  = partner->GetSuid().data;
-                    info.source_is_infected                         = (partner->GetInfections().size() > 0); // see GitHub-589 - Remove m_is_infected
-                    info.source_gender                              = partner->GetGender();
-                    info.source_age                                 = partner->GetAge();
-
-                    info.source_current_relationship_count          = p_sti_source->GetRelationships().size();
-                    info.source_lifetime_relationship_count         = p_sti_source->GetLifetimeRelationshipCount();
-                    info.source_relationships_in_last_6_months      = p_sti_source->GetLast6MonthRels();
-                    info.source_extrarelational_flags               = p_sti_source->GetExtrarelationalFlags();
-                    info.source_is_circumcised                      = p_sti_source->IsCircumcised();
-                    info.source_is_superspreader                    = p_sti_source->IsBehavioralSuperSpreader();
-                    info.source_has_sti                             = p_sti_source->HasSTICoInfection();
-
-                    info.source_infection_age                       = -42;
-                    break;
-                }
-            }
-            else
-            {
-                // if the partner is null, then the relationship had better be paused.
-                release_assert( relationship->GetState() == RelationshipState::PAUSED );
+                p_rel = relationship;
+                break;
             }
         }
+        release_assert( p_rel );
 
         release_assert( p_sti_source );
 
         info.time = individual->GetParent()->GetTime().time;
         info.year = individual->GetParent()->GetTime().Year();
 
-        // --------------------------------------------------------
-        // --- Assuming that the individuals in a relationship
-        // --- must be in the same node.
-        // --------------------------------------------------------
         info.node_id = individual->GetParent()->GetExternalID();
+        info.rel_id  = p_rel->GetSuid().data;
+
+        // SOURCE
+        info.source_id                                  = partner->GetSuid().data;
+        info.source_is_infected                         = (partner->GetInfections().size() > 0); // see GitHub-589 - Remove m_is_infected
+        info.source_gender                              = partner->GetGender();
+        info.source_age                                 = partner->GetAge();
+
+        info.source_current_relationship_count          = p_sti_source->GetRelationships().size();
+        info.source_lifetime_relationship_count         = p_sti_source->GetLifetimeRelationshipCount();
+        info.source_relationships_in_last_6_months      = p_sti_source->GetLast6MonthRels();
+        info.source_extrarelational_flags               = p_sti_source->GetExtrarelationalFlags();
+        info.source_is_circumcised                      = p_sti_source->IsCircumcised();
+        info.source_has_sti                             = p_sti_source->HasSTICoInfection();
+        info.source_is_superspreader                    = p_sti_source->IsBehavioralSuperSpreader();
+
+        info.source_infection_age                       = -42;
 
         // DESTINATION
         info.destination_id                             = individual->GetSuid().data;
@@ -164,9 +123,8 @@ namespace Kernel
         info.destination_relationships_in_last_6_months = p_sti_dest->GetLast6MonthRels();
         info.destination_extrarelational_flags          = p_sti_dest->GetExtrarelationalFlags();
         info.destination_is_circumcised                 = p_sti_dest->IsCircumcised();
-        info.destination_has_sti                        = (p_sti_dest->GetCoInfectiveFactor() > 1.0f);
+        info.destination_has_sti                        = p_sti_dest->HasSTICoInfection();
         info.destination_is_superspreader               = p_sti_dest->IsBehavioralSuperSpreader();
-        info.destination_has_sti                        = false ;
 
         CollectOtherData( info.rel_id, p_sti_source, p_sti_dest );
 

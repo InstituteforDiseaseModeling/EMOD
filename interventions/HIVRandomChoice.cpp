@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,23 +13,34 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionEnums.h"
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
-#include "IHIVInterventionsContainer.h" // for time-date util function and access into IHIVCascadeOfCare
+#include "IHIVInterventionsContainer.h" // for time-date util function
 
-static const char * _module = "HIVRandomChoice";
+SETUP_LOGGING( "HIVRandomChoice" )
 
 namespace Kernel
 {
     const static float MIN_PROBABILITY = 0.0f ;
     const static float MAX_PROBABILITY = 1.0f ;
 
+    // -----------------------------------------------------------------------------
+    // --- This compare is used to sort the event list.  This is just to get around
+    // --- change from using a map to a vector so that the regression tests still pass.
+    // --- The vector will be faster and the features of a map are not used.
+    // -----------------------------------------------------------------------------
+    bool trigger_compare( const std::pair<EventTrigger, float>& pairA,
+                          const std::pair<EventTrigger, float>& pairB )
+    {
+        return (pairA.first.ToString() < pairB.first.ToString());
+    }
+
     void
-    Event2ProbabilityMapType::ConfigureFromJsonAndKey(
+    Event2ProbabilityType::ConfigureFromJsonAndKey(
         const Configuration* inputJson,
         const std::string& key
     )
     {
         EventTrigger event ;
-        event.parameter_name = "HIVRandomChoices::Choices::Event" ;
+        //event.parameter_name = "HIVRandomChoices::Choices::Event" ;
 
         float total = 0.0 ;
         const auto& tvcs_jo = json_cast<const json::Object&>( (*inputJson)[key] );
@@ -64,7 +75,7 @@ namespace Kernel
                             "HIVRandomChoices::Choices::Probability", probability, MIN_PROBABILITY );
                 }
 
-                (this)->insert( std::make_pair( event, probability ) );
+                event_list.push_back( std::make_pair( event, probability ) );
 
                 total += probability ;
             }
@@ -80,22 +91,25 @@ namespace Kernel
         }
 
         // normalize the probabilities
-        for( auto& entry : *this )
+        for( auto& entry : event_list )
         {
             entry.second = entry.second / total ;
         }
+
+        // See trigger_compare
+        std::sort( event_list.begin(), event_list.end(), trigger_compare );
     }
 
-    void Event2ProbabilityMapType::serialize( IArchive& ar, Event2ProbabilityMapType& mapping )
+    void Event2ProbabilityType::serialize( IArchive& ar, Event2ProbabilityType& mapping )
     {
-        size_t count = ar.IsWriter() ? mapping.size() : -1;
+        size_t count = ar.IsWriter() ? mapping.event_list.size() : -1;
 
         ar.startArray(count);
         if( ar.IsWriter() )
         {
-            for (auto& entry : mapping)
+            for (auto& entry : mapping.event_list)
             {
-                std::string key   = entry.first;
+                std::string key   = entry.first.ToString();
                 float value = entry.second;
                 ar.startObject();
                     ar.labelElement("key"  ) & key;
@@ -115,22 +129,22 @@ namespace Kernel
                 ar.endObject();
 
                 EventTrigger event ;
-                event.parameter_name = "HIVRandomChoices::Choices::Event" ;
+                //event.parameter_name = "HIVRandomChoices::Choices::Event" ;
                 event = key;
 
-                mapping[key] = value;
+                mapping.event_list.push_back( std::make_pair( event,  value ) );
             }
         }
         ar.endArray();
     }
 
     json::QuickBuilder
-    Event2ProbabilityMapType::GetSchema()
+    Event2ProbabilityType::GetSchema()
     {
         json::QuickBuilder schema( GetSchemaBase() );
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
-        schema[ tn ] = json::String( "idmType:Event2ProbabilityMapType" );
+        schema[ tn ] = json::String( "idmType:Event2ProbabilityType" );
 
         schema[ts]["Event"] = json::Object();
         schema[ts]["Event"][ "type" ] = json::String( "Constrained String" );
@@ -157,12 +171,12 @@ namespace Kernel
     HIVRandomChoice::HIVRandomChoice( const HIVRandomChoice& master )
         : HIVSimpleDiagnostic( master )
     {
-        event2ProbabilityMap = master.event2ProbabilityMap;
+        event2Probability = master.event2Probability;
     }
 
     bool HIVRandomChoice::Configure( const Configuration* inputJson )
     {
-        initConfigComplexType("Choices", &event2ProbabilityMap, HIV_Random_Choices_DESC_TEXT);
+        initConfigComplexType("Choices", &event2Probability, HIV_Random_Choices_DESC_TEXT);
 
         return HIVSimpleDiagnostic::Configure( inputJson );
     }
@@ -179,16 +193,16 @@ namespace Kernel
         // random number to choose an event from the dictionary
         float p = Environment::getInstance()->RNG->e();
 
-        std::string eventEnum = NO_TRIGGER_STR ;
+        EventTrigger trigger;
         float probSum = 0;
 
-        // pick the IndividualEventTriggerType to broadcast
-        for (auto ep : event2ProbabilityMap)
+        // pick the EventTrigger to broadcast
+        for (auto ep : event2Probability.event_list)
         {
             probSum += ep.second;
             if (p <= probSum)
             {
-                eventEnum = ep.first ;
+                trigger = ep.first ;
                 break;
             }
         }
@@ -205,9 +219,9 @@ namespace Kernel
                                            "INodeTriggeredInterventionConsumer",
                                            "INodeEventContext" );
         }
-        if( eventEnum != NO_TRIGGER_STR )
+        if( !trigger.IsUninitialized() )
         {
-            broadcaster->TriggerNodeEventObserversByString( parent->GetEventContext(), eventEnum );
+            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), trigger );
         }
     }
 
@@ -218,6 +232,6 @@ namespace Kernel
         HIVSimpleDiagnostic::serialize( ar, obj );
         HIVRandomChoice& choice = *obj;
 
-        ar.labelElement("event2ProbabilityMap") & choice.event2ProbabilityMap;
+        ar.labelElement("event2Probability") & choice.event2Probability;
     }
 }

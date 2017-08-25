@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -54,43 +54,3 @@ protected:
     friend class ControllerExecuteFunctor<DefaultController>;
 };
 
-class BurnInCacheTestController : public IController
-{
-public:
-    virtual bool Execute();
-    virtual ~BurnInCacheTestController() {}
-
-protected:
-
-    template <class SimulationT> 
-    bool execute_internal();
-
-    friend class ControllerExecuteFunctor<BurnInCacheTestController>;
-};
-
-class SimpleBranchController : public IController
-{
-public:
-    virtual bool Execute();
-    virtual ~SimpleBranchController() {}
-
-protected:
-
-    template <class SimulationT> 
-    bool execute_internal();
-
-    friend class ControllerExecuteFunctor<SimpleBranchController>;
-};
-
-/////////////////////////////////////////////////////////////////////////
-// SimpleTerminationPredicateFactory
-// provides access to some simple termination predicates 
-
-class SimpleTerminationPredicateFactory
-{
-public:
-
-    template<class SimulationT>
-    static std::function<bool(SimulationT&,float)> CreatePredicate(SimulationT &sim, const Configuration *config);
-
-};

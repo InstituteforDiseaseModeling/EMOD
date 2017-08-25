@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,12 +19,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Log.h"
 #include "ValidationLog.h"
 #include "IdmMpi.h"
+#include "EventTrigger.h"
 
 #include <iso646.h>
 
 using namespace std;
 
-static const char * _module = "Environment";
+SETUP_LOGGING( "Environment" )
 
 #pragma warning(disable: 4996) // for suppressing strcpy caused security warnings
 
@@ -36,7 +37,9 @@ Environment::Environment()
 , Config(nullptr)
 , SimConfig(nullptr)
 , pPythonSupport(nullptr)
-, pIPFactory(nullptr)
+, pIPFactory( nullptr )
+, pNPFactory( nullptr )
+, pEventTriggerFactory(nullptr)
 , Status_Reporter(nullptr)
 , InputPath()
 , OutputPath()
@@ -137,7 +140,7 @@ bool Environment::Initialize(
 
     localEnv->Log->Init( config );
 
-    localEnv->Config = Configuration::CopyFromElement((*config)["parameters"]);
+    localEnv->Config = Configuration::CopyFromElement( (*config)["parameters"], config->GetDataLocation() );
 
     if( localEnv->Config->CheckElementByName("Default_Config_Path") || config->CheckElementByName("Default_Config_Path") )
         Kernel::JsonConfigurable::_possibleNonflatConfig = true;
@@ -159,6 +162,12 @@ Environment::~Environment()
 
     delete pIPFactory ;
     pIPFactory = nullptr ;
+
+    delete pNPFactory ;
+    pNPFactory = nullptr ;
+
+    delete pEventTriggerFactory;
+    pEventTriggerFactory = nullptr;
 }
 
 void Environment::Finalize()
@@ -198,9 +207,9 @@ const Configuration* Environment::getConfiguration()
 }
 
 
-Configuration* Environment::CopyFromElement( const json::Element& rElement )
+Configuration* Environment::CopyFromElement( const json::Element& rElement, const std::string& rDataLocation )
 {
-    return Configuration::CopyFromElement( rElement );
+    return Configuration::CopyFromElement( rElement, rDataLocation );
 }
 
 Configuration* Environment::LoadConfigurationFile( const std::string& rFileName )
@@ -224,6 +233,7 @@ void Environment::setInstance(Environment * env)
         delete localEnv ;
     }
     localEnv = env ;
+    Kernel::EventTriggerFactory::SetBuiltIn();
 }
 
 void Environment::setLogger(SimpleLogger* log)
@@ -261,9 +271,34 @@ void Environment::setIPFactory( void* pipf )
 
 void* Environment::getIPFactory()
 {
+    if (localEnv == nullptr)
+    {
+        throw Kernel::IllegalOperationException(__FILE__, __LINE__, __FUNCTION__, "Environment has not been created.");
+    }
+    return localEnv->pIPFactory;
+}
+
+void Environment::setNPFactory( void* pnpf )
+{
+    getInstance()->pNPFactory = pnpf;
+}
+
+void* Environment::getNPFactory()
+{
     if( localEnv == nullptr )
     {
         throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Environment has not been created." );
     }
-    return localEnv->pIPFactory;
+    return localEnv->pNPFactory;
+}
+
+const void* Environment::getEventTriggerFactory()
+{
+    return getInstance()->pEventTriggerFactory;
+}
+
+void Environment::setEventTriggerFactory( void* pFactory )
+{
+    release_assert( localEnv );
+    localEnv->pEventTriggerFactory = pFactory;
 }

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,8 +16,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"
 #include "Exceptions.h"
 #include "SimulationConfig.h"
+#include "StrainIdentity.h"
+#include "IdmString.h"
 
-static const char * _module = "OutbreakIndividual";
+SETUP_LOGGING( "OutbreakIndividual" )
 
 // Important: Use the instance method to obtain the intervention factory obj instead of static method to cross the DLL boundary
 // NO USAGE like this:  GET_CONFIGURABLE(SimulationConfig)->number_substrains in DLL
@@ -35,10 +37,11 @@ namespace Kernel
     IMPLEMENT_FACTORY_REGISTERED(OutbreakIndividual)
 
     OutbreakIndividual::OutbreakIndividual()
+    : ignoreImmunity( true )
     {
-        initConfigTypeMap( "Antigen", &antigen, Antigen_DESC_TEXT, 0, 10, 0 );
-        initConfigTypeMap( "Genome",  &genome,  Genome_DESC_TEXT, -1, 16777216, 0 );
-        initConfigTypeMap( "Incubation_Period_Override", &incubation_period_override, Incubation_Period_Override_DESC_TEXT, false);
+        initConfigTypeMap( "Ignore_Immunity", &ignoreImmunity, OB_Ignore_Immunity_DESC_TEXT, true );
+        initConfigTypeMap( "Incubation_Period_Override", &incubation_period_override, Incubation_Period_Override_DESC_TEXT, -1, INT_MAX, -1);
+        initSimTypes( 11, "GENERIC_SIM" , "VECTOR_SIM" , "MALARIA_SIM", "AIRBORNE_SIM", "POLIO_SIM", "TB_SIM", "TBHIV_SIM", "STI_SIM", "HIV_SIM", "PY_SIM", "TYPHOID_SIM" );
     }
 
     bool
@@ -46,6 +49,13 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
+        initConfigTypeMap( "Antigen", &antigen, Antigen_DESC_TEXT, 0, 10, 0 );
+        initConfigTypeMap( "Genome",  &genome,  Genome_DESC_TEXT, -1, 16777216, 0 );
+
+        // --------------------------------------------------------------
+        // --- Don't call BaseIntervention::Configure() because we don't
+        // --- want to inherit those parameters.
+        // --------------------------------------------------------------
         return JsonConfigurable::Configure( inputJson );
     }
 
@@ -54,15 +64,23 @@ namespace Kernel
         ICampaignCostObserver * pCCO
     )
     {
-        bool success = true;
+        bool distributed = false;
         // TBD: Get individual from context, and infect
         IIndividualHuman* individual = dynamic_cast<IIndividualHuman*>(context->GetParent()); // QI in new code
         INodeEventContext * pContext = individual->GetParent()->GetEventContext();
-        StrainIdentity* strain_identity = GetNewStrainIdentity(pContext);   // JPS: no need to create strain before we call this if we're calling into node...?
         LOG_DEBUG( "Infecting individual from Outbreak.\n" );
-        individual->AcquireNewInfection( strain_identity, incubation_period_override );
-        delete strain_identity;
-        return success;
+        if( ignoreImmunity || // if we're ignoring immunity, just infect
+            individual->GetAcquisitionImmunity() == 1.0f || // or if immunity is 0 (modifier=1), just infect
+            ( individual->GetAcquisitionImmunity() > 0.0f && randgen->e() < individual->GetAcquisitionImmunity() ) ) // or if immunity modifier is non-zero, draw against
+        {
+            individual->AcquireNewInfection( GetNewStrainIdentity( pContext ), incubation_period_override );
+            distributed = true;
+        }
+        else
+        {
+            LOG_DEBUG_F( "We didn't infect individual %d with immunity %f (ignore=%d).\n", individual->GetSuid().data, individual->GetAcquisitionImmunity(), ignoreImmunity );
+        }
+        return distributed;
     }
 
     void OutbreakIndividual::Update( float dt )
@@ -71,7 +89,7 @@ namespace Kernel
         // Distribute() doesn't call GiveIntervention() for this intervention, so it isn't added to the NodeEventContext's list of NDI
     }
 
-    Kernel::StrainIdentity* OutbreakIndividual::GetNewStrainIdentity(INodeEventContext *context)
+    const Kernel::StrainIdentity* OutbreakIndividual::GetNewStrainIdentity(INodeEventContext *context)
     {
         StrainIdentity *outbreakIndividual_strainID = nullptr;
 
@@ -119,15 +137,3 @@ namespace Kernel
         return outbreakIndividual_strainID;
     }
 }
-
-#if 0
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, OutbreakIndividual &ob, const unsigned int v)
-    {
-        ar & ob.antigen;
-        ar & ob.genome;
-        ar & ob.incubation_period_override;
-    }
-}
-#endif

@@ -1,0 +1,33 @@
+{
+    "Metadata": {
+        "DateCreated": "Waffle Wednesday May 10 08:25:00 2017", 
+        "Tool": "notepad++", 
+        "Author": "CWiswell", 
+        "IdReference": "fabricated", 
+        "Resolution": 150,
+        "NodeCount": 2
+    }, 
+    "Defaults": {
+
+        "IndividualProperties": [
+            {
+                "Property": "Risk",
+                "Values": [ "HIGH", "LOW" ],
+                "Initial_Distribution": [ 0.0, 1.0 ],
+                "Transitions": [],
+                "TransmissionMatrix": {
+                    "Route": "Contact",
+                    "Matrix":[
+                        [ 10.0, 0.1 ],
+                        [  0.1, 1.0 ]
+                    ]
+                }
+            }
+        ]
+    },
+    "Nodes": [
+        {
+            "NodeID": 1
+        }
+    ]
+}

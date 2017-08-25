@@ -1,0 +1,33 @@
+{
+     "Default_Config_Path": "defaults/vector_default_config.json", 
+     "parameters": {
+          "CLIMATE": {
+               "AIR": {
+                    "Air_Temperature_Filename": "Namawala_single_node_air_temperature_daily.bin"
+               }, 
+               "HUMIDITY": {
+                    "Relative_Humidity_Filename": "Namawala_single_node_relative_humidity_daily.bin"
+               }, 
+               "LAND_TEMP": {
+                    "Land_Temperature_Filename": "Namawala_single_node_land_temperature_daily.bin"
+               }, 
+               "RAINFALL": {
+                    "Rainfall_Filename": "Namawala_single_node_rainfall_daily.bin"
+               }
+          }, 
+          "DEMOGRAPHICS": {
+               "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE", 
+               "Demographics_Filenames": ["Namawala_single_node_demographics.json"]
+          }, 
+          "PRIMARY": {
+               "Config_Name": "2_Vector_Namawala_SugarTrap_EveryFeedFeed", 
+               "Geography": "Namawala", 
+               "Run_Number": 5, 
+               "Simulation_Duration": 730
+          }, 
+          "VECTOR": {
+               "Vector_Sampling_Type": "TRACK_ALL_VECTORS", 
+               "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_EVERY_DAY"
+          }
+     }
+}

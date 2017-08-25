@@ -1,0 +1,49 @@
+{
+    "Default_Config_Path": "defaults/hiv_scenario_default_config.json", 
+    "parameters": {
+        "____________DEMOGRAPHICS___________": {
+            "Base_Population_Scale_Factor": 1e-05, 
+            "Demographics_Filenames": [
+                "SSA_Demographics_3G.json", 
+                "pfa_simple.json",
+                "PFA_overlay_rates_04.json",
+                "intervention_status_overlay.json"
+            ], 
+            "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE", 
+            "x_Other_Mortality": 0.0,
+            "Enable_Birth": 0
+        }, 
+        "____________INTRAHOST___________": {
+            "Male_To_Female_Relative_Infectivity_Multipliers": [
+                1
+            ], 
+            "Male_To_Female_Relative_Infectivity_Ages": [
+                0
+            ]
+        }, 
+        "____________SIMULATION___________": {
+            "Simulation_Timestep": 30.41667, 
+            "Listed_Events": [
+                "Loop_Entry_InitialPopulation", 
+                "Done_Waiting", 
+                "Infinite_Loop_Should_Be_Aborted_Now"
+            ], 
+            "Simulation_Duration": 3650, 
+            "Base_Year": 1960
+        }, 
+        "____________REPORTING___________": {
+            "Report_Event_Recorder_Events": [
+                "Loop_Entry_InitialPopulation", 
+                "Done_Waiting", 
+                "Births", 
+                "InterventionDisqualified",
+                "PropertyChange",
+                "Infinite_Loop_Should_Be_Aborted_Now"
+            ], 
+            "Report_Event_Recorder": 1
+        }, 
+        "____________RARELY_CHANGED___________": {
+            "Config_Name": "04A_InterventionStatus"
+        }
+    }
+}

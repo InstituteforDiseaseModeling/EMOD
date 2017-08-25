@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,7 +17,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IIndividualHumanHIV.h"
 #include "IHIVInterventionsContainer.h"
 
-static const char * _module = "NChooserEventCoordinator";
+SETUP_LOGGING( "NChooserEventCoordinator" )
 
 namespace Kernel
 {
@@ -101,12 +101,12 @@ namespace Kernel
     void AgeRangeList::ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key )
     {
         // Temporary object created so we can 'operate' on json with the desired tools
-        auto p_config = Configuration::CopyFromElement( (*inputJson)[key] );
+        auto p_config = Configuration::CopyFromElement( (*inputJson)[key], inputJson->GetDataLocation() );
 
         const auto& json_array = json_cast<const json::Array&>( (*p_config) );
         for( auto data = json_array.Begin(); data != json_array.End(); ++data )
         {
-            Configuration* p_element_config = Configuration::CopyFromElement( *data );
+            Configuration* p_element_config = Configuration::CopyFromElement( *data, inputJson->GetDataLocation() );
 
             AgeRange ar;
             ar.Configure( p_element_config );
@@ -220,7 +220,7 @@ namespace Kernel
 
     void TargetedByAgeAndGender::FindQualifyingIndividuals( INodeEventContext* pNEC, 
                                                             const DiseaseQualifications& rDisease,
-                                                            PropertyRestrictions& rPropertyRestrictions )
+                                                            PropertyRestrictions<IPKey, IPKeyValue, IPKeyValueContainer>& rPropertyRestrictions )
     {
         m_QualifyingIndividuals.clear();
         m_QualifyingIndividuals.reserve( pNEC->GetIndividualHumanCount() );
@@ -232,7 +232,7 @@ namespace Kernel
 
             if( (m_Gender != Gender::COUNT) && (m_Gender != ihec->GetGender()) ) return;
 
-            if( !rPropertyRestrictions.Qualifies( ihec ) ) return;
+            if( !rPropertyRestrictions.Qualifies( *(ihec->GetProperties()) ) ) return;
 
             if( !rDisease.Qualifies( ihec ) ) return;
 
@@ -426,8 +426,8 @@ namespace Kernel
             if( num_total == 0 )
             {
                 std::stringstream msg;
-                msg << "The Base_Population_Scale_Factor (" << popScaleFactor << ") has scaled the values of Num_Targets all to zero so won't target anyone.";
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+                msg << "The Base_Population_Scale_Factor (" << popScaleFactor << ") has scaled the values of Num_Targets all to zero so won't target anyone.\n";
+                LOG_WARN( msg.str().c_str() ); //GH-605 - Change to warning so users can more easily test configuration.
             }
         }
         else
@@ -443,8 +443,8 @@ namespace Kernel
             if( num_total == 0 )
             {
                 std::stringstream msg;
-                msg << "The Base_Population_Scale_Factor (" << popScaleFactor << ") has scaled the values of Num_Targets_Males and Num_Target_Femailes all to zero so won't target anyone.";
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+                msg << "The Base_Population_Scale_Factor (" << popScaleFactor << ") has scaled the values of Num_Targets_Males and Num_Target_Females all to zero so won't target anyone.\n";
+                LOG_WARN( msg.str().c_str() ); //GH-605 - Change to warning so users can more easily test configuration.
             }
         }
     }
@@ -541,7 +541,15 @@ namespace Kernel
                 }
             }
         }
-        release_assert( m_AgeAndGenderList.size() > 0 );
+        // ----------------------------------------------------------------------------------
+        // --- DMB 9/26/2016 - I want this to be an error but users need the ability to test
+        // --- set Base_Population_Scale_Factor very small in order to test other things. 
+        // --- Hence, we need warning. (GH-605)
+        // ----------------------------------------------------------------------------------
+        if( m_AgeAndGenderList.size() == 0 )
+        {
+            LOG_WARN("Have zero individuals targeted.\n");
+        }
     }
 
     void TargetedDistribution::UpdateTargeting( const IdmDateTime& rDateTime, float dt )
@@ -640,6 +648,15 @@ namespace Kernel
         return m_EndDay <= rDateTime.time;
     }
 
+    void TargetedDistribution::CheckStartDay( float campaignStartDay ) const
+    {
+        if( GetStartInDays() < campaignStartDay )
+        {
+            LOG_WARN_F("Campaign starts on day %f. A NChooserEventCoordiator distribution starts before on day %f.  It will not distribute the targeted amount.\n",
+                        campaignStartDay, GetStartInDays() );
+        }
+    }
+
     // ------------------------------------------------------------------------
     // --- TargetedDistributionList
     // ------------------------------------------------------------------------
@@ -669,12 +686,12 @@ namespace Kernel
     void TargetedDistributionList::ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key )
     {
         // Temporary object created so we can 'operate' on json with the desired tools
-        auto p_config = Configuration::CopyFromElement( (*inputJson)[key] );
+        auto p_config = Configuration::CopyFromElement( (*inputJson)[key], inputJson->GetDataLocation() );
 
         const auto& json_array = json_cast<const json::Array&>( (*p_config) );
         for( auto data = json_array.Begin(); data != json_array.End(); ++data )
         {
-            Configuration* p_element_config = Configuration::CopyFromElement( *data );
+            Configuration* p_element_config = Configuration::CopyFromElement( *data, inputJson->GetDataLocation() );
 
             TargetedDistribution* p_td = m_pObjectFactory->CreateTargetedDistribution();
             p_td->Configure( p_element_config );
@@ -780,6 +797,15 @@ namespace Kernel
         }
     }
 
+    void TargetedDistributionList::CheckStartDay( float campaignStartDay ) const
+    {
+        for( auto p_td : m_TargetedDistributions )
+        {
+            p_td->CheckStartDay( campaignStartDay );
+        }
+    }
+
+
     // ------------------------------------------------------------------------
     // --- NChooserObjectFactory
     // ------------------------------------------------------------------------
@@ -865,7 +891,7 @@ namespace Kernel
         {
             m_TargetedDistributionList.CheckForOverlap();
 
-            InterventionValidator::ValidateIntervention( m_InterventionConfig._json );
+            InterventionValidator::ValidateIntervention( m_InterventionConfig._json, inputJson->GetDataLocation() );
         }
 
         return retValue;
@@ -876,12 +902,19 @@ namespace Kernel
         m_Parent = isec;
     }
 
+    void NChooserEventCoordinator::CheckStartDay( float campaignStartDay ) const
+    {
+        m_TargetedDistributionList.CheckStartDay( campaignStartDay );
+    }
+
+
     void NChooserEventCoordinator::AddNode( const suids::suid& node_suid )
     {
         INodeEventContext* pNEC = m_Parent->GetNodeEventContext( node_suid );
         if( !m_HasBeenScaled )
         {
             m_TargetedDistributionList.ScaleTargets( pNEC->GetNodeContext()->GetBasePopulationScaleFactor() );
+            m_HasBeenScaled = true;
         }
         m_CachedNodes.push_back( pNEC );
     }
@@ -895,7 +928,7 @@ namespace Kernel
             intervention_name << std::string( json::QuickInterpreter(m_InterventionConfig._json)["class"].As<json::String>() );
             m_InterventionName = intervention_name.str();
 
-            auto qi_as_config = Configuration::CopyFromElement( m_InterventionConfig._json );
+            auto qi_as_config = Configuration::CopyFromElement( m_InterventionConfig._json, "campaign" );
             m_pIntervention = InterventionFactory::getInstance()->CreateIntervention( qi_as_config );
             delete qi_as_config;
             qi_as_config = nullptr;

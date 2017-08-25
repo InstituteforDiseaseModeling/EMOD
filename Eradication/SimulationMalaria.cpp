@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,7 +19,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #pragma warning(disable : 4996)
 
-static const char * _module = "SimulationMalaria";
+SETUP_LOGGING( "SimulationMalaria" )
 
 #ifdef _MALARIA_DLL
 
@@ -154,24 +154,23 @@ namespace Kernel
     {
     }
 
-    void SimulationMalaria::addNewNodeFromDemographics(suids::suid node_suid, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory)
+    void SimulationMalaria::addNewNodeFromDemographics( suids::suid node_suid,
+                                                        NodeDemographicsFactory *nodedemographics_factory,
+                                                        ClimateFactory *climate_factory,
+                                                        bool white_list_enabled )
     {
         NodeMalaria *node = NodeMalaria::CreateNode(GetContextPointer(), node_suid);
-        addNode_internal(node, nodedemographics_factory, climate_factory);
+        addNode_internal( node, nodedemographics_factory, climate_factory, white_list_enabled );
     }
 
     ISimulationContext *
     SimulationMalaria::GetContextPointer() { return (ISimulationContext*)this; }
-} // end namespace Kernel
 
-#if 0
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive & ar, SimulationMalaria &sim, const unsigned int  file_version )
+    REGISTER_SERIALIZABLE(SimulationMalaria);
+
+    void SimulationMalaria::serialize(IArchive& ar, SimulationMalaria* obj)
     {
-        ar & sim.m_strain_identity_flags;
-
-        ar & boost::serialization::base_object<Kernel::SimulationVector>(sim);
+        SimulationVector::serialize( ar, obj );
+        // Nothing to do here.
     }
-}
-#endif
+} // end namespace Kernel

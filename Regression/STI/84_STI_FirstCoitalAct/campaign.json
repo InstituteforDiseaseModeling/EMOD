@@ -1,0 +1,28 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "FirstCoitalAct"
+                    ],
+                    "Demographic_Coverage": 1.0,
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "OutbreakIndividual",
+                        "Antigen": 0, 
+                        "Genome": 0, 
+                        "Incubation_Period_Override": 0,
+                        "Outbreak_Source": "PrevalenceIncrease"
+                    }
+                }
+            }
+        }
+    ]
+}

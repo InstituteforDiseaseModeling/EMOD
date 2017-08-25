@@ -11,6 +11,7 @@
                 "Enable_Immune_Decay": 0
             }, 
             "Enable_Vital_Dynamics": 0, 
+            "Enable_Birth": 0, 
             "SAMPLING": {
                 "Sample_Rate_Birth": 1
             }

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,12 +14,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InfectionSTI.h"
 #include "NodeSTI.h"
 #include "ReportSTI.h"
+#include "BinnedReportSTI.h"
+#include "STIReportEventRecorder.h"
 #include "SusceptibilitySTI.h"
 #include "SimulationConfig.h"
 #include "StiObjectFactory.h"
 #include "NodeInfoSTI.h"
 
-static const char * _module = "SimulationSTI";
+SETUP_LOGGING( "SimulationSTI" )
 
 static const float DEFAULT_BASE_YEAR = 2015.0f ;
 
@@ -32,14 +34,12 @@ namespace Kernel
         HANDLE_INTERFACE(ISTISimulationContext)
     END_QUERY_INTERFACE_DERIVED(SimulationSTI, Simulation)
 
-    float SimulationSTI::base_year = 0.0f;
-
     SimulationSTI::SimulationSTI()
         : relationshipSuidGenerator(EnvPtr->MPI.Rank, EnvPtr->MPI.NumTasks)
         , report_relationship_start(false)
         , report_relationship_end(false)
-        , report_transmission(false)
         , report_relationship_consummated(false)
+        , report_transmission(false)
     {
         initConfigTypeMap( "Report_Relationship_Start",     &report_relationship_start,      Report_Relationship_Start_DESC_TEXT, false);
         initConfigTypeMap( "Report_Relationship_End",       &report_relationship_end,        Report_Relationship_End_DESC_TEXT,   false);
@@ -47,6 +47,8 @@ namespace Kernel
         initConfigTypeMap( "Report_Coital_Acts",            &report_relationship_consummated,Report_Coital_Acts_DESC_TEXT,         false);
 
         reportClassCreator = ReportSTI::CreateReport;
+        eventReportClassCreator = STIReportEventRecorder::CreateReport;
+        binnedReportClassCreator = BinnedReportSTI::CreateReport;
     }
 
     SimulationSTI::~SimulationSTI(void)
@@ -160,10 +162,13 @@ namespace Kernel
         return true;
     }
 
-    void SimulationSTI::addNewNodeFromDemographics(suids::suid node_suid, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory)
+    void SimulationSTI::addNewNodeFromDemographics( suids::suid node_suid,
+                                                    NodeDemographicsFactory *nodedemographics_factory,
+                                                    ClimateFactory *climate_factory,
+                                                    bool white_list_enabled )
     {
         NodeSTI *node = NodeSTI::CreateNode(this, node_suid);
-        addNode_internal(node, nodedemographics_factory, climate_factory);
+        addNode_internal( node, nodedemographics_factory, climate_factory, white_list_enabled );
     }
 
     suids::suid SimulationSTI::GetNextRelationshipSuid()

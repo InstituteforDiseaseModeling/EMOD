@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -58,7 +58,7 @@ namespace Kernel {
         virtual bool Configure(const Configuration *config) override;
 
     protected:
-		BehaviorPfa();
+        BehaviorPfa();
         BehaviorPfa( const IPairFormationParameters*, 
                      float selectionThreshold,
                      RANDOMBASE*, 
@@ -71,7 +71,8 @@ namespace Kernel {
         float m_time_since_last_update;
 
         typedef vector<human_list_t> population_t;
-        typedef pair<int, human_list_t::iterator> map_entry_t;
+        typedef pair<int, human_list_t::iterator> pair_t;
+        typedef vector<pair_t> map_entry_t;
         typedef map<IIndividualHumanSTI*, map_entry_t> population_map_t;
 
 #pragma warning( push )
@@ -84,7 +85,7 @@ namespace Kernel {
 
     private:
         void AddToPopulation( human_list_t& age_bin_list, IIndividualHumanSTI* sti_person, int age_bin_index );
-        bool RemoveFromPopulation( IIndividualHumanSTI* sti_person, population_t& target_population );
+        bool RemoveFromPopulation( IIndividualHumanSTI* sti_person, population_t& target_population, bool remove_all );
         void UpdateQueueLengths( map<int, vector<int>>& rQueueLengths );
 
 #pragma warning( push )

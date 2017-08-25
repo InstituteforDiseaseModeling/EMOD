@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -25,15 +25,15 @@ namespace Kernel
         HIVARTStagingAbstract();
         HIVARTStagingAbstract( const HIVARTStagingAbstract& );
 
-        virtual bool Configure( const Configuration * inputJson );
+        virtual bool Configure( const Configuration * inputJson ) override;
 
         // IDistributingDistributableIntervention
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
 
     protected:
-        virtual bool positiveTestResult();
-        virtual void onNegativeTestResult();
-        virtual void positiveTestDistribute();
+        virtual bool positiveTestResult() override;
+        virtual void onNegativeTestResult() override;
+        virtual void positiveTestDistribute() override;
 
         virtual bool positiveTestResult( IIndividualHumanHIV *pHIV, 
                                          float year, 

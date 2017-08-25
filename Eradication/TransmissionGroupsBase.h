@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,6 +16,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
+    typedef map<const string, ScalingMatrix_t> PropertyToMatrixMap_t;
+
     class TransmissionGroupsBase : public ITransmissionGroups
     {
     protected:
@@ -23,7 +25,6 @@ namespace Kernel
 
         typedef map<const string, PropertyValueList_t> PropertyToValuesMap_t;
 
-        typedef map<const string, ScalingMatrix_t> PropertyToMatrixMap_t;
         PropertyToMatrixMap_t propertyNameToMatrixMap;
 
         typedef map<const string, int> ValueToIndexMap_t;
@@ -38,27 +39,34 @@ namespace Kernel
         void CheckForValidScalingMatrixSize( const ScalingMatrix_t& scalingMatrix, const PropertyValueList_t& values ) const;
         void AddScalingMatrixToPropertyToMatrixMap( const string& property, const ScalingMatrix_t& scalingMatrix );
         void CheckForValidStrainListSize( const StrainIdentitySet_t& strains ) const;
-        void InitializeCumulativeMatrix(ScalingMatrix_t& cumulativeMatrix);
         virtual void AddPropertyValuesToValueToIndexMap( const string& propertyName, const PropertyValueList_t& valueSet, int currentMatrixSize );
-        void AggregatePropertyMatrixWithCumulativeMatrix( const ScalingMatrix_t& propertyMatrix, ScalingMatrix_t& cumulativeMatrix );
 
-    protected:
+    public:
+        static void InitializeCumulativeMatrix( ScalingMatrix_t& cumulativeMatrix );
+        static void AggregatePropertyMatrixWithCumulativeMatrix( const ScalingMatrix_t& propertyMatrix, ScalingMatrix_t& cumulativeMatrix );
+
         class ContagionPopulationImpl : public IContagionPopulation
         {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
         public:
             ContagionPopulationImpl(float quantity) : contagionQuantity(quantity) {}
+            ContagionPopulationImpl( IStrainIdentity * strain, float quantity );
 
         private:
             // IContagionPopulation implementation
-            virtual AntigenId GetAntigenId( void ) const;
-            virtual float GetTotalContagion( void ) const;
-            virtual void ResolveInfectingStrain( StrainIdentity* strainId ) const;
+            virtual AntigenId GetAntigenID( void ) const override;
+            virtual AntigenId GetGeneticID( void ) const override; // Hmm.... not sure about this
+            virtual void SetAntigenID(int in_antigenID) override {}; // Hmm.... not sure about this
+            virtual void SetGeneticID(int in_geneticID) override {}; // Hmm.... not sure about this
+            virtual float GetTotalContagion( void ) const override;
+            virtual void ResolveInfectingStrain( IStrainIdentity* strainId ) const override;
 
             float contagionQuantity;
+            int antigenId;
         };
 
+    protected:
         // Utility function(s)
         inline float VectorDotProduct(const vector<float>& vectorOne, const vector<float>& vectorTwo)
         {
@@ -90,7 +98,7 @@ namespace Kernel
         virtual void AddProperty(const string& property, const PropertyValueList_t& values, const ScalingMatrix_t& scalingMatrix, const string& route) {}
         virtual void Build(const RouteToContagionDecayMap_t& contagionDecayRatesByRoute, int numberOfAntigens = 1, int numberOfSubstrains = 1) {}
         virtual void GetGroupMembershipForProperties(const RouteList_t& route, const tProperties* properties) const { }
-        virtual void DepositContagion(const StrainIdentity* strain, float amount, const TransmissionGroupMembership_t* transmissionGroupMembership) {}
+        virtual void DepositContagion(const IStrainIdentity& strain, float amount, const TransmissionGroupMembership_t* transmissionGroupMembership) {}
         virtual void ExposeToContagion(IInfectable* candidate, const TransmissionGroupMembership_t* transmissionGroupMembership, float deltaTee) const {}
         virtual void CorrectInfectivityByGroup(float infectivityCorrection, const TransmissionGroupMembership_t* transmissionGroupMembership) {}
         virtual void IncrementWeightedPopulation(const TransmissionGroupMembership_t* transmissionGroupMembership, float weight) {}

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -73,6 +73,8 @@ namespace Kernel {
         virtual void Add( const bool val ) override;
         virtual void Add( const IJsonObjectAdapter* val ) override;
 
+        virtual bool Contains(const char* key) const override;
+
         virtual IJsonObjectAdapter* operator[](const char* key) const override;
         virtual IJsonObjectAdapter* GetJsonObject(const char* key) const override;
         virtual IJsonObjectAdapter* GetJsonArray(const char* key) const override;
@@ -95,17 +97,6 @@ namespace Kernel {
         virtual float AsFloat() const override;
         virtual double AsDouble() const override;
         virtual bool AsBool() const override;
-
-/*
-        operator const char*() { return AsString(); }
-        operator int32_t()     { return AsInt(); }
-        operator uint32_t()    { return AsUint(); }
-        operator int64_t()     { return AsInt64(); }
-        operator uint64_t()    { return AsUint64(); }
-        operator float()       { return AsFloat(); }
-        operator double()      { return AsDouble(); }
-        operator bool()        { return AsBool(); }
-*/
 
         virtual operator const char*() const override;
         virtual operator int32_t() const override;

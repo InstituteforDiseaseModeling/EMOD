@@ -1,0 +1,73 @@
+{
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 5,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Property_Restrictions": [
+                    "Risk:HIGH"
+                ],
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0,
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "Antigen": 0,
+                    "Genome": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Property_Restrictions": [
+                    "Risk:LOW"
+                ],
+                "Intervention_Config": {
+                    "class": "PropertyValueChanger",
+                    "Disqualifying_Properties": [ ], 
+                    "New_Property_Value": "",
+                    "Target_Property_Key" : "Risk",
+                    "Target_Property_Value" : "HIGH",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 10
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 30,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Property_Restrictions": [
+                    "Risk:LOW"
+                ],
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Disqualifying_Properties": [ ], 
+                    "New_Property_Value": "Risk:HIGH",
+                    "Broadcast_Event": "Change_Low_To_High"
+                }
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

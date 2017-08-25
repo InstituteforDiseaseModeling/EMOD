@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -35,7 +35,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "CalendarEventCoordinator.h"
 #include "NodeSet.h"
 
-static const char * _module = "CampaignEvent";
+SETUP_LOGGING( "CampaignEvent" )
 json::Object Kernel::CampaignEventFactory::ceSchema;
 
 namespace Kernel
@@ -57,12 +57,12 @@ namespace Kernel
         {           
             // now try to instantiate and configure the NodeSet and the EventCoordinator
 
-            auto ns_config = Configuration::CopyFromElement( ce->nodeset_config._json );
+            auto ns_config = Configuration::CopyFromElement( ce->nodeset_config._json, config->GetDataLocation() );
             ce->nodeset = NodeSetFactory::CreateInstance( ns_config );
             delete ns_config;
             ns_config = nullptr;
 
-            auto ec_config = Configuration::CopyFromElement((ce->event_coordinator_config._json));
+            auto ec_config = Configuration::CopyFromElement( (ce->event_coordinator_config._json), config->GetDataLocation() );
             ce->event_coordinator = EventCoordinatorFactory::CreateInstance( ec_config );
             delete ec_config;
             ec_config = nullptr;
@@ -81,18 +81,18 @@ namespace Kernel
                 ce->Release();
                 return nullptr;
             }
+
+            // make sure the start day for the coordinator makes sense
+            ce->event_coordinator->CheckStartDay( ce->GetStartDay() );
         }
         return ce;
     }
 
-    void
-    CampaignEventFactory::Register(string classname, instantiator_function_t _if)  {  getRegisteredClasses()[classname] = _if;  }
+    void CampaignEventFactory::Register(string classname, instantiator_function_t _if)  {  getRegisteredClasses()[classname] = _if;  }
 
-    support_spec_map_t&
-    CampaignEventFactory::getRegisteredClasses() { static support_spec_map_t registered_classes; return registered_classes; }
+    support_spec_map_t& CampaignEventFactory::getRegisteredClasses() { static support_spec_map_t registered_classes; return registered_classes; }
 
-    json::QuickBuilder
-    CampaignEventFactory::GetSchema()
+    json::QuickBuilder CampaignEventFactory::GetSchema()
     {
         // Iterate over all registrants, instantiate using function pointer, call Configure
         // but in 'don't QI' mode.
@@ -154,10 +154,7 @@ namespace Kernel
     {
     }
 
-    bool
-    CampaignEvent::Configure(
-        const Configuration * inputJson
-    )
+    bool CampaignEvent::Configure(const Configuration * inputJson)
     {
         initConfigTypeMap( "Start_Day", &start_day, Start_Day_DESC_TEXT, 0 );
         initConfigComplexType( "Nodeset_Config", &nodeset_config, Nodeset_Config_DESC_TEXT );
@@ -191,18 +188,32 @@ namespace Kernel
 
     CampaignEvent::~CampaignEvent()
     {
-        if (event_coordinator) { event_coordinator->Release(); event_coordinator = nullptr; }
+        if (event_coordinator) { event_coordinator->Release(); event_coordinator = nullptr;} 
         if (nodeset) { nodeset->Release(); nodeset = nullptr; }
     }
 
-    float
-    CampaignEvent::GetStartDay() const { return start_day; }
+    float CampaignEvent::GetStartDay() const { return start_day; }
 
-    int
-    CampaignEvent::GetEventIndex() const { return event_index; }
+    int CampaignEvent::GetEventIndex() const { return event_index; }
 
-    void
-    CampaignEvent::SetEventIndex(int index) { event_index = index; }
+    void CampaignEvent::SetEventIndex(int index) { event_index = index; }
+
+    void CampaignEvent::CheckForValidNodeIDs(const std::vector<ExternalNodeId_t>& demographic_node_ids)
+    {
+        std::vector<ExternalNodeId_t> nodes_missing_in_demographics = nodeset->IsSubset(demographic_node_ids);
+        if (!nodes_missing_in_demographics.empty())
+        {
+            std::stringstream nodes_missing_in_demographics_str;
+            std::copy(nodes_missing_in_demographics.begin(), nodes_missing_in_demographics.end(), ostream_iterator<int>(nodes_missing_in_demographics_str, " "));  // list of missing nodes
+
+            std::stringstream error_msg;
+            error_msg << std::string("Found NodeIDs in the campaign that are missing in demographics: ") << nodes_missing_in_demographics_str.str();
+            error_msg << std::string(". Only nodes configured in demographics can be used in a campaign.");
+
+            throw InvalidInputDataException(__FILE__, __LINE__, __FUNCTION__, error_msg.str().c_str());
+        }
+    }
+
 }
 
 #if 0

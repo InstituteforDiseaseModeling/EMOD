@@ -1,0 +1,17 @@
+{
+    "Custom_Reports" : 
+    {
+        "Use_Explicit_Dlls" : 1,
+        "ReportNodeDemographics" :
+        {
+            "Enabled" : 1,
+            "Reports" :
+            [
+                {
+                    "Stratify_By_Gender" : 0,
+                    "Age_Bins" : [ ]
+                }
+            ]
+        }
+    }
+}

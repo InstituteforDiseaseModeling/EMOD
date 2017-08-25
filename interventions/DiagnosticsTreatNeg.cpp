@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 #include "TBContexts.h"
 
-static const char * _module = "DiagnosticTreatNeg";
+SETUP_LOGGING( "DiagnosticTreatNeg" )
 
 namespace Kernel
 {
@@ -46,8 +46,8 @@ namespace Kernel
         {
             if( use_event_or_config == EventOrConfig::Config || JsonConfigurable::_dryrun )
             {
-                InterventionValidator::ValidateIntervention( negative_diagnosis_config._json );
-                InterventionValidator::ValidateIntervention( defaulters_config._json );
+                InterventionValidator::ValidateIntervention( negative_diagnosis_config._json, inputJson->GetDataLocation() );
+                InterventionValidator::ValidateIntervention( defaulters_config._json, inputJson->GetDataLocation() );
             }
 
             if( !JsonConfigurable::_dryrun && 
@@ -77,7 +77,7 @@ namespace Kernel
     , defaulters_event()
     , m_gets_positive_test_intervention(false)
     {
-        initSimTypes( 1, "TB_SIM" );
+        initSimTypes( 2, "TB_SIM", "TBHIV_SIM" );
         days_to_diagnosis.handle = std::bind( &DiagnosticTreatNeg::onDiagnosisComplete, this, 0.0f );
     }
 
@@ -89,7 +89,7 @@ namespace Kernel
     , defaulters_event(master.defaulters_event)
     , m_gets_positive_test_intervention(master.m_gets_positive_test_intervention)
     {
-        initSimTypes( 1, "TB_SIM" );
+        initSimTypes( 2, "TB_SIM", "TBHIV_SIM" );
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // !!! IndividualInterventionConfig - the copy constructor and assignment operator are different.
         // !!! I needed to use the assignment operator to get this to work correctly.
@@ -117,6 +117,8 @@ namespace Kernel
 
     void DiagnosticTreatNeg::Update( float dt )
     {
+        if( !BaseIntervention::UpdateIndividualsInterventionStatus() ) return;
+
         //bool wasDistributed = false;
         if ( expired )
         {
@@ -172,11 +174,11 @@ namespace Kernel
         //This test is the same as smear, but if you are smear neg you can get a different intervention
 
         // Apply diagnostic test with given specificity/sensitivity
-        IIndividualHumanTB2* tb_ind = nullptr;
-        if(parent->QueryInterface( GET_IID( IIndividualHumanTB2 ), (void**)&tb_ind ) != s_OK)
+        IIndividualHumanTB* tb_ind = nullptr;
+        if(parent->QueryInterface( GET_IID( IIndividualHumanTB ), (void**)&tb_ind ) != s_OK)
         {
             LOG_WARN("DiagnosticTreatNeg works with TB sims ONLY");
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanTB2", "IIndividualHuman" );
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanTB", "IIndividualHuman" );
         }
 
         bool activeinf = tb_ind->HasActiveInfection() && !tb_ind->HasActivePresymptomaticInfection();
@@ -212,24 +214,21 @@ namespace Kernel
             throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "parent->GetInterventionFactoryObj()" );
         }
 
-        if( !negative_diagnosis_event.IsUninitialized() )
+        if( use_event_or_config == EventOrConfig::Event )
         {
-            if( negative_diagnosis_event != NO_TRIGGER_STR )
-            { 
-                INodeTriggeredInterventionConsumer* broadcaster = nullptr;
+            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
 
-                if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
+            if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
 
-                {
+            {
 
-                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-                }
-                broadcaster->TriggerNodeEventObserversByString( parent->GetEventContext(), negative_diagnosis_event );
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
             }
+            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), negative_diagnosis_event );
         }
         else if( negative_diagnosis_config._json.Type() != ElementType::NULL_ELEMENT )
         {
-            auto tmp_config = Configuration::CopyFromElement(negative_diagnosis_config._json);
+            auto tmp_config = Configuration::CopyFromElement( negative_diagnosis_config._json, "campaign" );
 
             // Distribute the test-negative intervention
             IDistributableIntervention *di = const_cast<IInterventionFactory*>(ifobj)->CreateIntervention( tmp_config );
@@ -274,24 +273,21 @@ namespace Kernel
         }
 
 
-        if( !defaulters_event.IsUninitialized() )
+        if( use_event_or_config == EventOrConfig::Event )
         {
-            if( defaulters_event != NO_TRIGGER_STR )
+            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
+
+            if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
+
             {
-                INodeTriggeredInterventionConsumer* broadcaster = nullptr;
 
-                if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-
-                {
-
-                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-                }
-                broadcaster->TriggerNodeEventObserversByString( parent->GetEventContext(), defaulters_event );
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
             }
+            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), defaulters_event );
         }
         else if( defaulters_config._json.Type() != ElementType::NULL_ELEMENT )
         {
-            auto tmp_config = Configuration::CopyFromElement(defaulters_config._json);
+            auto tmp_config = Configuration::CopyFromElement( defaulters_config._json, "campaign" );
 
             // Distribute the defaulters intervention, right away (do not use the days_to_diagnosis
             IDistributableIntervention *di = const_cast<IInterventionFactory*>(ifobj)->CreateIntervention( tmp_config );
@@ -330,37 +326,8 @@ namespace Kernel
         SimpleDiagnostic::serialize(ar, obj);
         DiagnosticTreatNeg& diagnostic = *obj;
         ar.labelElement("negative_diagnosis_config") & diagnostic.negative_diagnosis_config;
-// Remove after testing (implemented above)
-// clorton        if ( ar.IsWriter() )
-// clorton        {
-// clorton            std::ostringstream string_stream;
-// clorton            json::Writer::Write( diagnostic.negative_diagnosis_config._json, string_stream );
-// clorton            ar & string_stream.str();
-// clorton        }
-// clorton        else
-// clorton        {
-// clorton            std::string json;
-// clorton            ar & json;
-// clorton            std::istringstream string_stream( json );
-// clorton            json::Reader::Read( diagnostic.negative_diagnosis_config._json, string_stream );
-// clorton        }
-
         ar.labelElement("negative_diagnosis_event") & diagnostic.negative_diagnosis_event;
         ar.labelElement("defaulters_config") & diagnostic.defaulters_config;
-// Remove after testing (implemented above)
-// clorton        if ( ar.IsWriter() )
-// clorton        {
-// clorton            std::ostringstream string_stream;
-// clorton            json::Writer::Write( diagnostic.defaulters_config._json, string_stream );
-// clorton            ar & string_stream.str();
-// clorton        }
-// clorton        else
-// clorton        {
-// clorton            std::string json;
-// clorton            ar & json;
-// clorton            std::istringstream string_stream( json );
-// clorton            json::Reader::Read( diagnostic.defaulters_config._json, string_stream );
-// clorton        }
         ar.labelElement("defaulters_event") & diagnostic.defaulters_event;
         ar.labelElement("m_gets_positive_test_intervention") & diagnostic.m_gets_positive_test_intervention;
     }

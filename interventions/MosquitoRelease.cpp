@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,7 +16,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeVectorEventContext.h"  // for IMosquitoReleaseConsumer methods
 #include "VectorParameters.h"
 
-static const char * _module = "MosquitoRelease";
+SETUP_LOGGING( "MosquitoRelease" )
 
 namespace Kernel
 {
@@ -137,7 +137,7 @@ namespace Kernel
             initConfigComplexType( "Mated_Genetics", &mate, MR_Mated_Genetics_DESC_TEXT, "Released_Gender", "VECTOR_FEMALE" );
         }
 
-        JsonConfigurable::Configure( inputJson );
+        BaseNodeIntervention::Configure( inputJson );
         initConfig( "Released_Sterility", sterility, inputJson, MetadataDescriptor::Enum("Released_Sterility", MR_Released_Sterility_DESC_TEXT, MDD_ENUM_ARGS(VectorSterility)));
         initConfig( "Released_Wolbachia", Wolbachia, inputJson, MetadataDescriptor::Enum("Released_Wolbachia", MR_Released_Wolbachia_DESC_TEXT, MDD_ENUM_ARGS(VectorWolbachia))); 
         //initVectorConfig( "Released_HEGs", HEGstatus, inputJson, MetadataDescriptor::VectorOfEnum("Released_HEGs", MR_Released_HEGs_DESC_TEXT, MDD_ENUM_ARGS(VectorAllele))); 
@@ -161,20 +161,24 @@ namespace Kernel
 
     bool MosquitoRelease::Distribute(INodeEventContext *context, IEventCoordinator2* pEC)
     {
-        bool wasDistributed = false;
+        parent = context;
+
+        if( AbortDueToDisqualifyingInterventionStatus( context ) )
+        {
+            return false;
+        }
 
         IMosquitoReleaseConsumer *imrc;
-        if (s_OK == context->QueryInterface(GET_IID(IMosquitoReleaseConsumer), (void**)&imrc))
+        if (s_OK != context->QueryInterface(GET_IID(IMosquitoReleaseConsumer), (void**)&imrc))
         {
-            if(releasedNumber > 0)
-            {
-                imrc->ReleaseMosquitoes( cost_per_unit, getSpecies(), getVectorGenetics(), getNumber() );
-                wasDistributed = true;
-            }
+            throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "context", "IMosquitoReleaseConsumer", "INodeEventContext");
         }
-        else
+
+        bool wasDistributed = false;
+        if(releasedNumber > 0)
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IMosquitoReleaseConsumer", "INodeEventContext" );
+            imrc->ReleaseMosquitoes( cost_per_unit, getSpecies(), getVectorGenetics(), getNumber() );
+            wasDistributed = true;
         }
 
         return wasDistributed;
@@ -182,16 +186,16 @@ namespace Kernel
 
     void MosquitoRelease::Update( float dt )
     {
-        LOG_WARN("updating mosquito release (?!?)\n");
         // Distribute() doesn't call GiveIntervention() for this intervention, so it isn't added to the NodeEventContext's list of NDI
+        throw IllegalOperationException(__FILE__, __LINE__, __FUNCTION__, "MosquitoRelease::Update() should not be called.");
     }
 
-    std::string MosquitoRelease::getSpecies() const
+    const std::string& MosquitoRelease::getSpecies() const
     {
         return releasedSpecies;
     }
 
-    VectorMatingStructure MosquitoRelease::getVectorGenetics() const
+    const VectorMatingStructure& MosquitoRelease::getVectorGenetics() const
     {
         return vector_genetics;
     }
@@ -200,14 +204,6 @@ namespace Kernel
     {
         return releasedNumber;
     }
-
-    void MosquitoRelease::JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const
-    {
-    }
-
-    void MosquitoRelease::JDeserialize( IJsonObjectAdapter* root, JSerializer* helper )
-    {
-    } 
 }
 
 #if 0

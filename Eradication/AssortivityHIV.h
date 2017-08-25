@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -28,7 +28,7 @@ namespace Kernel
 
     protected:
         virtual IIndividualHumanSTI* SelectPartnerForExtendedGroups( AssortivityGroup::Enum group,
-                                                                     const IIndividualHumanSTI* pPartnerA,
+                                                                     IIndividualHumanSTI* pPartnerA,
                                                                      const list<IIndividualHumanSTI*>& potentialPartnerList );
 
         // This routine is called inside Configure() but before the data is completely read.
@@ -36,6 +36,8 @@ namespace Kernel
 
         virtual void CheckDerivedValues() override;
         virtual void CheckAxesForReceivedResults();
+        void SortMatrixReceivedResults();
+
     private:
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details

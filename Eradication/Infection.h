@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -35,14 +35,17 @@ namespace Kernel
         InfectionConfig();
         virtual bool Configure( const Configuration* config ) override;
 
+        static bool vital_disease_mortality;
+
     protected:
         friend class Infection;
-
+        
         static DurationDistribution incubation_distribution;
         static DurationDistribution infectious_distribution;
         static float base_infectivity;
         static float base_mortality;
         static MortalityTimeCourse::Enum                          mortality_time_course;                            // MORTALITY_TIME_COURSE
+
 
         GET_SCHEMA_STATIC_WRAPPER(InfectionConfig)
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
@@ -65,17 +68,18 @@ namespace Kernel
 
         virtual suids::suid GetSuid() const;
 
-        virtual void SetParameters(StrainIdentity* infstrain=nullptr, int incubation_period_override = -1 ) override;
+        virtual void SetParameters(IStrainIdentity* infstrain=NULL, int incubation_period_override = -1 );
         virtual void Update(float, ISusceptibilityContext* =nullptr) override;
 
         virtual InfectionStateChange::_enum GetStateChange() const override;
         virtual float GetInfectiousness() const override;
-        virtual float GetInfectiousnessByRoute(string route) const override; //used in multi-route simulations
+        virtual float GetInfectiousnessByRoute( const string& route ) const override; //used in multi-route simulations
 
         virtual void InitInfectionImmunology(ISusceptibilityContext* _immunity) override;
-        virtual void GetInfectiousStrainID(StrainIdentity* infstrain) override; // the ID of the strain being shed
+        virtual void GetInfectiousStrainID(IStrainIdentity* infstrain); // the ID of the strain being shed
         virtual bool IsActive() const override;
         virtual NonNegativeFloat GetDuration() const override;
+        virtual bool StrainMatches( IStrainIdentity * pStrain );
 
     protected:
         IIndividualHumanContext *parent;
@@ -96,11 +100,11 @@ namespace Kernel
 
         Infection();
         Infection(IIndividualHumanContext *context);
-        /* clorton virtual */ void Initialize(suids::suid _suid) /* clorton override */;
+        virtual void Initialize(suids::suid _suid);
 
         /* clorton virtual */ const SimulationConfig* params() /* clorton override */;
 
-        virtual void CreateInfectionStrain(StrainIdentity* infstrain);
+        virtual void CreateInfectionStrain(IStrainIdentity* infstrain);
         virtual void EvolveStrain(ISusceptibilityContext* immunity, float dt);
 
         DECLARE_SERIALIZABLE(Infection);

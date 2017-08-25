@@ -20,7 +20,7 @@
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "EveryUpdate",
+                    "Trigger_Condition_List": [ "EveryUpdate" ],
 
                     "Duration": 5,
 
@@ -28,8 +28,8 @@
                     {
                         "class": "HIVDelayedIntervention",
 
-                        "Abort_States": [],
-                        "Cascade_State": "",
+                        "Disqualifying_Properties": [],
+                        "New_Property_Value": "InterventionStatus:None",
 
                         "Single_Use": 1,
                         "Delay_Distribution": "FIXED_DURATION",
@@ -59,7 +59,7 @@
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "EveryUpdate",
+                    "Trigger_Condition_List": [ "EveryUpdate" ],
 
                     "Duration": 5,
 
@@ -67,8 +67,8 @@
                     {
                         "class": "HIVDelayedIntervention",
 
-                        "Abort_States": [],
-                        "Cascade_State": "",
+                        "Disqualifying_Properties": [],
+                        "New_Property_Value": "InterventionStatus:None",
 
                         "Single_Use": 1,
                         "Delay_Distribution": "FIXED_DURATION",
@@ -98,7 +98,7 @@
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "EveryUpdate",
+                    "Trigger_Condition_List": [ "EveryUpdate" ],
 
                     "Duration": 5,
 
@@ -106,8 +106,8 @@
                     {
                         "class": "HIVDelayedIntervention",
 
-                        "Abort_States": [],
-                        "Cascade_State": "",
+                        "Disqualifying_Properties": [],
+                        "New_Property_Value": "InterventionStatus:None",
 
                         "Single_Use": 1,
                         "Delay_Distribution": "FIXED_DURATION",
@@ -137,7 +137,7 @@
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "OnART0",
+                    "Trigger_Condition_List": [ "OnART0" ],
 
                     "Duration": 10,
 
@@ -148,8 +148,8 @@
                         "Muxer_Name": "SecondDelay",
                         "Max_Entries": 5,
 
-                        "Abort_States": [],
-                        "Cascade_State": "",
+                        "Disqualifying_Properties": [],
+                        "New_Property_Value": "InterventionStatus:None",
 
                         "Single_Use": 1,
                         "Delay_Distribution": "FIXED_DURATION",

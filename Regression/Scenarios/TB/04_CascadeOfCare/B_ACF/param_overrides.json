@@ -15,14 +15,6 @@
         "TB_Relapsed_to_Active_Rate":0.01,
         "TB_Slow_Progressor_Rate":0.02,
         "TB_Smear_Positive_Fraction_Adult":0.5,
-        "TB_Smear_Positive_Fraction_Child":0.5,
-        "Listed_Events": [
-            "ProviderOrdersTBTest",
-            "TBActivation",
-            "TBTestNegative",
-            "TBTestPositive",
-            "TBTestDefault", 
-            "TBFailedDrugRegimen"
-        ]
+        "TB_Smear_Positive_Fraction_Child":0.5
     }
 }

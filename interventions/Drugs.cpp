@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationEnums.h"        // Just for PKPDModel parameter (!)
 #include "Contexts.h"
 
-static const char * _module = "GenericDrug";
+SETUP_LOGGING( "GenericDrug" )
 
 namespace Kernel
 {
@@ -50,7 +50,7 @@ namespace Kernel
             initConfigTypeMap("Drug_PKPD_C50", &drug_c50, DRUG_Drug_PKPD_C50_DESC_TEXT, 0, 5000);
         }
 
-        bool configured = JsonConfigurable::Configure( inputJson );
+        bool configured = BaseIntervention::Configure( inputJson );
 
         PkPdParameterValidation();
 
@@ -91,7 +91,7 @@ namespace Kernel
     }
 
     GenericDrug::GenericDrug()
-        : parent(nullptr)
+        : BaseIntervention()
         , drug_type(0)
         , dosing_type(DrugUsageType::SingleDose)
         , durability_time_profile(PKPDModel::FIXED_DURATION_CONSTANT_EFFECT)
@@ -126,12 +126,6 @@ namespace Kernel
     GenericDrug::Release()
     {
         return BaseIntervention::Release();
-    }
-
-    void
-    GenericDrug::SetContextTo(IIndividualHumanContext *context)
-    {
-        parent = context;
     }
 
     void
@@ -188,6 +182,8 @@ namespace Kernel
     void
     GenericDrug::Update(float dt)
     {
+        if( !BaseIntervention::UpdateIndividualsInterventionStatus() ) return;
+
         switch (durability_time_profile)
         {
             case PKPDModel::FIXED_DURATION_CONSTANT_EFFECT:

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,12 +17,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Configuration.h"
 #include "InterventionFactory.h"
 #include "InterventionEnums.h"
-#include "StrainIdentity.h"
 #include "EventCoordinator.h"
 #include "Configure.h"
 
 namespace Kernel
 {
+    class StrainIdentity;
+
     struct IOutbreak : public ISupports
     {
         virtual int GetAntigen() const = 0;
@@ -57,7 +58,7 @@ namespace Kernel
         int genome;
         float import_age;
         int num_cases_per_node;
-        bool incubation_period_override;
+        int incubation_period_override;
 
         StrainIdentity* GetNewStrainIdentity(INodeEventContext *context);
     };

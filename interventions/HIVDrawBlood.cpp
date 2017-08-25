@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,11 +13,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionEnums.h"
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
-#include "SusceptibilityHIV.h" // for time-date util function and access into IHIVCascadeOfCare
-#include "IHIVInterventionsContainer.h" // for time-date util function and access into IHIVCascadeOfCare
+#include "SusceptibilityHIV.h" // for time-date util function
+#include "IHIVInterventionsContainer.h" // for time-date util function
 #include "IIndividualHumanHIV.h"
 
-static const char * _module = "HIVDrawBlood";
+SETUP_LOGGING( "HIVDrawBlood" )
 
 namespace Kernel
 {
@@ -39,7 +39,7 @@ namespace Kernel
     bool HIVDrawBlood::Configure(const Configuration* inputJson)
     {
         bool ret = HIVSimpleDiagnostic::Configure( inputJson );
-        if( (negative_diagnosis_event != NO_TRIGGER_STR) && !negative_diagnosis_event.IsUninitialized() )
+        if( !negative_diagnosis_event.IsUninitialized() )
         {
             throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "HIVDrawBlood can't have a Negative_Diagnosis_Event." );
         }

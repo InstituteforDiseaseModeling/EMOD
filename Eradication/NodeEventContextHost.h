@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -72,12 +72,9 @@ namespace Kernel
         //virtual void IncreasePrevalence(StrainIdentity* outbreak_strainID, IEventCoordinator2* pEC) override;
 
         // IIndividualTriggeredInterventionConsumer
-        virtual void RegisterNodeEventObserver( IIndividualEventObserver *pIEO, const IndividualEventTriggerType::Enum &trigger ) override;
-        virtual void UnregisterNodeEventObserver( IIndividualEventObserver *pIEO, const IndividualEventTriggerType::Enum &trigger ) override;
-        virtual void TriggerNodeEventObservers( IIndividualHumanEventContext *ihec, const IndividualEventTriggerType::Enum &trigger ) override;
-        virtual void RegisterNodeEventObserverByString( IIndividualEventObserver *pIEO, const std::string &trigger ) override;
-        virtual void UnregisterNodeEventObserverByString( IIndividualEventObserver *pIEO, const std::string &trigger ) override;
-        virtual void TriggerNodeEventObserversByString( IIndividualHumanEventContext *ihec, const std::string &trigger ) override;
+        virtual void RegisterNodeEventObserver( IIndividualEventObserver *pIEO, const EventTrigger& trigger ) override;
+        virtual void UnregisterNodeEventObserver( IIndividualEventObserver *pIEO, const EventTrigger& trigger ) override;
+        virtual void TriggerNodeEventObservers( IIndividualHumanEventContext *ihec, const EventTrigger& trigger ) override;
 
         //////////////////////////////////////////////////////////////////////////
          
@@ -104,7 +101,7 @@ namespace Kernel
         typedef std::list< INodeDistributableIntervention * > interventions_list_t;
         interventions_list_t interventions;
 
-        typedef std::map< std::string, std::list<IIndividualEventObserver*> > ieo_list_t;
+        typedef std::vector<std::vector<IIndividualEventObserver*> > ieo_list_t;
         ieo_list_t individual_event_observers;
         ieo_list_t disposed_observers;
 

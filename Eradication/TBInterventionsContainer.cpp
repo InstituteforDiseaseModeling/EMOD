@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -20,8 +20,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Sugar.h"
 #include "IHealthSeekingBehavior.h" //for IHealthSeekingBehavior interface
 #include "NodeEventContext.h"    // for INodeEventContext (ICampaignCostObserver)
+#include "EventTrigger.h"
 
-static const char * _module = "TBInterventionsContainer";
+SETUP_LOGGING( "TBInterventionsContainer" )
 
 namespace Kernel
 {
@@ -122,13 +123,13 @@ namespace Kernel
 
     }
 
-    void TBInterventionsContainer::UpdateTreatmentStatus(IndividualEventTriggerType::Enum new_treatment_status ) 
+    void TBInterventionsContainer::UpdateTreatmentStatus( const EventTrigger& new_treatment_status )
     {
         //this function is called when the drug is started and stopped/expires
         
         //first get the pointer to the person, parent is the generic individual
-        IIndividualHumanTB2* tb_patient = nullptr;
-        if ( parent->QueryInterface( GET_IID(IIndividualHumanTB2), (void**) &tb_patient ) != s_OK )
+        IIndividualHumanTB* tb_patient = nullptr;
+        if ( parent->QueryInterface( GET_IID(IIndividualHumanTB), (void**) &tb_patient ) != s_OK )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndvidualHumanTB2", "IndividualHuman" );
         }
@@ -140,48 +141,46 @@ namespace Kernel
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
         }
 
-        switch (new_treatment_status)
+        if( new_treatment_status == EventTrigger::TBStartDrugRegimen )
         {
-            case IndividualEventTriggerType::TBStartDrugRegimen:
-                LOG_DEBUG_F( "Individual %d starting the drug, broadcasting that this person started \n", parent->GetSuid().data );
-                broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), IndividualEventTriggerType::TBStartDrugRegimen );
-        
-                LOG_DEBUG("Started drug regimen, update tx_naive flag to false in TB IVC \n");
-                m_is_tb_tx_naive_TBIVC = false;
-                break;
+            LOG_DEBUG_F( "Individual %d starting the drug, broadcasting that this person started \n", parent->GetSuid().data );
+            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::TBStartDrugRegimen );
 
-            case IndividualEventTriggerType::TBStopDrugRegimen:
-                //figure out if they failed or relapsed now that they have stopped their drug regimen
-                //future should check if this works with multiple drugs on board at the same time
+            LOG_DEBUG( "Started drug regimen, update tx_naive flag to false in TB IVC \n" );
+            m_is_tb_tx_naive_TBIVC = false;
+        }
+        else if( new_treatment_status == EventTrigger::TBStopDrugRegimen )
+        {
+            //figure out if they failed or relapsed now that they have stopped their drug regimen
+            //future should check if this works with multiple drugs on board at the same time
 
-                //if the person still has active disease at the time this drug expires, they have failed
-                if (tb_patient->HasActiveInfection() )
-                {
-                    LOG_DEBUG_F( "Individual %d finished the drug but still has active disease, broadcasting that this person failed \n", parent->GetSuid().data );
-                    broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), IndividualEventTriggerType::TBFailedDrugRegimen );
+            //if the person still has active disease at the time this drug expires, they have failed
+            if( tb_patient->HasActiveInfection() )
+            {
+                LOG_DEBUG_F( "Individual %d finished the drug but still has active disease, broadcasting that this person failed \n", parent->GetSuid().data );
+                broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::TBFailedDrugRegimen );
 
-                    //Update the person's failed flag to false in the TBInterventionsContainer
-                    LOG_DEBUG("Finished drug regimen but failed, update failed flag to true in TB IVC \n");
-                    m_failed_tx_TBIVC = true;
-                }
-                else if (tb_patient->HasPendingRelapseInfection() )
-                {
-                    LOG_DEBUG_F( "Individual %d finished the drug but is pending relapse broadcasting that this person is pending relapse\n", parent->GetSuid().data );
-                    broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), IndividualEventTriggerType::TBRelapseAfterDrugRegimen );
-            
-                    //Update the person's failed flag to false in the TBInterventionsContainer
-                    LOG_DEBUG("Finished drug regimen but now pending relapse, update ever relapsed flag to true in TB IVC \n");
-                    m_ever_relapsed_TBIVC = true;
-                }
-                else
-                {
-                    LOG_DEBUG("the person finished the drug but did not fail or relapse");
-                }
-                break;
+                //Update the person's failed flag to false in the TBInterventionsContainer
+                LOG_DEBUG( "Finished drug regimen but failed, update failed flag to true in TB IVC \n" );
+                m_failed_tx_TBIVC = true;
+            }
+            else if( tb_patient->HasPendingRelapseInfection() )
+            {
+                LOG_DEBUG_F( "Individual %d finished the drug but is pending relapse broadcasting that this person is pending relapse\n", parent->GetSuid().data );
+                broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::TBRelapseAfterDrugRegimen );
 
-            default:
-                LOG_DEBUG("the person finished the drug but did not fail or relapse");
-                break;
+                //Update the person's failed flag to false in the TBInterventionsContainer
+                LOG_DEBUG( "Finished drug regimen but now pending relapse, update ever relapsed flag to true in TB IVC \n" );
+                m_ever_relapsed_TBIVC = true;
+            }
+            else
+            {
+                LOG_DEBUG( "the person finished the drug but did not fail or relapse" );
+            }
+        }
+        else
+        {
+            LOG_DEBUG("the person finished the drug but did not fail or relapse");
         }
     }
 
@@ -252,7 +251,7 @@ namespace Kernel
             {
                 ar.startObject();
                     ar.labelElement("key") & (uint32_t&)entry.first;
-                    ar.labelElement("value") & entry.second; // clorton Kernel::serialize(ar, entry.second);
+                    ar.labelElement("value") & entry.second;
                 ar.endObject();
             }
         }
@@ -264,7 +263,7 @@ namespace Kernel
                 TBDrugEffects_t effects;
                 ar.startObject();
                     ar.labelElement("key") & (uint32_t&)type;
-                    ar.labelElement("value") & effects; // clorton Kernel::serialize(ar, effects);
+                    ar.labelElement("value") & effects;
                 ar.endObject();
                 map[type] = effects;
             }

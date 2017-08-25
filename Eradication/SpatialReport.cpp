@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -31,7 +31,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 using namespace std;
 
-static const char * _module = "SpatialReport";
+SETUP_LOGGING( "SpatialReport" )
 
 static const string _report_name = "SpatialReport"; // is this what it should be called...?  multiple files...
 
@@ -352,10 +352,22 @@ SpatialReport::postProcessAccumulatedData()
 {
     LOG_DEBUG( "postProcessAccumulatedData\n" );
 
-    if( prevalence_info.enabled )
-        normalizeChannel(prevalence_info.name, population_info.name);
+    if ( prevalence_info.enabled )
+    {
+        if ( population_info.enabled )
+        {
+            normalizeChannel(prevalence_info.name, population_info.name);
+        }
+        else
+        {
+            throw GeneralConfigurationException(  __FILE__, __LINE__, __FUNCTION__, "If 'Prevalence' is enabled, then 'Population' must be enabled.");
+        }
+    }
 
-    normalizeChannel(rainfall_info.name, (1 / 1000.0f)); // multiply by 1000 (divide by 1/1000) to get result in mm
+    if ( rainfall_info.enabled )
+    {
+        normalizeChannel(rainfall_info.name, (1 / 1000.0f)); // multiply by 1000 (divide by 1/1000) to get result in mm
+    }
 
     // Turn these off for now... can add them back later if they're really needed
     //addDerivedCumulativeSummaryChannel(new_infections_info.name, "Cumulative_Infections");

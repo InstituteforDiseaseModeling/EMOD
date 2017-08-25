@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -48,25 +48,13 @@ namespace Kernel
         float demographic_coverage;
         TargetDemographicType::Enum default_target_demographic;
         TargetDemographicType::Enum target_demographic;
-        float target_age_min;
-        float target_age_max;
-        TargetGender::Enum target_gender; 
+        float target_age_min_years;
+        float target_age_max_years;
+        float target_age_min_days;
+        float target_age_max_days;
+        TargetGender::Enum target_gender;
         jsonConfigurable::tDynamicStringSet property_restrictions_set;
-        PropertyRestrictions property_restrictions;
+        PropertyRestrictions<IPKey,IPKeyValue,IPKeyValueContainer> property_restrictions;
         bool target_residents_only;
-
-#if USE_JSON_SERIALIZATION
-    public:
-        // IJsonSerializable Interfaces
-        virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-        virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
-#endif    
-
-#if USE_BOOST_SERIALIZATION
-    private:
-        friend class ::boost::serialization::access;
-        template<class Archive>
-        friend void serialize(Archive &ar, DemographicRestrictions &ec, const unsigned int v);
-#endif
     };
 }

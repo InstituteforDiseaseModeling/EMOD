@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -37,7 +37,7 @@ namespace Kernel
         virtual void Update_Immature_Queue  ( float dt );
         virtual void Update_Male_Queue      ( float dt );
 
-        virtual void AddVectors(VectorMatingStructure _vector_genetics, uint64_t releasedNumber);
+        virtual void AddVectors( const VectorMatingStructure& _vector_genetics, uint64_t releasedNumber );
 
     protected:
         virtual void InitializeVectorQueues(unsigned int adults, unsigned int _infectious);

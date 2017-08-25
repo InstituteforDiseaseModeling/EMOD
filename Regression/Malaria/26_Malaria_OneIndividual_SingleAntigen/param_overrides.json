@@ -1,0 +1,47 @@
+{
+     "CLIMATE": {
+          "AIR_TEMPERATURE": {
+               "Air_Temperature_Variance": 0, 
+               "Base_Air_Temperature": 22.0
+          }, 
+          "Climate_Model": "CLIMATE_CONSTANT", 
+          "LAND_TEMPERATURE": {
+               "Base_Land_Temperature": 26.0, 
+               "Land_Temperature_Variance": 0
+          }, 
+          "RAINFALL": {
+               "Base_Rainfall": 10.0, 
+               "Enable_Rainfall_Stochasticity": 0
+          }, 
+          "RELATIVE_HUMIDITY": {
+               "Base_Relative_Humidity": 0.75, 
+               "Relative_Humidity_Variance": 0
+          }
+     }, 
+     "DEMOGRAPHICS": {
+          "Base_Population_Scale_Factor": 0.001, 
+          "Demographics_Filenames": ["Namawala_single_node_demographics.json"], 
+          "Population_Scale_Type": "FIXED_SCALING"
+     }, 
+     "Default_Config_Path": "defaults/malaria_default_config.json", 
+     "GENERAL_DISEASE": {
+          "Enable_Superinfection": 0
+     }, 
+     "MALARIA": {
+          "Antibody_Memory_Level": 0.3, 
+          "Antigen_Switch_Rate": 0, 
+          "Base_Gametocyte_Production_Rate": 0.1, 
+          "Falciparum_MSP_Variants": 1, 
+          "Falciparum_Nonspecific_Types": 1, 
+          "Falciparum_PfEMP1_Variants": 1
+     }, 
+     "MOSQUITO": {
+          "Vector_Species_Names": []
+     }, 
+     "PRIMARY": {
+          "Config_Name": "26_Malaria_OneIndividual_SingleAntigen", 
+          "Geography": "Namawala", 
+          "Run_Number": 100, 
+          "Simulation_Duration": 5000
+     }
+}

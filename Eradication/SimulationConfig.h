@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -108,7 +108,6 @@ namespace Kernel
 
         // parameters for individual
         bool vital_dynamics;
-        bool vital_disease_mortality;
 
         int infection_updates_per_tstep;
         bool interventions;
@@ -128,7 +127,7 @@ namespace Kernel
         // stochasticity params
         float          airtemperature_variance;
         float          landtemperature_variance;
-        bool           rainfall_variance;
+        bool           rainfall_variance_enabled;
         float          humidity_variance;
 
         int number_basestrains;
@@ -143,15 +142,6 @@ namespace Kernel
         float node_grid_size;
         int Run_Number;
 
-        int branch_duration;
-        int branch_end_state;
-        int branch_start_state;
-
-        int burnin_period;
-        int serialization_test_cycles;
-
-        jsonConfigurable::tDynamicStringSet listed_events;
-
         std::string ConfigName;
         std::string airmig_filename;
         std::string campaign_filename;
@@ -164,7 +154,6 @@ namespace Kernel
         std::string localmig_filename;
         std::string regionmig_filename;
         std::string seamig_filename;
-        std::string TerminationPredicate;
 
         VectorParameters*  vector_params;
         MalariaParameters* malaria_params;

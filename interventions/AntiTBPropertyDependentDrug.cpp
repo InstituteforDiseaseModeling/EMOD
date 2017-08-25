@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -20,7 +20,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "TBParameters.h"
 #include "TBDrugTypeParameters.h" //for TBDrugTypes
 
-static const char* _module = "AntiTBPropDepDrug";
+SETUP_LOGGING( "AntiTBPropDepDrug" )
 
 namespace Kernel
 {
@@ -79,7 +79,7 @@ namespace Kernel
         schema[ ts ] = json::Array();
         schema[ ts ][0] = json::Object();
         // Should the value be a constrained string?
-        schema[ ts ][0][ "<demographics>::Defaults.Individual_Properties.*.Property.<keys>:<demographics>::Defaults.Individual_Properties.*.Value.<keys>" ] = json::String( "<config>::TB_Drug_Params" );
+        schema[ ts ][0][ IPKey::GetConstrainedStringConstraintKeyValue() ] = json::String( "<config>::TB_Drug_Params" );
         return schema;
     }
 
@@ -105,24 +105,28 @@ namespace Kernel
         initConfigTypeMap( "Enable_State_Specific_Treatment", &enable_state_specific_tx, TB_PropDepDrug_Enable_State_Specific_Treatment_DESC_TEXT, true );
         initConfigComplexType( "Drug_Type_by_Property", &drug_type_by_property, TB_PropDepDrug_Drug_Type_by_Property_DESC_TEXT);
         
-        return AntiTBDrug::Configure( inputJson );
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!! Skipping Configure() on AntiTBDrug because this intervention does not use those parameters.
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        return GenericDrug::Configure( inputJson );
     }
 
     void AntiTBPropDepDrug::ConfigureDrugTreatment( IIndividualHumanInterventionsContext * ivc )  
     {
-        IIndividualHumanTB2* tb_patient = nullptr;
-        if ( ivc->GetParent()->QueryInterface( GET_IID(IIndividualHumanTB2), (void**) &tb_patient ) != s_OK )
+        IIndividualHumanTB* tb_patient = nullptr;
+        if ( ivc->GetParent()->QueryInterface( GET_IID(IIndividualHumanTB), (void**) &tb_patient ) != s_OK )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndvidualHumanTB2", "IndividualHuman" );
         }
         
-        tProperties* pProp = ivc->GetParent()->GetEventContext()->GetProperties();
-
         auto tbdtMap = GET_CONFIGURABLE(SimulationConfig)->tb_params->TBDrugMap;
-        for (auto& pair : (*pProp))
+
+        IPKeyValueContainer* p_props = ivc->GetParent()->GetEventContext()->GetProperties();
+        for( auto kv : *p_props )
         {
-            const std::string& propkey = pair.first;
-            const std::string& propvalue = pair.second;
+            const std::string& propkey   = kv.GetKeyAsString();
+            const std::string& propvalue = kv.GetValueAsString();
+
             std::string drugtypekey = propkey + ":" + propvalue;
             std::string drugtypekeyFORMATLAB = propkey + "_" + propvalue;
 
@@ -133,9 +137,16 @@ namespace Kernel
 
             if( drug_type_by_property.prop2drugMap.count(drugtypekey) || drug_type_by_property.prop2drugMap.count(drugtypekeyFORMATLAB) )
             {
+                std::string conditional_drug_type;
+                if(drug_type_by_property.prop2drugMap.count(drugtypekey) )
+                {
+                    conditional_drug_type = drug_type_by_property.prop2drugMap.at(drugtypekey);
                 //string-ify the drug that was typed in to the campaign file
-                std::string conditional_drug_type = drug_type_by_property.prop2drugMap.at(drugtypekey);
-
+                }
+                else
+                {
+                    conditional_drug_type =  drug_type_by_property.prop2drugMap.at(drugtypekeyFORMATLAB);
+                }
                 //the primary_decay_time_constant is a generic drug parameter so it can't just be read in from TB_Drug_Params in the config
                 
                 current_reducedtransmit = 1.0;

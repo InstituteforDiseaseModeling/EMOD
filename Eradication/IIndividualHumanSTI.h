@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,12 +16,16 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Types.h"
 #include "suids.hpp"
 #include "IRelationship.h"
+#include "PropertiesString.h"
 
-namespace Kernel {
+namespace Kernel 
+{
+    class IPKeyValueContainer;
     struct IRelationshipParameters;
     struct IRelationship;
+
     struct IDMAPI RelationshipSetSorter :
-      public binary_function<const IRelationship*,
+        public std::binary_function<const IRelationship*,
                              const IRelationship*,
                              bool>
                              {
@@ -34,13 +38,15 @@ namespace Kernel {
     {
         virtual suids::suid GetSuid() const = 0; // pass-through to base
         virtual bool IsInfected() const = 0; //  pass-through to base
+        virtual const IPKeyValueContainer& GetPropertiesConst() const = 0;
         virtual suids::suid GetNodeSuid() const = 0;
         virtual bool IsBehavioralSuperSpreader() const = 0;
         virtual unsigned int GetExtrarelationalFlags() const = 0;
         virtual bool IsCircumcised() const = 0;
         virtual void UpdateHistory( const IdmDateTime& rCurrentTime, float dt ) = 0;
 
-        virtual float GetCoInfectiveFactor() const = 0;
+        virtual float GetCoInfectiveTransmissionFactor() const = 0;
+        virtual float GetCoInfectiveAcquisitionFactor() const = 0;
         virtual bool HasSTICoInfection() const = 0;
         virtual void SetStiCoInfectionState() = 0;
         virtual void ClearStiCoInfectionState() = 0;
@@ -63,11 +69,21 @@ namespace Kernel {
         virtual std::string toString() const = 0; // serialization, for logging
         virtual unsigned int GetOpenRelationshipSlot() const = 0; // change name
         virtual NaturalNumber GetLast6MonthRels() const = 0;
+        virtual NaturalNumber GetLast6MonthRels( RelationshipType::Enum ofType ) const = 0;
+        virtual NaturalNumber GetLast12MonthRels( RelationshipType::Enum ofType ) const = 0;
+        virtual NaturalNumber GetNumUniquePartners( int itp, int irel ) const = 0;
         virtual NaturalNumber GetLifetimeRelationshipCount() const = 0;
+        virtual NaturalNumber GetLifetimeRelationshipCount( RelationshipType::Enum ofType ) const = 0;
         virtual NaturalNumber GetNumRelationshipsAtDeath() const = 0;
         virtual float GetDebutAge() const = 0;
         virtual void NotifyPotentialExposure() = 0;
         virtual ProbabilityNumber getProbabilityUsingCondomThisAct( const IRelationshipParameters* pRelParams ) const = 0;
+        virtual void UpdateNumCoitalActs( uint32_t numActs ) = 0;
+        virtual uint32_t GetTotalCoitalActs() const = 0;
+
+        virtual void ClearAssortivityIndexes() = 0;
+        virtual int GetAssortivityIndex( RelationshipType::Enum type ) const = 0;
+        virtual void SetAssortivityIndex( RelationshipType::Enum type, int index ) = 0;
     };
 
 }

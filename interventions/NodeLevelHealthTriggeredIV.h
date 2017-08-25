@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -36,7 +36,6 @@ namespace Kernel
         virtual int AddRef() override;
         virtual int Release() override;
         virtual bool Configure( const Configuration* config ) override;
-        virtual bool ConfigureTriggers( const Configuration* config );
 
         // INodeDistributableIntervention
         virtual bool Distribute( INodeEventContext *pNodeEventContext, IEventCoordinator2 *pEC ) override;
@@ -45,20 +44,22 @@ namespace Kernel
         virtual void Update(float dt) override;
 
         // IIndividualEventObserver
-        virtual bool notifyOnEvent( IIndividualHumanEventContext *context, const std::string& StateChange ) override;
+        virtual bool notifyOnEvent( IIndividualHumanEventContext *context, const EventTrigger& trigger ) override;
 
     protected:
-        INodeEventContext* parent;
-        std::vector<std::string>   m_trigger_conditions;
+        std::vector<EventTrigger>   m_trigger_conditions;
         float max_duration;
         float duration;
+        PropertyRestrictions<NPKey, NPKeyValue, NPKeyValueContainer> node_property_restrictions;
         DemographicRestrictions demographic_restrictions;
         bool m_disqualified_by_coverage_only;
         float blackout_period ;
         float blackout_time_remaining ;
         EventTrigger blackout_event_trigger ;
+        bool blackout_on_first_occurrence;
         bool notification_occured ;
-        std::map<std::string,std::set<int>> event_occured_map ;
+        bool distribute_on_return_home;
+        std::vector<std::set<uint32_t>> event_occured_list;
         std::map<suids::suid,bool> event_occurred_while_resident_away;
         IndividualInterventionConfig actual_individual_intervention_config;
         NodeInterventionConfig actual_node_intervention_config;
@@ -70,5 +71,6 @@ namespace Kernel
         virtual float getDemographicCoverage() const;
         virtual void onDisqualifiedByCoverage( IIndividualHumanEventContext *pIndiv );
         std::string GetInterventionClassName() const;
+        void Unregister();
     };
 }

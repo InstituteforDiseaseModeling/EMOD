@@ -7,7 +7,8 @@
                     "Antigen": 0, 
                     "Genome": 0, 
                     "Outbreak_Source": "PrevalenceIncrease", 
-                    "class": "OutbreakIndividual"
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0
                 }, 
                 "Target_Demographic": "Everyone", 
                 "class": "StandardInterventionDistributionEventCoordinator"

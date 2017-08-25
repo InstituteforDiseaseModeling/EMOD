@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -25,7 +25,7 @@ namespace Kernel
     {
     }
 
-    VectorCohortWithHabitat::VectorCohortWithHabitat( IVectorHabitat* _habitat, float progress, int32_t initial_population, VectorMatingStructure _vector_genetics )
+    VectorCohortWithHabitat::VectorCohortWithHabitat( IVectorHabitat* _habitat, float progress, int32_t initial_population, const VectorMatingStructure& _vector_genetics )
         : VectorCohort((float)progress, initial_population, _vector_genetics)
         , habitat(_habitat)
         , habitat_type( _habitat ? _habitat->GetVectorHabitatType() : (VectorHabitatType::Enum) 0 )
@@ -37,9 +37,9 @@ namespace Kernel
         VectorCohort::Initialize();
     }
 
-    VectorCohortWithHabitat *VectorCohortWithHabitat::CreateCohort( IVectorHabitat* _habitat, float progress, int32_t initial_population, VectorMatingStructure _vector_genetics )
+    VectorCohortWithHabitat *VectorCohortWithHabitat::CreateCohort( IVectorHabitat* _habitat, float progress, int32_t initial_population, const VectorMatingStructure& _vector_genetics )
     {
-        VectorCohortWithHabitat *newqueue = _new_ VectorCohortWithHabitat(_habitat, progress, initial_population, _vector_genetics);
+        VectorCohortWithHabitat *newqueue = _new_ VectorCohortWithHabitat( _habitat, progress, initial_population, _vector_genetics );
         newqueue->Initialize();
 
         return newqueue;

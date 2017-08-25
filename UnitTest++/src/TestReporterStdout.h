@@ -21,7 +21,7 @@ private:
     virtual void ReportTestFinish(TestDetails const& test, float secondsElapsed);
     virtual void ReportSummary(int totalTestCount, int failedTestCount, int failureCount, float secondsElapsed);
 
-    std::vector<std::wstring>  failure_list ;
+    std::vector<std::string>  failure_list ;
 };
 
 }

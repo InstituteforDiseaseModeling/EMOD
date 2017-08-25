@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -52,7 +52,6 @@ SUITE(HivArtStagingByCD4DiagnosticTest)
             Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
             Environment::setSimulationConfig( m_pSimulationConfig );
 
-            m_InterventionsContext.setCascadeState( "not_set" );
             m_InterventionsContext.SetContextTo( &m_Human );
             m_Diag.SetContextTo( &m_Human );
             m_pSimulationConfig->sim_type = SimType::HIV_SIM ;
@@ -62,6 +61,13 @@ SUITE(HivArtStagingByCD4DiagnosticTest)
             idm_time.time = 2009.0 * 365.0;
             m_NEC.SetTime( idm_time );
 
+            std::map<std::string, float> ip_values_state ;
+            ip_values_state.insert( std::make_pair( "abort_state_1",   0.0f ) );
+            ip_values_state.insert( std::make_pair( "abort_state_2",   0.0f ) );
+            ip_values_state.insert( std::make_pair( "abort_state_3",   0.0f ) );
+            ip_values_state.insert( std::make_pair( "non_abort_state", 0.0f ) );
+            ip_values_state.insert( std::make_pair( "no_state",        1.0f ) );
+
             std::map<std::string,float> ip_values ;
             ip_values.insert( std::make_pair( "YES", 0.5f ) );
             ip_values.insert( std::make_pair( "NO",  0.5f ) );
@@ -69,15 +75,21 @@ SUITE(HivArtStagingByCD4DiagnosticTest)
             IPFactory::DeleteFactory();
             IPFactory::CreateFactory();
             IPFactory::GetInstance()->AddIP( 1, "HasActiveTB", ip_values );
+            IPFactory::GetInstance()->AddIP( 1, "InterventionStatus", ip_values_state );
 
-            m_Human.GetProperties()->operator[]( "HasActiveTB" ) = "YES" ;
-            //m_Human.GetProperties()->Set( IPKeyValue("HasActiveTB:YES") ) ;
+            m_Human.GetProperties()->Add( IPKeyValue( "HasActiveTB:YES"             ) );
+            m_Human.GetProperties()->Add( IPKeyValue( "InterventionStatus:no_state" ) );
 
             m_Human.SetHasHIV( true );
 
             m_pSimulationConfig->sim_type = SimType::HIV_SIM ;
-            m_pSimulationConfig->listed_events.insert("Births"          );
-            m_pSimulationConfig->listed_events.insert("NonDiseaseDeaths");
+
+            EventTriggerFactory::DeleteInstance();
+
+            json::Object fakeConfigJson;
+            Configuration * fakeConfigValid = Environment::CopyFromElement( fakeConfigJson );
+            EventTriggerFactory::GetInstance()->Configure( fakeConfigValid );
+            m_NEC.Initialize();
         }
 
         ~DiagnosticFixture()
@@ -101,11 +113,10 @@ SUITE(HivArtStagingByCD4DiagnosticTest)
         m_Diag.Configure( p_config.get() );
 
         m_InterventionsContext.OnTestCD4( 333.0 );
-        m_Human.GetProperties()->operator[]( "HasActiveTB" ) = "YES" ;
-        //m_Human.GetProperties()->Set( IPKeyValue("HasActiveTB:YES") ) ;
+        m_Human.GetProperties()->Add( IPKeyValue( "HasActiveTB:YES" ) );
         m_Human.SetIsPregnant( true );
 
-        CHECK_EQUAL( IndividualEventTriggerType::NoTrigger, m_NEC.GetTriggeredEvent() ) ;
+        CHECK( m_NEC.GetTriggeredEvent().IsUninitialized() ) ;
 
         CHECK_EQUAL( true,  m_Human.IsPregnant() );
         CHECK_EQUAL( true,  m_InterventionsContext.EverReceivedCD4() );
@@ -123,7 +134,7 @@ SUITE(HivArtStagingByCD4DiagnosticTest)
 
         m_Diag.Update( 1.0 );
 
-        CHECK_EQUAL( IndividualEventTriggerType::Births, m_NEC.GetTriggeredEvent() ) ;
+        CHECK_EQUAL( EventTrigger::Births.ToString(), m_NEC.GetTriggeredEvent().ToString() ) ;
         CHECK_EQUAL( true,  m_InterventionsContext.EverReceivedCD4() );
         CHECK_EQUAL( 333.0, m_InterventionsContext.LastRecordedCD4() );
         CHECK_EQUAL( 333.0, m_InterventionsContext.LowestRecordedCD4() );
@@ -145,11 +156,10 @@ SUITE(HivArtStagingByCD4DiagnosticTest)
         m_Diag.Configure( p_config.get() );
 
         m_InterventionsContext.OnTestCD4( 999.0 );
-        m_Human.GetProperties()->operator[]( "HasActiveTB" ) = "YES" ;
-        //m_Human.GetProperties()->Set( IPKeyValue("HasActiveTB:YES") ) ;
+        m_Human.GetProperties()->Add( IPKeyValue( "HasActiveTB:YES" ) );
         m_Human.SetIsPregnant( true );
 
-        CHECK_EQUAL( IndividualEventTriggerType::NoTrigger, m_NEC.GetTriggeredEvent() ) ;
+        CHECK( m_NEC.GetTriggeredEvent().IsUninitialized() ) ;
 
         CHECK_EQUAL( true,  m_Human.IsPregnant() );
         CHECK_EQUAL( true,  m_InterventionsContext.EverReceivedCD4() );
@@ -167,7 +177,7 @@ SUITE(HivArtStagingByCD4DiagnosticTest)
 
         m_Diag.Update( 1.0 );
 
-        CHECK_EQUAL( IndividualEventTriggerType::NonDiseaseDeaths, m_NEC.GetTriggeredEvent() ) ;
+        CHECK_EQUAL( EventTrigger::NonDiseaseDeaths.ToString(), m_NEC.GetTriggeredEvent().ToString() ) ;
         CHECK_EQUAL( true,  m_InterventionsContext.EverReceivedCD4() );
         CHECK_EQUAL( 999.0, m_InterventionsContext.LastRecordedCD4() );
         CHECK_EQUAL( 999.0, m_InterventionsContext.LowestRecordedCD4() );
@@ -193,11 +203,10 @@ SUITE(HivArtStagingByCD4DiagnosticTest)
         m_NEC.SetTime( idm_time );
 
         m_InterventionsContext.OnTestCD4( 333.0 );
-        m_Human.GetProperties()->operator[]( "HasActiveTB" ) = "YES" ;
-        //m_Human.GetProperties()->Set( IPKeyValue("HasActiveTB:YES") ) ;
+        m_Human.GetProperties()->Add( IPKeyValue( "HasActiveTB:YES" ) );
         m_Human.SetIsPregnant( true );
 
-        CHECK_EQUAL( IndividualEventTriggerType::NoTrigger, m_NEC.GetTriggeredEvent() ) ;
+        CHECK( m_NEC.GetTriggeredEvent().IsUninitialized() ) ;
 
         CHECK_EQUAL( true,  m_Human.IsPregnant() );
         CHECK_EQUAL( true,  m_InterventionsContext.EverReceivedCD4() );
@@ -215,7 +224,7 @@ SUITE(HivArtStagingByCD4DiagnosticTest)
 
         m_Diag.Update( 1.0 );
 
-        CHECK_EQUAL( IndividualEventTriggerType::NonDiseaseDeaths, m_NEC.GetTriggeredEvent() ) ;
+        CHECK_EQUAL( EventTrigger::NonDiseaseDeaths.ToString(), m_NEC.GetTriggeredEvent().ToString() ) ;
         CHECK_EQUAL( true,  m_InterventionsContext.EverReceivedCD4() );
         CHECK_EQUAL( 333.0, m_InterventionsContext.LastRecordedCD4() );
         CHECK_EQUAL( 333.0, m_InterventionsContext.LowestRecordedCD4() );

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -39,17 +39,16 @@ namespace Kernel
         // INodeDistributableIntervention
         virtual bool Distribute( INodeEventContext *pNodeEventContext, IEventCoordinator2 *pEC ) override;
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
-        virtual void SetContextTo(INodeEventContext *context) override;
         virtual void Update(float dt) override;
 
         // IIndividualEventObserver
-        virtual bool notifyOnEvent( IIndividualHumanEventContext *context, const std::string& StateChange ) override;
+        virtual bool notifyOnEvent( IIndividualHumanEventContext *context, const EventTrigger& trigger ) override;
 
         virtual void SetDemographicCoverage(float new_coverage) { demographic_restrictions.SetDemographicCoverage( new_coverage );};
         virtual void SetMaxDuration(float new_duration) {max_duration = new_duration;};
 
     protected:
-        INodeEventContext* parent;
+        void Unregister();
 
         float max_duration;
         float duration;

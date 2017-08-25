@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -39,6 +39,7 @@ namespace Kernel
 
         // IEventCoordinator
         virtual void SetContextTo(ISimulationEventContext *isec);
+        virtual void CheckStartDay( float campaignStartDay ) const override {};
 
         virtual void AddNode( const suids::suid& node_suid);
 
@@ -60,17 +61,24 @@ namespace Kernel
         virtual bool qualifiesDemographically( const IIndividualHumanEventContext * pIndividual );
 
     protected:
-        ISimulationEventContext  *parent;
         virtual float getDemographicCoverageForIndividual( const IIndividualHumanEventContext *pInd ) const;
         virtual void preDistribute(); 
         virtual bool HasNodeLevelIntervention() const;
+        virtual void ExtractInterventionNameForLogging();
+        virtual void InitializeInterventions();
+        virtual void DistributeInterventionsToNodes( INodeEventContext* event_context );
+        virtual void DistributeInterventionsToIndividuals( INodeEventContext* event_context );
+        virtual bool DistributeInterventionsToIndividual( IIndividualHumanEventContext *ihec,
+                                                          float & incrementalCostOut,
+                                                          ICampaignCostObserver * pICCO );
 
+        ISimulationEventContext  *parent;
         bool distribution_complete;
         int num_repetitions;
         int tsteps_between_reps;
+        int tsteps_since_last;
         //bool include_emigrants;
         //bool include_immigrants;
-        int tsteps_since_last;
         int intervention_activated;
         InterventionConfig intervention_config;
         std::vector<INodeEventContext*> cached_nodes;
@@ -78,14 +86,18 @@ namespace Kernel
         IDistributableIntervention *_di;
         DemographicRestrictions demographic_restrictions;
         float demographic_coverage;
+        PropertyRestrictions<NPKey, NPKeyValue, NPKeyValueContainer> node_property_restrictions;
+
+        std::ostringstream log_intervention_name;
 
         // helpers
         void regenerateCachedNodeContextPointers();
         void formatInterventionClassNames( std::ostringstream&, json::QuickInterpreter*);
         virtual void initializeInterventionConfig( const Configuration * inputJson );
-        virtual void validateInterventionConfig( const json::Element& rElement );
+        virtual void validateInterventionConfig( const json::Element& rElement, const std::string& rDataLocation );
         virtual bool TargetedIndividualIsCovered(IIndividualHumanEventContext *ihec);
         bool avoid_duplicates;
+        bool has_node_level_intervention;
 
     };
 }

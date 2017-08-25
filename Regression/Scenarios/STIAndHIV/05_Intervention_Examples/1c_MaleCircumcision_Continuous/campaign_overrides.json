@@ -15,47 +15,46 @@
             },
             "Event_Coordinator_Config":
             {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "ExplicitAgeRangesAndGender",
-                "Target_Gender": "Male",
-                "Demographic_Coverage": 1,
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender": "Male", 
+                "Demographic_Coverage": 1, 
                 "Intervention_Config":
                 {
-                    "class": "DelayedIntervention",
-                    "Cascade_State": "",
-                    "Delay_Distribution": "EXPONENTIAL_DURATION",
-                    "Delay_Period": 7300,
+                    "class": "DelayedIntervention", 
+                    "Delay_Distribution": "EXPONENTIAL_DURATION", 
+                    "Delay_Period": 7300, 
                     "Actual_IndividualIntervention_Configs": [
-					{
-						"class": "HIVSimpleDiagnostic",
-						"Cascade_State": "",
-						"Base_Specificity": 1,
-						"Base_Sensitivity": 1,
-						"Event_Or_Config": "Event",
-						"Positive_Diagnosis_Event": "NoTrigger",
-						"Negative_Diagnosis_Event": "HIVNeedsMaleCircumcision"
-					}
+                        {
+                            "class": "HIVSimpleDiagnostic", 
+                            "New_Property_Value": "InterventionStatus:None",
+                            "Base_Specificity": 1, 
+                            "Base_Sensitivity": 1, 
+                            "Event_Or_Config": "Event", 
+                            "Positive_Diagnosis_Event": "NoTrigger", 
+                            "Negative_Diagnosis_Event": "HIVNeedsMaleCircumcision" 
+                        }
                     ]
                 }
             }
-        },
+        }, 
         {
-            "class": "CampaignEventByYear",
-            "Event_Name": "Male circumcision after birth starting Jan 1, 2020",
-            "Start_Year": 2020,
+            "class": "CampaignEventByYear", 
+            "Event_Name": "Male circumcision after birth starting Jan 1, 2020", 
+            "Start_Year": 2020, 
             "Nodeset_Config":
             {
                 "class": "NodeSetAll"
-            },
+            }, 
             "Event_Coordinator_Config":
             {
-                "class": "StandardInterventionDistributionEventCoordinator",
+                "class": "StandardInterventionDistributionEventCoordinator", 
                 "Intervention_Config":
                 {
-                    "class": "BirthTriggeredIV",
-                    "Demographic_Coverage": 1,
-                    "Target_Demographic": "ExplicitGender",
-                    "Target_Gender": "Male",
+                    "class": "BirthTriggeredIV", 
+                    "Demographic_Coverage": 1, 
+                    "Target_Demographic": "ExplicitGender", 
+                    "Target_Gender": "Male", 
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "DelayedIntervention",
@@ -63,13 +62,13 @@
                         "Delay_Period": 7300,
                         "Actual_IndividualIntervention_Configs": [
                             {
-						    "class": "HIVSimpleDiagnostic",
-						    "Cascade_State": "",
-						    "Base_Specificity": 1,
-						    "Base_Sensitivity": 1,
-						    "Event_Or_Config": "Event",
-						    "Positive_Diagnosis_Event": "NoTrigger",
-						    "Negative_Diagnosis_Event": "HIVNeedsMaleCircumcision"
+                                "class": "HIVSimpleDiagnostic",
+                                "New_Property_Value": "InterventionStatus:None",
+                                "Base_Specificity": 1,
+                                "Base_Sensitivity": 1,
+                                "Event_Or_Config": "Event",
+                                "Positive_Diagnosis_Event": "NoTrigger",
+                                "Negative_Diagnosis_Event": "HIVNeedsMaleCircumcision"
                             }
                         ]
                     }

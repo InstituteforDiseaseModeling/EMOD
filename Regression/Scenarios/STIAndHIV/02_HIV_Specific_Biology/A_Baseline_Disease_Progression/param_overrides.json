@@ -33,22 +33,6 @@
         }, 
         "____________SIMULATION___________": {
             "Simulation_Timestep": 30, 
-            "Valid_Cascade_States": [
-                "", 
-                "ARTStaging", 
-                "ARTStagingDiagnosticTest", 
-                "LinkingToART", 
-                "LinkingToPreART", 
-                "OnART", 
-                "OnPreART", 
-                "HCTTestingLoop", 
-                "HCTUptakeAtDebut", 
-                "HCTUptakePostDebut", 
-                "TestingOnANC", 
-                "TestingOnChild6w", 
-                "TestingOnSymptomatic", 
-                "LostForever"
-            ], 
             "Simulation_Duration": 37000, 
             "Base_Year": 2000
         }, 

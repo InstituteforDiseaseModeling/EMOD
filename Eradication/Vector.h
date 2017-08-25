@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -59,11 +59,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #define DEFAULT_AQUATIC_ARRHENIUS2              (5000.0)
 #define DEFAULT_INFECTED_ARRHENIUS1             (6500.0)
 #define DEFAULT_INFECTED_ARRHENIUS2             (3500.0)
+#define DEFAULT_CYCLE_ARRHENIUS1                (4.090579E10f)
+#define DEFAULT_CYCLE_ARRHENIUS2                (7.740230E3f)
 #define DEFAULT_IMMATURE_DURATION               (4.0)
 #define DEFAULT_DAYS_BETWEEN_FEEDS              (3.0)
 #define DEFAULT_ANTHROPOPHILY                   (0.9f)
 #define DEFAULT_EGGBATCH_SIZE                   (100.0)
 #define DEFAULT_INFECTED_EGGBATCH_MODIFIER      (0.8f)
+#define DEFAULT_EGG_SURVIVAL_RATE               (0.99f) 
 #define DEFAULT_INFECTIOUS_MORTALITY_MODIFIER   (1.5)
 #define DEFAULT_AQUATIC_MORTALITY_RATE          (0.2f)
 #define DEFAULT_ADULT_LIFE_EXPECTANCY           (21.0)

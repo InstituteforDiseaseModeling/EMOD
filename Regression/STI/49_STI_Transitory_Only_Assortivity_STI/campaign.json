@@ -9,7 +9,8 @@
                          "Event_Name": "Outbreak (not used)", 
                          "Genome": 0, 
                          "Outbreak_Source": "PrevalenceIncrease", 
-                         "class": "OutbreakIndividual"
+                         "class": "OutbreakIndividual",
+                         "Incubation_Period_Override": 0
                     }, 
                     "Target_Demographic": "ExplicitAgeRanges", 
                     "Target_Age_Min": 0,

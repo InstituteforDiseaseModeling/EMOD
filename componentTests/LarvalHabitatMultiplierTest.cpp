@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -20,7 +20,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "LarvalHabitatMultiplier.h"
 #include "VectorParameters.h"
-#include "VectorParameters.h"
 #include "VectorSpeciesParameters.h"
 
 using namespace Kernel;
@@ -38,7 +37,9 @@ SUITE(LarvalHabitatMultiplierTest)
         : m_pSimulationConfig( new SimulationConfig() )
         {
             JsonConfigurable::ClearMissingParameters();
-
+            JsonConfigurable::_useDefaults = false;
+            JsonConfigurable::_track_missing = false;
+            
             Environment::Finalize();
             Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
             Environment::setSimulationConfig( m_pSimulationConfig );
@@ -50,15 +51,25 @@ SUITE(LarvalHabitatMultiplierTest)
             unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/LarvalHabitatMultiplierTest/config.json" ) );
             unique_ptr<Configuration> p_parameters( Environment::CopyFromElement( (*p_config)[ "parameters" ] ) );
 
-            m_pSimulationConfig->vector_params->vspMap[ "arabiensis" ] = VectorSpeciesParameters::CreateVectorSpeciesParameters( p_parameters.get(), "arabiensis" );
-            m_pSimulationConfig->vector_params->vspMap[ "funestus"   ] = VectorSpeciesParameters::CreateVectorSpeciesParameters( p_parameters.get(), "funestus"   );
-            m_pSimulationConfig->vector_params->vspMap[ "gambiae"    ] = VectorSpeciesParameters::CreateVectorSpeciesParameters( p_parameters.get(), "gambiae"    );
+            try
+            {
+                m_pSimulationConfig->vector_params->vspMap[ "arabiensis" ] = VectorSpeciesParameters::CreateVectorSpeciesParameters( p_parameters.get(), "arabiensis" );
+                m_pSimulationConfig->vector_params->vspMap[ "funestus"   ] = VectorSpeciesParameters::CreateVectorSpeciesParameters( p_parameters.get(), "funestus"   );
+                m_pSimulationConfig->vector_params->vspMap[ "gambiae"    ] = VectorSpeciesParameters::CreateVectorSpeciesParameters( p_parameters.get(), "gambiae"    );
+            }
+            catch( DetailedException& re )
+            {
+                PrintDebug( re.GetMsg() );
+                throw re;
+            }
         }
 
         ~LhmFixture()
         {
             delete m_pSimulationConfig;
             Environment::Finalize();
+            JsonConfigurable::_useDefaults = true;
+            JsonConfigurable::_track_missing = true;
         }
     };
 
@@ -282,9 +293,9 @@ SUITE(LarvalHabitatMultiplierTest)
             lhm.Read( json["LarvalHabitatMultiplier"], 789 );
             CHECK( false );
         }
-        catch( DetailedException& re )
+        catch( DetailedException& /*re*/ )
         {
-            PrintDebug( re.GetMsg() );
+            //PrintDebug( re.GetMsg() );
             CHECK( true );
         }
     }
@@ -307,5 +318,4 @@ SUITE(LarvalHabitatMultiplierTest)
             CHECK( true );
         }
     }
-
 }

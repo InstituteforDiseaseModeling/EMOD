@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -20,7 +20,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <cmath>
 #endif
 
-const char * _module = "ClimateByData";
+SETUP_LOGGING( "ClimateByData" )
 
 namespace Kernel {
     GET_SCHEMA_STATIC_WRAPPER_IMPL(Climate.ByData,ClimateByData)
@@ -49,10 +49,10 @@ namespace Kernel {
     )
     {
         LOG_DEBUG( "Configure\n" );
-        initConfigTypeMap( "Air_Temperature_Offset", &airtemperature_offset, Air_Temperature_Offset_DESC_TEXT, -20.0f, 20.0f, 0.0f );
-        initConfigTypeMap( "Land_Temperature_Offset", &landtemperature_offset, Land_Temperature_Offset_DESC_TEXT, -20.0f, 20.0f, 0.0f );
-        initConfigTypeMap( "Rainfall_Scale_Factor", &rainfall_scale_factor, Rainfall_Scale_Factor_DESC_TEXT, 0.1f, 10.0f, 1.0f );
-        initConfigTypeMap( "Relative_Humidity_Scale_Factor", &humidity_scale_factor, Relative_Humidity_Scale_Factor_DESC_TEXT, 0.1f, 10.0f, 1.0f );
+        initConfigTypeMap( "Air_Temperature_Offset", &airtemperature_offset, Air_Temperature_Offset_DESC_TEXT, -20.0f, 20.0f, 0.0f, "Climate_Model","CLIMATE_BY_DATA" );
+        initConfigTypeMap( "Land_Temperature_Offset", &landtemperature_offset, Land_Temperature_Offset_DESC_TEXT, -20.0f, 20.0f, 0.0f,"Climate_Model","CLIMATE_BY_DATA" );
+        initConfigTypeMap( "Rainfall_Scale_Factor", &rainfall_scale_factor, Rainfall_Scale_Factor_DESC_TEXT, 0.1f, 10.0f, 1.0f, "Climate_Model", "CLIMATE_BY_DATA" );
+        initConfigTypeMap( "Relative_Humidity_Scale_Factor", &humidity_scale_factor, Relative_Humidity_Scale_Factor_DESC_TEXT, 0.1f, 10.0f, 1.0f, "Climate_Model", "CLIMATE_BY_DATA" );
         return Climate::Configure( config );
     }
 
@@ -94,8 +94,8 @@ namespace Kernel {
         if(sorted[low_index] < 0)
             return false;
 
-        if((rainfall_variance && (EXPCDF(-1 / sorted[high_index] * resolution_correction * max_rainfall) < 0.975)) ||
-            (!rainfall_variance && sorted[high_index] * resolution_correction > max_rainfall))
+        if((rainfall_variance_enabled && (EXPCDF(-1 / sorted[high_index] * resolution_correction * max_rainfall) < 0.975)) ||
+            (!rainfall_variance_enabled && sorted[high_index] * resolution_correction > max_rainfall))
         {
             return false;
         }

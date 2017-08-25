@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,11 +19,17 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
+    struct IIndividualHumanContext;
+
     struct IDMAPI IWaningEffect : ISerializable
     {
+        virtual IWaningEffect* Clone() = 0;
         virtual void  Update(float dt) = 0;
         virtual float Current() const  = 0;
         virtual bool  Expired() const  = 0;
+        virtual void  SetContextTo( IIndividualHumanContext *context ) = 0;
+        virtual void  SetInitial(float newVal) = 0;
+        virtual void  SetCurrentTime(float dt) = 0;
     };
 
     typedef std::map<std::string, IWaningEffect*> waning_effects_t;
@@ -41,10 +47,14 @@ namespace Kernel
     public:
         static IWaningEffectFactory * getInstance() { return _instance ? _instance : _instance = new WaningEffectFactory(); }
 
-        static IWaningEffect* CreateInstance(const Configuration * config)
+        static IWaningEffect* CreateInstance( const WaningConfig& rWaningConfig )
         {
-            return CreateInstanceFromSpecs<IWaningEffect>(config, getRegisteredClasses(), true);
+            auto p_config = Configuration::CopyFromElement( rWaningConfig._json, "campaign" );
+            IWaningEffect* p_effect = CreateInstanceFromSpecs<IWaningEffect>( p_config, getRegisteredClasses(), true);
+            delete p_config;
+            return p_effect;
         }
+
         void Register(string classname, instantiator_function_t _if)  {  getRegisteredClasses()[classname] = _if;  }
         json::QuickBuilder GetSchema();
 

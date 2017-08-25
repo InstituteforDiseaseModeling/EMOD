@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -31,22 +31,25 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "StatusReporter.h" // for initialization progress
 #include "StrainIdentity.h"
 #include "IInfectable.h"
-#include "Instrumentation.h"
+#include "Memory.h"
 #include "FileSystem.h"
 #include "IMigrationInfo.h"
 #include "Individual.h"
+#include "IntranodeTransmissionTypes.h"
 #include "Serialization.h"
 #include "IdmMpi.h"
+#include "EventTrigger.h"
 
 #ifdef ENABLE_TBHIV
 #include "TBHIVParameters.h"
 #endif
 
-static const char* _module = "Node";
+SETUP_LOGGING( "Node" )
 
-using namespace json;
 
 #include "Properties.h"
+
+#define RELATIVE_SAMPLE_RATE_IMMUNE_MINIMUM (0.001f)
 
 namespace Kernel
 {
@@ -85,8 +88,8 @@ namespace Kernel
         , localWeather(nullptr)
         , migration_info(nullptr)
         , demographics()
-        , demographic_distributions()
         , externalId(0)
+        , node_properties()
         , event_context_host(nullptr)
         , events_from_other_nodes()
         , statPop(0)
@@ -98,9 +101,9 @@ namespace Kernel
         , Cumulative_Infections(0.0f)
         , Cumulative_Reported_Infections(0.0f)
         , Campaign_Cost(0.0f)
-        , Possible_Mothers(0)           // counters starting with this one were only used for old spatial reporting and can probably now be removed
+        , Possible_Mothers(0)
         , mean_age_infection(0.0f)
-        , newInfectedPeopleAgeProduct(0.0f)
+        , newInfectedPeopleAgeProduct(0.0f)           // counters starting with this one were only used for old spatial reporting and can probably now be removed
         , infected_people_prior()
         , infected_age_people_prior()
         , infectionrate(0.0f)
@@ -145,6 +148,9 @@ namespace Kernel
         , infectivity_boxcar_forcing_amplitude( 1.0f )
         , infectivity_boxcar_start_time( 0.0 )
         , infectivity_boxcar_end_time( 0.0 )
+        , infectivity_exponential_baseline( 1.0f )
+        , infectivity_exponential_rate( 1.0f )
+        , infectivity_exponential_delay (0.0f )
         , birth_rate_sinusoidal_forcing_amplitude( 1.0f )
         , birth_rate_sinusoidal_forcing_phase( 0.0f )
         , birth_rate_boxcar_forcing_amplitude( 1.0f )
@@ -152,13 +158,17 @@ namespace Kernel
         , birth_rate_boxcar_end_time( 0.0 )
     {
         SetContextTo(_parent_sim);  // TODO - this should be a virtual function call, but it isn't because the constructor isn't finished running yet.
-// clorton        const char* keys_whitelist_tmp[] = { "Accessibility", "Geographic", "Place", "Risk", "QualityOfCare", "HasActiveTB"  };
-// clorton        ipkeys_whitelist = std::set< std::string> ( keys_whitelist_tmp, keys_whitelist_tmp+sizeof_array(keys_whitelist_tmp) );
-// clorton        whitelist_enabled = true;
+        setupEventContextHost();
     }
 
     Node::Node()
         : serializationMask(SerializationFlags(uint32_t(SerializationFlags::Population) | uint32_t(SerializationFlags::Parameters)))
+        , ImmunityDistribution(nullptr)
+        , FertilityDistribution( nullptr )
+        , MortalityDistribution( nullptr )
+        , MortalityDistributionMale( nullptr )
+        , MortalityDistributionFemale( nullptr )
+        , AgeDistribution( nullptr )
         , _latitude(FLT_MAX)
         , _longitude(FLT_MAX)
         , ind_sampling_type( IndSamplingType::TRACK_ALL )
@@ -183,8 +193,8 @@ namespace Kernel
         , localWeather(nullptr)
         , migration_info(nullptr)
         , demographics()
-        , demographic_distributions()
         , externalId(0)
+        , node_properties()
         , event_context_host(nullptr)
         , events_from_other_nodes()
         , statPop(0)
@@ -196,9 +206,9 @@ namespace Kernel
         , Cumulative_Infections(0.0f)
         , Cumulative_Reported_Infections(0.0f)
         , Campaign_Cost(0.0f)
-        , Possible_Mothers(0)           // counters starting with this one were only used for old spatial reporting and can probably now be removed
+        , Possible_Mothers(0)
         , mean_age_infection(0.0f)
-        , newInfectedPeopleAgeProduct(0.0f)
+        , newInfectedPeopleAgeProduct(0.0f)           // counters starting with this one were only used for old spatial reporting and can probably now be removed
         , infected_people_prior()
         , infected_age_people_prior()
         , infectionrate(0.0f)
@@ -243,13 +253,16 @@ namespace Kernel
         , infectivity_boxcar_forcing_amplitude( 1.0f )
         , infectivity_boxcar_start_time( 0.0 )
         , infectivity_boxcar_end_time( 0.0 )
+        , infectivity_exponential_baseline( 1.0f )
+        , infectivity_exponential_rate( 1.0f )
+        , infectivity_exponential_delay (0.0f )
         , birth_rate_sinusoidal_forcing_amplitude( 1.0f )
         , birth_rate_sinusoidal_forcing_phase( 0.0f )
         , birth_rate_boxcar_forcing_amplitude( 1.0f )
         , birth_rate_boxcar_start_time( 0.0 )
         , birth_rate_boxcar_end_time( 0.0 )
     {
-        // No more to do here.
+        setupEventContextHost();
     }
 
     Node::~Node()
@@ -271,12 +284,12 @@ namespace Kernel
 
         delete event_context_host;
 
-        for (auto& ndd_pair : demographic_distributions)
-        {
-            delete ndd_pair.second;
-        }
-
-        demographic_distributions.clear();
+        delete ImmunityDistribution;
+        delete FertilityDistribution;
+        delete MortalityDistribution;
+        delete MortalityDistributionMale;
+        delete MortalityDistributionFemale;
+        delete AgeDistribution;
         */
     }
 
@@ -336,25 +349,19 @@ namespace Kernel
         initConfig( "Age_Initialization_Distribution_Type", age_initialization_distribution_type, config, MetadataDescriptor::Enum(Age_Initialization_Distribution_Type_DESC_TEXT, Age_Initialization_Distribution_Type_DESC_TEXT, MDD_ENUM_ARGS(DistributionType)) );
 
         initConfig( "Infectivity_Scale_Type", infectivity_scaling, config, MetadataDescriptor::Enum("infectivity_scaling", Infectivity_Scale_Type_DESC_TEXT, MDD_ENUM_ARGS(InfectivityScaling)) );
-        if ((infectivity_scaling == InfectivityScaling::SINUSOIDAL_FUNCTION_OF_TIME) || JsonConfigurable::_dryrun )
-        {
-            initConfigTypeMap( "Infectivity_Sinusoidal_Forcing_Amplitude", &infectivity_sinusoidal_forcing_amplitude, Sinusoidal_Infectivity_Forcing_Amplitude_DESC_TEXT, 0.0f, 1.0f, 0.0f );
-            initConfigTypeMap( "Infectivity_Sinusoidal_Forcing_Phase", &infectivity_sinusoidal_forcing_phase, Sinusoidal_Infectivity_Forcing_Phase_DESC_TEXT, 0.0f, 365.0f, 0.0f );
-        }
-        if ((infectivity_scaling  == InfectivityScaling::ANNUAL_BOXCAR_FUNCTION) || JsonConfigurable::_dryrun )
-        {
-            initConfigTypeMap( "Infectivity_Boxcar_Forcing_Amplitude", &infectivity_boxcar_forcing_amplitude, Boxcar_Infectivity_Forcing_Amplitude_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
-            initConfigTypeMap( "Infectivity_Boxcar_Forcing_Start_Time", &infectivity_boxcar_start_time, Boxcar_Infectivity_Forcing_Start_Time_DESC_TEXT, 0.0f, 365.0f, 0.0f );
-            initConfigTypeMap( "Infectivity_Boxcar_Forcing_End_Time", &infectivity_boxcar_end_time, Boxcar_Infectivity_Forcing_End_Time_DESC_TEXT, 0.0f, 365.0f, 0.0f );
-        }
+        initConfigTypeMap( "Infectivity_Sinusoidal_Forcing_Amplitude", &infectivity_sinusoidal_forcing_amplitude, Sinusoidal_Infectivity_Forcing_Amplitude_DESC_TEXT, 0.0f, 1.0f,    0.0f, "Infectivity_Scale_Type", "SINUSOIDAL_FUNCTION_OF_TIME" );
+        initConfigTypeMap( "Infectivity_Sinusoidal_Forcing_Phase",     &infectivity_sinusoidal_forcing_phase,     Sinusoidal_Infectivity_Forcing_Phase_DESC_TEXT,     0.0f, 365.0f,  0.0f, "Infectivity_Scale_Type", "SINUSOIDAL_FUNCTION_OF_TIME" );
+        initConfigTypeMap( "Infectivity_Exponential_Baseline",         &infectivity_exponential_baseline,         Infectivity_Exponential_Baseline_DESC_TEXT,         0.0f, 1.0f,    0.0f, "Infectivity_Scale_Type", "EXPONENTIAL_FUNCTION_OF_TIME" );
+        initConfigTypeMap( "Infectivity_Exponential_Delay",            &infectivity_exponential_delay,            Infectivity_Exponential_Delay_DESC_TEXT,            0.0f, FLT_MAX, 0.0f, "Infectivity_Scale_Type", "EXPONENTIAL_FUNCTION_OF_TIME" );
+        initConfigTypeMap( "Infectivity_Exponential_Rate",             &infectivity_exponential_rate,             Infectivity_Exponential_Rate_DESC_TEXT,             0.0f, FLT_MAX, 0.0f, "Infectivity_Scale_Type", "EXPONENTIAL_FUNCTION_OF_TIME" );
+        initConfigTypeMap( "Infectivity_Boxcar_Forcing_Amplitude",     &infectivity_boxcar_forcing_amplitude,     Boxcar_Infectivity_Forcing_Amplitude_DESC_TEXT,     0.0f, FLT_MAX, 0.0f, "Infectivity_Scale_Type", "ANNUAL_BOXCAR_FUNCTION" );
+        initConfigTypeMap( "Infectivity_Boxcar_Forcing_Start_Time",    &infectivity_boxcar_start_time,            Boxcar_Infectivity_Forcing_Start_Time_DESC_TEXT,    0.0f, 365.0f,  0.0f, "Infectivity_Scale_Type", "ANNUAL_BOXCAR_FUNCTION" );
+        initConfigTypeMap( "Infectivity_Boxcar_Forcing_End_Time",      &infectivity_boxcar_end_time,              Boxcar_Infectivity_Forcing_End_Time_DESC_TEXT,      0.0f, 365.0f,  0.0f, "Infectivity_Scale_Type", "ANNUAL_BOXCAR_FUNCTION" );
 
-        initConfig( "Animal_Reservoir_Type", animal_reservoir_type, config,
-                    MetadataDescriptor::Enum( "animal_reservoir_type", Animal_Reservoir_Type_DESC_TEXT, MDD_ENUM_ARGS(AnimalReservoir) ) );
-
-        if( animal_reservoir_type != AnimalReservoir::NO_ZOONOSIS || JsonConfigurable::_dryrun )
+        initConfig( "Animal_Reservoir_Type", animal_reservoir_type, config, MetadataDescriptor::Enum( "animal_reservoir_type", Animal_Reservoir_Type_DESC_TEXT, MDD_ENUM_ARGS(AnimalReservoir) ) );
+        initConfigTypeMap( "Zoonosis_Rate", &zoonosis_rate, Zoonosis_Rate_DESC_TEXT, 0.0f, 1.0f, 0.0f, "Animal_Reservoir_Type", "CONSTANT_ZOONOSIS,ZOONOSIS_FROM_DEMOGRAPHICS" );
+        if( animal_reservoir_type != AnimalReservoir::NO_ZOONOSIS && !JsonConfigurable::_dryrun )
         {
-            initConfigTypeMap( "Zoonosis_Rate", &zoonosis_rate, Zoonosis_Rate_DESC_TEXT, 0.0f, 1.0f, 0.0f );
-
             if( GET_CONFIGURABLE(SimulationConfig) &&
                 ( GET_CONFIGURABLE(SimulationConfig)->heterogeneous_intranode_transmission_enabled || 
                   GET_CONFIGURABLE(SimulationConfig)->number_basestrains > 1 ||
@@ -377,56 +384,38 @@ namespace Kernel
         initConfig( "Birth_Rate_Dependence", vital_birth_dependence, config, MetadataDescriptor::Enum(Birth_Rate_Dependence_DESC_TEXT, Birth_Rate_Dependence_DESC_TEXT, MDD_ENUM_ARGS(VitalBirthDependence)), "Enable_Birth" );
 
         initConfig( "Individual_Sampling_Type", ind_sampling_type, config, MetadataDescriptor::Enum("ind_sampling_type", Individual_Sampling_Type_DESC_TEXT, MDD_ENUM_ARGS(IndSamplingType)) );
-        if( ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_IMMUNE_STATE )
-        {
-            initConfigTypeMap( "Relative_Sample_Rate_Immune",   &sample_rate_immune, Sample_Rate_Immune_DESC_TEXT,     0.001f, 1.0f, 0.1f );
-            initConfigTypeMap( "Immune_Threshold_For_Downsampling",   &immune_threshold_for_downsampling, Immune_Threshold_For_Downsampling_DESC_TEXT,     0.0f, 1.0f, 0.0f );
-        }
-
-        if ( ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_AGE_GROUP || ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE )
-        {
-            initConfigTypeMap( "Sample_Rate_Birth",    &sample_rate_birth, Sample_Rate_Birth_DESC_TEXT,       0.0f, 1000.0f, 1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP || ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE");
-            initConfigTypeMap( "Sample_Rate_0_18mo",   &sample_rate_0_18mo, Sample_Rate_0_18mo_DESC_TEXT,     0.0f, 1000.0f, 1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP || ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
-            initConfigTypeMap( "Sample_Rate_18mo_4yr", &sample_rate_18mo_4yr, Sample_Rate_18mo_4yr_DESC_TEXT, 0.0f, 1000.0f, 1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP || ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
-            initConfigTypeMap( "Sample_Rate_5_9",      &sample_rate_5_9, Sample_Rate_5_9_DESC_TEXT,           0.0f, 1000.0f, 1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP || ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
-            initConfigTypeMap( "Sample_Rate_10_14",    &sample_rate_10_14, Sample_Rate_10_14_DESC_TEXT,       0.0f, 1000.0f, 1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP || ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
-            initConfigTypeMap( "Sample_Rate_15_19",    &sample_rate_15_19, Sample_Rate_15_19_DESC_TEXT,       0.0f, 1000.0f, 1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP || ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
-            initConfigTypeMap( "Sample_Rate_20_Plus",  &sample_rate_20_plus, Sample_Rate_20_Plus_DESC_TEXT,   0.0f, 1000.0f, 1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP || ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
-        }
+        initConfigTypeMap( "Relative_Sample_Rate_Immune",       &sample_rate_immune,                Sample_Rate_Immune_DESC_TEXT, RELATIVE_SAMPLE_RATE_IMMUNE_MINIMUM,  1.0f,  0.1f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_IMMUNE_STATE" );
+        initConfigTypeMap( "Immune_Threshold_For_Downsampling", &immune_threshold_for_downsampling, Immune_Threshold_For_Downsampling_DESC_TEXT, 0.0f,    1.0f,  0.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_IMMUNE_STATE" );
+        initConfigTypeMap( "Sample_Rate_Birth",                 &sample_rate_birth,                 Sample_Rate_Birth_DESC_TEXT,                 0.0f, 1000.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE");
+        initConfigTypeMap( "Sample_Rate_0_18mo",                &sample_rate_0_18mo,                Sample_Rate_0_18mo_DESC_TEXT,                0.0f, 1000.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
+        initConfigTypeMap( "Sample_Rate_18mo_4yr",              &sample_rate_18mo_4yr,              Sample_Rate_18mo_4yr_DESC_TEXT,              0.0f, 1000.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
+        initConfigTypeMap( "Sample_Rate_5_9",                   &sample_rate_5_9,                   Sample_Rate_5_9_DESC_TEXT,                   0.0f, 1000.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
+        initConfigTypeMap( "Sample_Rate_10_14",                 &sample_rate_10_14,                 Sample_Rate_10_14_DESC_TEXT,                 0.0f, 1000.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
+        initConfigTypeMap( "Sample_Rate_15_19",                 &sample_rate_15_19,                 Sample_Rate_15_19_DESC_TEXT,                 0.0f, 1000.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
+        initConfigTypeMap( "Sample_Rate_20_Plus",               &sample_rate_20_plus,               Sample_Rate_20_Plus_DESC_TEXT,               0.0f, 1000.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
+        initConfigTypeMap( "Max_Node_Population_Samples",       &max_sampling_cell_pop,             Max_Node_Population_Samples_DESC_TEXT,       1.0f, FLT_MAX, 30.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_POPULATION_SIZE,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
 
         initConfig( "Population_Scale_Type", population_scaling,  config, MetadataDescriptor::Enum(Population_Scale_Type_DESC_TEXT, Population_Scale_Type_DESC_TEXT, MDD_ENUM_ARGS(PopulationScaling)) );
         initConfigTypeMap( "Base_Population_Scale_Factor",      &population_scaling_factor,  Base_Population_Scale_Factor_DESC_TEXT,      0.0f, FLT_MAX, 1.0f, "Population_Scale_Type", "FIXED_SCALING" );
-        initConfigTypeMap( "Max_Node_Population_Samples",       &max_sampling_cell_pop,      Max_Node_Population_Samples_DESC_TEXT,       1.0f, FLT_MAX, 30.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_POPULATION_SIZE,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
 
         initConfig( "Population_Density_Infectivity_Correction", population_density_infectivity_correction, config, MetadataDescriptor::Enum("population_density_infectivity_correction", Population_Density_Infectivity_Correction_DESC_TEXT, MDD_ENUM_ARGS(PopulationDensityInfectivityCorrection)) ); // node only (move)
+        initConfigTypeMap( "Population_Density_C50", &population_density_c50, Population_Density_C50_DESC_TEXT, 0.0f, FLT_MAX, 10.0f, "Population_Density_Infectivity_Correction", PopulationDensityInfectivityCorrection::pairs::lookup_key( PopulationDensityInfectivityCorrection::SATURATING_FUNCTION_OF_DENSITY ) );
 
-        if (population_density_infectivity_correction == PopulationDensityInfectivityCorrection::SATURATING_FUNCTION_OF_DENSITY)
-        {
-            initConfigTypeMap( "Population_Density_C50",        &population_density_c50,     Population_Density_C50_DESC_TEXT,            0.0f, FLT_MAX, 10.0f, "Population_Density_Infectivity_Correction", PopulationDensityInfectivityCorrection::pairs::lookup_key(PopulationDensityInfectivityCorrection::SATURATING_FUNCTION_OF_DENSITY) );
-        }
-        
         initConfigTypeMap( "x_Birth",                           &x_birth,                    x_Birth_DESC_TEXT,                           0.0f, FLT_MAX, 1.0f, "Enable_Birth" );
-        
+
         initConfig( "Birth_Rate_Time_Dependence", vital_birth_time_dependence, config, MetadataDescriptor::Enum("vital_birth_time_dependence", Birth_Rate_Time_Dependence_DESC_TEXT, MDD_ENUM_ARGS(VitalBirthTimeDependence)), "Enable_Birth" ); // node only (move)
-        if ((vital_birth_time_dependence == VitalBirthTimeDependence::SINUSOIDAL_FUNCTION_OF_TIME) || JsonConfigurable::_dryrun )
-        {
-            initConfigTypeMap( "Birth_Rate_Sinusoidal_Forcing_Amplitude", &birth_rate_sinusoidal_forcing_amplitude, Sinusoidal_Birth_Rate_Forcing_Amplitude_DESC_TEXT, 0.0f, 1.0f, 0.0f, "Birth_Rate_Time_Dependence", "SINUSOIDAL_FUNCTION_OF_TIME" );
-            initConfigTypeMap( "Birth_Rate_Sinusoidal_Forcing_Phase", &birth_rate_sinusoidal_forcing_phase, Sinusoidal_Birth_Rate_Forcing_Phase_DESC_TEXT, 0.0f, 365.0f, 0.0f, "Birth_Rate_Time_Dependence", "SINUSOIDAL_FUNCTION_OF_TIME" );
-        }
-
-        
-        initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_Amplitude", &birth_rate_boxcar_forcing_amplitude, Boxcar_Birth_Rate_Forcing_Amplitude_DESC_TEXT, 0.0f, FLT_MAX, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );
-        initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_Start_Time", &birth_rate_boxcar_start_time, Boxcar_Birth_Rate_Forcing_Start_Time_DESC_TEXT, 0.0f, 365.0f, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );
-        initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_End_Time", &birth_rate_boxcar_end_time, Boxcar_Birth_Rate_Forcing_End_Time_DESC_TEXT, 0.0f, 365.0f, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );
-
-
+        initConfigTypeMap( "Birth_Rate_Sinusoidal_Forcing_Amplitude", &birth_rate_sinusoidal_forcing_amplitude, Sinusoidal_Birth_Rate_Forcing_Amplitude_DESC_TEXT, 0.0f,    1.0f, 0.0f, "Birth_Rate_Time_Dependence", "SINUSOIDAL_FUNCTION_OF_TIME" );
+        initConfigTypeMap( "Birth_Rate_Sinusoidal_Forcing_Phase",     &birth_rate_sinusoidal_forcing_phase,     Sinusoidal_Birth_Rate_Forcing_Phase_DESC_TEXT,     0.0f,  365.0f, 0.0f, "Birth_Rate_Time_Dependence", "SINUSOIDAL_FUNCTION_OF_TIME" );
+        initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_Amplitude",     &birth_rate_boxcar_forcing_amplitude,     Boxcar_Birth_Rate_Forcing_Amplitude_DESC_TEXT,     0.0f, FLT_MAX, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );
+        initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_Start_Time",    &birth_rate_boxcar_start_time,            Boxcar_Birth_Rate_Forcing_Start_Time_DESC_TEXT,    0.0f,  365.0f, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );
+        initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_End_Time",      &birth_rate_boxcar_end_time,              Boxcar_Birth_Rate_Forcing_End_Time_DESC_TEXT,      0.0f,  365.0f, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );      
+       
         bool ret = JsonConfigurable::Configure( config );
         return ret;
     }
 
     void Node::Initialize()
     {
-        setupEventContextHost();
         Configure( EnvPtr->Config );
 
         if(GET_CONFIGURABLE(SimulationConfig)->susceptibility_scaling == SusceptibilityScaling::LOG_LINEAR_FUNCTION_OF_TIME)
@@ -463,7 +452,7 @@ namespace Kernel
                 for( auto ind : this->individualHumans )
                 {
                     // this is only done during initialization.  During the sim, configureAndAddNewIndividual() will set this
-                    float temp_migration = (float)(Probability::getInstance()->fromDistribution(migration_dist_type, migration_dist1, migration_dist2, 1.0));
+                    float temp_migration = float(Probability::getInstance()->fromDistribution(migration_dist_type, migration_dist1, migration_dist2, 0.0, 1.0));
                     ind->SetMigrationModifier( temp_migration );
                 }
             }                          
@@ -473,9 +462,14 @@ namespace Kernel
     void Node::SetMonteCarloParameters(float indsamplerate, int nummininf)
     {
         Ind_Sample_Rate         = indsamplerate;
+
+        if ((ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_IMMUNE_STATE) && (sample_rate_immune * Ind_Sample_Rate <= RELATIVE_SAMPLE_RATE_IMMUNE_MINIMUM))
+        {
+            throw IncoherentConfigurationException(__FILE__, __LINE__, __FUNCTION__, "Relative_Sample_Rate_Immune", sample_rate_immune, "Base_Individual_Sample_Rate", Ind_Sample_Rate, "and Individual_Sampling_Type: ADAPTED_SAMPLING_BY_IMMUNE_STATE" );
+        }
     }
 
-    void Node::SetParameters(NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory)
+    void Node::SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory, bool white_list_enabled )
     {
         // Parameters set from an input filestream
         // TODO: Jeff, this is a bit hack-y that I had to do this. is there a better way?
@@ -483,18 +477,11 @@ namespace Kernel
         release_assert( demographics_temp );
         demographics = *(demographics_temp); // use copy constructor
         delete demographics_temp;
-        externalId = demographics["NodeID"].AsInt();
+        externalId = demographics["NodeID"].AsUint();
 
 
         //////////////////////////////////////////////////////////////////////////////////////
-        bool white_list_enabled = true ;
-        if( (EnvPtr != nullptr) && 
-            (EnvPtr->Config != nullptr) &&
-            EnvPtr->Config->Exist( "Disable_IP_Whitelist" ) &&
-            (*(EnvPtr->Config))["Disable_IP_Whitelist"].As<json::Number>() == 1 )
-        {
-            white_list_enabled = false;
-        }
+        node_properties = NPFactory::GetInstance()->GetInitialValues( GetRng(), demographics.GetJsonObject() );
 
         LOG_DEBUG( "Looking for Individual_Properties in demographics.json file(s)\n" );
         IPFactory::GetInstance()->Initialize( GetExternalID(), demographics.GetJsonObject(), white_list_enabled );
@@ -508,32 +495,26 @@ namespace Kernel
         {
             Above_Poverty = float(demographics["NodeAttributes"]["AbovePoverty"].AsDouble());
             urban = (demographics["NodeAttributes"]["Urban"].AsInt() != 0);
-#ifdef ENABLE_TBHIV
-            if (GET_CONFIGURABLE(SimulationConfig)->tbhiv_params->coinfection_incidence == true)
-            {
-                demographic_distributions[NodeDemographicsDistribution::HIVCoinfectionDistribution] = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["HIVCoinfectionDistribution"], "gender", "time", "age");
-                demographic_distributions[NodeDemographicsDistribution::HIVMortalityDistribution]   = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["HIVMortalityDistribution"], "gender", "time", "age");
-            }
-#endif // ENABLE_TBHIV
         }
 
         VitalDeathDependence::Enum vital_death_dependence = GET_CONFIGURABLE(SimulationConfig)->vital_death_dependence;
         if( vital_death_dependence == VitalDeathDependence::NONDISEASE_MORTALITY_BY_AGE_AND_GENDER )
         {
             LOG_DEBUG( "Parsing IndividualAttributes->MortalityDistribution tag in node demographics file.\n" );
-            demographic_distributions[NodeDemographicsDistribution::MortalityDistribution] = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["MortalityDistribution"], "gender", "age");
+            MortalityDistribution = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["MortalityDistribution"], "gender", "age");
         }
         else if( vital_death_dependence == VitalDeathDependence::NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER )
         {
             LOG_DEBUG( "Parsing IndividualAttributes->MortalityDistributionMale and IndividualAttributes->MortalityDistributionFemale tags in node demographics file.\n" );
-            demographic_distributions[NodeDemographicsDistribution::MortalityDistributionMale] = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["MortalityDistributionMale"], "age", "year");
-            demographic_distributions[NodeDemographicsDistribution::MortalityDistributionFemale] = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["MortalityDistributionFemale"], "age", "year");
+            MortalityDistributionMale   = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["MortalityDistributionMale"  ], "age", "year");
+            MortalityDistributionFemale = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["MortalityDistributionFemale"], "age", "year");
         }
 
         if (params()->immunity_initialization_distribution_type == DistributionType::DISTRIBUTION_COMPLEX)
         {
             LoadImmunityDemographicsDistribution();
         }
+        LoadOtherDiseaseSpecificDistributions();
 
         if (vital_birth_dependence != VitalBirthDependence::FIXED_BIRTH_RATE)// births per cell per day is population dependent
         {
@@ -541,12 +522,12 @@ namespace Kernel
             if(vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE) 
             {
                 LOG_DEBUG( "Parsing IndividualAttributes->FertilityDistribution tag in node demographics file.\n" );
-                demographic_distributions[NodeDemographicsDistribution::FertilityDistribution] = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["FertilityDistribution"], "urban", "age");
+                FertilityDistribution = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["FertilityDistribution"], "urban", "age");
             }
             else if(vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR)
             {
                 LOG_DEBUG( "Parsing IndividualAttributes->FertilityDistribution tag in node demographics file.\n" );
-                demographic_distributions[NodeDemographicsDistribution::FertilityDistribution] = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["FertilityDistribution"], "age", "year");
+                FertilityDistribution = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["FertilityDistribution"], "age", "year");
             }
 
             if (birthrate > BIRTHRATE_SANITY_VALUE)
@@ -574,9 +555,12 @@ namespace Kernel
                 }
             }
         }
+        
+        ExtractDataFromDemographics();
+
 #ifndef DISABLE_CLIMATE
         //  Set climate
-        //if (GET_CONFIGURABLE(SimulationConfig)->climate_structure != ClimateStructure::CLIMATE_OFF)   // DJK: Why commented?
+        if (ClimateFactory::climate_structure != ClimateStructure::CLIMATE_OFF)   // DJK: Why commented?
         {
             LOG_DEBUG( "Parsing NodeAttributes->Altitude tag in node demographics file.\n" );
             float altitude = float(demographics["NodeAttributes"]["Altitude"].AsDouble());
@@ -597,7 +581,7 @@ namespace Kernel
         // For GENERIC_SIM (and related human-immune-model classes), "ImmunityDistribution" is an age-specific probability of being immune
         // For derived classes, similar age-dependent distributions relate specifically to vaccine dose history (POLIO_SIM) and MSP/PfEMP1 antibodies (MALARIA_SIM)
         LOG_DEBUG( "Parsing IndividualAttributes->ImmunityDistribution tag in node demographics file.\n" );
-        demographic_distributions[NodeDemographicsDistribution::ImmunityDistribution] = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["ImmunityDistribution"], "age");
+        ImmunityDistribution = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["ImmunityDistribution"], "age");
     }
 
     ITransmissionGroups* Node::CreateTransmissionGroups()
@@ -631,7 +615,7 @@ namespace Kernel
 
         transmissionGroups = CreateTransmissionGroups();
 
-        if( (IPFactory::GetInstance()->GetIPList().size() > 0) && params()->heterogeneous_intranode_transmission_enabled )
+        if( IPFactory::GetInstance()->HasIPs() && params()->heterogeneous_intranode_transmission_enabled )
         {
             ValidateIntranodeTransmissionConfiguration();
 
@@ -643,8 +627,8 @@ namespace Kernel
 
                     AddRoute( decayMap, routeName );
 
-                    transmissionGroups->AddProperty( p_ip->GetKey().ToString(), 
-                                                     p_ip->GetValues().GetValuesToList(),
+                    transmissionGroups->AddProperty( p_ip->GetKeyAsString(),
+                                                     p_ip->GetValues<IPKeyValueContainer>().GetValuesToList(),
                                                      p_ip->GetIntraNodeTransmissions( GetExternalID() ).GetMatrix(),
                                                      routeName );
                 }
@@ -668,6 +652,14 @@ namespace Kernel
         transmissionGroups->GetGroupMembershipForProperties( route, properties, transmissionGroupMembership );
     }
 
+    std::map< std::string, float >
+    Node::GetTotalContagion()
+    const
+    {
+        // Honestly not sure how to implement this in the general case yet.
+        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "This function is only supported in NodeTyphoid at this time." );
+    }
+
     float Node::GetTotalContagion(const TransmissionGroupMembership_t* membership)
     {
         return transmissionGroups->GetTotalContagion(membership);
@@ -685,13 +677,17 @@ namespace Kernel
 
     void Node::ExposeIndividual(IInfectable* candidate, const TransmissionGroupMembership_t* individual, float dt)
     {
+        /*if( bSkipping )
+        {
+            return;
+        }*/
         transmissionGroups->ExposeToContagion(candidate, individual, dt);
     }
 
-    void Node::DepositFromIndividual(StrainIdentity* strain_IDs, float contagion_quantity, const TransmissionGroupMembership_t* individual)
+    void Node::DepositFromIndividual( const IStrainIdentity& strain_IDs, float contagion_quantity, const TransmissionGroupMembership_t* individual)
     {
-        LOG_DEBUG_F("deposit from individual: antigen index =%d, substain index = %d, quantity = %f\n", strain_IDs->GetAntigenID(), strain_IDs->GetGeneticID(), contagion_quantity);
-        transmissionGroups->DepositContagion(strain_IDs, contagion_quantity, individual);
+        LOG_DEBUG_F("deposit from individual: antigen index =%d, substain index = %d, quantity = %f\n", strain_IDs.GetAntigenID(), strain_IDs.GetGeneticID(), contagion_quantity);
+        transmissionGroups->DepositContagion( strain_IDs, contagion_quantity, individual );
     }
     
     act_prob_vec_t Node::DiscreteGetTotalContagion(const TransmissionGroupMembership_t* membership)
@@ -759,9 +755,22 @@ namespace Kernel
         }
     }
 
+    /*inline int Node::calcGap( float maxInfectionProb )
+    {
+        float gap = 1;
+        if (maxInfectionProb>=1.0)
+        {
+            gap=1;
+        }
+        else if (maxInfectionProb>0.0)
+        {
+            gap=int(ceil(log(1.0-randgen->e())/log(1.0-maxInfectionProb))); //geometric based on fMaxInfectionProb
+        }
+        return gap;
+    }*/
+
     void Node::Update(float dt)
     {
-
         // Update weather
         //if(GET_CONFIGURABLE(SimulationConfig)->climate_structure != ClimateStructure::CLIMATE_OFF)
         if(localWeather)
@@ -779,11 +788,11 @@ namespace Kernel
             // --- I'm putting this after updating the interventions because if one was
             // --- supposed to expire this timestep, then this event should not fire it.
             // -------------------------------------------------------------------------
-            for( auto event_name : events_from_other_nodes )
+            for( auto event_trigger : events_from_other_nodes )
             {
                 for (auto individual : individualHumans)
                 {
-                    event_context_host->TriggerNodeEventObserversByString( individual->GetEventContext(), event_name );
+                    event_context_host->TriggerNodeEventObservers( individual->GetEventContext(), event_trigger );
                 }
             }
         }
@@ -802,10 +811,23 @@ namespace Kernel
         // !!! GH-798 - I had to change this for loop to use an index so that a user could have an Outbreak intervention within
         // !!! a NLHTIV. Outbreak will import/add people to the scenario.  This gets around the issue of the iterator being violated.
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //bSkipping = false; // changes from individual to individual. Initialize to false
         for( int i = 0 ; i < individualHumans.size() ; ++i )
         {
             IIndividualHuman* individual = individualHumans[i];
 
+            // TBD: Move this to Typhoid layer without copy-pasting the entire function
+            // Each route has separate max prob and so separate gap. Has to be handled
+            /*if( gap == 1 )
+            {
+                bSkipping = false;
+                gap = calcGap( maxInfectionProb[ TransmissionRoute::TRANSMISSIONROUTE_CONTACT ] ); // TBD HACK: Pass map
+            }
+            else
+            {
+                bSkipping=true;
+                gap--;
+            }*/
             individual->Update(GetTime().time, dt);
 
             // JPS: Should we do this later, after updateVitalDynamics() instead?  
@@ -857,11 +879,11 @@ namespace Kernel
             IIndividualHuman* individual = individualHumans[iHuman];
             release_assert( individual );
 
-            auto state_change = individual->GetStateChange();
+            // clorton auto state_change = individual->GetStateChange();
             if( individual->IsDead() )
             {
                 if (individual->GetStateChange() == HumanStateChange::KilledByInfection)
-                    Disease_Deaths += (float)individual->GetMonteCarloWeight();
+                    Disease_Deaths += float(individual->GetMonteCarloWeight());
 
                 individual->UpdateGroupPopulation(-1.0f);
                 RemoveHuman( iHuman );
@@ -874,7 +896,7 @@ namespace Kernel
                     home_individual_ids.erase( individual->GetSuid().data ); // if this person doesn't call this home, then nothing happens
 
                     delete individual;
-                    individual = NULL;
+                    individual = nullptr;
                 }
                 else
                 {
@@ -937,9 +959,6 @@ namespace Kernel
             infectivity_correction *= getDensityContactScaling();
         }
 
-        infectionrate *= infectivity_correction / statPop; // Normalization by StatPop and density correction, does not include additional factors below for seasonality
-        LOG_DEBUG_F("[updateInfectivity] corrected infectionrate = %f\n", infectionrate);
-
         // Add in seasonality
         if (infectivity_scaling == InfectivityScaling::FUNCTION_OF_TIME_AND_LATITUDE)
         {
@@ -952,14 +971,23 @@ namespace Kernel
         else if(infectivity_scaling == InfectivityScaling::SINUSOIDAL_FUNCTION_OF_TIME)
         {
             infectivity_correction *= getSinusoidalCorrection(infectivity_sinusoidal_forcing_amplitude, 
-                                                              infectivity_sinusoidal_forcing_phase);	
+                                                              infectivity_sinusoidal_forcing_phase);
         }
         else if(infectivity_scaling == InfectivityScaling::ANNUAL_BOXCAR_FUNCTION)
         {
             infectivity_correction *= getBoxcarCorrection(infectivity_boxcar_forcing_amplitude,
                                                           infectivity_boxcar_start_time,
-                                                          infectivity_boxcar_end_time);	
+                                                          infectivity_boxcar_end_time);
         }
+        else if(infectivity_scaling == InfectivityScaling::EXPONENTIAL_FUNCTION_OF_TIME)
+        {
+            infectivity_correction *= getExponentialCorrection(infectivity_exponential_baseline,
+                                                          infectivity_exponential_rate, infectivity_exponential_delay);    
+        }
+
+        infectionrate *= infectivity_correction / statPop; // Normalization by StatPop and density correction, does not include additional factors below for seasonality
+        LOG_DEBUG_F("[updateInfectivity] corrected infectionrate = %f\n", infectionrate);
+
         // If there is an animal reservoir, deposit additional contagion
         if( animal_reservoir_type != AnimalReservoir::NO_ZOONOSIS )
         {
@@ -973,7 +1001,7 @@ namespace Kernel
             // Assume no heterogeneous transmission
             TransmissionGroupMembership_t defaultGroupMembership;
             defaultGroupMembership[0] = 0;
-            transmissionGroups->DepositContagion(&strainId, zoonosis_rate * statPop, &defaultGroupMembership);
+            transmissionGroups->DepositContagion( strainId, zoonosis_rate * statPop, &defaultGroupMembership );
 
         }        
         transmissionGroups->EndUpdate(infectivity_correction);
@@ -1073,6 +1101,15 @@ namespace Kernel
              \"AIRBORNE_SIM\" or \"ENVIRONMENTAL_SIM\"." );
     }
 
+    float Node::getExponentialCorrection(float baseline, float rate, float delay)
+    {
+        float correction = baseline;
+        if (GetTime().time >= delay) {
+            correction = 1 - (1-baseline)*exp(-1*(GetTime().time - delay)/rate);
+        }
+        return correction;
+    }
+
     void Node::updateVitalDynamics(float dt)
     {
         long int newborns    = 0;
@@ -1153,11 +1190,11 @@ namespace Kernel
                         float temp_birthrate = 0.0f;
                         if( vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE )
                         {
-                            temp_birthrate = GetDemographicsDistribution(NodeDemographicsDistribution::FertilityDistribution)->DrawResultValue(GetUrban(), individual->GetAge());
+                            temp_birthrate = FertilityDistribution->DrawResultValue(GetUrban(), individual->GetAge());
                         }
                         else    // INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR
                         {
-                            temp_birthrate = GetDemographicsDistribution(NodeDemographicsDistribution::FertilityDistribution)->DrawResultValue(individual->GetAge(), float(GetTime().Year()));
+                            temp_birthrate =FertilityDistribution->DrawResultValue(individual->GetAge(), float(GetTime().Year()));
                         }
 
                         LOG_DEBUG_F("%d-year-old possible mother has annual fertility rate = %f\n", int(individual->GetAge()/DAYSPERYEAR), temp_birthrate * DAYSPERYEAR);
@@ -1216,6 +1253,11 @@ namespace Kernel
     // (4) vital_birth_dependence: INDIVIDUAL_PREGNANCIES, INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE must have initial pregnancies initialized
     void Node::populateNewIndividualsFromDemographics(int count_new_individuals)
     {
+        if ((ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_IMMUNE_STATE) && (count_new_individuals * RELATIVE_SAMPLE_RATE_IMMUNE_MINIMUM < 1.0)) // At least one individual must be sampled
+        {
+            throw IncoherentConfigurationException(__FILE__, __LINE__, __FUNCTION__, "Relative_Sample_Rate_Immune", sample_rate_immune, "Number of Individuals", float(individualHumans.size()), "and Individual_Sampling_Type: ADAPTED_SAMPLING_BY_IMMUNE_STATE");
+        }
+        
         int32_t num_adults = 0 ;
         int32_t num_children = 0 ;
 
@@ -1238,7 +1280,7 @@ namespace Kernel
                 throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Age_Initialization_Distribution_Type", "DISTRIBUTION_COMPLEX", "['IndividualAttributes']['AgeDistribution']", "<not found>" );
             }
             LOG_DEBUG( "Parsing IndividualAttributes->AgeDistribution tag in node demographics file.\n" );
-            demographic_distributions[NodeDemographicsDistribution::AgeDistribution] = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["AgeDistribution"]);
+            AgeDistribution = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["AgeDistribution"]);
         }
 
         LOG_DEBUG( "Parsing IndividualAttributes->PrevalenceDistributionFlag tag in node demographics file.\n" );
@@ -1247,7 +1289,7 @@ namespace Kernel
         float prevdist1 = float(demographics["IndividualAttributes"]["PrevalenceDistribution1"].AsDouble());
         LOG_DEBUG( "Parsing IndividualAttributes->PrevalenceDistribution2 tag in node demographics file.\n" );
         float prevdist2 = float(demographics["IndividualAttributes"]["PrevalenceDistribution2"].AsDouble());
-        initial_prevalence = Probability::getInstance()->fromDistribution(prevalence_distribution_type, prevdist1, prevdist2, 0);
+        initial_prevalence = Probability::getInstance()->fromDistribution(prevalence_distribution_type, prevdist1, prevdist2, 0, 0);
 
         // Male/Female ratio implemented as a Gaussian at 50 +/- 1%.
         // TODO: it would be useful to add the possibility to read this from demographics (e.g. as part of enable_age_initialization_distribution by age + gender)
@@ -1265,8 +1307,6 @@ namespace Kernel
 
         // Keep track of the adapted sampling rate in case it will be further modified on an age-dependent basis for *each* individual in the loop below
         float temp_node_sampling_rate = temp_sampling_rate;
-
-        ExtractDataFromDemographics();
 
         // Loop over 'count_new_individuals' initial statistical population
         for (int i = 1; i <= count_new_individuals; ++i)
@@ -1297,14 +1337,14 @@ namespace Kernel
                     if( (required_percentage_of_children > 0.0f)  && IndividualHumanConfig::IsAdultAge( 0.0 ) )
                     {
                         throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__,
-                            "Minimum_Adult_Age_Years", 0,
+                            "Minimum_Adult_Age_Years", 0.0f,
                             "<demographics>::Defaults/Node.IndividualAttributes.PercentageChildren", required_percentage_of_children,
                             "You can't have any children if everyone is an adult (Minimum_Adult_Age_Years = 0 implies every one is an adult)." );
                     }
 
                     float required_percentage_of_adults = 1.0  -required_percentage_of_children ;
-                    float percent_children = (float)num_children / (float)count_new_individuals ;
-                    float percent_adults   = (float)num_adults   / (float)count_new_individuals ;
+                    float percent_children = float(num_children) / float(count_new_individuals) ;
+                    float percent_adults   = float(num_adults)   / float(count_new_individuals) ;
                     float age_years = temp_age / DAYSPERYEAR ;
 
                     // if a child and already have enough children, recalculate age until we get an adult
@@ -1340,7 +1380,7 @@ namespace Kernel
             }
 
             // For now, do it unconditionally and see if it can catch all the memory failures cases with minimum cost
-            MemoryGauge::CheckMemoryFailure();
+            MemoryGauge::CheckMemoryFailure( true );
 
             // Every 1000 individuals, do a StatusReport...
             if( individualHumans.size() % 1000 == 0 )
@@ -1356,7 +1396,17 @@ namespace Kernel
         // (If we ever want to use it in the future, e.g. in relation to Outbreak ImportCases, we can remove the following.  Clean-up would then be done only in the destructor.)
         if( age_initialization_distribution_type == DistributionType::DISTRIBUTION_COMPLEX )
         {
-            EraseAndDeleteDemographicsDistribution(NodeDemographicsDistribution::AgeDistribution);
+            delete AgeDistribution;
+            AgeDistribution = nullptr;
+        }
+    }
+
+    void Node::InitializeTransmissionGroupPopulations()
+    {
+        for (auto individual : individualHumans)
+        {
+            individual->UpdateGroupMembership();
+            individual->UpdateGroupPopulation(1.0f);
         }
     }
 
@@ -1454,8 +1504,10 @@ namespace Kernel
                     temp_infections = 1;
                 }
 
-                child = addNewIndividual(1.0F / temp_sampling_rate, 0.0F, randgen->i(Gender::COUNT),
-                    temp_infections, 1.0F, 1.0F, 1.0F, 1.0F * (randgen->e() < Above_Poverty));
+                float poverty = (randgen->e() < Above_Poverty) ? 1.0f : 0.0f;
+                int gender = randgen->i(Gender::COUNT);
+                child = addNewIndividual(1.0F / temp_sampling_rate, 0.0F, gender,
+                    temp_infections, 1.0F, 1.0F, 1.0F, poverty);
             }
 
             child->setupMaternalAntibodies(nullptr, this);
@@ -1533,14 +1585,14 @@ namespace Kernel
             { 
                 // "FertilityDistribution" is added to map in Node::SetParameters if 'vital_birth_dependence' flag is set to INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE
 
-                temp_birthrate = GetDemographicsDistribution(NodeDemographicsDistribution::FertilityDistribution)->DrawResultValue((GetUrban()?1.0:0.0), individual->GetAge());
+                temp_birthrate = FertilityDistribution->DrawResultValue((GetUrban()?1.0:0.0), individual->GetAge());
                 LOG_DEBUG_F("%d-year-old possible mother has annual fertility rate = %f\n", int(individual->GetAge()/DAYSPERYEAR), temp_birthrate * DAYSPERYEAR);
             }
             else if(vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR) 
             { 
                 // "FertilityDistribution" is added to map in Node::SetParameters if 'vital_birth_dependence' flag is set to INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR
 
-                temp_birthrate = GetDemographicsDistribution(NodeDemographicsDistribution::FertilityDistribution)->DrawResultValue(individual->GetAge(), float(GetTime().Year()));
+                temp_birthrate = FertilityDistribution->DrawResultValue(individual->GetAge(), float(GetTime().Year()));
                 LOG_DEBUG_F("%d-year-old possible mother has annual fertility rate = %f\n", int(individual->GetAge()/DAYSPERYEAR), temp_birthrate * DAYSPERYEAR);
             }
 
@@ -1568,13 +1620,13 @@ namespace Kernel
             {
             // Read from "ImmunityDistribution" that would have been added to map in Node::LoadImmunityDemographicsDistribution
             float randdraw = randgen->e();
-            temp_immunity = GetDemographicsDistribution(NodeDemographicsDistribution::ImmunityDistribution)->DrawFromDistribution(randdraw, ind_init_age);
+            temp_immunity = ImmunityDistribution->DrawFromDistribution(randdraw, ind_init_age);
             LOG_DEBUG_F( "creating individual with age = %f and immunity = %f, with randdraw = %f\n",  ind_init_age, temp_immunity, randdraw);
             }
             break;
 
         case DistributionType::DISTRIBUTION_SIMPLE:
-            temp_immunity = float(Probability::getInstance()->fromDistribution(immunity_dist_type, immunity_dist1, immunity_dist2, 1.0));
+            temp_immunity = float(Probability::getInstance()->fromDistribution(immunity_dist_type, immunity_dist1, immunity_dist2, 0.0, 1.0));
             break;
 
         case DistributionType::DISTRIBUTION_OFF:
@@ -1620,13 +1672,13 @@ namespace Kernel
             temp_immunity = drawInitialImmunity(ind_init_age);
 
             // set heterogeneous risk
-            temp_risk = float(Probability::getInstance()->fromDistribution(risk_dist_type, risk_dist1, risk_dist2, 1.0));
+            temp_risk = float(Probability::getInstance()->fromDistribution(risk_dist_type, risk_dist1, risk_dist2, 0.0, 1.0));
         }
 
         if( (migration_info != nullptr) && migration_info->IsHeterogeneityEnabled() )
         {
             // This is not done during initialization but other times when the individual is created.           
-            temp_migration = float(Probability::getInstance()->fromDistribution(migration_dist_type, migration_dist1, migration_dist2, 1.0));
+            temp_migration = float(Probability::getInstance()->fromDistribution(migration_dist_type, migration_dist1, migration_dist2, 0.0, 1.0));
         }
 
         // Finally, add the individual
@@ -1665,7 +1717,7 @@ namespace Kernel
         individualHumans.push_back(new_individual);
         home_individual_ids.insert( std::make_pair( new_individual->GetSuid().data, new_individual->GetSuid() ) );
 
-        event_context_host->TriggerNodeEventObservers( new_individual->GetEventContext(), IndividualEventTriggerType::Births ); // EAW: this is not just births!!  this will also trigger on e.g. AddImportCases
+        event_context_host->TriggerNodeEventObservers( new_individual->GetEventContext(), EventTrigger::Births ); // EAW: this is not just births!!  this will also trigger on e.g. AddImportCases
 
         if( new_individual->GetParent() == nullptr )
         {
@@ -1696,7 +1748,7 @@ namespace Kernel
 #endif
         //individualHumans.push_back(new_individual);
 #if 0
-        event_context_host->TriggerIndividualEventObservers( new_individual->GetEventContext(), IndividualEventTriggerType::Births ); // EAW: this is not just births!!  this will also trigger on e.g. AddImportCases
+        event_context_host->TriggerIndividualEventObservers( new_individual->GetEventContext(), EventTrigger::Births ); // EAW: this is not just births!!  this will also trigger on e.g. AddImportCases
 
         if( new_individual->GetParent() == nullptr )
         {
@@ -1718,7 +1770,7 @@ namespace Kernel
         if(age_initialization_distribution_type == DistributionType::DISTRIBUTION_COMPLEX)
         {
             // "AgeDistribution" is added to map in Node::SetParameters if 'enable_age_initialization_distribution' flag is set
-            age = GetDemographicsDistribution(NodeDemographicsDistribution::AgeDistribution)->DrawFromDistribution(randgen->e());
+            age = AgeDistribution->DrawFromDistribution(randgen->e());
         }
         else if (age_initialization_distribution_type == DistributionType::DISTRIBUTION_SIMPLE)
         {
@@ -1736,7 +1788,7 @@ namespace Kernel
             LOG_DEBUG( "Parsing IndividualAttributes->AgeDistribution2 tag in node demographics file.\n" );
             float agedist2 = float(demographics["IndividualAttributes"]["AgeDistribution2"].AsDouble());
 
-            age = Probability::getInstance()->fromDistribution(age_distribution_type, agedist1, agedist2, (20 * DAYSPERYEAR));
+            age = Probability::getInstance()->fromDistribution(age_distribution_type, agedist1, agedist2, 0.0, (20 * DAYSPERYEAR));
         }
 
         return age;
@@ -1791,24 +1843,6 @@ namespace Kernel
         return sampling_rate;
     }
     
-    void Node::EraseAndDeleteDemographicsDistribution(std::string key)
-    {
-        NodeDemographicsDistribution* ndd;
-        std::map<std::string, NodeDemographicsDistribution*>::iterator it = demographic_distributions.find(key);
-        if( it != demographic_distributions.end() )
-        {
-            ndd = it->second;
-            demographic_distributions.erase(it);
-            delete ndd;
-        }
-        else
-        {
-            std::ostringstream errMsg;
-            errMsg << "EraseAndDeleteDemographicsDistribution() cannot find key '" << key << "' in demographic_distributions map" << std::endl;
-            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, errMsg.str().c_str() );
-        }
-    }
-
     //------------------------------------------------------------------
     //   Individual migration methods
     //------------------------------------------------------------------
@@ -1834,7 +1868,7 @@ namespace Kernel
         LOG_DEBUG_F( "individual %lu is leaving node %lu and going to %lu\n", individual->GetSuid().data, GetSuid().data,
             individual->GetMigrationDestination().data );
 
-        event_context_host->TriggerNodeEventObservers( individual->GetEventContext(), IndividualEventTriggerType::Emigrating );
+        event_context_host->TriggerNodeEventObservers( individual->GetEventContext(), EventTrigger::Emigrating );
 
         // Do emigration logic here
         // Handle departure-linked interventions for individual
@@ -1866,7 +1900,7 @@ namespace Kernel
             {
                 event_context_host->ProcessArrivingIndividual(movedind);
             }
-            event_context_host->TriggerNodeEventObservers( movedind->GetEventContext(), IndividualEventTriggerType::Immigrating );
+            event_context_host->TriggerNodeEventObservers( movedind->GetEventContext(), EventTrigger::Immigrating );
 
             movedind->UpdateGroupMembership();
             movedind->UpdateGroupPopulation(1.0f);
@@ -1946,7 +1980,7 @@ namespace Kernel
 
         new_infections += monte_carlo_weight; 
         Cumulative_Infections += monte_carlo_weight; 
-        event_context_host->TriggerNodeEventObservers( ih->GetEventContext(), IndividualEventTriggerType::NewInfectionEvent );
+        event_context_host->TriggerNodeEventObservers( ih->GetEventContext(), EventTrigger::NewInfectionEvent );
 
         newInfectedPeopleAgeProduct += monte_carlo_weight * float(ih->GetAge());
     }
@@ -2002,12 +2036,12 @@ namespace Kernel
     //   Campaign event related
     //------------------------------------------------------------------
 
-    void Node::AddEventsFromOtherNodes( const std::vector<std::string>& rEventNameList )
+    void Node::AddEventsFromOtherNodes( const std::vector<EventTrigger>& rTriggerList )
     {
         events_from_other_nodes.clear();
-        for( auto event_name : rEventNameList )
+        for( auto trigger : rTriggerList )
         {
-            events_from_other_nodes.push_back( event_name );
+            events_from_other_nodes.push_back( trigger );
         }
     }
 
@@ -2098,22 +2132,6 @@ namespace Kernel
     //   Assorted getters and setters
     //------------------------------------------------------------------
 
-    const NodeDemographicsDistribution* Node::GetDemographicsDistribution(std::string key) const
-    {
-        std::map<std::string, NodeDemographicsDistribution*>::const_iterator it = demographic_distributions.find(key);
-
-        if( it == demographic_distributions.end() )
-        {
-            std::ostringstream errMsg;
-            errMsg << "GetDemographicsDistribution() cannot find key '" << key << "' in demographic_distributions map" << std::endl;
-            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, errMsg.str().c_str() );
-        }
-        else
-        {
-            return it->second; 
-        }
-    }
-
     std::vector<bool> Node::GetMigrationTypeEnabledFromDemographics() const
     {
         std::vector<bool> demog_enabled ;
@@ -2177,6 +2195,7 @@ namespace Kernel
 
     IMigrationInfo* Node::GetMigrationInfo() { return migration_info; }
     const NodeDemographics* Node::GetDemographics() const { return &demographics; }
+    NPKeyValueContainer& Node::GetNodeProperties() { return node_properties; }
 
     // Methods for implementing time dependence in infectivity, birth rate, migration, etc.
     float Node::getSinusoidalCorrection(float sinusoidal_amplitude, float sinusoidal_phase) const
@@ -2303,6 +2322,9 @@ namespace Kernel
         Node& node = *obj;
         ar.labelElement("serializationMask") & (uint32_t&)node.serializationMask;
 
+            ar.labelElement("suid") & node.suid;
+            ar.labelElement("externalId") & node.externalId;
+
         if ((node.serializationMask & SerializationFlags::Population) != 0) {
             ar.labelElement("individualHumans"   ) & node.individualHumans;
             ar.labelElement("home_individual_ids") & node.home_individual_ids;
@@ -2353,14 +2375,21 @@ namespace Kernel
         }
 
         if ((node.serializationMask & SerializationFlags::Properties) != 0) {
+            //ar.labelElement( "ImmunityDistribution"                        ) & node.ImmunityDistribution;
+            //ar.labelElement( "FertilityDistribution"                       ) & node.FertilityDistribution;
+            //ar.labelElement( "MortalityDistribution"                       ) & node.MortalityDistribution;
+            //ar.labelElement( "MortalityDistributionMale"                   ) & node.MortalityDistributionMale;
+            //ar.labelElement( "MortalityDistributionFemale"                 ) & node.MortalityDistributionFemale;
+            //ar.labelElement( "AgeDistribution"                             ) & node.AgeDistribution;
+
             ar.labelElement("_latitude") & node._latitude;
             ar.labelElement("_longitude") & node._longitude;
-            ar.labelElement("suid_data") & node.suid.data;
+// clorton          ar.labelElement("distribs") & node.distribs;
             ar.labelElement("urban") & node.urban;
             ar.labelElement("birthrate") & node.birthrate;
             ar.labelElement("Above_Poverty") & node.Above_Poverty;
             ar.labelElement("family_waiting_to_migrate") & node.family_waiting_to_migrate;
-            ar.labelElement("family_migration_destination") & node.family_migration_destination.data;
+            ar.labelElement("family_migration_destination") & node.family_migration_destination;
             ar.labelElement("family_migration_type") & (uint32_t&)node.family_migration_type;
             ar.labelElement("family_time_until_trip") & node.family_time_until_trip;
             ar.labelElement("family_time_at_destination") & node.family_time_at_destination;
@@ -2372,7 +2401,8 @@ namespace Kernel
 // clorton          ar.labelElement("migration_info") & node.migration_info;
 // clorton          ar.labelElement("demographics") & node.demographics;
 // clorton          ar.labelElement("demographic_distributions") & node.demographic_distributions;
-            ar.labelElement("externalId") & node.externalId;
+//            ar.labelElement("externalId") & node.externalId;
+            ar.labelElement("node_properties") & node.node_properties;
 // clorton          ar.labelElement("event_context_host") & node.event_context_host;
             ar.labelElement("statPop") & node.statPop;
             ar.labelElement("Infected") & node.Infected;
@@ -2404,49 +2434,3 @@ namespace Kernel
         }
     }
 }
-
-#if 0
-namespace Kernel
-{
-    template<class Archive>
-    void serialize( Archive &ar, Node& node, const unsigned int v )
-    {
-        ar.template register_type<Kernel::ClimateByData>();
-        ar.template register_type<Kernel::ClimateKoppen>();
-        ar.template register_type<Kernel::ClimateConstant>();
-
-        ar & node.individualHumans; 
-        ar & node.localWeather;
-        ar & node.migration_info;
-        ar & node.demographics;
-        ar & node.demographic_distributions;
-
-        // The following is the reason this can't go in the .h. Controller.cpp goes crazy! :(
-        ar & node.event_context_host;
-
-        ar & node.suid;
-
-        // Monte Carlo and adapted sampling parameters
-        ar & node.Ind_Sample_Rate;
-
-        // ar & node.features
-        ar & node._latitude;
-        ar & node._longitude;
-        ar & node.birthrate;
-        ar & node.Time;
-
-        //  Counters
-        ar & node.Possible_Mothers;
-        ar & node.Infected;
-        ar & node.statPop;
-        ar & node.Births;
-
-        ar & node.Campaign_Cost;
-
-        //ar & node.cases
-        ar & node.mInfectivity;
-        
-        ar & routes;
-    }
-}
-#endif

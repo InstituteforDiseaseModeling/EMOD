@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -38,6 +38,17 @@ namespace Kernel
         ENUM_VALUE_SPEC(NO_DENSITY_DEPENDENCE                               , 3)
         ENUM_VALUE_SPEC(DENSITY_DELAYED_GROWTH_NOT_MORTALITY                , 4))
 
+    // ENUM defs for Egg_Hatch_Density_Dependence
+    ENUM_DEFINE(EggHatchDensityDependence, 
+        ENUM_VALUE_SPEC(NO_DENSITY_DEPENDENCE                               , 0)
+        ENUM_VALUE_SPEC(DENSITY_DEPENDENCE                                  , 1))
+
+    // ENUM defs for Temperature_Dependent_Feeding_Cycle
+    ENUM_DEFINE(TemperatureDependentFeedingCycle, 
+        ENUM_VALUE_SPEC(NO_TEMPERATURE_DEPENDENCE                           , 0)
+        ENUM_VALUE_SPEC(ARRHENIUS_DEPENDENCE                                , 1)
+        ENUM_VALUE_SPEC(BOUNDED_DEPENDENCE                                  , 2))
+
     // ENUM defs for Vector_Larval_Rainfall_Mortality
     ENUM_DEFINE(VectorRainfallMortality,
         ENUM_VALUE_SPEC(NONE                                                , 0)
@@ -65,7 +76,8 @@ namespace Kernel
         ENUM_VALUE_SPEC(HUMAN_POPULATION                                    , 3)
         ENUM_VALUE_SPEC(CONSTANT                                            , 4)
         ENUM_VALUE_SPEC(BRACKISH_SWAMP                                      , 5)
-        ENUM_VALUE_SPEC(LINEAR_SPLINE                                       , 6)
+        ENUM_VALUE_SPEC(MARSHY_STREAM                                       , 6)
+        ENUM_VALUE_SPEC(LINEAR_SPLINE                                       , 7)
         ENUM_VALUE_SPEC(ALL_HABITATS                                        , 100))
 
     ENUM_DEFINE(HEGModel,

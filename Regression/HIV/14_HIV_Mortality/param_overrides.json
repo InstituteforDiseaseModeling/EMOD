@@ -5,21 +5,6 @@
         "Run_Number": 54,
         "Simulation_Duration": 17000,
         "Simulation_Timestep": 30,
-        "Valid_Cascade_States": [ 
-            "", 
-            "ARTStaging", 
-            "LinkingToART", 
-            "LinkingToPreART", 
-            "OnART", 
-            "OnPreART", 
-            "HCTTestingLoop", 
-            "HCTUptakeAtDebut", 
-            "HCTUptakePostDebut", 
-            "TestingOnANC", 
-            "TestingOnChild6w", 
-            "TestingOnSymptomatic", 
-            "LostForever" 
-        ],
         "Listed_Events": [
             "ARTStaging0",
             "ARTStaging1",
@@ -29,8 +14,6 @@
             "ARTStaging5",
             "ARTStaging6",
             "HCTTestingLoop0",
-            "HCTTestingLoop0",
-            "HCTTestingLoop1",
             "HCTTestingLoop1",
             "HCTUptakePostDebut0",
             "HCTUptakePostDebut1",
@@ -61,6 +44,7 @@
         "Demographics_Filenames": [
             "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json",
             "../input/PFA_overlay.json",
+            "../input/InterventionStatus_Accessibility_overlay.json",
             "PFA_overlay_rates.json",
             "PFA_Concurrency.json"
         ], 

@@ -1,0 +1,9 @@
+{
+    "parameters": {
+        "Default_Config_Path": "defaults/minimum_default_config.json",
+        "Config_Name": "9_Generic_MinimalConfig_EnableSuperinfections",
+
+        "Enable_Superinfection": 1, 
+        "Max_Individual_Infections": 2
+    }
+}

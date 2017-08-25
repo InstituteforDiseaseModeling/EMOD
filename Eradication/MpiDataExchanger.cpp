@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,7 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include  "IdmMpi.h"
 #include "NoCrtWarnings.h"
 
-static const char * _module = "MpiDataExchanger";
+SETUP_LOGGING( "MpiDataExchanger" )
 
 namespace Kernel
 {
@@ -63,7 +63,7 @@ namespace Kernel
                     SaveData( int(currentTime.time), EnvPtr->MPI.Rank, destination_rank, "send", writer->GetBuffer(), writer->GetBufferSize() );
                 }
 
-                uint32_t buffer_size = message_size_by_rank[destination_rank] = writer->GetBufferSize();
+                size_t buffer_size = message_size_by_rank[destination_rank] = writer->GetBufferSize();
                 IdmMpi::Request size_request;
                 EnvPtr->MPI.p_idm_mpi->SendIntegers( &message_size_by_rank[destination_rank], 1, destination_rank, &size_request );
                 outbound_requests.Add( size_request );
@@ -92,7 +92,7 @@ namespace Kernel
 
             if (size > 0)
             {
-                unique_ptr<char[]> buffer(new char[size]);
+                std::unique_ptr<char[]> buffer(new char[size]);
                 EnvPtr->MPI.p_idm_mpi->ReceiveChars( buffer.get(), size, source_rank );
 
                 if( EnvPtr->Log->CheckLogLevel(Logger::VALIDATION, _module) ) 
@@ -100,7 +100,7 @@ namespace Kernel
                     SaveData( int(currentTime.time), source_rank, EnvPtr->MPI.Rank, "recv", buffer.get(), size );
                 }
 
-                auto binary_reader = make_shared<BinaryArchiveReader>(buffer.get(), size);
+                auto binary_reader = std::make_shared<BinaryArchiveReader>(buffer.get(), size);
                 IArchive* reader = static_cast<IArchive*>(binary_reader.get());
 
                 if( reader->HasError() )
@@ -134,7 +134,7 @@ namespace Kernel
         sprintf_s(filename, 256, "%s\\%03d-%02d-%02d-%s-%s.json", EnvPtr->OutputPath.c_str(), time_step, source, dest, m_pName, suffix);
         FILE* f = nullptr;
         errno = 0;
-        if ( fopen_s( &f, filename, "w" ) != 0)
+        if ( fopen_s( &f, filename, "w" ) != 0 )
         {
             std::stringstream ss;
             ss << "Could not open for writing '"<< filename << "'";

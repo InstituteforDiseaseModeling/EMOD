@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -29,7 +29,7 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
 
     public:
-        static VectorCohortWithHabitat *CreateCohort( IVectorHabitat* _habitat = nullptr, float progress = 0.0f, int32_t initial_population = 0, VectorMatingStructure _vector_genetics = VectorMatingStructure() );
+        static VectorCohortWithHabitat *CreateCohort( IVectorHabitat* _habitat, float progress, int32_t initial_population, const VectorMatingStructure& _vector_genetics );
         virtual ~VectorCohortWithHabitat();
 
         virtual VectorHabitatType::Enum GetHabitatType();
@@ -40,7 +40,7 @@ namespace Kernel
         IVectorHabitat* habitat;
         VectorHabitatType::Enum habitat_type;
         VectorCohortWithHabitat();
-        VectorCohortWithHabitat( IVectorHabitat* _habitat, float progress, int32_t initial_population, VectorMatingStructure _vector_genetics );
+        VectorCohortWithHabitat( IVectorHabitat* _habitat, float progress, int32_t initial_population, const VectorMatingStructure& _vector_genetics );
         void Initialize();
 
         DECLARE_SERIALIZABLE(VectorCohortWithHabitat);

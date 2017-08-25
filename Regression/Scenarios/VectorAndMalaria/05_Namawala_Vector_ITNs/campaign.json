@@ -4,7 +4,6 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 0.7,
                 "Intervention_Config": {
-                    "Bednet_Type": "ITN",
                     "Cost_To_Consumer": 3.75,
                     "Killing_Config": {
                         "Initial_Effect": 0.6,
@@ -16,6 +15,10 @@
                         "Decay_Time_Constant": 730,
                         "class": "WaningEffectExponential"
                     },
+                    "Usage_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 1.0
+                    }, 
                     "class": "SimpleBednet"
                 },
                 "Target_Demographic": "Everyone",

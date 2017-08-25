@@ -17,6 +17,7 @@
                     "Travel_Linked": 0,
                     "Intervention_Config": {
                          "class": "OutbreakIndividual",
+                         "Incubation_Period_Override": 0,
                          "Event_Name": "Outbreak (not used)", 
                          "Outbreak_Source": "PrevalenceIncrease", 
                          "Antigen": 0, 

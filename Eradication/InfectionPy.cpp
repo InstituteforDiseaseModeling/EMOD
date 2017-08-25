@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -22,9 +22,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "RANDOM.h"
 #include "Exceptions.h"
 #include "SimulationConfig.h"
+#include "StrainIdentity.h"
+
 using namespace std;
 
-static const char* _module = "InfectionPy";
+SETUP_LOGGING( "InfectionPy" )
 
 namespace Kernel
 {
@@ -68,8 +70,6 @@ namespace Kernel
 
     InfectionPy *InfectionPy::CreateInfection(IIndividualHumanContext *context, suids::suid _suid)
     {
-        //VALIDATE(boost::format(">InfPy::CreateInfection(%1%, %2%)") % context->GetSuid().data % _suid.data );
-
         InfectionPy *newinfection = _new_ InfectionPy(context);
         newinfection->Initialize(_suid);
 
@@ -124,18 +124,5 @@ namespace Kernel
         StateChange = InfectionStateChange::Cleared;
     }
 }
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::InfectionPy)
-namespace Kernel
-{
-    template<class Archive>
-    void serialize(Archive & ar, InfectionPy& inf, const unsigned int file_version )
-    {
-        ar & boost::serialization::base_object<Kernel::Infection>(inf);
-    }
-    template void serialize( boost::mpi::packed_skeleton_iarchive&, Kernel::InfectionPy&, unsigned int);
-}
-#endif
 
 #endif // ENABLE_PYTHON

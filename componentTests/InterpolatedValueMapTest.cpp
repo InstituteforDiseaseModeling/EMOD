@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -102,13 +102,13 @@ SUITE(InterpolatedValueMapTest)
     TEST(TestNegativeTime)
     {
         TestHelper_Exception( __LINE__, "testdata/InterpolatedValueMapTest/TestNegativeTime.json",
-            "Configuration variable MyDataMap:Times with value -2000 out of range: less than or equal to 0." );
+            "Configuration variable MyDataMap:Times with value -2000 out of range: less than 0." );
     }
 
     TEST(TestNegativeValue)
     {
         TestHelper_Exception( __LINE__, "testdata/InterpolatedValueMapTest/TestNegativeValue.json",
-            "Configuration variable MyDataMap:Values with value -2 out of range: less than or equal to 0." );
+            "Configuration variable MyDataMap:Values with value -2 out of range: less than 0." );
     }
 
     TEST(TestTimeTooLarge)

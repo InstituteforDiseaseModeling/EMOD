@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -20,8 +20,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "JsonObjectDemog.h"
 #include "Properties.h"
 
-#include <FileSystem.h>
-#include <IndividualTB.h>
+#include "FileSystem.h"
+#include "IndividualTB.h"
 
 #include "Diagnostics.h"
 #include "RandomFake.h"
@@ -69,6 +69,12 @@ SUITE(SerializationTest)
         // --------------------
         // --- Initialize test
         // --------------------
+        EventTriggerFactory::DeleteInstance();
+
+        json::Object fakeConfigJson;
+        Configuration * fakeConfigValid = Environment::CopyFromElement( fakeConfigJson );
+        EventTriggerFactory::GetInstance()->Configure( fakeConfigValid );
+
         try
         {
             JsonObjectDemog json ;
@@ -78,8 +84,23 @@ SUITE(SerializationTest)
 
             for( int i = 0 ; i < json["Listed_Events"].size() ; i++ )
             {
-                m_pSimulationConfig->listed_events.insert( json["Listed_Events"][i].AsString() );
+                EventTriggerFactory::GetInstance()->CreateUserEventTrigger( json["Listed_Events"][i].AsString() );
             }
+
+            std::map<std::string, float> ip_values_state ;
+            CHECK( json.Contains( "Valid_Intervention_Statuses" ) );
+            CHECK( json["Valid_Intervention_Statuses"].IsArray() );
+            for( int i = 0 ; i < json["Valid_Intervention_Statuses"].size() ; i++ )
+            {
+                float percent_dist = 0.0;
+                if( (i + 1) == json[ "Valid_Intervention_Statuses" ].size() )
+                {
+                    percent_dist = 1.0;
+                }
+                ip_values_state.insert( std::make_pair( json[ "Valid_Intervention_Statuses" ][ i ].AsString(), percent_dist ) );
+            }
+            IPFactory::GetInstance()->AddIP( 1, "InterventionStatus", ip_values_state );
+
             CHECK( json.Contains( "Objects" ) );
             CHECK( json["Objects"].IsArray() );
 
@@ -168,91 +189,109 @@ SUITE(SerializationTest)
 
     TEST_FIXTURE(SerializationFixture, TestAirborneSerialization)
     {
-        // Open and read JSON
-        std::string* json = FileSystem::ReadFile( "testdata/SerializationTest/airborneIndividual.json" );
+        try
+        {
+            // Open and read JSON
+            std::string* json = FileSystem::ReadFile( "testdata/SerializationTest/airborneIndividual.json" );
 
-        // Instantiate from JSON
-        IndividualHumanAirborne* individual = nullptr;
-        ISerializable* source = (ISerializable*)individual;
-        IArchive* reader = dynamic_cast<IArchive*>(new JsonFullReader( json->c_str() ));
-        (*reader).labelElement("individual") & source;
+            // Instantiate from JSON
+            IndividualHumanAirborne* individual = nullptr;
+            ISerializable* source = (ISerializable*)individual;
+            IArchive* reader = dynamic_cast<IArchive*>(new JsonFullReader( json->c_str() ));
+            (*reader).labelElement("individual") & source;
 
-        // Serialize to binary
-        IArchive* binary_writer = dynamic_cast<IArchive*>(new BinaryArchiveWriter());
-        (*binary_writer) & source;
+            // Serialize to binary
+            IArchive* binary_writer = dynamic_cast<IArchive*>(new BinaryArchiveWriter());
+            (*binary_writer) & source;
 
-        // Deserialize from binary
-        const char* buffer = binary_writer->GetBuffer();
-        size_t count = binary_writer->GetBufferSize();
-        IArchive* binary_reader = dynamic_cast<IArchive*>(new BinaryArchiveReader( buffer, count ));
-        ISerializable* destination = nullptr;
-        (*binary_reader) & destination;
-        IndividualHumanAirborne* compare = (IndividualHumanAirborne*)destination;
+            // Deserialize from binary
+            const char* buffer = binary_writer->GetBuffer();
+            size_t count = binary_writer->GetBufferSize();
+            IArchive* binary_reader = dynamic_cast<IArchive*>(new BinaryArchiveReader( buffer, count ));
+            ISerializable* destination = nullptr;
+            (*binary_reader) & destination;
+            IndividualHumanAirborne* compare = (IndividualHumanAirborne*)destination;
 
-        // Compare
-        IArchive* writer = dynamic_cast<IArchive*>(new BinaryArchiveWriter());
-        (*writer) & compare;
+            // Compare
+            IArchive* writer = dynamic_cast<IArchive*>(new BinaryArchiveWriter());
+            (*writer) & compare;
 
-        const char* actual = writer->GetBuffer();
-        size_t actual_count = writer->GetBufferSize();
+            const char* actual = writer->GetBuffer();
+            size_t actual_count = writer->GetBufferSize();
 
-        CHECK_EQUAL( count, actual_count );
-        CHECK_ARRAY_EQUAL( buffer, actual, count );
+            CHECK_EQUAL( count, actual_count );
+            CHECK_ARRAY_EQUAL( buffer, actual, count );
 
-        delete writer;
+            delete writer;
 
-        compare = nullptr;
-        delete destination;
-        delete binary_reader;
-        delete source;
-        individual = nullptr;
-        delete binary_writer;
-        delete reader;
-        delete json;
+            compare = nullptr;
+            delete destination;
+            delete binary_reader;
+            delete source;
+            individual = nullptr;
+            delete binary_writer;
+            delete reader;
+            delete json;
+        }
+        catch( DetailedException& re )
+        {
+            PrintDebug( re.GetMsg() );
+            PrintDebug( re.GetStackTrace() );
+            CHECK( false );
+        }
     }
 
     TEST_FIXTURE(SerializationFixture, TestTbSerialization)
     {
-        // Open and read JSON
-        std::string* json = FileSystem::ReadFile( "testdata/SerializationTest/tbIndividual.json" );
+        try
+        {
+            // Open and read JSON
+            std::string* json = FileSystem::ReadFile( "testdata/SerializationTest/tbIndividual.json" );
 
-        // Instantiate from JSON
-        IndividualHumanTB* individual = nullptr;
-        ISerializable* source = (ISerializable*)individual;
-        IArchive* reader = dynamic_cast<IArchive*>(new JsonFullReader( json->c_str() ));
-        (*reader).labelElement("individual") & source;
+            // Instantiate from JSON
+            IndividualHumanTB* individual = nullptr;
+            ISerializable* source = (ISerializable*)individual;
+            IArchive* reader = dynamic_cast<IArchive*>(new JsonFullReader( json->c_str() ));
+            (*reader).labelElement("individual") & source;
 
-        // Serialize to binary
-        IArchive* binary_writer = dynamic_cast<IArchive*>(new BinaryArchiveWriter());
-        (*binary_writer) & source;
+            // Serialize to binary
+            IArchive* binary_writer = dynamic_cast<IArchive*>(new BinaryArchiveWriter());
+            (*binary_writer) & source;
 
-        // Deserialize from binary
-        const char* buffer = binary_writer->GetBuffer();
-        size_t count = binary_writer->GetBufferSize();
-        IArchive* binary_reader = dynamic_cast<IArchive*>(new BinaryArchiveReader( buffer, count ));
-        ISerializable* destination = nullptr;
-        (*binary_reader) & destination;
-        IndividualHumanTB* compare = (IndividualHumanTB*)destination;
+            // Deserialize from binary
+            const char* buffer = binary_writer->GetBuffer();
+            size_t count = binary_writer->GetBufferSize();
+            IArchive* binary_reader = dynamic_cast<IArchive*>(new BinaryArchiveReader( buffer, count ));
+            ISerializable* destination = nullptr;
+            (*binary_reader) & destination;
+            IndividualHumanTB* compare = (IndividualHumanTB*)destination;
 
-        // Compare
-        IArchive* writer = dynamic_cast<IArchive*>(new BinaryArchiveWriter());
-        (*writer) & compare;
+            // Compare
+            IArchive* writer = dynamic_cast<IArchive*>(new BinaryArchiveWriter());
+            (*writer) & compare;
 
-        const char* actual = writer->GetBuffer();
-        size_t actual_count = writer->GetBufferSize();
+            const char* actual = writer->GetBuffer();
+            size_t actual_count = writer->GetBufferSize();
 
-        CHECK_EQUAL( count, actual_count );
-        CHECK_ARRAY_EQUAL( buffer, actual, count );
+            CHECK_EQUAL( count, actual_count );
+            CHECK_ARRAY_EQUAL( buffer, actual, count );
 
-        delete writer;
+            delete writer;
 
-        compare = nullptr;
-        delete destination;
-        delete binary_reader;
-        delete source;
-        individual = nullptr;
-        delete binary_writer;
-        delete reader;
-        delete json;
+            compare = nullptr;
+            delete destination;
+            delete binary_reader;
+            delete source;
+            individual = nullptr;
+            delete binary_writer;
+            delete reader;
+            delete json;
+        }
+        catch( DetailedException& re )
+        {
+            PrintDebug( re.GetMsg() );
+            PrintDebug( re.GetStackTrace() );
+            CHECK( false );
+        }
     }
 }

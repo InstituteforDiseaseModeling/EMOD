@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -28,12 +28,17 @@ namespace Kernel
         virtual ~SimulationMalaria();
 
         // Allows correct type of community to be added by derived class Simulations
-        virtual void addNewNodeFromDemographics(suids::suid node_suid, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory) override;
+        virtual void addNewNodeFromDemographics( suids::suid node_suid,
+                                                 NodeDemographicsFactory *nodedemographics_factory,
+                                                 ClimateFactory *climate_factory,
+                                                 bool white_list_enabled ) override;
 
     protected:
         static bool ValidateConfiguration(const ::Configuration *config);
 
         virtual void InitializeFlags(const ::Configuration *config);  // override in derived classes to instantiate correct flag classes
+
+        DECLARE_SERIALIZABLE(SimulationMalaria);
 
     private:
         virtual void Initialize(const ::Configuration *config) override;

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,7 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodePy.h" // for base class
 #include "Debug.h" // for base class
 
-static const char * _module = "ReportPy";
+SETUP_LOGGING( "ReportPy" )
 
 
 namespace Kernel {
@@ -45,10 +45,10 @@ void ReportPy::EndTimestep( float currentTime, float dt )
 {
     Report::EndTimestep( currentTime, dt );
     
-	// Make sure we push at least one zero per timestep
-	Accumulate( _num_chronic_carriers_label, 0 );
-	Accumulate( _num_subclinic_infections_label, 0 );
-	Accumulate( _num_acute_infections_label, 0 );
+    // Make sure we push at least one zero per timestep
+    Accumulate( _num_chronic_carriers_label, 0 );
+    Accumulate( _num_subclinic_infections_label, 0 );
+    Accumulate( _num_acute_infections_label, 0 );
 }
 
 void
@@ -101,16 +101,6 @@ ReportPy::LogNodeData(
         throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNC", "INodePy", "INodeContext" );
     }
 }
-
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(ReportPy)
-template<class Archive>
-void serialize(Archive &ar, ReportPy& report, const unsigned int v)
-{
-    boost::serialization::void_cast_register<ReportPy,IReport>();
-    ar &boost::serialization::base_object<Report>(report);
-}
-#endif
 
 }
 

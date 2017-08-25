@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Environment.h"
 #include "Log.h"
 
-static const char * _module = "ValidationLog";
+SETUP_LOGGING( "ValidationLog" )
 
 ValidationLog::ValidationLog(std::ifstream *reference_file) // use to run in validate mode
 : referenceInputFile(reference_file), isValidating(true), exitOnValidationFailure(false), isEnabled(true), _index_(0)

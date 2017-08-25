@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,7 +17,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationConfig.h"               // for global-context access to PKPDmodel (!)
 #include "MalariaParameters.h"
 
-static const char * _module = "AntimalarialDrug";
+SETUP_LOGGING( "AntimalarialDrug" )
 
 namespace Kernel
 {
@@ -64,7 +64,7 @@ namespace Kernel
     std::string
     AntimalarialDrug::GetDrugName() const
     {
-        return drug_type;
+        return drug_name;
     }
 
     bool
@@ -73,12 +73,12 @@ namespace Kernel
     )
     {
         initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, AMDRUG_Cost_To_Consumer_DESC_TEXT, 0, 999999, 10);
-        drug_type.constraints = "<configuration>:Malaria_Drug_Params.*";
+        drug_name.constraints = "<configuration>:Malaria_Drug_Params.*";
         // would be nice to be able to set constraint_params so that this ConstrainedString could
         // validate itself, but not there yet.
-        initConfigTypeMap( "Drug_Type", &drug_type, AMDRUG_Drug_Type_DESC_TEXT);
+        initConfigTypeMap( "Drug_Type", &drug_name, AMDRUG_Drug_Type_DESC_TEXT);
         initConfig( "Dosing_Type", dosing_type, inputJson, MetadataDescriptor::Enum("Dosing_Type", AMDRUG_Dosing_Type_DESC_TEXT, MDD_ENUM_ARGS(DrugUsageType)) );
-        return JsonConfigurable::Configure( inputJson );
+        return BaseIntervention::Configure( inputJson );
     }
 
     AntimalarialDrug::AntimalarialDrug()
@@ -126,12 +126,12 @@ namespace Kernel
     void AntimalarialDrug::ConfigureDrugTreatment( IIndividualHumanInterventionsContext * ivc )
     {
         auto mdtMap = GET_CONFIGURABLE(SimulationConfig)->malaria_params->MalariaDrugMap;
-        if( mdtMap.find( drug_type ) == mdtMap.end() )
+        if( mdtMap.find( drug_name ) == mdtMap.end() )
         {
-            throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, "mdtMap", drug_type.c_str() );
+            throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, "mdtMap", drug_name.c_str() );
         }
 
-        auto drug_params = mdtMap.at( drug_type );
+        auto drug_params = mdtMap.at( drug_name );
 
         if(dosing_type == (DrugUsageType::FullTreatmentCourse) ||
            dosing_type == (DrugUsageType::FullTreatmentNewDetectionTech) ||
@@ -278,6 +278,6 @@ namespace Kernel
         ar.labelElement("drug_gametocyte02") & drug.drug_gametocyte02;
         ar.labelElement("drug_gametocyte34") & drug.drug_gametocyte34;
         ar.labelElement("drug_gametocyteM") & drug.drug_gametocyteM;
-        ar.labelElement("drug_type") & (std::string&)drug.drug_type;
+        ar.labelElement("drug_name") & (std::string&)drug.drug_name;
     }
 }

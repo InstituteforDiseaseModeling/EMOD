@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -29,8 +29,8 @@ namespace Kernel
     {
         if( this->m_NodeEventMap.size() != rThat.m_NodeEventMap.size() ) return false ;
 
-        std::map<suids::suid,std::vector<std::string>>::const_iterator this_it = this->m_NodeEventMap.begin();
-        std::map<suids::suid,std::vector<std::string>>::const_iterator that_it = rThat.m_NodeEventMap.begin();
+        std::map<suids::suid,std::vector<EventTrigger>>::const_iterator this_it = this->m_NodeEventMap.begin();
+        std::map<suids::suid,std::vector<EventTrigger>>::const_iterator that_it = rThat.m_NodeEventMap.begin();
         while( this_it != this->m_NodeEventMap.end() )
         {
             if( (*this_it).first != (*that_it).first ) return false ;
@@ -53,14 +53,9 @@ namespace Kernel
         return !operator==( rThat );
     }
 
-    void EventsForOtherNodes::Add( const suids::suid& rNodeSuid, const std::string& rEventName )
+    void EventsForOtherNodes::Add( const suids::suid& rNodeSuid, const EventTrigger& trigger )
     {
-        m_NodeEventMap[ rNodeSuid ].push_back( rEventName );
-    }
-
-    const std::vector<std::string>& EventsForOtherNodes::GetEventNames( const suids::suid& rNodeSuid )
-    {
-        return m_NodeEventMap[ rNodeSuid ] ;
+        m_NodeEventMap[ rNodeSuid ].push_back( trigger );
     }
 
     void EventsForOtherNodes::Clear()
@@ -73,12 +68,12 @@ namespace Kernel
         for( auto entry : m_NodeEventMap )
         {
             auto& dest_node_id = entry.first;
-            auto& event_name_list = entry.second;
+            auto& trigger_list = entry.second;
             std::ostringstream ss ;
             ss << dest_node_id.data  ;
-            for( auto event_name : event_name_list )
+            for( auto trigger : trigger_list )
             {
-                ss << ", " << event_name ;
+                ss << ", " << trigger.ToString() ;
             }
             printf("Rank=%2d: %s\n",EnvPtr->MPI.Rank,ss.str().c_str()); fflush(stdout);
         }
@@ -89,10 +84,10 @@ namespace Kernel
         for( auto entry : rEfon.m_NodeEventMap )
         {
             auto& dest_node_id = entry.first;
-            auto& event_name_list = entry.second;
-            for( auto event_name : event_name_list )
+            auto& trigger_list = entry.second;
+            for( auto trigger : trigger_list )
             {
-                m_NodeEventMap[ dest_node_id ].push_back( event_name );
+                m_NodeEventMap[ dest_node_id ].push_back( trigger );
             }
         }
     }

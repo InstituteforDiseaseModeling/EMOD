@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,12 +9,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 #include "VectorSpeciesParameters.h"
-
-#include "NodeVector.h"  // just for the NodeFlags :(
-#include "Vector.h"
+#include "VectorParameters.h"
 #include "Exceptions.h"
 
-static const char * _module = "VectorSpeciesParameters";
+SETUP_LOGGING( "VectorSpeciesParameters" )
 
 namespace Kernel
 {
@@ -43,7 +41,7 @@ namespace Kernel
                         << " is not a valid VectorHabitatType.";
                     throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
                 }
-                Configuration* json_copy = Configuration::CopyFromElement( tvcs );
+                Configuration* json_copy = Configuration::CopyFromElement( tvcs, inputJson->GetDataLocation() );
                 habitat_map.insert( std::make_pair( habitat_type, json_copy ) );
             }
             LOG_DEBUG_F( "Found %d larval habitats\n", habitat_map.size() );
@@ -81,48 +79,20 @@ namespace Kernel
         return schema;
     }
 
-    void VectorSpeciesParameters::serialize(IArchive& ar, VectorSpeciesParameters*& parameters)
-    {
-        if (!ar.IsWriter())
-        {
-            parameters = new VectorSpeciesParameters();
-        }
-
-        ar.startObject();
-            //ar.labelElement("habitat_paramss") & parameters->habitat_params;
-            ar.labelElement("aquaticarrhenius1") & parameters->aquaticarrhenius1;
-            ar.labelElement("aquaticarrhenius2") & parameters->aquaticarrhenius2;
-            ar.labelElement("infectedarrhenius1") & parameters->infectedarrhenius1;
-            ar.labelElement("infectedarrhenius2") & parameters->infectedarrhenius2;
-            ar.labelElement("immatureduration") & parameters->immatureduration;
-            ar.labelElement("daysbetweenfeeds") & parameters->daysbetweenfeeds;
-            ar.labelElement("anthropophily") & parameters->anthropophily;
-            ar.labelElement("eggbatchsize") & parameters->eggbatchsize;
-            ar.labelElement("infectedeggbatchmod") & parameters->infectedeggbatchmod;
-            ar.labelElement("infectiousmortalitymod") & parameters->infectiousmortalitymod;
-            ar.labelElement("aquaticmortalityrate") & parameters->aquaticmortalityrate;
-            ar.labelElement("adultlifeexpectancy") & parameters->adultlifeexpectancy;
-            ar.labelElement("transmissionmod") & parameters->transmissionmod;
-            ar.labelElement("acquiremod") & parameters->acquiremod;
-            ar.labelElement("infectioushfmortmod") & parameters->infectioushfmortmod;
-            ar.labelElement("indoor_feeding") & parameters->indoor_feeding;
-
-            ar.labelElement("feedingrate") & parameters->feedingrate;
-            ar.labelElement("adultmortality") & parameters->adultmortality;
-            ar.labelElement("immaturerate") & parameters->immaturerate;
-        ar.endObject();
-    }
-
     VectorSpeciesParameters::VectorSpeciesParameters() :
         aquaticarrhenius1(DEFAULT_AQUATIC_ARRHENIUS1),
         aquaticarrhenius2(DEFAULT_AQUATIC_ARRHENIUS2),
         infectedarrhenius1(DEFAULT_INFECTED_ARRHENIUS1),
         infectedarrhenius2(DEFAULT_INFECTED_ARRHENIUS2),
+        cyclearrhenius1(DEFAULT_CYCLE_ARRHENIUS1),
+        cyclearrhenius2(DEFAULT_CYCLE_ARRHENIUS2),
+        cyclearrheniusreductionfactor(1.0),
         immatureduration(DEFAULT_IMMATURE_DURATION),
         daysbetweenfeeds(DEFAULT_DAYS_BETWEEN_FEEDS),
         anthropophily(DEFAULT_ANTHROPOPHILY),
         eggbatchsize(DEFAULT_EGGBATCH_SIZE),
         infectedeggbatchmod(DEFAULT_INFECTED_EGGBATCH_MODIFIER),
+        eggsurvivalrate(DEFAULT_EGG_SURVIVAL_RATE),
         infectiousmortalitymod(DEFAULT_INFECTIOUS_MORTALITY_MODIFIER),
         aquaticmortalityrate(DEFAULT_AQUATIC_MORTALITY_RATE),
         adultlifeexpectancy(DEFAULT_ADULT_LIFE_EXPECTANCY),
@@ -131,6 +101,7 @@ namespace Kernel
         infectioushfmortmod(DEFAULT_INFECTIOUS_HUMAN_FEEDING_MORTALITY_MODIFIER),
         indoor_feeding(1.0),
         feedingrate(0.0),
+        nighttime_feeding(1.0),
         adultmortality(0.0),
         immaturerate(0.0)
     {
@@ -140,14 +111,22 @@ namespace Kernel
     {
     }
 
-    VectorSpeciesParameters* VectorSpeciesParameters::CreateVectorSpeciesParameters( const Configuration* inputJson, const std::string& vector_species_name)
+    VectorSpeciesParameters* VectorSpeciesParameters::CreateVectorSpeciesParameters( const Configuration* inputJson, 
+                                                                                     const std::string& vector_species_name )
     {
         LOG_DEBUG( "CreateVectorSpeciesParameters\n" );
+
+        // ------------------------------------------------------------------------------------------------------------
+        // --- We have to pass this VectorParameter value in because we can't access it quite yet via SimulationConfig
+        // --- We are dependent upon an outside variable so we are passing it in.  We make it static
+        // --- so that we don't create a new instance of the variable for every instance of VSP.
+        // ------------------------------------------------------------------------------------------------------------
+
         VectorSpeciesParameters* params = _new_ VectorSpeciesParameters();
         params->Initialize(vector_species_name);
         if( !JsonConfigurable::_dryrun )
         {
-            auto tmp_config = Configuration::CopyFromElement( (*inputJson)["Vector_Species_Params"][vector_species_name.c_str()] );
+            auto tmp_config = Configuration::CopyFromElement( (*inputJson)["Vector_Species_Params"][vector_species_name.c_str()], inputJson->GetDataLocation() );
             params->Configure( tmp_config );
             delete tmp_config;
             tmp_config = nullptr;
@@ -167,17 +146,25 @@ namespace Kernel
         initConfigTypeMap( ( "Aquatic_Arrhenius_2" ), &aquaticarrhenius2, Aquatic_Arrhenius_2_DESC_TEXT, 0.0f, 1E15f, 8328 );
         initConfigTypeMap( ( "Infected_Arrhenius_1" ), &infectedarrhenius1, Infected_Arrhenius_1_DESC_TEXT, 0.0f, 1E15f, 1.17E11f );
         initConfigTypeMap( ( "Infected_Arrhenius_2" ), &infectedarrhenius2, Infected_Arrhenius_2_DESC_TEXT, 0.0f, 1E15f, 8.34E3f );
+        
+        initConfigTypeMap( ("Cycle_Arrhenius_1"               ), &cyclearrhenius1,               Cycle_Arrhenius_1_DESC_TEXT,                0.0f, 1E15f, 4.09E10f, "Temperature_Dependent_Feeding_Cycle", "ARRHENIUS_DEPENDENCE" );
+        initConfigTypeMap( ("Cycle_Arrhenius_2"               ), &cyclearrhenius2,               Cycle_Arrhenius_2_DESC_TEXT,                0.0f, 1E15f, 7.74E3f,  "Temperature_Dependent_Feeding_Cycle", "ARRHENIUS_DEPENDENCE" );
+        initConfigTypeMap( ("Cycle_Arrhenius_Reduction_Factor"), &cyclearrheniusreductionfactor, Cycle_Arrhenius_Reduction_Factor_DESC_TEXT, 0.0f, 1.0f, 1.0f,      "Temperature_Dependent_Feeding_Cycle", "ARRHENIUS_DEPENDENCE" );
+
         initConfigTypeMap( ( "Immature_Duration" ), &immatureduration, Immature_Duration_DESC_TEXT, 0.0f, 730.0f, 2.0f );
         initConfigTypeMap( ( "Days_Between_Feeds" ), &daysbetweenfeeds, Days_Between_Feeds_DESC_TEXT, 0.0f, 730.0f, 3.0f );
         initConfigTypeMap( ( "Anthropophily" ), &anthropophily, Anthropophily_DESC_TEXT, 0.0f, 1.0f, 1.0f );
         initConfigTypeMap( ( "Egg_Batch_Size" ), &eggbatchsize, Egg_Batch_Size_DESC_TEXT, 0.0f, 10000.0f, 100.0f );
         initConfigTypeMap( ( "Infected_Egg_Batch_Factor" ), &infectedeggbatchmod, Infected_Egg_Batch_Factor_DESC_TEXT, 0.0f, 10.0f, 0.8f );
+        // Below is not used yet. Not going to add param to all vector configs until it's used.
+        //initConfigTypeMap( ( "Egg_Survival_Rate" ), &eggsurvivalrate, Egg_Survival_Rate_DESC_TEXT, 0.0f, 1.0f, 0.99f );
         initConfigTypeMap( ( "Aquatic_Mortality_Rate" ), &aquaticmortalityrate, Aquatic_Mortality_Rate_DESC_TEXT, 0.0f, 1.0f, 0.1f );
         initConfigTypeMap( ( "Adult_Life_Expectancy" ), &adultlifeexpectancy, Adult_Life_Expectancy_DESC_TEXT, 0.0f, 730.0f, 10.0f );
         initConfigTypeMap( ( "Transmission_Rate" ), &transmissionmod, Transmission_Rate_DESC_TEXT, 0.0f, 1.0f, 0.5f );
         initConfigTypeMap( ( "Acquire_Modifier" ), &acquiremod, Acquire_Modifier_DESC_TEXT, 0.0f, 1.0f, 1.0f );
         initConfigTypeMap( ( "Infectious_Human_Feed_Mortality_Factor" ), &infectioushfmortmod, Infectious_Human_Feed_Mortality_Factor_DESC_TEXT, 0.0f, 1000.0f, 1.5f );
         initConfigTypeMap( ( "Indoor_Feeding_Fraction" ), &indoor_feeding, Indoor_Feeding_Fraction_DESC_TEXT, 0.0f, 1.0f, 1.0f );
+        initConfigTypeMap( ( "Nighttime_Feeding_Fraction" ), &nighttime_feeding, Nighttime_Feeding_Fraction_DESC_TEXT, 0.0f, 1.0f, 1.0f );
 
         bool ret = false;
         try {
@@ -192,14 +179,6 @@ namespace Kernel
         feedingrate    = 1.0f / daysbetweenfeeds;
         adultmortality = 1.0f / adultlifeexpectancy;
         immaturerate   = 1.0f / immatureduration;
-
-        // Would like to do this, but SimulationConfig not set yet.
-        // Instead it's done in VectorPopulation::SetupLarvalHabitat
-        //LOG_DEBUG_F( "Multiply by x_templarvalhabitat: %x\n", GET_CONFIGURABLE(SimulationConfig) );
-        //if( GET_CONFIGURABLE(SimulationConfig) )
-        //{
-        //    habitat_param *= GET_CONFIGURABLE(SimulationConfig)->x_templarvalhabitat;
-        //}
 
         return ret;
     }
@@ -216,6 +195,42 @@ namespace Kernel
     {
         LOG_DEBUG_F( "VectorSpeciesParameters::Initialize: species = %s\n", vector_species_name.c_str() );
         _species = vector_species_name;
+    }
+
+    void VectorSpeciesParameters::serialize( IArchive& ar, VectorSpeciesParameters*& parameters )
+    {
+        if( !ar.IsWriter() )
+        {
+            parameters = new VectorSpeciesParameters();
+        }
+
+        ar.startObject();
+        //ar.labelElement("habitat_paramss") & parameters->habitat_params;
+        ar.labelElement( "aquaticarrhenius1" ) & parameters->aquaticarrhenius1;
+        ar.labelElement( "aquaticarrhenius2" ) & parameters->aquaticarrhenius2;
+        ar.labelElement( "infectedarrhenius1" ) & parameters->infectedarrhenius1;
+        ar.labelElement( "infectedarrhenius2" ) & parameters->infectedarrhenius2;
+        ar.labelElement( "cyclearrhenius1" ) & parameters->cyclearrhenius1;
+        ar.labelElement( "cyclearrhenius2" ) & parameters->cyclearrhenius2;
+        ar.labelElement( "cyclearrheniusreductionfactor" ) & parameters->cyclearrheniusreductionfactor;
+        ar.labelElement( "immatureduration" ) & parameters->immatureduration;
+        ar.labelElement( "daysbetweenfeeds" ) & parameters->daysbetweenfeeds;
+        ar.labelElement( "anthropophily" ) & parameters->anthropophily;
+        ar.labelElement( "eggbatchsize" ) & parameters->eggbatchsize;
+        ar.labelElement( "infectedeggbatchmod" ) & parameters->infectedeggbatchmod;
+        ar.labelElement( "eggsurvivalrate" ) & parameters->eggsurvivalrate;
+        ar.labelElement( "infectiousmortalitymod" ) & parameters->infectiousmortalitymod;
+        ar.labelElement( "aquaticmortalityrate" ) & parameters->aquaticmortalityrate;
+        ar.labelElement( "adultlifeexpectancy" ) & parameters->adultlifeexpectancy;
+        ar.labelElement( "transmissionmod" ) & parameters->transmissionmod;
+        ar.labelElement( "acquiremod" ) & parameters->acquiremod;
+        ar.labelElement( "infectioushfmortmod" ) & parameters->infectioushfmortmod;
+        ar.labelElement( "indoor_feeding" ) & parameters->indoor_feeding;
+        ar.labelElement( "nighttime_feeding" ) & parameters->nighttime_feeding;
+        ar.labelElement( "feedingrate" ) & parameters->feedingrate;
+        ar.labelElement( "adultmortality" ) & parameters->adultmortality;
+        ar.labelElement( "immaturerate" ) & parameters->immaturerate;
+        ar.endObject();
     }
 }
 

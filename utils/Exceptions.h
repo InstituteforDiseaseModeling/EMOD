@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,6 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <boost/lexical_cast.hpp> // no!!!
 #include "IdmApi.h"
 #include "CajunIncludes.h"
+#include <vector>
 
 // This is an exception library for the DTK. We wanted to keep it relatively flat and 
 // use-case driven, not theoretical. We have a DetailedException class that we use as our base that
@@ -159,8 +160,12 @@ namespace Kernel {
     class IDMAPI IncoherentConfigurationException : public DetailedException
     {
     public:
+        IncoherentConfigurationException( const char * file_name, int line_num, const char* func_name, const char* existing_label, unsigned long existing_value, const char* test_label, unsigned long test_value, const char* details = "" );
+        IncoherentConfigurationException( const char * file_name, int line_num, const char* func_name, const char* existing_label, signed int existing_value, const char* test_label, signed int test_value, const char* details = "" );
+        IncoherentConfigurationException( const char * file_name, int line_num, const char* func_name, const char* existing_label, double existing_value, const char* test_label, double test_value, const char* details = "" ); 
         IncoherentConfigurationException( const char * file_name, int line_num, const char* func_name, const char* existing_label, float existing_value, const char* test_label, float test_value, const char* details = "" );
         IncoherentConfigurationException( const char * file_name, int line_num, const char* func_name, const char* existing_label, const char * existing_value, const char* test_label, const char* test_value, const char* details = "" );
+        IncoherentConfigurationException( const char * file_name, int line_num, const char* func_name, const char* existing_label, signed int existing_value, const char* test_label, const char* test_value, const char* details = "" );
 
     protected:
         void IncoherentConfigurationException::createICEMessage(
@@ -187,6 +192,7 @@ namespace Kernel {
     {
     public:
         InvalidInputDataException( const char* file_name, int line_num, const char* function_name, const char* note = "" );
+        InvalidInputDataException( const char* file_name, int line_num, const char* function_name, const std::string & config_filename, const char* note = "");
     };
 
     // This exception is thrown when a formatting error occurs in the demographics files.
@@ -265,6 +271,7 @@ namespace Kernel {
     {
     public:
         MissingParameterFromConfigurationException( const char* filename, int line_num, const char* function_name, const char * config_filename, const char * param_name );
+        MissingParameterFromConfigurationException( const char* filename, int line_num, const char* function_name, const char * config_filename, std::vector<std::string> param_name, const char * details = "" );
     };
 
     class IDMAPI JsonTypeConfigurationException : public DetailedException

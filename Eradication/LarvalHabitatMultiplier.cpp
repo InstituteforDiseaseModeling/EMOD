@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,7 +16,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorParameters.h"
 #include "VectorSpeciesParameters.h"
 
-static const char* _module = "LarvalHabitatMultiplier";
+SETUP_LOGGING( "LarvalHabitatMultiplier" )
 
 namespace Kernel
 {
@@ -216,21 +216,30 @@ namespace Kernel
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
         schema[ tn ] = json::String( "idmType:LarvalHabitatMultiplier" );
-        //schema[ts] = json::Array();
-        //schema[ts][0] = json::Object();
-        //schema[ts][0]["Low"] = json::Object();
-        //schema[ts][0]["Low"][ "type" ] = json::String( "float" );
-        //schema[ts][0]["Low"][ "min" ] = json::Number( 0 );
-        //schema[ts][0]["Low"][ "max" ] = json::Number( 1000.0 );
-        //schema[ts][0]["Low"][ "description" ] = json::String( HIV_Age_Diagnostic_Low_DESC_TEXT );
-        //schema[ts][0]["High"] = json::Object();
-        //schema[ts][0]["High"][ "type" ] = json::String( "float" );
-        //schema[ts][0]["High"][ "min" ] = json::Number( 0 );
-        //schema[ts][0]["High"][ "max" ] = json::Number( 1000.0 );
-        //schema[ts][0]["High"][ "description" ] = json::String( HIV_Age_Diagnostic_High_DESC_TEXT );
-        //schema[ts][0]["Event"] = json::Object();
-        //schema[ts][0]["Event"][ "type" ] = json::String( "String" );
-        //schema[ts][0]["Event"][ "description" ] = json::String( HIV_Age_Diagnostic_Event_Name_DESC_TEXT );
+        schema[ts] = json::Array();
+        schema[ts][0] = json::Object();
+        schema[ts][0][ "type" ] = json::String( "float" );
+        schema[ts][0][ "min" ] = json::Number( 0 );
+        schema[ts][0][ "max" ] = json::Number( FLT_MAX );
+        schema[ts][0][ "description" ] = json::String( LHM_Single_Value_DESC_TEXT );
+        schema[ts][1] = json::Object();
+        schema[ts][1]["VectorHabitatType"][ "type" ] = json::String( "string" );
+        schema[ts][1]["VectorHabitatType"][ "description" ] = json::String( LHM_Habitat_Type_To_Value_Name_DESC_TEXT );
+        schema[ts][1]["Multiplier"][ "type" ] = json::String( "float" );
+        schema[ts][1]["Multiplier"][ "min" ] = json::Number( 0 );
+        schema[ts][1]["Multiplier"][ "max" ] = json::Number( FLT_MAX );
+        schema[ts][1]["Multiplier"][ "description" ] = json::String( LHM_Habitat_Type_To_Value_Value_DESC_TEXT );
+        schema[ts][2] = json::Object();
+        schema[ts][2]["VectorHabitatType"][ "type" ] = json::String( "string" );
+        schema[ts][2]["VectorHabitatType"][ "description" ] = json::String( LHM_Habitat_Type_To_Species_To_Value_Habitat_Type_DESC_TEXT );
+        schema[ts][2]["VectorHabitatType"]["SpeciesName"][ "type" ] = json::String( "string" );
+        schema[ts][2]["VectorHabitatType"]["SpeciesName"][ "description" ] = json::String( LHM_Habitat_Type_To_Species_To_Value_Species_Name_DESC_TEXT );
+        schema[ts][2]["VectorHabitatType"]["SpeciesName"][ "depends-on" ] = json::String( "Vector_Species_Names" );
+        schema[ts][2]["VectorHabitatType"]["Multiplier"][ "type" ] = json::String( "float" );
+        schema[ts][2]["VectorHabitatType"]["Multiplier"][ "min" ] = json::Number( 0 );
+        schema[ts][2]["VectorHabitatType"]["Multiplier"][ "max" ] = json::Number( FLT_MAX );
+        schema[ts][2]["VectorHabitatType"]["Multiplier"][ "description" ] = json::String( LHM_Habitat_Type_To_Species_To_Value_Value_DESC_TEXT );
+
         return schema;
     }
 

@@ -22,7 +22,8 @@
                 "Intervention_Config":
                 {
                     "class": "HIVSimpleDiagnostic",
-					"Cascade_State": "",
+                    "Disqualifying_Properties" : [],
+                    "New_Property_Value": "InterventionStatus:None",
                     "Base_Specificity": 1,
                     "Base_Sensitivity": 1,
                     "Event_Or_Config": "Event",

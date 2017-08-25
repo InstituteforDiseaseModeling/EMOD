@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,6 +17,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Debug.h"
 #include "IContagionPopulation.h"
 #include "TransmissionGroupMembership.h"
+#include "TransmissionGroupsBase.h"
 #include "NodeVector.h"
 
 #include "VectorInterventionsContainer.h"
@@ -29,7 +30,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "RANDOM.h"
 #define randgen (parent->GetRng())
 
-static const char* _module = "IndividualVector";
+SETUP_LOGGING( "IndividualVector" )
 
 namespace Kernel
 {
@@ -113,7 +114,7 @@ namespace Kernel
         m_total_exposure = 0;
 
         // Expose individual to all pools in weighted collection (i.e. indoor + outdoor)
-        LOG_DEBUG("Exposure to contagion: vector to human.\n");
+        LOG_VALID("Exposure to contagion: vector to human.\n");
         parent->ExposeIndividual((IInfectable*)this, &NodeVector::vector_to_human_all, dt);
 
         // Decide based on total exposure to infectious bites
@@ -145,8 +146,10 @@ namespace Kernel
             
         // Choose a strain based on a weighted draw over values from all vector-to-human pools
         float strain_cdf_draw = randgen->e() * m_total_exposure;
-        std::vector<strain_exposure_t>::iterator it = std::lower_bound( m_strain_exposure.begin(), m_strain_exposure.end(), strain_cdf_draw, compare_strain_exposure_float_less()); 
-        AcquireNewInfection(&(it->first));
+        std::vector<strain_exposure_t>::iterator it = std::lower_bound( m_strain_exposure.begin(), m_strain_exposure.end(), strain_cdf_draw, compare_strain_exposure_float_less());
+        TransmissionGroupsBase::ContagionPopulationImpl contPop( &(it->first), (it->second) );
+        LOG_DEBUG_F( "Mosquito->Human infection transmission based on total exposure %f. Existing infections = %d.\n", m_total_exposure, GetInfections().size() );
+        AcquireNewInfection(&contPop);
     }
 
     void IndividualHumanVector::Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route )
@@ -187,8 +190,7 @@ namespace Kernel
 
             // With a weighted random draw, pick a strain from the ContagionPopulation CDF
             StrainIdentity strain_id;
-            strain_id.SetAntigenID(cp->GetAntigenId());
-            cp->ResolveInfectingStrain(&strain_id); 
+            cp->ResolveInfectingStrain(&strain_id);
 
             // Push this exposure and strain back to the storage array for all vector-to-human pools (e.g. indoor, outdoor)
             m_strain_exposure.push_back( std::make_pair(strain_id, m_total_exposure) );
@@ -220,10 +222,16 @@ namespace Kernel
             }
         }
 
+        // This optimization seems to make sense. Works for Dengue. Need to test for Vector/Malaria of course.
+        if( infectiousness == 0 )
+        {
+            return;
+        }
+
         // Effects of transmission-reducing immunity.  N.B. interventions on vector success are not here, since they depend on vector-population-specific behavior
         release_assert( susceptibility );
         release_assert( interventions );
-        float modtransmit = susceptibility->GetModTransmit() * interventions->GetInterventionReducedTransmit();
+        float modtransmit = susceptibility->getModTransmit() * interventions->GetInterventionReducedTransmit();
 
         // Maximum individual infectiousness is set here, capping the sum of unmodified infectivity at prob=1
         float truncate_infectious_mod = (infectiousness > 1 ) ? 1.0f/infectiousness : 1.0f;
@@ -243,9 +251,12 @@ namespace Kernel
         for (auto& infectivity : infectivity_by_strain)
         {
             const StrainIdentity *id = &(infectivity.first);
-
-            parent->DepositFromIndividual( const_cast<StrainIdentity*>(id), host_vector_weight * infectivity.second * truncate_infectious_mod * modtransmit * ivie->GetblockIndoorVectorTransmit(), &NodeVector::human_to_vector_indoor );
-            parent->DepositFromIndividual( const_cast<StrainIdentity*>(id), host_vector_weight * infectivity.second * truncate_infectious_mod * modtransmit * ivie->GetblockOutdoorVectorTransmit(), &NodeVector::human_to_vector_outdoor );
+            LOG_DEBUG_F( "Depositing contagion from human to vector (indoor & outdoor) with biting-rate-driven weight of %f and combined modifiers of %f.\n",
+                         host_vector_weight,
+                         infectivity.second * truncate_infectious_mod * modtransmit * ivie->GetblockIndoorVectorTransmit()
+                       );
+            parent->DepositFromIndividual( *id, host_vector_weight * infectivity.second * truncate_infectious_mod * modtransmit * ivie->GetblockIndoorVectorTransmit(), &NodeVector::human_to_vector_indoor );
+            parent->DepositFromIndividual( *id, host_vector_weight * infectivity.second * truncate_infectious_mod * modtransmit * ivie->GetblockOutdoorVectorTransmit(), &NodeVector::human_to_vector_outdoor );
         }
     }
 
@@ -286,10 +297,7 @@ namespace Kernel
         {
             ar.startObject();
             StrainIdentity* strain = &entry.first;
-            ar.labelElement("strain");
-#if defined(WIN32)
-            Kernel::serialize(ar, strain);
-#endif
+            ar.labelElement("strain"); StrainIdentity::serialize(ar, strain);
             ar.labelElement("weight") & entry.second;
             ar.endObject();
         }

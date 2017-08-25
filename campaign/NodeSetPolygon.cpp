@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,7 +16,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Log.h"
 #include "NodeEventContext.h"
 
-static const char * _module = "NodeSetPolygon";
+SETUP_LOGGING( "NodeSetPolygon" )
 
 namespace Kernel
 {
@@ -25,9 +25,7 @@ namespace Kernel
     IMPL_QUERY_INTERFACE2(NodeSetPolygon, INodeSet, IConfigurable)
 
     bool
-    NodeSetPolygon::Configure(
-        const Configuration * inputJson
-    )
+    NodeSetPolygon::Configure(const Configuration * inputJson)
     {
         initConfigTypeMap( "Vertices", &vertices_raw, Node_Polygon_Vertices_DESC_TEXT );
         initConfig( "Polygon_Format", polygon_format, inputJson, MetadataDescriptor::Enum("polygon_format", Node_Polygon_Format_DESC_TEXT, MDD_ENUM_ARGS(PolygonFormatType) ) );
@@ -37,8 +35,7 @@ namespace Kernel
     //
     // NodeSetPolygon class methods
     //
-    void
-    NodeSetPolygon::parseEmodFormat()
+    void NodeSetPolygon::parseEmodFormat()
     {
         LOG_INFO("Parsing SHAPE polygon coordinates.\n");
 
@@ -92,8 +89,7 @@ namespace Kernel
     }
 
     // No input, use vertices_raw member variable as input.
-    void
-    NodeSetPolygon::parseGeoJsonFormat()
+    void NodeSetPolygon::parseGeoJsonFormat()
     {
         // vertices should be valid geojson, e.g.: [ [ 0.0,1.1 ],[ 2.2,3.3 ] ]"
         json::Object polygonJsonArray;
@@ -102,10 +98,7 @@ namespace Kernel
         // poly = (json::Array&)polygonJsonArray;
     }
 
-    bool
-    NodeSetPolygon::Contains(
-        INodeEventContext *nec
-    )
+    bool NodeSetPolygon::Contains(INodeEventContext *nec)
     {
         LOG_DEBUG_F( "Contains node ID = %d ?\n", nec->GetId().data );
         if( vertices_raw.length() > 0 ) // clear this after parse.
@@ -132,6 +125,12 @@ namespace Kernel
             return true;
         }*/
         return false;
+    }
+
+    std::vector<ExternalNodeId_t> NodeSetPolygon::IsSubset(const std::vector<ExternalNodeId_t>& demographic_node_ids)
+    {
+        std::vector<ExternalNodeId_t> dummy;
+        return dummy;
     }
 }
 

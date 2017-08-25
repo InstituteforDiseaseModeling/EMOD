@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationEnums.h"
 #include "Sigmoid.h"
 
-static const char * _module = "HIVSigmoidByYearAndSexDiagnostic";
+SETUP_LOGGING( "HIVSigmoidByYearAndSexDiagnostic" )
 
 namespace Kernel
 {
@@ -78,12 +78,12 @@ namespace Kernel
     void HIVSigmoidByYearAndSexDiagnostic::serialize(IArchive& ar, HIVSigmoidByYearAndSexDiagnostic* obj)
     {
         HIVSimpleDiagnostic::serialize( ar, obj );
-        HIVSigmoidByYearAndSexDiagnostic& cascade = *obj;
+        HIVSigmoidByYearAndSexDiagnostic& diag = *obj;
 
-        ar.labelElement("rampMin"         ) & cascade.rampMin;
-        ar.labelElement("rampMax"         ) & cascade.rampMax;
-        ar.labelElement("rampMidYear"     ) & cascade.rampMidYear;
-        ar.labelElement("rampRate"        ) & cascade.rampRate;
-        ar.labelElement("femaleMultiplier") & cascade.femaleMultiplier;
+        ar.labelElement("rampMin"         ) & diag.rampMin;
+        ar.labelElement("rampMax"         ) & diag.rampMax;
+        ar.labelElement("rampMidYear"     ) & diag.rampMidYear;
+        ar.labelElement("rampRate"        ) & diag.rampRate;
+        ar.labelElement("femaleMultiplier") & diag.femaleMultiplier;
     }
 }

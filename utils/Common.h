@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -69,7 +69,10 @@ struct InfectionStateChange {
         TBActivationSmearNeg = 14,
         TBActivationExtrapulm = 15,
         ClearedPendingRelapse = 16,
-        TBActivationPresymptomatic = 17
+        TBActivationPresymptomatic = 17, 
+
+        DengueIncubated      = 20,
+        DengueReportable     = 21
     };
 };
 
@@ -79,6 +82,7 @@ enum struct HumanStateChange : unsigned int {
     KilledByInfection     = 2,
     KilledByCoinfection   = 3,
     KilledByMCSampling    = 4,
+    KilledByOpportunisticInfection = 5,
     Migrating             = 10
 };
 
@@ -151,6 +155,7 @@ struct SpatialCoverageType {
 
 #ifdef VALIDATION
 #define LOG(_val)    EnvPtr->Report.Validation->Log(boost::format("%1% <= %2%") % _name % (_t)(_val))
+#error boost::format is no longer supported. If you want validation, fix this #define.
 #else
 #define LOG(_val)
 #endif
@@ -228,6 +233,7 @@ public:
 
 #ifdef VALIDATION
 
+#error boost::format is no longer supported. If you want validation, fix this #define.
 #define PROPERTY(_t, _v) \
 class _##_v \
 { \

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,6 +17,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "IdmString.h"
 #include "Log.h"
+#include "NodeProperties.h"
 
 #define EPSILON (FLT_EPSILON)
 
@@ -24,7 +25,7 @@ using namespace std;
 
 typedef std::map< std::string, std::string > tMapType;
 
-static const char * _module = "NodeDemographics";
+SETUP_LOGGING( "NodeDemographics" )
 
 namespace Kernel
 {
@@ -212,6 +213,21 @@ bool NodeDemographics::AsBool() const
     return flag ;
 }
 
+uint32_t NodeDemographics::AsUint() const
+{
+    uint32_t integer = 0 ;
+    try
+    {
+        integer = jsonValue.AsUint();
+    }
+    catch( SerializationException& )
+    {
+        std::string msg = GetFailedToInterpretMessage( "uint32" ) ;
+        throw NodeDemographicsFormatErrorException( __FILE__, __LINE__, __FUNCTION__, "UNKNOWN", msg.c_str() );
+    }
+    return integer ;
+}
+
 uint64_t NodeDemographics::AsUint64() const
 {
     uint64_t integer = 0 ;
@@ -328,7 +344,7 @@ bool NodeDemographics::operator!=( const NodeDemographics& rThat ) const
 }
 
 
-NodeDemographicsFactory * NodeDemographicsFactory::CreateNodeDemographicsFactory( boost::bimap<uint32_t, suids::suid> * nodeid_suid_map, 
+NodeDemographicsFactory * NodeDemographicsFactory::CreateNodeDemographicsFactory( boost::bimap<ExternalNodeId_t, suids::suid> * nodeid_suid_map,
                                                                                   const ::Configuration *config,
                                                                                   bool isDataInFiles,
                                                                                   uint32_t torusSize,
@@ -391,7 +407,33 @@ bool NodeDemographicsFactory::Configure(const Configuration* config)
         }
         else
         {
-            throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, "config.json", "Demographics_Filenames" );
+            throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, config->GetDataLocation().c_str(), "Demographics_Filenames" );
+        }
+    }
+
+    // -------------------------------------------------------------------------------------
+    // --- Allow_NodeID_Zero is an undocumented control that allows users to have
+    // --- demographics files with nodeID = 0.  This was created for backward compatability.
+    // -------------------------------------------------------------------------------------
+    allow_nodeid_zero = false;
+    if( !JsonConfigurable::_dryrun && (config != nullptr) )
+    {
+        if( config->Exist( "Allow_NodeID_Zero" ) )
+        {
+            allow_nodeid_zero = ((*config)[ "Allow_NodeID_Zero" ].As<json::Number>() == 1);
+        }
+    }
+
+    // -------------------------------------------------------------------------------------
+    // --- Allow_NodeID_Zero is an undocumented control that allows users to have
+    // --- demographics files with nodeID = 0.  This was created for backward compatability.
+    // -------------------------------------------------------------------------------------
+    allow_nodeid_zero = false;
+    if( !JsonConfigurable::_dryrun && (config != nullptr) )
+    {
+        if( config->Exist( "Allow_NodeID_Zero" ) )
+        {
+            allow_nodeid_zero = ((*config)[ "Allow_NodeID_Zero" ].As<json::Number>() == 1);
         }
     }
 
@@ -459,6 +501,15 @@ void NodeDemographicsFactory::Initialize( const ::Configuration* config,
                     throw NodeDemographicsFormatErrorException( __FILE__, __LINE__, __FUNCTION__, demo_filename.c_str(), msg.str().c_str() );
                 }
                 SetIdReference( layer, demo_filename, metadata );
+
+                // ------------------------------------------------------------------
+                // --- Get the NodeProperties element.  No overlay, but can override.
+                // --- Last file gets presidence.
+                // ------------------------------------------------------------------
+                if( node_properties.IsNull() && json.Contains( NPFactory::NODE_PROPERTIES_JSON_KEY ) )
+                {
+                    node_properties = json[ NPFactory::NODE_PROPERTIES_JSON_KEY ];
+                }
 
                 // ------------------------------------
                 // --- Get the default data if present
@@ -543,10 +594,10 @@ void NodeDemographicsFactory::Initialize( const ::Configuration* config,
 
             LOG_INFO_F("Using %s\n", idreference.c_str());
 
-            std::map<uint32_t,JsonObjectDemog> nodeid_2_nodedata_map;
+            std::map<ExternalNodeId_t,JsonObjectDemog> nodeid_2_nodedata_map;
 
             // add nodeIDs 1..100 (don't start at 0, because that's an invalid (reserved) nodeid)
-            for(uint32_t nodeid = 1; nodeid <= torus_size * torus_size; nodeid++)
+            for( ExternalNodeId_t nodeid = 1; nodeid <= torus_size * torus_size; nodeid++)
             {
                 nodeIDs.push_back( nodeid );
                 JsonObjectDemog nodedata = CreateDefaultNodeDemograhics( nodeid );
@@ -579,6 +630,12 @@ void NodeDemographicsFactory::Initialize( const ::Configuration* config,
     {
         throw InitializationException( __FILE__, __LINE__, __FUNCTION__, e.what() );
     }
+
+    // Probably can't get here, but bad things can happen down stream if this is true.
+    if( nodeIDs.size() == 0 )
+    {
+        throw InitializationException( __FILE__, __LINE__, __FUNCTION__, "Zero nodes were initialized.  You must have at least one." );
+    }
 }
 
 std::vector<std::string> NodeDemographicsFactory::GetDemographicFileNames(const ::Configuration* config)
@@ -594,15 +651,25 @@ std::vector<std::string> NodeDemographicsFactory::GetDemographicFileNames(const 
 
     if( demographics_filenames_list.empty() )
     {
-        throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Enable_Demographics_Initial", "1", "Demographics_Filenames", "<empty>" );
+        throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Enable_Demographics_Builtin", "0", "Demographics_Filenames", "<empty>" );
     }
     vector<string> demog_filenames;
     for (auto& filename : demographics_filenames_list)
     {
-        if( filename.empty() ) continue;
+        if( filename.empty() )
+        {
+            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Enable_Demographics_Builtin", "0", "Demographics_Filenames", "containing empty string" );
+        }
         std::string demog_path = Environment::FindFileOnPath(filename);
         demog_filenames.push_back( demog_path );
     }
+
+    // This should not happen, but check just incase.
+    if( demog_filenames.size() == 0 )
+    {
+        throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Enable_Demographics_Builtin", "0", "Demographics_Filenames", "<empty>" );
+    }
+
     return demog_filenames ;
 }
 
@@ -623,7 +690,7 @@ bool NodeDemographicsFactory::ReadNodeData( bool isUnCompiled,
 
     // Extract the data for each node and put it into a map so that node creation
     // can access only the nodes it needs to.
-    std::map<uint32_t,JsonObjectDemog> nodeid_2_nodedata_map;
+    std::map<ExternalNodeId_t,JsonObjectDemog> nodeid_2_nodedata_map;
     if( layer_has_nodes )
     {
         for( int i = 0 ; i < node_list_data.size() ; i++ )
@@ -651,9 +718,22 @@ bool NodeDemographicsFactory::ReadNodeData( bool isUnCompiled,
                 msg << "It is missing the 'NodeID' attribute for node number " << (i+1) << ".";
                 throw NodeDemographicsFormatErrorException( __FILE__, __LINE__, __FUNCTION__, rDemographicsFilename.c_str(), msg.str().c_str() );
             }
-            uint32_t node_id = nodedata[ nodeid_name.c_str() ].AsInt();
+            ExternalNodeId_t node_id = nodedata[ nodeid_name.c_str() ].AsUint();
+            if( !allow_nodeid_zero && (node_id == 0) )
+            {
+                std::stringstream ss;
+                ss << "'NodeID' is not allowed to be zero. It is an integer value such that 1 <= 'NodeID' <= " << UINT32_MAX << ".";
+                throw NodeDemographicsFormatErrorException( __FILE__, __LINE__, __FUNCTION__, rDemographicsFilename.c_str(), ss.str().c_str() );
+            }
+
             if( layer == 0 )
             {
+                if( std::find( nodeIDs.begin(), nodeIDs.end(), node_id ) != nodeIDs.end() )
+                {
+                    std::stringstream ss;
+                    ss << "'NodeID' = " << node_id << " appears more than once in your demographics.  NodeID's must be unique.";
+                    throw NodeDemographicsFormatErrorException( __FILE__, __LINE__, __FUNCTION__, rDemographicsFilename.c_str(), ss.str().c_str() );
+                }
                 nodeIDs.push_back( node_id );
             }
             else if( (layer > 0) && (nodedata_maps[0].count(node_id) <= 0) )
@@ -763,7 +843,11 @@ void NodeDemographicsFactory::SetIdReference( int layer, const std::string& rDem
     else
     {
         string tmp_idreference = rMetadata["IdReference"].AsString();
-        if(tmp_idreference.compare(idreference) != 0)
+        string tmp_idreference_lower(tmp_idreference);
+        string idreference_lower(idreference);  // Make a copy to transform so we do not modify the original.
+        std::transform(idreference_lower.begin(), idreference_lower.end(), idreference_lower.begin(), ::tolower);
+        std::transform(tmp_idreference_lower.begin(), tmp_idreference_lower.end(), tmp_idreference_lower.begin(), ::tolower);
+        if(tmp_idreference_lower != idreference_lower)
         {
             std::stringstream msg ;
             msg << "IdReference (=" << tmp_idreference << ") doesn't match base layer (=" << idreference << ").";
@@ -823,7 +907,7 @@ void NodeDemographicsFactory::WriteDefaultDemographicsFile( const std::string& r
 
     for( uint32_t i = 0 ; i < nodeIDs.size() ; i++ )
     {
-        uint32_t node_id = nodeIDs[i] ;
+        ExternalNodeId_t node_id = nodeIDs[i] ;
         JsonObjectDemog node_json = nodedata_maps[0][node_id] ;
         writer << node_json ;
     }
@@ -855,7 +939,7 @@ DemographicsContext* NodeDemographicsFactory::CreateDemographicsContext()
 NodeDemographics* NodeDemographicsFactory::CreateNodeDemographics( JsonObjectDemog value,
                                                                    std::map<std::string, std::string> *pStringTable, 
                                                                    INodeContext *pParentNode, 
-                                                                   uint32_t nodeid,
+                                                                   ExternalNodeId_t nodeid,
                                                                    const std::string& rValueKey,
                                                                    const std::string& rParentKey )
 {
@@ -863,7 +947,7 @@ NodeDemographics* NodeDemographicsFactory::CreateNodeDemographics( JsonObjectDem
     return p_nd ;
 }
 
-JsonObjectDemog NodeDemographicsFactory::CreateDefaultNodeDemograhics( uint32_t nodeid )
+JsonObjectDemog NodeDemographicsFactory::CreateDefaultNodeDemograhics( ExternalNodeId_t nodeid )
 {
     float lat = (nodeid % torus_size) * 0.008333 /* 30 arcsecs */;
     float lon = (nodeid / torus_size) * 0.008333 /* 30 arcsecs */;
@@ -877,32 +961,17 @@ JsonObjectDemog NodeDemographicsFactory::CreateDefaultNodeDemograhics( uint32_t 
     return nodedata ;
 }
 
-
-NodeDemographics* NodeDemographicsFactory::CreateNodeDemographics(INodeContext *parent_node)
+JsonObjectDemog NodeDemographicsFactory::GetJsonForNode( ExternalNodeId_t externalNodeId )
 {
-    NodeDemographics * new_demographics = nullptr;
+    JsonObjectDemog finalnodedata( JsonObjectDemog::JSON_OBJECT_OBJECT );
 
-    JsonObjectDemog finalnodedata( JsonObjectDemog::JSON_OBJECT_OBJECT ) ;
-
-    suids::suid node_suid = parent_node->GetSuid();
-
-    if(nodeid_suid_map->right.count(node_suid) == 0)
+    bool found_node = false;
+    for( int i = int( demographics_filenames.size() - 1 ); i >= 0; i-- )
     {
-        //std::cerr << "Couldn't find matching NodeID for suid " << node_suid.data << endl;
-        std::ostringstream msg;
-        msg << "Couldn't find matching NodeID for suid " << node_suid.data << endl;
-        throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-    }
-
-    uint32_t nodeid = nodeid_suid_map->right.at(node_suid);
-
-    bool found_node = false ;
-    for(int i = int(demographics_filenames.size() - 1); i >= 0; i--)
-    {
-        JsonObjectDemog nodedata ;
-        if( nodedata_maps[i].count(nodeid) > 0 )
+        JsonObjectDemog nodedata;
+        if( nodedata_maps[ i ].count( externalNodeId ) > 0 )
         {
-            nodedata = nodedata_maps[i][nodeid] ;
+            nodedata = nodedata_maps[ i ][ externalNodeId ];
         }
 
         if( !nodedata.IsNull() )
@@ -928,9 +997,30 @@ NodeDemographics* NodeDemographicsFactory::CreateNodeDemographics(INodeContext *
     if( !found_node )
     {
         std::ostringstream msg;
-        msg << "Error: Attempted to create demographics for unknown node: " << nodeid << endl;
+        msg << "Error: Attempted to create demographics for unknown node: " << externalNodeId << endl;
         throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
     }
+
+    return finalnodedata;
+}
+
+NodeDemographics* NodeDemographicsFactory::CreateNodeDemographics(INodeContext *parent_node)
+{
+    NodeDemographics * new_demographics = nullptr;
+
+    suids::suid node_suid = parent_node->GetSuid();
+
+    if(nodeid_suid_map->right.count(node_suid) == 0)
+    {
+        //std::cerr << "Couldn't find matching NodeID for suid " << node_suid.data << endl;
+        std::ostringstream msg;
+        msg << "Couldn't find matching NodeID for suid " << node_suid.data << endl;
+        throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+    }
+
+    ExternalNodeId_t nodeid = nodeid_suid_map->right.at(node_suid);
+
+    JsonObjectDemog finalnodedata = GetJsonForNode( nodeid );
 
     LOG_DEBUG("Creating new NodeDemographics object with string_table\n");
     for (auto& entry : (*full_string_table))
@@ -942,7 +1032,7 @@ NodeDemographics* NodeDemographicsFactory::CreateNodeDemographics(INodeContext *
 
     // Have to make this check afterwards so that we can use NodeDemographics::operator[]'s
     // ability to use the string table.
-    uint32_t data_nodeid = (*new_demographics)["NodeID"].AsInt();
+    ExternalNodeId_t data_nodeid = (*new_demographics)["NodeID"].AsUint();
     if( data_nodeid != nodeid )
     {
         std::stringstream msg ;
@@ -1311,7 +1401,7 @@ std::string NodeDemographicsDistribution::CreateListOfNames( const JsonObjectDem
 
 void NodeDemographicsDistribution::CheckArraySize( bool isCheckingDistributionValues,
                                                    const std::string& rDistName, 
-                                                   uint32_t nodeID, 
+                                                   ExternalNodeId_t nodeID,
                                                    const std::string& rArrayName,
                                                    const std::vector<int>& rNumPopGroups, 
                                                    int depth,
@@ -1528,35 +1618,6 @@ bool NodeDemographicsDistribution::operator!=( const NodeDemographicsDistributio
 
 
 }
-
-// a step towards limiting the lookup in Node for demographic_distributions by arbitrary keys
-const std::string Kernel::NodeDemographicsDistribution::FertilityDistribution       = "FertilityDistribution";
-const std::string Kernel::NodeDemographicsDistribution::ImmunityDistribution        = "ImmunityDistribution";
-const std::string Kernel::NodeDemographicsDistribution::MortalityDistribution       = "MortalityDistribution";
-const std::string Kernel::NodeDemographicsDistribution::MortalityDistributionMale   = "MortalityDistributionMale";
-const std::string Kernel::NodeDemographicsDistribution::MortalityDistributionFemale = "MortalityDistributionFemale";
-const std::string Kernel::NodeDemographicsDistribution::AgeDistribution             = "AgeDistribution";
-
-const std::string Kernel::NodeDemographicsDistribution::HIVCoinfectionDistribution          = "HIVCoinfectionDistribution";
-const std::string Kernel::NodeDemographicsDistribution::HIVMortalityDistribution          = "HIVMortalityDistribution";
-
-const std::string Kernel::NodeDemographicsDistribution::maternal_antibody_distribution1     = "maternal_antibody_distribution1";
-const std::string Kernel::NodeDemographicsDistribution::maternal_antibody_distribution2     = "maternal_antibody_distribution2";
-const std::string Kernel::NodeDemographicsDistribution::maternal_antibody_distribution3     = "maternal_antibody_distribution3";
-const std::string Kernel::NodeDemographicsDistribution::mucosal_memory_distribution1        = "mucosal_memory_distribution1";
-const std::string Kernel::NodeDemographicsDistribution::mucosal_memory_distribution2        = "mucosal_memory_distribution2";
-const std::string Kernel::NodeDemographicsDistribution::mucosal_memory_distribution3        = "mucosal_memory_distribution3";
-const std::string Kernel::NodeDemographicsDistribution::humoral_memory_distribution1        = "humoral_memory_distribution1";
-const std::string Kernel::NodeDemographicsDistribution::humoral_memory_distribution2        = "humoral_memory_distribution2";
-const std::string Kernel::NodeDemographicsDistribution::humoral_memory_distribution3        = "humoral_memory_distribution3";
-const std::string Kernel::NodeDemographicsDistribution::fake_time_since_last_infection_distribution        = "fake_time_since_last_infection_distribution";
-
-const std::string Kernel::NodeDemographicsDistribution::MSP_mean_antibody_distribution         = "MSP_mean_antibody_distribution";
-const std::string Kernel::NodeDemographicsDistribution::nonspec_mean_antibody_distribution     = "nonspec_mean_antibody_distribution";
-const std::string Kernel::NodeDemographicsDistribution::PfEMP1_mean_antibody_distribution      = "PfEMP1_mean_antibody_distribution";
-const std::string Kernel::NodeDemographicsDistribution::MSP_variance_antibody_distribution     = "MSP_variance_antibody_distribution";
-const std::string Kernel::NodeDemographicsDistribution::nonspec_variance_antibody_distribution = "nonspec_variance_antibody_distribution";
-const std::string Kernel::NodeDemographicsDistribution::PfEMP1_variance_antibody_distribution  = "PfEMP1_variance_antibody_distribution";
 
 #if 0
 namespace Kernel {

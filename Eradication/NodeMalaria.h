@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -39,6 +39,12 @@ namespace Kernel
         virtual float GetGeometricMeanParasitemia() const override { return m_Geometric_Mean_Parasitemia; }
         virtual float GetFeverPrevalence()          const override { return m_Fever_Prevalence; }
         virtual float GetMaternalAntibodyFraction() const override { return m_Maternal_Antibody_Fraction; }
+        virtual const NodeDemographicsDistribution* GetMSP_mean_antibody_distribution()         const override { return MSP_mean_antibody_distribution;};
+        virtual const NodeDemographicsDistribution* GetNonspec_mean_antibody_distribution()     const override { return nonspec_mean_antibody_distribution; };
+        virtual const NodeDemographicsDistribution* GetPfEMP1_mean_antibody_distribution()      const override { return PfEMP1_mean_antibody_distribution; };
+        virtual const NodeDemographicsDistribution* GetMSP_variance_antibody_distribution()     const override { return MSP_variance_antibody_distribution; };
+        virtual const NodeDemographicsDistribution* GetNonspec_variance_antibody_distribution() const override { return nonspec_variance_antibody_distribution; };
+        virtual const NodeDemographicsDistribution* GetPfEMP1_variance_antibody_distribution()  const override { return PfEMP1_variance_antibody_distribution; };
 
         virtual bool Configure( const Configuration* config ) override;
 
@@ -56,6 +62,13 @@ namespace Kernel
         float m_Geometric_Mean_Parasitemia;
         float m_Fever_Prevalence;
         float m_Maternal_Antibody_Fraction;
+
+        NodeDemographicsDistribution* MSP_mean_antibody_distribution;
+        NodeDemographicsDistribution* nonspec_mean_antibody_distribution;
+        NodeDemographicsDistribution* PfEMP1_mean_antibody_distribution;
+        NodeDemographicsDistribution* MSP_variance_antibody_distribution;
+        NodeDemographicsDistribution* nonspec_variance_antibody_distribution;
+        NodeDemographicsDistribution* PfEMP1_variance_antibody_distribution;
 
         virtual void LoadImmunityDemographicsDistribution() override;
         virtual float drawInitialImmunity(float ind_init_age) override;
@@ -75,7 +88,7 @@ namespace Kernel
     private:
         NodeMalaria();
         NodeMalaria(ISimulationContext *simulation, suids::suid suid);
-        /* clorton virtual */ void Initialize() /* clorton override */;
+        virtual void Initialize() override;
 
         virtual INodeContext *getContextPointer() override { return static_cast<INodeContext*>(this); }
     };

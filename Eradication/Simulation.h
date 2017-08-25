@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -27,6 +27,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IdmApi.h"
 #include "Serialization.h"
 #include "EventsForOtherNodes.h"
+
+#include "SerializedPopulation.h"
 
 class RANDOMBASE;
 
@@ -55,6 +57,8 @@ namespace Kernel
         static Simulation *CreateSimulation(const ::Configuration *config);
         virtual ~Simulation();
 
+        static float base_year;
+
         virtual bool Configure( const ::Configuration *json ) override;
 
         // IGlobalContext interfaces
@@ -76,7 +80,7 @@ namespace Kernel
         virtual void PostMigratingIndividualHuman(IIndividualHuman *i) override;
         virtual bool CanSupportFamilyTrips() const override;
 
-        virtual void DistributeEventToOtherNodes( const std::string& rEventName, INodeQualifier* pQualifier ) override;
+        virtual void DistributeEventToOtherNodes( const EventTrigger& rEventTrigger, INodeQualifier* pQualifier ) override;
         virtual void UpdateNodeEvents() override;
 
         // Unique ID services
@@ -101,6 +105,9 @@ namespace Kernel
 
         virtual void Initialize(const ::Configuration *config) override;
 
+        typedef std::map< suids::suid, INodeContext* > NodeMap_t; // TODO: change to unordered_map for better asymptotic performance
+        typedef NodeMap_t::value_type NodeMapEntry_t;
+
     protected:
 
         Simulation();
@@ -115,6 +122,7 @@ namespace Kernel
         virtual IMigrationInfoFactory* CreateMigrationInfoFactory ( const std::string& idreference,
                                                                     MigrationStructure::Enum ms,
                                                                     int torusSize );
+
         virtual void setupEventContextHost();
         virtual void setupMigrationQueues();
         void setupRng();
@@ -122,10 +130,20 @@ namespace Kernel
         void initSimulationState();
 
         // Node initialization
-        virtual void LoadInterventions( const char* campaignfilename );
+        virtual void LoadInterventions(const char * campaignfilename, const std::vector<ExternalNodeId_t>& demographic_node_ids);
         virtual int  populateFromDemographics(const char* campaign_filename, const char* loadbalance_filename); // creates nodes from demographics input file data
-        virtual void addNewNodeFromDemographics(suids::suid node_suid, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory); // For derived Simulation classes to add correct node type
-        void addNode_internal( INodeContext *node, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory); // Helper to add Nodes
+        virtual void addNewNodeFromDemographics( suids::suid node_suid,
+                                                 NodeDemographicsFactory *nodedemographics_factory, 
+                                                 ClimateFactory *climate_factory, 
+                                                 bool white_list_enabled); // For derived Simulation classes to add correct node type
+        void addNode_internal( INodeContext *node, 
+                               NodeDemographicsFactory *nodedemographics_factory, 
+                               ClimateFactory *climate_factory, 
+                               bool white_list_enabled ); // Helper to add Nodes
+        void initializeNode( INodeContext* node, 
+                             NodeDemographicsFactory* nodedemographics_factory, 
+                             ClimateFactory* climate_factory,
+                             bool white_list_enabled );
         int  getInitialRankFromNodeId( ExternalNodeId_t node_id ); // Need in MPI implementation
 
         // Migration
@@ -133,25 +151,27 @@ namespace Kernel
 
         // Campaign input file parsing
         virtual void notifyNewNodeObservers(INodeContext*);
-        virtual void loadCampaignFromFile( const std::string& campaign_filename );
+        virtual void loadCampaignFromFile(const std::string & campaignfilename, const std::vector<ExternalNodeId_t>& demographic_node_ids);
 
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
 
+        friend void SerializedState::SaveSerializedSimulation(Simulation* sim, uint32_t time_step, bool compress);
+        friend Kernel::ISimulation* SerializedState::ReadDtkVersion2(FILE* f, const char* filename, Header& header);
+        friend Kernel::ISimulation* SerializedState::ReadDtkVersion34(FILE* f, const char* filename, Header& header);
+
         SerializationFlags serializationMask;
 
         // Nodes
-        typedef std::map< suids::suid, INodeContext* > NodeMap_t; // TODO: change to unordered_map for better asymptotic performance
-        typedef NodeMap_t::value_type NodeMapEntry_t;
         NodeMap_t nodes;
         NodeRankMap nodeRankMap;
 
         std::map<int,EventsForOtherNodes> node_events_added ; // map of rank to EventsForOtherNodes
-        std::map<suids::suid,std::vector<std::string>> node_events_to_be_processed ; // map of node suids to list of events
+        std::map<suids::suid,std::vector<EventTrigger>> node_events_to_be_processed ; // map of node suids to list of events
 
         std::vector<INodeEventContext*> node_event_context_list ;
 
-        typedef boost::bimap<uint32_t, suids::suid> nodeid_suid_map_t;
+        typedef boost::bimap<ExternalNodeId_t, suids::suid> nodeid_suid_map_t;
         typedef nodeid_suid_map_t::value_type nodeid_suid_pair;
         nodeid_suid_map_t nodeid_suid_map;
 
@@ -165,9 +185,9 @@ namespace Kernel
         const DemographicsContext *demographicsContext;
 
         // Simulation-unique ID generators for each type of child object that might exist in our system
-        suids::distributed_generator<Infection> infectionSuidGenerator;
-        suids::distributed_generator<IndividualHuman> individualHumanSuidGenerator;
-        suids::distributed_generator<Node> nodeSuidGenerator;
+        suids::distributed_generator infectionSuidGenerator;
+        suids::distributed_generator individualHumanSuidGenerator;
+        suids::distributed_generator nodeSuidGenerator;
 
         // Input files
         std::string campaignFilename;
@@ -211,10 +231,12 @@ namespace Kernel
         bool enable_default_report;
         bool enable_event_report;
         std::string campaign_filename;
+        std::string custom_reports_filename;
         std::string loadbalance_filename;
         int Run_Number;
         bool can_support_family_trips;
 
+        bool m_IPWhiteListEnabled;
         NodeDemographicsFactory* demographics_factory;
 #pragma warning( pop )
     protected:

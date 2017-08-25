@@ -108,7 +108,7 @@
             "Migration_Model": "NO_MIGRATION"
         },
         "OUTPUT": {
-            "Custom_Reports_Filename" : "NoCustomReports",
+            "Custom_Reports_Filename" : "",
             "Report_Event_Recorder" : 0,
             "Enable_Default_Reporting" : 1,
             "Enable_Property_Output": 0,
@@ -116,6 +116,9 @@
         },
         "POLIO": {},
         "PRIMARY": {
+            "Memory_Usage_Warning_Threshold_Working_Set_MB" : 3500,
+            "Memory_Usage_Halting_Threshold_Working_Set_MB" : 4000,
+
             "Config_Name": "DEFAULT_CONFIG_NAME_SHOULD_BE_SET",
             "ENUMS": {
                 "Simulation_Type": "GENERIC_SIM"

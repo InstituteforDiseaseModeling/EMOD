@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -20,6 +20,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationConfig.h"
 #include "HIVEnums.h"
 #include "Properties.h"
+#include "common.h"
 
 using namespace std; 
 using namespace Kernel; 
@@ -105,11 +106,11 @@ SUITE(AssortivityTest)
             p_human->SetHasSTI( hasSTI );
             p_human->SetHasHIV( hasHIV );
             p_hic->OnTestForHIV( hasTestedPositiveForHIV );
-            p_human->GetProperties()->operator[]( rPropertyName ) = rPropertyValue ;
-            //if( !rPropertyName.empty()  && !rPropertyValue.empty() )
-            //{
-            //    p_human->GetProperties()->Add( IPKeyValue( rPropertyName, rPropertyValue ) ) ;
-            //}
+            //p_human->GetProperties()->operator[]( rPropertyName ) = rPropertyValue ;
+            if( !rPropertyName.empty()  && !rPropertyValue.empty() )
+            {
+                p_human->GetProperties()->Add( IPKeyValue( rPropertyName, rPropertyValue ) ) ;
+            }
 
             if( hasCoSTI )
                 p_human->SetStiCoInfectionState();
@@ -567,23 +568,6 @@ SUITE(AssortivityTest)
         CHECK( p_f_k == p_female_match_c );
         CHECK( p_f_a == p_female_match_d );
         CHECK( p_f_r == p_female_match_e );
-
-        // ----------------------------------------------------------------------
-        // --- Test that an individual with an unknown individual property value
-        // --- will throw an exception.
-        // ----------------------------------------------------------------------
-        try
-        {
-            IIndividualHumanSTI* p_m_bad = CreateHuman( Gender::MALE, 25.0f*365.0f, false, false, false, false, ReceivedTestResultsType::UNKNOWN, "Race", "XXX" );
-            
-            p_assort->SelectPartner( p_m_bad, female_list );
-        }
-        catch( DetailedException& re )
-        {
-            std::string msg = re.GetMsg();
-            std::string exp_msg = "The value (XXX) was not one of the Axes names ('HUMAN' 'VULCAN' 'KLINGON' 'ANDORIAN' 'ROMULAN' )." ;
-            CHECK( msg.find( exp_msg ) != string::npos );
-        }
     }
 
     void TestHelper_ConfigureException( int lineNumber, const std::string& rFilename, const std::string& rExpMsg )
@@ -645,7 +629,7 @@ SUITE(AssortivityTest)
     TEST_FIXTURE(AssortivityFixture, TestBadPropertyName)
     {
         TestHelper_ConfigureException( __LINE__, "testdata/AssortivityTest/TestBadPropertyName.json",
-            "Could not find the IndividualProperty key = '' for parameter 'TRANSITORY:Property_Name'.  Known keys are: Race" );
+            "TRANSITORY:Property_Name must be defined and cannot be empty string." );
     }
 
     TEST_FIXTURE(AssortivityFixture, TestBadMatrixBadRows)
@@ -675,13 +659,13 @@ SUITE(AssortivityTest)
     TEST_FIXTURE(AssortivityFixture, TestMissingStartYear)
     {
         TestHelper_ConfigureException( __LINE__, "testdata/AssortivityTest/TestMissingStartYear.json",
-            "Parameter 'Start_Year' not found in input file 'N/A'.\n\nWas reading values for TRANSITORY." );
+            "Parameter 'Start_Year of AssortivityHIV' not found in input file 'testdata/AssortivityTest/TestMissingStartYear.json'.\n\nWas reading values for TRANSITORY." );
     }
 
     TEST_FIXTURE(AssortivityFixture, TestMissingGroup)
     {
         TestHelper_ConfigureException( __LINE__, "testdata/AssortivityTest/TestMissingGroup.json",
-            "While trying to parse json data for param >>> Group <<< in otherwise valid json segment" );
+            "While trying to parse json data for param/key >>> Group <<< in otherwise valid json segment" );
     }
 
     TEST_FIXTURE(AssortivityFixture, TestMatrixRowAllZeros)

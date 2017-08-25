@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,7 +16,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "RANDOM.h"
 #include "Properties.h"
 
-static const char* _module = "ConcurrencyParameters";
+SETUP_LOGGING( "ConcurrencyParameters" )
 
 
 #define DEFAULT_PROPERTY "NONE"
@@ -99,9 +99,9 @@ namespace Kernel
         }
         else
         {
-            IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( rConcurrencyProperty );
+            const IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( rConcurrencyProperty );
 
-            for( IPKeyValue kv : p_ip->GetValues()  )
+            for( auto kv : p_ip->GetValues<IPKeyValueContainer>()  )
             {
                 const std::string& prop_value = kv.GetValueAsString();
 
@@ -305,8 +305,8 @@ namespace Kernel
                 throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
             }
 
-            IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( m_PropertyKey );
-            for( auto kv : p_ip->GetValues() )
+            const IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( m_PropertyKey );
+            for( auto kv : p_ip->GetValues<IPKeyValueContainer>() )
             {
                 const std::string& prop_value = kv.GetValueAsString();
 

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,7 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "IIndividualHumanSTI.h"
 
-static const char * _module = "StiCoInfectionDiagnostic";
+SETUP_LOGGING( "StiCoInfectionDiagnostic" )
 
 namespace Kernel
 {
@@ -27,7 +27,7 @@ namespace Kernel
     )
     {
         ConfigurePositiveEventOrConfig( inputJson );
-        bool ret = JsonConfigurable::Configure(inputJson); 
+        bool ret = SimpleDiagnostic::Configure(inputJson); 
         if( ret )
         {
             CheckPostiveEventConfig();

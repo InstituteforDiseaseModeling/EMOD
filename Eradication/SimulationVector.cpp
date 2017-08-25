@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -29,7 +29,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <chrono>
 typedef std::chrono::high_resolution_clock _clock;
 
-static const char * _module = "SimulationVector";
+SETUP_LOGGING( "SimulationVector" )
 
 namespace Kernel
 {
@@ -190,10 +190,13 @@ namespace Kernel
     }
 
     // called by demographic file Populate()
-    void SimulationVector::addNewNodeFromDemographics(suids::suid node_suid, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory)
+    void SimulationVector::addNewNodeFromDemographics( suids::suid node_suid,
+                                                       NodeDemographicsFactory *nodedemographics_factory,
+                                                       ClimateFactory *climate_factory,
+                                                       bool white_list_enabled )
     {
         NodeVector *node = NodeVector::CreateNode(this, node_suid);
-        addNode_internal(node, nodedemographics_factory, climate_factory);
+        addNode_internal( node, nodedemographics_factory, climate_factory, white_list_enabled );
         node_populations_map.insert( std::make_pair( node_suid, node->GetStatPop() ) );
     }
 
@@ -203,15 +206,16 @@ namespace Kernel
 
         WithSelfFunc to_self_func = [this](int myRank) 
         { 
-#ifndef CLORTON
+#ifndef _DEBUG  // Standard path
             // Don't bother to serialize locally
             for (auto iterator = migratingVectorQueues[myRank].rbegin(); iterator != migratingVectorQueues[myRank].rend(); ++iterator)
             {
+                // map.at() is faster than map[] since it doesn't optionally create an entry
                 auto vector = *iterator;
                 IMigrate* emigre = vector->GetIMigrate();
-                emigre->ImmigrateTo( nodes[emigre->GetMigrationDestination()] );
+                emigre->ImmigrateTo( nodes.at(emigre->GetMigrationDestination()) );
             }
-#else
+#else           // Test serialization even on single core.
             auto writer = new BinaryArchiveWriter();
             (*static_cast<IArchive*>(writer)) & migratingVectorQueues[myRank];
             for (auto& individual : migratingVectorQueues[myRank])
@@ -272,7 +276,7 @@ namespace Kernel
 
             NodeVector* pnv = static_cast<NodeVector*>( node_entry.second );
 
-            for( auto vp : pnv->GetVectorPopulations() )
+            for( auto vp : pnv->GetVectorPopulationReporting() )
             {
                 total_vector_population += vp->getAdultCount();
             }
@@ -298,7 +302,9 @@ namespace Kernel
         VectorCohortIndividual* vci = static_cast<VectorCohortIndividual*>(ind);
 
         // put in queue by species and node rank
-        migratingVectorQueues[nodeRankMap.GetRankFromNodeSuid(vci->GetMigrationDestination())].push_back(vci);
+        auto& suid = vci->VectorCohortIndividual::GetMigrationDestination();
+        auto rank = nodeRankMap.GetRankFromNodeSuid(suid);
+        migratingVectorQueues.at(rank).push_back(vci);
     }
 
     float SimulationVector::GetNodePopulation( const suids::suid& nodeSuid )
@@ -322,5 +328,21 @@ namespace Kernel
         return dynamic_cast<ISimulationContext*>(this);
     }
 
-}
+    REGISTER_SERIALIZABLE(SimulationVector);
 
+    void SimulationVector::serialize(IArchive& ar, SimulationVector* obj)
+    {
+        Simulation::serialize( ar, obj );
+        SimulationVector& sim = *obj;
+
+//        ar.labelElement("migratingVectorQueues") & sim.migratingVectorQueues;         // no reason to keep track of migrating vectors "in-flight" :)
+//        ar.labelElement("vector_migration_reports") & sim.vector_migration_reports;
+//        ar.labelElement("node_populations_map") & sim.node_populations_map;           // should be reconstituted in populateFromDemographics()
+
+        ar.labelElement("drugdefaultcost")    & sim.drugdefaultcost;
+        ar.labelElement("vaccinedefaultcost") & sim.vaccinedefaultcost;
+        ar.labelElement("housingmoddefaultcost"); ar.serialize( sim.housingmoddefaultcost, HOUSINGMOD_ARRAY_LENGTH );
+        ar.labelElement("awarenessdefaultcost");  ar.serialize( sim.awarenessdefaultcost, AWARENESS_ARRAY_LENGTH );
+        ar.labelElement("netdefaultcost");        ar.serialize( sim.netdefaultcost, BEDNET_ARRAY_LENGTH );
+    }
+}

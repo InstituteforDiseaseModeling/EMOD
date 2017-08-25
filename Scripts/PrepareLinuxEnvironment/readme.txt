@@ -20,7 +20,7 @@ Before running the script, you will need:
 Before you run the script you'll need to execute the following:
 
      chmod 755 PrepareLinuxEnvironment.sh
-
+   
 To run PrepareLinuxEnvironment.sh, execute the following at the command prompt:
 
      ./PrepareLinuxEnvironment.sh
@@ -30,7 +30,7 @@ If you want to walk through the script workflow but make no permanent system cha
      ./PrepareLinuxEnvironment.sh test
 
 Please note, it is recommended to read the script using a monotype.
-
+	 
 The following diagram shows the program flow of the PrepareLinuxEnvironment script.
 
                         +-------+

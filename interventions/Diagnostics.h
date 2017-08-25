@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -36,14 +36,13 @@ namespace Kernel
         SimpleDiagnostic();
         SimpleDiagnostic( const SimpleDiagnostic& master );
         virtual ~SimpleDiagnostic() {  }
-        bool Configure( const Configuration* pConfig );
+        bool Configure( const Configuration* pConfig ) override;
         void ConfigurePositiveEventOrConfig( const Configuration * inputJson );
 
         // IDistributingDistributableIntervention
-        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO );
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
-        virtual void SetContextTo(IIndividualHumanContext *context) { parent = context; } // for rng
-        virtual void Update(float dt);
+        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO ) override;
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+        virtual void Update(float dt) override;
 
         virtual bool positiveTestResult();
         virtual void onNegativeTestResult();
@@ -60,13 +59,13 @@ namespace Kernel
 
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
-        IIndividualHumanContext *parent;
         int   diagnostic_type;
         ProbabilityNumber base_specificity;
         ProbabilityNumber base_sensitivity;
         ProbabilityNumber treatment_fraction;
         CountdownTimer days_to_diagnosis; // can go negative if dt is > 1
 
+        EventOrConfig::Enum use_event_or_config;
         IndividualInterventionConfig positive_diagnosis_config;
         EventTrigger positive_diagnosis_event;
 

@@ -1,5 +1,5 @@
 {
     "tests": [
-        { "path" : "149_PyDemo" }
+        { "path" : "Py/149_PyDemo" }
     ]
 }

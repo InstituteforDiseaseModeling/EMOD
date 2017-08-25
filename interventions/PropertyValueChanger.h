@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -24,47 +24,39 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    struct IPropertyValueChangerEffects;
-    /* Keep around as an identity solution??? */
-    struct IPropertyValueChanger : public ISupports
+    class PropertyValueChanger : public BaseIntervention
     {
-        virtual const char * GetTargetPropertyValue() = 0;
-    };
-
-    class PropertyValueChanger : public BaseIntervention, public IPropertyValueChanger
-    {
-        public:
-        bool Configure( const Configuration * config );
+    public:
+        virtual bool Configure( const Configuration * config ) override;
 
         DECLARE_FACTORY_REGISTERED(InterventionFactory, PropertyValueChanger, IDistributableIntervention)
 
     public:
         PropertyValueChanger();
+        PropertyValueChanger( const PropertyValueChanger& rThat );
 
         // factory method
         virtual ~PropertyValueChanger();
 
         // IDistributableIntervention
-        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pCCO );
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
-        virtual void SetContextTo(IIndividualHumanContext *context);
-        virtual void Update(float dt);
+        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pCCO ) override;
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+        virtual void SetContextTo(IIndividualHumanContext *context) override;
+        virtual void Update(float dt) override;
 
-        virtual int AddRef();
-        virtual int Release();
-
-        virtual const char * GetTargetPropertyValue();
+        virtual int AddRef() override;
+        virtual int Release() override;
 
     protected:
-        IIndividualHumanContext *parent;
         jsonConfigurable::ConstrainedString target_property_key;
         jsonConfigurable::ConstrainedString target_property_value;
-        IPropertyValueChangerEffects *ibc;
         float probability;
         float revert;
         float max_duration;
         float action_timer;
         float reversion_timer;
+
+        static void SetActionTimer( PropertyValueChanger* pvc );
 
         DECLARE_SERIALIZABLE(PropertyValueChanger);
     };

@@ -1,0 +1,28 @@
+{
+     "Default_Config_Path": "defaults/malaria_default_config.json", 
+     "CLIMATE": {
+          "FILENAMES": {
+               "Air_Temperature_Filename": "Namawala_single_node_air_temperature_daily.bin", 
+               "Land_Temperature_Filename": "Namawala_single_node_land_temperature_daily.bin", 
+               "Rainfall_Filename": "Namawala_single_node_rainfall_daily.bin", 
+               "Relative_Humidity_Filename": "Namawala_single_node_relative_humidity_daily.bin"
+          }
+     }, 
+     "DEMOGRAPHICS": {
+          "Demographics_Filenames": ["Namawala_single_node_demographics.json"]
+     }, 
+     "MALARIA": {
+          "Antibody_Memory_Level": 0.3, 
+          "Antigen_Switch_Rate": 5e-09, 
+          "Base_Gametocyte_Production_Rate": 0.1, 
+          "Falciparum_MSP_Variants": 100, 
+          "Falciparum_Nonspecific_Types": 20, 
+          "Falciparum_PfEMP1_Variants": 1000
+     }, 
+     "PRIMARY": {
+          "Config_Name": "9_Malaria_Namawala_Production_Burnin", 
+          "Geography": "Namawala", 
+          "Run_Number": 110, 
+          "Simulation_Duration": 1825
+     }
+}

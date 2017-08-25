@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,7 +19,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IRelationship.h"
 #include "Sigmoid.h"
 
-static const char* _module = "STIBarrier";
+SETUP_LOGGING( "STIBarrier" )
 
 namespace Kernel
 {
@@ -49,7 +49,7 @@ namespace Kernel
     {
         LOG_DEBUG_F( "%s\n", __FUNCTION__ );
         initConfig( "Relationship_Type", rel_type, inputJson, MetadataDescriptor::Enum("Relationship_Type", STI_Barrier_Relationship_Type_DESC_TEXT, MDD_ENUM_ARGS(RelationshipType)) );
-        return JsonConfigurable::Configure( inputJson );
+        return BaseIntervention::Configure( inputJson );
     }
 
     bool
@@ -68,6 +68,8 @@ namespace Kernel
 
     void STIBarrier::Update( float dt )
     {
+        if( !BaseIntervention::UpdateIndividualsInterventionStatus() ) return;
+
         LOG_DEBUG_F( "%s\n", __FUNCTION__ );
         Sigmoid probs( early, late, midyear, rate );
         ibc->UpdateSTIBarrierProbabilitiesByType( rel_type, probs );
@@ -78,44 +80,13 @@ namespace Kernel
         IIndividualHumanContext *context
     )
     {
+        BaseIntervention::SetContextTo( context );
+
         if (s_OK != context->GetInterventionsContext()->QueryInterface(GET_IID(ISTIBarrierConsumer), (void**)&ibc) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "ISTIBarrierConsumer", "IIndividualHumanContext" );
         }
     }
-
-
-/*
-    Kernel::QueryResult STIBarrier::QueryInterface( iid_t iid, void **ppinstance )
-    {
-        assert(ppinstance);
-
-        if ( !ppinstance )
-            return e_NULL_POINTER;
-
-        ISupports* foundInterface;
-
-        if ( iid == GET_IID(ISTIBarrier)) 
-            foundInterface = static_cast<ISTIBarrier*>(this);
-        // -->> add support for other I*Consumer interfaces here <<--      
-        else if ( iid == GET_IID(ISupports)) 
-            foundInterface = static_cast<ISupports*>(static_cast<ISTIBarrier*>(this));
-        else
-            foundInterface = 0;
-
-        QueryResult status;
-        if ( !foundInterface )
-            status = e_NOINTERFACE;
-        else
-        {
-            //foundInterface->AddRef();           // not implementing this yet!
-            status = s_OK;
-        }
-
-        *ppinstance = foundInterface;
-        return status;
-
-    }*/
 
     REGISTER_SERIALIZABLE(STIBarrier);
 

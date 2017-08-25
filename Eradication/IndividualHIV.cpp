@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,8 +16,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SusceptibilityHIV.h"
 #include "HIVInterventionsContainer.h"
 #include "SimulationConfig.h"
+#include "EventTrigger.h"
 
-static const char* _module = "IndividualHIV";
+SETUP_LOGGING( "IndividualHIV" )
 
 namespace Kernel
 {
@@ -105,7 +106,8 @@ namespace Kernel
 
     void IndividualHumanHIV::setupInterventionsContainer()
     {
-        interventions = _new_ HIVInterventionsContainer();
+        m_pSTIInterventionsContainer = _new_ HIVInterventionsContainer();
+        interventions = m_pSTIInterventionsContainer;
     }
 
     bool IndividualHumanHIV::HasHIV() const
@@ -173,21 +175,11 @@ namespace Kernel
         {
             if( ((m_age - dt) < SIX_WEEKS) && (SIX_WEEKS <= m_age) )
             {
-                INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-                if (parent->GetEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster) != s_OK)
-                {
-                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()", "INodeTriggeredInterventionConsumer", "IIndividualHumanEventContext" );
-                }
-                broadcaster->TriggerNodeEventObservers( GetEventContext(), IndividualEventTriggerType::SixWeeksOld );
+                broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::SixWeeksOld );
             }
             else if( ((m_age - dt) < EIGHTEEN_MONTHS) && (EIGHTEEN_MONTHS <= m_age) )
             {
-                INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-                if (parent->GetEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster) != s_OK)
-                {
-                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()", "INodeTriggeredInterventionConsumer", "IIndividualHumanEventContext" );
-                }
-                broadcaster->TriggerNodeEventObservers( GetEventContext(), IndividualEventTriggerType::EighteenMonthsOld );
+                broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::EighteenMonthsOld );
             }
         }
     }
@@ -202,24 +194,14 @@ namespace Kernel
                                           ((DAYSPERWEEK*WEEKS_FOR_GESTATION - TWELVE_WEEKS) <= pregnancy_timer) )
             {
                 LOG_DEBUG_F( "Hit 12 weeks in pregnancy with pregnancy_timer of %f\n", pregnancy_timer );
-                INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-                if (parent->GetEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster) != s_OK)
-                {
-                    throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()", "INodeTriggeredInterventionConsumer", "IIndividualHumanEventContext");
-                }
-                broadcaster->TriggerNodeEventObservers( GetEventContext(), IndividualEventTriggerType::TwelveWeeksPregnant);
+                broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::TwelveWeeksPregnant);
             }
 
             if( ((pregnancy_timer - dt) < (DAYSPERWEEK*WEEKS_FOR_GESTATION - FOURTEEN_WEEKS)) && 
                                           ((DAYSPERWEEK*WEEKS_FOR_GESTATION - FOURTEEN_WEEKS) <= pregnancy_timer) )
             {
                 LOG_DEBUG_F( "Hit 14 weeks in pregnancy with pregnancy_timer of %f\n", pregnancy_timer );
-                INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-                if (parent->GetEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster) != s_OK)
-                {
-                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()", "INodeTriggeredInterventionConsumer", "IIndividualHumanEventContext" );
-                }
-                broadcaster->TriggerNodeEventObservers( GetEventContext(), IndividualEventTriggerType::FourteenWeeksPregnant );
+                broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::FourteenWeeksPregnant );
             }
             else
             {

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,7 +16,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationEventContext.h"
 #include "Debug.h"
 
-static const char * _module = "NodeVectorEventContext";
+SETUP_LOGGING( "NodeVectorEventContext" )
 
 namespace Kernel
 {
@@ -35,6 +35,7 @@ namespace Kernel
     , pOviTrapKilling(0)
     , pAnimalFeedKilling(0)
     , pOutdoorRestKilling(0)
+    , pIndoorKilling( 0.0f )
     { 
     }
 
@@ -60,9 +61,9 @@ namespace Kernel
 
         // -->> add support for other I*Consumer interfaces here <<--      
         else
-            foundInterface = 0;
+            foundInterface = nullptr;
 
-        QueryResult status = e_NOINTERFACE;
+        QueryResult status; // = e_NOINTERFACE;
         if ( !foundInterface )
         {
             //status = e_NOINTERFACE;
@@ -190,6 +191,11 @@ namespace Kernel
         pOutdoorRestKilling = killing;
     }
 
+    void NodeVectorEventContextHost::UpdateIndoorKilling( float killing )
+    {
+        pIndoorKilling = killing;
+    }
+
     //
     // INodeVectorInterventionEffects; (The Getters)
     // 
@@ -284,6 +290,11 @@ namespace Kernel
     float NodeVectorEventContextHost::GetOutdoorRestKilling()
     {
         return pOutdoorRestKilling;
+    }
+
+    float NodeVectorEventContextHost::GetIndoorKilling()
+    {
+        return pIndoorKilling;
     }
 
     void NodeVectorEventContextHost::ReleaseMosquitoes(

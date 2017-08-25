@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,6 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <list>
 #include "ISerializable.h"
 #include "VectorEnums.h"
+#include "Types.h"
 
 class Configuration;
 
@@ -33,8 +34,8 @@ namespace Kernel
         virtual void Update( float dt, INodeContext* node, const std::string& species ) = 0;
 
         virtual VectorHabitatType::Enum  GetVectorHabitatType()                   const = 0;
-        virtual float                    GetMaximumLarvalCapacity()               const = 0;
-        virtual float                    GetCurrentLarvalCapacity()               const = 0;
+        virtual NonNegativeFloat         GetMaximumLarvalCapacity()               const = 0;
+        virtual NonNegativeFloat         GetCurrentLarvalCapacity()               const = 0;
         virtual int32_t                  GetTotalLarvaCount(TimeStepIndex index)  const = 0;
 
         virtual void                     AddLarva(int32_t larva, float progress) = 0;
@@ -45,7 +46,8 @@ namespace Kernel
         virtual float                    GetArtificialLarvalMortality()  const = 0;
         virtual float                    GetLarvicideHabitatScaling()    const = 0;
         virtual float                    GetRainfallMortality()          const = 0;
-        virtual float                    GetEggCrowdingCorrection()      const = 0;
+
+        virtual float GetEggCrowdingCorrection( bool refresh = false ) = 0;
 
         virtual float GetLocalLarvalGrowthModifier() const = 0;
         virtual float GetLocalLarvalMortality(float species_aquatic_mortality, float progress) const = 0;

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IHIVInterventionsContainer.h"
 #include "SimulationConfig.h"
 
-static const char * _module = "NChooserEventCoordinatorHIV";
+SETUP_LOGGING( "NChooserEventCoordinatorHIV" )
 
 namespace Kernel
 {
@@ -156,10 +156,10 @@ namespace Kernel
                 return !pSTI->IsCircumcised();
 
             case TargetedDiseaseState::Has_Intervention:
-                return (pHEC->GetInterventionsContext()->GetInterventionsByName( rHasInterventionName ).size() > 0);
+                return pHEC->GetInterventionsContext()->ContainsExistingByName( rHasInterventionName );
 
             case TargetedDiseaseState::Not_Have_Intervention:
-                return !(pHEC->GetInterventionsContext()->GetInterventionsByName( rHasInterventionName ).size() > 0);
+                return !(pHEC->GetInterventionsContext()->ContainsExistingByName( rHasInterventionName ));
                 break;
 
             default:

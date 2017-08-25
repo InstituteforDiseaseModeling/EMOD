@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,7 +17,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "INodeContextFake.h"
 #include "IndividualHumanContextFake.h"
 #include "RandomFake.h"
-#include "JsonObjectDemog.h"
 #include "IdmMpi.h"
 
 using namespace Kernel; 
@@ -49,9 +48,6 @@ SUITE(MigrationTest)
 
             m_pMpi = IdmMpi::MessageInterface::CreateNull();
 
-            int argc      = 1;
-            char* exeName = "componentTests.exe";
-            char** argv   = &exeName;
             string configFilename("testdata/MigrationTest/config.json");
             string inputPath("testdata/MigrationTest");
             string outputPath("testdata/MigrationTest/output");
@@ -131,9 +127,6 @@ SUITE(MigrationTest)
             m_RandomFake.SetUL( 2576980377 ); // 0.6
 
             IndividualHumanContextFake traveler( nullptr, &nc_2, nullptr, nullptr );
-            suids::suid destination = suids::nil_suid();
-            MigrationType::Enum mig_type = MigrationType::NO_MIGRATION ;
-            float trip_time = -1.0 ;
 
             // ------------------------------------------------------------------
             // --- Test that male < 15 will NOT migrate
@@ -141,9 +134,9 @@ SUITE(MigrationTest)
             traveler.SetAge( 10.0*DAYSPERYEAR );
             traveler.SetGender( Gender::MALE );
 
-            destination = suids::nil_suid();
-            mig_type    = MigrationType::NO_MIGRATION;
-            trip_time   = -1.0;
+            suids::suid destination = suids::nil_suid();
+            MigrationType::Enum mig_type = MigrationType::NO_MIGRATION;
+            float trip_time = -1.0;
 
             p_mi_2->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
 
@@ -221,7 +214,7 @@ SUITE(MigrationTest)
         catch( DetailedException& re )
         {
             PrintDebug( re.GetMsg() );
-            CHECK( FALSE );
+            CHECK( false );
         }
     }
 
@@ -248,7 +241,7 @@ SUITE(MigrationTest)
 
 
             std::string idreference = "ABC" ;
-            unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( p_config.get(), 
+            unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( p_config.get(),
                                                                                                      idreference, 
                                                                                                      SimType::GENERIC_SIM,
                                                                                                      MigrationStructure::FIXED_RATE_MIGRATION,
@@ -343,9 +336,6 @@ SUITE(MigrationTest)
             m_RandomFake.SetUL( 2576980377 ); // 0.6
 
             IndividualHumanContextFake traveler( nullptr, &nc_2, nullptr, nullptr );
-            suids::suid destination = suids::nil_suid();
-            MigrationType::Enum mig_type = MigrationType::NO_MIGRATION ;
-            float trip_time = -1.0 ;
 
             // ------------------------------------------------------------------
             // --- Test that male < 15 will NOT migrate
@@ -353,9 +343,9 @@ SUITE(MigrationTest)
             traveler.SetAge( 10.0*DAYSPERYEAR );
             traveler.SetGender( Gender::MALE );
 
-            destination = suids::nil_suid();
-            mig_type    = MigrationType::NO_MIGRATION;
-            trip_time   = -1.0;
+            suids::suid destination = suids::nil_suid();
+            MigrationType::Enum mig_type = MigrationType::NO_MIGRATION;
+            float trip_time = -1.0;
 
             p_mi_2->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
 
@@ -519,7 +509,7 @@ SUITE(MigrationTest)
         catch( DetailedException& re )
         {
             PrintDebug( re.GetMsg() );
-            CHECK( FALSE );
+            CHECK( false );
         }
     }
 
@@ -540,7 +530,7 @@ SUITE(MigrationTest)
 
 
             std::string idreference = "Household-Scenario-Small" ;
-            unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config, 
+            unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config,
                                                                                                      idreference, 
                                                                                                      SimType::GENERIC_SIM,
                                                                                                      MigrationStructure::FIXED_RATE_MIGRATION,
@@ -648,7 +638,7 @@ SUITE(MigrationTest)
         catch( DetailedException& re )
         {
             PrintDebug( re.GetMsg() );
-            CHECK( FALSE );
+            CHECK( false );
         }
     }
 
@@ -668,7 +658,7 @@ SUITE(MigrationTest)
             }
 
             std::string idreference = "Default" ;
-            unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config, 
+            unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config,
                                                                                                      idreference, 
                                                                                                      SimType::GENERIC_SIM,
                                                                                                      MigrationStructure::FIXED_RATE_MIGRATION,
@@ -683,7 +673,7 @@ SUITE(MigrationTest)
             INodeContextFake nc_1( nodeid_suid_map.left.at(1) ) ;
             unique_ptr<IMigrationInfo> p_mi( p_mf->CreateMigrationInfo( &nc_1, nodeid_suid_map ) );
 
-            CHECK( p_mi->IsHeterogeneityEnabled() );
+            CHECK( !p_mi->IsHeterogeneityEnabled() );
 
             const std::vector<suids::suid>& reachable_nodes = p_mi->GetReachableNodes();
             CHECK_EQUAL( 8, reachable_nodes.size() );
@@ -761,7 +751,7 @@ SUITE(MigrationTest)
         catch( DetailedException& re )
         {
             PrintDebug( re.GetMsg() );
-            CHECK( FALSE );
+            CHECK( false );
         }
     }
 
@@ -784,7 +774,7 @@ SUITE(MigrationTest)
             }
 
             std::string idreference = "Default" ;
-            unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config, 
+            unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config,
                                                                                                      idreference, 
                                                                                                      SimType::GENERIC_SIM,
                                                                                                      MigrationStructure::FIXED_RATE_MIGRATION,
@@ -799,7 +789,7 @@ SUITE(MigrationTest)
             INodeContextFake nc_1( nodeid_suid_map.left.at(1) ) ;
             unique_ptr<IMigrationInfo> p_mi( p_mf->CreateMigrationInfo( &nc_1, nodeid_suid_map ) );
 
-            CHECK( p_mi->IsHeterogeneityEnabled() );
+            CHECK( !p_mi->IsHeterogeneityEnabled() );
 
             const std::vector<suids::suid>& reachable_nodes_1 = p_mi->GetReachableNodes();
             CHECK_EQUAL( 8, reachable_nodes_1.size() );
@@ -866,7 +856,7 @@ SUITE(MigrationTest)
         catch( DetailedException& re )
         {
             PrintDebug( re.GetMsg() );
-            CHECK( FALSE );
+            CHECK( false );
         }
     }
 
@@ -886,7 +876,7 @@ SUITE(MigrationTest)
             }
 
             std::string idreference = "Household-Scenario-Small" ;
-            unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config, 
+            unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config,
                                                                                                      idreference, 
                                                                                                      SimType::VECTOR_SIM,
                                                                                                      MigrationStructure::FIXED_RATE_MIGRATION,
@@ -1019,7 +1009,7 @@ SUITE(MigrationTest)
         catch( DetailedException& re )
         {
             printf("%s\n",re.GetMsg());
-            CHECK( FALSE );
+            CHECK( false );
         }
     }
 
@@ -1044,11 +1034,11 @@ SUITE(MigrationTest)
                 nodeid_suid_map.insert(nodeid_suid_pair(node_id, node_suid));
             }
 
-            unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( p_config.get(), 
-                                                                                                     rIdReference, 
+            unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( p_config.get(),
+                                                                                                     rIdReference,
                                                                                                      SimType::GENERIC_SIM,
                                                                                                      MigrationStructure::FIXED_RATE_MIGRATION,
-                                                                                                     false, 
+                                                                                                     false,
                                                                                                      10 ) );
 
             suids::suid node_suid;

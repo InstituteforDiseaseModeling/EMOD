@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,8 +13,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Debug.h"
 #include "Log.h"
 #include "ISTISimulationContext.h"
+#include "RelationshipGroups.h"
 
-static const char * _module = "RelationshipMgr";
+SETUP_LOGGING( "RelationshipMgr" )
 
 static void
     howlong(
@@ -118,7 +119,7 @@ namespace Kernel
     {
         clock_t before = clock();
         release_assert( parent );
-        nodePools = parent; // don't need to do this over and over do we?
+        nodePools = static_cast<RelationshipGroups*>(parent); // don't need to do this over and over do we?
 
         // update all existing relationships
         LOG_INFO_F( "%s: Updating %d relationships\n", __FUNCTION__, nodeRelationships.size() );
@@ -332,13 +333,13 @@ namespace Kernel
     )
     {
         std::string propertyKey = relationship->GetPropertyKey();
-        std::string propertyValue = relationship->GetPropertyName();
+        //std::string propertyValue = relationship->GetPropertyName();
         ScalingMatrix_t scalingMatrix; // { 1 }
         MatrixRow_t matrixRow;
         matrixRow.push_back( 1.0f );
         scalingMatrix.push_back( matrixRow );
-        relationshipListsForMP[ propertyKey ].push_back( propertyValue.c_str() );
-        nodePools->AddProperty( propertyKey.c_str(), relationshipListsForMP[ propertyKey ], scalingMatrix, "contact" );
+        relationshipListsForMP[ propertyKey ].push_back( relationship->GetSuid().data );
+        nodePools->AddProperty( propertyKey, relationshipListsForMP[ propertyKey ], scalingMatrix, "contact" );
     }
 
 #define MAX_DEAD_REL_QUEUE_SIZE 200 // found by sweeping, might make config param
@@ -367,12 +368,11 @@ namespace Kernel
         {
             // Doing batch delete of dead relationships for slot
             deadRelsThisType.sort();
-            std::list< std::string > newList;
+            std::list< uint32_t > newList;
             auto& current = relationshipListsForMP.at( thisRelTypeKey );
             while( current.size() > 0 )
             {
-                auto rel_name = current.front();
-                auto rel_name_as_int = atoi( rel_name.c_str() );
+                auto rel_name_as_int = current.front();
 
                 current.pop_front(); // removed from current, either dead or gets put in newList
                 if( deadRelsThisType.size() > 0 && rel_name_as_int == deadRelsThisType.front() )
@@ -381,7 +381,7 @@ namespace Kernel
                 }
                 else
                 {
-                    newList.push_back( rel_name );
+                    newList.push_back( rel_name_as_int );
                 }
             }
             relationshipListsForMP[ thisRelTypeKey ] = newList;

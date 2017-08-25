@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,19 +13,21 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Environment.h"
 #include "RANDOM.h"
 #include "Log.h"
+#include "Debug.h"
 
 
-static const char * _module = "MathFunctions";
+SETUP_LOGGING( "MathFunctions" )
 
 namespace Kernel 
 {
 
     Probability * Probability::_instance = nullptr;
-    double Probability::fromDistribution(DistributionFunction::Enum distribution_flag, double param1, double param2, double default_value)
+    double Probability::fromDistribution(DistributionFunction::Enum distribution_flag, double param1, double param2, double param3, double default_value)
     {
         //std::cout << __FUNCTION__ << " called with distribution = " << distribution_flag << std::endl;
         double value;
         auto rng = Environment::getInstance()->RNG;
+        release_assert( rng );
 
         switch (distribution_flag)
         {
@@ -103,6 +105,31 @@ namespace Kernel
             value = rng->Weibull(param1, param2);
             break;
         
+        case DistributionFunction::DUAL_TIMESCALE_DURATION:
+            // double exponential distribution - param1 (decay length) for the first time scale and param2 (decay length) for the second time scale.
+            // param3 is percetage of time the distribution is for the first time scale
+            if( param1 <= 0 )
+            {
+                throw ConfigurationRangeException( __FILE__, __LINE__, __FUNCTION__, "param1 (DUAL_TIMESCALE_DURATION:decay length)", param1, 0 );
+            }
+            if( param2 <= 0 )
+            {
+                throw ConfigurationRangeException( __FILE__, __LINE__, __FUNCTION__, "param2 (DUAL_TIMESCALE_DURATION:decay length)", param2, 0 );
+            }
+            if( (param3 < 0) || (1 < param3) )
+            {
+                throw ConfigurationRangeException( __FILE__, __LINE__, __FUNCTION__, "param3 (DUAL_TIMESCALE_DURATION:percentage of Time Scale #1)", param3, 0 );
+            }
+            if( (param3 == 1.0) || ((param3 > 0.0) && (param3 >= rng->e())) )
+            {
+                value = rng->expdist( param1 );
+            }
+            else
+            {
+                value = rng->expdist( param2 );
+            }
+            break;
+
         default:
             LOG_WARN_F("Do not recognize distribution type %d.  Check demographics input file.\n", distribution_flag);
             value = default_value; 

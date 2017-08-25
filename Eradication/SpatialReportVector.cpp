@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -27,7 +27,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 using namespace std;
 
-static const char * _module = "SpatialReportVector";
+SETUP_LOGGING( "SpatialReportVector" )
 
 namespace Kernel {
 
@@ -92,7 +92,7 @@ SpatialReportVector::LogNodeData(
         throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNC", "INodeVector", "INodeContext" );
     }
 
-    std::list<VectorPopulation*> vectorPopulations = pNV->GetVectorPopulations();
+    const VectorPopulationReportingList_t& vectorPopulations = pNV->GetVectorPopulationReporting();
 
     // TBD
     for (const auto vectorpopulation : vectorPopulations)

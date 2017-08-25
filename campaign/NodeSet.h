@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -32,6 +32,7 @@ namespace Kernel
     struct IDMAPI INodeSet : public ISerializable
     {
         virtual bool Contains(INodeEventContext *ndc) = 0; // must provide access to demographics id, lat, long, etc
+        virtual std::vector<ExternalNodeId_t> IsSubset(const std::vector<ExternalNodeId_t>& demographic_node_ids) = 0;
     };
 
     class IDMAPI INodeSetFactory
@@ -76,6 +77,7 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
         
         virtual bool Contains(INodeEventContext *ndc);
+        virtual std::vector<ExternalNodeId_t> IsSubset(const std::vector<ExternalNodeId_t>& demographic_node_ids);
 
     protected:
 #pragma warning( push )
@@ -93,6 +95,7 @@ namespace Kernel
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
         DECLARE_QUERY_INTERFACE()
         virtual bool Contains(INodeEventContext *ndc);
+        virtual std::vector<ExternalNodeId_t> IsSubset(const std::vector<ExternalNodeId_t>& demographic_node_ids);
 
     protected:
         void parseEmodFormat();
@@ -127,6 +130,7 @@ namespace Kernel
             NodeListConfig() {}
             virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
             virtual json::QuickBuilder GetSchema() override;
+            virtual bool  HasValidDefault() const override { return false; }
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
             tNodeIdList nodelist;
@@ -142,6 +146,7 @@ namespace Kernel
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
         DECLARE_QUERY_INTERFACE()
         virtual bool Contains(INodeEventContext *ndc);
+        virtual std::vector<ExternalNodeId_t> IsSubset(const std::vector<ExternalNodeId_t>& demographic_node_ids);
 
     protected:
         NodeListConfig nodelist_config;

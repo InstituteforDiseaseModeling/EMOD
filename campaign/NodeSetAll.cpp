@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,7 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include "NodeSet.h"
 
-static const char* _module = "NodeSetAll";
+SETUP_LOGGING( "NodeSetAll" )
 
 namespace Kernel
 {
@@ -21,20 +21,20 @@ namespace Kernel
 
     IMPL_QUERY_INTERFACE2(NodeSetAll, INodeSet, IConfigurable)
 
-    bool
-    NodeSetAll::Configure(
-        const Configuration * pInputJson
-    )
+    bool NodeSetAll::Configure(const Configuration * pInputJson)
     {
         return true; // nothing to configure
     }
 
-    bool
-    NodeSetAll::Contains(
-        INodeEventContext *ndc
-    )
+    bool NodeSetAll::Contains(INodeEventContext *ndc)
     {
         return true;
+    }
+
+    std::vector<ExternalNodeId_t> NodeSetAll::IsSubset(const std::vector<ExternalNodeId_t>& demographic_node_ids)
+    {
+        std::vector<ExternalNodeId_t> dummy;
+        return dummy;
     }
 
     REGISTER_SERIALIZABLE(NodeSetAll);

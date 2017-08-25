@@ -5,21 +5,6 @@
         "Run_Number": 54,
         "Simulation_Duration": 365,
         "Simulation_Timestep": 1,
-        "Valid_Cascade_States": [ 
-            "", 
-            "ARTStaging", 
-            "LinkingToART", 
-            "LinkingToPreART", 
-            "OnART", 
-            "OnPreART", 
-            "HCTTestingLoop", 
-            "HCTUptakeAtDebut", 
-            "HCTUptakePostDebut", 
-            "TestingOnANC", 
-            "TestingOnChild6w", 
-            "TestingOnSymptomatic", 
-            "LostForever" 
-        ],
         "alpha_____________DEMOGRAPHICS___________": "",
         "Base_Population_Scale_Factor": 0.002,
         "Demographics_Filenames": [

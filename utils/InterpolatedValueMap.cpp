@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,7 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Log.h"
 
-static const char* _module = "InterpolatedValueMap";
+SETUP_LOGGING( "InterpolatedValueMap" )
 
 static const std::string TIMES = "Times" ;
 static const std::string VALUES = "Values" ;
@@ -55,7 +55,7 @@ namespace Kernel
         std::vector< float > times, values;
 
         // Temporary object created so we can 'operate' on json with the desired tools
-        auto config = Configuration::CopyFromElement( (*inputJson)[key] );
+        auto config = Configuration::CopyFromElement( (*inputJson)[key], inputJson->GetDataLocation() );
         // Do not copy this pattern. This 'low-level' API to parse out values is not preferred.
         times = GET_CONFIG_VECTOR_FLOAT( config, TIMES );
         values = GET_CONFIG_VECTOR_FLOAT( config, VALUES );

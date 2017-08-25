@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "MathFunctions.h"
 #include "Migration.h"
 
-static const char * _module = "BroadcastEventToOtherNodes";
+SETUP_LOGGING( "BroadcastEventToOtherNodes" )
 
 namespace Kernel
 {
@@ -32,7 +32,7 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        initConfigTypeMap( "Event_Trigger", &event_trigger, BETON_Event_Trigger_DESC_TEXT, NO_TRIGGER_STR );
+        initConfigTypeMap( "Event_Trigger", &event_trigger, BETON_Event_Trigger_DESC_TEXT );
         initConfigTypeMap( "Include_My_Node", &include_my_node, BETON_Include_My_Node_DESC_TEXT, false );
 
         initConfig( "Node_Selection_Type", node_selection_type, inputJson, MetadataDescriptor::Enum("Node_Selection_Type", BETON_Node_Selection_Type_DESC_TEXT, MDD_ENUM_ARGS(NodeSelectionType)) );
@@ -43,9 +43,9 @@ namespace Kernel
             initConfigTypeMap( "Max_Distance_To_Other_Nodes_Km", &max_distance_km, BETON_Distance_DESC_TEXT, 0, FLT_MAX, FLT_MAX );
         }
 
-        bool ret = JsonConfigurable::Configure( inputJson );
+        bool ret = BaseIntervention::Configure( inputJson );
 
-        if( !JsonConfigurable::_dryrun && (event_trigger == NO_TRIGGER_STR) )
+        if( !JsonConfigurable::_dryrun && event_trigger.IsUninitialized() )
         {
             LOG_WARN_F("BroadcastEventToOtherNodes was configured with NoTrigger as the Broadcast_Event.  This special event will not be broadcast.");
         }
@@ -53,9 +53,9 @@ namespace Kernel
     }
 
     BroadcastEventToOtherNodes::BroadcastEventToOtherNodes()
-        : parent( nullptr )
+        : BaseIntervention()
         , p_node_context( nullptr )
-        , event_trigger( NO_TRIGGER_STR )
+        , event_trigger()
         , include_my_node( false )
         , node_selection_type( NodeSelectionType::DISTANCE_ONLY )
         , max_distance_km( 0.0 )
@@ -64,7 +64,6 @@ namespace Kernel
 
     BroadcastEventToOtherNodes::BroadcastEventToOtherNodes( const BroadcastEventToOtherNodes& master )
         :BaseIntervention( master )
-        , parent( nullptr )
         , p_node_context( nullptr )
         , event_trigger( master.event_trigger )
         , include_my_node( master.include_my_node )
@@ -75,6 +74,8 @@ namespace Kernel
 
     void BroadcastEventToOtherNodes::Update( float dt )
     {
+        if( !BaseIntervention::UpdateIndividualsInterventionStatus() ) return;
+
         p_node_context->GetParent()->DistributeEventToOtherNodes( event_trigger, this );
 
         // expire the intervention
@@ -83,7 +84,8 @@ namespace Kernel
 
     void BroadcastEventToOtherNodes::SetContextTo(IIndividualHumanContext *context)
     { 
-        parent = context; 
+        BaseIntervention::SetContextTo( context );
+
         p_node_context = parent->GetEventContext()->GetNodeEventContext()->GetNodeContext();
     }
 

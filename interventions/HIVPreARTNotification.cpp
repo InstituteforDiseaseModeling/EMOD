@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,10 +16,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "STIInterventionsContainer.h"
 
-#include "IHIVInterventionsContainer.h" // for time-date util function and access into IHIVCascadeOfCare
+#include "IHIVInterventionsContainer.h" // for time-date util function
 #include "IIndividualHumanHIV.h"
 
-static const char * _module = "HIVPreARTNotification";
+SETUP_LOGGING( "HIVPreARTNotification" )
 
 namespace Kernel
 {
@@ -44,7 +44,7 @@ namespace Kernel
     {
         initConfigTypeMap("Starting_PreART", &startingPreART, HIV_Starting_PreART_DESC_TEXT , true);
 
-        return JsonConfigurable::Configure( inputJson );
+        return BaseIntervention::Configure( inputJson );
     }
 
     bool HIVPreARTNotification::Distribute(
@@ -52,27 +52,32 @@ namespace Kernel
         ICampaignCostObserver * const pICCO
     )
     {
-        IIndividualHumanContext *parent = context->GetParent();
-        LOG_DEBUG_F( "Individual %d is getting tested.\n", parent->GetSuid().data );
-
-        IIndividualHumanHIV * hiv_parent = nullptr;
-        if (parent->QueryInterface(GET_IID(IIndividualHumanHIV), (void**)&hiv_parent) != s_OK)
+        bool distributed = BaseIntervention::Distribute( context, pICCO );
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanHIV", "IIndividualHumanContext" );
-        }
-        IHIVMedicalHistory * med_parent = nullptr;
-        if (parent->GetInterventionsContext()->QueryInterface(GET_IID(IHIVMedicalHistory), (void**)&med_parent) != s_OK)
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IHIVMedicalHistory", "IIndividualHumanContext" );
-        }
+            IIndividualHumanContext *parent = context->GetParent();
+            LOG_DEBUG_F( "Individual %d is getting tested.\n", parent->GetSuid().data );
 
-        if( startingPreART ) {
-            med_parent->OnBeginPreART();
-        } else {
-            med_parent->OnEndPreART();
-        }
+            IIndividualHumanHIV * hiv_parent = nullptr;
+            if (parent->QueryInterface(GET_IID(IIndividualHumanHIV), (void**)&hiv_parent) != s_OK)
+            {
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanHIV", "IIndividualHumanContext" );
+            }
+            IHIVMedicalHistory * med_parent = nullptr;
+            if (parent->GetInterventionsContext()->QueryInterface(GET_IID(IHIVMedicalHistory), (void**)&med_parent) != s_OK)
+            {
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IHIVMedicalHistory", "IIndividualHumanContext" );
+            }
 
-        return BaseIntervention::Distribute( context, pICCO );
+            if( startingPreART ) 
+            {
+                med_parent->OnBeginPreART();
+            } 
+            else 
+            {
+                med_parent->OnEndPreART();
+            }
+        }
+        return distributed;
     }
 
     void HIVPreARTNotification::Update( float dt )

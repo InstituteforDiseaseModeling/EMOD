@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "INodeContext.h"
 #include "StrainIdentity.h"
 
-static const char * _module = "VectorCohort";
+//SETUP_LOGGING( "VectorCohort" )
 
 namespace Kernel
 {
@@ -32,7 +32,7 @@ namespace Kernel
     {
     }
 
-    VectorCohort::VectorCohort(float _progress, uint32_t _population, VectorMatingStructure _vector_genetics)
+    VectorCohort::VectorCohort(float _progress, uint32_t _population, const VectorMatingStructure& _vector_genetics)
         : vector_genetics(_vector_genetics)
         , progress(_progress)
         , population(_population)
@@ -43,7 +43,7 @@ namespace Kernel
     {
     }
 
-    VectorCohort *VectorCohort::CreateCohort(float progress, uint32_t population, VectorMatingStructure vector_genetics)
+    VectorCohort *VectorCohort::CreateCohort(float progress, uint32_t population, const VectorMatingStructure& vector_genetics)
     {
         VectorCohort *newqueue = _new_ VectorCohort(progress, population, vector_genetics);
         newqueue->Initialize();
@@ -51,12 +51,13 @@ namespace Kernel
         return newqueue;
     }
 
-    const StrainIdentity* VectorCohort::GetStrainIdentity() const
+    static StrainIdentity static_strain;
+
+    const IStrainIdentity& VectorCohort::GetStrainIdentity() const
     {
         // dummy strain identity for cohort model
         // derived VectorCohortIndividual will actually keep track of strains
-        // memory is freed after contagion is queued in VectorPopulation::ProcessFeedingCycle
-        return _new_ StrainIdentity();
+        return static_strain;
     }
 
     void VectorCohort::ImmigrateTo(INodeContext* destination_node)
@@ -99,7 +100,7 @@ namespace Kernel
         population = new_pop;
     }
 
-    double 
+    float 
     VectorCohort::GetProgress() const
     {
         return progress;
@@ -112,7 +113,7 @@ namespace Kernel
     }
 
     void
-    VectorCohort::IncreaseProgress( double delta )
+    VectorCohort::IncreaseProgress( float delta )
     {
         progress += delta;
     }

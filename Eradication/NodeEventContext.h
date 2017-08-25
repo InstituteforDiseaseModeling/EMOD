@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,7 +11,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include <string>
 #include <list>
-#include <vector>
 
 #include "IdmApi.h"
 #include "BoostLibWrapper.h"
@@ -23,7 +22,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "RANDOM.h"
 #include "IdmDateTime.h"
 #include "Contexts.h"
-#include "StrainIdentity.h"
 #include "IndividualEventContext.h"
 #include "Interventions.h" // for IIndividualHumanEventObserver
 
@@ -31,6 +29,7 @@ namespace Kernel
 {
     struct NodeDemographics;
     class Node;
+    class StrainIdentity;
     
     struct INodeContext;
     class IndividualHuman;
@@ -56,6 +55,7 @@ namespace Kernel
     struct IVisitIndividual
     {
         virtual bool visitIndividualCallback( IIndividualHumanEventContext *ihec, float & incrementalCostOut, ICampaignCostObserver * pICCO ) = 0;
+        virtual ~IVisitIndividual() {}
     };
 
     struct IDMAPI INodeEventContext : public ISupports 

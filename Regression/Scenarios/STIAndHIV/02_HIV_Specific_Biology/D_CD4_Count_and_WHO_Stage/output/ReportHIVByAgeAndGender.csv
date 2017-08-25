@@ -1,4 +1,4 @@
-Year, NodeId, Gender, Age, Population, Infected, Newly Infected, On_ART, Died, Died_from_HIV, Tested Past Year or On_ART, Tested Ever HIVPos, Tested Ever HIVNeg, Tested Positive, Tested Negative
+Year, NodeId, Gender, Age, Population, Infected, Newly Infected, On_ART, Died, Died_from_HIV, Tested Past Year or On_ART, Tested Ever, Diagnosed, Newly Tested Positive, Newly Tested Negative
 2000.49,1,0,0,44,0,0,0,0,0,0,0,0,0,0
 2000.49,1,0,1,0,0,0,0,0,0,0,0,0,0,0
 2000.49,1,0,2,0,0,0,0,0,0,0,0,0,0,0

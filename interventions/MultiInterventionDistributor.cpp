@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,8 +10,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include "Contexts.h"
 #include "MultiInterventionDistributor.h"
+#include "IndividualEventContext.h"
 
-static const char * _module = "MultiInterventionDistributor";
+SETUP_LOGGING( "MultiInterventionDistributor" )
 
 namespace Kernel
 {
@@ -28,16 +29,16 @@ namespace Kernel
     {
         initConfigComplexType("Intervention_List", &intervention_list, MID_Intervention_List_DESC_TEXT);
 
-        bool ret = JsonConfigurable::Configure( inputJson );
+        bool ret = BaseIntervention::Configure( inputJson );
         if( ret )
         {
-            InterventionValidator::ValidateInterventionArray( intervention_list._json );
+            InterventionValidator::ValidateInterventionArray( intervention_list._json, inputJson->GetDataLocation() );
         }
         return ret ;
     }
 
     MultiInterventionDistributor::MultiInterventionDistributor()
-    : parent(nullptr)
+    : BaseIntervention()
     {
     }
 
@@ -50,13 +51,16 @@ namespace Kernel
         // nothing to do here.  this intervention just distributes its list of interventions and then expires
     }
     
-    void MultiInterventionDistributor::SetContextTo(IIndividualHumanContext *context) 
-    { 
-        parent = context;
-    }
-
     bool MultiInterventionDistributor::Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO )
     {
+        // ----------------------------------------------------------------------------------
+        // --- Putting this here because we don't want anything to happen if we are aborting
+        // ----------------------------------------------------------------------------------
+        if( AbortDueToDisqualifyingInterventionStatus( context->GetParent() ) )
+        {
+            return false;
+        }
+
         // Important: Use the instance method to obtain the intervention factory obj instead of static method to cross the DLL boundary
         IGlobalContext *pGC = nullptr;
         const IInterventionFactory* ifobj = nullptr;
@@ -78,24 +82,30 @@ namespace Kernel
             for( int idx=0; idx<interventions_array.Size(); idx++ )
             {
                 const json::Object& actualIntervention = json_cast<const json::Object&>(interventions_array[idx]);
-                Configuration * tmpConfig = Configuration::CopyFromElement(actualIntervention);
+                Configuration * tmpConfig = Configuration::CopyFromElement( actualIntervention, "campaign" );
                 assert( tmpConfig );
 
                 // Instantiate and distribute interventions
                 LOG_DEBUG_F( "Attempting to instantiate intervention of class %s\n", std::string((*tmpConfig)["class"].As<json::String>()).c_str() );
                 IDistributableIntervention *di = const_cast<IInterventionFactory*>(ifobj)->CreateIntervention(tmpConfig);
-                assert(di);
-                delete tmpConfig;
-                tmpConfig = nullptr;
-
                 if (di)
                 {
                     if (!di->Distribute( context, pICCO ) )
                     {
                         di->Release();
                     }
-                    LOG_DEBUG_F("Distributed an intervention %p\n", di);
                 }
+                else
+                {
+                    INodeDistributableIntervention* ndi = const_cast<IInterventionFactory*>(ifobj)->CreateNDIIntervention( tmpConfig );
+                    release_assert(ndi);
+                    if( !ndi->Distribute( context->GetParent()->GetEventContext()->GetNodeEventContext(), nullptr ) )
+                    {
+                        ndi->Release();
+                    }
+                }
+                delete tmpConfig;
+                tmpConfig = nullptr;
             }
         }
         catch(json::Exception &e)

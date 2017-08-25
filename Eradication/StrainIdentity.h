@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,35 +9,28 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #pragma once
 
-#include "BoostLibWrapper.h"
 #include "IArchive.h"
+#include "IStrainIdentity.h"
 
 namespace Kernel
 {
-    class StrainIdentity
+    class StrainIdentity : public IStrainIdentity
     {
     public:
         StrainIdentity(void);
         StrainIdentity(int initial_antigen, int initial_genome);
+        StrainIdentity( const IStrainIdentity *copy );
         virtual ~StrainIdentity(void);
 
-        int  GetAntigenID(void) const;
-        int  GetGeneticID(void) const;
-        void SetAntigenID(int in_antigenID);
-        void SetGeneticID(int in_geneticID);
+        // IStrainIdentity methods
+        virtual int  GetAntigenID(void) const override;
+        virtual int  GetGeneticID(void) const override;
+        virtual void SetAntigenID(int in_antigenID) override;
+        virtual void SetGeneticID(int in_geneticID) override;
+        virtual void ResolveInfectingStrain( IStrainIdentity* strainId ) const;
 
-        // Order first by antigenID, then by geneticID
-        inline bool operator<(const StrainIdentity& id) const {
-            return ( antigenID <  id.GetAntigenID() ) || 
-                   ( antigenID == id.GetAntigenID() && geneticID < id.GetGeneticID() );
-        }
-
-        inline bool operator>(const StrainIdentity& id) const {
-            return ( antigenID >  id.GetAntigenID() ) || 
-                   ( antigenID == id.GetAntigenID() && geneticID > id.GetGeneticID() );
-        }
-
-        friend IArchive& serialize(IArchive&, StrainIdentity*&);
+        static IArchive& serialize(IArchive&, StrainIdentity*&);
+        static IArchive& serialize(IArchive&, StrainIdentity&);
 
     protected:
         int antigenID;

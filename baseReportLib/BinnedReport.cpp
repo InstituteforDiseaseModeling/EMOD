@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,13 +21,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Sugar.h"
 #include "IIndividualHuman.h"
 #include "ProgVersion.h"
-// clorton #include "RapidJsonImpl.h"
+#include "Serializer.h"
 
 using namespace std;
 using namespace json;
 
-// Module name for logging
-static const char * _module = "BinnedReport"; 
+SETUP_LOGGING( "BinnedReport" )
 
 static const std::string _report_name = "BinnedReport.json";
 
@@ -38,6 +37,7 @@ namespace Kernel {
 const char * BinnedReport::_pop_label = "Population";
 const char * BinnedReport::_infected_label = "Infected";
 const char * BinnedReport::_new_infections_label = "New Infections";
+const char * BinnedReport::_new_reported_infections_label = "New Reported Infections";
 const char * BinnedReport::_disease_deaths_label = "Disease Deaths";
 
 
@@ -60,6 +60,7 @@ BinnedReport::BinnedReport()
     , population_bins(nullptr)
     , infected_bins(nullptr)
     , new_infections_bins(nullptr)
+    , new_reported_infections_bins(nullptr)
     , disease_deaths_bins(nullptr)
     , p_output_augmentor(nullptr)
     , _age_bin_upper_values(nullptr)
@@ -93,6 +94,7 @@ BinnedReport::~BinnedReport()
     delete[] population_bins;
     delete[] infected_bins;
     delete[] new_infections_bins;
+    delete[] new_reported_infections_bins;
     delete[] disease_deaths_bins;
     //p_output_augmentor - do not delete since this class does not own it
 }
@@ -142,6 +144,7 @@ void BinnedReport::initChannelBins()
     population_bins     = new float[num_total_bins];
     infected_bins       = new float[num_total_bins];
     new_infections_bins = new float[num_total_bins];
+    new_reported_infections_bins = new float[num_total_bins];
     disease_deaths_bins = new float[num_total_bins];
 
     clearChannelsBins();
@@ -152,6 +155,7 @@ void BinnedReport::clearChannelsBins()
     memset(population_bins    , 0, num_total_bins * sizeof(float));
     memset(infected_bins      , 0, num_total_bins * sizeof(float));
     memset(new_infections_bins, 0, num_total_bins * sizeof(float));
+    memset(new_reported_infections_bins, 0, num_total_bins * sizeof(float));
     memset(disease_deaths_bins, 0, num_total_bins * sizeof(float));
 }
 
@@ -167,6 +171,7 @@ void BinnedReport::EndTimestep( float currentTime, float dt )
     Accumulate(_pop_label, population_bins);
     Accumulate(_infected_label, infected_bins);
     Accumulate(_new_infections_label, new_infections_bins);
+    //Accumulate(_new_reported_infections_label, new_reported_infections_bins);
     Accumulate(_disease_deaths_label, disease_deaths_bins);
 
     clearChannelsBins();
@@ -241,11 +246,18 @@ void  BinnedReport::LogIndividualData( Kernel::IIndividualHuman* individual )
     if (individual->IsInfected())
     {
         infected_bins[bin_index] += mc_weight;
+    }
 
-        NewInfectionState::_enum nis = individual->GetNewInfectionState();
+    NewInfectionState::_enum nis = individual->GetNewInfectionState();
 
-        if(nis == NewInfectionState::NewAndDetected || nis == NewInfectionState::NewInfection)
-            new_infections_bins[bin_index] += mc_weight;
+    if(nis == NewInfectionState::NewAndDetected || nis == NewInfectionState::NewInfection)
+    {
+        new_infections_bins[bin_index] += mc_weight;
+    }
+
+    if(nis == NewInfectionState::NewAndDetected || nis == NewInfectionState::NewlyDetected)
+    {
+        new_reported_infections_bins[bin_index] += mc_weight;
     }
 
     if(individual->GetStateChange() == HumanStateChange::KilledByInfection) 
@@ -406,7 +418,7 @@ json::Element BinnedReport::formatChannelDataBins(const float data[], std::vecto
         for(int i = 0; i < num_timesteps; i++)
         {
             ChannelDataMap::channel_data_t::value_type val = data[i * num_total_bins];
-            if (boost::math::isnan(val)) val = 0;  // Since NaN isn't part of the json standard, force all NaN values to zero
+            if (std::isnan(val)) val = 0;   // Since NaN isn't part of the json standard, force all NaN values to zero
             arr[i] = Number(val);
         }
     }
@@ -434,7 +446,7 @@ void BinnedReport::formatChannelDataBins(Kernel::IJsonObjectAdapter* pIJsonObj, 
         for(int i = 0; i < num_timesteps; i++)
         {
             ChannelDataMap::channel_data_t::value_type val = data[i * num_total_bins];
-            if (boost::math::isnan(val)) val = 0;  // Since NaN isn't part of the json standard, force all NaN values to zero
+            if (std::isnan(val)) val = 0;   // Since NaN isn't part of the json standard, force all NaN values to zero
             pIJsonObj->Add(val);
         }
         pIJsonObj->EndArray();

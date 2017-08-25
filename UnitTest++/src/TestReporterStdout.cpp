@@ -1,13 +1,13 @@
 #include "TestReporterStdout.h"
 #include <cstdio>
+#include <string>
+#include <sstream>
 
 #include "TestDetails.h"
 
 
 #ifdef WIN32
 #include "windows.h"
-#include <string>
-#include <sstream>
 #endif
 
 namespace UnitTest {
@@ -21,11 +21,10 @@ namespace UnitTest {
 #endif
 
         printf(errorFormat, details.filename, details.lineNumber, details.testName, failure);
-#ifdef WIN32
-        std::wostringstream msg;
+
+        std::stringstream msg;
         msg << details.filename << "(" << details.lineNumber << "): ERROR: Failure in " << details.testName << ": " << failure << "\n" ;
         failure_list.push_back( msg.str() );
-#endif
     }
 
     void TestReporterStdout::ReportTestStart(TestDetails const& /*test*/)
@@ -36,20 +35,27 @@ namespace UnitTest {
     {
     }
 
-    void Print( const std::wstring& rMsg )
+    void Print( const std::string& rMsg )
     {
+        fprintf( stdout, "%s", rMsg.c_str() );
+        fflush( stdout );
+
+        fprintf( stderr, "%s", rMsg.c_str() );
+        fflush( stderr );
+
 #ifdef WIN32
-        OutputDebugStringW( rMsg.c_str() );
+        std::wstring wmsg( rMsg.begin(), rMsg.end() );
+        OutputDebugStringW( wmsg.c_str() );
 #endif
-        std::string msg( rMsg.begin(), rMsg.end() );
-        printf("%s",msg.c_str());
     }
 
     void TestReporterStdout::ReportSummary(int const totalTestCount, int const failedTestCount,
                                            int const failureCount, float secondsElapsed)
     {
-        std::wostringstream msg;
+        std::stringstream msg;
+
         msg << "\n-----------------------------------------------------------------------\n" ;
+        msg << "componentTests\n";
 
         for( int i = 0 ; i < failure_list.size() ; i++ )
         {

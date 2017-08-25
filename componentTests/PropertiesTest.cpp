@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,6 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include <memory> // unique_ptr
 #include "UnitTest++.h"
+#include "common.h"
 #include "INodeContextFake.h"
 
 #include "Properties.h"
@@ -151,13 +152,20 @@ SUITE(PropertiesTest)
 
             std::vector<IndividualProperty*> ip_list = IPFactory::GetInstance()->GetIPList();
             CHECK_EQUAL( 2, ip_list.size() );
-            CHECK_EQUAL( std::string("Accessibility"), ip_list[0]->GetKey().ToString() );
-            CHECK_EQUAL( std::string("Risk"         ), ip_list[1]->GetKey().ToString() );
+            CHECK_EQUAL( std::string("Accessibility"), ip_list[0]->GetKeyAsString() );
+            CHECK_EQUAL( std::string("Risk"         ), ip_list[1]->GetKeyAsString() );
 
-            IPKeyValueContainer ip_values_1 = ip_list[0]->GetValues();
+            IPKeyValueContainer ip_values_1 = ip_list[0]->GetValues<IPKeyValueContainer>();
             CHECK_EQUAL( 2, ip_values_1.Size() );
             CHECK( ip_values_1.Contains( "Accessibility:VaccineTake" ) );
             CHECK( ip_values_1.Contains( "Accessibility:VaccineRefuse" ) );
+
+            IPKeyValueIterator it = ip_values_1.begin();
+            CHECK_CLOSE( 0.85, (*it).GetInitialDistribution( 1 ), 0.001 );
+            ++it;
+            CHECK_CLOSE( 0.15, (*it).GetInitialDistribution( 1 ), 0.001 );
+            ++it;
+            CHECK( it == ip_values_1.end() );
 
             CHECK( ip_list[0]->GetIntraNodeTransmissions( 1 ).HasMatrix() );
             CHECK_EQUAL( std::string("contact"), ip_list[0]->GetIntraNodeTransmissions( 1 ).GetRouteName() );
@@ -169,7 +177,7 @@ SUITE(PropertiesTest)
             CHECK_EQUAL( 0.3f, ip_list[0]->GetIntraNodeTransmissions( 1 ).GetMatrix()[1][0] );
             CHECK_EQUAL( 5.0f, ip_list[0]->GetIntraNodeTransmissions( 1 ).GetMatrix()[1][1] );
 
-            IPKeyValueContainer ip_values_2 = ip_list[1]->GetValues();
+            IPKeyValueContainer ip_values_2 = ip_list[1]->GetValues<IPKeyValueContainer>();
             CHECK_EQUAL( 3, ip_values_2.Size() );
             CHECK(  ip_values_2.Contains( "Risk:HIGH"   ) );
             CHECK(  ip_values_2.Contains( "Risk:MEDIUM" ) );
@@ -179,6 +187,15 @@ SUITE(PropertiesTest)
             CHECK( !ip_list[1]->GetIntraNodeTransmissions( 1 ).HasMatrix() );
             CHECK_EQUAL( std::string("contact"), ip_list[0]->GetIntraNodeTransmissions( 1 ).GetRouteName() );
             CHECK_EQUAL( 0, ip_list[1]->GetIntraNodeTransmissions( 1 ).GetMatrix().size() );
+
+            it = ip_values_2.begin();
+            CHECK_CLOSE( 0.1, (*it).GetInitialDistribution( 1 ), 0.001 );
+            ++it;
+            CHECK_CLOSE( 0.4, (*it).GetInitialDistribution( 1 ), 0.001 );
+            ++it;
+            CHECK_CLOSE( 0.5, (*it).GetInitialDistribution( 1 ), 0.001 );
+            ++it;
+            CHECK( it == ip_values_2.end() );
         }
         catch( DetailedException& e )
         {
@@ -214,13 +231,39 @@ SUITE(PropertiesTest)
 
             std::vector<IndividualProperty*> ip_list = IPFactory::GetInstance()->GetIPList();
             CHECK_EQUAL( 1, ip_list.size() );
-            CHECK_EQUAL( std::string("Age_Bin"), ip_list[0]->GetKey().ToString() );
+            CHECK_EQUAL( std::string("Age_Bin"), ip_list[0]->GetKeyAsString() );
 
-            IPKeyValueContainer ip_values_1 = ip_list[0]->GetValues();
+            IPKeyValueContainer ip_values_1 = ip_list[0]->GetValues<IPKeyValueContainer>();
             CHECK_EQUAL( 3, ip_values_1.Size() );
-            CHECK( ip_values_1.Contains( "Age_Bin:Age_Bin_Property_From_0_To_5" ) );
-            CHECK( ip_values_1.Contains( "Age_Bin:Age_Bin_Property_From_5_To_13" ) );
+            CHECK( ip_values_1.Contains( "Age_Bin:Age_Bin_Property_From_0_To_5"    ) );
+            CHECK( ip_values_1.Contains( "Age_Bin:Age_Bin_Property_From_5_To_13"   ) );
             CHECK( ip_values_1.Contains( "Age_Bin:Age_Bin_Property_From_13_To_125" ) );
+
+
+            IPKeyValueIterator it = ip_values_1.begin();
+            CHECK_EQUAL( "Age_Bin_Property_From_0_To_5", (*it).GetValueAsString() );
+            ++it;
+            CHECK_EQUAL( "Age_Bin_Property_From_5_To_13", (*it).GetValueAsString() );
+            ++it;
+            CHECK_EQUAL( "Age_Bin_Property_From_13_To_125", (*it).GetValueAsString() );
+            ++it;
+            CHECK( it == ip_values_1.end() );
+
+            std::string container_str = ip_values_1.ToString();
+            CHECK_EQUAL( "Age_Bin:Age_Bin_Property_From_0_To_5,Age_Bin:Age_Bin_Property_From_5_To_13,Age_Bin:Age_Bin_Property_From_13_To_125", container_str );
+
+            std::string values_str = ip_values_1.GetValuesToString();
+            CHECK_EQUAL( "Age_Bin_Property_From_0_To_5, Age_Bin_Property_From_5_To_13, Age_Bin_Property_From_13_To_125", values_str );
+
+            std::set<std::string> value_set = ip_values_1.GetValuesToStringSet();
+            auto value_set_it = value_set.begin();
+            CHECK_EQUAL( "Age_Bin_Property_From_0_To_5"   , *value_set_it );
+            ++value_set_it;
+            CHECK_EQUAL( "Age_Bin_Property_From_13_To_125", *value_set_it );
+            ++value_set_it;
+            CHECK_EQUAL( "Age_Bin_Property_From_5_To_13", *value_set_it );
+            ++value_set_it;
+            CHECK( value_set_it == value_set.end() );
 
             CHECK( ip_list[0]->GetIntraNodeTransmissions( 1 ).HasMatrix() );
             CHECK_EQUAL( std::string("contact"), ip_list[0]->GetIntraNodeTransmissions( 1 ).GetRouteName() );
@@ -303,9 +346,9 @@ SUITE(PropertiesTest)
 
             std::vector<IndividualProperty*> ip_list = IPFactory::GetInstance()->GetIPList();
             CHECK_EQUAL( 1, ip_list.size() );
-            CHECK_EQUAL( std::string("QualityOfCare"), ip_list[0]->GetKey().ToString() );
+            CHECK_EQUAL( std::string("QualityOfCare"), ip_list[0]->GetKeyAsString() );
 
-            IPKeyValueContainer ip_values = ip_list[0]->GetValues();
+            IPKeyValueContainer ip_values = ip_list[0]->GetValues<IPKeyValueContainer>();
             CHECK_EQUAL( 3, ip_values.Size() );
             CHECK( ip_values.Contains( "QualityOfCare:Good" ) );
             CHECK( ip_values.Contains( "QualityOfCare:OK"   ) );
@@ -380,9 +423,9 @@ SUITE(PropertiesTest)
 
             std::vector<IndividualProperty*> ip_list = IPFactory::GetInstance()->GetIPList();
             CHECK_EQUAL( 1, ip_list.size() );
-            CHECK_EQUAL( std::string("Place"), ip_list[0]->GetKey().ToString() );
+            CHECK_EQUAL( std::string("Place"), ip_list[0]->GetKeyAsString() );
 
-            IPKeyValueContainer ip_values = ip_list[0]->GetValues();
+            IPKeyValueContainer ip_values = ip_list[0]->GetValues<IPKeyValueContainer>();
             CHECK_EQUAL( 5, ip_values.Size() );
             CHECK( ip_values.Contains( "Place:Community" ) );
             CHECK( ip_values.Contains( "Place:School"   ) );
@@ -459,17 +502,17 @@ SUITE(PropertiesTest)
         IPFactory::GetInstance()->Initialize( 1, demographics_1->GetJsonObject(), true );
         IPFactory::GetInstance()->Initialize( 2, demographics_2->GetJsonObject(), true );
 
-        IPKeyValue kv_access_no  = IPFactory::GetInstance()->GetIP( "Accessibility" )->GetValues().Get( "Accessibility:NO"  );
-        IPKeyValue kv_access_yes = IPFactory::GetInstance()->GetIP( "Accessibility" )->GetValues().Get( "Accessibility:YES" );
+        IPKeyValue kv_access_no  = IPFactory::GetInstance()->GetIP( "Accessibility" )->GetValues<IPKeyValueContainer>().Get( "Accessibility:NO"  );
+        IPKeyValue kv_access_yes = IPFactory::GetInstance()->GetIP( "Accessibility" )->GetValues<IPKeyValueContainer>().Get( "Accessibility:YES" );
 
         CHECK_CLOSE( 0.85, kv_access_no.GetInitialDistribution(  1 ), 0.00001 );
         CHECK_CLOSE( 0.15, kv_access_yes.GetInitialDistribution( 1 ), 0.00001 );
         CHECK_CLOSE( 0.60, kv_access_no.GetInitialDistribution(  2 ), 0.00001 );
         CHECK_CLOSE( 0.40, kv_access_yes.GetInitialDistribution( 2 ), 0.00001 );
 
-        IPKeyValue kv_risk_high = IPFactory::GetInstance()->GetIP( "Risk" )->GetValues().Get( "Risk:HIGH" );
-        IPKeyValue kv_risk_med  = IPFactory::GetInstance()->GetIP( "Risk" )->GetValues().Get( "Risk:MED"  );
-        IPKeyValue kv_risk_low  = IPFactory::GetInstance()->GetIP( "Risk" )->GetValues().Get( "Risk:LOW"  );
+        IPKeyValue kv_risk_high = IPFactory::GetInstance()->GetIP( "Risk" )->GetValues<IPKeyValueContainer>().Get( "Risk:HIGH" );
+        IPKeyValue kv_risk_med  = IPFactory::GetInstance()->GetIP( "Risk" )->GetValues<IPKeyValueContainer>().Get( "Risk:MED"  );
+        IPKeyValue kv_risk_low  = IPFactory::GetInstance()->GetIP( "Risk" )->GetValues<IPKeyValueContainer>().Get( "Risk:LOW"  );
 
         CHECK_CLOSE( 0.1, kv_risk_high.GetInitialDistribution( 1 ), 0.00001 );
         CHECK_CLOSE( 0.4, kv_risk_med.GetInitialDistribution(  1 ), 0.00001 );
@@ -552,7 +595,7 @@ SUITE(PropertiesTest)
 
         try
         {
-            kv.GetKey();
+            kv.GetKey<IPKey>();
             CHECK( false );
         }
         catch( NullPointerException& )
@@ -606,9 +649,9 @@ SUITE(PropertiesTest)
 
         std::vector<IndividualProperty*> ip_list = IPFactory::GetInstance()->GetIPList();
         CHECK_EQUAL( 1, ip_list.size() );
-        CHECK_EQUAL( std::string("QualityOfCare"), ip_list[0]->GetKey().ToString() );
+        CHECK_EQUAL( std::string("QualityOfCare"), ip_list[0]->GetKeyAsString() );
 
-        IPKeyValueContainer ip_values = ip_list[0]->GetValues();
+        IPKeyValueContainer ip_values = ip_list[0]->GetValues<IPKeyValueContainer>();
         CHECK_EQUAL( 3, ip_values.Size() );
         CHECK( ip_values.Contains( "QualityOfCare:Good" ) );
         CHECK( ip_values.Contains( "QualityOfCare:OK"   ) );
@@ -616,13 +659,13 @@ SUITE(PropertiesTest)
 
         try
         {
-            ip_values.Get( ip_list[0]->GetKey() );
+            ip_values.Get( ip_list[0]->GetKey<IPKey>() );
             CHECK( false );
         }
         catch( DetailedException& e )
         {
             std::string msg = e.GetMsg();
-            if( msg.find( "Illegal use of IPKeyValueContainer::Get( const IPKey& rKey ).  Should not be used on containers that have multiple values for one key" ) == string::npos )
+            if( msg.find( "Illegal use of KeyValueContainer::Get( const Key& rKey ).  Should not be used on containers that have multiple values for one key." ) == string::npos )
             {
                 PrintDebug( e.GetMsg() );
                 CHECK( false );
@@ -671,13 +714,29 @@ SUITE(PropertiesTest)
 
         std::vector<IndividualProperty*> ip_list = IPFactory::GetInstance()->GetIPList();
         CHECK_EQUAL( 1, ip_list.size() );
-        CHECK_EQUAL( std::string("QualityOfCare"), ip_list[0]->GetKey().ToString() );
+        CHECK_EQUAL( std::string("QualityOfCare"), ip_list[0]->GetKeyAsString() );
 
-        IPKeyValueContainer ip_values = ip_list[0]->GetValues();
+        IPKeyValueContainer ip_values = ip_list[0]->GetValues<IPKeyValueContainer>();
         CHECK_EQUAL( 3, ip_values.Size() );
         CHECK( ip_values.Contains( "QualityOfCare:Good" ) );
         CHECK( ip_values.Contains( "QualityOfCare:OK"   ) );
         CHECK( ip_values.Contains( "QualityOfCare:Bad"  ) );
+
+        // Test for spaces around colon
+        std::string kv_str_spaces = "QualityOfCare : Bad";
+        std::string key_str_spaces;
+        std::string value_str_spaces;
+        IPFactory::ParseKeyValueString( kv_str_spaces, key_str_spaces, value_str_spaces );
+        CHECK_EQUAL( "QualityOfCare", key_str_spaces );
+        CHECK_EQUAL( "Bad", value_str_spaces );
+
+        // Test for more spaces
+        std::string kv_str_spaces2 = " QualityOfCare : Bad ";
+        std::string key_str_spaces2;
+        std::string value_str_spaces2;
+        IPFactory::ParseKeyValueString( kv_str_spaces2, key_str_spaces2, value_str_spaces2 );
+        CHECK_EQUAL( "QualityOfCare", key_str_spaces2 );
+        CHECK_EQUAL( "Bad", value_str_spaces2 );
 
         try
         {
@@ -690,7 +749,7 @@ SUITE(PropertiesTest)
         catch( DetailedException& e )
         {
             std::string msg = e.GetMsg();
-            if( msg.find( "Invalid Individual Property Key-Value string = 'invalid_key-value'.  Format is 'key:value'." ) == string::npos )
+            if( msg.find( "Invalid IndividualProperties Key-Value string = 'invalid_key-value'.  Format is 'key:value'." ) == string::npos )
             {
                 PrintDebug( e.GetMsg() );
                 CHECK( false );
@@ -722,7 +781,7 @@ SUITE(PropertiesTest)
         catch( DetailedException& e )
         {
             std::string msg = e.GetMsg();
-            if( msg.find( "Found existing IndividualProperty key = 'QualityOfCare'.  Can't create duplicate key.  Known keys are: QualityOfCare" ) == string::npos )
+            if( msg.find( "Found existing Property key = 'QualityOfCare'.  Can't create duplicate key.  Known keys are: QualityOfCare" ) == string::npos )
             {
                 PrintDebug( e.GetMsg() );
                 CHECK( false );
@@ -860,25 +919,25 @@ SUITE(PropertiesTest)
     TEST_FIXTURE(PropertiesTestFixture, TestNotInWhiteList)
     {
         TestReadingError( false, __LINE__, "testdata/PropertiesTest/demog_TestNotInWhiteList.json",
-                          "Invalid Individual Property key 'NonWhiteListProperty' found in demographics file. Use one of: 'Accessibility', 'Age_Bin', 'Geographic', 'HasActiveTB', 'Place', 'QualityOfCare', 'Risk'");
+                          "Invalid IndividualProperties key 'NonWhiteListProperty' found in demographics file. Use one of: 'Accessibility', 'Age_Bin', 'Geographic', 'HasActiveTB', 'InterventionStatus', 'Place', 'QualityOfCare', 'Risk'");
     }
 
     TEST_FIXTURE(PropertiesTestFixture, TestTooManyProperties)
     {
         TestReadingError( false, __LINE__, "testdata/PropertiesTest/demog_TestTooManyProperties.json",
-                          "Too many Individual Properties (4). Max is 2.");
+                          "Too many IndividualProperties (4). Max is 3.");
     }
 
     TEST_FIXTURE( PropertiesTestFixture, TestNotSameNumberOfIPs )
     {
         TestReadingError( true, __LINE__, "testdata/PropertiesTest/demog_TestNotSameNumberOfIPs.json",
-            "Individual Properties were first intialized for nodeId=1 and it had 2 propertie(s).\nnodeID=2 has 1 propertie(s).  All nodes must have the same keys and values." );
+            "IndividualProperties were first intialized for nodeID=1 and it had 2 properties.\nnodeID=2 has 1 properties.  All nodes must have the same keys and values." );
     }
 
     TEST_FIXTURE( PropertiesTestFixture, TestDifferentKey )
     {
         TestReadingError( true, __LINE__, "testdata/PropertiesTest/demog_TestDifferentKey.json",
-            "Individual Properties were first initialized for node 1.\nnodeID=2 has 'RiskyBusiness' which is not in the first node.\nAll nodes must have the same keys and values (and in the same order)." );
+            "IndividualProperties were first initialized for node 1.\nnodeID=2 has 'RiskyBusiness' which is not in the first node.\nAll nodes must have the same keys and values (and in the same order)." );
     }
 
     TEST_FIXTURE( PropertiesTestFixture, TestNotSameNumberOfValues )
@@ -891,6 +950,12 @@ SUITE(PropertiesTest)
     {
         TestReadingError( true, __LINE__, "testdata/PropertiesTest/demog_TestDifferentValue.json",
             "demographics[IndividualProperties][1] with property=Risk for NodeId=2 has value=MED.\nPrevious node(s) do not have this value.  All nodes must have the same keys and values." );
+    }
+
+    TEST_FIXTURE( PropertiesTestFixture, TestDuplicateKeys )
+    {
+        TestReadingError( true, __LINE__, "testdata/PropertiesTest/demog_TestDuplicateKeys.json",
+                          "Found existing Property key = 'Risk'.  Can't create duplicate key.  Known keys are: Risk, Accessibility" );
     }
 
     TEST_FIXTURE(PropertiesTestFixture, TestGetAllPossibleKeyValueCombinations)
@@ -918,12 +983,12 @@ SUITE(PropertiesTest)
 
         std::vector<IndividualProperty*> ip_list = IPFactory::GetInstance()->GetIPList();
         CHECK_EQUAL( 4, ip_list.size() );
-        CHECK_EQUAL( std::string("Accessibility"), ip_list[0]->GetKey().ToString() );
-        CHECK_EQUAL( std::string("HasActiveTB"  ), ip_list[1]->GetKey().ToString() );
-        CHECK_EQUAL( std::string("QualityOfCare"), ip_list[2]->GetKey().ToString() );
-        CHECK_EQUAL( std::string("Risk"         ), ip_list[3]->GetKey().ToString() );
+        CHECK_EQUAL( std::string("Accessibility"), ip_list[0]->GetKeyAsString() );
+        CHECK_EQUAL( std::string("HasActiveTB"  ), ip_list[1]->GetKeyAsString() );
+        CHECK_EQUAL( std::string("QualityOfCare"), ip_list[2]->GetKeyAsString() );
+        CHECK_EQUAL( std::string("Risk"         ), ip_list[3]->GetKeyAsString() );
 
-        std::vector<std::string> combos = IPFactory::GetInstance()->GetAllPossibleKeyValueCombinations();
+        std::vector<std::string> combos = IPFactory::GetInstance()->GetAllPossibleKeyValueCombinations<IPKeyValueContainer>();
         //std::stringstream ss;
         //for( auto combo : combos )
         //{

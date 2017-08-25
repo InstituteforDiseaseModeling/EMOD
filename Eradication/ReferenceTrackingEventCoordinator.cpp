@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,8 +11,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "ReferenceTrackingEventCoordinator.h"
 #include "SimulationConfig.h"
+#include "Simulation.h"
+#include <algorithm> // for std:find
 
-static const char * _module = "ReferenceTrackingEventCoordinator";
+SETUP_LOGGING( "ReferenceTrackingEventCoordinator" )
 
 namespace Kernel
 {
@@ -32,16 +34,19 @@ namespace Kernel
     )
     {
         if( !JsonConfigurable::_dryrun &&
+#ifdef ENABLE_TYPHOID
+            (GET_CONFIGURABLE( SimulationConfig )->sim_type != SimType::TYPHOID_SIM) &&
+#endif
             (GET_CONFIGURABLE( SimulationConfig )->sim_type != SimType::STI_SIM) &&
             (GET_CONFIGURABLE( SimulationConfig )->sim_type != SimType::HIV_SIM) )
         {
-            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "ReferenceTrackingEventCoordinator can only be used in STI and HIV simulations." );
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "ReferenceTrackingEventCoordinator can only be used in STI, HIV, and TYPHOID simulations." );
         }
 
         float update_period = DAYSPERYEAR;
-        initConfigComplexType("Time_Value_Map", &year2ValueMap, "Map of times (years) to coverages." );
-        initConfigTypeMap("Update_Period", &update_period, "Gap between distribution updates.", 1.0, 10*DAYSPERYEAR, DAYSPERYEAR );
-        initConfigTypeMap("End_Year", &end_year, "Final date at which this set of targeted coverages should be applied (expiration)", MIN_YEAR, MAX_YEAR, MAX_YEAR );
+        initConfigComplexType("Time_Value_Map", &year2ValueMap, RTEC_Time_Value_Map_DESC_TEXT );
+        initConfigTypeMap(    "Update_Period",  &update_period, RTEC_Update_Period_DESC_TEXT, 1.0,      10*DAYSPERYEAR, DAYSPERYEAR );
+        initConfigTypeMap(    "End_Year",       &end_year,      RTEC_End_Year_DESC_TEXT,      MIN_YEAR, MAX_YEAR,       MAX_YEAR );
 
         auto ret = StandardInterventionDistributionEventCoordinator::Configure( inputJson );
         num_repetitions = -1; // unlimited
@@ -55,7 +60,24 @@ namespace Kernel
                 tsteps_between_reps = 1;
             }
         }
+        LOG_DEBUG_F( "ReferenceTrackingEventCoordinator configured with update_period = %f, end_year = %f, and tsteps_between_reps (derived) = %d.\n", update_period, end_year, tsteps_between_reps );
         return ret;
+    }
+
+    void ReferenceTrackingEventCoordinator::CheckStartDay( float campaignStartDay ) const
+    {
+        float campaign_start_year = campaignStartDay / DAYSPERYEAR + Simulation::base_year;
+        if( end_year <= campaign_start_year )
+        {
+            LOG_WARN_F( "Campaign starts on year %f (day=%f). A ReferenceTrackingEventCoordinator ends on End_Year %f.  It will not distribute any interventions.\n",
+                        campaign_start_year, campaignStartDay, end_year );
+        }
+
+        if( campaign_start_year != year2ValueMap.begin()->first )
+        {
+            LOG_WARN_F( "Campaign starts on year %f (day=%f). A ReferenceTrackingEventCoordinator has a Time_Value_Map that starts on year %f.\n",
+                        campaign_start_year, campaignStartDay, year2ValueMap.begin()->first );
+        }
     }
 
     // Obviously don't need this if it's not doing anything useful.
@@ -67,6 +89,7 @@ namespace Kernel
             LOG_INFO_F( "ReferenceTrackingEventCoordinator expired.\n" );
             distribution_complete = true;
         }
+        LOG_DEBUG_F( "Update...ing.\n" );
         return StandardInterventionDistributionEventCoordinator::Update( dt );
     }
 
@@ -74,10 +97,12 @@ namespace Kernel
     // and then to set the target coverage based on the error between measured and configured (for current time).
     void ReferenceTrackingEventCoordinator::preDistribute()
     {
+        LOG_DEBUG_F( "preDistributed.\n" );
         // Two variables that will be used by lambda function that's called for each individual;
         // these vars accumulate values across the population. 
         NonNegativeFloat totalWithIntervention = 0.0f;
         NonNegativeFloat totalQualifyingPop = 0.0f;
+        haves.clear();
 
         // This is the function that will be called for each individual in this node (event_context)
         INodeEventContext::individual_visit_function_t fn = 
@@ -87,10 +112,15 @@ namespace Kernel
             {
                 auto mcw = ihec->GetMonteCarloWeight();
                 totalQualifyingPop += mcw;
+
+                // Check whether this individual has this intervention
                 auto better_ptr = ihec->GetInterventionsContext();
-                // Check whether this individual has a non-zero quantity of this intervention
                 std::string intervention_name = _di->GetName();
-                totalWithIntervention += ( (better_ptr->GetInterventionsByName( intervention_name ).size() > 0) ? mcw : 0 );
+                if( better_ptr->ContainsExistingByName( intervention_name ) )
+                {
+                    totalWithIntervention += mcw;
+                    haves.push_back( ihec->GetSuid().data );
+                }
             }
         };
 
@@ -130,6 +160,17 @@ namespace Kernel
         }
         demographic_restrictions.SetDemographicCoverage( dc );
 
+    }
+
+    bool ReferenceTrackingEventCoordinator::TargetedIndividualIsCovered(IIndividualHumanEventContext *ihec)
+    {
+        if( std::find( haves.begin(), haves.end(), ihec->GetSuid().data ) != haves.end() )
+        {
+            // This person already has the intervention. They are in the haves list.
+            LOG_DEBUG_F( "Skipping %d coz they already have it.\n", ihec->GetSuid().data );
+            return false;
+        }
+        return StandardInterventionDistributionEventCoordinator::TargetedIndividualIsCovered(ihec);
     }
 
 }

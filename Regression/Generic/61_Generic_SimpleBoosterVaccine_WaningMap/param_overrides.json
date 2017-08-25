@@ -1,0 +1,33 @@
+{
+    "Default_Config_Path": "defaults/generic_default_config.json", 
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Population_Scale_Type": "FIXED_SCALING", 
+            "Demographics_Filenames": [
+                "demog/Namawala_singlenode_4group_demographics.properties.json"
+            ]
+        }, 
+        "DISEASE": {
+            "INFECTIOUSNESS": {
+                "Base_Infectivity": 1e-07, 
+                "Infectious_Period_Distribution": "FIXED_DURATION", 
+                "Base_Infectious_Period": 2
+            }, 
+            "INCUBATION": {
+                "Base_Incubation_Period": 0
+            }
+        }, 
+        "PRIMARY": {
+            "Run_Number": 2, 
+            "Simulation_Duration": 20, 
+            "Config_Name": "61_Generic_SimpleBoosterVaccine_WaningMap", 
+            "Geography": "Namawala"
+        }, 
+        "INTRANODE_TRANSMISSION": {
+            "Enable_Heterogeneous_Intranode_Transmission": 1
+        }, 
+        "OUTPUT": {
+            "Enable_Property_Output": 1
+        }
+    }
+}

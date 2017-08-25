@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,6 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <vector>
 
 #include "Diagnostics.h"
+#include "EventTrigger.h"
 
 namespace Kernel
 {
@@ -25,8 +26,9 @@ namespace Kernel
             AgeThresholds() {}
             virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
             virtual json::QuickBuilder GetSchema() override;
+            virtual bool  HasValidDefault() const override { return false; }
             std::vector<std::pair< NaturalNumber, NaturalNumber > > thresholds;
-            std::vector< std::string > thresh_events;
+            std::vector< EventTrigger > thresh_events;
 
             static void serialize(IArchive& ar, AgeThresholds& obj);
     };
@@ -40,11 +42,11 @@ namespace Kernel
     public: 
         AgeDiagnostic();
         AgeDiagnostic( const AgeDiagnostic& );
-        virtual bool Configure( const Configuration* pConfig );
+        virtual bool Configure( const Configuration* pConfig ) override;
         virtual ~AgeDiagnostic();
 
     protected:
-        virtual bool positiveTestResult();
+        virtual bool positiveTestResult() override;
         AgeThresholds age_thresholds;
 
         DECLARE_SERIALIZABLE(AgeDiagnostic);

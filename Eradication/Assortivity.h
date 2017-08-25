@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -40,7 +40,7 @@ namespace Kernel
         Assortivity( RelationshipType::Enum relType=RelationshipType::TRANSITORY, RANDOMBASE *prng=nullptr );
         virtual ~Assortivity();
 
-        IPKey GetPropertyKey() const { return m_PropertyKey ; }
+        const IPKey& GetPropertyKey() const { return m_PropertyKey ; }
 
         // -------------------------
         // --- IAssortivity Methods
@@ -54,20 +54,25 @@ namespace Kernel
         // select a partner from the potentialPartnerList.
         // Return nullptr if a suitable partner was not found.
         // nullptr can be returned even if the list is not empty.
-        virtual IIndividualHumanSTI* SelectPartner( const IIndividualHumanSTI* pPartnerA,
+        virtual IIndividualHumanSTI* SelectPartner( IIndividualHumanSTI* pPartnerA,
                                                     const list<IIndividualHumanSTI*>& potentialPartnerList ) override;
 
         virtual void SetParameters( RANDOMBASE* prng ) override;
     protected:
-        typedef std::function<std::string( const Assortivity*, const IIndividualHumanSTI*)> tGetStringValueFunc ;
+        typedef std::function<int( const Assortivity*, const IIndividualHumanSTI* )> tGetIndexFunc;
+        typedef std::function<std::string( const Assortivity*, const IIndividualHumanSTI* )> tGetStringValueFunc;
 
-        IIndividualHumanSTI* FindPartner( const IIndividualHumanSTI* pPartnerA,
+        IIndividualHumanSTI* FindPartner( IIndividualHumanSTI* pPartnerA,
                                           const list<IIndividualHumanSTI*>& potentialPartnerList,
-                                          tGetStringValueFunc func );
+                                          tGetIndexFunc func);
+
+        IIndividualHumanSTI* FindPartnerIP( IIndividualHumanSTI* pPartnerA,
+                                            const list<IIndividualHumanSTI*>& potentialPartnerList,
+                                            tGetStringValueFunc func);
 
         // Derived classes will add more options to the switch statement
         virtual IIndividualHumanSTI* SelectPartnerForExtendedGroups( AssortivityGroup::Enum group,
-                                                                     const IIndividualHumanSTI* pPartnerA,
+                                                                     IIndividualHumanSTI* pPartnerA,
                                                                      const list<IIndividualHumanSTI*>& potentialPartnerList );
 
         // This routine is called inside Configure() but before the data is completely read.
@@ -91,9 +96,10 @@ namespace Kernel
         void CheckAxesForTrueFalse();
         void CheckAxesForProperty();
         void CheckMatrix();
+        void SortMatrixFalseTrue();
 
         static std::string Assortivity::ValuesToString( const std::vector<std::string>& rList ) ;
-    private:
+
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
         RelationshipType::Enum          m_RelType ;

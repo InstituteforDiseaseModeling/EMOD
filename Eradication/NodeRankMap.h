@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -61,9 +61,8 @@ namespace Kernel
 
         INodeInfo& GetNodeInfo( const suids::suid& node_suid );
 
-        std::string ToString();
+//        std::string ToString();
 
-        // hack: to let us get the complete list of nodes
         typedef std::map< suids::suid, INodeInfo*> RankMap_t;
         typedef std::pair<suids::suid, INodeInfo*> RankMapEntry_t;
 
@@ -77,6 +76,9 @@ namespace Kernel
         std::vector<INodeInfo*> nodes_in_my_rank;
         unsigned char* m_Buffer;
         uint32_t m_BufferSize;
+
+        std::vector<INodeInfo*> nodesBySuid;
+        std::vector<int32_t> ranksBySuid;
 
         struct merge_duplicate_key_exception : public std::exception
         {

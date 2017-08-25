@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,13 +12,16 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "FileSystem.h"
 #include "Debug.h"
+#include "Log.h"
 
 #define DEFAULT_PYTHON_HOME "c:/Python27"
 #define PYTHON_DLL_W          L"python27.dll"
 #define PYTHON_DLL_S           "python27.dll"
 
 #define PYTHON_SCRIPT_PATH_NOT_SET ""
- 
+
+SETUP_LOGGING("PythonSupport")
+
 namespace Kernel
 {
     std::string PythonSupport::SCRIPT_PRE_PROCESS         = "dtk_pre_process";
@@ -56,16 +59,34 @@ namespace Kernel
     }
 #pragma warning( pop )
 
+    // This function may have been a premature optimization: now with 2 possible paths we don't really want to do it this way.
     std::string PythonSupport::CreatePythonScriptPath( const std::string& script_filename )
     {
-        std::string path_to_script = FileSystem::Concat( m_PythonScriptPath, std::string(script_filename)+".py" );
+        std::string path_to_script = FileSystem::Concat( std::string( "." ), std::string(script_filename)+".py" );
         return path_to_script;
     }
 
     bool PythonSupport::PythonScriptCheckExists( const std::string& script_filename )
     {
-        bool exists = FileSystem::FileExists( CreatePythonScriptPath( script_filename ) );
-        return exists;
+        LOG_INFO_F( "Checking if a python script exists: %s\n", script_filename.c_str() );
+        // We should check two paths: the py script path and .
+        std::string path_to_script = FileSystem::Concat( std::string( "." ), std::string(script_filename)+".py" );
+        if( FileSystem::FileExists( path_to_script ) )
+        {
+            LOG_INFO_F( "Found python script %s in path %s\n", script_filename.c_str(), "." );
+            return true;
+        }
+        LOG_INFO_F( "Did not find python script %s in path %s\n", script_filename.c_str(), "." );
+        
+        path_to_script = FileSystem::Concat( m_PythonScriptPath, std::string(script_filename)+".py" );
+        if( FileSystem::FileExists( path_to_script ) )
+        {
+            LOG_INFO_F( "But found python script %s in path %s\n", script_filename.c_str(), m_PythonScriptPath.c_str() );
+            return true;
+        }
+        LOG_INFO_F( "Did not find python script %s in path %s either\n", script_filename.c_str(), m_PythonScriptPath.c_str() );
+        
+        return false;
     }
 
     void PythonSupport::PythonScriptsNotFound()
@@ -82,6 +103,7 @@ namespace Kernel
     {
         m_IsGettingSchema = isGettingSchema;
         m_PythonScriptPath = pythonScriptPath;
+        LOG_INFO_F( "m_PythonScriptPath set to %s.\n", m_PythonScriptPath.c_str() );
 
 #ifdef ENABLE_PYTHON
         if( m_PythonScriptPath == PYTHON_SCRIPT_PATH_NOT_SET )
@@ -165,6 +187,7 @@ namespace Kernel
         release_assert( path );
     
         //std::cout << "Calling PyList_Append." << std::endl;
+        PyList_Append(sys_path, PyString_FromString( "." ));
         if (PyList_Append(sys_path, path) < 0)
         {
             PyErr_Print();
@@ -229,7 +252,7 @@ namespace Kernel
                 PyTuple_SetItem(vars, 0, py_filename_str);
                 auto retValue = PyObject_CallObject( pFunc, vars );
                 PyErr_Print();
-                if( retValue != nullptr && std::string( retValue->ob_type->tp_name ) != "NoneType" )
+                if( retValue != nullptr && std::string( retValue->ob_type->tp_name ) == "str" )
                 {
                     return_filename = PyString_AsString( retValue );
                 }

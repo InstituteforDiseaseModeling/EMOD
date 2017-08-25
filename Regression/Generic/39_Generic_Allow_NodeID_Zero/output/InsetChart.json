@@ -1,0 +1,184 @@
+{
+    "Header": {
+        "DateTime": "Wed Oct 26 13:56:38 2016",
+        "DTK_Version": "1365 GH-845-NodeIdZeroBackDoor (58494d6) Oct 26 2016 13:07:00",
+        "Report_Type": "InsetChart",
+        "Report_Version": "3.2",
+        "Start_Time": 0,
+        "Simulation_Timestep": 1,
+        "Timesteps": 5,
+        "Channels": 17
+    },
+    "Channels": {
+        "Births": {
+            "Units": "Births",
+            "Data": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "Campaign Cost": {
+            "Units": "USD",
+            "Data": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "Cumulative Infections": {
+            "Units": "",
+            "Data": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "Cumulative Reported Infections": {
+            "Units": "",
+            "Data": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "Daily (Human) Infection Rate": {
+            "Units": "Infection Rate",
+            "Data": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "Disease Deaths": {
+            "Units": "",
+            "Data": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "Exposed Population": {
+            "Units": "Exposed Fraction",
+            "Data": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "Human Infectious Reservoir": {
+            "Units": "Total Infectivity",
+            "Data": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "Infected": {
+            "Units": "Infected Fraction",
+            "Data": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "Infectious Population": {
+            "Units": "Infectious Fraction",
+            "Data": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "Log Prevalence": {
+            "Units": "Log Prevalence",
+            "Data": [
+                -10,
+                -10,
+                -10,
+                -10,
+                -10
+            ]
+        },
+        "New Infections": {
+            "Units": "",
+            "Data": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "New Reported Infections": {
+            "Units": "",
+            "Data": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "Recovered Population": {
+            "Units": "Recovered (Immune) Fraction",
+            "Data": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "Statistical Population": {
+            "Units": "Population",
+            "Data": [
+                100,
+                100,
+                100,
+                100,
+                100
+            ]
+        },
+        "Susceptible Population": {
+            "Units": "Susceptible Fraction",
+            "Data": [
+                1,
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        "Waning Population": {
+            "Units": "Waning Immunity Fraction",
+            "Data": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    }
+}

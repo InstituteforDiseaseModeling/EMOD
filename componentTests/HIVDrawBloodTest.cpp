@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -50,18 +50,34 @@ SUITE(HivDrawBloodTest)
             Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
             Environment::setSimulationConfig( m_pSimulationConfig );
 
-            m_InterventionsContext.setCascadeState( "not_set" );
             m_InterventionsContext.SetContextTo( &m_Human );
             m_Diag.SetContextTo( &m_Human );
             m_ISusceptibilityHIVFake.SetCD4Count( 777.0 );
             m_pSimulationConfig->sim_type = SimType::HIV_SIM ;
-            m_pSimulationConfig->listed_events.insert("Births"   );
-            m_pSimulationConfig->listed_events.insert("NoTrigger");
+
+            std::map<std::string, float> ip_values_state ;
+            ip_values_state.insert( std::make_pair( "abort_state_1", 0.0f ) );
+            ip_values_state.insert( std::make_pair( "abort_state_2", 0.0f ) );
+            ip_values_state.insert( std::make_pair( "abort_state_3", 0.0f ) );
+            ip_values_state.insert( std::make_pair( "non_abort_state", 0.0f ) );
+            ip_values_state.insert( std::make_pair( "no_state", 1.0f ) );
+
+            IPFactory::DeleteFactory();
+            IPFactory::CreateFactory();
+            IPFactory::GetInstance()->AddIP( 1, "InterventionStatus", ip_values_state );
+
+            m_Human.GetProperties()->Add( IPKeyValue( "InterventionStatus:no_state" ) );
+
+            EventTriggerFactory::DeleteInstance();
+
+            json::Object fakeConfigJson;
+            Configuration * fakeConfigValid = Environment::CopyFromElement( fakeConfigJson );
+            EventTriggerFactory::GetInstance()->Configure( fakeConfigValid );
+            m_NEC.Initialize();
         }
 
         ~DiagnosticFixture()
         {
-            m_pSimulationConfig->listed_events.clear();
             delete m_pSimulationConfig;
             Environment::setSimulationConfig( nullptr );
             Environment::Finalize();
@@ -76,7 +92,7 @@ SUITE(HivDrawBloodTest)
         std::unique_ptr<Configuration> p_config( Configuration_Load( "testdata/HIVDrawBloodTest.json" ) );
         m_Diag.Configure( p_config.get() );
 
-        CHECK_EQUAL( IndividualEventTriggerType::NoTrigger, m_NEC.GetTriggeredEvent() ) ;
+        CHECK( m_NEC.GetTriggeredEvent().IsUninitialized() ) ;
 
         CHECK_EQUAL( false, m_InterventionsContext.EverReceivedCD4() );
         CHECK_EQUAL( 0.0,   m_InterventionsContext.LastRecordedCD4() );
@@ -90,7 +106,7 @@ SUITE(HivDrawBloodTest)
 
         m_Diag.Update(1.0);
 
-        CHECK_EQUAL( IndividualEventTriggerType::Births, m_NEC.GetTriggeredEvent() ) ;
+        CHECK_EQUAL( EventTrigger::Births.ToString(), m_NEC.GetTriggeredEvent().ToString() ) ;
         CHECK_EQUAL( true,  m_InterventionsContext.EverReceivedCD4() );
         CHECK_EQUAL( 777.0, m_InterventionsContext.LastRecordedCD4() );
 

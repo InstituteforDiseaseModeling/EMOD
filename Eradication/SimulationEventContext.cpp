@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -30,7 +30,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 */
 
-static const char * _module = "SimulationEventContext";
+SETUP_LOGGING( "SimulationEventContext" )
 
 namespace Kernel
 {
@@ -103,13 +103,10 @@ namespace Kernel
         }
     }
 
-
-
     INodeEventContext* SimulationEventContextHost::GetNodeEventContext( suids::suid node_id )
     {
-        return (sim->nodes[node_id])->GetEventContext();
+        return sim->nodes.at(node_id)->GetEventContext();
     }
-
 
     void SimulationEventContextHost::Update( float dt )
     {
@@ -154,7 +151,7 @@ namespace Kernel
         }
     }
 
-    void SimulationEventContextHost::LoadCampaignFromFile( const std::string& campaignfile )
+    void SimulationEventContextHost::LoadCampaignFromFile(const std::string& campaignfile, const std::vector<ExternalNodeId_t>& nodeIds_demographics)
     {
         using namespace json;
         Configuration *campaign = Configuration::Load(campaignfile);
@@ -186,12 +183,13 @@ namespace Kernel
             for (int k= 0; k < events.Size(); k++ )
             {
                 // TODO: this is very inefficient; could probably convert these arguments to const QuickInterpreter*s instead of full Configurations...
-                Configuration *event_config = Configuration::CopyFromElement(events[k]);
+                Configuration *event_config = Configuration::CopyFromElement( events[k], campaign->GetDataLocation() );
                 release_assert( event_config );
 
-                CampaignEvent *ce = CampaignEventFactory::CreateInstance(event_config); 
+                CampaignEvent *ce = CampaignEventFactory::CreateInstance(event_config);
                 if (ce)
                 {
+                    ce->CheckForValidNodeIDs(nodeIds_demographics);
                     if( ce->GetStartDay() < sim->GetSimulationTime().time )
                     {
                         LOG_WARN_F("Discarding old event for t=%0.1f.\n", ce->GetStartDay());
@@ -203,7 +201,8 @@ namespace Kernel
                     }
                     ce->SetEventIndex(k);
                     event_queue.push(ce);
-                } else
+                } 
+                else
                 {
                     std::stringstream s ;
                     s << "Failure loading campaign events: could not instantiate object for Event " << k << std::endl ;

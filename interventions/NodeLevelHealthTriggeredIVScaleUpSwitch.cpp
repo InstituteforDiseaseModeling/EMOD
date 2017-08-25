@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Debug.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 
-static const char * _module = "NodeLevelHealthTriggeredIVScaleUpSwitch";
+SETUP_LOGGING( "NodeLevelHealthTriggeredIVScaleUpSwitch" )
 
 namespace Kernel
 {
@@ -115,7 +115,7 @@ namespace Kernel
             throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "The pointer to IInterventionFactory object is not valid (could be DLL specific)" );
         }
 
-		const json::Array & interventions_array = json::QuickInterpreter(not_covered_intervention_configs._json).As<json::Array>();
+        const json::Array & interventions_array = json::QuickInterpreter(not_covered_intervention_configs._json).As<json::Array>();
         LOG_DEBUG_F("not_covered_intervention_configs array size = %d\n", interventions_array.Size());
        
         if (interventions_array.Size() == 0 )
@@ -127,7 +127,7 @@ namespace Kernel
             for( int idx=0; idx<interventions_array.Size(); idx++ )
             {
                 const json::Object& notcoveredIntervention = json_cast<const json::Object&>(interventions_array[idx]);
-                Configuration * tmpConfig = Configuration::CopyFromElement(notcoveredIntervention);
+                Configuration * tmpConfig = Configuration::CopyFromElement( notcoveredIntervention, "campaign" );
                 assert( tmpConfig );
                 LOG_DEBUG_F("NodeHTIScaleUpSwitch will distribute notcoveredintervention #%d\n", idx);
 

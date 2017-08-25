@@ -1,0 +1,56 @@
+{
+    "Metadata": {
+        "DateCreated": "Wed Aug 31 07:00:00 2016", 
+        "Tool": "notepad", 
+        "Author": "dbridenbecker", 
+        "IdReference": "0", 
+        "NodeCount": 2,
+        "Resolution": 150
+    }, 
+    "Defaults": {
+        "NodeAttributes": {
+            "Altitude": 0, 
+            "Airport": 0, 
+            "Region": 1, 
+            "Seaport": 0, 
+            "BirthRate": 0.0
+        }, 
+        "IndividualAttributes": {
+            "AgeDistributionFlag": 0, 
+            "AgeDistribution1": 3600.0, 
+            "AgeDistribution2": 43800.0, 
+            "PrevalenceDistributionFlag": 0, 
+            "PrevalenceDistribution1": 0.0, 
+            "PrevalenceDistribution2": 0.0, 
+            "ImmunityDistributionFlag": 0, 
+            "ImmunityDistribution1": 1, 
+            "ImmunityDistribution2": 0, 
+            "RiskDistributionFlag": 0, 
+            "RiskDistribution1": 1, 
+            "RiskDistribution2": 0, 
+            "MigrationHeterogeneityDistributionFlag": 0, 
+            "MigrationHeterogeneityDistribution1": 1, 
+            "MigrationHeterogeneityDistribution2": 0
+        }
+    },
+    "Nodes": [
+        {
+            "NodeID": 1, 
+            "NodeAttributes":
+            {
+                "InitialPopulation": 10,
+                "Longitude" :  0.0,
+                "Latitude"  :  0.1
+            }
+        },
+        {
+            "NodeID": 2, 
+            "NodeAttributes":
+            {
+                "InitialPopulation": 0,
+                "Longitude" :  0.0,
+                "Latitude"  :  0.2
+            }
+        }
+    ]
+}

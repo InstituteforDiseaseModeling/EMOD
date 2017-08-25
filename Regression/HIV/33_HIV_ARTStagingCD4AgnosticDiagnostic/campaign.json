@@ -47,8 +47,8 @@
                 {
                     "class": "HIVDelayedIntervention",
 
-                    "Abort_States": [ "CascadeState_1", "CascadeState_2", "CascadeState_3" ],
-                    "Cascade_State": "CascadeState_4",
+                    "Disqualifying_Properties": [ "InterventionStatus:InterventionStatus_1", "InterventionStatus:InterventionStatus_2", "InterventionStatus:InterventionStatus_3" ],
+                    "New_Property_Value": "InterventionStatus:InterventionStatus_4",
                     "Single_Use": 1,
 
                     "Delay_Distribution": "FIXED_DURATION",
@@ -78,7 +78,7 @@
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "HIVNeedsHIVTest",
+                    "Trigger_Condition_List": [ "HIVNeedsHIVTest" ],
 
                     "Demographic_Coverage": 1,
                     "Duration": 14600,
@@ -91,8 +91,8 @@
                         "Base_Sensitivity"         : 0,
                         "Cost_To_Consumer"         : 10,
                         "Days_To_Diagnosis"        : 5,
-                        "Abort_States"             : [ "CascadeState_1", "CascadeState_2", "CascadeState_3" ],
-                        "Cascade_State"            : "CascadeState_4",
+                        "Disqualifying_Properties"             : [ "InterventionStatus:InterventionStatus_1", "InterventionStatus:InterventionStatus_2", "InterventionStatus:InterventionStatus_3" ],
+                        "New_Property_Value"            : "InterventionStatus:InterventionStatus_4",
                         "Individual_Property_Active_TB_Key" : "HasActiveTB",
                         "Individual_Property_Active_TB_Value" : "YES",
                         "Adult_Treatment_Age"    : 1865,

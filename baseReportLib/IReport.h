@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,6 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <functional>
 #include "IdmApi.h"
 #include "Configure.h"
+#include "INodeContext.h"
 
 namespace Kernel
 {
@@ -34,7 +35,8 @@ namespace Kernel
         // ------------------
         // --- Public Methods
         // ------------------
-        virtual void Initialize( unsigned int nrmSize ) = 0;
+        virtual void Initialize(unsigned int nrmSize) = 0;
+        virtual void CheckForValidNodeIDs(const std::vector<ExternalNodeId_t>& demographicNodeIds) = 0;
 
         virtual void UpdateEventRegistration( float currentTime, 
                                               float dt, 
@@ -42,7 +44,7 @@ namespace Kernel
         virtual void BeginTimestep() = 0;
         virtual void LogIndividualData( IIndividualHuman* individual ) = 0;
         virtual void LogNodeData( INodeContext* pNC ) = 0;
-        virtual void EndTimestep( float currentTime, float dt ) = 0;
+        virtual void EndTimestep( float currentTime, float dt) = 0;
 
         // Return true if LogIndividualData() should be called.
         virtual bool IsCollectingIndividualData( float currentTime, float dt ) const = 0 ;
@@ -72,6 +74,7 @@ namespace Kernel
         // -------------------
         // --- IReport Methods
         // -------------------
+        virtual void CheckForValidNodeIDs(const std::vector<ExternalNodeId_t>& demographicNodeIds) {};
         virtual void UpdateEventRegistration( float currentTime, 
                                               float dt, 
                                               std::vector<INodeEventContext*>& rNodeEventContextList ) {} ;

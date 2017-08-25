@@ -19,8 +19,7 @@
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
-                    ".Trigger_Condition": "STIDebut",
-                    "Trigger_Condition": "EveryUpdate",
+                    "Trigger_Condition_List": [ "EveryUpdate" ],
 
                     "Demographic_Coverage": 1,
                     "Duration": 14600,
@@ -31,8 +30,8 @@
 
                         "Days_To_Diagnosis": 0,
 
-                        "Abort_States": [],
-                        "Cascade_State": "",
+                        "Disqualifying_Properties": [],
+                        "New_Property_Value": "InterventionStatus:None",
 
                         "Ramp_Min": -0.0052,
                         "Ramp_Max": 0.25,

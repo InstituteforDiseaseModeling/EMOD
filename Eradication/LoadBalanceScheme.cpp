@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,7 +19,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Configure.h"
 #include "Configuration.h"
 
-static const char * _module = "LoadBalanceScheme";
+SETUP_LOGGING( "LoadBalanceScheme" )
 
 namespace Kernel 
 {
@@ -47,7 +47,7 @@ namespace Kernel
             release_assert( numTasks > 0 );
 
             std::vector< std::vector<int> > matrix ;
-            initConfigTypeMap( "Load_Balance_Scheme_Nodes_On_Core_Matrix", &matrix, Load_Balance_Scheme_DESC_TEXT, 0, INT_MAX, 0 );
+            initConfigTypeMap( "Load_Balance_Scheme_Nodes_On_Core_Matrix", &matrix, Load_Balance_Scheme_Nodes_On_Core_Matrix_DESC_TEXT, 0, INT_MAX, 0 );
 
             Configuration* p_config = Configuration::Load( rFilename );
             release_assert( p_config );

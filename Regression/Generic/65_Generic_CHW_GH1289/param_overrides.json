@@ -1,0 +1,26 @@
+{
+    "Default_Config_Path": "defaults/generic_scenario_default_config.json", 
+    "parameters": {
+        "Config_Name": "65_Generic_CHW_GH1289", 
+        "Geography": "SamplesInput",
+        "Run_Number": 1, 
+        "Simulation_Duration": 120,
+        
+        "Disable_IP_Whitelist" : 1,
+        "Demographics_Filenames": [ "demographics.json" ],
+        "Birth_Rate_Dependence": "POPULATION_DEP_RATE", 
+        "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF",
+        "Enable_Vital_Dynamics": 0, 
+        "Sample_Rate_Birth": 1,
+        
+        "Enable_Immune_Decay": 0,
+        "Base_Infectivity": 0.7,
+        "Base_Incubation_Period": 0,
+        
+        "Listed_Events" : [ "CHW_Give_Drugs", "Received_Treatment" ],
+        
+        "Enable_Property_Output": 1,
+        
+        "logLevel_JsonConfigurable" : "WARNING"
+    }
+}

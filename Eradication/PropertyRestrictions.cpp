@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,25 +10,26 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 
 #include "PropertyRestrictions.h"
-#include "Node.h"
-#include "IndividualEventContext.h"
 
-static const char * _module = "PropertyRestrictions";
+SETUP_LOGGING( "PropertyRestrictions" )
 
 namespace Kernel
 {
-    PropertyRestrictions::PropertyRestrictions()
+    template<class Key, class KeyValue, class Container>
+    PropertyRestrictions<Key,KeyValue,Container>::PropertyRestrictions()
     : JsonConfigurable()
     , _restrictions()
     {
     }
 
-    int PropertyRestrictions::Size() const
+    template<class Key, class KeyValue, class Container>
+    int PropertyRestrictions<Key, KeyValue, Container>::Size() const
     {
         return _restrictions.size();
     }
 
-    void PropertyRestrictions::ConfigureFromJsonAndKey( const Configuration * inputJson, const std::string& key )
+    template<class Key, class KeyValue, class Container>
+    void PropertyRestrictions<Key, KeyValue, Container>::ConfigureFromJsonAndKey( const Configuration * inputJson, const std::string& key )
     {
         // Make this optional.
         if( inputJson->Exist( key ) == false )
@@ -48,7 +49,7 @@ namespace Kernel
         json::QuickInterpreter s2sarray = (*inputJson)[key].As<json::Array>();
         for( int idx=0; idx < (*inputJson)[key].As<json::Array>().Size(); idx++ )
         {
-            IPKeyValueContainer container;
+            Container container;
 
             auto json_map = s2sarray[idx].As<json::Object>();
             for( auto data = json_map.Begin();
@@ -57,68 +58,113 @@ namespace Kernel
             {
                 std::string key = data->name;
                 std::string value = (std::string)s2sarray[idx][key].As< json::String >();
-                IPKeyValue kv( key, value );
+                KeyValue kv( key, value );
                 container.Add( kv );
             }
             _restrictions.push_back( container );
         }
     }
 
-    json::QuickBuilder PropertyRestrictions::GetSchema()
+    template<class Key, class KeyValue, class Container>
+    json::QuickBuilder PropertyRestrictions<Key, KeyValue, Container>::GetSchema()
     {
         json::QuickBuilder schema( GetSchemaBase() );
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
 
-        schema[ tn ] = json::String( "idmType:PropertyRestrictions" );
+        // this is kind of hacky, but there only two types right now.
+        if( std::string( typeid(Key).name() ) == "class Kernel::IPKey" )
+        {
+            schema[ tn ] = json::String( "idmType:PropertyRestrictions" );
+        }
+        else
+        {
+            schema[ tn ] = json::String( "idmType:NodePropertyRestrictions" );
+        }
         schema[ ts ] = json::Array();
         schema[ ts ][0] = json::Object();
         schema[ ts ][0]["<key>"] = json::Object();
         schema[ ts ][0]["<key>"][ "type" ] = json::String( "Constrained String" );
-        schema[ ts ][0]["<key>"][ "constraints" ] = json::String( "<demographics>::Defaults.Individual_Properties.*.Property.<keys>" );
-        schema[ ts ][0]["<key>"][ "description" ] = json::String( "Individual Property Key from demographics file." );
+        schema[ ts ][0]["<key>"][ "constraints" ] = json::String( Key::GetConstrainedStringConstraintKey() );
+        schema[ ts ][0]["<key>"][ "description" ] = json::String( Key::GetConstrainedStringDescriptionKey() );
         schema[ ts ][0]["<value>"] = json::Object();
         schema[ ts ][0]["<value>"][ "type" ] = json::String( "String" );
-        schema[ ts ][0]["<key>"][ "constraints" ] = json::String( "<demographics>::Defaults.Individual_Properties.*.Value.<keys>" );
-        schema[ ts ][0]["<value>"][ "description" ] = json::String( "Individual Property Value from demographics file." );
+        schema[ ts ][0]["<value>"][ "constraints" ] = json::String( Key::GetConstrainedStringConstraintValue()  );
+        schema[ ts ][0]["<value>"][ "description" ] = json::String( Key::GetConstrainedStringDescriptionValue() );
         return schema;
     }
 
-    void PropertyRestrictions::Add( std::map< std::string, std::string >& rMap )
+    template<class Key, class KeyValue, class Container>
+    void PropertyRestrictions<Key, KeyValue, Container>::Add( std::map< std::string, std::string >& rMap )
     {
-        IPKeyValueContainer container;
+        Container container;
         for( auto& entry : rMap )
         {
-            IPKeyValue kv( entry.first, entry.second );
+            KeyValue kv( entry.first, entry.second );
             container.Add( kv );
         }
         _restrictions.push_back( container );
     }
 
-    bool PropertyRestrictions::Qualifies( const IIndividualHumanEventContext* pHEC )
+    template<class Key, class KeyValue, class Container>
+    bool PropertyRestrictions<Key, KeyValue, Container>::Qualifies( const Container& rPropertiesContainer )
     {
-        auto * pProp = const_cast<Kernel::IIndividualHumanEventContext*>(pHEC)->GetProperties();
+        bool qualifies = true;
+
+        // individual has to have one of these properties
+        for( Container& container : _restrictions)
+        {
+            qualifies = false;
+            bool meets_property_restriction_criteria = true;
+            for( auto kv : container )
+            {
+                if( rPropertiesContainer.Contains( kv ) )
+                {
+                    LOG_DEBUG_F( "Partial property restriction: constraint is %s.\n", kv.ToString().c_str() );
+                    continue; // we're good
+                }
+                else
+                {
+                    meets_property_restriction_criteria = false;
+#ifdef WIN32
+                    LOG_DEBUG_F( "Person does not get the intervention because the allowed property is %s and the person is %s.\n", 
+                                 kv.ToString().c_str(), rPropertiesContainer.Get( kv.GetKey<Key>() ).ToString().c_str() );
+#endif
+                    break;
+                }
+            }
+            // If verified, we're done since these are OR-ed together
+            if( meets_property_restriction_criteria )
+            {
+                qualifies = true;
+                LOG_DEBUG_F( "Individual meets at least 1 of the OR-ed together property restriction conditions. Not checking the rest.\n" );
+                break;
+            }
+        }
+
+        return qualifies;
+    }
+
+    template<class Key, class KeyValue, class Container>
+    bool PropertyRestrictions<Key, KeyValue, Container>::Qualifies( const tProperties* pProp )
+    {
         release_assert( pProp );
 
         bool qualifies = true;
 
         // individual has to have one of these properties
-        for( IPKeyValueContainer& container : _restrictions)
+        for( Container& container : _restrictions )
         {
             qualifies = false;
             bool meets_property_restriction_criteria = true;
-            for( IPKeyValue kv : container)
+            for( KeyValue kv : container )
             {
-                const std::string szKey = kv.GetKey().ToString();
-                const std::string szVal = kv.GetValueAsString();
+                const std::string& szKey = kv.GetKeyAsString();
+                const std::string& szVal = kv.GetValueAsString();
 
                 LOG_DEBUG_F( "Applying property restrictions in event coordinator: %s/%s.\n", szKey.c_str(), szVal.c_str() );
                 // Every individual has to have a property value for each property key
-                if( pProp->find( szKey ) == pProp->end() )
-                {
-                    throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, "properties", szKey.c_str() );
-                }
-                else if( pProp->at( szKey ) == szVal )
+                if( pProp->at( szKey ) == szVal )
                 {
                     LOG_DEBUG_F( "Person satisfies (partial) property restriction: constraint is %s/%s and the person is %s.\n", szKey.c_str(), szVal.c_str(), pProp->at( szKey ).c_str() );
                     continue; // we're good
@@ -142,15 +188,16 @@ namespace Kernel
         return qualifies;
     }
 
-    std::string PropertyRestrictions::GetAsString() const
+    template<class Key, class KeyValue, class Container>
+    std::string PropertyRestrictions<Key, KeyValue, Container>::GetAsString() const
     {
         std::string restriction_str ;
         if( _restrictions.size() > 0 )
         {
-            for( IPKeyValueContainer container : _restrictions )
+            for( Container container : _restrictions )
             {
                 restriction_str += "[ ";
-                for( IPKeyValue kv : container )
+                for( KeyValue kv : container )
                 {
                     std::string prop = kv.ToString();
                     restriction_str += "'"+ prop +"', " ;
@@ -162,4 +209,12 @@ namespace Kernel
         }
         return restriction_str;
     }
+
+    // -------------------------------------------------------------------------------
+    // --- This defines the implementations for these templetes with these parameters.
+    // --- If you comment these out, you will get unresolved externals when linking.
+    // -------------------------------------------------------------------------------
+    template class PropertyRestrictions<IPKey, IPKeyValue, IPKeyValueContainer>;
+    template class PropertyRestrictions<NPKey, NPKeyValue, NPKeyValueContainer>;
+
 }

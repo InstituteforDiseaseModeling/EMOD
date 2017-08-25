@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -27,13 +27,15 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "config_params.rc"
 #ifdef ENABLE_TBHIV
-#include "IndividualCoinfection.h"
+#include "IndividualCoInfection.h"
+#include "TBHIVParameters.h"
 #else
 #include "TBContexts.h"
 #include "Individual.h"
 #endif
+#include "StrainIdentity.h"
 
-static const char * _module = "InfectionTB";
+SETUP_LOGGING( "InfectionTB" )
 
 namespace Kernel
 {
@@ -69,65 +71,74 @@ namespace Kernel
     END_QUERY_INTERFACE_BODY(InfectionTB)
 
     bool
-    InfectionTBConfig::Configure(
-        const Configuration * config
-    )
+        InfectionTBConfig::Configure(
+            const Configuration * config
+        )
     {
-        LOG_DEBUG( "Configure\n" );
-        initConfigTypeMap( "TB_Latent_Cure_Rate", &TB_latent_cure_rate, TB_Latent_Cure_Rate_DESC_TEXT, 0.0f, 1.0f, 0.0005479f ); // tb
-        initConfigTypeMap( "TB_Fast_Progressor_Rate", &TB_fast_progressor_rate, TB_Fast_Progressor_Rate_DESC_TEXT, 0.0f, 1.0f, 0.000041096f ); // tb
-        initConfigTypeMap( "TB_Slow_Progressor_Rate", &TB_slow_progressor_rate, TB_Slow_Progressor_Rate_DESC_TEXT, 0.0f, 1.0f, 0.000002054f ); // tb, -1 only to turn on AgeDepSlowProgression
-        initConfigTypeMap( "TB_Active_Cure_Rate", &TB_active_cure_rate, TB_Active_Cure_Rate_DESC_TEXT, 0.0f, 1.0f, 0.0f ); // tb
-        initConfigTypeMap( "TB_Inactivation_Rate", &TB_inactivation_rate, TB_Inactivation_Rate_DESC_TEXT, 0.0f, 1.0f, 0.00041096f ); // tb
-        initConfigTypeMap( "TB_Active_Mortality_Rate", &TB_active_mortality_rate, TB_Active_Mortality_Rate_DESC_TEXT, 0.0f, 1.0f, 0.0009589f ); // tb
-        initConfigTypeMap( "TB_Extrapulmonary_Mortality_Multiplier", &TB_extrapulmonary_mortality_multiplier, TB_Extrapulmonary_Mortality_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.4f ); // tb
-        initConfigTypeMap( "TB_Smear_Negative_Mortality_Multiplier", &TB_smear_negative_mortality_multiplier, TB_Smear_Negative_Mortality_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.4f ); // tb
-        initConfigTypeMap( "TB_Active_Presymptomatic_Infectivity_Multiplier", &TB_active_presymptomatic_infectivity_multiplier, TB_Active_Presymptomatic_Infectivity_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.0274f );
-        initConfigTypeMap( "TB_Presymptomatic_Rate", &TB_presymptomatic_rate, TB_Presymptomatic_Rate_DESC_TEXT, 0.0f, 1.0f, 0.0274f ); // tb
-        initConfigTypeMap( "TB_Presymptomatic_Cure_Rate", &TB_presymptomatic_cure_rate, TB_Presymptomatic_Cure_Rate_DESC_TEXT, 0.0f, 1.0f, 0.0274f ); // tb
-        initConfigTypeMap( "TB_Smear_Negative_Infectivity_Multiplier", &TB_smear_negative_infectivity_multiplier, TB_Smear_Negative_Infectivity_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.25f );
-        initConfigTypeMap( "TB_Drug_Efficacy_Multiplier_MDR", &TB_Drug_Efficacy_Multiplier_MDR, TB_Drug_Efficacy_Multiplier_MDR_DESC_TEXT, 0.0f, 1.0f, 1.0f ); // 1 means equal efficacy if MDR or not
-        initConfigTypeMap( "TB_Drug_Efficacy_Multiplier_Failed", &TB_Drug_Efficacy_Multiplier_Failed, TB_Drug_Efficacy_Multiplier_Failed_DESC_TEXT, 0.0f, 1.0f, 1.0f ); // 1 means equal efficacy if failed
-        initConfigTypeMap( "TB_Drug_Efficacy_Multiplier_Relapsed", &TB_Drug_Efficacy_Multiplier_Relapsed, TB_Drug_Efficacy_Multiplier_Relapsed_DESC_TEXT, 0.0f, 1.0f, 1.0f ); // 1 means equal efficacy if relapsed
-        initConfigTypeMap( "TB_MDR_Fitness_Multiplier", &TB_MDR_Fitness_Multiplier, TB_MDR_Fitness_Multiplier_DESC_TEXT, 0.0f, 1.0f, 1.0f ); // 1 means equal fitness for MDR strain 
-        initConfigTypeMap( "TB_Relapsed_to_Active_Rate", &TB_relapsed_to_active_rate, TB_Relapsed_to_Active_Rate_DESC_TEXT, 0.0f, 1.0f, 0.000041096f ); // default equal to fast progressor
-        
-        initConfig( "TB_Active_Period_Distribution", TB_active_period_distribution, config, MetadataDescriptor::Enum("TB_active_distribution", TB_Active_Period_Distribution_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction)) ); 
+        LOG_DEBUG("Configure\n");
+        initConfigTypeMap("TB_Latent_Cure_Rate", &TB_latent_cure_rate, TB_Latent_Cure_Rate_DESC_TEXT, 0.0f, 1.0f, 0.0005479f); // tb
+        initConfigTypeMap("TB_Fast_Progressor_Rate", &TB_fast_progressor_rate, TB_Fast_Progressor_Rate_DESC_TEXT, 0.0f, 1.0f, 0.000041096f); // tb
+        initConfigTypeMap("TB_Slow_Progressor_Rate", &TB_slow_progressor_rate, TB_Slow_Progressor_Rate_DESC_TEXT, -1.0f, 1.0f, 0.000002054f); // tb, -1 only to turn on AgeDepSlowProgression
+        initConfigTypeMap("TB_Active_Cure_Rate", &TB_active_cure_rate, TB_Active_Cure_Rate_DESC_TEXT, 0.0f, 1.0f, 0.0f); // tb
+        initConfigTypeMap("TB_Inactivation_Rate", &TB_inactivation_rate, TB_Inactivation_Rate_DESC_TEXT, 0.0f, 1.0f, 0.00041096f); // tb
+        initConfigTypeMap("TB_Active_Mortality_Rate", &TB_active_mortality_rate, TB_Active_Mortality_Rate_DESC_TEXT, 0.0f, 1.0f, 0.0009589f); // tb
+        initConfigTypeMap("TB_Extrapulmonary_Mortality_Multiplier", &TB_extrapulmonary_mortality_multiplier, TB_Extrapulmonary_Mortality_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.4f); // tb
+        initConfigTypeMap("TB_Smear_Negative_Mortality_Multiplier", &TB_smear_negative_mortality_multiplier, TB_Smear_Negative_Mortality_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.4f); // tb
+        initConfigTypeMap("TB_Active_Presymptomatic_Infectivity_Multiplier", &TB_active_presymptomatic_infectivity_multiplier, TB_Active_Presymptomatic_Infectivity_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.0274f);
+        initConfigTypeMap("TB_Presymptomatic_Rate", &TB_presymptomatic_rate, TB_Presymptomatic_Rate_DESC_TEXT, 0.0f, 1.0f, 0.0274f); // tb
+        initConfigTypeMap("TB_Presymptomatic_Cure_Rate", &TB_presymptomatic_cure_rate, TB_Presymptomatic_Cure_Rate_DESC_TEXT, 0.0f, 1.0f, 0.0274f); // tb
+        initConfigTypeMap("TB_Smear_Negative_Infectivity_Multiplier", &TB_smear_negative_infectivity_multiplier, TB_Smear_Negative_Infectivity_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.25f);
+        initConfigTypeMap("TB_Drug_Efficacy_Multiplier_MDR", &TB_Drug_Efficacy_Multiplier_MDR, TB_Drug_Efficacy_Multiplier_MDR_DESC_TEXT, 0.0f, 1.0f, 1.0f); // 1 means equal efficacy if MDR or not
+        initConfigTypeMap("TB_Drug_Efficacy_Multiplier_Failed", &TB_Drug_Efficacy_Multiplier_Failed, TB_Drug_Efficacy_Multiplier_Failed_DESC_TEXT, 0.0f, 1.0f, 1.0f); // 1 means equal efficacy if failed
+        initConfigTypeMap("TB_Drug_Efficacy_Multiplier_Relapsed", &TB_Drug_Efficacy_Multiplier_Relapsed, TB_Drug_Efficacy_Multiplier_Relapsed_DESC_TEXT, 0.0f, 1.0f, 1.0f); // 1 means equal efficacy if relapsed
+        initConfigTypeMap("TB_MDR_Fitness_Multiplier", &TB_MDR_Fitness_Multiplier, TB_MDR_Fitness_Multiplier_DESC_TEXT, 0.0f, 1.0f, 1.0f); // 1 means equal fitness for MDR strain 
+        initConfigTypeMap("TB_Relapsed_to_Active_Rate", &TB_relapsed_to_active_rate, TB_Relapsed_to_Active_Rate_DESC_TEXT, 0.0f, 1.0f, 0.000041096f); // default equal to fast progressor
+
+        initConfig("TB_Active_Period_Distribution", TB_active_period_distribution, config, MetadataDescriptor::Enum("TB_active_distribution", TB_Active_Period_Distribution_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction)));
         //note for both exponential and gaussian duration, the mean is defined by the total_rate of active_cure_rate and active_mortality_rate, corrected for smear status
-        if( TB_active_period_distribution == DistributionFunction::GAUSSIAN_DURATION || JsonConfigurable::_dryrun )
+        if (TB_active_period_distribution == DistributionFunction::GAUSSIAN_DURATION || JsonConfigurable::_dryrun)
         {
-            initConfigTypeMap( "TB_Active_Period_Std_Dev", &TB_active_period_std_dev, TB_Active_Period_Std_Dev_DESC_TEXT, 0.0f, FLT_MAX, 1.0f );
+            initConfigTypeMap("TB_Active_Period_Std_Dev", &TB_active_period_std_dev, TB_Active_Period_Std_Dev_DESC_TEXT, 0.0f, FLT_MAX, 1.0f);
         }
-        if( JsonConfigurable::_dryrun == false )
+        if (JsonConfigurable::_dryrun == false)
         {
-            if( TB_active_period_distribution == DistributionFunction::FIXED_DURATION ||
+            if (TB_active_period_distribution == DistributionFunction::FIXED_DURATION ||
                 TB_active_period_distribution == DistributionFunction::UNIFORM_DURATION ||
                 TB_active_period_distribution == DistributionFunction::POISSON_DURATION ||
                 TB_active_period_distribution == DistributionFunction::LOG_NORMAL_DURATION ||
                 TB_active_period_distribution == DistributionFunction::BIMODAL_DURATION
-              )
+                )
             {
-                throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Only EXPONENTIAL_DURATION and GAUSSIAN_DURATION are supported for TB_active_period_distribution." );
+                throw NotYetImplementedException(__FILE__, __LINE__, __FUNCTION__, "Only EXPONENTIAL_DURATION and GAUSSIAN_DURATION are supported for TB_active_period_distribution.");
             }
         }
 
 #ifdef ENABLE_TBHIV
-        if( JsonConfigurable::_dryrun || GET_CONFIGURABLE( SimulationConfig )->sim_type == SimType::TBHIV_SIM ) // Hmmm...
-        {
-            initConfigTypeMap( "TB_CD4_Activation_Vector", &TB_cd4_activation_vec, TB_cd4_activation_vec_DESC_TEXT,0.0f, FLT_MAX, 1.0f);
-            initConfigTypeMap( "CD4_Strata_Activation", &CD4_strata_act_vec, CD4_Strata_Activation_DESC_TEXT, 1.0f, 2000.0f);
-        }
+        initConfigTypeMap("TB_CD4_Activation_Vector", &TB_cd4_activation_vec, TB_cd4_activation_vec_DESC_TEXT, 0.0f, FLT_MAX, 1.0f, 0, "Simulation_Type", "TBHIV_SIM");
+        initConfigTypeMap("CD4_Strata_Activation", &CD4_strata_act_vec, CD4_Strata_Activation_DESC_TEXT, -1.0f, 2000.0f, 1.0f, 0, "Simulation_Type", "TBHIV_SIM");
 #endif
 
-        bool cRet = JsonConfigurable::Configure( config );
+        bool cRet = JsonConfigurable::Configure(config);
 
+#ifdef ENABLE_TBHIV
         auto it_activation_factor = TB_cd4_activation_vec.cbegin();
         auto it_cd4_strata = CD4_strata_act_vec.cbegin();
 
-        while (  (it_activation_factor!= TB_cd4_activation_vec.cend() ) && (it_cd4_strata != CD4_strata_act_vec.cend() ) )
+        // make sure lengths are equivalent for mapping, ie prevent user error
+        int size_act = static_cast <int> (TB_cd4_activation_vec.size());
+        int size_strata = static_cast <int> (CD4_strata_act_vec.size());
+
+        if (size_act != size_strata)
+        {
+             throw IncoherentConfigurationException(__FILE__, __LINE__, __FUNCTION__, "Length Activation Rate Vector", size_act, "Length of CD4 Strata", size_strata);
+        }
+
+        while( ( it_activation_factor != TB_cd4_activation_vec.cend() ) &&
+               ( it_cd4_strata != CD4_strata_act_vec.cend() ) )
         {
             CD4_map[*it_cd4_strata++] = *it_activation_factor++;
         }
+#endif
         return cRet;
     }
 
@@ -159,7 +170,7 @@ namespace Kernel
         m_is_pending_relapse = false;
         m_shows_symptoms = false;
 
-        if( parent->QueryInterface( GET_IID( IIndividualHumanCoinfection ), (void**)&human_coinf ) != s_OK )
+        if( parent->QueryInterface( GET_IID( IIndividualHumanCoInfection ), (void**)&human_coinf ) != s_OK )
         {
             LOG_DEBUG_F( "parent is just tb person, not co-inf.\n" );
             human_coinf = nullptr;
@@ -167,15 +178,15 @@ namespace Kernel
         m_duration_since_init_infection = 0.0f;
     }
 
-    void InfectionTB::SetParameters(StrainIdentity* infstrain, int incubation_period_override)
+    void InfectionTB::SetParameters(IStrainIdentity* infstrain, int incubation_period_override)
     {
+        LOG_DEBUG_F( "New TB infection for individual %d; incubation_period_override = %d.\n", parent->GetSuid().data, incubation_period_override );
         CreateInfectionStrain(infstrain);
 
         // Defer setting duration of incubation/infection periods 
         // to InitInfectionImmunology function which is called next
         // in AcquireNewInfection since it takes a Susceptibility argument
-        // allowing age/coinfection/etc. dependencies
-
+        // allowing age/coinfection/etc. dependencies 
     }
 
     // TODO: PUT A BIG EXPLANATION OF THE TB S-E-I-R NATURAL HISTORY HERE
@@ -184,7 +195,7 @@ namespace Kernel
     void InfectionTB::Update(float dt, ISusceptibilityContext* immunity)
     {
         StateChange = InfectionStateChange::None; // reset state change of previous time-step
-        LOG_DEBUG("InfectionTB Update \n");
+        LOG_VALID_F( "InfectionTB::Update for individual %d.\n", parent->GetSuid().data );
         m_duration_since_init_infection += dt;
 
         //natural history of disease progression only allowed when not on drugs
@@ -194,8 +205,8 @@ namespace Kernel
         {
             duration +=dt;
 
-            LOG_DEBUG_F("Your incubation_timer is %f \n", incubation_timer);
-            //LATENT
+            LOG_VALID_F("Your incubation_timer is now %f \n", incubation_timer);
+          
             if (!m_is_active && duration > incubation_timer) 
             {
                 // Latent-to-Cured
@@ -274,7 +285,7 @@ namespace Kernel
             }
             else
             {
-                LOG_DEBUG("Not time for you to progress from one state to another \n");
+                LOG_VALID("Not time for you to progress from one state to another \n");
             }
         }
         // Evolution of drug resistance is handled here 
@@ -309,6 +320,13 @@ namespace Kernel
 
     void InfectionTB::InitializeLatentInfection(ISusceptibilityContext* immunity)
     {
+#ifdef ENABLE_TBHIV
+        LOG_VALID_F( "%s: Individual %lu now has latent infection.\n", __FUNCTION__, parent->GetSuid().data );
+        if (human_coinf != nullptr && human_coinf->HasHIV())
+        {
+            human_coinf->ModActivate();
+        }
+#endif
         LOG_DEBUG( "Initializing a latent infection.\n" ); 
         StateChange = InfectionStateChange::TBLatent; 
 
@@ -352,11 +370,24 @@ namespace Kernel
         {
             m_is_fast_progressor = false;
 
-            //Latent slow by exponential rate
+#ifdef ENABLE_TBHIV 
+            if (human_coinf != nullptr && human_coinf->HasHIV())
+            {
+                incubation_timer = randgen->time_varying_rate_dist(human_coinf->GetTBActivationVector(), GET_CONFIGURABLE(SimulationConfig)->tbhiv_params->cd4_time_step , InfectionTBConfig::TB_latent_cure_rate);
+                IndividualHumanCoInfection* out1 = dynamic_cast <IndividualHumanCoInfection*> (human_coinf);
+                bool flag_reconst = out1->GetHIVInterventionsContainer()->ShouldReconstituteCD4();
+                // Leave trailing space before period for SFT get_val function. For now.
+                LOG_VALID_F( "Individual %lu Incubation_timer calculated as %f, based on TB activation vector & timestep, reconstitute=%d .\n", parent->GetSuid().data, incubation_timer, flag_reconst );
+                float total_rate = human_coinf->GetNextLatentActivation(incubation_timer) + InfectionTBConfig::TB_latent_cure_rate;
+                m_recover_fraction = (total_rate > 0 ? InfectionTBConfig::TB_latent_cure_rate / total_rate : 0);
+            }
+            else
+#endif
             if (InfectionTBConfig::TB_slow_progressor_rate >= 0)
             {
                 float total_rate = InfectionTBConfig::TB_slow_progressor_rate + InfectionTBConfig::TB_latent_cure_rate;
                 incubation_timer = float(randgen->expdist(total_rate));
+                LOG_DEBUG_F( "Incubation_timer calculated as %f, based on TB slow progressor & cure rates.\n", incubation_timer );
 
                 m_recover_fraction = (total_rate > 0 ? InfectionTBConfig::TB_latent_cure_rate/total_rate : 0);
             }
@@ -365,20 +396,11 @@ namespace Kernel
             else
             {    
                 incubation_timer = CalculateTimerAgeDepSlowProgression(immunity);
+                LOG_DEBUG_F( "Incubation_timer calculated as %f, based on TB slow progressor rate & age (?).\n", incubation_timer );
                 m_recover_fraction = 0; // if your slow progression goes by age you can't recover naturally, this would be latent -> cured which is indistinguishable from non-disease 
             }
         }
 
-#ifdef ENABLE_TBHIV
-        // HIV-specific code that needs to be encapsulated.
-        if( human_coinf != nullptr && immunityTB->GetCD4ActFlag() )
-        {
-
-            incubation_timer = randgen->time_varying_rate_dist( human_coinf->GetTBactivationvector(), human_coinf->GetCD4TimeStep(), InfectionTBConfig::TB_latent_cure_rate);
-            float total_rate = human_coinf->GetNextLatentActivation(incubation_timer) + InfectionTBConfig::TB_latent_cure_rate;
-            m_recover_fraction = (total_rate > 0 ? InfectionTBConfig::TB_latent_cure_rate/total_rate : 0);
-        }
-#endif
 
         // And the fractional allocation to each state
         //set flags for all latent disease
@@ -452,10 +474,10 @@ namespace Kernel
         }
 
         //Relapsers do not spend any time in Presymptomatic infection, they go directly to active disease
-        IIndividualHumanTB2* tb_ind = nullptr;
+        IIndividualHumanTB* tb_ind = nullptr;
         
         IIndividualHumanContext * patient = GetParent();
-        if(patient->GetEventContext()->QueryInterface( GET_IID( IIndividualHumanTB2 ), (void**)&tb_ind ) != s_OK)
+        if(patient->GetEventContext()->QueryInterface( GET_IID( IIndividualHumanTB ), (void**)&tb_ind ) != s_OK)
         { 
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pIndividual", "IIndividualHumanTB2", "IIndividualHumanEventContext" );
         }
@@ -482,16 +504,22 @@ namespace Kernel
     
     void InfectionTB::InitializeActiveInfection(ISusceptibilityContext* immunity)
     {
-        dynamic_cast<IIndividualHumanTB2*>(parent)->onInfectionIncidence();
-        if (infection_strain->GetGeneticID() == TBInfectionDrugResistance::FirstLineResistant)
-        {
-            dynamic_cast<IIndividualHumanTB2*>(parent)->onInfectionMDRIncidence();
-        }
-        LOG_DEBUG( "InitializeActiveInfection\n" );
+        LOG_DEBUG("InitializeActiveInfection\n");
         ISusceptibilityTB* immunityTB = nullptr;
-        if( immunity->QueryInterface( GET_IID( ISusceptibilityTB ), (void**)&immunityTB ) != s_OK )
+        if (immunity->QueryInterface(GET_IID(ISusceptibilityTB), (void**)&immunityTB) != s_OK)
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "immunity", "ISusceptibilityTB", "Susceptibility" );
+            throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "immunity", "ISusceptibilityTB", "Susceptibility");
+        }
+
+        IIndividualHumanTB2* tb2  = nullptr;
+        if (parent->QueryInterface(GET_IID(IIndividualHumanTB2), (void**)&tb2)  == s_OK)
+        {
+             
+            tb2->onInfectionIncidence();
+            if (infection_strain->GetGeneticID() == TBInfectionDrugResistance::FirstLineResistant)
+            {
+                tb2->onInfectionMDRIncidence();
+            } 
         }
 
         // Figure out individual dependence of active disease presentation
@@ -626,31 +654,30 @@ namespace Kernel
         }
 
         //Modulate drug clearance rate depending if person has ever failed (prob should be specific for drug type and for this particular infection in future)
-        IIndividualHumanTB2* tb_ind = nullptr;
-        if(patient->GetEventContext()->QueryInterface( GET_IID( IIndividualHumanTB2 ), (void**)&tb_ind ) != s_OK)
+        IIndividualHumanTB* tb_ind = nullptr;
+        if(patient->GetEventContext()->QueryInterface( GET_IID( IIndividualHumanTB ), (void**)&tb_ind ) == s_OK)
         { 
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pIndividual", "IIndividualHumanTB2", "IIndividualHumanEventContext" );
+            if (tb_ind->HasFailedTreatment())
+            {
+                TB_drug_inactivation_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Failed;
+                TB_drug_clearance_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Failed;
+                LOG_DEBUG_F("Adjusting drug clearance rate because I have failed before, new rate is %f \n", TB_drug_clearance_rate);
+
+                //TODO: Could also modulate the resistance, relapse and mortality rate if infection has ever failed (also should be specific for drug type in future)
+            }
+
+            //Modulate drug clearance rate depending if infection has ever relapsed (also should be specific for drug type in future)
+            if (tb_ind->HasEverRelapsedAfterTreatment())
+            {
+                TB_drug_inactivation_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Relapsed;
+                TB_drug_clearance_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Relapsed;
+                LOG_DEBUG_F("Adjusting drug clearance rate because I have relapsed before, new rate is %f \n", TB_drug_clearance_rate);
+
+                //TODO: Could also modulate the resistance, relapse and mortality rate if infection has ever failed (also should be specific for drug type in future)
+            }
+
         }
-
-        if ( tb_ind->HasFailedTreatment() )
-        {
-            TB_drug_inactivation_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Failed;
-            TB_drug_clearance_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Failed; 
-            LOG_DEBUG_F("Adjusting drug clearance rate because I have failed before, new rate is %f \n", TB_drug_clearance_rate);
-            
-            //TODO: Could also modulate the resistance, relapse and mortality rate if infection has ever failed (also should be specific for drug type in future)
-        }
-
-        //Modulate drug clearance rate depending if infection has ever relapsed (also should be specific for drug type in future)
-        if ( tb_ind->HasEverRelapsedAfterTreatment() )
-        {
-            TB_drug_inactivation_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Relapsed; 
-            TB_drug_clearance_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Relapsed; 
-            LOG_DEBUG_F("Adjusting drug clearance rate because I have relapsed before, new rate is %f \n", TB_drug_clearance_rate);
-
-            //TODO: Could also modulate the resistance, relapse and mortality rate if infection has ever failed (also should be specific for drug type in future)
-        }
-
+      
         TBDrugEffects_t total_drug_effect_on_infection;
         total_drug_effect_on_infection.clearance_rate = TB_drug_clearance_rate;
         total_drug_effect_on_infection.inactivation_rate = TB_drug_inactivation_rate;
@@ -658,7 +685,6 @@ namespace Kernel
         total_drug_effect_on_infection.relapse_rate = TB_drug_relapse_rate;
         total_drug_effect_on_infection.mortality_rate = TB_drug_mortality_rate;
         return total_drug_effect_on_infection;
-
     }
 
 
@@ -674,13 +700,18 @@ namespace Kernel
 
             //If no active drugs, there is no probability of evolving drug resistance
             //If active and on drugs with non-zero resistance rate, fixed higher probability of evolving resistance from drug pressure
-            if (total_drug_effects.resistance_rate != 0 && total_drug_effects.clearance_rate > 0 && IsActive() == true) 
+            if (total_drug_effects.resistance_rate != 0  && IsActive() == true) 
             {
-                if (randgen->e() < total_drug_effects.resistance_rate * dt ) 
+                if (randgen->e() < total_drug_effects.resistance_rate * dt)
                 {
                     infection_strain->SetGeneticID(TBInfectionDrugResistance::FirstLineResistant);
                     m_evolved_resistance = true;
-                    dynamic_cast<IIndividualHumanTB2*>(parent)->onInfectionMDRIncidence(); //alert observer to new MDR incident case (evolved)
+
+                    IIndividualHumanTB2 * tb2ptr = nullptr;  //check below since this observer not used for TBHIV
+                    if (parent->GetEventContext()->QueryInterface(GET_IID(IIndividualHumanTB2), (void**)&tb2ptr) == s_OK)
+                    {
+                        dynamic_cast<IIndividualHumanTB2*>(parent)->onInfectionMDRIncidence(); //alert observer to new MDR incident case (evolved)
+                    }
                     LOG_DEBUG("Evolved drug resistance strain while having active disease and on drugs \n");
 
                     infectiousness *= InfectionTBConfig::TB_MDR_Fitness_Multiplier;     //fitness penalty for MDR
@@ -722,17 +753,17 @@ namespace Kernel
         bool ret = false;
         
         //ACTIVE DISEASE CAN GO TO CLEARED, PENDING_RELAPSE, INACTIVE TO LATENT, or DEATH
-        if (IsActive() == true) 
+        if (m_is_active == true ) 
         {
             //draw to see if the event occurs now
             if (randgen->e() < (dt * total_event_rate))
             {
-                float rand2 = randgen->e();
+                ProbabilityNumber rand2 = randgen->e();
 
                 // Infection cleared
                 if ( rand2 < (total_drug_effects.clearance_rate / total_event_rate) )
                 {
-                    LOG_DEBUG( "TB drug truly cleared my infection \n" );
+                    LOG_DEBUG_F( "TB drug truly cleared my (%d) infection from active state.\n", parent->GetSuid().data );
                     StateChange = InfectionStateChange::Cleared;
                     ret = true;
                 }
@@ -740,7 +771,7 @@ namespace Kernel
                 //Infection will relapse
                 else if ( rand2 < ( (total_drug_effects.clearance_rate + total_drug_effects.relapse_rate) / total_event_rate) )
                 {
-                    LOG_DEBUG( "TB drug cleared my infection, but I will relapse in the future \n" );
+                    LOG_DEBUG_F( "TB drug cleared my infection, but %d will relapse in the future.\n", parent->GetSuid().data );
                     StateChange = InfectionStateChange::ClearedPendingRelapse;
                     InitializePendingRelapse( immunity );
                     ret = true;
@@ -749,15 +780,16 @@ namespace Kernel
                 // Active-to-latent
                 else if (rand2 > (1 - (total_drug_effects.inactivation_rate / total_event_rate ) ) )
                 {
+                    LOG_DEBUG_F( "TB drug deactivated my (%d) infection (from active state to latent).\n", parent->GetSuid().data );
                     StateChange = InfectionStateChange::TBInactivation;
                     InitializeLatentInfection( immunity );
                     ret = true;
                 }
 
-                // Active-to-death
-                else
+                // Active-to-death only for the symptomatic
+                else if (m_shows_symptoms) 
                 {
-                    LOG_DEBUG_F("Died from active disease on drugs, death_rate is %f, rand2 is %f \n", total_drug_effects.mortality_rate);
+                    LOG_DEBUG_F( "Died from active disease on drugs, death_rate is %f, rand2 is %f \n", total_drug_effects.mortality_rate, float(rand2) );
                     StateChange = InfectionStateChange::Fatal; 
                     ret = true;
                 }
@@ -769,32 +801,73 @@ namespace Kernel
             //IF STILL ON TREATMENT INCREMENT THE INCUBATION TIMER so that you are not allowed to re-advance to active disease on this treatment 
             if (m_is_pending_relapse) 
             {
-                incubation_timer = incubation_timer + dt; // NOTE: this is only place in code where the incubation_timer is incremented.???
+                LOG_DEBUG("Will relapse after treaatment \n");
             }
             else
             { 
-                float rand = randgen->e();
-
+                duration += (1.0 - total_drug_effects.inactivation_rate) * dt; //dilate time
+                ProbabilityNumber rand = randgen->e();
+                
                 // Latent -to- cleared
                 if (rand < (dt * total_drug_effects.clearance_rate))
                 {
-                    LOG_DEBUG( "TB drug truly cleared my infection from latent state \n" );
+                    LOG_DEBUG_F( "TB drug truly cleared my (%d) infection from latent state.\n", parent->GetSuid().data );
                     StateChange = InfectionStateChange::Cleared;
                     ret = true;
                 }
-            
-                // Latent-to-death
-                else if (rand > (1 - (dt * total_drug_effects.mortality_rate)))
+                else if (duration > incubation_timer)
                 {
-                    LOG_DEBUG_F("Died from latent disease on drugs, death_rate is %f, rand2 is %f \n", total_drug_effects.mortality_rate);
-                    StateChange = InfectionStateChange::Fatal; 
-                    ret = true;
+                    //for latency clearance rate of drugs is ADDITIONAL Clearance rate (note no diference when no natural clearance of latency)
+                    float rand1 = randgen->e();
+                    if (rand1 < m_recover_fraction)
+                    {
+                        StateChange = InfectionStateChange::Cleared;
+                    }
+                    else
+                    {
+                        LOG_DEBUG_F( "Individual %d progressing from Latent to Active Presymptomatic while on TB Drugs.\n", parent->GetSuid().data );
+                        InitializeActivePresymptomaticInfection(immunity);
+                        StateChange = InfectionStateChange::TBActivationPresymptomatic;
+                    }
                 }
             }
         }      
 
         // Otherwise drug did not have an effect in this timestep
         return ret;
+    }
+
+    void InfectionTB::ExogenousLatentSlowToFast()
+    {
+        // Reset timer
+        duration = 0.0f;
+        //set to fast
+
+        release_assert(!m_is_active); //make sure we arrived here from latency
+        release_assert(!m_is_fast_progressor);
+        release_assert(!m_is_pending_relapse);
+
+        m_is_fast_progressor = true;
+
+        float total_rate = InfectionTBConfig::TB_fast_progressor_rate + InfectionTBConfig::TB_latent_cure_rate;
+        incubation_timer = float(randgen->expdist(total_rate));
+
+        m_recover_fraction = (total_rate > 0 ? InfectionTBConfig::TB_latent_cure_rate / total_rate : 0);
+
+        // And the fractional allocation to each state
+        //set flags for all latent disease
+        m_is_active = false;
+        m_is_pending_relapse = false;
+        m_is_smear_positive = false;
+        m_is_extrapulmonary = false;
+        m_shows_symptoms = false;
+
+        // Latent to death not simulated, recover_fraction set in the relevant latent section
+        m_death_fraction = 0;
+
+        // Reset infectiousness
+        infectiousness = 0;    
+
     }
 
     float InfectionTB::CalculateTimerAgeDepSlowProgression(ISusceptibilityContext* immunity)
@@ -883,12 +956,23 @@ namespace Kernel
     }
     
     void InfectionTB::ResetDuration()
-        {
-            duration = 0;
-        }
+    {
+        duration = 0;
+    }
     
-    InfectionTB::InfectionTB() { }
-    InfectionTB::InfectionTB(IIndividualHumanContext *context) : InfectionAirborne(context) { }
+    InfectionTB::InfectionTB()
+    {
+        human_coinf = nullptr;
+    }
+    InfectionTB::InfectionTB(IIndividualHumanContext *context) : InfectionAirborne(context)
+    {
+        human_coinf = nullptr;
+    }
+
+    void InfectionTB::ModifyInfectionStrain(IStrainIdentity * exog_strain_id)
+    {
+        CreateInfectionStrain(exog_strain_id);
+    }
     //const SimulationConfig* InfectionTB::params() { return GET_CONFIGURABLE(SimulationConfig); }
 
     REGISTER_SERIALIZABLE(InfectionTB);

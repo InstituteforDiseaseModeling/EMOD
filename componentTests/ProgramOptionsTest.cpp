@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -31,7 +31,7 @@ SUITE(ProgramOptionsTest)
         int t1_argc = 1 ;
         char* t1_argv[] =
         {
-            {"Eradication.exe"}
+            "Eradication.exe"
         };
 
         string t1_errmsg = po.ParseCommandLine( t1_argc, t1_argv );
@@ -46,8 +46,8 @@ SUITE(ProgramOptionsTest)
         int t2_argc = 2 ;
         char* t2_argv[] =
         {
-            {"Eradication.exe"},
-            {"--noArgLongName2"}
+            "Eradication.exe",
+            "--noArgLongName2"
         };
 
         string t2_errmsg = po.ParseCommandLine( t2_argc, t2_argv );
@@ -62,9 +62,9 @@ SUITE(ProgramOptionsTest)
         int t3_argc = 3 ;
         char* t3_argv[] =
         {
-            {"Eradication.exe"},
-            {"--noArgLongName2"},
-            {"--noArgLongName1"}
+            "Eradication.exe",
+            "--noArgLongName2",
+            "--noArgLongName1"
         };
 
         string t3_errmsg = po.ParseCommandLine( t3_argc, t3_argv );
@@ -79,9 +79,9 @@ SUITE(ProgramOptionsTest)
         int t4_argc = 3 ;
         char* t4_argv[] =
         {
-            {"Eradication.exe"},
-            {"--noArgLongName2"},
-            {"--XXXXX"}
+            "Eradication.exe",
+            "--noArgLongName2",
+            "--XXXXX"
         };
 
         string t4_errmsg = po.ParseCommandLine( t4_argc, t4_argv );
@@ -94,9 +94,9 @@ SUITE(ProgramOptionsTest)
         int t5_argc = 3 ;
         char* t5_argv[] =
         {
-            {"Eradication.exe"},
-            {"-t"},
-            {"--noArgLongName1"}
+            "Eradication.exe",
+            "-t",
+            "--noArgLongName1"
         };
 
         string t5_errmsg = po.ParseCommandLine( t5_argc, t5_argv );
@@ -137,9 +137,9 @@ SUITE(ProgramOptionsTest)
         int t1_argc = 3 ;
         char* t1_argv[] =
         {
-            {"Eradication.exe"},
-            {"--intLongName1"},
-            {"999"}
+            "Eradication.exe",
+            "--intLongName1",
+            "999"
         };
 
         string t1_errmsg = po.ParseCommandLine( t1_argc, t1_argv );
@@ -157,10 +157,10 @@ SUITE(ProgramOptionsTest)
         int t2_argc = 4 ;
         char* t2_argv[] =
         {
-            {"Eradication.exe"},
-            {"--intLongName2=444"},
-            {"--intLongName1"},
-            {"999"}
+            "Eradication.exe",
+            "--intLongName2=444",
+            "--intLongName1",
+            "999"
         };
 
         string t2_errmsg = po.ParseCommandLine( t2_argc, t2_argv );
@@ -177,8 +177,8 @@ SUITE(ProgramOptionsTest)
         int t3_argc = 2 ;
         char* t3_argv[] =
         {
-            {"Eradication.exe"},
-            {"--intLongName1"}
+            "Eradication.exe",
+            "--intLongName1"
         };
 
         string t3_exp = "Error parsing command line: missing value for option 'intLongName1'" ;
@@ -192,8 +192,8 @@ SUITE(ProgramOptionsTest)
         int t4_argc = 2 ;
         char* t4_argv[] =
         {
-            {"Eradication.exe"},
-            {"--intLongName1="}
+            "Eradication.exe",
+            "--intLongName1="
         };
 
         string t4_exp = "Error parsing command line: missing value for option 'intLongName1'" ;
@@ -211,9 +211,9 @@ SUITE(ProgramOptionsTest)
         int t5_argc = 3 ;
         char* t5_argv[] =
         {
-            {"Eradication.exe"},
-            {"--intLongName1"},
-            {"bad-value"}
+            "Eradication.exe",
+            "--intLongName1",
+            "bad-value"
         };
 
         string t5_exp = "Error parsing command line: illegal value(bad-value) for option 'intLongName1'" ;
@@ -256,9 +256,9 @@ SUITE(ProgramOptionsTest)
         int t1_argc = 3 ;
         char* t1_argv[] =
         {
-            {"Eradication.exe"},
-            {"--intLongName1"},
-            {"111"}
+            "Eradication.exe",
+            "--intLongName1",
+            "111"
         };
 
         string t1_errmsg = po.ParseCommandLine( t1_argc, t1_argv );
@@ -277,8 +277,8 @@ SUITE(ProgramOptionsTest)
         int t2_argc = 2 ;
         char* t2_argv[] =
         {
-            {"Eradication.exe"},
-            {"--intLongName1"}
+            "Eradication.exe",
+            "--intLongName1"
         };
 
         string t2_errmsg = po.ParseCommandLine( t2_argc, t2_argv );
@@ -297,9 +297,9 @@ SUITE(ProgramOptionsTest)
         int t3_argc = 3 ;
         char* t3_argv[] =
         {
-            {"Eradication.exe"},
-            {"--intLongName1"},
-            {"--intLongName3"}
+            "Eradication.exe",
+            "--intLongName1",
+            "--intLongName3"
         };
 
         string t3_errmsg = po.ParseCommandLine( t3_argc, t3_argv );
@@ -345,9 +345,9 @@ SUITE(ProgramOptionsTest)
         int t1_argc = 3 ;
         char* t1_argv[] =
         {
-            {"Eradication.exe"},
-            {"--strLongName2"},
-            {"abcd"}
+            "Eradication.exe",
+            "--strLongName2",
+            "abcd"
         };
 
         string t1_errmsg = po.ParseCommandLine( t1_argc, t1_argv );
@@ -370,10 +370,10 @@ SUITE(ProgramOptionsTest)
         int t2_argc = 4 ;
         char* t2_argv[] =
         {
-            {"Eradication.exe"},
-            {"--strLongName2"},
-            {"abcd"},
-            {"--strLongName3=wxyz"}
+            "Eradication.exe",
+            "--strLongName2",
+            "abcd",
+            "--strLongName3=wxyz"
         };
 
         string t2_errmsg = po.ParseCommandLine( t2_argc, t2_argv );
@@ -395,11 +395,11 @@ SUITE(ProgramOptionsTest)
         int t3_argc = 5 ;
         char* t3_argv[] =
         {
-            {"Eradication.exe"},
-            {"--strLongName2"},
-            {"abcd"},
-            {"--strLongName3=wxyz"},
-            {"-F=qwer" }
+            "Eradication.exe",
+            "--strLongName2",
+            "abcd",
+            "--strLongName3=wxyz",
+            "-F=qwer" 
         };
 
         string t3_errmsg = po.ParseCommandLine( t3_argc, t3_argv );
@@ -422,12 +422,12 @@ SUITE(ProgramOptionsTest)
         int t4_argc = 6 ;
         char* t4_argv[] =
         {
-            {"Eradication.exe"},
-            {"--strLongName2"},
-            {"abcd"},
-            {"--strLongName3=wxyz"},
-            {"-F" },
-            {"qwer" }
+            "Eradication.exe",
+            "--strLongName2",
+            "abcd",
+            "--strLongName3=wxyz",
+            "-F" ,
+            "qwer" 
         };
 
         string t4_errmsg = po.ParseCommandLine( t4_argc, t4_argv );
@@ -485,9 +485,9 @@ SUITE(ProgramOptionsTest)
         int t1_argc = 3 ;
         char* t1_argv[] =
         {
-            {"Eradication.exe"},
-            {"--listLongName1"},
-            {"oneC"}
+            "Eradication.exe",
+            "--listLongName1",
+            "oneC"
         };
 
         string t1_errmsg = po.ParseCommandLine( t1_argc, t1_argv );
@@ -505,10 +505,10 @@ SUITE(ProgramOptionsTest)
         int t2_argc = 4 ;
         char* t2_argv[] =
         {
-            {"Eradication.exe"},
-            {"--listLongName1"},
-            {"oneC"},
-            {"--listLongName2=twoB"}
+            "Eradication.exe",
+            "--listLongName1",
+            "oneC",
+            "--listLongName2=twoB"
         };
 
         string t2_errmsg = po.ParseCommandLine( t2_argc, t2_argv );
@@ -525,8 +525,8 @@ SUITE(ProgramOptionsTest)
         int t3_argc = 2 ;
         char* t3_argv[] =
         {
-            {"Eradication.exe"},
-            {"--listLongName2=XXX"}
+            "Eradication.exe",
+            "--listLongName2=XXX"
         };
 
         string t3_errmsg = po.ParseCommandLine( t3_argc, t3_argv );
@@ -595,13 +595,13 @@ SUITE(ProgramOptionsTest)
         int t1_argc = 7 ;
         char* t1_argv[] =
         {
-            {"Eradication.exe"},
-            {"--config"},
-            {"config.json"},
-            {"--input-path"},
-            {"."},
-            {"--output-path"},
-            {"testing"}
+            "Eradication.exe",
+            "--config",
+            "config.json",
+            "--input-path",
+            ".",
+            "--output-path",
+            "testing"
         };
 
         string t1_errmsg = po.ParseCommandLine( t1_argc, t1_argv );
@@ -638,8 +638,8 @@ SUITE(ProgramOptionsTest)
         int t2_argc = 2 ;
         char* t2_argv[] =
         {
-            {"Eradication.exe"},
-            {"--help"}
+            "Eradication.exe",
+            "--help"
         };
 
         string t2_errmsg = po.ParseCommandLine( t2_argc, t2_argv );

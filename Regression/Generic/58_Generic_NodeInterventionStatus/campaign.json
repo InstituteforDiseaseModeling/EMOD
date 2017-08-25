@@ -1,0 +1,95 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        { 
+            "COMMENT1" : "Test that only the RURAL families can travel to Node 1.",
+            "COMMENT2" : "This should test that interventions are disqualified during Distribute.",
+            "COMMENT3" : "Verify by looking at ReportNodeDemographics.csv - check that the URBAN nodes did not migrate, check that InterventionStatus has updated.",
+            "class": "CampaignEvent",
+            "Start_Day": 5,
+            "Nodeset_Config": 
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": 
+            { 
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": 
+                { 
+                    "class": "MigrateFamily",
+                    "Disqualifying_Properties": [
+                        "Place:URBAN"
+                    ],
+                    "New_Property_Value": "InterventionStatus:1_VISIT",
+                    "NodeID_To_Migrate_To": 1,
+                    "Duration_Before_Leaving_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_Before_Leaving_Fixed": 0, 
+                    "Duration_At_Node_Distribution_Type" : "FIXED_DURATION",
+                    "Duration_At_Node_Fixed": 5, 
+                    "Is_Moving" : 0
+                }
+            }
+        },
+        { 
+            "COMMENT1" : "Add NLHTIV and see that Disqualifying_Properties distributes only to the URBAN nodes.",
+            "COMMENT2" : "Verify that infection goes down in the URBAN nodes via ReportNodeDemographics also Campain Cost increases",
+            "class": "CampaignEvent",
+            "Start_Day": 20,
+            "Nodeset_Config": 
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": 
+            { 
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": 
+                { 
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Disqualifying_Properties": [
+                        "Place:RURAL",
+                        "InterventionStatus:STOP_VACCINATING"
+                    ],
+                    "New_Property_Value": "InterventionStatus:VACCINATING",
+                    "Trigger_Condition_List": [ "NewInfectionEvent" ],
+                    "Target_Demographic": "Everyone", 
+                    "Demographic_Coverage": 0.5,
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "SimpleVaccine",
+                        "Cost_To_Consumer": 10,
+                        "Vaccine_Take": 1,
+                        "Vaccine_Type": "Generic",
+                        "Waning_Config": {
+                            "class": "WaningEffectBox",
+                            "Initial_Effect": 1.0, 
+                            "Box_Duration": 100
+                        }
+                    }
+                }
+            }
+        },
+        { 
+            "COMMENT1" : "Test that NLHTIVs abort due to STOP_VACCINATING value.",
+            "COMMENT2" : "Verify by seeing that Campaign Cost flattens out - stops increasing.",
+            "class": "CampaignEvent",
+            "Start_Day": 40,
+            "Nodeset_Config": 
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": 
+            { 
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Node_Property_Restrictions" : [ { "InterventionStatus": "VACCINATING" } ],
+                "Intervention_Config": 
+                { 
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "InterventionStatus:STOP_VACCINATING",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 0
+                }
+            }
+        }
+    ]
+}

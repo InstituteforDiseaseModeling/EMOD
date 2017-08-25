@@ -63,8 +63,8 @@
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVMuxer",
 
-                        "Abort_States": [ "Abort_Infinite_Loop" ],
-                        "Cascade_State": "Infinite_Loop",
+                        "Disqualifying_Properties": [ "InterventionStatus:Abort_Infinite_Loop" ],
+                        "New_Property_Value": "InterventionStatus:Infinite_Loop",
 
                         "Delay_Distribution": "FIXED_DURATION",
                         "Delay_Period": 365,

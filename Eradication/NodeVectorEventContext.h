@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,15 +10,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #pragma once
 
 #include <string>
-#include <list>
-#include <vector>
-
-#include "BoostLibWrapper.h"
 
 #include "ISupports.h"
-#include "Configuration.h"
-#include "suids.hpp"
-#include "RANDOM.h"
 #include "NodeEventContext.h"
 #include "NodeEventContextHost.h"
 #include "VectorEnums.h"
@@ -38,7 +31,7 @@ namespace Kernel
         virtual void UpdateLarvalHabitatReduction( VectorHabitatType::Enum habitat, float reduction ) = 0;
         virtual void UpdateLarvalHabitatReduction( const LarvalHabitatMultiplier& lhm ) = 0;
         virtual void UpdateOutdoorKilling( float killing ) = 0;
-        virtual void UpdateOviTrapKilling(VectorHabitatType::Enum  habitat, float killing) = 0;
+        virtual void UpdateOviTrapKilling(VectorHabitatType::Enum habitat, float killing) = 0;
         virtual void UpdateVillageSpatialRepellent(float) = 0;
         virtual void UpdateADIVAttraction(float) = 0;
         virtual void UpdateADOVAttraction(float) = 0;
@@ -47,6 +40,7 @@ namespace Kernel
         virtual void UpdateSugarFeedKilling(float) = 0;
         virtual void UpdateAnimalFeedKilling(float) = 0;
         virtual void UpdateOutdoorRestKilling(float) = 0;
+        virtual void UpdateIndoorKilling( float ) = 0;
     };
 
     class IMosquitoReleaseConsumer : public ISupports
@@ -67,7 +61,7 @@ namespace Kernel
         NodeVectorEventContextHost(Node* _node);
         virtual ~NodeVectorEventContextHost();
   
-        virtual QueryResult QueryInterface(iid_t iid, void** pinstance);
+        virtual QueryResult QueryInterface(iid_t iid, void** pinstance) override;
        
         // INodeVectorInterventionEffectsApply
         virtual void UpdateLarvalKilling( VectorHabitatType::Enum habitat, float killing ) override;
@@ -83,6 +77,7 @@ namespace Kernel
         virtual void UpdateOviTrapKilling(VectorHabitatType::Enum  habitat, float killing) override;
         virtual void UpdateAnimalFeedKilling(float killing) override;
         virtual void UpdateOutdoorRestKilling(float killing) override;
+        virtual void UpdateIndoorKilling(float killing) override;
 
         // INodeVectorInterventionEffects;
         virtual float GetLarvalKilling(VectorHabitatType::Enum) override;
@@ -97,6 +92,7 @@ namespace Kernel
         virtual float GetOviTrapKilling(VectorHabitatType::Enum) override;
         virtual float GetAnimalFeedKilling() override;
         virtual float GetOutdoorRestKilling() override;
+        virtual float GetIndoorKilling() override;
 
         VectorHabitatType::Enum larval_killing_target;
         VectorHabitatType::Enum larval_reduction_target;
@@ -105,7 +101,7 @@ namespace Kernel
         LarvalHabitatMultiplier larval_reduction;
 
         // IMosquitoReleaseConsumer
-        virtual void ReleaseMosquitoes( NonNegativeFloat cost, const std::string& species, const VectorMatingStructure& genetics, NaturalNumber number );
+        virtual void ReleaseMosquitoes( NonNegativeFloat cost, const std::string& species, const VectorMatingStructure& genetics, NaturalNumber number ) override;
 
     protected: 
         float pLarvalKilling;
@@ -120,6 +116,7 @@ namespace Kernel
         float pOviTrapKilling;
         float pAnimalFeedKilling;
         float pOutdoorRestKilling;
+        float pIndoorKilling;
 
     private:
         NodeVectorEventContextHost() : NodeEventContextHost(nullptr) { }

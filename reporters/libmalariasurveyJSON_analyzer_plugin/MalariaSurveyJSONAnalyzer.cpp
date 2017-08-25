@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,19 +16,20 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IndividualMalaria.h"
 #include "SusceptibilityMalaria.h"
 #include "NodeEventContext.h"
+#include "Serializer.h"
 
 #include "DllInterfaceHelper.h"
 #include "DllDefs.h"
 #include "ProgVersion.h"
-#include "IdmMpi.h"
+#include "ReportUtilities.h"
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!! CREATING NEW REPORTS
 // !!! If you are creating a new report by copying this one, you will need to modify 
 // !!! the values below indicated by "<<<"
 
-// Module name for logging, CustomReport.json, and DLL GetType()
-static const char * _module = "MalariaSurveyJSONAnalyzer"; // <<< Name of this file
+// Name for logging, CustomReport.json, and DLL GetType()
+SETUP_LOGGING( "MalariaSurveyJSONAnalyzer" ) // <<< Name of this file
 
 namespace Kernel
 {
@@ -99,89 +100,48 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
     {
     }
 
-    void MalariaPatient::JSerialize( IJsonObjectAdapter* root, JSerializer* helper )
+    void MalariaPatient::Serialize( IJsonObjectAdapter& root, JSerializer& helper )
     {
         LOG_DEBUG("Serializing MalariaPatient\n");
-        root->BeginObject();
+        root.BeginObject();
 
         LOG_DEBUG("Inserting simple variables\n");
-        root->Insert("id",             id);
-        root->Insert("node_id",        node_id);
-        root->Insert("initial_age",    initial_age);
-        root->Insert("local_birthday", local_birthday);
+        root.Insert("id",             id);
+        root.Insert("node_id",        node_id);
+        root.Insert("initial_age",    initial_age);
+        root.Insert("local_birthday", local_birthday);
 
-        root->Insert("strain_ids");
-        root->BeginArray();
+        root.Insert("strain_ids");
+        root.BeginArray();
         for (auto& inner : strain_ids)
         {
             // TODO: add helper function for serializing pair<int,int> ??
-            root->BeginArray();
-            root->Add(inner.first);
-            root->Add(inner.second);
-            root->EndArray();
+            root.BeginArray();
+            root.Add(inner.first);
+            root.Add(inner.second);
+            root.EndArray();
         }
-        root->EndArray();
+        root.EndArray();
 
         LOG_DEBUG("Inserting array variables\n");
-        SerializeChannel("true_asexual_parasites", true_asexual_density,     root, helper);
-        SerializeChannel("true_gametocytes",       true_gametocyte_density,  root, helper);
-        SerializeChannel("asexual_parasites",      asexual_parasite_density, root, helper);
-        SerializeChannel("gametocytes",            gametocyte_density,       root, helper);
-        SerializeChannel("infectiousness",         infectiousness,           root, helper);
-        SerializeChannel("pos_asexual_fields",     pos_asexual_fields,       root, helper);
-        SerializeChannel("pos_gametocyte_fields",  pos_gametocyte_fields,    root, helper);
-        SerializeChannel("temps",                  fever,                    root, helper);
-        SerializeChannel("rdt",                    rdt,                      root, helper);
+        ReportUtilities::SerializeVector( root, helper, "true_asexual_parasites", true_asexual_density     );
+        ReportUtilities::SerializeVector( root, helper, "true_gametocytes",       true_gametocyte_density  );
+        ReportUtilities::SerializeVector( root, helper, "asexual_parasites",      asexual_parasite_density );
+        ReportUtilities::SerializeVector( root, helper, "gametocytes",            gametocyte_density       );
+        ReportUtilities::SerializeVector( root, helper, "infectiousness",         infectiousness           );
+        ReportUtilities::SerializeVector( root, helper, "pos_asexual_fields",     pos_asexual_fields       );
+        ReportUtilities::SerializeVector( root, helper, "pos_gametocyte_fields",  pos_gametocyte_fields    );
+        ReportUtilities::SerializeVector( root, helper, "temps",                  fever                    );
+        ReportUtilities::SerializeVector( root, helper, "rdt",                    rdt                      );
 
-        root->EndObject();
+        root.EndObject();
     }
 
-    void MalariaPatient::SerializeChannel( std::string channel_name, std::vector<float> &channel_data,
-                                           IJsonObjectAdapter* root, JSerializer* helper )
-    {
-        root->Insert(channel_name.c_str());
-        root->BeginArray();
-        helper->JSerialize(channel_data, root);
-        root->EndArray();
-    }
-
-    std::vector<float> JDeserializeFloatVector( const std::string& name, IJsonObjectAdapter* root )
-    {
-        std::vector<float> value_list;
-
-        IJsonObjectAdapter* p_outer_array = root->GetJsonArray( name.c_str() );
-        release_assert( p_outer_array->GetSize() == 1 );
-
-        IJsonObjectAdapter* p_json_array = (*p_outer_array)[IndexType(0)];
-        for( unsigned int i = 0 ; i < p_json_array->GetSize(); ++i )
-        {
-            float value = (*p_json_array)[IndexType(i)]->AsFloat();
-            value_list.push_back( value );
-        }
-        return value_list;
-    }
-
-    std::vector<std::string> JDeserializeStringVector( const std::string& name, IJsonObjectAdapter* root )
-    {
-        std::vector<std::string> value_list;
-
-        IJsonObjectAdapter* p_outer_array = root->GetJsonArray( name.c_str() );
-        release_assert( p_outer_array->GetSize() == 1 );
-
-        IJsonObjectAdapter* p_json_array = (*p_outer_array)[IndexType(0)];
-        for( unsigned int i = 0 ; i < p_json_array->GetSize(); ++i )
-        {
-            std::string value = (*p_json_array)[IndexType(i)]->AsString();
-            value_list.push_back( value );
-        }
-        return value_list;
-    }
-
-    std::vector< std::pair<int,int> > JDeserializeStrainIds( IJsonObjectAdapter* root )
+    std::vector< std::pair<int,int> > DeserializeStrainIds( IJsonObjectAdapter& root )
     {
         std::vector< std::pair<int,int> > value_list;
 
-        IJsonObjectAdapter* p_json_array = root->GetJsonArray( "strain_ids" );
+        IJsonObjectAdapter* p_json_array = root.GetJsonArray( "strain_ids" );
         for( unsigned int i = 0 ; i < p_json_array->GetSize(); ++i )
         {
             IJsonObjectAdapter* p_inner_array = (*p_json_array)[IndexType(i)];
@@ -192,24 +152,132 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         return value_list;
     }
 
-    void MalariaPatient::JDeserialize( IJsonObjectAdapter* root )
+    void MalariaPatient::Deserialize( IJsonObjectAdapter& root )
     {
-        id             = root->GetInt(   "id"             );
-        node_id        = root->GetInt(   "node_id"        );
-        initial_age    = root->GetFloat( "initial_age"    );
-        local_birthday = root->GetFloat( "local_birthday" );
+        id             = root.GetInt(   "id"             );
+        node_id        = root.GetInt(   "node_id"        );
+        initial_age    = root.GetFloat( "initial_age"    );
+        local_birthday = root.GetFloat( "local_birthday" );
 
-        strain_ids = JDeserializeStrainIds( root );
+        strain_ids = DeserializeStrainIds( root );
 
-        true_asexual_density      = JDeserializeFloatVector(  "true_asexual_parasites" , root );
-        true_gametocyte_density   = JDeserializeFloatVector(  "true_gametocytes"       , root );
-        asexual_parasite_density  = JDeserializeFloatVector(  "asexual_parasites"      , root );
-        gametocyte_density        = JDeserializeFloatVector(  "gametocytes"            , root );
-        infectiousness            = JDeserializeFloatVector(  "infectiousness"         , root );
-        pos_asexual_fields        = JDeserializeFloatVector(  "pos_asexual_fields"     , root );
-        pos_gametocyte_fields     = JDeserializeFloatVector(  "pos_gametocyte_fields"  , root );
-        fever                     = JDeserializeFloatVector(  "temps"                  , root );
-        rdt                       = JDeserializeFloatVector(  "rdt"                    , root );
+        ReportUtilities::DeserializeVector( root, false, "true_asexual_parasites" , true_asexual_density     );
+        ReportUtilities::DeserializeVector( root, false, "true_gametocytes"       , true_gametocyte_density  );
+        ReportUtilities::DeserializeVector( root, false, "asexual_parasites"      , asexual_parasite_density );
+        ReportUtilities::DeserializeVector( root, false, "gametocytes"            , gametocyte_density       );
+        ReportUtilities::DeserializeVector( root, false, "infectiousness"         , infectiousness           );
+        ReportUtilities::DeserializeVector( root, false, "pos_asexual_fields"     , pos_asexual_fields       );
+        ReportUtilities::DeserializeVector( root, false, "pos_gametocyte_fields"  , pos_gametocyte_fields    );
+        ReportUtilities::DeserializeVector( root, false, "temps"                  , fever                    );
+        ReportUtilities::DeserializeVector( root, false, "rdt"                    , rdt                      );
+    }
+
+// ----------------------------------------
+// --- MalariaPatientMap Methods
+// ----------------------------------------
+
+    MalariaPatientMap::MalariaPatientMap()
+    {
+    }
+
+    MalariaPatientMap::~MalariaPatientMap()
+    {
+    }
+
+    void MalariaPatientMap::Clear()
+    {
+        for( auto& entry: m_Map )
+        {
+            delete entry.second;
+        }
+        m_Map.clear();
+    }
+
+    template <typename T>
+    void UpdateVector( std::vector<T>& existing_vector, std::vector<T>& new_vector )
+    {
+        for( int i = existing_vector.size(); i < new_vector.size() ; ++i )
+        {
+            existing_vector.push_back( new_vector[i] );
+        }
+    }
+
+    void MalariaPatientMap::Update( const IIntervalData& rOther )
+    {
+        const MalariaPatientMap& rOtherMap = static_cast< const MalariaPatientMap& >(rOther);
+
+        for( auto& other_entry : rOtherMap.m_Map )
+        {
+            MalariaPatient* new_patient = other_entry.second;
+            MalariaPatient* existing_patient = FindPatient( new_patient->id );
+
+            if( existing_patient == nullptr )
+            {
+                existing_patient = new MalariaPatient(new_patient->id,-1,-1);
+                Add( existing_patient );
+            }
+
+            // set in constructor
+            //existing_patient->id             = new_patient->id;
+
+            existing_patient->node_id        = new_patient->node_id;
+            existing_patient->initial_age    = new_patient->initial_age;
+            existing_patient->local_birthday = new_patient->local_birthday;
+            existing_patient->strain_ids     = new_patient->strain_ids;
+
+            UpdateVector( existing_patient->true_asexual_density     , new_patient->true_asexual_density     );
+            UpdateVector( existing_patient->true_gametocyte_density  , new_patient->true_gametocyte_density  );
+            UpdateVector( existing_patient->asexual_parasite_density , new_patient->asexual_parasite_density );
+            UpdateVector( existing_patient->gametocyte_density       , new_patient->gametocyte_density       );
+            UpdateVector( existing_patient->infectiousness           , new_patient->infectiousness           );
+            UpdateVector( existing_patient->pos_asexual_fields       , new_patient->pos_asexual_fields       );
+            UpdateVector( existing_patient->pos_gametocyte_fields    , new_patient->pos_gametocyte_fields    );
+            UpdateVector( existing_patient->fever                    , new_patient->fever                    );
+            UpdateVector( existing_patient->rdt                      , new_patient->rdt                      );
+        }
+    }
+
+    void MalariaPatientMap::Serialize( IJsonObjectAdapter& rjoa, JSerializer& js )
+    {
+        rjoa.Insert("patient_array");
+        rjoa.BeginArray();
+        for( auto &id_patient_pair: m_Map )
+        {
+            MalariaPatient* patient = id_patient_pair.second;
+            release_assert( patient );
+            patient->Serialize( rjoa, js );
+        }
+        rjoa.EndArray();
+    }
+
+    void MalariaPatientMap::Deserialize( IJsonObjectAdapter& rjoa )
+    {
+        IJsonObjectAdapter* p_json_array = rjoa.GetJsonArray("patient_array");
+
+        for( unsigned int i = 0 ; i < p_json_array->GetSize() ; ++i )
+        {
+            MalariaPatient* new_patient = new MalariaPatient(-1,-1,-1);
+            new_patient->Deserialize( *(*p_json_array)[i] );
+
+            Add( new_patient );
+        }
+        delete p_json_array;
+    }
+
+    MalariaPatient* MalariaPatientMap::FindPatient( uint32_t id )
+    {
+        MalariaPatient* p_patient = nullptr;
+        std::map<uint32_t,MalariaPatient*>::iterator it = m_Map.find( id );
+        if( it != m_Map.end() )
+        {
+            p_patient = it->second;
+        }
+        return p_patient;
+    }
+
+    void MalariaPatientMap::Add( MalariaPatient* pPatient )
+    {
+        m_Map.insert( std::make_pair( pPatient->id, pPatient ) );
     }
 
 // ----------------------------------------
@@ -217,31 +285,27 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
 // ----------------------------------------
 
     MalariaSurveyJSONAnalyzer::MalariaSurveyJSONAnalyzer() 
-        : BaseEventReportIntervalOutput( _module )
-        , m_patient_map()
-        , m_PrettyFormat(true)
+        : BaseEventReportIntervalOutput( _module, true, new MalariaPatientMap(), new MalariaPatientMap() ) // true => one file per report
+        , m_pPatientMap(nullptr)
     {
-        LOG_DEBUG( "CTOR\n" );
     }
 
     MalariaSurveyJSONAnalyzer::~MalariaSurveyJSONAnalyzer()
     {
-        LOG_DEBUG( "DTOR\n" );
-        if( m_patient_map.size() > 0 )
-        {
-            WriteOutput( -999.0f );
-        }
-        ClearOutputData();
     }
 
     bool MalariaSurveyJSONAnalyzer::Configure( const Configuration* inputJson )
     {
-        initConfigTypeMap( "Pretty_Format", &m_PrettyFormat, "True implies pretty JSON format, false saves space.", true );
+        bool configured = BaseEventReportIntervalOutput::Configure( inputJson );
 
-        return BaseEventReportIntervalOutput::Configure( inputJson );
+        if( configured )
+        {
+            m_pPatientMap = static_cast<MalariaPatientMap*>(m_pIntervalData);
+        }
+        return configured;
     }
 
-    bool MalariaSurveyJSONAnalyzer::notifyOnEvent( IIndividualHumanEventContext *context, const std::string& StateChange )
+    bool MalariaSurveyJSONAnalyzer::notifyOnEvent( IIndividualHumanEventContext *context, const EventTrigger& trigger )
     {
         if( HaveUnregisteredAllEvents() )
         {
@@ -270,20 +334,16 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         IMalariaSusceptibility* susceptibility_malaria = individual_malaria->GetMalariaSusceptibilityContext();
 
         // get the correct existing patient or insert a new one
-        MalariaPatient* patient = NULL;
-        patient_map_t::const_iterator it = m_patient_map.find(id);
-        if ( it == m_patient_map.end() )
+        MalariaPatient* patient = m_pPatientMap->FindPatient(id);
+
+        if( patient == nullptr )
         {
             patient = new MalariaPatient(id, age, m_interval_timer-age); // birthday relative to current interval (i.e. output file)
-            m_patient_map.insert( std::make_pair(id, patient) );
+            m_pPatientMap->Add( patient );
 
             patient->strain_ids = individual_malaria->GetInfectingStrainIds();
             INodeEventContext* node_context = context->GetNodeEventContext();
             patient->node_id = node_context->GetExternalId();
-        }
-        else
-        {
-            patient = it->second;
         }
 
         // Push back today's disease variables
@@ -312,206 +372,11 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         return true;
     }
 
-    void MalariaSurveyJSONAnalyzer::EndTimestep( float currentTime, float dt )
+    void MalariaSurveyJSONAnalyzer::SerializeOutput( float currentTime, IJsonObjectAdapter& output, JSerializer& js )
     {
-        Reduce();
-        BaseEventReportIntervalOutput::EndTimestep( currentTime, dt );
-    }
+        output.Insert("ntsteps", m_reporting_interval);
 
-    template <typename T>
-    void UpdateVector( std::vector<T>& existing_vector, std::vector<T>& new_vector )
-    {
-        for( int i = existing_vector.size(); i < new_vector.size() ; ++i )
-        {
-            existing_vector.push_back( new_vector[i] );
-        }
-    }
-
-    void SendData( const std::string& rToSend )
-    {
-        uint32_t size = rToSend.size();
-
-        IdmMpi::Request size_request;
-        EnvPtr->MPI.p_idm_mpi->SendIntegers( &size, 1, 0, &size_request );
-
-
-        IdmMpi::Request data_request;
-        EnvPtr->MPI.p_idm_mpi->SendChars( rToSend.c_str(), size, 0, &data_request );
-
-        IdmMpi::RequestList request_list;
-        request_list.Add( size_request );
-        request_list.Add( data_request );
-
-        EnvPtr->MPI.p_idm_mpi->WaitAll( request_list );
-    }
-
-    void GetData( int fromRank, std::vector<char>& rReceive )
-    {
-        int32_t size = 0;
-        EnvPtr->MPI.p_idm_mpi->ReceiveIntegers( &size, 1, fromRank );
-
-        rReceive.resize( size + 1 );
-
-        EnvPtr->MPI.p_idm_mpi->ReceiveChars( rReceive.data(), size, fromRank );
-        rReceive[size] = '\0';
-    }
-
-    void MalariaSurveyJSONAnalyzer::Reduce()
-    {
-        if( !HaveRegisteredAllEvents() )
-        {
-            return;
-        }
-
-        if( EnvPtr->MPI.Rank != 0 )
-        {
-            IJsonObjectAdapter* pIJsonObj = CreateJsonObjAdapter();
-            pIJsonObj->CreateNewWriter();
-            pIJsonObj->BeginObject();
-
-            JSerializer js;
-            SerializePatients( pIJsonObj, js );
-
-            pIJsonObj->EndObject();
-
-            std::string json_data = pIJsonObj->ToString();
-
-            SendData( json_data );
-            delete pIJsonObj;
-        }
-        else
-        {
-            for( int fromRank = 1 ; fromRank < EnvPtr->MPI.NumTasks ; ++fromRank )
-            {
-                std::vector<char> received;
-                GetData( fromRank, received );
-
-                IJsonObjectAdapter* pIJsonObj = CreateJsonObjAdapter();
-                pIJsonObj->Parse( received.data() );
-
-                IJsonObjectAdapter* p_json_array = pIJsonObj->GetJsonArray("patient_array");
-
-                for( unsigned int i = 0 ; i < p_json_array->GetSize() ; ++i )
-                {
-                    MalariaPatient* new_patient = new MalariaPatient(-1,-1,-1);
-                    new_patient->JDeserialize( (*p_json_array)[i] );
-
-                    patient_map_t::const_iterator it = m_patient_map.find( new_patient->id );
-                    if( it == m_patient_map.end() )
-                    {
-                        m_patient_map.insert( std::make_pair( new_patient->id, new_patient ) );
-                    }
-                    else
-                    {
-                        MalariaPatient* existing_patient = it->second;
-
-                        existing_patient->node_id        = new_patient->node_id;
-                        existing_patient->initial_age    = new_patient->initial_age;
-                        existing_patient->local_birthday = new_patient->local_birthday;
-
-                        UpdateVector( existing_patient->true_asexual_density     , new_patient->true_asexual_density     );
-                        UpdateVector( existing_patient->true_gametocyte_density  , new_patient->true_gametocyte_density  );
-                        UpdateVector( existing_patient->asexual_parasite_density , new_patient->asexual_parasite_density );
-                        UpdateVector( existing_patient->gametocyte_density       , new_patient->gametocyte_density       );
-                        UpdateVector( existing_patient->infectiousness           , new_patient->infectiousness           );
-                        UpdateVector( existing_patient->pos_asexual_fields       , new_patient->pos_asexual_fields       );
-                        UpdateVector( existing_patient->pos_gametocyte_fields    , new_patient->pos_gametocyte_fields    );
-                        UpdateVector( existing_patient->fever                    , new_patient->fever                    );
-                        UpdateVector( existing_patient->rdt                      , new_patient->rdt                      );
-
-                        delete new_patient;
-                        new_patient = nullptr;
-                    }
-                }
-                delete pIJsonObj;
-            }
-        }
-    }
-
-    void MalariaSurveyJSONAnalyzer::SerializePatients( IJsonObjectAdapter* pIJsonObj,
-                                                       JSerializer& js )
-    {
-        pIJsonObj->Insert("patient_array");
-        pIJsonObj->BeginArray();
-        for(auto &id_patient_pair: m_patient_map)
-        {
-            MalariaPatient* patient = id_patient_pair.second;
-            patient->JSerialize(pIJsonObj, &js);
-        }
-        pIJsonObj->EndArray();
-    }
-
-    void MalariaSurveyJSONAnalyzer::WriteOutput( float currentTime )
-    {
-        // Open output file
-        ofstream ofs;
-        std::ostringstream output_file_name;
-        output_file_name << GetBaseOutputFilename() << "_" << (m_report_count-1) << ".json";
-        LOG_INFO_F( "Writing file: %s\n", output_file_name.str().c_str() );
-        ofs.open( FileSystem::Concat( EnvPtr->OutputPath, output_file_name.str() ).c_str() );
-        if (!ofs.is_open())
-        {
-            LOG_ERR("Failed to open output file for serialization.\n");
-            throw Kernel::FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, output_file_name.str().c_str() );
-        }
-
-        // Accumulate array of patients as JSON
-        int counter = 0;
-        JSerializer js;
-        LOG_DEBUG("Creating JSON object adaptor.\n");
-        IJsonObjectAdapter* pIJsonObj = CreateJsonObjAdapter();
-        LOG_DEBUG("Creating new JSON writer.\n");
-        pIJsonObj->CreateNewWriter();
-        LOG_DEBUG("Beginning malaria patient array.\n");
-        pIJsonObj->BeginObject();
-        pIJsonObj->Insert("ntsteps", m_reporting_interval);
-
-        SerializePatients( pIJsonObj, js );
-
-        pIJsonObj->EndObject();
-
-        // Write output to file
-        // GetFormattedOutput() could be used for a smaller but less human readable file
-        char* sHumans = nullptr;
-        if( m_PrettyFormat )
-        {
-            js.GetPrettyFormattedOutput(pIJsonObj, sHumans);
-        }
-        else
-        {
-            const char* const_humans = nullptr;
-            js.GetFormattedOutput( pIJsonObj, const_humans );
-            sHumans = const_cast<char*>(const_humans);
-        }
-
-        if (sHumans)
-        {
-            ofs << sHumans << endl;
-            if( m_PrettyFormat )
-            {
-                delete sHumans ;
-            }
-            sHumans = nullptr ;
-        }
-        else
-        {
-            throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, output_file_name.str().c_str() );
-        }
-
-        if (ofs.is_open())
-        {
-            ofs.close();
-        }
-        pIJsonObj->FinishWriter();
-        delete pIJsonObj ;
-    }
-
-    void MalariaSurveyJSONAnalyzer::ClearOutputData()
-    {
-        for( auto &patient: m_patient_map )
-        {
-            delete patient.second;
-        }
-        m_patient_map.clear();
+        release_assert( m_pPatientMap );
+        m_pPatientMap->Serialize( output, js );
     }
 }

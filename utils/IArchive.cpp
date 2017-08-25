@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -28,7 +28,7 @@ namespace Kernel
         {
             for (auto& entry : vec)
             {
-                *this & entry.data;
+                *this & entry;
             }
         }
         else
@@ -36,8 +36,7 @@ namespace Kernel
             vec.resize(count);
             for (size_t i = 0; i < count; ++i)
             {
-                Kernel::suids::suid value;
-                *this & vec[i].data;
+                *this & vec[i];
             }
         }
         this->endArray();

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -32,6 +32,7 @@ namespace Kernel
             ResistanceHegGenetics() {}
             virtual void ConfigureFromJsonAndKey( const Configuration *, const std::string &key ) override;
             virtual json::QuickBuilder GetSchema() override;
+            virtual bool  HasValidDefault() const override { return false; }
             VectorAllele::Enum pesticideResistance;
             VectorAllele::Enum HEG;
     };
@@ -54,8 +55,8 @@ namespace Kernel
         virtual void Update(float dt);
 
     protected:
-        virtual std::string getSpecies() const;
-        virtual VectorMatingStructure getVectorGenetics() const;
+        virtual const std::string& getSpecies() const;
+        virtual const VectorMatingStructure& getVectorGenetics() const;
         virtual int getNumber() const;
 
     protected:
@@ -64,8 +65,5 @@ namespace Kernel
         ResistanceHegGenetics self;
         ResistanceHegGenetics mate;
         int releasedNumber;
-
-        void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const;
-        void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper );
     };
 }

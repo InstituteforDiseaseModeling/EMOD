@@ -21,6 +21,7 @@ invoked by calling this application method.
 
 import os
 import json
+from jsonmerge import merge
 
 # ----------
 # Constants
@@ -36,7 +37,7 @@ base_assortivity_details_fn = "output/Assortivity_Details"
 # The RelationshipType code here is intended to mimic the RelationshipType
 # enum found in Relationship.h
 # -------------------------------------------------------------------------
-NumRelationshipTypes = 3
+NumRelationshipTypes = 4
 
 def RelationshipType_LookUpName( rel_type ):
     if rel_type == 0:
@@ -45,6 +46,8 @@ def RelationshipType_LookUpName( rel_type ):
         return "INFORMAL"
     elif rel_type == 2:
         return "MARITAL"
+    elif rel_type == 3:
+        return "COMMERCIAL"
     else:
         raise exception( "Unknown relationshp type = " + str(rel_type) )
 
@@ -234,8 +237,8 @@ class Demographics:
         config_file.close()
     
     def ReadSocietyData( self ):
-        found = 0
         #demo_fn_array = self.demo_fn_str.split(";")
+        overlayed_json = {}
         for demo_fn in self.demo_fn_array:
             filename = demo_fn
             if os.path.isfile( filename ) == False :
@@ -243,19 +246,20 @@ class Demographics:
             #print( "filename = " + filename + "\n" )
             demo_file = open( filename, "r" )
             demo_json = json.loads( demo_file.read() )
-            if "Defaults" in demo_json.keys():
-                if "Society" in demo_json["Defaults"].keys():
-                    self.society_json = demo_json["Defaults"]["Society"] # !!! GOT DATA !!!
-                    found = 1
+            overlayed_json = merge( overlayed_json, demo_json )
             demo_file.close()
-        if found == 0:
+
+        if "Defaults" in overlayed_json.keys():
+            if "Society" in overlayed_json["Defaults"].keys():
+                self.society_json = overlayed_json["Defaults"]["Society"] # !!! GOT DATA !!!
+        else:
             raise exception("Could not find Society element in demographics")
 
     def GetParameters( self ):
         param_list = []
         for rel_type in range(NumRelationshipTypes):
-            rel_params_name = "Pair_Formation_Parameters_" + RelationshipType_LookUpName( rel_type )
-            param = Parameters( self.society_json[ rel_params_name ] )
+            rel_params_name = RelationshipType_LookUpName( rel_type )
+            param = Parameters( self.society_json[ rel_params_name ]["Pair_Formation_Parameters"] )
             param_list.append( param )
         return param_list
 
@@ -297,8 +301,8 @@ def GetColumnIndexesFromHeader( header ):
     used_columns.append( "B_age"                  )
     used_columns.append( "A_is_infected"          )
     used_columns.append( "B_is_infected"          )
-    used_columns.append( "A_Props"                )
-    used_columns.append( "B_Props"                )
+    used_columns.append( "A_IndividualProperties" )
+    used_columns.append( "B_IndividualProperties" )
     used_columns.append( "A_STI_CoInfection"      )
     used_columns.append( "B_STI_CoInfection"      )
     used_columns.append( "A_HIV_Tested_Positive"  )
@@ -342,8 +346,8 @@ def ReadData( filename ):
             data.age_B                  = float(line_array[ col_indexes_map["B_age"                 ] ])
             data.infected_A             = int(  line_array[ col_indexes_map["A_is_infected"         ] ])
             data.infected_B             = int(  line_array[ col_indexes_map["B_is_infected"         ] ])
-            data.props_A                =       line_array[ col_indexes_map["A_Props"               ] ]
-            data.props_B                =       line_array[ col_indexes_map["B_Props"               ] ]
+            data.props_A                =       line_array[ col_indexes_map["A_IndividualProperties"] ]
+            data.props_B                =       line_array[ col_indexes_map["B_IndividualProperties"] ]
 
             if header.find( "A_STI_CoInfection" ) > 0:
                 data.STI_CoInfected_A       = int(  line_array[ col_indexes_map["A_STI_CoInfection"     ] ] )

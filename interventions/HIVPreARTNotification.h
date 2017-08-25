@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -26,13 +26,12 @@ namespace Kernel
         HIVPreARTNotification();
         virtual ~HIVPreARTNotification() { }
 
-        virtual bool Configure( const Configuration * config );
+        virtual bool Configure( const Configuration * config ) override;
 
         // IDistributableIntervention
-        virtual void SetContextTo(IIndividualHumanContext *context) { }
-        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO );
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
-        virtual void Update(float dt);
+        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO ) override;
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+        virtual void Update(float dt) override;
 
     protected:
         bool startingPreART;

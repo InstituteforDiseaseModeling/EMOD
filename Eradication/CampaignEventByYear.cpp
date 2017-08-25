@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,12 +9,17 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 #include "CampaignEventByYear.h"
+#ifndef DISABLE_STI
 #include "SimulationSTI.h"
+#endif
+#ifdef ENABLE_TYPHOID
+#include "SimulationTyphoid.h"
+#endif
 #include "SimulationConfig.h"
 
 namespace Kernel
 {
-#ifndef DISABLE_STI
+#if !defined(DISABLE_STI) || defined(ENABLE_TYPHOID)
     //
     // CampaignEventByYear class here.
     //
@@ -31,6 +36,9 @@ namespace Kernel
     )
     {
         if( !JsonConfigurable::_dryrun &&
+#ifdef ENABLE_TYPHOID
+            (GET_CONFIGURABLE( SimulationConfig )->sim_type != SimType::TYPHOID_SIM) &&
+#endif
             (GET_CONFIGURABLE( SimulationConfig )->sim_type != SimType::STI_SIM) &&
             (GET_CONFIGURABLE( SimulationConfig )->sim_type != SimType::HIV_SIM) )
         {
@@ -44,7 +52,10 @@ namespace Kernel
 
         // Bypasss CampaignEvent base class so that we don't break without Start_Day!
         bool ret = JsonConfigurable::Configure( inputJson );
-        start_day = (start_year - SimulationSTI::base_year) * DAYSPERYEAR;
+        if( Simulation::base_year > 0 )
+        { 
+            start_day = (start_year - Simulation::base_year) * DAYSPERYEAR; 
+        }
         return ret;
     }
 

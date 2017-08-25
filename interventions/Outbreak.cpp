@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,8 +14,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationConfig.h"
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for IOutbreakConsumer methods
+#include "StrainIdentity.h"
 
-static const char * _module = "Outbreak";
+SETUP_LOGGING( "Outbreak" )
 
 // Important: Use the instance method to obtain the intervention factory obj instead of static method to cross the DLL boundary
 // NO USAGE like this:  GET_CONFIGURABLE(SimulationConfig)->number_substrains in DLL
@@ -27,6 +28,7 @@ namespace Kernel
     BEGIN_QUERY_INTERFACE_BODY(Outbreak)
         HANDLE_INTERFACE(IConfigurable)
         //HANDLE_INTERFACE(IDistributableIntervention)
+        HANDLE_INTERFACE(IBaseIntervention)
         HANDLE_INTERFACE(INodeDistributableIntervention)
         HANDLE_INTERFACE(IOutbreak)
         HANDLE_ISUPPORTS_VIA(INodeDistributableIntervention)
@@ -37,9 +39,10 @@ namespace Kernel
 
     Outbreak::Outbreak() : import_age(DAYSPERYEAR)
     {
+        initSimTypes( 11, "GENERIC_SIM" , "VECTOR_SIM" , "MALARIA_SIM", "AIRBORNE_SIM", "POLIO_SIM", "TB_SIM", "TBHIV_SIM", "STI_SIM", "HIV_SIM", "PY_SIM", "TYPHOID_SIM" );
         initConfigTypeMap( "Antigen", &antigen, Antigen_DESC_TEXT, 0, 10, 0 );
         initConfigTypeMap( "Genome",  &genome,  Genome_DESC_TEXT, -1, 16777216, 0 );
-        initConfigTypeMap( "Incubation_Period_Override", &incubation_period_override, Incubation_Period_Override_DESC_TEXT, false);
+        initConfigTypeMap( "Incubation_Period_Override", &incubation_period_override, Incubation_Period_Override_DESC_TEXT,-1, INT_MAX, -1);
     }
 
     bool
@@ -61,10 +64,8 @@ namespace Kernel
         IOutbreakConsumer *ioc;
         if (s_OK == context->QueryInterface(GET_IID(IOutbreakConsumer), (void**)&ioc))
         {
-            StrainIdentity* strain_identity = GetNewStrainIdentity(context);   // JPS: no need to create strain before we call this if we're calling into node...? 
-            ioc->AddImportCases(strain_identity, import_age, num_cases_per_node);
+            ioc->AddImportCases(GetNewStrainIdentity( context ), import_age, num_cases_per_node);
             wasDistributed = true;
-            delete strain_identity;
         }
         else
         {

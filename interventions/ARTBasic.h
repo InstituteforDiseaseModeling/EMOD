@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -25,13 +25,13 @@ namespace Kernel
         virtual ~ARTBasic();
 
         // ISupports
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
-        virtual void SetContextTo(IIndividualHumanContext *context);
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+        virtual void SetContextTo(IIndividualHumanContext *context) override;
 
         // IDistributableIntervention
-        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pCCO );
+        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pCCO ) override;
 
-        virtual std::string GetDrugName();
+        virtual std::string GetDrugName() const override;
 
     protected:
         // These have same names as analogous methods on container but are internal for the drug itself.
@@ -39,7 +39,7 @@ namespace Kernel
         bool viral_suppression;
         float days_to_achieve_suppression ;
 
-        virtual void ApplyEffects();
+        virtual void ApplyEffects() override;
 
         IHIVDrugEffectsApply * itbda;
 

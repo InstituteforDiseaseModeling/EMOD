@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -24,7 +24,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IHIVInterventionsContainer.h"
 #include "SusceptibilityHIV.h"
 
-static const char* _module = "HIVReportEventRecorder";
+SETUP_LOGGING( "HIVReportEventRecorder" )
 
 namespace Kernel
 {
@@ -36,12 +36,25 @@ namespace Kernel
     }
 
     HIVReportEventRecorder::HIVReportEventRecorder()
-        : ReportEventRecorder()
+        : STIReportEventRecorder()
+        , m_InterventionStatusKey()
     {
     }
 
     HIVReportEventRecorder::~HIVReportEventRecorder()
     {
+    }
+
+    void HIVReportEventRecorder::Initialize( unsigned int nrmSize )
+    {
+        ReportEventRecorder::Initialize( nrmSize );
+
+        // has to be done if Initialize() since it is called after the demographics is read
+        IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( "InterventionStatus", "", false );
+        if( p_ip != nullptr )
+        {
+            m_InterventionStatusKey = p_ip->GetKey<IPKey>();
+        }
     }
 
     std::string HIVReportEventRecorder::GetHeader() const
@@ -52,13 +65,13 @@ namespace Kernel
         header += "OnART," ;
         header += "CD4," ;
         header += "WHO_Stage," ;
-        header += "CascadeState";
+        header += "InterventionStatus";
 
         return header;
     }
 
     std::string HIVReportEventRecorder::GetOtherData( IIndividualHumanEventContext *context, 
-                                                      const std::string& StateChange )
+                                                      const EventTrigger& trigger )
     {
         IIndividualHumanHIV * iindividual_hiv = nullptr;
         if (s_OK != context->QueryInterface(GET_IID(IIndividualHumanHIV), (void**)&iindividual_hiv) )
@@ -77,26 +90,19 @@ namespace Kernel
             who_stage = iindividual_hiv->GetHIVInfection()->GetWHOStage();
         }
 
-        IHIVCascadeOfCare *ihcc = nullptr;
-        if ( s_OK != context->GetInterventionsContext()->QueryInterface(GET_IID(IHIVCascadeOfCare), (void **)&ihcc) )
+        std::string intervention_state = "None";
+        if( m_InterventionStatusKey.IsValid() )
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context->GetInterventionsContext()", "IHIVCascadeOfCare", "IIndividualHumanEventContext" );
-        }
-
-        std::string cascade_state = ihcc->getCascadeState();
-
-        if( cascade_state.length() == 0 )
-        {
-            cascade_state = "None";
+            intervention_state = context->GetProperties()->Get( m_InterventionStatusKey ).GetValueAsString();
         }
 
         std::stringstream ss ;
-        ss                   << ","
+        ss                  << ","
            << has_hiv       << ","
            << on_ART        << ","
            << cd4           << ","
            << who_stage     << ","
-           << cascade_state;
+           << intervention_state;
 
         return ss.str() ;
     }

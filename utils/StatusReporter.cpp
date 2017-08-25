@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,8 +10,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Debug.h"
 #include "StatusReporter.h"
 #include <sstream>
-
-static const char * _module = "StatusReporter";
 
 // Don't force upgrade of gcc just for this. Actual ifdef isn't really win32, it's c++11, but nullptr requires gcc 4.6
 #ifdef WIN32
@@ -53,6 +51,8 @@ void StatusReporter::WriteStatusToFile( const std::string & status )
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
+
+SETUP_LOGGING( "StatusReporter" )
 
 // Link with Ws2_32.lib to resolve these types
 class LocalWinsockJunk

@@ -1,0 +1,126 @@
+{
+    "Metadata": {
+        "DateCreated": "Wed Aug 31 07:00:00 2016", 
+        "Tool": "notepad", 
+        "Author": "dbridenbecker", 
+        "IdReference": "0", 
+        "NodeCount": 10,
+        "Resolution": 150
+    }, 
+    "Defaults": {
+        "NodeAttributes": {
+            "InitialPopulation": 10,
+            "Altitude": 0, 
+            "Airport": 0, 
+            "Region": 1, 
+            "Seaport": 0, 
+            "BirthRate": 0.0
+        }, 
+        "IndividualAttributes": {
+            "AgeDistributionFlag": 1, 
+            "AgeDistribution1": 0.0, 
+            "AgeDistribution2": 43800.0, 
+            "PrevalenceDistributionFlag": 0, 
+            "PrevalenceDistribution1": 0.0, 
+            "PrevalenceDistribution2": 0.0, 
+            "ImmunityDistributionFlag": 0, 
+            "ImmunityDistribution1": 1, 
+            "ImmunityDistribution2": 0, 
+            "RiskDistributionFlag": 0, 
+            "RiskDistribution1": 1, 
+            "RiskDistribution2": 0, 
+            "MigrationHeterogeneityDistributionFlag": 0, 
+            "MigrationHeterogeneityDistribution1": 1, 
+            "MigrationHeterogeneityDistribution2": 0
+        }
+    },
+    "NodeProperties": [
+        {
+            "Property": "Accessibility",
+            "Values": [ "YES", "NO"],
+            "Initial_Distribution": [ 1.0, 0.0 ]
+        }
+    ],
+    "Nodes": [
+        {
+            "NodeID": 1, 
+            "NodeAttributes":
+            {
+                "Longitude" :  0.0,
+                "Latitude"  :  0.1
+            }
+        },
+        {
+            "NodeID": 2, 
+            "NodeAttributes":
+            {
+                "Longitude" :  0.0,
+                "Latitude"  :  0.2
+            }
+        },
+        {
+            "NodeID": 3, 
+            "NodeAttributes":
+            {
+                "Longitude" :  0.0,
+                "Latitude"  :  0.3
+            }
+        },
+        {
+            "NodeID": 4, 
+            "NodeAttributes":
+            {
+                "Longitude" :  0.0,
+                "Latitude"  :  0.4
+            }
+        },
+        {
+            "NodeID": 5, 
+            "NodeAttributes":
+            {
+                "Longitude" :  0.0,
+                "Latitude"  :  0.5
+            }
+        },
+        {
+            "NodeID": 6, 
+            "NodeAttributes":
+            {
+                "Longitude" :  0.1,
+                "Latitude"  :  0.1
+            }
+        },
+        {
+            "NodeID": 7, 
+            "NodeAttributes":
+            {
+                "Longitude" :  0.1,
+                "Latitude"  :  0.2
+            }
+        },
+        {
+            "NodeID": 8, 
+            "NodeAttributes":
+            {
+                "Longitude" :  0.1,
+                "Latitude"  :  0.3
+            }
+        },
+        {
+            "NodeID": 9, 
+            "NodeAttributes":
+            {
+                "Longitude" :  0.1,
+                "Latitude"  :  0.4
+            }
+        },
+        {
+            "NodeID": 10, 
+            "NodeAttributes":
+            {
+                "Longitude" :  0.1,
+                "Latitude"  :  0.5
+            }
+        }
+    ]
+}

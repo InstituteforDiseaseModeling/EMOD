@@ -11,6 +11,14 @@
         "Event_8",
         "Event_9"
     ],
+    "Valid_Intervention_Statuses" :
+    [
+        "abort_state_1",
+        "abort_state_2",
+        "abort_state_3",
+        "non_abort_state",
+        "no_state"
+    ],
     "Objects" :
     [
         {
@@ -21,17 +29,26 @@
                 "cost_per_unit"                 : 1,
                 "expired"                       : false,
                 "dont_allow_duplicates"         : false,
+                "first_time"                    : false,
+                "disqualifying_properties"      : [ ],
+                "status_property"               : "InterventionStatus:non_abort_state",
                 "vaccine_type"                  : 2,
                 "vaccine_take"                  : 3.3,
                 "vaccine_took"                  : true,
+                "efficacy_is_multiplicative"    : false,
                 "waning_effect" :
                 {
                     "__class__":"WaningEffectMapLinear",
+                    "currentEffect"            : 0.5,
                     "m_Expired"                : false,
                     "m_EffectOriginal"         : 1.0,
-                    "m_EffectCurrent"          : 0.5,
                     "m_ExpireAtDurationMapEnd" : true,
-                    "m_TimeSinceStart"         : 123,
+                    "m_TimeSinceStart"         :
+                    {
+                        "_value"     : 123,
+                        "_min_value" : 0,
+                        "_max_value" : 3.4e+038
+                    },
                     "m_DurationMap"            :
                     [
                         { "key": 1990, "value" : 0.1 },
@@ -49,11 +66,16 @@
             "Test" :
             {
                 "__class__":"WaningEffectMapPiecewise",
+                "currentEffect"            : 0.4,
                 "m_Expired"                : false,
                 "m_EffectOriginal"         : 0.5,
-                "m_EffectCurrent"          : 0.4,
                 "m_ExpireAtDurationMapEnd" : false,
-                "m_TimeSinceStart"         : 1,
+                "m_TimeSinceStart"         :
+                {
+                    "_value"     : 1,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
                 "m_DurationMap"            :
                 [
                     { "key": 1991, "value" : 0.31 },
@@ -66,11 +88,16 @@
             "Test" :
             {
                 "__class__":"WaningEffectMapLinear",
+                "currentEffect"            : 0.5,
                 "m_Expired"                : false,
                 "m_EffectOriginal"         : 1.0,
-                "m_EffectCurrent"          : 0.5,
                 "m_ExpireAtDurationMapEnd" : true,
-                "m_TimeSinceStart"         : 123,
+                "m_TimeSinceStart"         :
+                {
+                    "_value"     : 123,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
                 "m_DurationMap"            :
                 [
                     { "key": 1990, "value" : 0.1 },
@@ -115,7 +142,7 @@
             "Test" :
             {
                 "__class__":"IndividualHumanHIV",
-                "suid_data"                 : 1234,
+                "suid"                      : { "id" : 1234 },
                 "m_age"                     : 7300,
                 "m_gender"                  : 1,
                 "m_mc_weight"               : 1.0,
@@ -145,7 +172,7 @@
                 [
                     {
                         "__class__":"InfectionHIV",
-                        "suid": 5,
+                        "suid": { "id" : 5 },
                         "duration"        : 1.1,
                         "total_duration"  : 2.2,
                         "incubation_timer": 3.3,
@@ -178,7 +205,7 @@
                     },
                     {
                         "__class__":"InfectionHIV",
-                        "suid": 6,
+                        "suid": { "id" : 6 },
                         "duration"        : 5.1,
                         "total_duration"  : 4.2,
                         "incubation_timer": 3.3,
@@ -224,6 +251,9 @@
                             "cost_per_unit" : 1,
                             "expired"       : false,
                             "dont_allow_duplicates" : false,
+                            "first_time"            : false,
+                            "disqualifying_properties"      : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                            "status_property"               : "InterventionStatus:non_abort_state",
                             "m_ReducedAcquire"              : 0.7,
                             "m_ApplyIfHigherReducedAcquire" : true,
                             "m_DistrbutedEventTrigger"      : "Event_9"
@@ -233,7 +263,10 @@
                             "name"          : "class Kernel::ModifyStiCoInfectionStatus",
                             "cost_per_unit" : 2,
                             "expired"       : false,
-                            "dont_allow_duplicates" : false,
+                            "dont_allow_duplicates"    : false,
+                            "first_time"               : false,
+                            "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                            "status_property"          : "InterventionStatus:non_abort_state",
                             "set_flag_to"   : true
                         },
                         {
@@ -242,6 +275,9 @@
                             "cost_per_unit":3,
                             "expired":false,
                             "dont_allow_duplicates" : true,
+                            "first_time"            : false,
+                            "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                            "status_property"          : "InterventionStatus:non_abort_state",
                             "startingPreART" : true
                         }
                     ],
@@ -293,7 +329,6 @@
                         "_min_value" : 0,
                         "_max_value" : 1.0
                     },
-                    "cascade_state"                     : "State_1",
                     "campaign_semaphores"               : 
                     [
                         { "key" : "muxer_1", "value" : 1 },
@@ -328,27 +363,17 @@
                 "StateChange"               : 0,
                 "migration_mod"             : 1.0,
                 "migration_type"            : 1,
-                "migration_destination_data": 4,
+                "migration_destination"     : { "id" : 4 },
                 "migration_time_until_trip"        : 3.3,
                 "migration_time_at_destination"    : 3.1,
                 "migration_is_destination_new_home": false,
                 "migration_will_return"            : true,
                 "migration_outbound"               : true,
                 "max_waypoints"             : 5,
-                "waypoints"                 : [ 2, 3 ],
+                "waypoints"                 : [ { "id" : 2 }, { "id" : 3 } ],
                 "waypoints_trip_type"       : [ 0, 1 ],
-                "home_node_id"              : 1,
-                "Properties" : 
-                [
-                    {
-                        "key"   : "Location",
-                        "value" : "RURAL"
-                    },
-                    {
-                        "key"   : "Risk",
-                        "value" : "HIGH"
-                    }
-                ],
+                "home_node_id"              : { "id" : 1 },
+                "Properties" : [ "InterventionStatus:no_state", "Risk:HIGH" ],
                 "waiting_for_family_trip"                  : false,
                 "leave_on_family_trip"                     : true,
                 "is_on_family_trip"                        : false,
@@ -356,18 +381,18 @@
                 "family_migration_time_until_trip"         : 15.5,
                 "family_migration_time_at_destination"     : 16.6,
                 "family_migration_is_destination_new_home" : false,
-                "family_migration_destination"             : 2,
+                "family_migration_destination"             : { "id" : 2 },
                 "relationships" : 
                 [
                     {
                         "__class__":"MarriageRelationship",
-                        "_suid"                    : 123,
+                        "_suid"                    : { "id" : 123 },
                         "state"                    : 0,
                         "previous_state"           : 0,
                         "relationship_type"        : 2,
                         "termination_reason"      : 0,
-                        "absent_male_partner_id"   : 123,
-                        "absent_female_partner_id" : 456,
+                        "absent_male_partner_id"   : { "id" : 123 },
+                        "absent_female_partner_id" : { "id" : 456 },
                         "rel_timer"                : 1.1,
                         "rel_duration"             : 2.2,
                         "start_time"               : 3.3,
@@ -396,13 +421,13 @@
                     },
                     {
                         "__class__":"InformalRelationship",
-                        "_suid"                    : 222,
+                        "_suid"                    : { "id" : 222 },
                         "state"                    : 1,
                         "previous_state"           : 0,
                         "relationship_type"        : 1,
                         "termination_reason"      : 0,
-                        "absent_male_partner_id"   : 555,
-                        "absent_female_partner_id" : 333,
+                        "absent_male_partner_id"   : { "id" : 555 },
+                        "absent_female_partner_id" : { "id" : 333 },
                         "rel_timer"                : 41.1,
                         "rel_duration"             : 42.2,
                         "start_time"               : 43.3,
@@ -431,13 +456,13 @@
                     },
                     {
                         "__class__":"TransitoryRelationship",
-                        "_suid"                    : 789,
+                        "_suid"                    : { "id" : 789 },
                         "state"                    : 2,
                         "previous_state"           : 0,
                         "relationship_type"        : 0,
                         "termination_reason"      : 0,
-                        "absent_male_partner_id"   : 321,
-                        "absent_female_partner_id" : 654,
+                        "absent_male_partner_id"   : { "id" : 321 },
+                        "absent_female_partner_id" : { "id" : 654 },
                         "rel_timer"                : 21.1,
                         "rel_duration"             : 22.2,
                         "start_time"               : 23.3,
@@ -466,13 +491,13 @@
                     },
                     {
                         "__class__":"TransitoryRelationship",
-                        "_suid"                    : 888,
+                        "_suid"                    : { "id" : 888 },
                         "state"                    : 0,
                         "previous_state"           : 0,
                         "relationship_type"        : 0,
                         "termination_reason"      : 0,
-                        "absent_male_partner_id"   : 654,
-                        "absent_female_partner_id" : 321,
+                        "absent_male_partner_id"   : { "id" : 654 },
+                        "absent_female_partner_id" : { "id" : 321 },
                         "rel_timer"                : 31.1,
                         "rel_duration"             : 32.2,
                         "start_time"               : 33.3,
@@ -512,8 +537,9 @@
                 "relationshipSlots"                        : 5,
                 "delay_between_adding_relationships_timer" : 30,
                 "potential_exposure_flag"                  : true,
-                "num_lifetime_relationships"               : 7,
-                "last_6_month_relationships"               : [ 30, 60, 90 ],
+                "num_lifetime_relationships"               : [ 7, 2, 1, 10 ],
+                "last_6_month_relationships"               : [ {"first":0, "second":30}, {"first":1, "second":60}, {"first":2, "second":90},{"first":3, "second":120} ],
+                "last_12_month_relationships"              : [ {"first":0, "second":40}, {"first":1, "second":70}, {"first":2, "second":99},{"first":3, "second":130} ],
                 "slot2RelationshipDebugMap"                : 
                 [
                     {
@@ -532,6 +558,41 @@
                         "key" : 4,
                         "value" : 1
                     }
+                ],
+                "m_AssortivityIndex"     : [ -1, -1, -1, -1 ],
+                "m_TotalCoitalActs" : 3,
+                "relationship_properties":
+                [
+                    {
+                        "key" : "Relationship.0-0",
+                        "value" : 1
+                    }
+                ],
+                "num_unique_partners" : [
+                    [
+                        [
+                            {
+                                "key" : { "id" : 1 },
+                                "value" : 100
+                            },
+                            {
+                                "key" : { "id" : 2 },
+                                "value" : 200
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "key" : { "id" : 3 },
+                                "value" : 300
+                            },
+                            {
+                                "key" : { "id" : 4 },
+                                "value" : 400
+                            }
+                        ]
+                    ]
                 ],
                 "has_active_TB"                            : true,
                 "pos_num_partners_while_CD4500plus"        : 3,
@@ -553,6 +614,9 @@
                         "cost_per_unit"                 : 1,
                         "expired"                       : false,
                         "dont_allow_duplicates"         : false,
+                        "first_time"                    : false,
+                        "disqualifying_properties"      : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                        "status_property"               : "InterventionStatus:non_abort_state",
                         "m_ReducedAcquire"              : 0.7,
                         "m_ApplyIfHigherReducedAcquire" : true,
                         "m_DistrbutedEventTrigger"      : "Event_9"
@@ -562,7 +626,10 @@
                         "name"          : "class Kernel::ModifyStiCoInfectionStatus",
                         "cost_per_unit" : 2,
                         "expired"       : false,
-                        "dont_allow_duplicates" : false,
+                        "dont_allow_duplicates"    : false,
+                        "first_time"               : false,
+                        "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                        "status_property"          : "InterventionStatus:non_abort_state",
                         "set_flag_to"   : true
                     },
                     {
@@ -571,19 +638,23 @@
                         "cost_per_unit":1,
                         "expired":false,
                         "dont_allow_duplicates" : true,
+                        "first_time"               : false,
+                        "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                        "status_property"          : "InterventionStatus:non_abort_state",
                         "remaining_delay_days"  :
                         {
-                            "_value"     : 33,
+                            "_value"     : 52,
                             "_min_value" : 0,
-                            "_max_value" : 3.4e+038
+                            "_max_value" : 3.40282e+38
                         },
                         "coverage"              : 0.52,
                         "delay_distribution"    :
-                        {
-                            "m_Type"     : 0,
-                            "m_Param1"   : 9.0,
-                            "m_Param2"   : 0.0
-                        },
+                            {
+                                "m_Type"     : 0,
+                                "m_Param1"   : 9.0,
+                                "m_Param2"   : 0.0,
+                                "m_Param3"   : 0.0
+                            },
                         "actual_intervention_config" : "null",
                         "year2DelayMap" :
                         [
@@ -591,19 +662,7 @@
                             { "key" : 1992, "value" : 20 },
                             { "key" : 1993, "value" : 30 }
                         ],
-                        "abortStates" :
-                        {
-                            "values" :
-                            [
-                                "State_7",
-                                "State_8",
-                                "State_9"
-                            ],
-                            "value_source" : "ValidCascadeStates"
-                        },
-                        "cascadeState"                  : "State_4",
                         "days_remaining"                : 99,
-                        "firstUpdate"                   : true,
                         "broadcast_event"               : "Event_1",
                         "broadcast_on_expiration_event" : "Event_2"
                     }
@@ -656,7 +715,6 @@
                     "_min_value" : 0,
                     "_max_value" : 1.0
                 },
-                "cascade_state"                     : "State_1",
                 "campaign_semaphores"               : 
                 [
                     { "key" : "muxer_1", "value" : 1 },
@@ -688,7 +746,7 @@
             "Test" :
             {
                 "__class__":"InfectionHIV",
-                "suid": 5,
+                "suid": { "id" : 5 },
                 "duration"        : 1.1,
                 "total_duration"  : 2.2,
                 "incubation_timer": 3.3,
@@ -748,9 +806,13 @@
                 "cost_per_unit"                 : 1,
                 "expired"                       : false,
                 "dont_allow_duplicates"         : false,
+                "first_time"                    : false,
+                "disqualifying_properties"      : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"               : "InterventionStatus:non_abort_state",
                 "vaccine_type"                  : 2,
                 "vaccine_take"                  : 3.3,
                 "vaccine_took"                  : false,
+                "efficacy_is_multiplicative"    : false,
                 "waning_effect" :
                 {
                     "__class__":"WaningEffectBoxExponential",
@@ -768,6 +830,9 @@
                 "cost_per_unit"         : 1,
                 "expired"               : false,
                 "dont_allow_duplicates" : false,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "target_property_key"   : "Risk",
                 "target_property_value" : "HIGH",
                 "probability"           : 0.9,
@@ -785,18 +850,23 @@
                 "cost_per_unit":1,
                 "expired":false,
                 "dont_allow_duplicates" : false,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "destination_external_node_id" : 5,
                 "duration_before_leaving" :
                 {
                     "m_Type"     : 0,
                     "m_Param1"   : 9.0,
-                    "m_Param2"   : 0.0
+                    "m_Param2"   : 0.0,
+                    "m_Param3"   : 0.0
                 },
                 "duration_at_node" :
                 {
                     "m_Type"     : 1,
                     "m_Param1"   : 0.0,
-                    "m_Param2"   : 1.0
+                    "m_Param2"   : 1.0,
+                    "m_Param3"   : 0.0
                 },
                 "is_moving" : true
             }
@@ -809,6 +879,9 @@
                 "cost_per_unit":1,
                 "expired":false,
                 "dont_allow_duplicates" : false,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "broadcast_event"       : "Event_8"
             }
         },
@@ -820,6 +893,9 @@
                 "cost_per_unit":7,
                 "expired":false,
                 "dont_allow_duplicates" : false,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "timer"    :
                 {
                     "_value"     : 33,
@@ -837,6 +913,9 @@
                 "cost_per_unit":7,
                 "expired":false,
                 "dont_allow_duplicates" : false,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "diagnostic_type":0,
                 "base_specificity":
                 {
@@ -862,19 +941,9 @@
                     "_min_value" : 0,
                     "_max_value" : 3.4e+038
                 },
+                "use_event_or_config": 0,
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_9",
-                "abortStates" :
-                {
-                    "values" :
-                    [
-                        "State_51",
-                        "State_52",
-                        "State_53"
-                    ],
-                    "value_source" : "ValidCascadeStates"
-                },
-                "cascadeState"               : "State_22",
                 "firstUpdate"                : false,
                 "result_of_positive_test"    : true,
                 "original_days_to_diagnosis" : 11,
@@ -890,64 +959,14 @@
         {
             "Test" :
             {
-                "__class__":"HIVSetCascadeState",
-                "name"          : "class Kernel::HIVSetCascadeState",
-                "cost_per_unit":7,
-                "expired":false,
-                "dont_allow_duplicates" : false,
-                "diagnostic_type":0,
-                "base_specificity":
-                {
-                    "_value":0.4,
-                    "_min_value":0,
-                    "_max_value":1
-                },
-                "base_sensitivity":
-                {
-                    "_value":0.3,
-                    "_min_value":0,
-                    "_max_value":1
-                },
-                "treatment_fraction":
-                {
-                    "_value":0.2,
-                    "_min_value":0,
-                    "_max_value":1
-                },
-                "days_to_diagnosis"  :
-                {
-                    "_value"     : 4.5,
-                    "_min_value" : 0,
-                    "_max_value" : 3.4e+038
-                },
-                "positive_diagnosis_config":"null",
-                "positive_diagnosis_event":"Event_9",
-                "abortStates" :
-                {
-                    "values" :
-                    [
-                        "State_51",
-                        "State_52",
-                        "State_53"
-                    ],
-                    "value_source" : "ValidCascadeStates"
-                },
-                "cascadeState"               : "State_22",
-                "firstUpdate"                : false,
-                "result_of_positive_test"    : true,
-                "original_days_to_diagnosis" : 11,
-                "absoluteDuration"           : 44,
-                "negative_diagnosis_event"   : "Event_2"
-            }
-        },
-        {
-            "Test" :
-            {
                 "__class__":"HIVRapidHIVDiagnostic",
                 "name"          : "class Kernel::HIVRapidHIVDiagnostic",
                 "cost_per_unit":7,
                 "expired":false,
                 "dont_allow_duplicates" : false,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "diagnostic_type":1,
                 "base_specificity":
                 {
@@ -973,19 +992,9 @@
                     "_min_value" : 0,
                     "_max_value" : 3.4e+038
                 },
+                "use_event_or_config": 0,
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_7",
-                "abortStates" :
-                {
-                    "values" :
-                    [
-                        "State_71",
-                        "State_72",
-                        "State_73"
-                    ],
-                    "value_source" : "ValidCascadeStates"
-                },
-                "cascadeState"               : "State_2",
                 "firstUpdate"                : false,
                 "result_of_positive_test"    : true,
                 "original_days_to_diagnosis" : 55,
@@ -1002,6 +1011,9 @@
                 "cost_per_unit":9,
                 "expired":false,
                 "dont_allow_duplicates" : false,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "diagnostic_type":1,
                 "base_specificity":
                 {
@@ -1027,25 +1039,15 @@
                     "_min_value" : 0,
                     "_max_value" : 3.4e+038
                 },
+                "use_event_or_config": 0,
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_7",
-                "abortStates" :
-                {
-                    "values" :
-                    [
-                        "State_11",
-                        "State_21",
-                        "State_31"
-                    ],
-                    "value_source" : "ValidCascadeStates"
-                },
-                "cascadeState"               : "State_5",
                 "firstUpdate"                : true,
                 "result_of_positive_test"    : false,
                 "original_days_to_diagnosis" : 11,
                 "absoluteDuration"           : 22,
                 "negative_diagnosis_event"   : "Event_8",
-                "event2ProbabilityMap" :
+                "event2Probability" :
                 [
                     { "key" : "Event_1", "value" : 19 },
                     { "key" : "Event_2", "value" : 29 },
@@ -1061,7 +1063,10 @@
                 "cost_per_unit":3,
                 "expired":false,
                 "dont_allow_duplicates" : true,
-                "startingPreART" : true
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
+                "startingPreART"        : true
             }
         },
         {
@@ -1072,6 +1077,9 @@
                 "cost_per_unit":9,
                 "expired":false,
                 "dont_allow_duplicates" : false,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "diagnostic_type":1,
                 "base_specificity":
                 {
@@ -1097,19 +1105,9 @@
                     "_min_value" : 0,
                     "_max_value" : 3.4e+038
                 },
+                "use_event_or_config": 0,
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_1",
-                "abortStates" :
-                {
-                    "values" :
-                    [
-                        "State_1",
-                        "State_2",
-                        "State_3"
-                    ],
-                    "value_source" : "ValidCascadeStates"
-                },
-                "cascadeState"               : "State_4",
                 "firstUpdate"                : false,
                 "result_of_positive_test"    : true,
                 "original_days_to_diagnosis" : 55,
@@ -1136,18 +1134,22 @@
                 "cost_per_unit":5,
                 "expired":false,
                 "dont_allow_duplicates" : false,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "remaining_delay_days"  :
                 {
-                    "_value"     : 2,
+                    "_value"     : 23,
                     "_min_value" : 0,
-                    "_max_value" : 3.4e+038
+                    "_max_value" : 3.40282e+38
                 },
                 "coverage"              : 0.32,
                 "delay_distribution"    :
                 {
                     "m_Type"     : 1,
                     "m_Param1"   : 0.0,
-                    "m_Param2"   : 5.0
+                    "m_Param2"   : 5.0,
+                    "m_Param3"   : 0.0
                 },
                 "actual_intervention_config" : "null",
                 "year2DelayMap" :
@@ -1156,23 +1158,12 @@
                     { "key" : 1995, "value" : 25 },
                     { "key" : 1996, "value" : 35 }
                 ],
-                "abortStates" :
-                {
-                    "values" :
-                    [
-                        "State_7",
-                        "State_8",
-                        "State_9"
-                    ],
-                    "value_source" : "ValidCascadeStates"
-                },
-                "cascadeState"                  : "State_4",
                 "days_remaining"                : 99,
-                "firstUpdate"                   : true,
                 "broadcast_event"               : "Event_3",
                 "broadcast_on_expiration_event" : "Event_4",
                 "max_entries"                   : 2,
-                "muxer_name"                    : "Seahawks"
+                "muxer_name"                    : "Seahawks",
+                "firstUpdate"                   : true
             }
         },
         {
@@ -1183,6 +1174,9 @@
                 "cost_per_unit":4,
                 "expired":false,
                 "dont_allow_duplicates" : false,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "diagnostic_type":2,
                 "base_specificity":
                 {
@@ -1208,19 +1202,9 @@
                     "_min_value" : 0,
                     "_max_value" : 3.4e+038
                 },
+                "use_event_or_config": 0,
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_6",
-                "abortStates" :
-                {
-                    "values" :
-                    [
-                        "State_11",
-                        "State_21",
-                        "State_31"
-                    ],
-                    "value_source" : "ValidCascadeStates"
-                },
-                "cascadeState"               : "State_4",
                 "firstUpdate"                : false,
                 "result_of_positive_test"    : true,
                 "original_days_to_diagnosis" : 22,
@@ -1236,18 +1220,22 @@
                 "cost_per_unit":1,
                 "expired":false,
                 "dont_allow_duplicates" : true,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "remaining_delay_days"  :
                 {
-                    "_value"     : 3,
+                    "_value"     : 52,
                     "_min_value" : 0,
-                    "_max_value" : 3.4e+038
+                    "_max_value" : 3.40282e+38
                 },
                 "coverage"              : 0.52,
                 "delay_distribution"    :
                 {
                     "m_Type"     : 0,
                     "m_Param1"   : 9.0,
-                    "m_Param2"   : 0.0
+                    "m_Param2"   : 0.0,
+                    "m_Param3"   : 0.0
                 },
                 "actual_intervention_config" : "null",
                 "year2DelayMap" :
@@ -1256,19 +1244,7 @@
                     { "key" : 1992, "value" : 20 },
                     { "key" : 1993, "value" : 30 }
                 ],
-                "abortStates" :
-                {
-                    "values" :
-                    [
-                        "State_7",
-                        "State_8",
-                        "State_9"
-                    ],
-                    "value_source" : "ValidCascadeStates"
-                },
-                "cascadeState"                  : "State_4",
                 "days_remaining"                : 99,
-                "firstUpdate"                   : true,
                 "broadcast_event"               : "Event_1",
                 "broadcast_on_expiration_event" : "Event_2"
             }
@@ -1281,18 +1257,22 @@
                 "cost_per_unit":9,
                 "expired":false,
                 "dont_allow_duplicates" : false,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "remaining_delay_days"  :
                 {
-                    "_value"     : 3,
+                    "_value"     : 5,
                     "_min_value" : 0,
-                    "_max_value" : 3.4e+038
+                    "_max_value" : 3.40282e+38
                 },
                 "coverage"              : 0.5,
                 "delay_distribution"    :
                 {
                     "m_Type"     : 1,
                     "m_Param1"   : 0.0,
-                    "m_Param2"   : 1.0
+                    "m_Param2"   : 1.0,
+                    "m_Param3"   : 0.0
                 },
                 "actual_intervention_config" : "null"
             }
@@ -1305,6 +1285,9 @@
                 "cost_per_unit":9,
                 "expired":false,
                 "dont_allow_duplicates" : false,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "diagnostic_type":1,
                 "base_specificity":
                 {
@@ -1330,19 +1313,9 @@
                     "_min_value" : 0,
                     "_max_value" : 3.4e+038
                 },
+                "use_event_or_config": 0,
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_2",
-                "abortStates" :
-                {
-                    "values" :
-                    [
-                        "State_4",
-                        "State_5",
-                        "State_6"
-                    ],
-                    "value_source" : "ValidCascadeStates"
-                },
-                "cascadeState"               : "State_5",
                 "firstUpdate"                : false,
                 "result_of_positive_test"    : true,
                 "original_days_to_diagnosis" : 77,
@@ -1396,6 +1369,9 @@
                 "cost_per_unit":9,
                 "expired":false,
                 "dont_allow_duplicates" : false,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "diagnostic_type":1,
                 "base_specificity":
                 {
@@ -1421,19 +1397,9 @@
                     "_min_value" : 0,
                     "_max_value" : 3.4e+038
                 },
+                "use_event_or_config": 0,
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_2",
-                "abortStates" :
-                {
-                    "values" :
-                    [
-                        "State_4",
-                        "State_5",
-                        "State_6"
-                    ],
-                    "value_source" : "ValidCascadeStates"
-                },
-                "cascadeState"               : "State_5",
                 "firstUpdate"                : false,
                 "result_of_positive_test"    : true,
                 "original_days_to_diagnosis" : 77,
@@ -1468,6 +1434,9 @@
                 "cost_per_unit":9,
                 "expired":false,
                 "dont_allow_duplicates" : false,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "diagnostic_type":1,
                 "base_specificity":
                 {
@@ -1493,19 +1462,9 @@
                     "_min_value" : 0,
                     "_max_value" : 3.4e+038
                 },
+                "use_event_or_config": 0,
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_1",
-                "abortStates" :
-                {
-                    "values" :
-                    [
-                        "State_1",
-                        "State_2",
-                        "State_3"
-                    ],
-                    "value_source" : "ValidCascadeStates"
-                },
-                "cascadeState"               : "State_4",
                 "firstUpdate"                : false,
                 "result_of_positive_test"    : true,
                 "original_days_to_diagnosis" : 55,
@@ -1521,6 +1480,9 @@
                 "cost_per_unit":9,
                 "expired":false,
                 "dont_allow_duplicates" : false,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "diagnostic_type":1,
                 "base_specificity":
                 {
@@ -1546,6 +1508,7 @@
                     "_min_value" : 0,
                     "_max_value" : 3.4e+038
                 },
+                "use_event_or_config": 0,
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_1",
                 "cd4_thresholds" :
@@ -1573,6 +1536,9 @@
                 "cost_per_unit"             : 2,
                 "expired"                   : false,
                 "dont_allow_duplicates"     : true,
+                "first_time"                : false,
+                "disqualifying_properties"  : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"           : "InterventionStatus:non_abort_state",
                 "drug_type"                 : 2,
                 "dosing_type"               : 1,
                 "durability_time_profile"   : 9,
@@ -1602,6 +1568,9 @@
                 "cost_per_unit"             : 1,
                 "expired"                   : false,
                 "dont_allow_duplicates"     : false,
+                "first_time"                : false,
+                "disqualifying_properties"  : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"           : "InterventionStatus:non_abort_state",
                 "drug_type"                 : 1,
                 "dosing_type"               : 2,
                 "durability_time_profile"   : 1,
@@ -1633,6 +1602,9 @@
                 "cost_per_unit":9,
                 "expired":false,
                 "dont_allow_duplicates" : false,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "diagnostic_type":1,
                 "base_specificity":
                 {
@@ -1658,6 +1630,7 @@
                     "_min_value" : 0,
                     "_max_value" : 3.4e+038
                 },
+                "use_event_or_config": 0,
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_1",
                 "age_thresholds" :
@@ -1685,6 +1658,9 @@
                 "cost_per_unit"             : 1,
                 "expired"                   : false,
                 "dont_allow_duplicates"     : false,
+                "first_time"                : false,
+                "disqualifying_properties"  : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"           : "InterventionStatus:non_abort_state",
                 "drug_type"                 : 1,
                 "dosing_type"               : 2,
                 "durability_time_profile"   : 1,
@@ -1714,10 +1690,13 @@
                 "cost_per_unit":1,
                 "expired":false,
                 "dont_allow_duplicates" : false,
-                "event_trigger"       : "Event_8",
-                "include_my_node"     : true,
-                "node_selection_type" : 2,
-                "max_distance_km"     : 12.3
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
+                "event_trigger"         : "Event_8",
+                "include_my_node"       : true,
+                "node_selection_type"   : 2,
+                "max_distance_km"       : 12.3
             }
         },
         {
@@ -1940,11 +1919,11 @@
                 [
                     {
                         "key"   : "Relationship00",
-                        "value" : [ "2", "7" ]
+                        "value" : [ 2, 7 ]
                     },
                     {
                         "key"   : "Relationship11",
-                        "value" : [ "4", "9" ]
+                        "value" : [ 4, 9 ]
                     }
                 ],
                 "dead_relationships_by_type" :
@@ -1964,7 +1943,7 @@
             "Test" :
             {
                 "__class__":"IndividualHumanSTI",
-                "suid_data"                 : 1234,
+                "suid"                      : { "id" : 1234 },
                 "m_age"                     : 7300,
                 "m_gender"                  : 1,
                 "m_mc_weight"               : 1.0,
@@ -1988,7 +1967,7 @@
                 [
                     {
                         "__class__":"InfectionSTI",
-                        "suid": 5,
+                        "suid": { "id" : 5 },
                         "duration"        : 1.1,
                         "total_duration"  : 2.2,
                         "incubation_timer": 3.3,
@@ -2009,7 +1988,7 @@
                     },
                     {
                         "__class__":"InfectionSTI",
-                        "suid": 6,
+                        "suid": { "id" : 6 },
                         "duration"        : 5.1,
                         "total_duration"  : 4.2,
                         "incubation_timer": 3.3,
@@ -2043,6 +2022,9 @@
                             "cost_per_unit" : 1,
                             "expired"       : false,
                             "dont_allow_duplicates" : false,
+                            "first_time"            : false,
+                            "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                            "status_property"          : "InterventionStatus:non_abort_state",
                             "m_ReducedAcquire"              : 0.7,
                             "m_ApplyIfHigherReducedAcquire" : true,
                             "m_DistrbutedEventTrigger"      : "Event_9"
@@ -2053,7 +2035,10 @@
                             "cost_per_unit" : 2,
                             "expired"       : false,
                             "dont_allow_duplicates" : false,
-                            "set_flag_to"   : true
+                            "first_time"            : false,
+                            "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                            "status_property"          : "InterventionStatus:non_abort_state",
+                            "set_flag_to"           : true
                         }
                     ],
                     "is_circumcised" : true,
@@ -2100,27 +2085,17 @@
                 "StateChange"               : 0,
                 "migration_mod"             : 1.0,
                 "migration_type"            : 1,
-                "migration_destination_data": 4,
+                "migration_destination"     : { "id" : 4 },
                 "migration_time_until_trip"        : 3.3,
                 "migration_time_at_destination"    : 3.1,
                 "migration_is_destination_new_home": false,
                 "migration_will_return"            : true,
                 "migration_outbound"               : true,
                 "max_waypoints"             : 5,
-                "waypoints"                 : [ 2, 3 ],
+                "waypoints"                 : [ { "id" : 2 }, { "id" : 3 } ],
                 "waypoints_trip_type"       : [ 0, 1 ],
-                "home_node_id"              : 1,
-                "Properties" : 
-                [
-                    {
-                        "key"   : "Location",
-                        "value" : "RURAL"
-                    },
-                    {
-                        "key"   : "Risk",
-                        "value" : "HIGH"
-                    }
-                ],
+                "home_node_id"              : { "id" : 1 },
+                "Properties" : [ "InterventionStatus:no_state", "Risk:HIGH" ],
                 "waiting_for_family_trip"                  : false,
                 "leave_on_family_trip"                     : true,
                 "is_on_family_trip"                        : false,
@@ -2128,18 +2103,18 @@
                 "family_migration_time_until_trip"         : 15.5,
                 "family_migration_time_at_destination"     : 16.6,
                 "family_migration_is_destination_new_home" : false,
-                "family_migration_destination"             : 2,
+                "family_migration_destination"             : { "id" : 2 },
                 "relationships" : 
                 [
                     {
                         "__class__":"MarriageRelationship",
-                        "_suid"                    : 123,
+                        "_suid"                    : { "id" : 123 },
                         "state"                    : 0,
                         "previous_state"           : 0,
                         "relationship_type"        : 2,
                         "termination_reason"      : 0,
-                        "absent_male_partner_id"   : 123,
-                        "absent_female_partner_id" : 456,
+                        "absent_male_partner_id"   : { "id" : 123 },
+                        "absent_female_partner_id" : { "id" : 456 },
                         "rel_timer"                : 1.1,
                         "rel_duration"             : 2.2,
                         "start_time"               : 3.3,
@@ -2168,13 +2143,13 @@
                     },
                     {
                         "__class__":"InformalRelationship",
-                        "_suid"                    : 222,
+                        "_suid"                    : { "id" : 222 },
                         "state"                    : 1,
                         "previous_state"           : 0,
                         "relationship_type"        : 1,
                         "termination_reason"      : 0,
-                        "absent_male_partner_id"   : 555,
-                        "absent_female_partner_id" : 333,
+                        "absent_male_partner_id"   : { "id" : 555 },
+                        "absent_female_partner_id" : { "id" : 333 },
                         "rel_timer"                : 41.1,
                         "rel_duration"             : 42.2,
                         "start_time"               : 43.3,
@@ -2203,13 +2178,13 @@
                     },
                     {
                         "__class__":"TransitoryRelationship",
-                        "_suid"                    : 789,
+                        "_suid"                    : { "id" : 789 },
                         "state"                    : 2,
                         "previous_state"           : 0,
                         "relationship_type"        : 0,
                         "termination_reason"      : 0,
-                        "absent_male_partner_id"   : 321,
-                        "absent_female_partner_id" : 654,
+                        "absent_male_partner_id"   : { "id" : 321 },
+                        "absent_female_partner_id" : { "id" : 654 },
                         "rel_timer"                : 21.1,
                         "rel_duration"             : 22.2,
                         "start_time"               : 23.3,
@@ -2238,13 +2213,13 @@
                     },
                     {
                         "__class__":"TransitoryRelationship",
-                        "_suid"                    : 888,
+                        "_suid"                    : { "id" : 888 },
                         "state"                    : 0,
                         "previous_state"           : 0,
                         "relationship_type"        : 0,
                         "termination_reason"      : 0,
-                        "absent_male_partner_id"   : 654,
-                        "absent_female_partner_id" : 321,
+                        "absent_male_partner_id"   : { "id" : 654 },
+                        "absent_female_partner_id" : { "id" : 321 },
                         "rel_timer"                : 31.1,
                         "rel_duration"             : 32.2,
                         "start_time"               : 33.3,
@@ -2284,8 +2259,9 @@
                 "relationshipSlots"                        : 5,
                 "delay_between_adding_relationships_timer" : 30,
                 "potential_exposure_flag"                  : true,
-                "num_lifetime_relationships"               : 7,
-                "last_6_month_relationships"               : [ 30, 60, 90 ],
+                "num_lifetime_relationships"               : [ 7, 2, 1, 10 ],
+                "last_6_month_relationships"               : [ {"first":0, "second":30}, {"first":1, "second":60}, {"first":2, "second":90},{"first":3, "second":120} ],
+                "last_12_month_relationships"              : [ {"first":0, "second":40}, {"first":1, "second":70}, {"first":2, "second":99},{"first":3, "second":130} ],
                 "slot2RelationshipDebugMap"                : 
                 [
                     {
@@ -2304,6 +2280,41 @@
                         "key" : 4,
                         "value" : 1
                     }
+                ],
+                "m_AssortivityIndex"     : [ -1, -1, -1, -1 ],
+                "m_TotalCoitalActs" : 3,
+                "relationship_properties":
+                [
+                    {
+                        "key" : "Relationship.0-1",
+                        "value" : 2
+                    }
+                ],
+                "num_unique_partners" : [
+                    [
+                        [
+                            {
+                                "key" : { "id" : 1 },
+                                "value" : 100
+                            },
+                            {
+                                "key" : { "id" : 2 },
+                                "value" : 200
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            {
+                                "key" : { "id" : 3 },
+                                "value" : 300
+                            },
+                            {
+                                "key" : { "id" : 4 },
+                                "value" : 400
+                            }
+                        ]
+                    ]
                 ]
             }
         },
@@ -2325,13 +2336,13 @@
             "Test" :
             {
                 "__class__":"MarriageRelationship",
-                "_suid"                    : 987,
+                "_suid"                    : { "id" : 987 },
                 "state"                    : 0,
                 "previous_state"           : 0,
                 "relationship_type"        : 2,
                 "termination_reason"      : 0,
-                "absent_male_partner_id"   : 123,
-                "absent_female_partner_id" : 456,
+                "absent_male_partner_id"   : { "id" : 123 },
+                "absent_female_partner_id" : { "id" : 456 },
                 "rel_timer"                : 1.1,
                 "rel_duration"             : 2.2,
                 "start_time"               : 3.3,
@@ -2363,7 +2374,7 @@
             "Test" :
             {
                 "__class__":"InfectionSTI",
-                "suid": 5,
+                "suid": { "id" : 5 },
                 "duration"        : 1.1,
                 "total_duration"  : 2.2,
                 "incubation_timer": 3.3,
@@ -2398,6 +2409,9 @@
                         "cost_per_unit" : 1,
                         "expired"       : false,
                         "dont_allow_duplicates" : false,
+                        "first_time"            : false,
+                        "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                        "status_property"          : "InterventionStatus:non_abort_state",
                         "m_ReducedAcquire"              : 0.7,
                         "m_ApplyIfHigherReducedAcquire" : true,
                         "m_DistrbutedEventTrigger"      : "Event_9"
@@ -2408,14 +2422,20 @@
                         "cost_per_unit" : 2,
                         "expired"       : false,
                         "dont_allow_duplicates" : false,
-                        "set_flag_to"   : true
+                        "first_time"            : false,
+                        "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                        "status_property"          : "InterventionStatus:non_abort_state",
+                        "set_flag_to"           : true
                     },
                     {
                         "__class__" : "STIBarrier",
                         "name"          : "class Kernel::STIBarrier",
                         "cost_per_unit" : 3,
                         "expired"       : false,
-                         "dont_allow_duplicates" : false,
+                        "dont_allow_duplicates" : false,
+                        "first_time"            : false,
+                        "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                        "status_property"          : "InterventionStatus:non_abort_state",
                         "early"         : 0.1,
                         "late"          : 0.2,
                         "midyear"       : 0.3,
@@ -2427,7 +2447,10 @@
                         "name"          : "class Kernel::StiCoInfectionDiagnostic",
                         "cost_per_unit" : 4,
                         "expired"       : false,
-                        "dont_allow_duplicates" : false
+                        "dont_allow_duplicates" : false,
+                        "first_time"            : false,
+                        "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                        "status_property"          : "InterventionStatus:non_abort_state"
                     },
                     {
                         "__class__" : "STIIsPostDebut",
@@ -2435,6 +2458,9 @@
                         "cost_per_unit" : 5,
                         "expired"       : false,
                         "dont_allow_duplicates" : false,
+                        "first_time"            : false,
+                        "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                        "status_property"          : "InterventionStatus:non_abort_state",
                         "diagnostic_type":1,
                         "base_specificity":
                         {
@@ -2460,6 +2486,7 @@
                             "_min_value" : 0,
                             "_max_value" : 3.4e+038
                         },
+                        "use_event_or_config": 0,
                         "positive_diagnosis_config":"null",
                         "positive_diagnosis_event":"Event_6",
                         "negative_diagnosis_event":"Event_7"
@@ -2510,6 +2537,9 @@
                 "cost_per_unit":9,
                 "expired":false,
                 "dont_allow_duplicates" : false,
+                "first_time"            : false,
+                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"          : "InterventionStatus:non_abort_state",
                 "diagnostic_type":1,
                 "base_specificity":
                 {
@@ -2535,6 +2565,7 @@
                     "_min_value" : 0,
                     "_max_value" : 3.4e+038
                 },
+                "use_event_or_config": 0,
                 "positive_diagnosis_config":"null",
                 "positive_diagnosis_event":"Event_1"
             }
@@ -2543,7 +2574,7 @@
             "Test" :
             {
                 "__class__" : "Infection",
-                "suid": 1,
+                "suid": { "id" : 1 },
                 "duration"        : 1.1,
                 "total_duration"  : 2.2,
                 "incubation_timer": 3.3,
@@ -2567,7 +2598,7 @@
             "Test" :
             {
                 "__class__" : "InfectionTB",
-                "suid": 1,
+                "suid": { "id" : 1 },
                 "duration"        : 1.1,
                 "total_duration"  : 2.2,
                 "incubation_timer": 3.3,
@@ -2612,6 +2643,9 @@
                         "cost_per_unit"             : 1,
                         "expired"                   : false,
                         "dont_allow_duplicates"     : false,
+                        "first_time"                : false,
+                        "disqualifying_properties"  : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                        "status_property"           : "InterventionStatus:non_abort_state",
                         "drug_type"                 : 1,
                         "dosing_type"               : 2,
                         "durability_time_profile"   : 1,
@@ -2643,6 +2677,9 @@
                         "cost_per_unit"             : 2,
                         "expired"                   : false,
                         "dont_allow_duplicates"     : false,
+                        "first_time"                : false,
+                        "disqualifying_properties"  : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                        "status_property"           : "InterventionStatus:non_abort_state",
                         "drug_type"                 : 2,
                         "dosing_type"               : 1,
                         "durability_time_profile"   : 2,
@@ -2681,9 +2718,13 @@
                         "cost_per_unit"                 : 3,
                         "expired"                       : false,
                         "dont_allow_duplicates"         : false,
+                        "first_time"                    : false,
+                        "disqualifying_properties"      : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                        "status_property"               : "InterventionStatus:non_abort_state",
                         "vaccine_type"                  : 1,
                         "vaccine_take"                  : 0.1,
                         "vaccine_took"                  : true,
+                        "efficacy_is_multiplicative"    : true,
                         "waning_effect" :
                         {
                             "__class__":"WaningEffectBoxExponential",
@@ -2699,6 +2740,9 @@
                         "cost_per_unit"   : 4,
                         "expired"         : true,
                         "dont_allow_duplicates" : false,
+                        "first_time"            : false,
+                        "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                        "status_property"          : "InterventionStatus:non_abort_state",
                         "diagnostic_type" : 1,
                         "base_specificity":
                         {
@@ -2724,6 +2768,7 @@
                             "_min_value" : 0,
                             "_max_value" : 3.4e+038
                         },
+                        "use_event_or_config"       : 0,
                         "positive_diagnosis_config" : "null",
                         "positive_diagnosis_event"  : "Event_2",
                         "negative_diagnosis_config" : "null",
@@ -2738,7 +2783,11 @@
                         "cost_per_unit"              : 5,
                         "expired"                    : false,
                         "dont_allow_duplicates"      : false,
+                        "first_time"                 : false,
+                        "disqualifying_properties"   : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                        "status_property"            : "InterventionStatus:non_abort_state",
                         "probability_of_seeking"     : 0.1,
+                        "use_event_or_config"        : 0,
                         "actual_intervention_config" : "null",
                         "actual_intervention_event"  : "Event_5",
                         "single_use" : true

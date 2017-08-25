@@ -38,10 +38,10 @@ if dst_path != "":
     sys.exit(0)
 
 # set the common libraries
-env.Append(LIBPATH = ["$BUILD_DIR/baseReportLib", "$BUILD_DIR/cajun", "$BUILD_DIR/campaign", "$BUILD_DIR/snappy", "$BUILD_DIR/utils"])
+env.Append(LIBPATH = ["$BUILD_DIR/baseReportLib", "$BUILD_DIR/cajun", "$BUILD_DIR/campaign", "$BUILD_DIR/snappy", "$BUILD_DIR/lz4", "$BUILD_DIR/utils"])
 
 print( "Link executable against cajun, campaign, snappy, and utils lib's." )
-env.Append(LIBS=["baseReportLib", "cajun", "campaign", "snappy", "utils"])
+env.Append(LIBS=["baseReportLib", "cajun", "campaign", "snappy", "lz4", "utils"])
 
 #print "builddir is " + env["BUILD_DIR"]
 
@@ -49,7 +49,9 @@ env.Append(LIBS=["baseReportLib", "cajun", "campaign", "snappy", "utils"])
 SConscript( [ 'baseReportLib/SConscript',
               'cajun/SConscript',
               'campaign/SConscript',
+              'Eradication/SConscript_coreLib',
               'snappy/SConscript',
+              'lz4/SConscript',
               'utils/SConscript' ])
 
 # If DLL=true, build libgeneric_static.lib
@@ -75,6 +77,7 @@ if env['AllDlls']:
     SConscript( 'libgeneric/TBSConscript' )
     SConscript( 'libgeneric/STISConscriptStatic' )
     SConscript( 'libgeneric/HIVSConscript' )
+    SConscript( 'libgeneric/PySConscript' )
     #SConscript( 'libgeneric/PolioSConscript' )
 elif env[ 'DiseaseDll' ] != "":
     print( "Build specific disease dll." )
@@ -104,6 +107,8 @@ elif env[ 'DiseaseDll' ] != "":
         SConscript( 'libgeneric/STISConscriptStatic' )
         SConscript( 'libgeneric/HIVSConscriptStatic' )
         SConscript( 'libgeneric/HIVSConscript', variant_dir="HIV/disease_plugins" )
+    elif dtype == 'PY':
+        SConscript( 'libgeneric/PySConscript', variant_dir="Py/disease_plugins" )
     else:
         print "Unspecified or unknown disease type: " + dtype
 
@@ -168,11 +173,13 @@ if env['AllDlls'] or env[ 'DiseaseDll' ] != "":
         SConscript( 'libgeneric/HivpreartnotificationSConscript', variant_dir=dll_op_path ) 
         SConscript( 'libgeneric/HivrandomchoiceSConscript', variant_dir=dll_op_path ) 
         SConscript( 'libgeneric/HivrapidhivdiagnosticSConscript', variant_dir=dll_op_path ) 
-        SConscript( 'libgeneric/HivsetcascadestateSConscript', variant_dir=dll_op_path )
         SConscript( 'libgeneric/HivsigmoidbyyearandsexdiagnosticSConscript', variant_dir=dll_op_path ) 
         SConscript( 'libgeneric/HivsimplediagnosticSConscript', variant_dir=dll_op_path )
         SConscript( 'libgeneric/HivmuxerSConscript', variant_dir=dll_op_path )
         SConscript( 'libgeneric/PmtctSConscript', variant_dir=dll_op_path )
+
+    if env['DiseaseDll'] == "PY":
+        SConscript( 'libpy/PySConscript', variant_dir=dll_op_path )
 
     # Polio
     # NOT YET SConscript( 'libgeneric/PoliovaccineSConscript' )
@@ -199,18 +206,19 @@ def OptionalScript(sconscript_name):
     else:
         print("Skipping missing script: '{0}'".format(sconscript_path))
 
-if os.sys.platform == 'win32':
-    OptionalScript('reporters/SConscript_Generic_AgeAtInfection')
-    OptionalScript('reporters/SConscript_Generic_AgeAtInfectionHistogram')
-    OptionalScript('reporters/SConscript_Generic_Basic')
-    OptionalScript('reporters/SConscript_Generic_EventCounter')
-    OptionalScript('reporters/SConscript_Generic_HumanMigrationTracking')
-    OptionalScript('reporters/SConscript_Generic_KmlDemo')
-    OptionalScript('reporters/SConscript_Generic_NodeDemographics')
+disease = "ALL"
+if 'Disease' in env and len(env['Disease']) > 0:
+    disease = env["Disease"]
 
-    disease = "ALL"
-    if 'Disease' in env and len(env['Disease']) > 0:
-        disease = env["Disease"]
+if os.sys.platform == 'win32':
+    if disease != "Typhoid":
+        OptionalScript('reporters/SConscript_Generic_AgeAtInfection')
+        OptionalScript('reporters/SConscript_Generic_AgeAtInfectionHistogram')
+        OptionalScript('reporters/SConscript_Generic_Basic')
+        OptionalScript('reporters/SConscript_Generic_EventCounter')
+        OptionalScript('reporters/SConscript_Generic_HumanMigrationTracking')
+        OptionalScript('reporters/SConscript_Generic_KmlDemo')
+        OptionalScript('reporters/SConscript_Generic_NodeDemographics')
 
     if( (disease == "ALL") or (disease == "HIV") ):
         OptionalScript('reporters/SConscript_HIV_WHO2015')
@@ -234,9 +242,13 @@ if os.sys.platform == 'win32':
     if( (disease == "ALL") or (disease == "STI") or (disease == "HIV") ):
         OptionalScript('reporters/SConscript_STI_RelationshipMigrationTracking')
         OptionalScript('reporters/SConscript_STI_RelationshipQueue')
+        OptionalScript('reporters/SConscript_STI_RelationshipCensus')
 
     if( (disease == "ALL") or (disease == "Vector") or (disease == "Malaria") ):
         OptionalScript('reporters/SConscript_Vector_VectorHabitat')
         OptionalScript('reporters/SConscript_Vector_VectorMigration')
         OptionalScript('reporters/SConscript_Vector_VectorStats')
 
+if( disease == "ALL"):
+    OptionalScript('UnitTest++/SConscript')
+    OptionalScript('componentTests/SConscript')

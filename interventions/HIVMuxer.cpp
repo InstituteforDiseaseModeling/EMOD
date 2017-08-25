@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "RANDOM.h"
 #include "IHIVInterventionsContainer.h" // for access to campaign_semaphores
 
-static const char * _module = "HIVMuxer";
+SETUP_LOGGING( "HIVMuxer" )
 
 namespace Kernel
 {
@@ -26,14 +26,18 @@ namespace Kernel
 
     HIVMuxer::HIVMuxer()
     : HIVDelayedIntervention()
+    , max_entries(1)
+    , muxer_name("")
+    , firstUpdate(true)
     {
     }
 
     HIVMuxer::HIVMuxer( const HIVMuxer &master )
     : HIVDelayedIntervention( master )
+    , max_entries(master.max_entries)
+    , muxer_name(master.muxer_name)
+    , firstUpdate(master.firstUpdate)
     {
-        muxer_name = master.muxer_name;
-        max_entries = master.max_entries;
     }
 
     bool HIVMuxer::Configure( const Configuration * inputJson )
@@ -88,19 +92,22 @@ namespace Kernel
 
     bool HIVMuxer::Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO )
     {
-        IHIVCampaignSemaphores *ihcs = nullptr;
-        if ( s_OK != context->QueryInterface(GET_IID(IHIVCampaignSemaphores), (void **)&ihcs) )
+        bool distributed = HIVDelayedIntervention::Distribute(context, pICCO);
+        if( distributed )
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHIVCampaignSemaphores", "IIndividualHumanInterventionsContext" );
-        }
+            IHIVCampaignSemaphores *ihcs = nullptr;
+            if ( s_OK != context->QueryInterface(GET_IID(IHIVCampaignSemaphores), (void **)&ihcs) )
+            {
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHIVCampaignSemaphores", "IIndividualHumanInterventionsContext" );
+            }
 
-        // initialize the semaphore if not already done
-        if (!ihcs->SemaphoreExists(muxer_name))
-        {
-            ihcs->SemaphoreInit(muxer_name, 0);
+            // initialize the semaphore if not already done
+            if (!ihcs->SemaphoreExists(muxer_name))
+            {
+                ihcs->SemaphoreInit(muxer_name, 0);
+            }
         }
-
-        return HIVDelayedIntervention::Distribute(context, pICCO);
+        return distributed;
     }
 
     void HIVMuxer::Update(float dt)
@@ -109,7 +116,7 @@ namespace Kernel
         if ( s_OK != parent->GetInterventionsContext()->QueryInterface(GET_IID(IHIVCampaignSemaphores), (void **)&ihcs) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetInterventionsContext()", 
-                                                                             "IHIVCascadeOfCare", 
+                                                                             "IHIVCampaignSemaphores", 
                                                                              "IIndividualHumanInterventionsContext" );
         }
 
@@ -119,6 +126,7 @@ namespace Kernel
             expired = num_entries > max_entries;
             LOG_DEBUG_F("Individual %d now has %d instances of %s (allows %d).  expired == %d.\n", 
                          parent->GetSuid().data, num_entries, muxer_name.c_str(), max_entries, expired);
+            firstUpdate = false;
         }
 
         if (!expired)   // if already expired (from the firstUpdate), skip this step
@@ -145,5 +153,6 @@ namespace Kernel
 
         ar.labelElement("max_entries") & muxer.max_entries;
         ar.labelElement("muxer_name" ) & muxer.muxer_name;
+        ar.labelElement("firstUpdate") & muxer.firstUpdate;
     }
 }

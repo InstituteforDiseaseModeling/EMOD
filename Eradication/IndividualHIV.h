@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -37,7 +37,7 @@ namespace Kernel
     public:
         friend class SimulationHIV;
         DECLARE_QUERY_INTERFACE()
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING();
+        IMPLEMENT_NO_REFERENCE_COUNTING();
 
         virtual ~IndividualHumanHIV(void);
         static   IndividualHumanHIV *CreateHuman( INodeContext *context, 

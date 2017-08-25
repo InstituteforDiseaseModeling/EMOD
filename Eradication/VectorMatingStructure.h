@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,7 +19,13 @@ namespace Kernel
     typedef std::pair< VectorAllele::Enum, VectorAllele::Enum > AllelePair_t;
     typedef std::map< VectorAllele::Enum, float > AlleleFractions_t;
 
-    class VectorMatingStructure
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // !!! The 'final' tag is intended to stop developers from adding virtual methods to
+    // !!! this class and then extending it.  VectorMatingStructure is in every mosquito and adding 
+    // !!! virtual methods adds a vtable pointer (8-bytes) to every instance.  This is really impactful
+    // !!! when talking about 100's of millions of mosquitos.
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    class VectorMatingStructure final
     {
     public:
         VectorMatingStructure( VectorGender::Enum      _gen  = VectorGender::VECTOR_FEMALE,
@@ -29,7 +35,7 @@ namespace Kernel
                                AllelePair_t            _HEGs = std::make_pair(VectorAllele::WILD, VectorAllele::WILD) );
 
         VectorMatingStructure( VectorGeneticIndex_t _index );
-        virtual ~VectorMatingStructure();
+        ~VectorMatingStructure();
 
         void SetIndex(VectorGeneticIndex_t _index);
         void SetGender(VectorGender::Enum _gen);

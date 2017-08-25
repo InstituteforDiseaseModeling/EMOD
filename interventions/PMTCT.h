@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -27,12 +27,12 @@ namespace Kernel
         PMTCT();
         PMTCT( const PMTCT& );
         ~PMTCT();
-        virtual bool Configure( const Configuration* pConfig );
+        virtual bool Configure( const Configuration* pConfig ) override;
 
         // IDistributingDistributableIntervention
-        virtual void SetContextTo(IIndividualHumanContext *context);
-        virtual void Update(float dt);
-        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver* const pEC);
+        virtual void SetContextTo(IIndividualHumanContext *context) override;
+        virtual void Update(float dt) override;
+        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver* const pEC) override;
 
 protected:
         IHIVMTCTEffects * ivc; // interventions container

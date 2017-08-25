@@ -1,0 +1,1280 @@
+{
+    "Defaults": {
+        "IndividualAttributes": {
+            "AgeDistribution1": 0.000118,
+            "AgeDistribution2": 0,
+            "AgeDistributionFlag": 3,
+            "ImmunityDistribution1": 0,
+            "ImmunityDistribution2": 0,
+            "ImmunityDistributionFlag": 0,
+            "MigrationHeterogeneityDistribution1": 0.25,
+            "MigrationHeterogeneityDistribution2": 0,
+            "MigrationHeterogeneityDistributionFlag": 0,
+            "MortalityDistribution": {
+                "AxisNames": [
+                    "gender",
+                    "age"
+                ],
+                "AxisScaleFactors": [
+                    1,
+                    365
+                ],
+                "AxisUnits": [
+                    "male=0,female=1",
+                    "years"
+                ],
+                "NumDistributionAxes": 2,
+                "NumPopulationGroups": [
+                    2,
+                    6
+                ],
+                "PopulationGroups": [
+                    [
+                        0,
+                        1
+                    ],
+                    [
+                        0,
+                        2,
+                        10,
+                        50,
+                        100,
+                        2000
+                    ]
+                ],
+                "ResultScaleFactor": 2.74e-06,
+                "ResultUnits": "annual deaths per 1000 individuals",
+                "ResultValues": [
+                    [
+                        60,
+                        50,
+                        10,
+                        50,
+                        300,
+                        999
+                    ],
+                    [
+                        60,
+                        50,
+                        10,
+                        50,
+                        300,
+                        999
+                    ]
+                ]
+            },
+            "PercentageChildren": 0.5,
+            "PrevalenceDistribution1": 0,
+            "PrevalenceDistribution2": 0,
+            "PrevalenceDistributionFlag": 0,
+            "RiskDistribution1": 0,
+            "RiskDistribution2": 0,
+            "RiskDistributionFlag": 0
+        },
+        "NodeAttributes": {
+            "AbovePoverty": 0.5,
+            "Airport": 0,
+            "Altitude": 0,
+            "BirthRate": 0.00012329,
+            "Latitude": -1,
+            "Longitude": -1,
+            "Region": 1,
+            "Seaport": 1,
+            "Urban": 0
+        },
+        "NodeID": -1
+    },
+    "Metadata": {
+        "Author": "DTK",
+        "DateCreated": "2015-11-24 22:15:33.802000",
+        "IdReference": "Household-Scenario-Small",
+        "NodeCount": 74,
+        "Tool": "Eradication.exe"
+    },
+    "Nodes": [
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00049316,
+                "InitialPopulation": 4,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.496057999999998,
+                "Longitude": 27.998618,
+                "PrevalenceDistribution1": 0.125,
+                "PrevalenceDistribution2": 0.5,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 14
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00049316,
+                "InitialPopulation": 4,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.492432999999998,
+                "Longitude": 27.982538000000002,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 19
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00036987,
+                "InitialPopulation": 3,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.497126999999999,
+                "Longitude": 27.98301,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 22
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00073974,
+                "InitialPopulation": 6,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.496285,
+                "Longitude": 27.981722000000001,
+                "PrevalenceDistribution1": 0.25,
+                "PrevalenceDistribution2": 1,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 23
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00086303,
+                "InitialPopulation": 7,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.494226999999999,
+                "Longitude": 27.983847999999998,
+                "PrevalenceDistribution1": 0.071428571428571425,
+                "PrevalenceDistribution2": 0.2857142857142857,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 25
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00086303,
+                "InitialPopulation": 7,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.494054999999999,
+                "Longitude": 27.980388000000001,
+                "PrevalenceDistribution1": 0.071428571428571425,
+                "PrevalenceDistribution2": 0.2857142857142857,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 35
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00049316,
+                "InitialPopulation": 4,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.493333,
+                "Longitude": 27.992184999999999,
+                "PrevalenceDistribution1": 0.25,
+                "PrevalenceDistribution2": 1,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 38
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00049316,
+                "InitialPopulation": 4,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.495167000000002,
+                "Longitude": 27.987338000000001,
+                "PrevalenceDistribution1": 0.25,
+                "PrevalenceDistribution2": 1,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 41
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00049316,
+                "InitialPopulation": 4,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.496261999999998,
+                "Longitude": 27.981213,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 43
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00012329,
+                "InitialPopulation": 1,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.494499999999999,
+                "Longitude": 27.991743,
+                "PrevalenceDistribution1": 0.5,
+                "PrevalenceDistribution2": 1,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 44
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00073974,
+                "InitialPopulation": 6,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.489270000000001,
+                "Longitude": 27.975187999999999,
+                "PrevalenceDistribution1": 0.25,
+                "PrevalenceDistribution2": 1,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 45
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00073974,
+                "InitialPopulation": 6,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.49363,
+                "Longitude": 28.001792999999999,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 48
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.0006164499999999999,
+                "InitialPopulation": 5,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.496732999999999,
+                "Longitude": 27.983201999999999,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 53
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00024658,
+                "InitialPopulation": 2,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.496877999999999,
+                "Longitude": 27.981745,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 54
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00024658,
+                "InitialPopulation": 2,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.494161999999999,
+                "Longitude": 27.994230000000002,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 58
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00073974,
+                "InitialPopulation": 6,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.494254999999999,
+                "Longitude": 27.977882999999999,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 59
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00049316,
+                "InitialPopulation": 4,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.49635,
+                "Longitude": 27.982493000000002,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 60
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00073974,
+                "InitialPopulation": 6,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.496632000000002,
+                "Longitude": 27.979068000000002,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 63
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00024658,
+                "InitialPopulation": 2,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.4971,
+                "Longitude": 27.982672999999998,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 64
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.0006164499999999999,
+                "InitialPopulation": 5,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.494751999999998,
+                "Longitude": 28.001957999999998,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 69
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00036987,
+                "InitialPopulation": 3,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.493410000000001,
+                "Longitude": 27.983345,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 70
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00049316,
+                "InitialPopulation": 4,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.495262,
+                "Longitude": 27.982341999999999,
+                "PrevalenceDistribution1": 0.125,
+                "PrevalenceDistribution2": 0.5,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 71
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00073974,
+                "InitialPopulation": 6,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.491245000000006,
+                "Longitude": 27.9834,
+                "PrevalenceDistribution1": 0.083333333333333329,
+                "PrevalenceDistribution2": 0.33333333333333331,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 87
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00024658,
+                "InitialPopulation": 2,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.494302999999999,
+                "Longitude": 27.983021999999998,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 94
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00073974,
+                "InitialPopulation": 6,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.494077999999998,
+                "Longitude": 27.977136999999999,
+                "PrevalenceDistribution1": 0.33333333333333331,
+                "PrevalenceDistribution2": 1,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 95
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00049316,
+                "InitialPopulation": 4,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.493676999999998,
+                "Longitude": 27.978097000000002,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 96
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00197264,
+                "InitialPopulation": 16,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.497796999999998,
+                "Longitude": 27.986988,
+                "PrevalenceDistribution1": 0.125,
+                "PrevalenceDistribution2": 0.5,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 103
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00073974,
+                "InitialPopulation": 6,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.492973000000006,
+                "Longitude": 27.992184999999999,
+                "PrevalenceDistribution1": 0.41666666666666669,
+                "PrevalenceDistribution2": 1,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 105
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00036987,
+                "InitialPopulation": 3,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.497098000000001,
+                "Longitude": 27.982700000000001,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 107
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00036987,
+                "InitialPopulation": 3,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.496326999999994,
+                "Longitude": 27.982462000000002,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 110
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.0006164499999999999,
+                "InitialPopulation": 5,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.493072000000002,
+                "Longitude": 27.982752000000001,
+                "PrevalenceDistribution1": 0.10000000000000001,
+                "PrevalenceDistribution2": 0.40000000000000002,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 114
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00024658,
+                "InitialPopulation": 2,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.491821999999999,
+                "Longitude": 27.977181999999999,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 118
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00036987,
+                "InitialPopulation": 3,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.494617000000002,
+                "Longitude": 27.983937999999998,
+                "PrevalenceDistribution1": 0.16666666666666666,
+                "PrevalenceDistribution2": 0.66666666666666663,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 122
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00049316,
+                "InitialPopulation": 4,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.495101999999999,
+                "Longitude": 27.987722000000002,
+                "PrevalenceDistribution1": 0.25,
+                "PrevalenceDistribution2": 1,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 127
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00086303,
+                "InitialPopulation": 7,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.497104999999998,
+                "Longitude": 27.979222,
+                "PrevalenceDistribution1": 0.071428571428571425,
+                "PrevalenceDistribution2": 0.2857142857142857,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 130
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00036987,
+                "InitialPopulation": 3,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.493154999999998,
+                "Longitude": 27.980440000000002,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 140
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00086303,
+                "InitialPopulation": 7,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.492507999999994,
+                "Longitude": 27.993908000000001,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 141
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00110961,
+                "InitialPopulation": 9,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.496392,
+                "Longitude": 27.992072,
+                "PrevalenceDistribution1": 0.1111111111111111,
+                "PrevalenceDistribution2": 0.44444444444444442,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 147
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.0006164499999999999,
+                "InitialPopulation": 5,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.493872,
+                "Longitude": 27.982567,
+                "PrevalenceDistribution1": 0.10000000000000001,
+                "PrevalenceDistribution2": 0.40000000000000002,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 149
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00036987,
+                "InitialPopulation": 3,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.4938,
+                "Longitude": 27.980972999999999,
+                "PrevalenceDistribution1": 0.16666666666666666,
+                "PrevalenceDistribution2": 0.66666666666666663,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 150
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00012329,
+                "InitialPopulation": 1,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.496621999999999,
+                "Longitude": 27.985703000000004,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 151
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00110961,
+                "InitialPopulation": 9,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.498323000000006,
+                "Longitude": 27.987215000000006,
+                "PrevalenceDistribution1": 0.1111111111111111,
+                "PrevalenceDistribution2": 0.44444444444444442,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 152
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00073974,
+                "InitialPopulation": 6,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.496096999999999,
+                "Longitude": 27.991067999999999,
+                "PrevalenceDistribution1": 0.16666666666666666,
+                "PrevalenceDistribution2": 0.66666666666666663,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 153
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.0006164499999999999,
+                "InitialPopulation": 5,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.494688,
+                "Longitude": 27.982978000000006,
+                "PrevalenceDistribution1": 0.10000000000000001,
+                "PrevalenceDistribution2": 0.40000000000000002,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 156
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00135619,
+                "InitialPopulation": 11,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.493062999999999,
+                "Longitude": 27.982313000000001,
+                "PrevalenceDistribution1": 0.090909090909090925,
+                "PrevalenceDistribution2": 0.3636363636363637,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 161
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00073974,
+                "InitialPopulation": 6,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.495370000000001,
+                "Longitude": 27.979025,
+                "PrevalenceDistribution1": 0.083333333333333329,
+                "PrevalenceDistribution2": 0.33333333333333331,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 171
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00012329,
+                "InitialPopulation": 1,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.495661999999999,
+                "Longitude": 27.989128000000004,
+                "PrevalenceDistribution1": 0.5,
+                "PrevalenceDistribution2": 1,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 179
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00024658,
+                "InitialPopulation": 2,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.494802,
+                "Longitude": 28.001373000000001,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 182
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00012329,
+                "InitialPopulation": 1,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.498407999999998,
+                "Longitude": 27.986218000000001,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 183
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00110961,
+                "InitialPopulation": 9,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.496296999999998,
+                "Longitude": 27.981217999999998,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 185
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00049316,
+                "InitialPopulation": 4,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.497122000000001,
+                "Longitude": 27.983021999999998,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 188
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00086303,
+                "InitialPopulation": 7,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.497057000000002,
+                "Longitude": 27.983657000000001,
+                "PrevalenceDistribution1": 0.071428571428571425,
+                "PrevalenceDistribution2": 0.2857142857142857,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 195
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00049316,
+                "InitialPopulation": 4,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.492236999999999,
+                "Longitude": 27.981729999999999,
+                "PrevalenceDistribution1": 0.125,
+                "PrevalenceDistribution2": 0.5,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 196
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00086303,
+                "InitialPopulation": 7,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.493932000000001,
+                "Longitude": 27.983274999999999,
+                "PrevalenceDistribution1": 0.071428571428571425,
+                "PrevalenceDistribution2": 0.2857142857142857,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 197
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00049316,
+                "InitialPopulation": 4,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.494586999999999,
+                "Longitude": 27.979842999999999,
+                "PrevalenceDistribution1": 0.125,
+                "PrevalenceDistribution2": 0.5,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 206
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00073974,
+                "InitialPopulation": 6,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.494129999999998,
+                "Longitude": 27.979386999999999,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 210
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00073974,
+                "InitialPopulation": 6,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.495338,
+                "Longitude": 27.981632999999999,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 214
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00073974,
+                "InitialPopulation": 6,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.496662000000001,
+                "Longitude": 27.981838,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 221
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00049316,
+                "InitialPopulation": 4,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.491312000000001,
+                "Longitude": 27.978133000000003,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 224
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00073974,
+                "InitialPopulation": 6,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.494378000000001,
+                "Longitude": 27.978517,
+                "PrevalenceDistribution1": 0.16666666666666666,
+                "PrevalenceDistribution2": 0.66666666666666663,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 227
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00012329,
+                "InitialPopulation": 1,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.495045000000001,
+                "Longitude": 27.985173,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 240
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00073974,
+                "InitialPopulation": 6,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.494292999999999,
+                "Longitude": 27.992415000000001,
+                "PrevalenceDistribution1": 0.16666666666666666,
+                "PrevalenceDistribution2": 0.66666666666666663,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 244
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00086303,
+                "InitialPopulation": 7,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.492929999999998,
+                "Longitude": 27.982119999999998,
+                "PrevalenceDistribution1": 0.071428571428571425,
+                "PrevalenceDistribution2": 0.2857142857142857,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 247
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00073974,
+                "InitialPopulation": 6,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.495056999999999,
+                "Longitude": 27.980136999999999,
+                "PrevalenceDistribution1": 0.083333333333333329,
+                "PrevalenceDistribution2": 0.33333333333333331,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 258
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00049316,
+                "InitialPopulation": 4,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.493468,
+                "Longitude": 27.983505000000001,
+                "PrevalenceDistribution1": 0.125,
+                "PrevalenceDistribution2": 0.5,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 259
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00036987,
+                "InitialPopulation": 3,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.495255,
+                "Longitude": 27.987742000000001,
+                "PrevalenceDistribution1": 0.16666666666666666,
+                "PrevalenceDistribution2": 0.66666666666666663,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 263
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00147948,
+                "InitialPopulation": 12,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.494678,
+                "Longitude": 27.981133000000003,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 265
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00036987,
+                "InitialPopulation": 3,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.496295,
+                "Longitude": 27.983702000000001,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 269
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00086303,
+                "InitialPopulation": 7,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.492967,
+                "Longitude": 27.997523000000001,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 270
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.0006164499999999999,
+                "InitialPopulation": 5,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.493182999999998,
+                "Longitude": 27.979991999999999,
+                "PrevalenceDistribution1": 0.10000000000000001,
+                "PrevalenceDistribution2": 0.40000000000000002,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 275
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00049316,
+                "InitialPopulation": 4,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.493920000000006,
+                "Longitude": 27.977478000000001,
+                "PrevalenceDistribution1": 0.125,
+                "PrevalenceDistribution2": 0.5,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 276
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00036987,
+                "InitialPopulation": 3,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.494267000000001,
+                "Longitude": 27.993839999999999,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 277
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.0006164499999999999,
+                "InitialPopulation": 5,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.498517,
+                "Longitude": 27.986678000000001,
+                "PrevalenceDistribution1": 0.0,
+                "PrevalenceDistribution2": 0.0,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 281
+        },
+        {
+            "NodeAttributes": {
+                "BirthRate": 0.00073974,
+                "InitialPopulation": 6,
+                "InitialVectors": 10000,
+                "LarvalHabitatMultiplier": {
+                    "ALL_HABITATS": 0.1
+                },
+                "Latitude": -16.491849999999999,
+                "Longitude": 27.977158000000006,
+                "PrevalenceDistribution1": 0.083333333333333329,
+                "PrevalenceDistribution2": 0.33333333333333331,
+                "PrevalenceDistributionFlag": 1
+            },
+            "NodeID": 283
+        }
+    ]
+}

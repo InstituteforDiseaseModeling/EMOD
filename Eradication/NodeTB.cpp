@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,8 +16,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContextHost.h" //for node level trigger
 #include "IndividualTB.h"
 #include "SimulationConfig.h"
+#include "EventTrigger.h"
 
-static const char* _module = "NodeTB";
+SETUP_LOGGING( "NodeTB" )
 
 namespace Kernel
 {
@@ -74,7 +75,7 @@ namespace Kernel
         {
         //  Latent infection that became active pre-symptomatic
         case InfectionStateChange::TBActivationPresymptomatic:
-            event_context_host->TriggerNodeEventObservers(ih->GetEventContext(), IndividualEventTriggerType::TBActivationPresymptomatic);
+            event_context_host->TriggerNodeEventObservers(ih->GetEventContext(), EventTrigger::TBActivationPresymptomatic);
             break;
 
         //  Active pre-symptomatic infection to active symptomatic
@@ -86,17 +87,17 @@ namespace Kernel
         case InfectionStateChange::TBActivationExtrapulm:
             if ( tb_ind->HasEverRelapsedAfterTreatment() )
             {
-                 event_context_host->TriggerNodeEventObservers(ih->GetEventContext(), IndividualEventTriggerType::TBActivationPostRelapse);
+                 event_context_host->TriggerNodeEventObservers(ih->GetEventContext(), EventTrigger::TBActivationPostRelapse);
             }
             else
             {
-                event_context_host->TriggerNodeEventObservers(ih->GetEventContext(), IndividualEventTriggerType::TBActivation);
+                event_context_host->TriggerNodeEventObservers(ih->GetEventContext(), EventTrigger::TBActivation);
             }
             break;
 
         //  Infection got treatment and is now pending relapse - trigger goes off if you are ON OR OFF DRUGS.
         case InfectionStateChange::ClearedPendingRelapse:
-            event_context_host->TriggerNodeEventObservers(ih->GetEventContext(), IndividualEventTriggerType::TBPendingRelapse);
+            event_context_host->TriggerNodeEventObservers(ih->GetEventContext(), EventTrigger::TBPendingRelapse);
             break;
 
         // no other infection state change is connected to a trigger, no trigger goes off in this time step
@@ -132,7 +133,6 @@ namespace Kernel
         IndividualHumanTB * pIncident 
         )
     {
-//        std::cout << pIncident->GetSuid().data << " just recovered from an infection." << std::endl;
         incident_counter += pIncident->GetMonteCarloWeight();
     }
 

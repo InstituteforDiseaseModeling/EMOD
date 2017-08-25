@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,6 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationConfig.h"
 #include "IdmMpi.h"
 #include "Properties.h"
+#include "Schema.h"
 
 #include <string>
 #include <climits>
@@ -22,14 +23,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <iostream>
 #include <memory> // unique_ptr
 
+
 using namespace Kernel;
 using namespace std;
-
-
-void writeInputSchemas(
-    const char* dll_path,
-    const char* output_path
-);
 
 
 
@@ -47,6 +43,9 @@ SUITE(SchemaTest)
 
             Environment::Finalize();
             Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
+
+            json::Object fakeConfigJson;
+            Environment::getInstance()->Config = Configuration::CopyFromElement( fakeConfigJson );
 
             IPFactory::DeleteFactory();
             IPFactory::CreateFactory();
@@ -98,6 +97,10 @@ SUITE(SchemaTest)
         int exp_pos = p_exp_contents->find_first_of("}");
         std::string act_contents = p_act_contents->substr( act_pos, p_act_contents->length() );
         std::string exp_contents = p_exp_contents->substr( exp_pos, p_exp_contents->length() );
+
+        // replace carriage return with space to reduce differences with Linux.
+        std::replace( act_contents.begin(), act_contents.end(), char(13), ' ' );
+        std::replace( exp_contents.begin(), exp_contents.end(), char(13), ' ' );
 
         CHECK( exp_contents == act_contents );
 

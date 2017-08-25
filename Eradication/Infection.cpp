@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,8 +16,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "RANDOM.h"
 #include "SimulationConfig.h"
 #include "MathFunctions.h"
+#include "StrainIdentity.h"
 
-static const char* _module = "Infection";
+SETUP_LOGGING( "Infection" )
 
 namespace Kernel
 {
@@ -27,6 +28,7 @@ namespace Kernel
     DurationDistribution InfectionConfig::infectious_distribution = DurationDistribution( DistributionFunction::FIXED_DURATION );
     float InfectionConfig::base_infectivity = 1.0f;
     float InfectionConfig::base_mortality = 1.0f;
+    bool  InfectionConfig::vital_disease_mortality = false;
 
     GET_SCHEMA_STATIC_WRAPPER_IMPL(Infection,InfectionConfig)
     BEGIN_QUERY_INTERFACE_BODY(InfectionConfig)
@@ -35,11 +37,12 @@ namespace Kernel
     InfectionConfig::InfectionConfig()
     {
         incubation_distribution.SetTypeNameDesc( "Incubation_Period_Distribution", Incubation_Period_Distribution_DESC_TEXT );
-        incubation_distribution.AddSupportedType( DistributionFunction::FIXED_DURATION,       "Base_Incubation_Period", Base_Incubation_Period_DESC_TEXT,      "", "" );
-        incubation_distribution.AddSupportedType( DistributionFunction::UNIFORM_DURATION,     "Incubation_Period_Min",  Incubation_Period_Min_DESC_TEXT,  "Incubation_Period_Max",     Incubation_Period_Max_DESC_TEXT );
-        incubation_distribution.AddSupportedType( DistributionFunction::GAUSSIAN_DURATION,    "Incubation_Period_Mean", Incubation_Period_Mean_DESC_TEXT, "Incubation_Period_Std_Dev", Incubation_Period_Std_Dev_DESC_TEXT );
-        incubation_distribution.AddSupportedType( DistributionFunction::EXPONENTIAL_DURATION, "Base_Incubation_Period", Base_Incubation_Period_DESC_TEXT,      "", "" );
-        incubation_distribution.AddSupportedType( DistributionFunction::POISSON_DURATION,     "Incubation_Period_Mean", Incubation_Period_Mean_DESC_TEXT,      "", "" );
+        incubation_distribution.AddSupportedType( DistributionFunction::FIXED_DURATION,       "Base_Incubation_Period",     Base_Incubation_Period_DESC_TEXT,     "", "" );
+        incubation_distribution.AddSupportedType( DistributionFunction::UNIFORM_DURATION,     "Incubation_Period_Min",      Incubation_Period_Min_DESC_TEXT,      "Incubation_Period_Max",     Incubation_Period_Max_DESC_TEXT );
+        incubation_distribution.AddSupportedType( DistributionFunction::GAUSSIAN_DURATION,    "Incubation_Period_Mean",     Incubation_Period_Mean_DESC_TEXT,     "Incubation_Period_Std_Dev", Incubation_Period_Std_Dev_DESC_TEXT );
+        incubation_distribution.AddSupportedType( DistributionFunction::EXPONENTIAL_DURATION, "Base_Incubation_Period",     Base_Incubation_Period_DESC_TEXT,     "", "" );
+        incubation_distribution.AddSupportedType( DistributionFunction::POISSON_DURATION,     "Incubation_Period_Mean",     Incubation_Period_Mean_DESC_TEXT,     "", "" );
+        incubation_distribution.AddSupportedType( DistributionFunction::LOG_NORMAL_DURATION,  "Incubation_Period_Log_Mean", Incubation_Period_Log_Mean_DESC_TEXT, "Incubation_Period_Log_Width", Incubation_Period_Log_Width_DESC_TEXT );
 
         infectious_distribution.SetTypeNameDesc( "Infectious_Period_Distribution", Infectious_Period_Distribution_DESC_TEXT );
         infectious_distribution.AddSupportedType( DistributionFunction::FIXED_DURATION,       "Base_Infectious_Period", Base_Infectious_Period_DESC_TEXT,      "", "" );
@@ -62,7 +65,8 @@ namespace Kernel
         LOG_DEBUG_F( "infectious_distribution = %s\n", DistributionFunction::pairs::lookup_key(infectious_distribution.GetType()) );
 
         initConfigTypeMap( "Base_Infectivity", &base_infectivity, Base_Infectivity_DESC_TEXT, 0.0f, 1000.0f, 0.3f ); // should default change depending on disease?
-        initConfigTypeMap( "Base_Mortality", &base_mortality, Base_Mortality_DESC_TEXT, 0.0f, 1000.0f, 0.001f, "Enable_Vital_Dynamics" ); // should default change depending on disease?
+        initConfigTypeMap( "Base_Mortality", &base_mortality, Base_Mortality_DESC_TEXT, 0.0f, 1000.0f, 0.001f, "Enable_Vital_Dynamics" ); // should default change depending on disease? 
+        initConfigTypeMap( "Enable_Disease_Mortality", &vital_disease_mortality, Enable_Disease_Mortality_DESC_TEXT, true, "Simulation_Type", "GENERIC_SIM,STI_SIM,HIV_SIM,MALARIA_SIM" );
 
         bool bRet = JsonConfigurable::Configure( config );
 
@@ -125,7 +129,7 @@ namespace Kernel
         delete infection_strain;
     }
 
-    void Infection::SetParameters(Kernel::StrainIdentity* infstrain, int incubation_period_override ) // or something
+    void Infection::SetParameters( IStrainIdentity* infstrain, int incubation_period_override ) // or something
     {
         // Set up infection strain
         CreateInfectionStrain(infstrain);
@@ -137,9 +141,9 @@ namespace Kernel
         else
         {
             incubation_timer = InfectionConfig::incubation_distribution.CalculateDuration();
-            LOG_DEBUG_F( "incubation_timer = %f\n", incubation_timer );
+            LOG_DEBUG_F( "incubation_timer initialized to %f for individual %d\n", incubation_timer, parent->GetSuid().data );
         }
-        
+
         infectious_timer = InfectionConfig::infectious_distribution.CalculateDuration();
         LOG_DEBUG_F( "infectious_timer = %f\n", infectious_timer );
 
@@ -163,7 +167,6 @@ namespace Kernel
         StateChange = InfectionStateChange::None;
         duration += dt;
 
-// TODO        if (duration >= incubation_timer)
         if (duration > incubation_timer)
         {
             infectiousness = InfectionConfig::base_infectivity;
@@ -175,8 +178,13 @@ namespace Kernel
         // To query for mortality-reducing effects of drugs or vaccines
         IDrugVaccineInterventionEffects* idvie = nullptr;
 
+        bool vdm = InfectionConfig::vital_disease_mortality;
+        /*if( params() != nullptr )
+        {
+            vdm = params()->vital_disease_mortality;
+        }*/
         // if disease has a daily mortality rate, and disease mortality is on, then check for death
-        if (params()->vital_disease_mortality
+        if (vdm
             && (InfectionConfig::mortality_time_course == MortalityTimeCourse::DAILY_MORTALITY)
             && (duration > incubation_timer))
         {
@@ -194,7 +202,7 @@ namespace Kernel
         if (duration > total_duration)
         {
             // disease mortality active and is accounted for at end of infectious period
-            if (params()->vital_disease_mortality && (InfectionConfig::mortality_time_course == MortalityTimeCourse::MORTALITY_AFTER_INFECTIOUS))
+            if (vdm && (InfectionConfig::mortality_time_course == MortalityTimeCourse::MORTALITY_AFTER_INFECTIOUS))
             {
                 if ( s_OK != parent->GetInterventionsContext()->QueryInterface(GET_IID(IDrugVaccineInterventionEffects), (void**)&idvie) )
                 {
@@ -219,7 +227,7 @@ namespace Kernel
         EvolveStrain(immunity, dt); // genomic modifications
     }
 
-    void Infection::CreateInfectionStrain(StrainIdentity* infstrain)
+    void Infection::CreateInfectionStrain(IStrainIdentity* infstrain)
     {
         if (infection_strain == nullptr)
         {
@@ -229,7 +237,8 @@ namespace Kernel
 
         if (infstrain != nullptr)
         {
-            *infection_strain = *infstrain;
+            infection_strain->SetAntigenID( infstrain->GetAntigenID() );
+            infection_strain->SetGeneticID( infstrain->GetGeneticID() );
             // otherwise, using the default antigenID and substrainID from the StrainIdentity constructor
         }
     }
@@ -240,9 +249,11 @@ namespace Kernel
         // infection_strain
     }
 
-    void Infection::GetInfectiousStrainID(Kernel::StrainIdentity* infstrain) 
+    void Infection::GetInfectiousStrainID( IStrainIdentity* infstrain ) 
     {
-        *infstrain = *infection_strain;
+        // Really want to make this cloning an internal StrainIdentity function
+        infstrain->SetAntigenID( infection_strain->GetAntigenID() );
+        infstrain->SetGeneticID( infection_strain->GetGeneticID() );
     }
 
     void Infection::SetContextTo(IIndividualHumanContext* context) { parent = context; }
@@ -257,7 +268,7 @@ namespace Kernel
 
     float Infection::GetInfectiousness() const { return infectiousness; }
 
-    float Infection::GetInfectiousnessByRoute(string route) const {
+    float Infection::GetInfectiousnessByRoute( const string& route ) const {
         if( infectiousnessByRoute.find( route ) == infectiousnessByRoute.end() )
         {
             throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, "infectiousnesssByRoute", route.c_str() );
@@ -283,7 +294,7 @@ namespace Kernel
     void Infection::serialize(IArchive& ar, Infection* obj)
     {
         Infection& infection = *obj;
-        ar.labelElement("suid") & infection.suid.data;
+        ar.labelElement("suid") & infection.suid;
         ar.labelElement("duration") & infection.duration;
         ar.labelElement("total_duration") & infection.total_duration;
         ar.labelElement("incubation_timer") & infection.incubation_timer;
@@ -291,9 +302,12 @@ namespace Kernel
         ar.labelElement("infectiousness") & infection.infectiousness;
         ar.labelElement("infectiousnessByRoute") & infection.infectiousnessByRoute;
         ar.labelElement("StateChange") & (uint32_t&)infection.StateChange;
-        ar.labelElement("infection_strain");
-#if defined(WIN32)
-        Kernel::serialize(ar, infection.infection_strain);
-#endif
+        ar.labelElement( "infection_strain" ); StrainIdentity::serialize( ar, infection.infection_strain );
+    }
+
+    bool
+    Infection::StrainMatches( IStrainIdentity * pStrain )
+    {
+        return( infection_strain->GetAntigenID() == pStrain->GetAntigenID() );
     }
 }

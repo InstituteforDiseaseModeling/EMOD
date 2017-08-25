@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -22,6 +22,7 @@ namespace Kernel
 {
     struct IIndividualHumanInterventionsContext;
     struct INodeEventContext;
+    class IPKeyValueContainer;
 
     struct IDMAPI IIndividualHumanEventContext : public ISupports 
     {
@@ -41,7 +42,7 @@ namespace Kernel
         // useful sub contexts
         virtual IIndividualHumanInterventionsContext *GetInterventionsContext() const  = 0;
         virtual INodeEventContext *GetNodeEventContext() = 0;
-        virtual tProperties * GetProperties() = 0;
+        virtual IPKeyValueContainer * GetProperties() = 0;
 
         // TODO: add more methods here to extend programmatic capability of event coordinators w.r.t. to individual state!
     };

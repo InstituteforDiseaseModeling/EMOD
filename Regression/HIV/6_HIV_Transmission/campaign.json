@@ -68,7 +68,7 @@
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "HIVNeedsMaleCircumcision",
+                    "Trigger_Condition_List": [ "HIVNeedsMaleCircumcision" ],
                     "Target_Demographic": "ExplicitGender",
                     "Target_Gender": "Male",
                     "Actual_IndividualIntervention_Config":
@@ -105,8 +105,8 @@
                     {
                         "class": "HIVSigmoidByYearAndSexDiagnostic",
                         "Days_To_Diagnosis": 0,
-                        "Abort_States": [],
-                        "Cascade_State": "",
+                        "Disqualifying_Properties": [],
+                        "New_Property_Value": "",
 
                         "Ramp_Min": 0.05,
                         "Ramp_Max": 0.60,

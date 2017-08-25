@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,11 +21,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "PyInterventionsContainer.h"
 
+SETUP_LOGGING( "PyInterventionsContainer" )
 
 namespace Kernel
 {
-    static const char* _module = "PyInterventionsContainer";
-
     BEGIN_QUERY_INTERFACE_DERIVED(PyInterventionsContainer, InterventionsContainer)
         //HANDLE_INTERFACE(IPyVaccineEffects)
         //HANDLE_INTERFACE(IPyDrugEffects)
@@ -78,22 +77,5 @@ namespace Kernel
     }
 
 }
-
-#if USE_BOOST_SERIALIZATION || USE_BOOST_MPI
-BOOST_CLASS_EXPORT(Kernel::PyInterventionsContainer)
-namespace Kernel
-{
-    template<class Archive>
-    void serialize(Archive &ar, PyInterventionsContainer& cont, const unsigned int v)
-    {
-        static const char * _module = "PyInterventionsContainer";
-        LOG_DEBUG("(De)serializing PyInterventionsContainer\n");
-
-        //ar & cont.new_vaccines;  // SusceptibilityPy update based on new vaccines done in same time step?
-        boost::serialization::void_cast_register<PyInterventionsContainer, InterventionsContainer>();
-        ar & boost::serialization::base_object<Kernel::InterventionsContainer>(cont);
-    }
-}
-#endif
 
 #endif // ENABLE_PYTHON

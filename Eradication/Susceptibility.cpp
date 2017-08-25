@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationConfig.h"
 #include "RapidJsonImpl.h"
 
-static const char* _module = "Susceptibility";
+SETUP_LOGGING( "Susceptibility" )
 
 namespace Kernel
 {
@@ -127,7 +127,7 @@ namespace Kernel
         return mod_acquire * getSusceptibilityCorrection();
     }
 
-    float Susceptibility::GetModTransmit()
+    float Susceptibility::getModTransmit()
     const
     { return mod_transmit; }
 
@@ -141,13 +141,13 @@ namespace Kernel
     const
     {
         float susceptibility_correction = 1;
-        if( GET_CONFIGURABLE(SimulationConfig)->susceptibility_scaling == SusceptibilityScaling::LINEAR_FUNCTION_OF_AGE &&
+        if( GET_CONFIGURABLE(SimulationConfig) && 
+            GET_CONFIGURABLE(SimulationConfig)->susceptibility_scaling == SusceptibilityScaling::LINEAR_FUNCTION_OF_AGE &&
             GET_CONFIGURABLE(SimulationConfig)->susceptibility_scaling_rate > 0.0f )
         {
             susceptibility_correction = GET_CONFIGURABLE(SimulationConfig)->susceptibility_scaling_intercept + age*GET_CONFIGURABLE(SimulationConfig)->susceptibility_scaling_rate/DAYSPERYEAR;
         }
         BOUND_RANGE(susceptibility_correction, 0.0f, 1.0f);
-        LOG_DEBUG_F( "%s returning %f\n", __FUNCTION__, susceptibility_correction );
         return susceptibility_correction;
     }
 
@@ -172,6 +172,21 @@ namespace Kernel
         {
             mod_mortality += (1.0f - mod_mortality) * SusceptibilityConfig::mortdecayrate * dt;
         }
+    }
+
+    void  Susceptibility::updateModAcquire(float updateVal)
+    {
+        mod_acquire *= updateVal;
+    }
+
+    void  Susceptibility::updateModTransmit(float updateVal)
+    {
+        mod_transmit *= updateVal;
+    }
+
+    void  Susceptibility::updateModMortality(float updateVal)
+    {
+        mod_mortality *= updateVal;
     }
 
     void Susceptibility::UpdateInfectionCleared()

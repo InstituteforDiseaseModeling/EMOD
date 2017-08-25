@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2015 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,6 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Properties.h"
 #include "PropertiesString.h"
+#include "BasePropertiesTemplates.h"
 #include "Log.h"
 #include "IdmString.h"
 #include "FileSystem.h"
@@ -20,16 +21,16 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Common.h"
 #include "RANDOM.h"
 
-static const char* _module = "Properties";
+SETUP_LOGGING( "Properties" )
 
 const char* IP_AGE_BIN_PROPERTY = "Age_Bin";
 const char* IP_AGE_BIN_VALUE_0  = "Age_Bin_Property_From_0";
 std::string IP_AGE_BIN_VALUE_PREFIX  = "Age_Bin_Property_From_";
 
 const char* IP_KEY                    = "IndividualProperties";
-const char* IP_NAME_KEY               = "Property";
-const char* IP_VALUES_KEY             = "Values";
-const char* IP_INIT_KEY               = "Initial_Distribution";
+extern const char* IP_NAME_KEY;    // = "Property";
+extern const char* IP_VALUES_KEY;  // = "Values";
+extern const char* IP_INIT_KEY;    // = "Initial_Distribution";
 const char* IP_AGE_BIN_EDGE_KEY       = "Age_Bin_Edges_In_Years";
 
 const char* IP_TRANS_KEY              = "Transitions"; // optional
@@ -54,134 +55,57 @@ const char* IP_TM_KEY                 = "TransmissionMatrix";
 const char* IP_TM_ROUTE_KEY               = "Route";
 const char* IP_TM_MATRIX_KEY              = "Matrix";
 
-#define KEY_VALUE_SEPARATOR_CHAR (':')
-#define KEY_VALUE_SEPARATOR (":")
-#define PROP_SEPARATOR (",")
-
-#ifdef OLD
-
-//const char* IP_KEY;
-//const char* IP_NAME_KEY;
-//const char* IP_VALUES_KEY;
-//const char* IP_INIT_KEY;
-//const char* IP_AGE_BIN_KEY;
-
-const char* IP_PROBABILITY_KEY = IP_TRANS_PROBABILITY_KEY;
-const char* IP_REVERSION_KEY   = IP_TRANS_REVERSION_KEY;
-const char* IP_AGE_KEY         = IP_TRANS_AGE_KEY;
-const char* IP_WHEN_KEY        = IP_TRANS_WHEN_KEY;
-
-const char* TRANSMISSION_MATRIX_KEY = IP_TM_KEY;
-const char* ROUTE_KEY               = IP_TM_ROUTE_KEY;
-const char* TRANSMISSION_DATA_KEY   = IP_TM_MATRIX_KEY;
-#endif //OLD
-
-
-std::string PropertiesToString( const tProperties& properties, 
-                                const char propValSeparator, 
-                                const char propSeparator )
-{
-    std::string propertyString;
-    for (const auto& entry : properties)
-    {
-        const std::string& key   = entry.first;
-        const std::string& value = entry.second;
-        propertyString += key + propValSeparator + value + propSeparator;
-    }
-
-    if( !propertyString.empty() )
-    {
-#ifdef WIN32
-        propertyString.pop_back();
-#else
-        propertyString.resize(propertyString.size() - 1);
-#endif
-    }
-
-    return propertyString;
-}
-
-std::string PropertiesToString( const tProperties& properties )
-{
-    return PropertiesToString( properties, ':', ',' );
-}
-
-std::string PropertiesToStringCsvFriendly( const tProperties& properties )
-{
-    return PropertiesToString( properties, '-', ';' );
-}
-
 namespace Kernel
 {
-template <typename T, std::size_t N>
-inline std::size_t sizeof_array( T (&)[N] ) { return N; }
-
-static const char* KEY_WHITE_LIST_TMP[] = { "Age_Bin", "Accessibility", "Geographic", "Place", "Risk", "QualityOfCare", "HasActiveTB"  };
-
-const char* IPFactory::transitions_dot_json_filename = "transitions.json";
-
-    // ------------------------------------------------------------------------
-    // --- IPKeyValueInternal
-    // ------------------------------------------------------------------------
-
-    class IPKeyValueInternal
-    {
-    public:
-        IPKeyValueInternal( IndividualProperty* pip, const std::string& rValue, uint32_t externalNodeId, const ProbabilityNumber& rInitialDist )
-            : m_pIP( pip )
-            , m_KeyValueString()
-            , m_Value( rValue )
-            , m_InitialDistributions()
-        {
-            m_KeyValueString = IPFactory::CreateKeyValueString( m_pIP->GetKeyAsString(), m_Value );
-            m_InitialDistributions[ externalNodeId ] = rInitialDist;
-        }
-
-    protected:
-        friend class IPKeyValue;
-        friend class IPFactory;
-
-        IndividualProperty* m_pIP;
-        std::string m_KeyValueString;
-        std::string m_Value;
-        std::map<uint32_t,float> m_InitialDistributions;
-    };
+    const char* IPFactory::transitions_dot_json_filename = "transitions.json";
 
     // ------------------------------------------------------------------------
     // --- IPKey
     // ------------------------------------------------------------------------
 
+    const char* IPKey::GetConstrainedStringConstraintKey()
+    {
+        return "<demographics>::*.Individual_Properties.*.Property";
+    }
+
+    const char* IPKey::GetConstrainedStringConstraintValue()
+    {
+        return "<demographics>::*.Individual_Properties.*.Values";
+    }
+
+    const char* IPKey::GetConstrainedStringConstraintKeyValue()
+    {
+        return "'<demographics>::*.Individual_Properties.*.Property':'<demographics>::*.Individual_Properties.*.Values'";
+    }
+
+    const char* IPKey::GetConstrainedStringDescriptionKey()
+    {
+        return "Individual Property Key from demographics file.";
+    }
+
+    const char* IPKey::GetConstrainedStringDescriptionValue()
+    {
+        return "Individual Property Value from demographics file.";
+    }
+
     IPKey::IPKey()
-        : m_pIP( nullptr )
-        , m_ParameterName()
+        : BaseKey()
     {
     }
 
-    IPKey::IPKey( IndividualProperty* pip )
-        : m_pIP( pip )
-        , m_ParameterName()
+    IPKey::IPKey( const BaseProperty* pip )
+        : BaseKey( pip )
     {
-        release_assert( m_pIP );
     }
 
     IPKey::IPKey( const std::string& rKeyStr )
-        : m_pIP( nullptr )
-        , m_ParameterName()
+        : BaseKey()
     {
         m_pIP = IPFactory::GetInstance()->GetIP( rKeyStr );
     }
 
     IPKey::~IPKey()
     {
-    }
-
-    const std::string& IPKey::ToString() const
-    {
-        if( m_pIP == nullptr )
-        {
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pIP" );
-        }
-        return m_pIP->GetKeyAsString();
     }
 
     IPKey& IPKey::operator=( const std::string& rKeyStr )
@@ -192,11 +116,7 @@ const char* IPFactory::transitions_dot_json_filename = "transitions.json";
 
     bool IPKey::operator==( const IPKey& rThat ) const
     {
-        // ------------------------------------------------------------
-        // --- Don't check the parameter name.  The user wants to know
-        // --- if this is the same key, not the same parameter.
-        // ------------------------------------------------------------
-        return ( this->m_pIP == rThat.m_pIP );
+        return BaseKey::operator==( rThat );
     }
 
     bool IPKey::operator!=( const IPKey& rThat ) const
@@ -204,19 +124,15 @@ const char* IPFactory::transitions_dot_json_filename = "transitions.json";
         return !operator==( rThat ); 
     }
 
-    bool IPKey::IsValid() const
+    static void key_assign_func( BaseKey* pkv, const std::string& rKeyStr )
     {
-        return (m_pIP != nullptr);
+        IPKey* p_key = static_cast<IPKey*>(pkv);
+        *p_key = rKeyStr;
     }
 
-    const std::string& IPKey::GetParameterName() const
+    void IPKey::serialize( IArchive& ar, IPKey& key )
     {
-        return m_ParameterName;
-    }
-
-    void IPKey::SetParameterName( const std::string& rParameterName )
-    {
-        m_ParameterName = rParameterName;
+        BaseKey::serialize( ar, key, key_assign_func );
     }
 
     // ------------------------------------------------------------------------
@@ -470,7 +386,7 @@ const char* IPFactory::transitions_dot_json_filename = "transitions.json";
         if( (m_Type == IP_TRANS_TYPE_VALUE_AGE) ||
             ((m_Type == IP_TRANS_TYPE_VALUE_TIMESTEP) && (m_Start == 0.0) &&
                                                          (rKey.ToString() == IP_AGE_BIN_PROPERTY) &&
-                                                         (to_value_str.find(IP_AGE_BIN_VALUE_0) !=  string::npos) ) )
+                                                         (to_value_str.find(IP_AGE_BIN_VALUE_0) !=  std::string::npos) ) )
         {
             JsonObjectDemog birth_intervention_config( JsonObjectDemog::JSON_OBJECT_OBJECT );
             birth_intervention_config.Parse( intervention_config.ToString().c_str() );
@@ -553,105 +469,48 @@ const char* IPFactory::transitions_dot_json_filename = "transitions.json";
     // ------------------------------------------------------------------------
     // --- IPKeyValue
     // ------------------------------------------------------------------------
+
     IPKeyValue::IPKeyValue()
-        : m_pInternal( nullptr )
-        , m_ParameterName()
+        : BaseKeyValue()
     {
     }
 
     IPKeyValue::IPKeyValue( const std::string& rKeyValueStr )
-        : m_pInternal( nullptr )
-        , m_ParameterName()
+        : BaseKeyValue()
     {
-        m_pInternal = IPFactory::GetInstance()->GetKeyValue( rKeyValueStr );
+        m_pInternal = IPFactory::GetInstance()->GetKeyValue<IPKeyValueContainer>( IP_KEY, rKeyValueStr );
     }
 
     IPKeyValue::IPKeyValue( const std::string& rKeyStr, const std::string& rValueStr )
-        : m_pInternal( nullptr )
-        , m_ParameterName()
+        : BaseKeyValue()
     {
         std::string kv_str = IPFactory::CreateKeyValueString( rKeyStr, rValueStr );
-        m_pInternal = IPFactory::GetInstance()->GetKeyValue( kv_str );
+        m_pInternal = IPFactory::GetInstance()->GetKeyValue<IPKeyValueContainer>( IP_KEY, kv_str );
     }
 
-    IPKeyValue::IPKeyValue( IPKeyValueInternal* pkvi )
-        : m_pInternal( pkvi )
-        , m_ParameterName()
+    IPKeyValue::IPKeyValue( KeyValueInternal* pkvi )
+        : BaseKeyValue( pkvi )
     {
-        release_assert( m_pInternal );
     }
 
     IPKeyValue::~IPKeyValue()
     {
-        // we don't own so don't delete
-        m_pInternal = nullptr;
-    }
-
-    bool IPKeyValue::IsValid() const
-    {
-        return (m_pInternal != nullptr);
-    }
-
-    const std::string& IPKeyValue::ToString() const
-    {
-        if( m_pInternal == nullptr )
-        {
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal" );
-        }
-        return m_pInternal->m_KeyValueString;
     }
 
     IPKeyValue& IPKeyValue::operator=( const std::string& rKeyValueStr )
     {
-        m_pInternal =IPFactory::GetInstance()->GetKeyValue( rKeyValueStr, m_ParameterName );
+        m_pInternal =IPFactory::GetInstance()->GetKeyValue<IPKeyValueContainer>( IP_KEY, rKeyValueStr, m_ParameterName );
         return *this;
     }
 
     bool IPKeyValue::operator==( const IPKeyValue& rThat ) const 
     {
-        // ------------------------------------------------------------
-        // --- Don't check the parameter name.  The user wants to know
-        // --- if this is the same key-value, not the same parameter.
-        // ------------------------------------------------------------
-        //if( this->m_ParameterName != rThat.m_ParameterName ) return false;
-
-        if( this->m_pInternal != rThat.m_pInternal ) return false;
-
-        return true;
+        return BaseKeyValue::operator==( rThat );
     }
 
     bool IPKeyValue::operator!=( const IPKeyValue& rThat ) const
     {
         return !operator==( rThat );
-    }
-
-    const std::string& IPKeyValue::GetParameterName() const
-    {
-        return m_ParameterName;
-    }
-
-    void IPKeyValue::SetParameterName( const std::string& rParameterName )
-    {
-        m_ParameterName = rParameterName;
-    }
-
-    IPKey IPKeyValue::GetKey() const
-    {
-        if( m_pInternal == nullptr )
-        {
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal" );
-        }
-        IPKey key( m_pInternal->m_pIP );
-        return key;
-    }
-
-    std::string IPKeyValue::GetValueAsString() const
-    {
-        if( m_pInternal == nullptr )
-        {
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal" );
-        }
-        return m_pInternal->m_Value;
     }
 
     double IPKeyValue::GetInitialDistribution( uint32_t externalNodeId ) const
@@ -660,81 +519,67 @@ const char* IPFactory::transitions_dot_json_filename = "transitions.json";
         {
             throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal" );
         }
-        return m_pInternal->m_InitialDistributions[ externalNodeId ];
+        return m_pInternal->GetInitialDistribution( externalNodeId );
     }
 
-    void IPKeyValue::UpdateInitialDistribution( uint32_t externalNodeId, double value )
+    static void key_value_assign_func( BaseKeyValue* pkva, const std::string& rKvStr )
     {
-        if( m_pInternal == nullptr )
-        {
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal" );
-        }
-        m_pInternal->m_InitialDistributions[ externalNodeId ] = value;
+        IPKeyValue* p_kv = static_cast<IPKeyValue*>(pkva);
+        *p_kv = rKvStr;
+    }
+
+    void IPKeyValue::serialize( IArchive& ar, IPKeyValue& kv )
+    {
+        BaseKeyValue::serialize( ar, kv, key_value_assign_func );
     }
 
     // ------------------------------------------------------------------------
-    // --- IPKeyValueContainer::Iterator
+    // --- IPKeyValueIterator
     // ------------------------------------------------------------------------
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // !!! Ideally, we would just use the map for the container, but to keep from changing the results,
-    // !!! we also use a vector to maintain the order of the values like in the old version.
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // See BasePropertiesTempaltes.h for template classes/methods
 
-    //IPKeyValueContainer::Iterator::Iterator( std::map<std::string,IPKeyValue>::const_iterator it )
-    //    : m_Iterator( it )
-    //{
-    //}
-
-    IPKeyValueContainer::Iterator::Iterator( std::vector<IPKeyValue>::const_iterator it )
-        : m_Iterator( it )
+    IPKeyValueIterator::IPKeyValueIterator( std::vector<KeyValueInternal*>::const_iterator it )
+        : BaseIterator<IPKeyValue>( it )
     {
     }
 
-    IPKeyValueContainer::Iterator::~Iterator()
+    IPKeyValueIterator::~IPKeyValueIterator()
     {
     }
 
-    bool IPKeyValueContainer::Iterator::operator==( const IPKeyValueContainer::Iterator& rThat ) const
+    bool IPKeyValueIterator::operator==( const IPKeyValueIterator& rThat ) const
     {
-        return (this->m_Iterator == rThat.m_Iterator);
+        return BaseIterator<IPKeyValue>::operator==( rThat );
     }
 
-    bool IPKeyValueContainer::Iterator::operator!=( const IPKeyValueContainer::Iterator& rThat ) const
+    bool IPKeyValueIterator::operator!=( const IPKeyValueIterator& rThat ) const
     {
         return !operator==( rThat );
     }
 
-    IPKeyValueContainer::Iterator& IPKeyValueContainer::Iterator::operator++()
+    IPKeyValueIterator& IPKeyValueIterator::operator++()
     {
-        m_Iterator++;
+        BaseIterator<IPKeyValue>::operator++();
         return *this;
-    }
-
-    IPKeyValue IPKeyValueContainer::Iterator::operator*()
-    {
-        //return m_Iterator->second;
-        return *m_Iterator;
     }
 
     // ------------------------------------------------------------------------
     // --- IPKeyValueContainer
     // ------------------------------------------------------------------------
-
-    IPKeyValueContainer::Iterator IPKeyValueContainer::begin() const
-    {
-        //return Iterator( m_Map.begin() ); // !!! See comment for interator
-        return Iterator( m_Vector.begin() );
-    }
-
-    IPKeyValueContainer::Iterator IPKeyValueContainer::end() const 
-    {
-        //return Iterator( m_Map.end() ); // !!! See comment for interator
-        return Iterator( m_Vector.end() );
-    }
+    // See BasePropertiesTempaltes.h for template classes/methods
 
     IPKeyValueContainer::IPKeyValueContainer()
-        : m_Map()
-        , m_Vector()
+        : BaseKeyValueContainer<IPKey,IPKeyValue, IPKeyValueIterator>()
+    {
+    }
+
+    IPKeyValueContainer::IPKeyValueContainer( const std::vector<KeyValueInternal*>& rInternalList )
+        : BaseKeyValueContainer<IPKey, IPKeyValue, IPKeyValueIterator>( rInternalList )
+    {
+    }
+
+    IPKeyValueContainer::IPKeyValueContainer( const IPKeyValueContainer& rThat )
+        : BaseKeyValueContainer<IPKey, IPKeyValue, IPKeyValueIterator>( rThat )
     {
     }
 
@@ -742,18 +587,15 @@ const char* IPFactory::transitions_dot_json_filename = "transitions.json";
     {
     }
 
+    IPKeyValueContainer& IPKeyValueContainer::operator=( const IPKeyValueContainer& rThat )
+    {
+        BaseKeyValueContainer<IPKey, IPKeyValue, IPKeyValueIterator>::operator=( rThat );
+        return *this;
+    }
+
     bool IPKeyValueContainer::operator==( const IPKeyValueContainer& rThat ) const
     {
-        if( this->m_Map.size() != rThat.m_Map.size() ) return false;
-
-        for( auto entry : this->m_Map )
-        {
-            IPKeyValue this_kv = this->m_Map.at( entry.first );
-            IPKeyValue that_kv = rThat.m_Map.at( entry.first );
-
-            if( this_kv != that_kv ) return false;
-        }
-        return true;
+        return BaseKeyValueContainer<IPKey, IPKeyValue, IPKeyValueIterator>::operator==( rThat );
     }
 
     bool IPKeyValueContainer::operator!=( const IPKeyValueContainer& rThat ) const
@@ -763,159 +605,33 @@ const char* IPFactory::transitions_dot_json_filename = "transitions.json";
 
     void IPKeyValueContainer::Add( const IPKeyValue& rKeyValue )
     {
-        m_Map[ rKeyValue.ToString() ] = rKeyValue;
-        m_Vector.push_back( rKeyValue );
-        release_assert( m_Map.size() == m_Vector.size() );
+        BaseKeyValueContainer<IPKey, IPKeyValue, IPKeyValueIterator>::Add( rKeyValue.m_pInternal );
     }
 
     void IPKeyValueContainer::Remove( const IPKeyValue& rKeyValue )
     {
-        m_Map.erase( rKeyValue.ToString() );
-
-        for( auto it = m_Vector.begin() ; it != m_Vector.end() ; ++it )
-        {
-            if( rKeyValue == *it )
-            {
-                m_Vector.erase( it );
-                break;
-            }
-        }
-        release_assert( m_Map.size() == m_Vector.size() );
-    }
-
-    IPKeyValue IPKeyValueContainer::Get( const IPKey& rKey ) const
-    {
-        IPKeyValue kv;
-        bool found = false;
-        for( auto entry : m_Map )
-        {
-            if( entry.second.GetKey() == rKey )
-            {
-                if( found )
-                {
-                    std::ostringstream ss;
-                    ss << "Illegal use of IPKeyValueContainer::Get( const IPKey& rKey ).  Should not be used on containers that have multiple values for one key.";
-                    throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
-                }
-                else
-                {
-                    kv = entry.second;
-                    found = true;
-                }
-            }
-        }
-        return kv;
+        BaseKeyValueContainer<IPKey, IPKeyValue, IPKeyValueIterator>::Remove( rKeyValue.m_pInternal );
     }
 
     void IPKeyValueContainer::Set( const IPKeyValue& rNewKeyValue )
     {
-        bool found = false;
-        for( auto& rEntry : m_Map )
+        BaseKeyValueContainer<IPKey, IPKeyValue, IPKeyValueIterator>::Set( rNewKeyValue.m_pInternal );
+    }
+
+    tProperties IPKeyValueContainer::GetOldVersion() const
+    {
+        tProperties old_map;
+        for( auto p_kvi : m_Vector )
         {
-            if( rEntry.second.GetKey() == rNewKeyValue.GetKey() )
-            {
-                if( found )
-                {
-                    std::ostringstream ss;
-                    ss << "Illegal use of IPKeyValueContainer::Set( const IPKeyValue& rKeyValue ).  Should not be used on containers that have multiple values for one key.";
-                    throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
-                }
-                else
-                {
-                    rEntry.second = rNewKeyValue;
-                    found = true;
-                }
-            }
+            old_map.emplace( p_kvi->GetProperty()->GetKeyAsString(), p_kvi->GetValueAsString() );
         }
-        for( IPKeyValue& r_kv : m_Vector )
-        {
-            if( r_kv.GetKey() == rNewKeyValue.GetKey() )
-            {
-                r_kv = rNewKeyValue;
-                break;
-            }
-        }
+        return old_map;
     }
 
-    IPKeyValue IPKeyValueContainer::Get( const std::string& rKeyValueString ) const
+    IPKeyValue IPKeyValueContainer::FindFirst( const IPKeyValueContainer& rContainer ) const
     {
-        return m_Map.at( rKeyValueString );
+        return IPKeyValue( BaseKeyValueContainer::FindFirst( rContainer ) );
     }
-
-    bool IPKeyValueContainer::Contains( const std::string& rKeyValueString ) const
-    {
-        return (m_Map.count( rKeyValueString ) > 0);
-    }
-
-    bool IPKeyValueContainer::Contains( const IPKeyValue& rKeyValue ) const
-    {
-        return (m_Map.count( rKeyValue.ToString() ) > 0);
-    }
-
-    bool IPKeyValueContainer::Contains( const IPKey& rKey ) const
-    {
-        for( auto entry : m_Map )
-        {
-            if( rKey == entry.second.GetKey() )
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    std::string IPKeyValueContainer::GetValuesToString() const
-    {
-        std::stringstream ss;
-        for( auto kv : *this )
-        {
-            ss << kv.GetValueAsString() << ", ";
-        }
-        std::string ret_str = ss.str();
-        ret_str = ret_str.substr(0, ret_str.length()-2 );
-        return ret_str;
-    }
-
-    std::set<std::string> IPKeyValueContainer::GetValuesToStringSet() const
-    {
-        std::set<std::string> str_set;
-        for( auto kv : *this )
-        {
-            str_set.insert( kv.GetValueAsString() );
-        }
-        return str_set;
-    }
-
-    std::list<std::string> IPKeyValueContainer::GetValuesToList() const
-    {
-        std::list<std::string> list;
-        for( auto kv : *this )
-        {
-            list.push_back( kv.GetValueAsString() );
-        }
-        return list;
-    }
-
-    std::string IPKeyValueContainer::ToString() const
-    {
-        std::string ret_str;
-        for( auto kv : *this )
-        {
-            ret_str += kv.ToString() + std::string(PROP_SEPARATOR);
-        }
-        if( !ret_str.empty() )
-        {
-            ret_str = ret_str.substr(0, ret_str.length()-1 );
-        }
-        return ret_str;
-    }
-
-    void IPKeyValueContainer::Clear()
-    {
-        m_Map.clear();
-        m_Vector.clear();
-    }
-
 
     // ------------------------------------------------------------------------
     // --- IPIntraNodeTransmissions
@@ -926,6 +642,7 @@ const char* IPFactory::transitions_dot_json_filename = "transitions.json";
         , m_Matrix()
     {
     }
+
     IPIntraNodeTransmissions::~IPIntraNodeTransmissions()
     {
     }
@@ -1001,25 +718,25 @@ const char* IPFactory::transitions_dot_json_filename = "transitions.json";
     // ------------------------------------------------------------------------
 
     IndividualProperty::IndividualProperty()
-        : m_Key()
-        , m_Values()
+        : BaseProperty()
         , m_Transitions()
         , m_IntraNodeTransmissionsMap()
     {
     }
 
     IndividualProperty::IndividualProperty( uint32_t externalNodeId, const std::string& rKeyStr, const std::map<std::string,float>& rValues )
-        : m_Key(rKeyStr)
-        , m_Values()
+        : BaseProperty()
         , m_Transitions()
+        , m_IntraNodeTransmissionsMap()
     {
+        m_Key = rKeyStr;
+
         float total_prob = 0.0;
         for( auto entry : rValues )
         {
-            IPKeyValueInternal* pkvi = new IPKeyValueInternal( this, entry.first, externalNodeId, entry.second );
+            KeyValueInternal* pkvi = new KeyValueInternal( this, entry.first, externalNodeId, entry.second );
             IPFactory::GetInstance()->AddKeyValue( pkvi );
-            IPKeyValue kv( pkvi );
-            m_Values.Add( kv );
+            m_Values.push_back( pkvi );
             total_prob += entry.second;
         }
         if( (total_prob < 0.99999) || (1.000001 < total_prob) )
@@ -1054,122 +771,42 @@ const char* IPFactory::transitions_dot_json_filename = "transitions.json";
 
     void IndividualProperty::Read( int idx, uint32_t externalNodeId, const JsonObjectDemog& rDemog, bool isNotFirstNode )
     {
-        if( isNotFirstNode )
-        {
-            release_assert( m_Key == rDemog[ IP_NAME_KEY ].AsString() );
-        }
-        else
-        {
-            m_Key = rDemog[ IP_NAME_KEY ].AsString();
-        }
+        BaseProperty::Read( idx, externalNodeId, rDemog, isNotFirstNode );
 
         if( m_Key == IP_AGE_BIN_PROPERTY )
         {
             ReadPropertyAgeBin( idx, externalNodeId, rDemog, isNotFirstNode );
         }
-        else
-        {
-            ReadProperty( idx, externalNodeId, rDemog, isNotFirstNode );
-        }
+
         IPIntraNodeTransmissions* p_transmission = new IPIntraNodeTransmissions();
-        p_transmission->Read( m_Key, rDemog, m_Values.Size() );
+        p_transmission->Read( m_Key, rDemog, m_Values.size() );
         m_IntraNodeTransmissionsMap[ externalNodeId ] = p_transmission;
+    }
+
+    KeyValueInternal* IndividualProperty::get_kvi_func( BaseFactory* pFact, const char* ip_key_str, const std::string& rKvStr )
+    {
+        IPFactory* p_ip_fact = static_cast<IPFactory*>(pFact);
+        KeyValueInternal* p_kvi = p_ip_fact->GetKeyValue<IPKeyValueContainer>( ip_key_str, rKvStr );
+        return p_kvi;
     }
 
     void IndividualProperty::ReadProperty( int idx, uint32_t externalNodeId, const JsonObjectDemog& rDemog, bool isNotFirstNode )
     {
-        if( !rDemog.Contains( IP_VALUES_KEY ) )
-        {
-            std::ostringstream badMap;
-            badMap << "demographics[" << IP_KEY << "][" << idx << "]";
-            throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, badMap.str().c_str(), IP_VALUES_KEY );
-        }
-        if( !rDemog.Contains( IP_INIT_KEY ) )
-        {
-            std::ostringstream badMap;
-            badMap << "demographics[" << IP_KEY << "][" << idx << "]";
-            throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, badMap.str().c_str(), IP_INIT_KEY );
-        }
-
-        auto num_values = rDemog[IP_VALUES_KEY].size();
-        auto num_probs  = rDemog[IP_INIT_KEY  ].size();
-
-        if( num_values != num_probs )
-        {
-            std::ostringstream msg;
-            msg << "Number of Values in " << IP_VALUES_KEY << " ("
-                << num_values
-                << ") needs to be the same as number of values in "
-                << IP_INIT_KEY
-                << " ("
-                << num_probs
-                << ")."
-                << std::endl;
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-        }
-        else if( num_values == 0 )
-        {
-            std::ostringstream msg;
-            msg << "demographics[" << IP_KEY << "][" << idx << "][" << IP_VALUES_KEY << "] (property=" << m_Key << ") cannot have zero values.";
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-        }
-        else if( isNotFirstNode && (num_values != m_Values.Size()) )
-        {
-            std::stringstream ss;
-            ss << "demographics[" << IP_KEY << "][" << idx << "][" << IP_VALUES_KEY << "] for key=" << m_Key << " and nodeId=" << externalNodeId << " has " << num_values << " values.\n";
-            ss << "The previous node(s) had " << m_Values.Size() << " values.  All nodes must have the same keys and values.";
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
-        }
-
-        IPFactory::GetInstance()->CheckIpKeyInWhitelist( m_Key, num_values );
-
-        float total_prob = 0.0;
-        for( int val_idx = 0; val_idx < num_values; val_idx++ )
-        {
-            std::string       value        = rDemog[IP_VALUES_KEY][val_idx].AsString();
-            ProbabilityNumber initial_dist = rDemog[IP_INIT_KEY  ][val_idx].AsDouble();
-            std::string kv_str = IPFactory::CreateKeyValueString( m_Key, value );
-            bool contains_kv = m_Values.Contains( kv_str );
-            if( isNotFirstNode )
-            {
-                if( !contains_kv )
-                {
-                    std::ostringstream ss;
-                    ss << "demographics[" << IP_KEY << "][" << idx << "] with property=" << m_Key << " for NodeId=" << externalNodeId << " has value=" << value << ".\n";
-                    ss << "Previous node(s) do not have this value.  All nodes must have the same keys and values.";
-                    throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
-                }
-                IPKeyValue kv = m_Values.Get( kv_str );
-                kv.UpdateInitialDistribution( externalNodeId, initial_dist );
-            }
-            else
-            {
-                if( contains_kv )
-                {
-                    std::ostringstream ss;
-                    ss << "demographics[" << IP_KEY << "][" << idx << "] with property=" << m_Key << " has a duplicate value = " << value ;
-                    throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
-                }
-                IPKeyValueInternal* pkvi = new IPKeyValueInternal( this, value, externalNodeId, initial_dist );
-                IPFactory::GetInstance()->AddKeyValue( pkvi );
-                IPKeyValue kv( pkvi );
-                m_Values.Add( kv );
-            }
-            total_prob += initial_dist;
-        }
-
-        if( (total_prob < 0.99999) || (1.000001 < total_prob) )
-        {
-            std::ostringstream ss;
-            ss << "The values in demographics[" << IP_KEY << "][" << idx << "][" << IP_INIT_KEY << "] (property=" << m_Key << ") add up to " << total_prob << ".  They must add up to 1.0" ;
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
-        }
+        BaseProperty::ReadProperty( IP_KEY,
+                                        IP_VALUES_KEY,
+                                        IP_INIT_KEY,
+                                        IPFactory::GetInstance(),
+                                        idx,
+                                        externalNodeId,
+                                        rDemog,
+                                        isNotFirstNode,
+                                        IndividualProperty::get_kvi_func );
 
         if( !isNotFirstNode )
         {
             if( rDemog.Contains( IP_TRANS_KEY ) )
             {
-                for( int itran = 0 ; itran < rDemog[ IP_TRANS_KEY ].size() ; itran++ )
+                for( int itran = 0; itran < rDemog[ IP_TRANS_KEY ].size(); itran++ )
                 {
                     IPTransition* p_tran = new IPTransition();
                     p_tran->Read( idx, itran, rDemog[ IP_TRANS_KEY ][ itran ], m_Key );
@@ -1251,7 +888,7 @@ const char* IPFactory::transitions_dot_json_filename = "transitions.json";
             // ---------------
             // --- Add value
             // ---------------
-            bool contains_kv = m_Values.Contains( IPFactory::CreateKeyValueString( m_Key, value ) );
+            bool contains_kv = Contains( m_Values, m_Key, value );
             if( isNotFirstNode )
             {
                 if( !contains_kv )
@@ -1271,16 +908,15 @@ const char* IPFactory::transitions_dot_json_filename = "transitions.json";
                     ss << ": Duplicate Value found: " << value;
                     throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
                 }
-                IPKeyValueInternal* pkvi = new IPKeyValueInternal( this, value, externalNodeId, 0.0 );
+                KeyValueInternal* pkvi = new KeyValueInternal( this, value, externalNodeId, 0.0 );
                 IPFactory::GetInstance()->AddKeyValue( pkvi );
-                IPKeyValue kv( pkvi );
-                m_Values.Add( kv );
+                m_Values.push_back( pkvi );
             }
         }
 
         if( !isNotFirstNode )
         {
-            IPFactory::GetInstance()->CheckIpKeyInWhitelist( m_Key, m_Values.Size() );
+            IPFactory::GetInstance()->CheckIpKeyInWhitelist( IP_KEY, m_Key, m_Values.size() );
 
             if( rDemog.Contains( IP_TRANS_KEY ) && (rDemog[ IP_TRANS_KEY ].size() > 0) )
             {
@@ -1325,40 +961,12 @@ const char* IPFactory::transitions_dot_json_filename = "transitions.json";
         }
     }
 
-    IPKey IndividualProperty::GetKey() const
-    {
-        return IPKey(m_Key);
-    }
-
-    const IPKeyValueContainer& IndividualProperty::GetValues() const
-    {
-        return m_Values;
-    }
-
-    IPKeyValue IndividualProperty::GetInitialValue( uint32_t externalNodeId, RANDOMBASE* pRNG )
-    {
-        float ran = pRNG->e();
-        float prob = 0.0;
-
-        for( auto kv : m_Values )
-        {
-            prob += kv.GetInitialDistribution( externalNodeId );
-            if( prob >= ran )
-            {
-                return kv;
-            }
-        }
-        std::ostringstream msg;
-        msg << "Was not able to select an initial value for IP = " << m_Key;
-        throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-    }
-
     std::vector<JsonObjectDemog> IndividualProperty::ConvertTransitions()
     {
         std::vector<JsonObjectDemog> main_list ;
         for( auto p_tran : m_Transitions )
         {
-            std::vector<JsonObjectDemog> list = p_tran->ConvertToCampaignEvent( GetKey() );
+            std::vector<JsonObjectDemog> list = p_tran->ConvertToCampaignEvent( GetKey<IPKey>() );
             for( auto jod : list )
             {
                 main_list.push_back( jod );
@@ -1372,57 +980,22 @@ const char* IPFactory::transitions_dot_json_filename = "transitions.json";
         return *m_IntraNodeTransmissionsMap.at( externalNodeId );
     }
 
-    bool IndividualProperty::Compare( IndividualProperty* pLeft, IndividualProperty* pRight )
-    {
-        return (pLeft->GetKeyAsString() < pRight->GetKeyAsString());
-    }
-
     // ------------------------------------------------------------------------
-    // --- IPFactor
+    // --- IPFactory
     // ------------------------------------------------------------------------
 
     IPFactory::IPFactory()
-        : m_ExternalNodeIdOfFirst( UINT32_MAX )
-        , m_WhiteListEnabled( true )
-        , m_IPList()
-        , m_KeyValueMap()
-        , m_KeyWhiteList()
+        : BaseFactory()
     {
-        m_KeyWhiteList = std::set< std::string> ( KEY_WHITE_LIST_TMP, KEY_WHITE_LIST_TMP+sizeof_array(KEY_WHITE_LIST_TMP) );
     }
 
     IPFactory::~IPFactory()
     {
-        for( auto pip : m_IPList )
-        {
-            delete pip;
-        }
-        m_IPList.clear();
-
-        for( auto entry : m_KeyValueMap )
-        {
-            delete entry.second;
-        }
-        m_KeyValueMap.clear();
-    }
-
-    std::string IPFactory::CreateKeyValueString( const std::string& rKeyStr, const std::string& rValueStr )
-    {
-        return rKeyStr + std::string(KEY_VALUE_SEPARATOR) + rValueStr;
     }
 
     void IPFactory::ParseKeyValueString( const std::string& rKeyValueStr, std::string& rKeyStr, std::string& rValueStr )
     {
-        IdmString kv_str = rKeyValueStr;
-        auto fragments = kv_str.split(KEY_VALUE_SEPARATOR_CHAR);
-        if( (fragments.size() != 2) || fragments[0].empty() || fragments[1].empty() )
-        {
-            std::ostringstream msg;
-            msg << "Invalid Individual Property Key-Value string = '" << rKeyValueStr << "'.  Format is 'key:value'.";
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-        }
-        rKeyStr   = fragments[0];
-        rValueStr = fragments[1];
+        BaseFactory::ParseKeyValueString( IP_KEY, rKeyValueStr, rKeyStr, rValueStr );
     }
 
     void IPFactory::CreateFactory()
@@ -1453,85 +1026,23 @@ const char* IPFactory::transitions_dot_json_filename = "transitions.json";
 
     void IPFactory::Initialize( uint32_t externalNodeId, const JsonObjectDemog& rDemog, bool isWhitelistEnabled )
     {
-        m_WhiteListEnabled = isWhitelistEnabled;
-
-        if( externalNodeId == UINT32_MAX )
+       read_function_t read_fn =
+            []( int idx, uint32_t externalNodeId, const JsonObjectDemog& rDemog, bool isNotFirstNode )
         {
-            std::stringstream ss;
-            ss << "You are not allowed to use an external Node ID of " << UINT32_MAX << ".";
-            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
-        }
+           IndividualProperty* p_ip = new IndividualProperty();
+           p_ip->Read( idx, externalNodeId, rDemog, isNotFirstNode );
+           return p_ip;
+       };
 
-        if( m_ExternalNodeIdOfFirst == UINT32_MAX )
-        {
-            m_ExternalNodeIdOfFirst = externalNodeId;
-        }
-
-        if( !rDemog.Contains( IP_KEY ) )
-        {
-            return;
-        }
-
-        LOG_INFO_F( "%d Individual_Properties found in demographics for NodeId=%d\n", rDemog[IP_KEY].size(), externalNodeId );
-
-        // Check that we're not using more than 2 axes in whitelist mode
-        if( rDemog[IP_KEY].size() > 2 && isWhitelistEnabled )
-        {
-            std::ostringstream msg;
-            msg << "Too many Individual Properties (" 
-                << rDemog[IP_KEY].size()
-                << "). Max is 2."
-                << std::endl;
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-        }
-
-        if( m_ExternalNodeIdOfFirst == externalNodeId )
-        {
-            for( int idx = 0; idx < rDemog[IP_KEY].size(); idx++ )
-            {
-                IndividualProperty* p_ip = new IndividualProperty();
-                p_ip->Read( idx, externalNodeId, rDemog[IP_KEY][idx], false );
-                m_IPList.push_back( p_ip );
-            }
-
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // !!! Needed only to stay in sync with previous version
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            std::sort( m_IPList.begin(), m_IPList.end(), IndividualProperty::Compare );
-        }
-        else
-        {
-            if( rDemog[IP_KEY].size() != m_IPList.size() )
-            {
-                std::stringstream ss;
-                ss << "Individual Properties were first intialized for nodeId=" << m_ExternalNodeIdOfFirst << " and it had " << m_IPList.size() << " propertie(s).\n";
-                ss << "nodeID=" << externalNodeId << " has " << rDemog[IP_KEY].size() << " propertie(s).  All nodes must have the same keys and values.";
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
-            }
-            for( int idx = 0; idx < rDemog[IP_KEY].size(); idx++ )
-            {
-                IndividualProperty* p_ip = GetIP( rDemog[ IP_KEY ][ idx ][ IP_NAME_KEY ].AsString(), "", false );
-                if( p_ip == nullptr )
-                {
-                    std::stringstream ss;
-                    ss << "Individual Properties were first initialized for node " << m_ExternalNodeIdOfFirst << ".\n";
-                    ss << "nodeID=" << externalNodeId << " has '" << rDemog[IP_KEY][idx][IP_NAME_KEY].AsString() << "' which is not in the first node.\n";
-                    ss << "All nodes must have the same keys and values (and in the same order).";
-                    throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
-                }
-                else
-                {
-                    p_ip->Read( idx, externalNodeId, rDemog[ IP_KEY ][ idx ], true );
-                }
-            }
-        }
+        BaseFactory::Initialize( IP_KEY, IP_NAME_KEY, read_fn, externalNodeId, rDemog, isWhitelistEnabled );
     }
 
     void IPFactory::WriteTransitionsFile()
     {
         JsonObjectDemog event_array(JsonObjectDemog::JSON_OBJECT_ARRAY );
-        for( auto p_ip : m_IPList )
+        for( auto p_pa : m_IPList )
         {
+            IndividualProperty* p_ip = static_cast<IndividualProperty*>(p_pa);
             std::vector<JsonObjectDemog> list = p_ip->ConvertTransitions();
             for( auto jod : list )
             {
@@ -1547,159 +1058,51 @@ const char* IPFactory::transitions_dot_json_filename = "transitions.json";
         out.WriteToFile( fn.c_str() );
     }
 
-    void IPFactory::CheckIpKeyInWhitelist( const std::string& rKey, int numValues )
+    BaseProperty* IPFactory::construct_ip( uint32_t externalNodeId,
+                                               const std::string& rKeyStr,
+                                               const std::map<std::string, float>& rValues )
     {
-        if( m_WhiteListEnabled )
-        {
-            if( m_KeyWhiteList.count( rKey ) == 0 )
-            {
-                std::ostringstream msg;
-                msg << "Invalid Individual Property key '" << rKey << "' found in demographics file. Use one of: ";
-                for (auto& key : m_KeyWhiteList)
-                {
-                    msg << "'" << key<< "', " ;
-                }
-                std::string msg_str = msg.str();
-                msg_str = msg_str.substr( 0, msg_str.length()-2 );
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-            }
-
-            if (((numValues > 5) && (rKey != "Geographic")) || (numValues > 125))
-            {
-                std::ostringstream msg;
-                msg << "Too many values for Individual Property key " << rKey << ".  This key has " << numValues << " and the limit is 5, except for Geographic, which is 125." << std::endl;
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-            }
-        }
+        return new IndividualProperty( externalNodeId, rKeyStr, rValues );
     }
 
     void IPFactory::AddIP( uint32_t externalNodeId, const std::string& rKeyStr, const std::map<std::string,float>& rValues )
     {
-        bool found = false;
-        std::string known_keys;
-        for( auto p_ip : m_IPList )
-        {
-            known_keys += p_ip->GetKeyAsString() + ", ";
-            if( p_ip->GetKeyAsString() == rKeyStr )
-            {
-                found = true;
-            }
-        }
-        if( found )
-        {
-            known_keys = known_keys.substr(0, known_keys.length()-2 );
-            std::ostringstream msg;
-            msg << "Found existing IndividualProperty key = '" << rKeyStr << "'.  Can't create duplicate key.  ";
-            msg << "Known keys are: " << known_keys;
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-        }
+        BaseFactory::AddIP( externalNodeId, rKeyStr, rValues, IPFactory::construct_ip );
+    }
 
-        IndividualProperty* p_ip = new IndividualProperty( externalNodeId, rKeyStr, rValues );
-        m_IPList.push_back( p_ip );
+    std::vector<IndividualProperty*> IPFactory::GetIPList() const
+    {
+        std::vector<IndividualProperty*> ret_list;
+        for( auto p_pa : m_IPList )
+        {
+            ret_list.push_back( static_cast<IndividualProperty*>(p_pa) );
+        }
+        return ret_list;
+    }
+
+    bool IPFactory::HasIPs() const
+    {
+        return (m_IPList.size() > 0);
     }
 
     IndividualProperty* IPFactory::GetIP( const std::string& rKey, const std::string& rParameterName, bool throwOnNotFound )
     {
-        for( auto p_ip : m_IPList )
-        {
-            if( p_ip->GetKeyAsString() == rKey )
-            {
-                return p_ip;
-            }
-        }
-        if( throwOnNotFound )
-        {
-            std::ostringstream msg;
-            msg << "Could not find the IndividualProperty key = '" << rKey;
-            if( !rParameterName.empty() )
-            {
-                msg << "' for parameter '" << rParameterName;
-            }
-            msg << "'.  ";
-            msg << "Known keys are: " << GetKeysAsString();
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-        }
-        return nullptr;
-    }
-
-    std::vector<std::string> IPFactory::GetAllPossibleKeyValueCombinations() const
-    {
-        std::vector<std::string> possible_list;
-        if( m_IPList.size() > 0 )
-        {
-            IPKeyValueContainer container = m_IPList[0]->GetValues();
-            for( auto kv : container )
-            {
-                std::string kv_str = kv.ToString();
-                possible_list.push_back( kv_str );
-            }
-        }
-        for( int i = 1 ; i < m_IPList.size() ; i++ )
-        {
-            std::vector<std::string> new_list;
-            IPKeyValueContainer container = m_IPList[i]->GetValues();
-            for( auto kv : container )
-            {
-                std::string kv_str = kv.ToString();
-                for( auto pv : possible_list )
-                {
-                    std::string new_value = pv + std::string(PROP_SEPARATOR) + kv_str;
-                    new_list.push_back( new_value );
-                }
-            }
-            possible_list = new_list;
-        }
-        return possible_list;
-    }
-
-    void IPFactory::AddKeyValue( IPKeyValueInternal* pkvi )
-    {
-        if( m_KeyValueMap.count( pkvi->m_KeyValueString ) != 0 )
-        {
-            std::ostringstream msg;
-            msg << "The IndividualProperty key-value = " << pkvi->m_KeyValueString << " already exists.  ";
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-        }
-        m_KeyValueMap[ pkvi->m_KeyValueString ] = pkvi;
-    }
-
-    IPKeyValueInternal* IPFactory::GetKeyValue( const std::string& rKeyValueString, const std::string& rParameterName )
-    {
-        if( m_KeyValueMap.count( rKeyValueString ) == 0 )
-        {
-            std::string keyStr, valueStr;
-            IPFactory::ParseKeyValueString( rKeyValueString, keyStr, valueStr );
-            IndividualProperty* pip = IPFactory::GetInstance()->GetIP( keyStr, rParameterName, false );
-            std::ostringstream msg;
-            if( !rParameterName.empty() )
-            {
-                msg << "Parameter '" << rParameterName << "' is invalid.  ";
-            }
-            if( pip == nullptr )
-            {
-                std::string keys = IPFactory::GetKeysAsString();
-                msg << "Could not find the key("<< keyStr << ") for the key-value=" << rKeyValueString << ".  Possible keys are: " << keys;
-            }
-            else
-            {
-                std::string values = pip->GetValues().GetValuesToString();
-                msg << "Could not find the value(" << valueStr << ") for the key(" << keyStr << ").  Possible values for the key are: " << values;
-            }
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-        }
-
-        return m_KeyValueMap.at( rKeyValueString );
+        BaseProperty* p_pa = BaseFactory::GetIP( rKey, rParameterName, throwOnNotFound );
+        IndividualProperty* p_ip = static_cast<IndividualProperty*>(p_pa);
+        return p_ip;
     }
 
     IPKeyValueContainer IPFactory::GetInitialValues( uint32_t externalNodeId, RANDOMBASE* pRNG ) const
     {
         IPKeyValueContainer properties;
 
-        for( auto pIP : m_IPList )
+        for( auto p_pa : m_IPList )
         {
-            if( pIP->GetKeyAsString() != IP_AGE_BIN_PROPERTY )
+            IndividualProperty* p_ip = static_cast<IndividualProperty*>(p_pa);
+            if( p_ip->GetKeyAsString() != IP_AGE_BIN_PROPERTY )
             {
-                IPKeyValue init_val = pIP->GetInitialValue( externalNodeId, pRNG );
+                IndividualProperty* p_ip = static_cast<IndividualProperty*>(p_pa);
+                IPKeyValue init_val = p_ip->GetInitialValue<IPKeyValue>( externalNodeId, pRNG );
                 properties.Add( init_val );
             }
             else
@@ -1711,27 +1114,16 @@ const char* IPFactory::transitions_dot_json_filename = "transitions.json";
         return properties;
     }
 
-    std::set< std::string > IPFactory::GetKeysAsStringSet() const
-    {
-        std::set<std::string> keys;
-        for( auto pIP : m_IPList )
-        {
-            keys.insert( pIP->GetKey().ToString() );
-        }
-        return keys;
-    }
+    // -------------------------------------------------------------------------------
+    // --- This defines the implementations for these templetes with these parameters.
+    // --- If you comment these out, you will get unresolved externals when linking.
+    // -------------------------------------------------------------------------------
+    template IDMAPI IPKey BaseKeyValue::GetKey<IPKey>() const;
+    template IDMAPI IPKey BaseProperty::GetKey<IPKey>() const;
+    template IDMAPI IPKeyValueContainer BaseProperty::GetValues<IPKeyValueContainer>() const;
+    template IDMAPI std::vector<std::string> BaseFactory::GetAllPossibleKeyValueCombinations<IPKeyValueContainer>() const;
+    template IDMAPI KeyValueInternal* BaseFactory::GetKeyValue<IPKeyValueContainer>( const char* ip_key_str, const std::string& rKeyValueString, const std::string& rParameterName );
+    template IDMAPI class BaseIterator<IPKeyValue>;
+    template IDMAPI class BaseKeyValueContainer<IPKey, IPKeyValue, IPKeyValueIterator>;
 
-    std::string IPFactory::GetKeysAsString() const
-    {
-        std::string keys_str;
-        if( m_IPList.size() > 0 )
-        {
-            keys_str = m_IPList[0]->GetKeyAsString();
-            for( int i = 1 ; i < m_IPList.size() ; i++ )
-            {
-                keys_str += std::string(", ") + m_IPList[i]->GetKeyAsString();
-            }
-        }
-        return keys_str;
-    }
 }

@@ -1,0 +1,26 @@
+# Object files
+*.o
+*.ko
+
+# Libraries
+*.lib
+*.a
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# IDE / editors files
+*.suo
+*.user
+.clang_complete
+_codelite/
+_codelite_lz4/
+*.zip

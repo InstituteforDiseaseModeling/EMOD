@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -23,11 +23,11 @@ namespace Kernel
         STIIsPostDebut( const STIIsPostDebut& ); // copy ctor
 
         // IDistributingDistributableIntervention
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
 
         // SimpleDiagnostic
-        virtual bool positiveTestResult(); // Test if recipient "tests positive"
-        virtual void onNegativeTestResult();  // What to do if recipient "tests negative"
+        virtual bool positiveTestResult() override;    // Test if recipient "tests positive"
+        virtual void onNegativeTestResult() override;  // What to do if recipient "tests negative"
 
     protected:
 #pragma warning( push )

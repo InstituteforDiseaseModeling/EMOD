@@ -1,0 +1,14 @@
+{
+     "Default_Config_Path": "defaults/generic_default_config.json", 
+     "parameters": {
+          "DEMOGRAPHICS": {
+               "Demographics_Filenames": ["Namawala_single_node_demographics.json"]
+          }, 
+          "PRIMARY": {
+               "Config_Name": "34_Generic_Namawala", 
+               "Geography": "Namawala", 
+               "Run_Number": 1, 
+               "Simulation_Duration": 180
+          }
+     }
+}

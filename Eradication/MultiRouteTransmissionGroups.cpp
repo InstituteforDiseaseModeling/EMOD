@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,7 +13,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "MultiRouteTransmissionGroups.h"
 #include "Log.h"
 
-static const char* _module = "MultiRouteTransmissionGroups";
+SETUP_LOGGING( "MultiRouteTransmissionGroups" )
+
+static map< unsigned int, Kernel::TransmissionRoute::Enum > routeIndex2EnumMap;
 
 namespace Kernel
 {
@@ -106,6 +108,12 @@ namespace Kernel
         BuildRouteScalingMatrices(routeCount);
         StoreRouteDecayValues(routeCount, contagionDecayRatesByRoute);
         AllocateAccumulators(routeCount);
+
+        if(routeIndex2EnumMap.size() == 0 )
+        {
+            routeIndex2EnumMap.insert( std::make_pair( 0, Kernel::TransmissionRoute::TRANSMISSIONROUTE_CONTACT ) );
+            routeIndex2EnumMap.insert( std::make_pair( 1, Kernel::TransmissionRoute::TRANSMISSIONROUTE_ENVIRONMENTAL ) );
+        }
     }
 
     void MultiRouteTransmissionGroups::BuildRouteScalingMatrices( int routeCount )
@@ -148,12 +156,14 @@ namespace Kernel
         shedContagionByRoute.resize(routeCount);
         currentContagionByRoute.resize(routeCount);
         populationSizeByRoute.resize(routeCount);
+        infectionRateByRoute.resize(routeCount);
 
         for (RouteIndex routeIndex = 0; routeIndex < routeCount; routeIndex++)
         {
             int groupCount = getGroupCountForRoute(routeIndex);
             shedContagionByRoute[routeIndex].resize(groupCount);
             currentContagionByRoute[routeIndex].resize(groupCount);
+            infectionRateByRoute[routeIndex].resize(groupCount);
         }
     }
 
@@ -192,8 +202,8 @@ namespace Kernel
                 const string& routeName = route[iRoute];
                 if (routeNameFromMap == routeName)
                 {
-                    //LOG_VALID_F("foundRoute: routeIndex=%d\n",idx);
-                    (*membershipOut)[idx] = 0;
+                    LOG_VALID_F( "Setting tx group membership for index %d to %d (route index): routeName (passed in) = %s, routeNameFromMap (from loop) is same.\n", idx, iRoute, routeName.c_str() );
+                    (*membershipOut)[idx] = 0; // iRoute;
                 }
             }
             idx++;
@@ -209,6 +219,7 @@ namespace Kernel
                 if ((*membershipOut).find(routeIndex) != (*membershipOut).end())
                 {
                     const string& propertyValue = entry.second;
+                    LOG_VALID_F( "Increasing tx group membership for (route) index %d by %d.\n", routeIndex, (propertyValueToIndexMap.at(propertyName).at(propertyValue) ) );
                     (*membershipOut)[routeIndex] += (propertyValueToIndexMap.at(propertyName).at(propertyValue));
                 }
             }
@@ -234,14 +245,16 @@ namespace Kernel
         {
             RouteIndex routeIndex = entry.first;
             GroupIndex groupIndex = entry.second;
-            LOG_DEBUG_F("route index %d and group index %d\n", routeIndex, groupIndex);
-            totalContagion += shedContagionByRoute[routeIndex][groupIndex];
+            LOG_DEBUG_F( "Getting infectionRateByRoute: route index %d and group index %d: %f\n", routeIndex, groupIndex, infectionRateByRoute[routeIndex][groupIndex] );
+
+            //totalContagion += shedContagionByRoute[routeIndex][groupIndex];
+            totalContagion += infectionRateByRoute[routeIndex][groupIndex];
         }
 
         return totalContagion;
     }
 
-    void MultiRouteTransmissionGroups::DepositContagion( const StrainIdentity* /* strain */, float amount, const TransmissionGroupMembership_t* transmissionGroupMembership )
+    void MultiRouteTransmissionGroups::DepositContagion( const IStrainIdentity& /* strain */, float amount, const TransmissionGroupMembership_t* transmissionGroupMembership )
     {
         for (const auto& entry : (*transmissionGroupMembership))
         {
@@ -264,8 +277,14 @@ namespace Kernel
 
         if ((infectionRateForGroups > 0) && (candidate != nullptr))
         {
-            ContagionPopulationImpl contagionPopulation(infectionRateForGroups);
-            candidate->Expose(static_cast<IContagionPopulation*>(&contagionPopulation), deltaTee, TransmissionRoute::TRANSMISSIONROUTE_ALL);
+            for (const auto& entry : (*transmissionGroupMembership))
+            {
+                auto routeIndex  = entry.first;
+                auto groupIndex  = entry.second;
+                ContagionPopulationImpl contagionPopulation(infectionRateForGroups);
+                auto txroute = routeIndex2EnumMap.at( routeIndex ); 
+                candidate->Expose(static_cast<IContagionPopulation*>(&contagionPopulation), deltaTee, txroute );
+            }
         }
     }
 
@@ -281,12 +300,14 @@ namespace Kernel
 
     void MultiRouteTransmissionGroups::EndUpdate(float infectivityCorrection)
     {
+        LOG_VALID_F( "%s\n", __FUNCTION__ );
         int routeCount = shedContagionByRoute.size();
         for (int iRoute = 0; iRoute < routeCount; iRoute++)
         {
             float decay = 1.0f - contagionDecayRates[iRoute];
             ScalingMatrix_t& scalingMatrix = scalingMatrices[iRoute];
             vector<float>& currentContagion = currentContagionByRoute[iRoute];
+            LOG_DEBUG_F( "Applying decay rate of %f on route %d to accumulation of %f\n", decay, iRoute, currentContagionByRoute[ iRoute ][0] );
             int groupCount = scalingMatrix.size();
             for (int iSink = 0; iSink < groupCount; iSink++)
             {
@@ -296,6 +317,7 @@ namespace Kernel
                 sum *= infectivityCorrection;
                 currentContagion[iSink] *= decay;
                 currentContagion[iSink] += sum;
+                LOG_DEBUG_F("Adding %f to %f contagion [route:%d,group:%d]\n", sum, currentContagion[iSink], iRoute, iSink);
             }
 
             float populationForRoute = populationSizeByRoute[iRoute];
@@ -310,8 +332,11 @@ namespace Kernel
                 memset(infectionRateForRoute.data(), 0, groupCount * sizeof(float));
             }
 
+            LOG_VALID_F( "foi for route %d = %f\n", iRoute, infectionRateForRoute[0] );
+
             // Reset the shed contagion accumulator for the route
             memset(shedContagionByRoute[iRoute].data(), 0, shedContagionByRoute[iRoute].size() * sizeof(float));
+
         }
     }
 }

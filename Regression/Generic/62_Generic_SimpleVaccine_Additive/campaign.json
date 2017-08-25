@@ -1,0 +1,93 @@
+{
+    "Campaign_Name": "Initial Seeding",
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "SimpleVaccine",
+                    "Cost_To_Consumer": 10,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "Vaccine_Take": 1,
+                    "Efficacy_Is_Multiplicative" : 0,
+                    "Waning_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect" : 0.3
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 20,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.001,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "Antigen": 0,
+                    "Genome": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 31,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "SimpleVaccine",
+                    "Cost_To_Consumer": 10,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "Vaccine_Take": 1,
+                    "Efficacy_Is_Multiplicative" : 0,
+                    "Waning_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect" : 0.3
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 61,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "SimpleVaccine",
+                    "Cost_To_Consumer": 10,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "Vaccine_Take": 1,
+                    "Efficacy_Is_Multiplicative" : 0,
+                    "Waning_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect" : 0.3
+                    }
+                }
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

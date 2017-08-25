@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -24,7 +24,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SpatialReportPy.h"
 #include "ProgVersion.h"
 
-static const char * _module = "SimulationPy";
+SETUP_LOGGING( "SimulationPy" )
 
 #ifdef _TYPHOID_DLL
 
@@ -149,11 +149,14 @@ namespace Kernel
     }
 
     // called by demographic file Populate()
-    void SimulationPy::addNewNodeFromDemographics(suids::suid node_suid, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory)
+    void SimulationPy::addNewNodeFromDemographics( suids::suid node_suid,
+                                                   NodeDemographicsFactory *nodedemographics_factory,
+                                                   ClimateFactory *climate_factory,
+                                                   bool white_list_enabled )
     {
         NodePy *node = NodePy::CreateNode(this, node_suid);
 
-        addNode_internal(node, nodedemographics_factory, climate_factory);
+        addNode_internal( node, nodedemographics_factory, climate_factory, white_list_enabled );
     }
 
     void SimulationPy::InitializeFlags( const ::Configuration *config )
@@ -171,24 +174,5 @@ namespace Kernel
         return Simulation::Reports_CreateBuiltIn();
     }
 }
-
-#if USE_BOOST_SERIALIZATION
-BOOST_CLASS_EXPORT(Kernel::SimulationPy)
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive & ar, SimulationPy& sim, const unsigned int  file_version )
-    {
-        // must register all derived type serialized through base class pointer members
-        ar.template register_type<NodePy>();
-        ar.template register_type<SimulationPyFlags>();
-        ar.template register_type<NodePyFlags>();
-        ar.template register_type<IndividualHumanPyFlags>();
-        ar.template register_type<InfectionPyFlags>();
-        ar.template register_type<SusceptibilityPyFlags>();
-
-        ar & boost::serialization::base_object<Simulation>(sim);
-    }
-}
-#endif
 
 #endif // 

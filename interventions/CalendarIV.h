@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -34,6 +34,7 @@ namespace Kernel
             TargetAgeArrayConfig() {}
             virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
             virtual json::QuickBuilder GetSchema() override;
+            virtual bool  HasValidDefault() const override { return false; }
             std::map< float, float > age2ProbabilityMap;
             bool dropout;
 
@@ -47,21 +48,19 @@ namespace Kernel
     public:
         // We inherit AddRef/Release abstractly through IHealthSeekBehavior,
         // even though BaseIntervention has a non-abstract version.
-        virtual int32_t AddRef() { return BaseIntervention::AddRef(); }
-        virtual int32_t Release() { return BaseIntervention::Release(); }
+        virtual int32_t AddRef() override { return BaseIntervention::AddRef(); }
+        virtual int32_t Release() override { return BaseIntervention::Release(); }
 
         IVCalendar();
         virtual ~IVCalendar();
-        bool Configure( const Configuration* config );
+        bool Configure( const Configuration* config ) override;
 
         // IDistributingDistributableIntervention
-        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO );
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
-        virtual void SetContextTo(IIndividualHumanContext *context) { parent = context; } // for rng
-        virtual void Update(float dt);
+        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO ) override;
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+        virtual void Update(float dt) override;
 
     protected:
-        IIndividualHumanContext *parent;
         TargetAgeArrayConfig target_age_array; // json list of floats
         IndividualInterventionConfig actual_intervention_config;
         bool dropout;

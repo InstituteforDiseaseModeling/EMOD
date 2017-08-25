@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -89,6 +89,8 @@ typedef uint32_t IndexType;
         virtual void Add( const bool val )     = 0;
         virtual void Add( const IJsonObjectAdapter* val ) = 0;
 
+        virtual bool Contains(const char* key) const = 0;
+
         virtual IJsonObjectAdapter* operator[](const char* key) const = 0;
         virtual IJsonObjectAdapter* GetJsonObject(const char* key)  const = 0;
         virtual IJsonObjectAdapter* GetJsonArray(const char* key)   const = 0;
@@ -111,17 +113,6 @@ typedef uint32_t IndexType;
         virtual float AsFloat()        const = 0;
         virtual double AsDouble()      const = 0;
         virtual bool AsBool()          const = 0;
-
-/*
-        operator const char*() { return AsString(); }
-        operator int32_t()     { return AsInt(); }
-        operator uint32_t()    { return AsUint(); }
-        operator int64_t()     { return AsInt64(); }
-        operator uint64_t()    { return AsUint64(); }
-        operator float()       { return AsFloat(); }
-        operator double()      { return AsDouble(); }
-        operator bool()        { return AsBool(); }
-*/
 
         virtual operator const char*() const = 0;
         virtual operator int32_t()     const = 0;

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 #include "TBContexts.h"
 
-static const char * _module = "MDRDiagnostic";
+SETUP_LOGGING( "MDRDiagnostic" )
 
 namespace Kernel
 {
@@ -30,9 +30,9 @@ namespace Kernel
         return DiagnosticTreatNeg::Configure( inputJson );
     }
 
-    MDRDiagnostic::MDRDiagnostic() : DiagnosticTreatNeg()
-   , treatment_fraction_neg(0)
-
+    MDRDiagnostic::MDRDiagnostic() 
+        : DiagnosticTreatNeg()
+        , treatment_fraction_neg(0)
     {
         initConfigTypeMap("Treatment_Fraction_Negative_Diagnosis", &treatment_fraction_neg, Treatment_Fraction_Negative_Diagnosis_DESC_TEXT, 0.0f, 1.0f);
     }
@@ -49,11 +49,11 @@ namespace Kernel
         // Apply diagnostic test with given specificity/sensitivity
         bool  infected = parent->GetEventContext()->IsInfected();
 
-        IIndividualHumanTB2* tb_ind = nullptr;
-        if(parent->QueryInterface( GET_IID( IIndividualHumanTB2 ), (void**)&tb_ind ) != s_OK)
+        IIndividualHumanTB* tb_ind = nullptr;
+        if(parent->QueryInterface( GET_IID( IIndividualHumanTB ), (void**)&tb_ind ) != s_OK)
         {
             LOG_WARN("ResistanceDiagnostics works with TB sims ONLY");
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanTB2", "IIndividualHuman" );
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanTB", "IIndividualHuman" );
         }
 
         // always return negative if the person is not infected

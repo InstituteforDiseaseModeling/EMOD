@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -23,7 +23,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "INodeContext.h"
 #include "Properties.h"
 
-static const char* _module = "InterventionsContainer";
+SETUP_LOGGING( "InterventionsContainer" )
 
 namespace Kernel
 {
@@ -47,8 +47,6 @@ namespace Kernel
             foundInterface = static_cast<IVaccineConsumer*>(this);
         else if (iid == GET_IID(IDrugVaccineInterventionEffects))
             foundInterface = static_cast<IDrugVaccineInterventionEffects*>(this);
-        else if (iid == GET_IID(IPropertyValueChangerEffects))
-            foundInterface = static_cast<IPropertyValueChangerEffects*>(this);
         else
             foundInterface = nullptr;
 
@@ -172,6 +170,18 @@ namespace Kernel
         return (p_intervention != nullptr);
     }
 
+    bool InterventionsContainer::ContainsExistingByName( const std::string& name )
+    {
+        for (auto intervention : interventions)
+        {
+            if (intervention->GetName() == name)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     void InterventionsContainer::Update(float dt)
     {
         drugVaccineReducedAcquire   = 1.0;
@@ -226,29 +236,83 @@ namespace Kernel
         iv->AddRef();
         iv->SetContextTo( parent );
         // TODO: For vaccine, now vaccine intervention needs to call ApplyVaccineTake on itself (???)
-        LOG_DEBUG_F("InterventionsContainer has %d interventions now\n", interventions.size());
+        LOG_DEBUG_F("InterventionsContainer (individual %d) has %d interventions now\n", GetParent()->GetSuid().data, interventions.size());
         return true;
     }
 
     void InterventionsContainer::UpdateVaccineAcquireRate(
-        float acquire
+        float acquire,
+        bool isMultiplicative
     )
     {
-        drugVaccineReducedAcquire *= (1.0f-acquire);
+        if( isMultiplicative )
+        {
+            drugVaccineReducedAcquire *= (1.0f - acquire);
+        }
+        else
+        {
+            drugVaccineReducedAcquire -= acquire;
+        }
+
+        if( drugVaccineReducedAcquire > 1.0 )
+        {
+            drugVaccineReducedAcquire = 1.0;
+        }
+        else if( drugVaccineReducedAcquire < 0.0 )
+        {
+            LOG_WARN_F("drugVaccineReducedAcquire(=%f) < 0, setting to zero\n",drugVaccineReducedAcquire);
+            drugVaccineReducedAcquire = 0.0;
+        }
     }
 
     void InterventionsContainer::UpdateVaccineTransmitRate(
-        float xmit
+        float xmit,
+        bool isMultiplicative
     )
     {
-        drugVaccineReducedTransmit *= (1.0f-xmit);
+        if( isMultiplicative )
+        {
+            drugVaccineReducedTransmit *= (1.0f - xmit);
+        }
+        else
+        {
+            drugVaccineReducedTransmit -= xmit;
+        }
+
+        if( drugVaccineReducedTransmit > 1.0 )
+        {
+            drugVaccineReducedTransmit = 1.0;
+        }
+        else if( drugVaccineReducedTransmit < 0.0 )
+        {
+            LOG_WARN_F("drugVaccineReducedTransmit(=%f) < 0, setting to zero\n",drugVaccineReducedTransmit);
+            drugVaccineReducedTransmit = 0.0;
+        }
     }
 
     void InterventionsContainer::UpdateVaccineMortalityRate(
-        float mort
+        float mort,
+        bool isMultiplicative
     )
     {
-        drugVaccineReducedMortality *= (1.0f-mort);
+        if( isMultiplicative )
+        {
+            drugVaccineReducedMortality *= (1.0f - mort);
+        }
+        else
+        {
+            drugVaccineReducedMortality -= mort;
+        }
+
+        if( drugVaccineReducedMortality > 1.0 )
+        {
+            drugVaccineReducedMortality = 1.0;
+        }
+        else if( drugVaccineReducedMortality < 0.0 )
+        {
+            LOG_WARN_F("drugVaccineReducedMortality(=%f) < 0, setting to zero\n",drugVaccineReducedMortality);
+            drugVaccineReducedMortality = 0.0;
+        }
     }
 
     void InterventionsContainer::ChangeProperty(
@@ -268,29 +332,36 @@ namespace Kernel
         }
 */
         // Get parent property (remove need for casts)
-        tProperties* pProps = parent->GetEventContext()->GetProperties();
-        release_assert( pProps );
+        IPKeyValueContainer* pProps = parent->GetEventContext()->GetProperties();
+
         // Check that property exists, except Age_Bins which are special case. We bootstrap individuals into age_bins at t=1,
         // with no prior existing age bin property.
-        if( ( std::string( property ) != "Age_Bin" ) && ( pProps->find( property ) == pProps->end() ) )
+        IPKey key( property );
+        if( ( std::string( property ) != "Age_Bin" ) && !pProps->Contains( key ) )
         {
             throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, "properties", property );
         }
 
-        release_assert( IPFactory::GetInstance()->GetIP( property )->GetValues().Contains( IPFactory::CreateKeyValueString( property, new_value ) ) );
+        IPKeyValue new_kv( property, new_value );
 
-        if( (*pProps)[ property ] != new_value )
+        if( !pProps->Contains( new_kv ) )
         {
-            LOG_DEBUG_F( "Moving individual (%lu) property %s from %s to %s\n", parent->GetSuid().data, property, (*pProps)[ property ].c_str(), new_value );
+            IPKeyValue old_kv = pProps->Get( key );
+            LOG_DEBUG_F( "Moving individual (%lu) property %s from %s to %s\n", parent->GetSuid().data, property, old_kv.GetValueAsString().c_str(), new_value );
             parent->UpdateGroupPopulation(-1.0f);
-            (*pProps)[ property ] = new_value;
+            pProps->Set( new_kv );
             parent->UpdateGroupMembership();
             parent->UpdateGroupPopulation(1.0f);
             parent->SetPropertyReportString("");
-        }
-        else
-        {
-            LOG_WARN_F( "ChangeProperty found that individual %lu already has property value %s.\n", parent->GetSuid().data, new_value );
+
+            //broadcast that the individual changed properties
+            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
+            if( s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface( GET_IID( INodeTriggeredInterventionConsumer ), (void**)&broadcaster ) )
+            {
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
+            }
+            LOG_DEBUG_F( "Individual %d changed property, broadcasting PropertyChange \n", parent->GetSuid().data );
+            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::PropertyChange );
         }
     }
 

@@ -83,12 +83,12 @@
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "Births",
+                    "Trigger_Condition_List": [ "Births" ],
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "HIVPiecewiseByYearAndSexDiagnostic",
-                        "Abort_States": [  ],
-                        "Cascade_State": "",
+                        "Disqualifying_Properties": [  ],
+                        "New_Property_Value": "",
                         "Time_Value_Map" :
                         {
                             "Times":  [ 0   ],
@@ -116,7 +116,7 @@
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "LTFU0",
+                    "Trigger_Condition_List": [ "LTFU0" ],
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "PropertyValueChanger",
@@ -139,7 +139,7 @@
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "LTFU0",
+                    "Trigger_Condition_List": [ "LTFU0" ],
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "ModifyStiCoInfectionStatus",

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,10 +17,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Debug.h"
 #include "Environment.h"
 #include "Configuration.h"
-#include "SimulationConfig.h"
+#include "EventTrigger.h"
 
 #include "Simulation.h"
 #include "SimulationFactory.h"
+#include "NodeProperties.h"
+#include "Properties.h"
+
 #ifndef _DLLS_
 #ifndef DISABLE_MALARIA
 #include "SimulationMalaria.h"
@@ -28,8 +31,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #ifndef DISABLE_VECTOR
 #include "SimulationVector.h"
 #endif
+#ifdef ENABLE_ENVIRONMENTAL
+#include "SimulationEnvironmental.h"
+#endif
 #ifdef ENABLE_POLIO
 #include "SimulationPolio.h"
+#endif
+#ifdef ENABLE_TYPHOID
+#include "SimulationTyphoid.h"
 #endif
 
 #ifndef DISABLE_AIRBORNE
@@ -49,22 +58,55 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #ifndef DISABLE_HIV
 #include "SimulationHIV.h"
 #endif
+#ifdef ENABLE_DENGUE
+#include "SimulationDengue.h"
+#endif
 #endif
 
 #ifdef ENABLE_PYTHON_FEVER
 #include "SimulationPy.h"
 #endif
 
-#include "DllLoader.h"
+#include "SerializedPopulation.h"
 
-static const char * _module = "SimulationFactory";
+#include <chrono>
+#include "FileSystem.h"
+#include "EventTrigger.h"
+
+SETUP_LOGGING( "SimulationFactory" )
 
 namespace Kernel
 {
     ISimulation * SimulationFactory::CreateSimulation()
     {
+        EventTriggerFactory::GetInstance()->Configure(EnvPtr->Config);
+        NPFactory::CreateFactory();
+        IPFactory::CreateFactory();
 
-        ISimulation * newsim = NULL;
+        ISimulation* newsim = nullptr;
+
+        if ( CONFIG_PARAMETER_EXISTS( EnvPtr->Config, "Serialized_Population_Filenames" ) )
+        {
+            std::string path(".");
+            if ( CONFIG_PARAMETER_EXISTS( EnvPtr->Config, "Serialized_Population_Path" ) )
+            {
+                path = GET_CONFIG_STRING(EnvPtr->Config, "Serialized_Population_Path");
+            }
+            std::vector<string> filenames = GET_CONFIG_VECTOR_STRING( EnvPtr->Config, "Serialized_Population_Filenames" );
+            if ( filenames.size() != EnvPtr->MPI.NumTasks )
+            {
+                throw IncoherentConfigurationException(__FILE__, __LINE__, __FUNCTION__, "MPI.NumTasks", float(EnvPtr->MPI.NumTasks), "filenames.size()", float(filenames.size()), "Number of serialized population filenames doesn't match number of MPI tasks.");
+            }
+            std::string population_filename = FileSystem::Concat(path, filenames[EnvPtr->MPI.Rank]);
+            auto t_start = std::chrono::high_resolution_clock::now();
+            newsim = SerializedState::LoadSerializedSimulation( population_filename.c_str() );
+            auto t_finish = std::chrono::high_resolution_clock::now();
+            newsim->Initialize( EnvPtr->Config );
+            double elapsed = uint64_t((t_finish - t_start).count()) * 1000 * double(std::chrono::high_resolution_clock::period::num) / double(std::chrono::high_resolution_clock::period::den);
+            LOG_INFO_F( "Loaded serialized population from '%s' in %f ms\n.", population_filename.c_str(), elapsed );
+            return newsim;
+        }
+
         std::string sSimType;
 
         try
@@ -82,11 +124,21 @@ namespace Kernel
             else if (sSimType == "MALARIA_SIM")
                 sim_type = SimType::MALARIA_SIM;
 #endif
-#ifdef ENABLE_POLIO
+#ifdef ENABLE_ENVIRONMENTAL
             else if (sSimType == "ENVIRONMENTAL_SIM")
                 sim_type = SimType::ENVIRONMENTAL_SIM;
+#endif
+#ifdef ENABLE_POLIO
             else if (sSimType == "POLIO_SIM")
                 sim_type = SimType::POLIO_SIM;
+#endif
+#ifdef ENABLE_ENVIRONMENTAL
+            else if (sSimType == "ENVIRONMENTAL_SIM")
+                sim_type = SimType::ENVIRONMENTAL_SIM;
+#endif
+#ifdef ENABLE_TYPHOID
+            else if (sSimType == "TYPHOID_SIM")
+                sim_type = SimType::TYPHOID_SIM;
 #endif
 #ifndef DISABLE_AIRBORNE
             else if (sSimType == "AIRBORNE_SIM")
@@ -108,6 +160,10 @@ namespace Kernel
             else if (sSimType == "HIV_SIM")
                 sim_type = SimType::HIV_SIM;
 #endif // HIV
+#ifdef ENABLE_DENGUE
+            else if (sSimType == "DENGUE_SIM")
+                sim_type = SimType::DENGUE_SIM;
+#endif
 #ifdef ENABLE_PYTHON_FEVER
             else if (sSimType == "PY_SIM")
                 sim_type = SimType::PY_SIM;
@@ -144,13 +200,19 @@ namespace Kernel
                 case SimType::GENERIC_SIM:
                     newsim = Simulation::CreateSimulation(EnvPtr->Config);
                 break;
-#ifdef ENABLE_POLIO
+#if defined(ENABLE_ENVIRONMENTAL)
                 case SimType::ENVIRONMENTAL_SIM:
                     newsim = SimulationEnvironmental::CreateSimulation(EnvPtr->Config);
                 break;
-
+#endif
+#if defined( ENABLE_POLIO)
                 case SimType::POLIO_SIM:
                     newsim = SimulationPolio::CreateSimulation(EnvPtr->Config);
+                break;
+#endif        
+#if defined( ENABLE_TYPHOID)
+                case SimType::TYPHOID_SIM:
+                    newsim = SimulationTyphoid::CreateSimulation(EnvPtr->Config);
                 break;
 #endif        
 #ifndef DISABLE_VECTOR
@@ -190,6 +252,11 @@ namespace Kernel
                     newsim = SimulationHIV::CreateSimulation(EnvPtr->Config);
                 break;
 #endif // HIV
+#ifdef ENABLE_DENGUE
+                case SimType::DENGUE_SIM:
+                    newsim = SimulationDengue::CreateSimulation(EnvPtr->Config);
+                break;
+#endif 
 #ifdef ENABLE_PYTHON_FEVER 
                 case SimType::PY_SIM:
                     newsim = SimulationPy::CreateSimulation(EnvPtr->Config);
@@ -210,5 +277,4 @@ namespace Kernel
 
         return newsim;
     }
-
 }

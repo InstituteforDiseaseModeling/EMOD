@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -35,7 +35,6 @@ namespace Kernel
         virtual int Release() override;
 
         // IDistributableIntervention
-        virtual void SetContextTo(IIndividualHumanContext *context) override;
         virtual void Update(float dt) override;
 
         // IDrug
@@ -59,9 +58,6 @@ namespace Kernel
         virtual void ApplyEffects(); // virtual, not part of interface
         virtual void PkPdParameterValidation();
         virtual void Expire();
-
-        // context for this intervention--does not need to be reset upon migration, it is just for GiveDrug()
-        IIndividualHumanContext *parent;
 
         int   drug_type;
         DrugUsageType::Enum dosing_type;

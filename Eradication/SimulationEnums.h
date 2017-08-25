@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -101,7 +101,8 @@ namespace Kernel
     // ENUM defs for RANDOM_TYPE
     ENUM_DEFINE(RandomType, 
         ENUM_VALUE_SPEC(USE_PSEUDO_DES                                      , 0)
-        ENUM_VALUE_SPEC(USE_LINEAR_CONGRUENTIAL                             , 1))    
+        ENUM_VALUE_SPEC(USE_LINEAR_CONGRUENTIAL                             , 1)
+        ENUM_VALUE_SPEC(USE_AES_COUNTER                                     , 2))
 
     // ENUM defs for Infectivity_Scale_Type (was SEASONAL_INFECTIVITY)
     ENUM_DEFINE(InfectivityScaling, 
@@ -109,7 +110,8 @@ namespace Kernel
         ENUM_VALUE_SPEC(FUNCTION_OF_TIME_AND_LATITUDE                       , 1)
         ENUM_VALUE_SPEC(FUNCTION_OF_CLIMATE                                 , 2)
         ENUM_VALUE_SPEC(SINUSOIDAL_FUNCTION_OF_TIME                         , 3)
-        ENUM_VALUE_SPEC(ANNUAL_BOXCAR_FUNCTION                              , 4))
+        ENUM_VALUE_SPEC(ANNUAL_BOXCAR_FUNCTION                              , 4)
+        ENUM_VALUE_SPEC(EXPONENTIAL_FUNCTION_OF_TIME                        , 5))
 
     ENUM_DEFINE(SusceptibilityScaling,
         ENUM_VALUE_SPEC(CONSTANT_SUSCEPTIBILITY                             , 0)
@@ -121,14 +123,16 @@ namespace Kernel
         ENUM_VALUE_SPEC(GENERIC_SIM                                         , 0)
         ENUM_VALUE_SPEC(VECTOR_SIM                                          , 1)
         ENUM_VALUE_SPEC(MALARIA_SIM                                         , 2)
-        ENUM_VALUE_SPEC(ENVIRONMENTAL_SIM                                   , 3)
-        ENUM_VALUE_SPEC(POLIO_SIM                                           , 4)
+//        ENUM_VALUE_SPEC(ENVIRONMENTAL_SIM                                   , 3)
+//        ENUM_VALUE_SPEC(POLIO_SIM                                           , 4)
         ENUM_VALUE_SPEC(AIRBORNE_SIM                                        , 5)
         ENUM_VALUE_SPEC(TB_SIM                                              , 6)
-        ENUM_VALUE_SPEC(TBHIV_SIM                                           , 7)
+//        ENUM_VALUE_SPEC(TBHIV_SIM                                           , 7)
         ENUM_VALUE_SPEC(STI_SIM                                             , 8)
         ENUM_VALUE_SPEC(HIV_SIM                                             , 9)
-        ENUM_VALUE_SPEC(PY_SIM                                          , 10))
+        ENUM_VALUE_SPEC(PY_SIM                                              , 10))
+//        ENUM_VALUE_SPEC(TYPHOID_SIM                                         , 11)
+//        ENUM_VALUE_SPEC(DENGUE_SIM                                          , 12))
 
     // ENUM defs for VITAL_BIRTH_DEPENDENCE
     ENUM_DEFINE(VitalBirthDependence, 
@@ -169,8 +173,7 @@ namespace Kernel
         ENUM_VALUE_SPEC(MOPV1                                               , 2)
         ENUM_VALUE_SPEC(MOPV2                                               , 3)
         ENUM_VALUE_SPEC(MOPV3                                               , 4)
-        ENUM_VALUE_SPEC(IPV                                                 , 5))
-
+        ENUM_VALUE_SPEC(IPV                                                 , 5)) 
 
     // ENUM defs for RiskGroup
     ENUM_DEFINE(RiskGroup,
@@ -178,4 +181,9 @@ namespace Kernel
         ENUM_VALUE_SPEC(HIGH                                                , 1)
         ENUM_VALUE_SPEC(COUNT                                               , 2) )
 
+    ENUM_DEFINE(TBFastProgressorType,
+        ENUM_VALUE_SPEC(AGE                                                 , 0)
+        ENUM_VALUE_SPEC(POVERTY                                             , 1)
+        ENUM_VALUE_SPEC(POVERTY_SUSCEPTIBILITY_TO_INFECTION                 , 2)
+        ENUM_VALUE_SPEC(POVERTY_AND_SUSCEPTIBILITY                          , 3))
 }

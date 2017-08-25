@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,7 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include "RelationshipParameters.h"
 
-static const char * _module = "RelationshipParameters";
+SETUP_LOGGING( "RelationshipParameters" )
 
 namespace Kernel {
 
@@ -57,8 +57,8 @@ namespace Kernel {
         {
             if( ma_strings.size() != ma_dist.size() )
             {
-                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Migration_Actions.size()", ma_strings.size(), 
-                                                                                          "Migration_Actions_Distribution.size()", ma_dist.size(),
+                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Migration_Actions.size()", int( ma_strings.size() ), 
+                                                                                          "Migration_Actions_Distribution.size()", int( ma_dist.size() ),
                                                                                           "'Migration_Actions' and 'Migration_Actions_Distribution' must have the same number of elements.");
             }
             else if( ma_strings.size() == 0 )

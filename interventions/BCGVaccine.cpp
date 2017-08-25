@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,7 +17,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IndividualEventContext.h"  // for GetAge
 #include "RANDOM.h"                  // for ApplyVaccineTake random draw
 
-static const char * _module = "BCGVaccine";
+SETUP_LOGGING( "BCGVaccine" )
 
 namespace Kernel
 {
@@ -38,7 +38,7 @@ namespace Kernel
     : SimpleVaccine()
     , vaccine_take_age_decay_rate(0)
     {
-        initSimTypes( 1, "TB_SIM" );
+        initSimTypes( 2, "TB_SIM", "TBHIV_SIM" );
         initConfigTypeMap("Vaccine_Take_Age_Decay_Rate", &vaccine_take_age_decay_rate, BCG_Vaccine_Take_Age_Decay_Rate_DESC_TEXT );
     }
 

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -78,6 +78,11 @@ namespace Kernel
         static int max_ind_inf;
         static bool superinfection;
         static float x_othermortality;
+        
+        // From SimConfig
+        static MigrationStructure::Enum                             migration_structure;                              // MIGRATION_STRUCTURE
+        static VitalDeathDependence::Enum                           vital_death_dependence;                           // Vital_Death_Dependence
+        static bool vital_dynamics;
 
         virtual bool Configure( const Configuration* config ) override;
 
@@ -121,12 +126,12 @@ namespace Kernel
         virtual ISusceptibilityContext*               GetSusceptibilityContext() const override;
 
         virtual const Kernel::NodeDemographics*     GetDemographics() const override;
-        virtual const NodeDemographicsDistribution* GetDemographicsDistribution(std::string key) const override;
 
         // IIndividualHumanEventContext methods
         virtual bool   IsPregnant()           const override { return is_pregnant; };
         virtual inline int GetAbovePoverty()  const override { return above_poverty; } // financially secure = 1, less financially secure = 0
         virtual double GetAge()               const override { return m_age; }
+        inline float getAgeInYears()          const {return floor(GetAge()/DAYSPERYEAR);}
         virtual int    GetGender()            const override { return m_gender; }
         virtual double GetMonteCarloWeight()  const override { return m_mc_weight; }
         virtual bool   IsPossibleMother()     const override;
@@ -135,8 +140,7 @@ namespace Kernel
         virtual HumanStateChange GetStateChange() const override { return StateChange; }
         virtual void Die( HumanStateChange ) override;
         virtual INodeEventContext   * GetNodeEventContext() override; // for campaign cost reporting in e.g. HealthSeekingBehavior
-        virtual tProperties* GetProperties() override;
-        //virtual IPKeyValueContainer* GetProperties();
+        virtual IPKeyValueContainer* GetProperties() override;
         virtual const std::string& GetPropertyReportString() const override { return m_PropertyReportString; }
         virtual void SetPropertyReportString( const std::string& str ) override { m_PropertyReportString = str; }
         virtual bool AtHome() const override;
@@ -175,10 +179,11 @@ namespace Kernel
         // Infections
         virtual void ExposeToInfectivity(float dt, const TransmissionGroupMembership_t* transmissionGroupMembership);
         virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route = TransmissionRoute::TRANSMISSIONROUTE_ALL ) override;
-        virtual void AcquireNewInfection(StrainIdentity *infstrain = nullptr, int incubation_period_override = -1) override;
+        virtual void AcquireNewInfection( const IStrainIdentity *infstrain = nullptr, int incubation_period_override = -1) override;
+
         virtual const infection_list_t &GetInfections() const override;
         virtual void UpdateInfectiousness(float dt) override;
-        virtual bool InfectionExistsForThisStrain(StrainIdentity* check_strain_id);
+        virtual bool InfectionExistsForThisStrain(IStrainIdentity* check_strain_id);
         virtual void ClearNewInfectionState() override;
         virtual NewInfectionState::_enum GetNewInfectionState() const override { return m_new_infection_state; }
         virtual inline float GetInfectiousness() const override { return infectiousness; }
@@ -260,8 +265,7 @@ namespace Kernel
 
         suids::suid home_node_id ;
 
-        tProperties Properties;
-        //IPKeyValueContainer* pProperties;
+        IPKeyValueContainer Properties;
         std::string m_PropertyReportString;
 
         INodeContext* parent;   // Access back to node/simulation methods
@@ -272,6 +276,7 @@ namespace Kernel
         virtual IInfection* createInfection(suids::suid _suid); // factory method (overridden in derived classes)
         virtual void setupInterventionsContainer();            // derived classes can customize the container, and hence the interventions supported, by overriding this method
         virtual void applyNewInterventionEffects(float dt);    // overriden when interventions (e.g. polio vaccine) updates individual properties (e.g. immunity)
+        virtual void UpdateAge( float dt );
 
         float GetRoundTripDurationRate( MigrationType::Enum trip_type );
 
@@ -281,6 +286,7 @@ namespace Kernel
 
         virtual void PropagateContextToDependents();
         INodeTriggeredInterventionConsumer* broadcaster;
+
 
     private:
 

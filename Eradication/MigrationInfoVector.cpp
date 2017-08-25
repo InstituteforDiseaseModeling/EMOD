@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -310,11 +310,11 @@ namespace Kernel
             initConfigTypeMap( "Enable_Vector_Migration_Local",      &(m_InfoFileListVector[0]->m_IsEnabled), Enable_Vector_Migration_Local_DESC_TEXT,    false, "Enable_Vector_Migration" );
             initConfigTypeMap( "Enable_Vector_Migration_Regional",   &(m_InfoFileListVector[2]->m_IsEnabled), Enable_Vector_Migration_Regional_DESC_TEXT, false, "Enable_Vector_Migration" ); 
 
-            initConfigTypeMap( "Vector_Migration_Filename_Local",    &(m_InfoFileListVector[0]->m_Filename),  Vector_Migration_Filename_Local_DESC_TEXT, "UNSPECIFIED_FILE", "Enable_Vector_Migration"    );
-            initConfigTypeMap( "Vector_Migration_Filename_Regional", &(m_InfoFileListVector[2]->m_Filename),  Vector_Migration_Filename_Regional_DESC_TEXT, "UNSPECIFIED_FILE", "Enable_Vector_Migration" );
+            initConfigTypeMap( "Vector_Migration_Filename_Local",    &(m_InfoFileListVector[0]->m_Filename),  Vector_Migration_Filename_Local_DESC_TEXT, "UNSPECIFIED_FILE", "Enable_Vector_Migration_Local"    );
+            initConfigTypeMap( "Vector_Migration_Filename_Regional", &(m_InfoFileListVector[2]->m_Filename),  Vector_Migration_Filename_Regional_DESC_TEXT, "UNSPECIFIED_FILE", "Enable_Vector_Migration_Regional" );
 
-            initConfigTypeMap( "x_Vector_Migration_Local",           &(m_InfoFileListVector[0]->m_xModifier), x_Vector_Migration_Local_DESC_TEXT,    0.0f, FLT_MAX, 1.0f, "Enable_Vector_Migration" );
-            initConfigTypeMap( "x_Vector_Migration_Regional",        &(m_InfoFileListVector[2]->m_xModifier), x_Vector_Migration_Regional_DESC_TEXT, 0.0f, FLT_MAX, 1.0f, "Enable_Vector_Migration" );
+            initConfigTypeMap( "x_Vector_Migration_Local",           &(m_InfoFileListVector[0]->m_xModifier), x_Vector_Migration_Local_DESC_TEXT,    0.0f, FLT_MAX, 1.0f, "Enable_Vector_Migration_Local" );
+            initConfigTypeMap( "x_Vector_Migration_Regional",        &(m_InfoFileListVector[2]->m_xModifier), x_Vector_Migration_Regional_DESC_TEXT, 0.0f, FLT_MAX, 1.0f, "Enable_Vector_Migration_Regional" );
 
             initConfigTypeMap( "Vector_Migration_Habitat_Modifier",  &m_ModifierHabitat,  Vector_Migration_Habitat_Modifier_DESC_TEXT,  0.0f, FLT_MAX, 0.0f, "Enable_Vector_Migration" );
             initConfigTypeMap( "Vector_Migration_Food_Modifier",     &m_ModifierFood,     Vector_Migration_Food_Modifier_DESC_TEXT,     0.0f, FLT_MAX, 0.0f, "Enable_Vector_Migration" );

@@ -159,9 +159,6 @@
     <ClInclude Include="..\utils\Profile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Eradication\Properties.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\cajun\include\quick.h">
       <Filter>Header Files</Filter>
     </ClInclude>

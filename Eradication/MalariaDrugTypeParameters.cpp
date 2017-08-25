@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,7 +16,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Log.h"
 
-static const char * _module = "DTP";
+SETUP_LOGGING( "DTP" )
+
 #if !defined( DISABLE_MALARIA )
 namespace Kernel
 {
@@ -129,7 +130,7 @@ namespace Kernel
         {
             try
             {
-                Configuration* drug_config = Configuration::CopyFromElement( (*inputJson)["Malaria_Drug_Params"][drugType] );
+                Configuration* drug_config = Configuration::CopyFromElement( (*inputJson)["Malaria_Drug_Params"][drugType], inputJson->GetDataLocation() );
                 params->Configure( drug_config );
                 delete drug_config;
                 drug_config = nullptr;
@@ -183,7 +184,7 @@ namespace Kernel
 
         int eDrug = MalariaDrugType::pairs::lookup_value(drugType.c_str());
 
-        if ( eDrug < 0 )
+        if ( (eDrug < 0) && !JsonConfigurable::_dryrun )
         {
             LOG_WARN_F("Anti-malarial drug name in Malaria_Drug_Params block (%s) is not one of the standard cases.\n", drugType.c_str());
         }

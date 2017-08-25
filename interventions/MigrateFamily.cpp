@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,7 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 #include "SimulationConfig.h"
 
-static const char * _module = "MigrateFamily";
+SETUP_LOGGING( "MigrateFamily" )
 
 namespace Kernel
 {
@@ -44,7 +44,7 @@ namespace Kernel
         duration_before_leaving.Configure( this, inputJson );
         duration_at_node.Configure( this, inputJson );
 
-        bool ret = JsonConfigurable::Configure( inputJson );
+        bool ret = BaseNodeIntervention::Configure( inputJson );
 
         if( ret )
         {
@@ -56,7 +56,6 @@ namespace Kernel
 
     MigrateFamily::MigrateFamily()
         : BaseNodeIntervention()
-        , parent( nullptr )
         , destination_external_node_id( 0 )
         , duration_before_leaving()
         , duration_at_node()
@@ -79,7 +78,6 @@ namespace Kernel
 
     MigrateFamily::MigrateFamily( const MigrateFamily& master )
         : BaseNodeIntervention( master )
-        , parent( nullptr )
         , destination_external_node_id( master.destination_external_node_id )
         , duration_before_leaving( master.duration_before_leaving )
         , duration_at_node( master.duration_at_node )
@@ -102,13 +100,14 @@ namespace Kernel
 
     void MigrateFamily::Update( float dt )
     {
+        if( !BaseNodeIntervention::UpdateNodesInterventionStatus() ) return;
+
         INodeContext* p_node_context = parent->GetNodeContext();
 
-        printf("MigrateFamily::Update: node_id=%d  expired=%d\n",p_node_context->GetExternalID(),expired);
-        if( !expired )
+        if( !Expired() )
         {
             // expire the intervention
-            expired = true;
+            SetExpired( true );
 
             suids::suid destination_id = p_node_context->GetParent()->GetNodeSuid( destination_external_node_id );
 

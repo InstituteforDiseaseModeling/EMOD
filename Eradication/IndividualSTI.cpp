@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -27,19 +27,35 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IPairFormationRateTable.h"
 #include "IPairFormationAgent.h"
 #include "IConcurrency.h"
+#include "StrainIdentity.h"
+#include "EventTrigger.h"
 
-static const char* _module = "IndividualSTI";
+SETUP_LOGGING( "IndividualSTI" )
 
 // Assume MAX_SLOTS == 63 => 64-bits are full
 #define SLOTS_FILLED (uint64_t(0xFFFFFFFFFFFFFFFF))
 
-#define SUPER_SPREADER 0x8
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!! If you change size of promiscuity_flags (unsigned char) or
+// !!! add more RelationshipTypes (>7), change this macro.
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#define SUPER_SPREADER 0x80
 
 #define IS_SUPER_SPREADER()   ((promiscuity_flags & SUPER_SPREADER) != 0)
 #define IS_EXTRA_ALLOWED(rel) ((promiscuity_flags & EXTRA_RELATIONAL_ALLOWED((Kernel::RelationshipType::Enum)rel)) != 0)
-
-#define SIX_MONTHS (6*IDEALDAYSPERMONTH)  // 60*30 is my 6 months
 #define MAX_RELATIONSHIPS_PER_INDIVIDUAL_ALL_TYPES (MAX_SLOTS)
+
+// -------------------------------------------------------------------
+// !!!! Duplicated in ReportRelationshipCensus !!!
+#define THREE_MONTHS  ( 91) // ~3 months
+#define SIX_MONTHS    (182) // ~6 months
+#define NINE_MONTHS   (274) // ~9 months
+#define TWELVE_MONTHS (365) // ~12 months
+
+static const float PERIODS[] = { THREE_MONTHS, SIX_MONTHS, NINE_MONTHS, TWELVE_MONTHS };
+static std::vector<float> UNIQUE_PARTNER_TIME_PERIODS( PERIODS, PERIODS + sizeof( PERIODS ) / sizeof( PERIODS[ 0 ] ) );
+// -------------------------------------------------------------------
+
 
 namespace Kernel
 {
@@ -49,7 +65,8 @@ namespace Kernel
     float IndividualHumanSTIConfig::debutAgeYrsFemale_lambda = 1.0f;
     float IndividualHumanSTIConfig::debutAgeYrsMin = 13.0f;
 
-    float IndividualHumanSTIConfig::sti_coinfection_mult = 0.10f;
+    float IndividualHumanSTIConfig::sti_coinfection_trans_mult = 1.0f;
+    float IndividualHumanSTIConfig::sti_coinfection_acq_mult = 1.0f;
 
     float IndividualHumanSTIConfig::min_days_between_adding_relationships = 60.0f;
 
@@ -78,7 +95,8 @@ namespace Kernel
 
         initConfigTypeMap( "Sexual_Debut_Age_Min", &debutAgeYrsMin, STI_Sexual_Debut_Age_Min_DESC_TEXT, 0.0f, FLT_MAX, 13.0f );
 
-        initConfigTypeMap( "STI_Coinfection_Multiplier", &sti_coinfection_mult, STI_Coinfection_Multiplier_DESC_TEXT, 0.0f, 100.0f, 10.0f );
+        initConfigTypeMap( "STI_Coinfection_Acquisition_Multiplier", &sti_coinfection_acq_mult, STI_Coinfection_Acquisition_Multiplier_DESC_TEXT, 0.0f, 100.0f, 10.0f );
+        initConfigTypeMap( "STI_Coinfection_Transmission_Multiplier", &sti_coinfection_trans_mult, STI_Coinfection_Transmission_Multiplier_DESC_TEXT, 0.0f, 100.0f, 10.0f );
 
         initConfigTypeMap( "Min_Days_Between_Adding_Relationships", &min_days_between_adding_relationships, STI_Min_Days_Between_Adding_Relationships_DESC_TEXT, 0.0f, 365.0f, 60.0f );
 
@@ -171,7 +189,8 @@ namespace Kernel
             {
                 prop_key = p_concurrency->GetPropertyKey().c_str();
             }
-            const char* prop_value = p_concurrency->GetConcurrencyPropertyValue( GetProperties(), prop_key, new_value );
+            tProperties old_map = GetProperties()->GetOldVersion();
+            const char* prop_value = p_concurrency->GetConcurrencyPropertyValue( &old_map, prop_key, new_value );
             SetConcurrencyParameters( prop_key, prop_value );
         }
     }
@@ -274,12 +293,7 @@ namespace Kernel
         {
             if( IsCircumcised() )
             {
-                ISTICircumcisionConsumer *ic = nullptr;
-                if (s_OK != interventions->QueryInterface(GET_IID( ISTICircumcisionConsumer ), (void**)&ic) )
-                {
-                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "interventions", "ISTICircumcisionConsumer", "InterventionsContainer" );
-                }
-                mult *= (1.0 - ic->GetCircumcisedReducedAcquire());
+                mult *= (1.0 - m_pSTIInterventionsContainer->GetCircumcisedReducedAcquire());
             }
         }
         else if(IndividualHumanSTIConfig::maleToFemaleRelativeInfectivityAges.size() > 0 )
@@ -343,7 +357,7 @@ namespace Kernel
             // We store this as the heretofore unused "Antigen ID" of the Infecting Strain.
             cp->ResolveInfectingStrain(&strainId); // get the substrain ID
             strainId.SetAntigenID(pCP_as_Probs->GetInfectorID());
-            AcquireNewInfection(&strainId);
+            AcquireNewInfection( &strainId );
         }
     }
 
@@ -364,13 +378,40 @@ namespace Kernel
         , relationshipSlots(0)
         , delay_between_adding_relationships_timer(0.0f)
         , potential_exposure_flag(false)
+        , m_pSTIInterventionsContainer( nullptr )
         , relationships_at_death()
-        , num_lifetime_relationships(0)
+        , num_lifetime_relationships()
         , last_6_month_relationships()
+        , last_12_month_relationships()
         , p_sti_node(nullptr)
+        //, m_AssortivityIndex()
+        , m_TotalCoitalActs( 0 )
+        , relationship_properties()
+        , num_unique_partners()
     {
         ZERO_ARRAY( queued_relationships );
         ZERO_ARRAY( active_relationships );
+        ZERO_ARRAY( num_lifetime_relationships );
+
+        for (int i = 0; i < RelationshipType::COUNT; ++i)
+        {
+            m_AssortivityIndex[i] = -1;
+        }
+
+        for( int i = 0; i < UNIQUE_PARTNER_TIME_PERIODS.size(); ++i )
+        {
+            std::vector<PartnerIdToRelEndTimeMap_t> rel_type_vector_of_maps;
+            for( int j = 0; j < RelationshipType::COUNT; ++j )
+            {
+                rel_type_vector_of_maps.push_back( PartnerIdToRelEndTimeMap_t() );
+            }
+            num_unique_partners.push_back( rel_type_vector_of_maps );
+        }
+    }
+
+    const IPKeyValueContainer& IndividualHumanSTI::GetPropertiesConst() const
+    {
+        return Properties;
     }
 
     suids::suid IndividualHumanSTI::GetNodeSuid() const
@@ -390,25 +431,7 @@ namespace Kernel
         float dt
         )
     {
-        bool was_pre_debut = m_age < sexual_debut_age;
-
         IndividualHuman::Update( currenttime, dt );
-
-        // Check for debut
-        bool is_post_debut = m_age >= sexual_debut_age;
-        if (was_pre_debut && is_post_debut)
-        {
-            // Broadcast STIDebut
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-            if (parent->GetEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster) != s_OK)
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, 
-                                               "parent->GetEventContext()",
-                                               "INodeTriggeredInterventionConsumer",
-                                               "IIndividualHumanEventContext" );
-            }
-            broadcaster->TriggerNodeEventObservers( GetEventContext(), IndividualEventTriggerType::STIDebut );
-        }
 
         // ---------------------------------------------------------------
         // --- Update the individual pointers in the paused relationships.
@@ -420,12 +443,51 @@ namespace Kernel
         }
     }
 
+    void IndividualHumanSTI::UpdateAge( float dt )
+    {
+        bool was_pre_debut = m_age < sexual_debut_age;
+
+        IndividualHuman::UpdateAge( dt );
+
+        // Check for debut
+        bool is_post_debut = m_age >= sexual_debut_age;
+        if( was_pre_debut && is_post_debut )
+        {
+            // Broadcast STIDebut
+            broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::STIDebut );
+        }
+    }
+
    void IndividualHumanSTI::UpdateHistory( const IdmDateTime& rCurrentTime, float dt )
    {
-        while( last_6_month_relationships.size() && ( rCurrentTime.time - last_6_month_relationships.front() ) > SIX_MONTHS )
-        {
+       while( (last_6_month_relationships.size() > 0) && ((rCurrentTime.time - last_6_month_relationships.front().second) > SIX_MONTHS) )
+       {
             last_6_month_relationships.pop_front();
-        }
+       }
+       while( (last_12_month_relationships.size() > 0) && ((rCurrentTime.time - last_12_month_relationships.front().second) > TWELVE_MONTHS) )
+       {
+           last_12_month_relationships.pop_front();
+       }
+
+       for( int itp = 0; itp < UNIQUE_PARTNER_TIME_PERIODS.size(); ++itp )
+       {
+           float time_period = UNIQUE_PARTNER_TIME_PERIODS[ itp ];
+           for( int irel = 0; irel < RelationshipType::COUNT; ++irel )
+           {
+               PartnerIdToRelEndTimeMap_t& r_partner_map = num_unique_partners[ itp ][ irel ];
+               for( auto it = r_partner_map.begin(); it != r_partner_map.end();  )
+               {
+                   if( (rCurrentTime.time - it->second) > time_period )
+                   {
+                       it = r_partner_map.erase( it );
+                   }
+                   else
+                   {
+                       ++it;
+                   }
+               }
+           }
+       }
    }
 
     void IndividualHumanSTI::Die(
@@ -472,7 +534,15 @@ namespace Kernel
 
     void IndividualHumanSTI::setupInterventionsContainer()
     {
-        interventions = _new_ STIInterventionsContainer();
+        m_pSTIInterventionsContainer = _new_ STIInterventionsContainer();
+        interventions = m_pSTIInterventionsContainer;
+    }
+
+    void IndividualHumanSTI::UpdateGroupMembership()
+    {
+        const RouteList_t& routes = parent->GetTransmissionRoutes();
+
+        static_cast<NodeSTI*>(p_sti_node)->GetGroupMembershipForIndividual_STI( routes, &relationship_properties, &transmissionGroupMembership );
     }
 
     void IndividualHumanSTI::UpdateInfectiousnessSTI(act_prob_vec_t &act_prob_vec, unsigned int rel_id)
@@ -501,12 +571,12 @@ namespace Kernel
             // including intrahost factors like stage and ART, but excluding condoms
             // Also excluding STI because they're handled separately
             infectiousness += infection->GetInfectiousness();
-            float prob_per_act =  m_mc_weight * infection->GetInfectiousness() * susceptibility->GetModTransmit() * interventions->GetInterventionReducedTransmit();
+            float prob_per_act =  m_mc_weight * infection->GetInfectiousness() * susceptibility->getModTransmit() * interventions->GetInterventionReducedTransmit();
             LOG_DEBUG_F( "prob_per_act based on infectiousness of %f = %f.\n", infection->GetInfectiousness(), prob_per_act );
-            
+
             StrainIdentity tmp_strainIDs;
             infection->GetInfectiousStrainID(&tmp_strainIDs);
-            
+
             if( prob_per_act )
             {
                 // Loop over acts, modifying act probability as needed
@@ -515,27 +585,25 @@ namespace Kernel
                     for( unsigned int act_idx = 0; act_idx < act_prob_i.num_acts; ++act_idx )
                     {
                         LOG_DEBUG_F( "Individual %d depositing contagion PROBABILITY %f into (relationship) transmission group.\n", GetSuid().data, prob_per_act );
-                        parent->DepositFromIndividual(&tmp_strainIDs, prob_per_act * act_prob_i.prob_per_act, &transmissionGroupMembership);
+                        parent->DepositFromIndividual( tmp_strainIDs, prob_per_act * act_prob_i.prob_per_act, &transmissionGroupMembership);
                     }
                 }
             }
         }
 
-        infectiousness *= susceptibility->GetModTransmit() * interventions->GetInterventionReducedTransmit();
-        
+        infectiousness *= susceptibility->getModTransmit() * interventions->GetInterventionReducedTransmit();
+
         // Restore network
         transmissionGroupMembership = transmissionGroupMembershipSave;
     }
 
     void IndividualHumanSTI::UpdateInfectiousness(float dt)
     {
-        LOG_DEBUG_F( "%s: indiv=%d\n", __FUNCTION__, GetSuid().data );
-        if( delay_between_adding_relationships_timer > 0 )
+        if( delay_between_adding_relationships_timer > 0.0f )
         {
             delay_between_adding_relationships_timer -= dt;
         }
 
-        LOG_DEBUG_F( "Individual %lu Updating infectiousness on %d relationships\n", GetSuid().data, relationships.size() );
         // DJK: Why only consummate relationships of males?  What about MSM?  Designate one "consummator" per rel?  <ERAD-1868>
         if( GetGender() == Gender::MALE )
         {
@@ -547,7 +615,7 @@ namespace Kernel
         }
     }
 
-    void IndividualHumanSTI::AcquireNewInfection(StrainIdentity *infstrain, int incubation_period_override )
+    void IndividualHumanSTI::AcquireNewInfection( const IStrainIdentity *infstrain, int incubation_period_override )
     {
         int numInfs = int(infections.size());
         if( (numInfs >= IndividualHumanConfig::max_ind_inf) ||
@@ -585,15 +653,7 @@ namespace Kernel
 
         IndividualHuman::AcquireNewInfection( infstrain, incubation_period_override );
 
-        INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-        if (parent->GetEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster) != s_OK)
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, 
-                                            "parent->GetEventContext()",
-                                            "INodeTriggeredInterventionConsumer",
-                                            "IIndividualHumanEventContext" );
-        }
-        broadcaster->TriggerNodeEventObservers( GetEventContext(), IndividualEventTriggerType::STINewInfection );
+        broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::STINewInfection );
     }
 
     void
@@ -620,7 +680,8 @@ namespace Kernel
         release_assert( p_sti_node );
         ISociety* society = p_sti_node->GetSociety();
 
-        bool is_any_available = false ;
+        float ellapsed_time = 0;
+        bool is_any_available = false;
         bool available[RelationshipType::COUNT];
         float formation_rates[RelationshipType::COUNT];
         ZERO_ARRAY(formation_rates);
@@ -628,20 +689,21 @@ namespace Kernel
         for( int type = 0; type < RelationshipType::COUNT; type++ )
         {
             available[type] = AvailableForRelationship( RelationshipType::Enum(type));
-            is_any_available |= available[type] ;
+            is_any_available |= available[type];
 
             if( available[type] )
             {
                 RelationshipType::Enum rel_type = RelationshipType::Enum(type);
                 RiskGroup::Enum risk_group = IS_EXTRA_ALLOWED(rel_type) ? RiskGroup::HIGH : RiskGroup::LOW;
+                // Formation rates will remain constant across the dt timestep
                 formation_rates[type] = society->GetRates(rel_type)->GetRateForAgeAndSexAndRiskGroup(m_age, m_gender, risk_group);
                 cumulative_rate += formation_rates[type] ;
             }
         }
 
-        if( is_any_available )
+        while( cumulative_rate > 0.0f && is_any_available && ellapsed_time < dt )
         {
-            if (LOG_LEVEL(DEBUG)) 
+            if (LOG_LEVEL(DEBUG))
             {
                 std::stringstream ss;
                 ss << __FUNCTION__ << "individual " << suid.data << " availability { ";
@@ -662,32 +724,43 @@ namespace Kernel
             }
 
             // At least one relationship could be formed
-            if (cumulative_rate > 0.0f)
+            // Advance total ellapsed time by time to next relationship
+            ellapsed_time += randgen->expdist(cumulative_rate);
+            if (ellapsed_time <= dt)
             {
-                float time_to_relationship = randgen->expdist(cumulative_rate);
-                if (time_to_relationship <= dt)
+                float random_draw = randgen->e() * cumulative_rate;
+                float running_sum = 0.0f;
+                int type=0;
+                for (type = 0; type < RelationshipType::COUNT; type++)
                 {
-                    float random_draw = randgen->e() * cumulative_rate;
-                    float running_sum = 0.0f;
-                    int type=0;
-                    for (type = 0; type < RelationshipType::COUNT; type++)
+                    running_sum += formation_rates[type];
+                    if (running_sum > random_draw)
                     {
-                        running_sum += formation_rates[type];
-                        if (running_sum > random_draw)
-                        {
-                            break;
-                        }
+                        break;
                     }
-                    release_assert(type < RelationshipType::COUNT);
+                }
+                release_assert(type < RelationshipType::COUNT);
 
-                    LOG_DEBUG_F( "%s: individual %d joining %s PFA.\n", __FUNCTION__, suid.data, RelationshipType::pairs::lookup_key(type) );
+                LOG_DEBUG_F( "%s: individual %d joining %s PFA.\n", __FUNCTION__, suid.data, RelationshipType::pairs::lookup_key(type) );
 
-                    society->GetPFA(RelationshipType::Enum(type))->AddIndividual(this);
-                    ++queued_relationships[type] ;
-                    release_assert( queued_relationships[type] == 1 );
+                society->GetPFA(RelationshipType::Enum(type))->AddIndividual(this);
+                ++queued_relationships[type] ;
+            }
+
+            // Update statistics for the next round
+            is_any_available = false;
+            cumulative_rate = 0.0f;
+            for( int type = 0; type < RelationshipType::COUNT; type++ )
+            {
+                available[type] = AvailableForRelationship( RelationshipType::Enum(type));
+                is_any_available |= available[type];
+
+                if( available[type] )
+                {
+                    cumulative_rate += formation_rates[type] ;
                 }
             }
-        }
+        } // while ellapsed_time < dt
     }
 
     void
@@ -695,19 +768,12 @@ namespace Kernel
         IRelationship * pNewRelationship
     )
     {
-        // In future we will allow simultaneous multiple relationships but for now not so much.
-        if( relationships.size() > 0 )
-        {
-            LOG_DEBUG_F( "%s: individual %lu is already in %d relationships, adding another one!\n",
-                         __FUNCTION__, GetSuid().data, relationships.size() );
-        }
-
-        relationships.insert( pNewRelationship );
+        relationships.insert(pNewRelationship);
 
         LOG_DEBUG_F( "%s: calling UpdateGroupMembership: %s=>%s.\n",
                     __FUNCTION__, pNewRelationship->GetPropertyKey().c_str(), pNewRelationship->GetPropertyName().c_str() );
 
-        if( Properties.find( pNewRelationship->GetPropertyKey() ) != Properties.end() )
+        if( relationship_properties.find( pNewRelationship->GetPropertyKey() ) != relationship_properties.end() )
         {
             std::ostringstream msg;
             msg << "Individual "
@@ -715,17 +781,16 @@ namespace Kernel
                 << "found existing relationship in the same slot, key ("
                 << pNewRelationship->GetPropertyKey().c_str()
                 << "): "
-                << Properties[ pNewRelationship->GetPropertyKey() ].c_str()
+                << relationship_properties[ pNewRelationship->GetPropertyKey() ]
                 << std::endl;
             throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
         }
-        Properties[ pNewRelationship->GetPropertyKey() ] = pNewRelationship->GetPropertyName();
+        relationship_properties[ pNewRelationship->GetPropertyKey() ] = pNewRelationship->GetSuid().data;
 
         RelationshipType::Enum relationship_type = pNewRelationship->GetType();
 
         --queued_relationships[relationship_type] ;
         ++active_relationships[relationship_type] ;
-        release_assert( queued_relationships[relationship_type] == 0 );
 
         // set slot bit
         uint64_t slot = GetOpenRelationshipSlot();
@@ -741,8 +806,18 @@ namespace Kernel
             delay_between_adding_relationships_timer = IndividualHumanSTIConfig::min_days_between_adding_relationships;
         }
         // DJK: Can these counters live elsewhere?  Either reporter or something parallel to interventions container, e.g. counters container
-        num_lifetime_relationships++;
-        last_6_month_relationships.push_back( float(parent->GetTime().time) );
+        num_lifetime_relationships[ int(relationship_type) ]++;
+        last_6_month_relationships.push_back( std::make_pair( int( relationship_type ), float( parent->GetTime().time ) ) );
+        last_12_month_relationships.push_back( std::make_pair( int( relationship_type ), float( parent->GetTime().time ) ) );
+
+        suids::suid partner_id = pNewRelationship->GetPartnerId( GetSuid() );
+        for( int itp = 0; itp < UNIQUE_PARTNER_TIME_PERIODS.size(); ++itp )
+        {
+            PartnerIdToRelEndTimeMap_t& r_partner_map = num_unique_partners[ itp ][ int( relationship_type ) ];
+            r_partner_map[ partner_id ] = FLT_MAX;
+        }
+
+        broadcaster->TriggerNodeEventObservers(GetEventContext(), EventTrigger::EnteredRelationship);
     }
 
     void
@@ -755,7 +830,7 @@ namespace Kernel
         release_assert( relationships.find(pRelationship) != relationships.end() );
 
         relationships.erase( pRelationship );
-        Properties.erase( pRelationship->GetPropertyKey() );
+        relationship_properties.erase( pRelationship->GetPropertyKey() );
 
         RelationshipType::Enum relationship_type = pRelationship->GetType();
         // These are unsigned quantities, so we'll loop for wrap-around.
@@ -771,6 +846,15 @@ namespace Kernel
         slot2RelationshipDebugMap[ slot ] = -1;
 
         delay_between_adding_relationships_timer = 0.0f;
+
+        suids::suid partner_id = pRelationship->GetPartnerId( GetSuid() );
+        for( int itp = 0; itp < UNIQUE_PARTNER_TIME_PERIODS.size(); ++itp )
+        {
+            PartnerIdToRelEndTimeMap_t& r_partner_map = num_unique_partners[ itp ][ int( relationship_type ) ];
+            r_partner_map[ partner_id ] = float( parent->GetTime().time );
+        }
+
+        broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::ExitedRelationship );
     }
 
     bool
@@ -811,12 +895,19 @@ namespace Kernel
     }
 
     float 
-    IndividualHumanSTI::GetCoInfectiveFactor()
+    IndividualHumanSTI::GetCoInfectiveAcquisitionFactor()
+    const
+    {
+        return has_other_sti_co_infection ? IndividualHumanSTIConfig::sti_coinfection_acq_mult : 1.0f;
+    }
+
+    float 
+    IndividualHumanSTI::GetCoInfectiveTransmissionFactor()
     const
     {
         if( has_other_sti_co_infection )
         {
-            return IndividualHumanSTIConfig::sti_coinfection_mult;
+            return IndividualHumanSTIConfig::sti_coinfection_trans_mult;
         }
         else
         {
@@ -826,13 +917,7 @@ namespace Kernel
 
     bool IndividualHumanSTI::IsCircumcised() const
     {
-        ISTICircumcisionConsumer *ic = nullptr;
-        if (s_OK != interventions->QueryInterface(GET_IID( ISTICircumcisionConsumer ), (void**)&ic) )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "interventions", "ISTICircumcisionConsumer", "interventions" );
-        }
-        
-        return ic->IsCircumcised();
+        return m_pSTIInterventionsContainer->IsCircumcised();
     }
 
     void
@@ -878,35 +963,30 @@ namespace Kernel
     bool IndividualHumanSTI::AvailableForRelationship(RelationshipType::Enum relType) const
     {
         unsigned int effective_rels[ RelationshipType::COUNT ];
-        bool no_queued_relationships = true ;
-        bool no_relationships_or_allowed_extra = true ;
+        bool no_relationships_or_allowed_extra = true;
+        unsigned int total_rels = 0;
         for( int type = 0; type < RelationshipType::COUNT; type++ )
         {
-            effective_rels[ type ] = active_relationships[type];
-            no_queued_relationships &= (queued_relationships[ type ] == 0) ;
-            no_relationships_or_allowed_extra &= ( (effective_rels[ type ] == 0) || 
-                                                   ( (effective_rels[ type ] > 0) && IS_EXTRA_ALLOWED(type))) ;
+            effective_rels[ type ] = active_relationships[type] + queued_relationships[type];
+            total_rels += effective_rels[ type ];
+            no_relationships_or_allowed_extra &= ( (effective_rels[type] == 0) || 
+                                                   ( (effective_rels[type] > 0) && IS_EXTRA_ALLOWED(type)));
         }
 
         // --------------------------------------------------------------------
-        // --- An individual can be queued for only one relationship at a time.
-        // --- checking queued_..._relationships prevents individuals without
-        // --- promiscuity flags set from becoming concurrent.
+        // --- An individual is eligible for a relationship of this type if:
+        // --- 1) Older than debut age
+        // --- 2) Sufficient time has passed since last rel end
+        // --- 3) No rels of this type, or extra-relational flag is present
+        // --- 4) Num active plus queued rels is less than max
         // --------------------------------------------------------------------
         bool ret = ( (GetAge() >= sexual_debut_age) &&
                      (delay_between_adding_relationships_timer <= 0.0f) &&
-                     no_queued_relationships &&
                      no_relationships_or_allowed_extra &&
-                     (effective_rels[relType] < max_relationships[relType])
+                     (effective_rels[relType] < max_relationships[relType]) &&
+                     total_rels <= MAX_SLOTS
                    );
 
-        if( (relationshipSlots == SLOTS_FILLED) && (ret == true) )
-        {
-            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Individual reporting available when all slots filled up." );
-        }
-
-        LOG_DEBUG_F( "%s: individual %d returning %d at time %.2f from node %d \n",
-                     __FUNCTION__, GetSuid().data, ret, (float) GetParent()->GetTime().time, GetParent()->GetSuid().data );
 
         return ret;
     }
@@ -953,10 +1033,47 @@ namespace Kernel
     }
 
     NaturalNumber
+    IndividualHumanSTI::GetLast6MonthRels( RelationshipType::Enum ofType )
+    const
+    {
+        auto func = [ ofType ]( std::pair<int, float> p ) { return (ofType == p.first); };
+        int num = std::count_if( last_6_month_relationships.begin(), last_6_month_relationships.end(), func );
+        return num;
+    }
+
+    NaturalNumber
+    IndividualHumanSTI::GetLast12MonthRels( RelationshipType::Enum ofType )
+    const
+    {
+        auto func = [ ofType ]( std::pair<int, float> p ) { return (ofType == p.first); };
+        int num = std::count_if( last_12_month_relationships.begin(), last_12_month_relationships.end(), func );
+        return num;
+    }
+
+    NaturalNumber
+    IndividualHumanSTI::GetNumUniquePartners( int itp, int irel )
+    const
+    {
+        return num_unique_partners[ itp ][ irel ].size();
+    }
+
+    NaturalNumber
     IndividualHumanSTI::GetLifetimeRelationshipCount()
     const
     {
-        return num_lifetime_relationships;
+        unsigned int sum = 0;
+        for( int type = 0; type < RelationshipType::COUNT; type++ )
+        {
+            sum += num_lifetime_relationships[type];
+        }
+        return sum;
+    }
+
+    NaturalNumber
+    IndividualHumanSTI::GetLifetimeRelationshipCount( RelationshipType::Enum ofType )
+    const
+    {
+        return num_lifetime_relationships[ ofType ];
     }
 
     NaturalNumber
@@ -989,7 +1106,7 @@ namespace Kernel
            << ",num_relationships="
            << relationships.size()
            << ",num_relationships_lifetime="
-           << num_lifetime_relationships
+           << GetLifetimeRelationshipCount()
            << ",num_relationships_last_6_months="
            << last_6_month_relationships.size()
            << ",promiscuity_flags="
@@ -1111,24 +1228,52 @@ namespace Kernel
             {
                 LOG_DEBUG_F( "%s: individual %lu is in %s PFA - removing.\n", __FUNCTION__, suid.data, RelationshipType::pairs::lookup_key(type) );
                 society->GetPFA(RelationshipType::Enum(type))->RemoveIndividual(this);
-                --queued_relationships[type] ;
-                release_assert( queued_relationships[type] == 0 );
+                queued_relationships[type] = 0;
             }
         }
     }
-    
+
     ProbabilityNumber IndividualHumanSTI::getProbabilityUsingCondomThisAct( const IRelationshipParameters* pRelParams ) const
     {
-        ISTIBarrierConsumer* p_barrier = nullptr;
-        if (interventions->QueryInterface(GET_IID(ISTIBarrierConsumer), (void**)&p_barrier) != s_OK)
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "interventions", "ISTIBarrierConsumer", "InterventionsContainer" );
-        }
-        const Sigmoid& probs = p_barrier->GetSTIBarrierProbabilitiesByRelType( pRelParams );
+        const Sigmoid& probs = m_pSTIInterventionsContainer->GetSTIBarrierProbabilitiesByRelType( pRelParams );
         float year = float(GetParent()->GetTime().Year());
         ProbabilityNumber prob = probs.variableWidthAndHeightSigmoid( year );
         //LOG_DEBUG_F( "%s: returning %f from Sigmoid::vWAHS( %f, %f, %f, %f, %f )\n", __FUNCTION__, (float) prob, year, probs.midyear, probs.rate, probs.early, probs.late );
         return prob;
+    }
+
+    void IndividualHumanSTI::ClearAssortivityIndexes()
+    {
+        for (int i = 0; i < RelationshipType::COUNT; ++i)
+        {
+            m_AssortivityIndex[i] = -1;
+        }
+    }
+
+    int IndividualHumanSTI::GetAssortivityIndex( RelationshipType::Enum type ) const
+    {
+        return m_AssortivityIndex[ type ];
+    }
+    void IndividualHumanSTI::SetAssortivityIndex( RelationshipType::Enum type, int index )
+    {
+        m_AssortivityIndex[ type ] = index;
+    }
+
+    void IndividualHumanSTI::UpdateNumCoitalActs( uint32_t numActs )
+    {
+        unsigned int prev_total_coital_acts = m_TotalCoitalActs;
+
+        m_TotalCoitalActs += numActs;
+
+        if( (prev_total_coital_acts == 0) && (m_TotalCoitalActs > 0) )
+        {
+            broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::FirstCoitalAct );
+        }
+    }
+
+    uint32_t IndividualHumanSTI::GetTotalCoitalActs() const
+    {
+        return m_TotalCoitalActs;
     }
 
     REGISTER_SERIALIZABLE(IndividualHumanSTI);
@@ -1152,6 +1297,39 @@ namespace Kernel
                 IRelationship* p_rel = nullptr;
                 ar & p_rel;
                 rel_set.insert( p_rel );
+            }
+        }
+        ar.endArray();
+    }
+
+    void serialize_pair_list( IArchive& ar, std::list < std::pair<int, float>>& pairList )
+    {
+        size_t count = ar.IsWriter() ? pairList.size() : -1;
+
+        ar.startArray( count );
+        if( ar.IsWriter() )
+        {
+            for( auto& entry : pairList )
+            {
+                int first = entry.first;
+                float second = entry.second;
+                ar.startObject();
+                ar.labelElement( "first" ) & first;
+                ar.labelElement( "second" ) & second;
+                ar.endObject();
+            }
+        }
+        else
+        {
+            for( size_t i = 0; i < count; ++i )
+            {
+                int first = 0;
+                float second = 0.0;
+                ar.startObject();
+                ar.labelElement( "first" ) & first;
+                ar.labelElement( "second" ) & second;
+                ar.endObject();
+                pairList.push_back( std::make_pair( first, second ) );
             }
         }
         ar.endArray();
@@ -1184,8 +1362,18 @@ namespace Kernel
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         //ar.labelElement("relationships_at_death"                  ); serialize_relationships( ar, human_sti.relationships_at_death );
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        ar.labelElement("num_lifetime_relationships"              ) & human_sti.num_lifetime_relationships;
-        ar.labelElement("last_6_month_relationships"              ) & human_sti.last_6_month_relationships;
+        ar.labelElement("num_lifetime_relationships"              ); ar.serialize( human_sti.num_lifetime_relationships, rel_count );
+        ar.labelElement("last_6_month_relationships"              ); serialize_pair_list( ar, human_sti.last_6_month_relationships );
+        ar.labelElement("last_12_month_relationships"             ); serialize_pair_list( ar, human_sti.last_12_month_relationships );
         ar.labelElement("slot2RelationshipDebugMap"               ) & human_sti.slot2RelationshipDebugMap;
+        ar.labelElement("m_AssortivityIndex"                      ); ar.serialize( human_sti.m_AssortivityIndex, rel_count );
+        ar.labelElement("m_TotalCoitalActs"                       ) & human_sti.m_TotalCoitalActs;
+        ar.labelElement("relationship_properties"                 ) & human_sti.relationship_properties;
+        ar.labelElement("num_unique_partners"                     ) & human_sti.num_unique_partners;
+
+        if( human_sti.m_pSTIInterventionsContainer == nullptr )
+        {
+            human_sti.m_pSTIInterventionsContainer = static_cast<STIInterventionsContainer*>(human_sti.interventions);
+        }
     }
 }

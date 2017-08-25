@@ -8,14 +8,6 @@
         "Simulation_Duration":300,
         "Simulation_Timestep": 5, 
         "TB_Active_Cure_Rate":1e-09,
-        "TB_Fast_Progressor_Rate":1,
-        "Listed_Events": [
-            "ProviderOrdersTBTest",
-            "TBActivation",
-            "TBMDRTestNegative",
-            "TBMDRTestPositive",
-            "TBMDRTestDefault", 
-            "TBFailedDrugRegimen"
-        ]
+        "TB_Fast_Progressor_Rate":1
     }
 }

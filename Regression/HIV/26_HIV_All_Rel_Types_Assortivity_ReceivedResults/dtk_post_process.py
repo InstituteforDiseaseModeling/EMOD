@@ -21,22 +21,26 @@ invoked by calling this application method.
 
 import os
 import json
+from jsonmerge import merge
+import argparse
+#import matplotlib.pyplot as plt
+#import numpy as np
 
 # ----------
 # Constants
 # ----------
-input_path                  = "//bayesianfil01/IDM/home/dbridenbecker/input/"
-config_filename             = "config.json"
-input_filename              = "output/RelationshipStart.csv"
-pfa_results_filename        = "output/PFA_Results.csv"
-base_assortivity_summary_fn = "output/Assortivity_Summary"
-base_assortivity_details_fn = "output/Assortivity_Details"
+input_path                        = "//bayesianfil01/IDM/home/dbridenbecker/input/"
+config_filename                   = "config.json"
+input_filename                    = "RelationshipStart.csv"
+pfa_results_filename              = "PFA_Results.csv"
+base_assortivity_summary_filename = "Assortivity_Summary"
+base_assortivity_details_filename = "Assortivity_Details"
 
 # -------------------------------------------------------------------------
 # The RelationshipType code here is intended to mimic the RelationshipType
 # enum found in Relationship.h
 # -------------------------------------------------------------------------
-NumRelationshipTypes = 3
+NumRelationshipTypes = 4
 
 def RelationshipType_LookUpName( rel_type ):
     if rel_type == 0:
@@ -45,6 +49,8 @@ def RelationshipType_LookUpName( rel_type ):
         return "INFORMAL"
     elif rel_type == 2:
         return "MARITAL"
+    elif rel_type == 3:
+        return "COMMERCIAL"
     else:
         raise exception( "Unknown relationshp type = " + str(rel_type) )
 
@@ -234,8 +240,8 @@ class Demographics:
         config_file.close()
     
     def ReadSocietyData( self ):
-        found = 0
         #demo_fn_array = self.demo_fn_str.split(";")
+        overlayed_json = {}
         for demo_fn in self.demo_fn_array:
             filename = demo_fn
             if os.path.isfile( filename ) == False :
@@ -243,19 +249,20 @@ class Demographics:
             #print( "filename = " + filename + "\n" )
             demo_file = open( filename, "r" )
             demo_json = json.loads( demo_file.read() )
-            if "Defaults" in demo_json.keys():
-                if "Society" in demo_json["Defaults"].keys():
-                    self.society_json = demo_json["Defaults"]["Society"] # !!! GOT DATA !!!
-                    found = 1
+            overlayed_json = merge( overlayed_json, demo_json )
             demo_file.close()
-        if found == 0:
+
+        if "Defaults" in overlayed_json.keys():
+            if "Society" in overlayed_json["Defaults"].keys():
+                self.society_json = overlayed_json["Defaults"]["Society"] # !!! GOT DATA !!!
+        else:
             raise exception("Could not find Society element in demographics")
 
     def GetParameters( self ):
         param_list = []
         for rel_type in range(NumRelationshipTypes):
-            rel_params_name = "Pair_Formation_Parameters_" + RelationshipType_LookUpName( rel_type )
-            param = Parameters( self.society_json[ rel_params_name ] )
+            rel_params_name = RelationshipType_LookUpName( rel_type )
+            param = Parameters( self.society_json[ rel_params_name ]["Pair_Formation_Parameters"] )
             param_list.append( param )
         return param_list
 
@@ -297,8 +304,8 @@ def GetColumnIndexesFromHeader( header ):
     used_columns.append( "B_age"                  )
     used_columns.append( "A_is_infected"          )
     used_columns.append( "B_is_infected"          )
-    used_columns.append( "A_Props"                )
-    used_columns.append( "B_Props"                )
+    used_columns.append( "A_IndividualProperties" )
+    used_columns.append( "B_IndividualProperties" )
     used_columns.append( "A_STI_CoInfection"      )
     used_columns.append( "B_STI_CoInfection"      )
     used_columns.append( "A_HIV_Tested_Positive"  )
@@ -342,8 +349,8 @@ def ReadData( filename ):
             data.age_B                  = float(line_array[ col_indexes_map["B_age"                 ] ])
             data.infected_A             = int(  line_array[ col_indexes_map["A_is_infected"         ] ])
             data.infected_B             = int(  line_array[ col_indexes_map["B_is_infected"         ] ])
-            data.props_A                =       line_array[ col_indexes_map["A_Props"               ] ]
-            data.props_B                =       line_array[ col_indexes_map["B_Props"               ] ]
+            data.props_A                =       line_array[ col_indexes_map["A_IndividualProperties"] ]
+            data.props_B                =       line_array[ col_indexes_map["B_IndividualProperties"] ]
 
             if header.find( "A_STI_CoInfection" ) > 0:
                 data.STI_CoInfected_A       = int(  line_array[ col_indexes_map["A_STI_CoInfection"     ] ] )
@@ -355,6 +362,7 @@ def ReadData( filename ):
 
             #print "time={0}, id_A={1}, id_B={2}, age_A={3}, age_B={4}".format( data.start_time, data.id_A, data.id_B, data.age_A, data.age_B )
 
+            #if( data.start_time > 5000 ):
             rel_data_list.append( data )
 
     return rel_data_list
@@ -466,12 +474,81 @@ class ChiSquare:
         self.critical_value = self.GetChiSquareCriticalValue( self.df )
 
 # -----------------------------------------------------------------------
+# -----------------------------------------------------------------------
+
+#def plotBunch( all_data, plot_name, baseline_data=None ):
+#    num_chans = all_data[0]["Header"]["Channels"]
+#    plt.suptitle( plot_name )
+#    square_root = 4
+#    if num_chans > 30:
+#        square_root = 6
+#    elif num_chans > 16:
+#        square_root = 5
+#    plots = []
+#    labels = []
+#
+#    ncols = square_root
+#    nrows = num_chans / square_root
+#    if nrows < 1:
+#        nrows = 1
+#
+#    idx = 0
+#    for chan_title in sorted(all_data[0]["Channels"]):
+#        idx_x = idx%square_root
+#        idx_y = int(idx/square_root)
+#
+#        try:
+#            subplot = plt.subplot2grid( (nrows,ncols), (idx_y,idx_x)  ) 
+#            colors = [ 'b', 'g', 'c', 'm', 'y', 'k' ]
+#
+#            if baseline_data is not None:
+#                tstep = 1
+#                if( "Simulation_Timestep" in baseline_data["Header"] ):
+#                    tstep = baseline_data["Header"]["Simulation_Timestep"]
+#                x_len = len( baseline_data["Channels"][chan_title]["Data"] )
+#                x_data = np.arange( 0, x_len*tstep, tstep )
+#                plots.append( subplot.plot( x_data, baseline_data["Channels"][chan_title]["Data"], 'r-', linewidth=2 ) )
+#
+#            for sim_idx in range(0,len(all_data)):
+#                labels.append(str(sim_idx))
+#
+#                x_len = len( all_data[sim_idx]["Channels"][chan_title]["Data"] )
+#
+#                tstep = 1
+#                if( "Simulation_Timestep" in all_data[sim_idx]["Header"] ):
+#                    tstep = all_data[sim_idx]["Header"]["Simulation_Timestep"]
+#
+#                x_data = np.arange( 0, x_len*tstep, tstep )
+#
+#                plots.append( subplot.plot( x_data, all_data[sim_idx]["Channels"][chan_title]["Data"], colors[sim_idx%len(colors)] + '-' ) )
+#
+#            plt.title( chan_title )
+#        except Exception as ex:
+#            print str(ex)
+#        if idx == (square_root*square_root)-1:
+#            break
+#
+#        idx += 1
+#
+#    #plt.legend( plots, labels )
+#
+#    #plt.set_size( 'xx-small' )
+#    plt.subplots_adjust( left=0.04, right=0.99, bottom=0.05, top =0.91, wspace=0.3, hspace=0.3 )
+#    #pylab.savefig( plot_name.replace( " ", "_" ) + ".png", bbox_inches='tight', orientation='landscape' )
+#    plt.show()
+#    # print( "Exiting from plotBunch.\n" )
+
+
+# -----------------------------------------------------------------------
 # Write the pair forming agent results to a file.  The results compare
 # the expected distribution of relationships to the actual distribution.
 # The method uses the Chi-Square statistic to compare the distributions.
 # This comparison is based on the logic in BehaviorPfa.cpp.
 # -----------------------------------------------------------------------
 def WritePfaResults( filename, params_list, rel_count_fbin_mbin_type ):
+
+    exp_fn = "output/PFA_expected.csv"
+    exp_file = open( exp_fn, "w" )
     with open( filename, "w" ) as output_file:
         # -----------------------------------------------------
         # Write one matrix of counts and chi-square statistics 
@@ -479,23 +556,47 @@ def WritePfaResults( filename, params_list, rel_count_fbin_mbin_type ):
         # -----------------------------------------------------
 
         for rel_type in range(NumRelationshipTypes):
+
+            act_data = []
+            act_data.append( {} )
+            act_data[0]["Header"] = {}
+            act_data[0]["Header"]["Channels"] = params_list[rel_type].num_bins_m
+            act_data[0]["Header"]["Simulation_Timestep"] = 1
+            act_data[0]["Channels"] = {}
+
+            exp_data = {}
+            exp_data["Header"] = {}
+            exp_data["Header"]["Channels"] = params_list[rel_type].num_bins_m
+            exp_data["Header"]["Simulation_Timestep"] = 1
+            exp_data["Channels"] = {}
+
             # ------------
             # Write Header
             # ------------
             rel_str = RelationshipType_LookUpName( rel_type )
             output_file.write( rel_str )
+            exp_file.write( rel_str )
+             
             for female_bin_index in range(params_list[rel_type].num_bins_f):
                 age_f = params_list[rel_type].initial_age_years_f + float(female_bin_index)*params_list[rel_type].age_increment_years_f
                 output_file.write( ",F=" + str(age_f) )
+                exp_file.write( ",F=" + str(age_f) )
 
             output_file.write( ",df,Crit_Val,CS_Stat,Pass" )
             output_file.write( "\n" )
+            exp_file.write( "\n" )
 
             # -------------------------------------------------------------
             # Write Matrix - male bins are rows and female bins are columns
             # -------------------------------------------------------------
             for male_bin_index in range(params_list[rel_type].num_bins_m):
                 age_m = params_list[rel_type].GetAgeFromIndexMale( male_bin_index )
+                age_m_str = "M=" + str(age_m)
+                act_data[0]["Channels"][age_m_str] = {}
+                act_data[0]["Channels"][age_m_str]["Data"] = []
+                exp_data["Channels"][age_m_str] = {}
+                exp_data["Channels"][age_m_str]["Data"] = []
+
                 total_females_for_this_age_male = 0
                 for female_bin_index in range(params_list[rel_type].num_bins_f):
                     act = rel_count_fbin_mbin_type[ rel_type ][ male_bin_index ][ female_bin_index ]
@@ -504,10 +605,13 @@ def WritePfaResults( filename, params_list, rel_count_fbin_mbin_type ):
                 ftotal_females_for_this_age_male = float(total_females_for_this_age_male)
                 actual = []
                 expected = []
-                output_file.write( "M=" + str(age_m) )
+                output_file.write( age_m_str )
+                exp_file.write( age_m_str )
+
                 for female_bin_index in range(params_list[rel_type].num_bins_f):
                     act = rel_count_fbin_mbin_type[ rel_type ][ male_bin_index ][ female_bin_index ]
                     output_file.write( "," + str( act ) )
+                    exp_file.write( "," + str( act ) )
                     
                     # ------------------------------------
                     # Save data for Chi-Square calculation
@@ -518,6 +622,9 @@ def WritePfaResults( filename, params_list, rel_count_fbin_mbin_type ):
                     #print( str(ftotal_females_for_this_age_male) + " * " + str(mp_val) + " = " + str(fexp) + "\n" )
                     actual.append( fact )
                     expected.append( fexp )
+
+                    act_data[0]["Channels"][age_m_str]["Data"].append( fact )
+                    exp_data["Channels"][age_m_str]["Data"].append( fexp )
 
                 # -----------------------------------------------------
                 # Calculate Chi-Square Statistic and determine
@@ -534,9 +641,18 @@ def WritePfaResults( filename, params_list, rel_count_fbin_mbin_type ):
                 output_file.write( "," + str(cs.statistic) )
                 output_file.write( "," + str(passed) )
                 output_file.write( "\n" )
+                exp_file.write( "\n" )
 
             output_file.write( "\n" )
             output_file.write( "\n" )
+
+            exp_file.write( "\n" )
+            exp_file.write( "\n" )
+
+            #plot_title = RelationshipType_LookUpName( rel_type )
+            #plotBunch( act_data, plot_title, exp_data )
+
+    exp_file.close()
 
 # -------------------------------------------------------------------------------
 # Write a summary of the Assortivity results.  This is the break down of how
@@ -645,8 +761,20 @@ def application():
 
     print( "You are here! " + os.getcwd() )
 
-    if os.path.isfile( input_filename ) == False :
-        print( "!!!! Can't open " + input_filename +"!!!!" )
+    #parser = argparse.ArgumentParser()
+    #parser.add_argument('output_dir', help='Directory containing data.  One directory up should contain config.json.')
+    #args = parser.parse_args()
+    #
+    #output_dir = args.output_dir
+    output_dir = "output"
+
+    input_fn                    = os.path.join( output_dir, input_filename                    )
+    pfa_results_fn              = os.path.join( output_dir, pfa_results_filename              )
+    base_assortivity_summary_fn = os.path.join( output_dir, base_assortivity_summary_filename )
+    base_assortivity_details_fn = os.path.join( output_dir, base_assortivity_details_filename )
+    
+    if os.path.isfile( input_fn ) == False :
+        print( "!!!! Can't open " + input_fn +"!!!!" )
         return
 
     # ------------------------------------------------------
@@ -663,7 +791,7 @@ def application():
     # -----------------------------
     # Collect data from input file
     # -----------------------------
-    rel_data_list = ReadData( input_filename )
+    rel_data_list = ReadData( input_fn )
 
     print( "read data") 
     # ---------------------------
@@ -717,7 +845,7 @@ def application():
     # -------------------------------
     # Write the PFA results to a file
     # -------------------------------
-    WritePfaResults( pfa_results_filename, params_list, rel_count_fbin_mbin_type )
+    WritePfaResults( pfa_results_fn, params_list, rel_count_fbin_mbin_type )
 
     print( "wrote pfa" )
     for rel_type in range(NumRelationshipTypes):
@@ -729,5 +857,6 @@ def application():
             WriteAssortivityResultsDetails( det_fn, params_list[ rel_type ], rel_count_prop_fbin_mbin_type[ rel_type ] )
 
     print ("post processing complete")
+
 if __name__ == "__main__":
     application()

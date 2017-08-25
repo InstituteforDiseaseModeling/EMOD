@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -25,13 +25,12 @@ namespace Kernel
         DelayedIntervention( const DelayedIntervention& );
         virtual ~DelayedIntervention();
 
-        virtual bool Configure( const Configuration* config );
-        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO );
-        virtual void SetContextTo( IIndividualHumanContext *context );
+        virtual bool Configure( const Configuration* config ) override;
+        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO ) override;
 
         // IDistributingDistributableIntervention
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
-        virtual void Update(float dt);
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+        virtual void Update(float dt) override;
 
         virtual void Callback( float dt );
 
@@ -39,12 +38,11 @@ namespace Kernel
         virtual void PreConfigure( const Configuration* config );
         virtual void DistributionConfigure( const Configuration* config );
         virtual void InterventionConfigure( const Configuration* config );
-        virtual void InterventionValidate();
+        virtual void InterventionValidate( const std::string& rDataLocation );
         virtual void DelayValidate();
 
         virtual void CalculateDelay();
 
-        IIndividualHumanContext *parent;
         CountdownTimer remaining_delay_days;
         float coverage;
 

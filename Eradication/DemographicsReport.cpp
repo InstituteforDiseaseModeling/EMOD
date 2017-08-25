@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -22,7 +22,7 @@ using namespace std;
 using namespace json;
 using namespace Kernel;
 
-static const char * _module = "DemographicsReport";
+SETUP_LOGGING( "DemographicsReport" )
 
 static const std::string _report_name = "DemographicsSummary.json";
 
@@ -33,7 +33,6 @@ float DemographicsReport::age_buckets[] = {  1825.0f,  3650.0f,  5475.0f,  7300.
                                             20075.0f, 21900.0f, 23725.0f, 25550.0f, 27375.0f,
                                             29200.0f, 31025.0f, 32850.0f, 34675.0f, 36500.0f };
 
-// TODO: can use fancy boost::format stuff here to populate from above?
 std::string DemographicsReport::age_ranges[] = {    "<5",   "5-9", "10-14", "15-19", "20-24", "25-29", "30-34",
                                                  "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", 
                                                  "70-74", "75-79", "80-84", "85-89", "90-94", "95-99", ">100" };

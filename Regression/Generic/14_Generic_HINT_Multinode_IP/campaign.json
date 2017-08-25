@@ -1,0 +1,51 @@
+{
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            },
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0
+                },
+                "Property_Restrictions": [
+                    "Risk:Low"
+                ],
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 75,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 2 ]
+            },
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.05,
+                "Intervention_Config": {
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0
+                },
+                "Property_Restrictions": [
+                    "Risk:High"
+                ],
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

@@ -51,7 +51,7 @@
                }, 
                "SEA": {
                     "Enable_Sea_Migration": 0, 
-                    "Sea_Migration_Filename": "Madagascar_Nosibe_2.5arcmin_sea_migration.bin"
+                    "Sea_Migration_Filename": ""
                }
         },  
         "PRIMARY": {
@@ -68,18 +68,7 @@
                     "arabiensis",
                     "funestus",
                     "gambiae"
-                ],
-                "Vector_Species_Params": {
-                    "arabiensis": {
-                        "Immature_Duration": 2
-                    },
-                    "funestus": {
-                        "Immature_Duration": 2
-                    },
-                    "gambiae": {
-                        "Immature_Duration": 2
-                    }
-                }
+                ]
             },
             "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
             "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_EVERY_DAY"

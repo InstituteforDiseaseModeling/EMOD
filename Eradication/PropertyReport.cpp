@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,7 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 using namespace std;
 using namespace json;
 
-static const char * _module = "PropertyReport";
+SETUP_LOGGING( "PropertyReport" )
 
 static const std::string _report_name = "PropertyReport.json";
 
@@ -69,8 +69,8 @@ PropertyReport::GenerateAllPermutationsOnce(
         keys.erase( key );
         //std::cout << "key = " << key << std::endl;
         //std::cout << "Iterating over " << Kernel::Node::distribs[ key ].size() << " values for key " << key << std::endl;
-        IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( key );
-        for( IPKeyValue kv : p_ip->GetValues() )
+        const IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( key );
+        for( auto kv : p_ip->GetValues<IPKeyValueContainer>() )
         {
             std::string value = kv.GetValueAsString();
             //std::cout << "inserting key-value pair into perm: " << key << ":" << value << std::endl;
@@ -125,8 +125,8 @@ PropertyReport::LogIndividualData(
             GenerateAllPermutationsOnce( individual, permKeys, actualPerm ); // call this just first time.
         }
 
-        const auto * pProp = individual->GetProperties();
-        if( pProp->size() == 0 )
+        tProperties prop_map = individual->GetProperties()->GetOldVersion();
+        if( prop_map.size() == 0 )
         {
             LOG_WARN_F( "Individual %lu aged %f (years) had no properties in %s.\n", individual->GetSuid().data, individual->GetAge()/DAYSPERYEAR, __FUNCTION__ );
             // This seems to be people reaching "old age" (i.e., over 125)
@@ -134,7 +134,7 @@ PropertyReport::LogIndividualData(
         }
 
         // Copy all property keys from src to dest but only if present in permKeys
-        auto src = getKeys( *pProp );
+        auto src = getKeys( prop_map );
 
         // copy-if setup
         std::vector<std::string> dest( src.size() );
@@ -149,7 +149,7 @@ PropertyReport::LogIndividualData(
         tProperties permProps;
         for( auto &entry : dest )
         {
-            permProps.insert( std::make_pair( entry, pProp->at(entry) ) );
+            permProps.insert( std::make_pair( entry, prop_map.at(entry) ) );
         }
         // Try an optimized solution that constructs a reporting bucket string based entirely
         // on the properties of the individual. But we need some rules. Let's start with simple

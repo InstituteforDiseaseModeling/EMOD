@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -22,7 +22,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 using namespace std;
 using namespace json;
 
-static const char * _module = "Report";
+SETUP_LOGGING( "Report" )
 
 const string Report::_stat_pop_label       ( "Statistical Population" );
 const string Report::_susceptible_pop_label( "Susceptible Population" );
@@ -40,7 +40,7 @@ const string Report::_cum_reported_infections_label( "Cumulative Reported Infect
 const string Report::_hum_infectious_res_label( "Human Infectious Reservoir" );
 const string Report::_log_prev_label( "Log Prevalence" );
 const string Report::_infection_rate_label( "Daily (Human) Infection Rate" );
-const string Report::_aoi_label( "Age Of Infection" );
+//const string Report::_aoi_label( "Mean Age Of Infection" );
 
 /////////////////////////
 // Initialization methods
@@ -80,27 +80,8 @@ void Report::BeginTimestep()
 
 void Report::EndTimestep( float currentTime, float dt )
 {
-//#ifdef __GNUC__
-//    auto now = clock(); // msec on linux, seconds on windoze!
-//#else
-//    auto now = GetTickCount(); // msec on win
-//#endif
-//
-//    float diff = 0;
-//    if( last_time > 0 )
-//    {
-//        //std::cout << "now = " << now << ", last = " << last_time << std::endl;
-//        diff = now - last_time;
-//    }
     Accumulate("Disease Deaths", disease_deaths);
-    //Accumulate("Timestep Wallclock Duration", diff);
     BaseChannelReport::EndTimestep( currentTime, dt );
-    //last_time = clock();
-//#ifdef __GNUC__
-//    last_time = clock(); // msec on linux, seconds on windoze!
-//#else
-//    last_time = GetTickCount();
-//#endif
 }
 
 void
@@ -129,12 +110,13 @@ Report::LogNodeData(
     Kernel::INodeContext * pNC
 )
 {
+
     LOG_DEBUG( "LogNodeData\n" );
 
     Accumulate(_stat_pop_label, pNC->GetStatPop());
     Accumulate("Births", pNC->GetBirths());
     Accumulate("Infected", pNC->GetInfected());
-    //Accumulate(_aoi_label, pNC->GetMeanAgeInfection() * pNC->GetInfected());
+    //Accumulate(_aoi_label: pNC->GetMeanAgeInfection() ); // * pNC->GetInfected());
 
     if (pNC->GetLocalWeather())
     {

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,15 +15,15 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Debug.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 #include "EventTrigger.h"
-#include "SimulationConfig.h"  // for verifying string triggers are 'valid'
 #include "IIndividualHuman.h"
 
-static const char * _module = "NodeLevelHealthTriggeredIV";
+SETUP_LOGGING( "NodeLevelHealthTriggeredIV" )
 
 namespace Kernel
 {
     BEGIN_QUERY_INTERFACE_BODY(NodeLevelHealthTriggeredIV)
         HANDLE_INTERFACE(IConfigurable)
+        HANDLE_INTERFACE(IBaseIntervention)
         HANDLE_INTERFACE(INodeDistributableIntervention)
         HANDLE_INTERFACE(IIndividualEventObserver)
         HANDLE_ISUPPORTS_VIA(INodeDistributableIntervention)
@@ -32,18 +32,20 @@ namespace Kernel
     IMPLEMENT_FACTORY_REGISTERED(NodeLevelHealthTriggeredIV)
 
     NodeLevelHealthTriggeredIV::NodeLevelHealthTriggeredIV()
-    : parent(nullptr)
+    : BaseNodeIntervention()
     , m_trigger_conditions()
     , max_duration(0)
     , duration(0)
-    //, demographic_restrictions(true,TargetDemographicType::ExplicitAgeRanges)
+    , node_property_restrictions()
     , demographic_restrictions()
     , m_disqualified_by_coverage_only(false)
     , blackout_period(0.0)
     , blackout_time_remaining(0.0)
-    , blackout_event_trigger("UNINITIALIZED STRING")
+    , blackout_event_trigger()
+    , blackout_on_first_occurrence(false)
     , notification_occured(false)
-    , event_occured_map()
+    , distribute_on_return_home(false)
+    , event_occured_list()
     , event_occurred_while_resident_away()
     , actual_individual_intervention_config()
     , actual_node_intervention_config()
@@ -53,7 +55,11 @@ namespace Kernel
     {
     }
 
-    NodeLevelHealthTriggeredIV::~NodeLevelHealthTriggeredIV() { }
+    NodeLevelHealthTriggeredIV::~NodeLevelHealthTriggeredIV()
+    { 
+        delete _di;
+        delete _ndi;
+    }
     int NodeLevelHealthTriggeredIV::AddRef()
     {
         return BaseNodeIntervention::AddRef();
@@ -61,98 +67,6 @@ namespace Kernel
     int NodeLevelHealthTriggeredIV::Release()
     {
         return BaseNodeIntervention::Release();
-    }
-
-    bool
-    NodeLevelHealthTriggeredIV::ConfigureTriggers(
-        const Configuration* inputJson
-    )
-    {
-        // --------------------------------------------------------------------------------------------------------------------
-        // --- Phase 0 - Pre V2.0 - Trigger_Condition was an enum and users had to have all indivual events in the enum list.
-        // --- Phase 1 -     V2.0 - Trigger_Condition was an enum but TriggerString and TriggerList were added to allow the 
-        // ---                      user to use new User Defined events (i.e. strings).
-        // --- Phase 2 - 11/12/15 - Trigger_Condition is now a string and so users don't need to use Trigger_Condition_String
-        // ---                      in order to use the User Defined events.  However, we are leaving support here for 
-        // ---                      Trigger_Condition_String for backward compatibility (and I'm lazy).
-        // --- Phase 3 - TBD      - In the future, we want to consolidate so that the user only defines Trigger_Condition_List
-        // --------------------------------------------------------------------------------------------------------------------
-        JsonConfigurable::_useDefaults = InterventionFactory::useDefaults;
-
-        std::string trigger_string_enum_str = IndividualEventTriggerType::pairs::lookup_key( IndividualEventTriggerType::TriggerString );
-        std::string trigger_list_enum_str   = IndividualEventTriggerType::pairs::lookup_key( IndividualEventTriggerType::TriggerList );
-
-        jsonConfigurable::tDynamicStringSet tmp_listed_events;
-        if( !JsonConfigurable::_dryrun )
-        {
-            // ------------------------------------------------------------------
-            // --- Can't do this during "dryrun" because SimulationConfig is null
-            // ------------------------------------------------------------------
-            tmp_listed_events = GET_CONFIGURABLE(SimulationConfig)->listed_events;
-            tmp_listed_events.insert( trigger_string_enum_str );
-            tmp_listed_events.insert( trigger_list_enum_str );
-        }
-
-        jsonConfigurable::ConstrainedString trigger_condition = NO_TRIGGER_STR;
-        trigger_condition.constraints = "<configuration>:Listed_Events.*";
-        trigger_condition.constraint_param = &tmp_listed_events;
-
-        EventTrigger trigger_condition_string = NO_TRIGGER_STR;
-
-        // TODO need to add conditionality but not supported in all datatypes yet
-        initConfigTypeMap( "Trigger_Condition", &trigger_condition, HTI_Trigger_Condition_DESC_TEXT  );
-
-        bool retValue = JsonConfigurable::Configure( inputJson );
-
-        if( retValue && ( (trigger_condition == trigger_list_enum_str  ) ||
-                          (trigger_condition == trigger_string_enum_str) ||
-                          JsonConfigurable::_dryrun ) )
-        {
-            if( trigger_condition == trigger_list_enum_str || JsonConfigurable::_dryrun )
-            {
-                // TODO need to add conditionality but not supported in all datatypes yet
-                initConfigTypeMap( "Trigger_Condition_List", &m_trigger_conditions, NLHTI_Trigger_Condition_List_DESC_TEXT );
-            }
-            // would have else but schema needs to be able to enter both blocks. 
-            if( trigger_condition == trigger_string_enum_str || JsonConfigurable::_dryrun )
-            {
-                // TODO need to add conditionality but not supported in all datatypes yet
-                initConfigTypeMap( "Trigger_Condition_String", &trigger_condition_string, NLHTI_Trigger_Condition_String_DESC_TEXT  );
-            }
-            // ------------------------------------------------------------------------------------------------------------
-            // --- We have to call JsonConfigurable::Configure() twice in order to get the value of Trigger_Condition and
-            // --- then read in Trigger_Condition_List or Trigger_Condition_String based on the value of Trigger_Condition.
-            // ------------------------------------------------------------------------------------------------------------
-            retValue = JsonConfigurable::Configure( inputJson );
-
-            if( retValue )
-            {
-                if( trigger_condition == trigger_string_enum_str )
-                {
-                    m_trigger_conditions.push_back( trigger_condition_string );
-                    LOG_INFO_F( "This NLHTI is listening to %s events.\n", trigger_condition_string.c_str() );
-                }
-                else if( trigger_condition == trigger_list_enum_str )
-                {
-                    // ------------------------------------------------------------------------------
-                    // --- Use a constrained string to verify that the strings in the list are valid.
-                    // --- Assignign the trigger to the constrainged string will do the validation
-                    // ------------------------------------------------------------------------------
-                    EventTrigger validating_trigger = NO_TRIGGER_STR;
-                    for( auto trigger : m_trigger_conditions )
-                    {
-                        validating_trigger = trigger; // validate
-                    }
-                }
-            }
-        }
-        else if( retValue && (trigger_condition != trigger_string_enum_str) &&
-                             (trigger_condition != NO_TRIGGER_STR         ) )
-        {
-            m_trigger_conditions.push_back( trigger_condition );
-            LOG_INFO_F( "This NLHTI is listening to %s events.\n", m_trigger_conditions[0].c_str() );
-        }
-        return retValue;
     }
 
     bool
@@ -174,17 +88,34 @@ namespace Kernel
             ( ( inputJson->Exist( "Actual_IndividualIntervention_Config" ) &&  inputJson->Exist( "Actual_NodeIntervention_Config" )) || 
               (!inputJson->Exist( "Actual_IndividualIntervention_Config" ) && !inputJson->Exist( "Actual_NodeIntervention_Config" )) ) )
         {
-            throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "You must define either 'Actual_IndividualIntervention_Config' or 'Actual_NodeIntervention_Config' but not both." );
+            throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "You must specify either 'Actual_IndividualIntervention_Config' or 'Actual_NodeIntervention_Config' (but do not specify both)." );
         }
+
+        initConfigTypeMap( "Distribute_On_Return_Home", &distribute_on_return_home, Distribute_On_Return_Home_DESC_TEXT, false );
 
         initConfigTypeMap("Duration", &max_duration, BT_Duration_DESC_TEXT, -1.0f, FLT_MAX, -1.0f ); // -1 is a convention for indefinite duration
 
         initConfigTypeMap( "Blackout_Period", &blackout_period, Blackout_Period_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
         initConfigTypeMap( "Blackout_Event_Trigger", &blackout_event_trigger, Blackout_Event_Trigger_DESC_TEXT );
+        initConfigTypeMap( "Blackout_On_First_Occurrence", &blackout_on_first_occurrence, Blackout_On_First_Occurrence_DESC_TEXT, false );
+
+        initConfigComplexType( "Node_Property_Restrictions", &node_property_restrictions, NLHTIV_Node_Property_Restriction_DESC_TEXT );
 
         demographic_restrictions.ConfigureRestrictions( this, inputJson );
 
-        bool retValue = ConfigureTriggers( inputJson );
+        // --------------------------------------------------------------------------------------------------------------------
+        // --- Phase 0 - Pre V2.0 - Trigger_Condition was an enum and users had to have all indivual events in the enum list.
+        // --- Phase 1 -     V2.0 - Trigger_Condition was an enum but TriggerString and TriggerList were added to allow the 
+        // ---                      user to use new User Defined events (i.e. strings).
+        // --- Phase 2 - 11/12/15 - Trigger_Condition is now a string and so users don't need to use Trigger_Condition_String
+        // ---                      in order to use the User Defined events.  However, we are leaving support here for 
+        // ---                      Trigger_Condition_String for backward compatibility (and I'm lazy).
+        // --- Phase 3 - 11/9/16    Consolidate so that the user only defines Trigger_Condition_List
+        // --------------------------------------------------------------------------------------------------------------------
+        JsonConfigurable::_useDefaults = InterventionFactory::useDefaults; // Why???
+        initConfigTypeMap( "Trigger_Condition_List", &m_trigger_conditions, NLHTI_Trigger_Condition_List_DESC_TEXT );
+
+        bool retValue = BaseNodeIntervention::Configure( inputJson );
 
         //this section copied from standardevent coordinator
         if( retValue && !JsonConfigurable::_dryrun )
@@ -192,13 +123,38 @@ namespace Kernel
             demographic_restrictions.CheckConfiguration();
             if( inputJson->Exist( "Actual_IndividualIntervention_Config" ) )
             {
-                InterventionValidator::ValidateIntervention( actual_individual_intervention_config._json );
+                InterventionValidator::ValidateIntervention( actual_individual_intervention_config._json, inputJson->GetDataLocation() );
                 using_individual_config = true;
             }
             else if( inputJson->Exist( "Actual_NodeIntervention_Config" ) )
             {
-                InterventionValidator::ValidateIntervention( actual_node_intervention_config._json );
+                InterventionValidator::ValidateIntervention( actual_node_intervention_config._json, inputJson->GetDataLocation() );
                 using_individual_config = false;
+            }
+
+            event_occured_list.resize( EventTriggerFactory::GetInstance()->GetNumEventTriggers() );
+
+            bool blackout_configured = (inputJson->Exist("Blackout_Event_Trigger")) || (inputJson->Exist("Blackout_Period")) || (inputJson->Exist("Blackout_On_First_Occurrence"));
+            bool blackout_all_configured = (inputJson->Exist("Blackout_Event_Trigger")) && (inputJson->Exist("Blackout_Period")) && (inputJson->Exist("Blackout_On_First_Occurrence"));
+            if (blackout_configured && !blackout_all_configured)
+            {
+                std::vector<string> blackout_missing_str;
+                if( !inputJson->Exist("Blackout_Event_Trigger") )       blackout_missing_str.push_back("Blackout_Event_Trigger");
+                if( !inputJson->Exist("Blackout_Period") )              blackout_missing_str.push_back("Blackout_Period");
+                if( !inputJson->Exist("Blackout_On_First_Occurrence") ) blackout_missing_str.push_back("Blackout_On_First_Occurrence");
+
+                throw MissingParameterFromConfigurationException(__FILE__, __LINE__, __FUNCTION__, inputJson->GetDataLocation().c_str(), blackout_missing_str, " All three Blackout parameters must be configured.");
+            }
+
+            if( distribute_on_return_home )
+            {
+                if( (std::find( m_trigger_conditions.begin(), m_trigger_conditions.end(), EventTrigger::Emigrating ) != m_trigger_conditions.end()) ||
+                    (std::find( m_trigger_conditions.begin(), m_trigger_conditions.end(), EventTrigger::Immigrating ) != m_trigger_conditions.end()) )
+                {
+                    throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "When using Distribute_On_Return_Home, you cannot also use Emigrating or Immigrating." );
+                }
+                m_trigger_conditions.push_back( EventTrigger::Emigrating );
+                m_trigger_conditions.push_back( EventTrigger::Immigrating );
             }
         }
         JsonConfigurable::_useDefaults = false;
@@ -211,36 +167,40 @@ namespace Kernel
         IEventCoordinator2 *pEC
     )
     {
-        LOG_DEBUG_F("Distributed Nodelevel health-triggered intervention to NODE: %d\n", pNodeEventContext->GetId().data);
+        bool was_distributed = BaseNodeIntervention::Distribute(pNodeEventContext, pEC);
+        if (was_distributed)
+        {
+            LOG_DEBUG_F("Distributed Nodelevel health-triggered intervention to NODE: %d\n", pNodeEventContext->GetId().data);
 
-        // QI to register ourself as a NodeLevelHealthTriggeredIV observer
-        INodeTriggeredInterventionConsumer * pNTIC = nullptr;
-        if (s_OK != pNodeEventContext->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&pNTIC) )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNodeEventContext", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
+            // QI to register ourself as a NodeLevelHealthTriggeredIV observer
+            INodeTriggeredInterventionConsumer * pNTIC = nullptr;
+            if (s_OK != pNodeEventContext->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&pNTIC))
+            {
+                throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "pNodeEventContext", "INodeTriggeredInterventionConsumer", "INodeEventContext");
+            }
+            release_assert(pNTIC);
+            for (auto &trigger : m_trigger_conditions)
+            {
+                pNTIC->RegisterNodeEventObserver((IIndividualEventObserver*)this, trigger);
+            }
         }
-        release_assert( pNTIC );
-        for( auto &trigger : m_trigger_conditions )
-        {
-            pNTIC->RegisterNodeEventObserverByString( (IIndividualEventObserver*)this, trigger );
-        }
-
-        // We can QI NEC to get the campaign cost observer (it's just the node!)
-        ICampaignCostObserver *iCCO;
-        if (parent && s_OK != parent->QueryInterface(GET_IID(ICampaignCostObserver), (void**)&iCCO))
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "ICampaignCostObserver", "INodeEventContext" );
-        }
-        assert( iCCO );
-        return true;
+        return was_distributed;
     }
 
     //returns false if didn't get the intervention
     bool NodeLevelHealthTriggeredIV::notifyOnEvent(
         IIndividualHumanEventContext *pIndiv,
-        const std::string& StateChange
+        const EventTrigger& trigger
     )
     {
+        // ----------------------------------------------------------------------
+        // --- Ignore events for nodes that don't qualify due to their properties
+        // ----------------------------------------------------------------------
+        if( !node_property_restrictions.Qualifies( parent->GetNodeContext()->GetNodeProperties() ) )
+        {
+            return false;
+        }
+
         IIndividualHuman *p_human = nullptr;
         if (s_OK != pIndiv->QueryInterface(GET_IID(IIndividualHuman), (void**)&p_human))
         {
@@ -248,7 +208,7 @@ namespace Kernel
         }
 
         bool missed_intervention = false ;
-        if( StateChange == IndividualEventTriggerType::pairs::lookup_key( IndividualEventTriggerType::Emigrating ) )
+        if( distribute_on_return_home && (trigger == EventTrigger::Emigrating) )
         {
             if( p_human->AtHome() )
             {
@@ -261,7 +221,7 @@ namespace Kernel
             }
             return false ;
         }
-        else if( StateChange == IndividualEventTriggerType::pairs::lookup_key( IndividualEventTriggerType::Immigrating ) )
+        else if( distribute_on_return_home && (trigger == EventTrigger::Immigrating) )
         {
             if( p_human->AtHome() )
             {
@@ -299,23 +259,23 @@ namespace Kernel
             }
         }
 
-        if( !blackout_event_trigger.IsUninitialized() && (blackout_event_trigger != NO_TRIGGER_STR ) && (blackout_period > 0.0) )
+        if( !blackout_event_trigger.IsUninitialized() && (blackout_period > 0.0) )
         {
-            if( (event_occured_map[ StateChange ].count( pIndiv->GetSuid().data ) > 0) || (!missed_intervention && (blackout_time_remaining > 0.0f)) )
+            if( (event_occured_list[ trigger.GetIndex() ].count( pIndiv->GetSuid().data ) > 0) || (!missed_intervention && (blackout_time_remaining > 0.0f)) )
             {
                 INodeTriggeredInterventionConsumer * pNTIC = NULL;
                 if (s_OK != parent->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&pNTIC) )
                 {
                     throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
                 }
-                pNTIC->TriggerNodeEventObserversByString( pIndiv, blackout_event_trigger );
+                pNTIC->TriggerNodeEventObservers( pIndiv, blackout_event_trigger );
                 return false;
             }
         }
 
         LOG_DEBUG_F("Individual %d experienced event %s, check to see if they pass the conditions before distributing actual_intervention \n",
                     pIndiv->GetInterventionsContext()->GetParent()->GetSuid().data,
-                    StateChange.c_str()
+                    trigger.c_str()
                    );
 
         assert( parent );
@@ -385,36 +345,54 @@ namespace Kernel
 
         if( distributed )
         {
-            notification_occured = true ;
-            event_occured_map[ StateChange ].insert( pIndiv->GetSuid().data ); 
+            if( blackout_on_first_occurrence )
+            {
+                blackout_time_remaining = blackout_period ;
+            }
+            else
+            {
+                notification_occured = true ;
+            }
+            event_occured_list[ trigger.GetIndex() ].insert( pIndiv->GetSuid().data ); 
         }
 
         return distributed;
     }
 
-    void NodeLevelHealthTriggeredIV::Update( float dt )
+
+    void NodeLevelHealthTriggeredIV::Unregister()
     {
+        // unregister ourself as a node level health triggered observer
+        INodeTriggeredInterventionConsumer * pNTIC = nullptr;
+        if (s_OK != parent->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&pNTIC))
+        {
+            throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "parent", "INodeTriggeredInterventionConsumer", "INodeEventContext");
+        }
+        release_assert(pNTIC);
+        for (auto &trigger : m_trigger_conditions)
+        {
+            pNTIC->UnregisterNodeEventObserver( this, trigger );
+        }
+        SetExpired( true );
+    }
+
+    void NodeLevelHealthTriggeredIV::Update(float dt)
+    {
+        if (!BaseNodeIntervention::UpdateNodesInterventionStatus())
+        {
+            Unregister();
+            return;
+        }
+
         duration += dt;
         if( max_duration >= 0 && duration > max_duration )
         {
-            // QI to register ourself as a node level health triggered observer
-            LOG_DEBUG_F( "Node-Level HTI reached max_duration. Time to unregister...\n" );
-            INodeTriggeredInterventionConsumer * pNTIC = nullptr;
-            if (s_OK == parent->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&pNTIC) )
-            {
-                release_assert( pNTIC );
-                for( auto &trigger : m_trigger_conditions )
-                {
-                    pNTIC->UnregisterNodeEventObserverByString( this, trigger );
-                }
-                expired = true ;
-            }
-            else
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-            }
+            LOG_DEBUG_F("Node-Level HTI reached max_duration. Time to unregister...\n");
+            Unregister();
         }
-        event_occured_map.clear();
+        event_occured_list.clear();
+        event_occured_list.resize( EventTriggerFactory::GetInstance()->GetNumEventTriggers() );
+
         blackout_time_remaining -= dt ;
         if( notification_occured )
         {
@@ -426,8 +404,7 @@ namespace Kernel
 
     void NodeLevelHealthTriggeredIV::SetContextTo(INodeEventContext *context)
     {
-        release_assert( context );
-        parent = context;
+        BaseNodeIntervention::SetContextTo( context );
 
         // Important: Use the instance method to obtain the intervention factory obj instead of static method to cross the DLL boundary
         //const IInterventionFactory* ifobj = dynamic_cast<NodeEventContextHost *>(parent)->GetInterventionFactoryObj();
@@ -446,11 +423,11 @@ namespace Kernel
             Configuration* config = nullptr;
             if( using_individual_config )
             {
-                config = Configuration::CopyFromElement( (actual_individual_intervention_config._json) );
+                config = Configuration::CopyFromElement( (actual_individual_intervention_config._json), "campaign" );
             }
             else
             {
-                config = Configuration::CopyFromElement( (actual_node_intervention_config._json) );
+                config = Configuration::CopyFromElement( (actual_node_intervention_config._json), "campaign" );
             }
 
             _di = const_cast<IInterventionFactory*>(ifobj)->CreateIntervention( config );
@@ -514,23 +491,3 @@ namespace Kernel
         return class_name;
     }
 }
-
-#if 0
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, NodeLevelHealthTriggeredIV& iv, const unsigned int v)
-    {
-        ar & iv.actual_intervention_config;
-        ar & iv.demographic_restrictions;
-        ar & iv.efficacy;
-        ar & iv.max_duration;
-        ar & iv.m_trigger_conditions;
-        ar & iv.blackout_period;
-        ar & iv.blackout_time_remaining;
-        ar & iv.blackout_event_trigger;
-        ar & iv.notification_occured;
-        ar & iv.event_occured_map;
-        ar & iv.event_occurred_while_resident_away;
-    }
-}
-#endif

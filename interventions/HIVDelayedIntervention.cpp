@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,14 +13,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IndividualEventContext.h"
 #include "NodeEventContext.h"
 #include "RANDOM.h"
-#include "IHIVInterventionsContainer.h" // for time-date util function and access into IHIVCascadeOfCare
+#include "IHIVInterventionsContainer.h" // for time-date util function
 
-static const char * _module = "HIVDelayedIntervention";
+SETUP_LOGGING( "HIVDelayedIntervention" )
 
 namespace Kernel
 {
     BEGIN_QUERY_INTERFACE_DERIVED(HIVDelayedIntervention, DelayedIntervention)
-        HANDLE_INTERFACE(IHIVCascadeStateIntervention)
     END_QUERY_INTERFACE_DERIVED(HIVDelayedIntervention, DelayedIntervention)
 
     IMPLEMENT_FACTORY_REGISTERED(HIVDelayedIntervention)
@@ -28,10 +27,7 @@ namespace Kernel
     HIVDelayedIntervention::HIVDelayedIntervention()
     : DelayedIntervention()
     , year2DelayMap()
-    , abortStates()
-    , cascadeState("")
     , days_remaining(-1)
-    , firstUpdate(true)
     , broadcast_event()
     , broadcast_on_expiration_event()
     {
@@ -44,10 +40,7 @@ namespace Kernel
         : DelayedIntervention( master )
     {
         year2DelayMap = master.year2DelayMap;
-        abortStates = master.abortStates;
-        cascadeState = master.cascadeState;
         days_remaining = master.days_remaining;
-        firstUpdate = master.firstUpdate;
         broadcast_event = master.broadcast_event;
         broadcast_on_expiration_event = master.broadcast_on_expiration_event;
     }
@@ -55,9 +48,6 @@ namespace Kernel
     bool HIVDelayedIntervention::Configure( const Configuration * inputJson )
     {
         // should be lifted to HIVIntervention class later
-        abortStates.value_source = "<configuration>::Valid_Cascade_States.*";
-        initConfigTypeMap("Abort_States", &abortStates, HIV_Delayed_Intervention_Abort_States_DESC_TEXT);
-        initConfigTypeMap("Cascade_State", &cascadeState, HIV_Delayed_Intervention_Cascade_States_DESC_TEXT);
         initConfigTypeMap("Expiration_Period", &days_remaining, HIV_Delayed_Intervention_Expiration_Period_DESC_TEXT, 0, FLT_MAX, FLT_MAX);
 
         // DelayedIntervention::Configure split into PreConfigure and MainConfigure to separate initConfig's from initConfigTypeMap-depends-on, and postpone JsonConfigurable::Configure
@@ -81,37 +71,16 @@ namespace Kernel
 
         initConfigTypeMap( "Broadcast_On_Expiration_Event", &broadcast_on_expiration_event, HIV_Delayed_Intervention_Broadcast_On_Expiration_Event_DESC_TEXT );
 
-        bool ret = JsonConfigurable::Configure(inputJson);
+        // skip DelayedIntervention::Configure() because we don't want those variables.
+        bool ret = BaseIntervention::Configure(inputJson);
         if( ret )
         {
             // don't validate the intervention configuration since not supported
             DelayValidate();
-            AbortValidate();
         }
 
         LOG_DEBUG_F( "HIVDelayedIntervention configured with days_remaining = %f and remaining_delay_days = %f\n", (float) days_remaining, (float) remaining_delay_days );
         return ret ;
-    }
-
-    void HIVDelayedIntervention::AbortValidate()
-    {
-        // error if the cascadeState is an abortState
-        if (abortStates.find(cascadeState) != abortStates.end())
-        {
-            std::string abort_state_list ;
-            for( auto state : abortStates )
-            {
-                abort_state_list += state + ", " ;
-            }
-            if( abortStates.size() > 0 )
-            {
-                abort_state_list = abort_state_list.substr( 0, abort_state_list.length() - 2 );
-            }
-            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__,
-                                                    "Cascade_State", cascadeState.c_str(),
-                                                    "Abort_States", abort_state_list.c_str(),
-                                                    "The Cascade_State cannot be one of the Abort_States." );
-        }
     }
 
     void
@@ -144,94 +113,11 @@ namespace Kernel
         LOG_DEBUG_F("Drew %0.2f remaining delay days in %s.\n", float(remaining_delay_days), DistributionFunction::pairs::lookup_key(delay_distribution.GetType()));
     }
 
-    // todo: lift to HIVIntervention or helper function (repeated in HIVSimpleDiagnostic)
-    bool HIVDelayedIntervention::UpdateCascade()
-    {
-        if( AbortDueToCurrentCascadeState() )
-        {
-            return false ;
-        }
-
-        // is this the first time through?  if so, update the cascade state.
-        if (firstUpdate)
-        {
-            IHIVCascadeOfCare * hiv_parent = nullptr;
-            if( parent->GetInterventionsContext()->QueryInterface( GET_IID(IHIVCascadeOfCare), (void**)&hiv_parent ) != s_OK )
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IHIVInterventionsContainer", "IIndividualHumanContext" );
-            }
-
-            firstUpdate = false;
-            LOG_DEBUG_F( "Setting cascade state to %s for individual %d\n", cascadeState.c_str(), parent->GetSuid().data );
-            hiv_parent->setCascadeState(cascadeState);
-        }
-        return true;
-    }
-
-    bool HIVDelayedIntervention::AbortDueToCurrentCascadeState()
-    {
-        IHIVCascadeOfCare *ihcc = nullptr;
-        if ( s_OK != parent->GetInterventionsContext()->QueryInterface(GET_IID(IHIVCascadeOfCare), (void **)&ihcc) )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
-                                           "parent->GetInterventionsContext()",
-                                           "IHIVCascadeOfCare",
-                                           "IIndividualHumanInterventionsContext" );
-        }
-
-        std::string currentState = ihcc->getCascadeState();
-
-        if ( abortStates.find(currentState) != abortStates.end() )
-        {
-
-            // Duplicated from SimpleDiagnostic::positiveTestDistribute
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-            if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-            }
-
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), IndividualEventTriggerType::CascadeStateAborted );
-            LOG_DEBUG_F("The current cascade state \"%s\" is one of the Abort_States.  Expiring the delay for individual %d.\n", currentState.c_str(), parent->GetSuid().data );
-            expired = true;
-
-            return true;
-        }
-        return false;
-    }
-
-    bool HIVDelayedIntervention::qualifiesToGetIntervention( IIndividualHumanContext* pIndivid )
-    {
-        return !AbortDueToCurrentCascadeState();
-    }
-
-    bool HIVDelayedIntervention::Distribute(
-        IIndividualHumanInterventionsContext *context,
-        ICampaignCostObserver * const pICCO
-    )
-    {
-        parent = context->GetParent();
-        LOG_DEBUG_F( "Individual %d is getting a delay.\n", parent->GetSuid().data );
-
-        if( qualifiesToGetIntervention( parent ) )
-        {
-            return DelayedIntervention::Distribute( context, pICCO );
-        }
-        else
-        {
-            expired = true ;
-            return false ;
-        }
-    }
-
-
     void HIVDelayedIntervention::Update(float dt)
     {
-        bool cascade_state_ok = UpdateCascade();
-        if( !cascade_state_ok )
+        if( !DelayedIntervention::UpdateIndividualsInterventionStatus() )
         {
-            // the cascadeState must be an abort state
-            return ;
+            return;
         }
 
         days_remaining -= dt;
@@ -244,9 +130,9 @@ namespace Kernel
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
             }
-            if( (broadcast_on_expiration_event != NO_TRIGGER_STR) && !broadcast_on_expiration_event.IsUninitialized() )
+            if( !broadcast_on_expiration_event.IsUninitialized() )
             {
-                broadcaster->TriggerNodeEventObserversByString( parent->GetEventContext(), broadcast_on_expiration_event );
+                broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), broadcast_on_expiration_event );
             }
             LOG_DEBUG_F("broadcast on expiration event\n");
 
@@ -259,9 +145,9 @@ namespace Kernel
 
     void HIVDelayedIntervention::Callback( float dt )
     {
-        if( expired || (broadcast_event == NO_TRIGGER_STR) || broadcast_event.IsUninitialized() )
+        if( expired || broadcast_event.IsUninitialized() )
         {
-            LOG_DEBUG_F("expired or event == NoTrigger\n");
+            LOG_DEBUG_F("expired or event is unitialized\n");
             return;
         }
 
@@ -274,21 +160,11 @@ namespace Kernel
                                            "INodeTriggeredInterventionConsumer",
                                            "INodeEventContext" );
         }
-        broadcaster->TriggerNodeEventObserversByString( parent->GetEventContext(), broadcast_event );
+        broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), broadcast_event );
         LOG_DEBUG_F("broadcast actual event\n");
 
         expired = true;
         return;
-    }
-
-    const std::string& HIVDelayedIntervention::GetCascadeState()
-    {
-        return cascadeState;
-    }
-
-    const jsonConfigurable::tDynamicStringSet& HIVDelayedIntervention::GetAbortStates()
-    {
-        return abortStates;
     }
 
     REGISTER_SERIALIZABLE(HIVDelayedIntervention);
@@ -299,10 +175,7 @@ namespace Kernel
         HIVDelayedIntervention& delayed = *obj;
 
         ar.labelElement("year2DelayMap"                 ) & delayed.year2DelayMap;
-        ar.labelElement("abortStates"                   ) & delayed.abortStates;
-        ar.labelElement("cascadeState"                  ) & delayed.cascadeState;
         ar.labelElement("days_remaining"                ) & delayed.days_remaining;
-        ar.labelElement("firstUpdate"                   ) & delayed.firstUpdate;
         ar.labelElement("broadcast_event"               ) & delayed.broadcast_event;
         ar.labelElement("broadcast_on_expiration_event" ) & delayed.broadcast_on_expiration_event;
     }

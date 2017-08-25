@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -20,7 +20,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "INodeContext.h"
 #include "NodeEventContext.h"
 
-static const char* _module = "ReportHIVMortalityEvents";
+SETUP_LOGGING( "ReportHIVMortalityEvents" )
 
 namespace Kernel {
 
@@ -45,7 +45,7 @@ namespace Kernel {
         NonNegativeFloat  years_since_first_ART_start;
         NonNegativeFloat  years_since_latest_ART_start;
         ARTStatus::Enum   ART_status_at_death;
-        std::string       cascade_state ;
+        std::string       intervention_state ;
         bool              ever_tested ;
         bool              ever_tested_positive ;
         bool              ever_received_CD4_result ;
@@ -71,7 +71,7 @@ namespace Kernel {
             , years_since_first_ART_start(0)
             , years_since_latest_ART_start(0)
             , ART_status_at_death(ARTStatus::UNDEFINED)
-            , cascade_state()
+            , intervention_state()
             , ever_tested(false)
             , ever_tested_positive(false)
             , ever_received_CD4_result(false)
@@ -85,9 +85,22 @@ namespace Kernel {
     ReportHIVMortalityEvents::ReportHIVMortalityEvents( const ISimulation* parent )
         : BaseTextReportEvents( "HIVMortality.csv" )
         , _parent( parent )
+        , m_InterventionStatusKey()
     {
         eventTriggerList.push_back( "DiseaseDeaths" );
         eventTriggerList.push_back( "NonDiseaseDeaths" );
+    }
+
+    void ReportHIVMortalityEvents::Initialize( unsigned int nrmSize )
+    {
+        BaseTextReportEvents::Initialize( nrmSize );
+
+        // has to be done if Initialize() since it is called after the demographics is read
+        IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( "InterventionStatus", "", false );
+        if( p_ip != nullptr )
+        {
+            m_InterventionStatusKey = p_ip->GetKey<IPKey>();
+        }
     }
 
     std::string ReportHIVMortalityEvents::GetHeader() const
@@ -112,7 +125,7 @@ namespace Kernel {
                << "Years_since_first_ART_initiation,"
                << "Years_since_most_recent_ART_initiation,"
                << "ART_status_just_prior_to_death,"
-               << "Cascade_State,"
+               << "Intervention_Status,"
                << "Ever_tested,"
                << "Ever_tested_positive,"
                << "Ever_received_CD4_result,"
@@ -126,12 +139,12 @@ namespace Kernel {
     bool
     ReportHIVMortalityEvents::notifyOnEvent(
         IIndividualHumanEventContext *context,
-        const std::string& StateChange
+        const EventTrigger& trigger
     )
     {
         LOG_DEBUG_F( "Individual %d experienced event %s\n",
                      context->GetSuid().data,
-                     StateChange.c_str()
+                     trigger.c_str()
                    );
         IIndividualHumanHIV* hiv_individual = nullptr;
         if ( context->QueryInterface( GET_IID(IIndividualHumanHIV), (void**)&hiv_individual ) != s_OK )
@@ -158,8 +171,7 @@ namespace Kernel {
         info.death_time = _parent->GetSimulationTime().time;
         info.death_by_HIV = false;
         {
-            if( StateChange == "DiseaseDeaths" ||
-                StateChange == "NonDiseaseDeaths" )
+            if( (trigger == EventTrigger::DiseaseDeaths) || (trigger == EventTrigger::NonDiseaseDeaths) )
             {
                 info.individual_id = context->GetSuid().data;
                 info.gender = context->GetGender();
@@ -215,21 +227,19 @@ namespace Kernel {
                 info.ART_status_at_death = hiv_individual->GetHIVInterventionsContainer()->GetArtStatus();
                 info.in_ART              = hiv_individual->GetHIVInterventionsContainer()->OnArtQuery();
 
-                IHIVCascadeOfCare * coc = nullptr;
-                release_assert( hiv_individual->GetHIVInterventionsContainer() );
-                if( s_OK != hiv_individual->GetHIVInterventionsContainer()->QueryInterface(GET_IID(IHIVCascadeOfCare), (void**)&coc) )
+                info.intervention_state = "None";
+                if( m_InterventionStatusKey.IsValid() )
                 {
-                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "coc", "IHIVCascadeOfCare", "IHIVInterventionsContainer" );
+                    info.intervention_state = context->GetProperties()->Get( m_InterventionStatusKey ).GetValueAsString();
                 }
-                info.cascade_state = coc->getCascadeState();
             }
             else
             {
-                LOG_DEBUG_F( "Un-handled event: %s\n", StateChange.c_str() );
+                LOG_DEBUG_F( "Un-handled event: %s\n", trigger.c_str() );
             }
         }
 
-        if( StateChange == "DiseaseDeaths" )
+        if( trigger == EventTrigger::DiseaseDeaths )
         {
             info.death_by_HIV = true;
         }
@@ -255,7 +265,7 @@ namespace Kernel {
                           << info.years_since_first_ART_start  << ","
                           << info.years_since_latest_ART_start << ","
                           << art_status                        << ","
-                          << info.cascade_state                << ","
+                          << info.intervention_state                << ","
                           << info.ever_tested                  << ","
                           << info.ever_tested_positive         << ","
                           << info.ever_received_CD4_result     << ","

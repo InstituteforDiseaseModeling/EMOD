@@ -1,0 +1,54 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "EnteredRelationship"
+                    ],
+                    "Demographic_Coverage": 1.0,
+                    "Target_Demographic": "ExplicitGender", 
+                    "Target_Gender": "Male", 
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "MaleCircumcision",
+                        "Circumcision_Reduced_Acquire": 1.0,
+                        "Distributed_Event_Trigger" : "Male_Circumcision_Event",
+                        "Apply_If_Higher_Reduced_Acquire" : 0
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "ExitedRelationship"
+                    ],
+                    "Demographic_Coverage": 1.0,
+                    "Target_Demographic": "ExplicitGender", 
+                    "Target_Gender": "Female", 
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "OutbreakIndividual",
+                        "Antigen": 0, 
+                        "Genome": 0, 
+                        "Incubation_Period_Override": 0,
+                        "Outbreak_Source": "PrevalenceIncrease"
+                    }
+                }
+            }
+        }
+    ]
+}

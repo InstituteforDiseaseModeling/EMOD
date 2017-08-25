@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,6 +13,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeAirborne.h"
 #include "IndividualTB.h" // for serialization junk
 #include "TBContexts.h"
+#ifdef ENABLE_TBHIV
+#include "IndividualCoInfection.h"
+#endif
 
 class ReportTB;
 
@@ -71,7 +74,7 @@ namespace Kernel
         NodeTB();
         NodeTB(ISimulationContext *_parent_sim, suids::suid node_suid);
 
-        /* clorton virtual */ void Initialize() /* clorton override */;
+        virtual void Initialize() override;
 
         // Factory methods
         virtual IIndividualHuman* createHuman( suids::suid suid, float monte_carlo_weight, float initial_age, int gender, float above_poverty) override;

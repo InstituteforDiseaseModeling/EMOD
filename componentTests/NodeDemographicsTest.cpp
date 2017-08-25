@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,13 +16,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationConfig.h"
 #include "INodeContextFake.h"
 #include "IdmMpi.h"
+#include "Instrumentation.h"
 
 #include <string>
-#include <climits>
 #include <vector>
-#include <iostream>
 #include <memory> // unique_ptr
-#include "common.h"
 
 #ifdef WIN32
 #include <sys/stat.h> // _S_IREAD
@@ -31,43 +29,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 using namespace Kernel;
 using namespace std;
-
-
-class Stopwatch
-{
-public:
-    Stopwatch()
-        : _start(0)
-        , _stop(0)
-    {
-    };
-
-    void Start()
-    {
-        QueryPerformanceCounter((LARGE_INTEGER*)&_start);
-    };
-
-    double Stop()
-    {
-        QueryPerformanceCounter((LARGE_INTEGER*)&_stop);
-        double ms = ResultNanoseconds()/1000000.0 ;
-        return ms ;
-    };
-
-    double ResultNanoseconds()
-    {
-        LARGE_INTEGER frequency;
-        QueryPerformanceFrequency(&frequency);
-        double cyclesPerNanosecond = static_cast<double>(frequency.QuadPart) / 1000000000.0;
-
-        uint64_t elapsed = _stop - _start;
-        return elapsed / cyclesPerNanosecond;
-    };
-
-private:
-    uint64_t _start;
-    uint64_t _stop;
-};
 
 
 SUITE(NodeDemographicsTest)
@@ -93,9 +54,6 @@ SUITE(NodeDemographicsTest)
 
             Environment::Finalize();
             Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
-            int argc      = 1;
-            char* exeName = "componentTests.exe";
-            char** argv   = &exeName;
             string configFilename("testdata/NodeDemographicsTest/config.json");
             string inputPath("testdata/NodeDemographicsTest");
             string outputPath("testdata/NodeDemographicsTest/output");
@@ -245,9 +203,6 @@ SUITE(NodeDemographicsTest)
         IdmMpi::MessageInterface* pMpi = IdmMpi::MessageInterface::CreateNull();
         Environment::Finalize();
         Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
-        int argc      = 1;
-        char* exeName = "componentTests.exe";
-        char** argv   = &exeName;
         string configFilename("testdata/NodeDemographicsTest/config_legacy.json");
         string p("testdata/NodeDemographicsTest");
         Environment::Initialize(pMpi,nullptr,configFilename, p, p, /*p, */p, false);
@@ -604,6 +559,7 @@ SUITE(NodeDemographicsTest)
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestTwoFileDiffIdRef)
     {
+        // Use lower case for IdReference values since the DTK converts all IdReference values to... lower case.
         TestHelper_FormatException( __LINE__, "demographics_TestTwoFileDiffIdRef_base.json;demographics_TestTwoFileDiffIdRef_overlay.json", 
                                               "Format error encountered loading demographics file (testdata/NodeDemographicsTest/demographics_TestTwoFileDiffIdRef_overlay.json).  IdReference (=Different ID Ref) doesn't match base layer (=Gridded world grump2.5arcmin)." );
     }
@@ -1556,7 +1512,7 @@ SUITE(NodeDemographicsTest)
         for( int i = 0 ; i < nodeIDs.size() ; i++ )
         {
             uint32_t data_node_id = nodeIDs[i] ;
-            uint32_t file_node_id = default_demog_json["Nodes"][(IndexType)i]["NodeID"].AsUint();
+            uint32_t file_node_id = default_demog_json["Nodes"][IndexType(i)]["NodeID"].AsUint();
             CHECK_EQUAL( data_node_id, file_node_id );
 
             suids::suid node_suid = GetNextNodeSuid();
@@ -1569,7 +1525,7 @@ SUITE(NodeDemographicsTest)
             CHECK_EQUAL( 1000, data_initial_population );
 
             double data_lat = (*p_node_demo)["NodeAttributes"]["Latitude"].AsDouble();
-            double file_lat = default_demog_json["Nodes"][(IndexType)i]["NodeAttributes"]["Latitude"].AsDouble();
+            double file_lat = default_demog_json["Nodes"][IndexType(i)]["NodeAttributes"]["Latitude"].AsDouble();
 
             CHECK_EQUAL( data_lat, file_lat );
         }
@@ -1584,7 +1540,8 @@ SUITE(NodeDemographicsTest)
         Stopwatch watch ;
         watch.Start();
         unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
-        double ms = watch.Stop();
+        watch.Stop();
+        double ms = watch.ResultNanoseconds() / 1000000.0;
         
         ostringstream msg ;
         msg << "Duration (ms) = " << ms << endl ;
@@ -1688,6 +1645,79 @@ SUITE(NodeDemographicsTest)
         CHECK_EQUAL( 0,               pdf_a );
         CHECK_EQUAL( "Accessibility", prop_1 );
         CHECK_EQUAL( "Age_Bin",       prop_2 );
+    }
+
+    TEST_FIXTURE( NodeDemographicsFactoryFixture, TestIndividualPropertyOverlays )
+    {
+        std::vector<std::string> demog_filenames;
+        demog_filenames.push_back( "demographics_TestIndividualPropertyOverlays_Base.json" );
+        demog_filenames.push_back( "demographics_TestIndividualPropertyOverlays_DefaultOverlay.json" );
+        demog_filenames.push_back( "demographics_TestIndividualPropertyOverlays_NodeOverlay.json" );
+
+        NodeDemographicsFactory::SetDemographicsFileList( demog_filenames );
+
+        nodeid_suid_map_t node_id_suid_map;
+        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory( &node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
+        const vector<uint32_t>& nodeIDs = factory->GetNodeIDs();
+        CHECK_EQUAL( 2, nodeIDs.size() );
+        CHECK_EQUAL( 1, nodeIDs[ 0 ] );
+        CHECK_EQUAL( 2, nodeIDs[ 1 ] );
+
+        suids::suid node_suid_1 = GetNextNodeSuid();
+        node_id_suid_map.insert( nodeid_suid_pair( 1, node_suid_1 ) );
+        INodeContextFake ncf_1( node_suid_1 );
+        unique_ptr<NodeDemographics> p_node_demo_1( factory->CreateNodeDemographics( &ncf_1 ) );
+
+        suids::suid node_suid_2 = GetNextNodeSuid();
+        node_id_suid_map.insert( nodeid_suid_pair( 2, node_suid_2 ) );
+        INodeContextFake ncf_2( node_suid_2 );
+        unique_ptr<NodeDemographics> p_node_demo_2( factory->CreateNodeDemographics( &ncf_2 ) );
+
+        // -------------------------------------------------
+        // --- Check properties that are unique for the node
+        // -------------------------------------------------
+
+        int    pop_1 = (*p_node_demo_1)[ "NodeAttributes" ][ "InitialPopulation" ].AsInt();
+        int    pop_2 = (*p_node_demo_2)[ "NodeAttributes" ][ "InitialPopulation" ].AsInt();
+
+        CHECK_EQUAL( 12345, pop_1 );
+        CHECK_EQUAL( 67890, pop_2 );
+
+        string prop_1_0 = (*p_node_demo_1)[ "IndividualProperties" ][ 0 ][ "Property" ].AsString();
+        string prop_2_0 = (*p_node_demo_2)[ "IndividualProperties" ][ 0 ][ "Property" ].AsString();
+
+        CHECK_EQUAL( "Accessibility", prop_1_0 );
+        CHECK_EQUAL( "Accessibility", prop_2_0 );
+
+        string prop_1_0_val_0 = (*p_node_demo_1)[ "IndividualProperties" ][ 0 ][ "Values" ][ 0 ].AsString();
+        string prop_1_0_val_1 = (*p_node_demo_1)[ "IndividualProperties" ][ 0 ][ "Values" ][ 1 ].AsString();
+        string prop_2_0_val_0 = (*p_node_demo_2)[ "IndividualProperties" ][ 0 ][ "Values" ][ 0 ].AsString();
+        string prop_2_0_val_1 = (*p_node_demo_2)[ "IndividualProperties" ][ 0 ][ "Values" ][ 1 ].AsString();
+
+        CHECK_EQUAL( "YES", prop_1_0_val_0 );
+        CHECK_EQUAL( "NO",  prop_1_0_val_1 );
+        CHECK_EQUAL( "YES", prop_2_0_val_0 );
+        CHECK_EQUAL( "NO",  prop_2_0_val_1 );
+
+        double prop_1_0_dis_0 = (*p_node_demo_1)[ "IndividualProperties" ][ 0 ][ "Initial_Distribution" ][ 0 ].AsDouble();
+        double prop_1_0_dis_1 = (*p_node_demo_1)[ "IndividualProperties" ][ 0 ][ "Initial_Distribution" ][ 1 ].AsDouble();
+        double prop_2_0_dis_0 = (*p_node_demo_2)[ "IndividualProperties" ][ 0 ][ "Initial_Distribution" ][ 0 ].AsDouble();
+        double prop_2_0_dis_1 = (*p_node_demo_2)[ "IndividualProperties" ][ 0 ][ "Initial_Distribution" ][ 1 ].AsDouble();
+
+        //CHECK_CLOSE( 0.7, prop_1_0_dis_0, 0.0001 );
+        //CHECK_CLOSE( 0.3, prop_1_0_dis_1, 0.0001 );
+        //CHECK_CLOSE( 0.8, prop_2_0_dis_0, 0.0001 );
+        //CHECK_CLOSE( 0.2, prop_2_0_dis_1, 0.0001 );
+
+        //CHECK_CLOSE( 0.1, prop_1_0_dis_0, 0.0001 );
+        //CHECK_CLOSE( 0.9, prop_1_0_dis_1, 0.0001 );
+        //CHECK_CLOSE( 0.1, prop_2_0_dis_0, 0.0001 );
+        //CHECK_CLOSE( 0.9, prop_2_0_dis_1, 0.0001 );
+
+        CHECK_CLOSE( 0.1, prop_1_0_dis_0, 0.0001 );
+        CHECK_CLOSE( 0.9, prop_1_0_dis_1, 0.0001 );
+        CHECK_CLOSE( 0.4, prop_2_0_dis_0, 0.0001 );
+        CHECK_CLOSE( 0.6, prop_2_0_dis_1, 0.0001 );
     }
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestDistributionsInOverlays)

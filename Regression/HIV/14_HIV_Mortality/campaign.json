@@ -48,7 +48,7 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "STIDebut",
+                    "Trigger_Condition_List": [ "STIDebut" ],
                     "Property_Restrictions_Within_Node": 
                     [
                         { "Accessibility": "Yes" }
@@ -56,8 +56,8 @@
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVSigmoidByYearAndSexDiagnostic",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging" ],
-                        "Cascade_State": "HCTUptakeAtDebut",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART", "InterventionStatus:OnPreART", "InterventionStatus:LinkingToPreART", "InterventionStatus:ARTStaging" ],
+                        "New_Property_Value": "InterventionStatus:HCTUptakeAtDebut",
                         "Days_To_Diagnosis": 0,
                         "Ramp_Min": -0.0051999999999999998,
                         "Ramp_Max": 0.050000000000000003,
@@ -88,7 +88,7 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "HCTUptakePostDebut0",
+                    "Trigger_Condition_List": [ "HCTUptakePostDebut0" ],
                     "Property_Restrictions_Within_Node": 
                     [
                         { "Accessibility": "Yes" }
@@ -98,8 +98,8 @@
                         "class": "HIVMuxer",
                         "Muxer_Name": "HCTUptakePostDebut",
                         "Max_Entries": 1,
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging", "HCTTestingLoop" ],
-                        "Cascade_State": "HCTUptakePostDebut",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART", "InterventionStatus:OnPreART", "InterventionStatus:LinkingToPreART", "InterventionStatus:ARTStaging", "InterventionStatus:HCTTestingLoop" ],
+                        "New_Property_Value": "InterventionStatus:HCTUptakePostDebut",
                         "Delay_Distribution": "FIXED_DURATION",
                         "Delay_Period": 365,
                         "Broadcast_Event": "HCTUptakePostDebut1"
@@ -122,7 +122,7 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "HCTUptakePostDebut1",
+                    "Trigger_Condition_List": [ "HCTUptakePostDebut1" ],
                     "Property_Restrictions_Within_Node": 
                     [
                         { "Accessibility": "Yes" }
@@ -130,8 +130,8 @@
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVPiecewiseByYearAndSexDiagnostic",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging", "HCTTestingLoop" ],
-                        "Cascade_State": "HCTUptakePostDebut",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART", "InterventionStatus:OnPreART", "InterventionStatus:LinkingToPreART", "InterventionStatus:ARTStaging", "InterventionStatus:HCTTestingLoop" ],
+                        "New_Property_Value": "InterventionStatus:HCTUptakePostDebut",
                         "Days_To_Diagnosis": 0,
                         "Default_Value": 0,
                         "Time_Value_Map": 
@@ -164,12 +164,12 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "HCTUptakePostDebut2",
+                    "Trigger_Condition_List": [ "HCTUptakePostDebut2" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVRandomChoice",
-                        "Abort_States": [],
-                        "Cascade_State": "HCTUptakePostDebut",
+                        "Disqualifying_Properties": [],
+                        "New_Property_Value": "InterventionStatus:HCTUptakePostDebut",
                         "Choices": 
                         { 
                             "HCTUptakePostDebut0": 1
@@ -195,12 +195,12 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "HCTTestingLoop0",
+                    "Trigger_Condition_List": [ "HCTTestingLoop0" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVRapidHIVDiagnostic",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging" ],
-                        "Cascade_State": "HCTTestingLoop",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART", "InterventionStatus:OnPreART", "InterventionStatus:LinkingToPreART", "InterventionStatus:ARTStaging" ],
+                        "New_Property_Value": "InterventionStatus:HCTTestingLoop",
                         "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "ARTStaging1",
                         "Negative_Diagnosis_Event": "HCTTestingLoop1"
@@ -223,14 +223,14 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "HCTTestingLoop1",
+                    "Trigger_Condition_List": [ "HCTTestingLoop1" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVMuxer",
                         "Muxer_Name": "HCTTestingLoop",
                         "Max_Entries": 1,
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging" ],
-                        "Cascade_State": "HCTTestingLoop",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART", "InterventionStatus:OnPreART", "InterventionStatus:LinkingToPreART", "InterventionStatus:ARTStaging" ],
+                        "New_Property_Value": "InterventionStatus:HCTTestingLoop",
                         "Delay_Distribution": "EXPONENTIAL_DURATION",
                         "Delay_Period": 550,
                         "Broadcast_Event": "HCTTestingLoop0"
@@ -255,7 +255,7 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "HIVSymptomatic",
+                    "Trigger_Condition_List": [ "HIVSymptomatic" ],
                     "Property_Restrictions_Within_Node": 
                     [
                         { "Accessibility": "Yes" }
@@ -285,12 +285,12 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "TestingOnSymptomatic1",
+                    "Trigger_Condition_List": [ "TestingOnSymptomatic1" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVSigmoidByYearAndSexDiagnostic",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging" ],
-                        "Cascade_State": "TestingOnSymptomatic",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART", "InterventionStatus:OnPreART", "InterventionStatus:LinkingToPreART", "InterventionStatus:ARTStaging" ],
+                        "New_Property_Value": "InterventionStatus:TestingOnSymptomatic",
                         "Days_To_Diagnosis": 0,
                         "Ramp_Min": 0,
                         "Ramp_Max__SP7": "<-- MARKER",
@@ -321,7 +321,7 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "TwelveWeeksPregnant",
+                    "Trigger_Condition_List": [ "TwelveWeeksPregnant" ],
                     "Property_Restrictions_Within_Node": 
                     [
                         { "Accessibility": "Yes" }
@@ -351,12 +351,12 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "TestingOnANC1",
+                    "Trigger_Condition_List": [ "TestingOnANC1" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVPiecewiseByYearAndSexDiagnostic",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging", "TestingOnSymptomatic" ],
-                        "Cascade_State": "TestingOnANC",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART", "InterventionStatus:OnPreART", "InterventionStatus:LinkingToPreART", "InterventionStatus:ARTStaging", "InterventionStatus:TestingOnSymptomatic" ],
+                        "New_Property_Value": "InterventionStatus:TestingOnANC",
                         "Days_To_Diagnosis": 0,
                         "Time_Value_Map": 
                         { 
@@ -389,7 +389,7 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "SixWeeksOld",
+                    "Trigger_Condition_List": [ "SixWeeksOld" ],
                     "Property_Restrictions_Within_Node": 
                     [
                         { "Accessibility": "Yes" }
@@ -397,8 +397,8 @@
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVPiecewiseByYearAndSexDiagnostic",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging", "TestingOnSymptomatic" ],
-                        "Cascade_State": "TestingOnChild6w",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART", "InterventionStatus:OnPreART", "InterventionStatus:LinkingToPreART", "InterventionStatus:ARTStaging", "InterventionStatus:TestingOnSymptomatic" ],
+                        "New_Property_Value": "InterventionStatus:TestingOnChild6w",
                         "Days_To_Diagnosis": 0,
                         "Time_Value_Map": 
                         { 
@@ -430,12 +430,12 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "ARTStaging0",
+                    "Trigger_Condition_List": [ "ARTStaging0" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVRapidHIVDiagnostic",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART" ],
-                        "Cascade_State": "ARTStaging",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART", "InterventionStatus:OnPreART", "InterventionStatus:LinkingToPreART" ],
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
                         "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "ARTStaging1"
                     }
@@ -457,12 +457,12 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "ARTStaging1",
+                    "Trigger_Condition_List": [ "ARTStaging1" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVRandomChoice",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART" ],
-                        "Cascade_State": "ARTStaging",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART", "InterventionStatus:OnPreART", "InterventionStatus:LinkingToPreART" ],
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
                         "Choices": 
                         { 
                             "LTFU1": 0.14999999999999999,
@@ -487,14 +487,14 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "ARTStaging2",
+                    "Trigger_Condition_List": [ "ARTStaging2" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVMuxer",
                         "Muxer_Name": "ARTStaging",
                         "Max_Entries": 1,
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART" ],
-                        "Cascade_State": "ARTStaging",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART", "InterventionStatus:OnPreART", "InterventionStatus:LinkingToPreART" ],
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
                         "Delay_Distribution": "FIXED_DURATION",
                         "Delay_Period": 1,
                         "Broadcast_Event": "ARTStaging3"
@@ -517,12 +517,12 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "ARTStaging3",
+                    "Trigger_Condition_List": [ "ARTStaging3" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVDrawBlood",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART" ],
-                        "Cascade_State": "ARTStaging",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART", "InterventionStatus:OnPreART", "InterventionStatus:LinkingToPreART" ],
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
                         "Test_For_CD4_Count": 1,
                         "Test_For_Viral_Load": 0,
                         "Event_Or_Config": "Event",
@@ -546,12 +546,12 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "ARTStaging4",
+                    "Trigger_Condition_List": [ "ARTStaging4" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVARTStagingCD4AgnosticDiagnostic",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART" ],
-                        "Cascade_State": "ARTStaging",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART", "InterventionStatus:OnPreART", "InterventionStatus:LinkingToPreART" ],
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
                         "NOTE1": "Threshold for adult vs child guidelines",
                         "Adult_Treatment_Age": 5,
                         "Adult_By_WHO_Stage": 
@@ -606,12 +606,12 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "ARTStaging5",
+                    "Trigger_Condition_List": [ "ARTStaging5" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVRandomChoice",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART" ],
-                        "Cascade_State": "ARTStaging",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART", "InterventionStatus:OnPreART", "InterventionStatus:LinkingToPreART" ],
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
                         "Choices": 
                         { 
                             "LTFU2": 0.14999999999999999,
@@ -636,12 +636,12 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "ARTStaging6",
+                    "Trigger_Condition_List": [ "ARTStaging6" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVARTStagingByCD4Diagnostic",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART" ],
-                        "Cascade_State": "ARTStaging",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART", "InterventionStatus:OnPreART", "InterventionStatus:LinkingToPreART" ],
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
                         "Threshold": 
                         { 
                             "Times": [ 2004, 2011.8 ],
@@ -681,12 +681,12 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "LinkingToPreART0",
+                    "Trigger_Condition_List": [ "LinkingToPreART0" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVSigmoidByYearAndSexDiagnostic",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART" ],
-                        "Cascade_State": "LinkingToPreART",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART", "InterventionStatus:OnPreART" ],
+                        "New_Property_Value": "InterventionStatus:LinkingToPreART",
                         "Days_To_Diagnosis": 0,
                         "Ramp_Min": 0.46000000000000002,
                         "Ramp_Max__SP8": "<-- MARKER",
@@ -718,7 +718,7 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "OnPreART0",
+                    "Trigger_Condition_List": [ "OnPreART0" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVPreARTNotification",
@@ -743,14 +743,14 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "OnPreART0",
+                    "Trigger_Condition_List": [ "OnPreART0" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVMuxer",
                         "Muxer_Name": "PreART",
                         "Max_Entries": 1,
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART" ],
-                        "Cascade_State": "OnPreART",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART" ],
+                        "New_Property_Value": "InterventionStatus:OnPreART",
                         "Delay_Distribution": "FIXED_DURATION",
                         "Delay_Period": 180,
                         "Broadcast_Event": "OnPreART1"
@@ -773,12 +773,12 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "OnPreART1",
+                    "Trigger_Condition_List": [ "OnPreART1" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVRandomChoice",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART" ],
-                        "Cascade_State": "OnPreART",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART" ],
+                        "New_Property_Value": "InterventionStatus:OnPreART",
                         "Choices": 
                         { 
                             "LTFU4": 0.20000000000000001,
@@ -803,12 +803,12 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "OnPreART2",
+                    "Trigger_Condition_List": [ "OnPreART2" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVARTStagingCD4AgnosticDiagnostic",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART" ],
-                        "Cascade_State": "OnPreART",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART" ],
+                        "New_Property_Value": "InterventionStatus:OnPreART",
                         "NOTE1": "Threshold for adult vs child guidelines",
                         "Adult_Treatment_Age": 5,
                         "Adult_By_WHO_Stage": 
@@ -863,12 +863,12 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "OnPreART3",
+                    "Trigger_Condition_List": [ "OnPreART3" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVDrawBlood",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART" ],
-                        "Cascade_State": "OnPreART",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART" ],
+                        "New_Property_Value": "InterventionStatus:OnPreART",
                         "Test_For_CD4_Count": 1,
                         "Test_For_Viral_Load": 0,
                         "Event_Or_Config": "Event",
@@ -892,12 +892,12 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "OnPreART4",
+                    "Trigger_Condition_List": [ "OnPreART4" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVARTStagingByCD4Diagnostic",
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART" ],
-                        "Cascade_State": "OnPreART",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART", "InterventionStatus:LinkingToART" ],
+                        "New_Property_Value": "InterventionStatus:OnPreART",
                         "Threshold": 
                         { 
                             "Times": [ 2004, 2011.8 ],
@@ -936,7 +936,7 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "OnART0",
+                    "Trigger_Condition_List": [ "OnART0" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVPreARTNotification",
@@ -961,7 +961,7 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "LTFU4",
+                    "Trigger_Condition_List": [ "LTFU4" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVPreARTNotification",
@@ -987,12 +987,12 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "LinkingToART0",
+                    "Trigger_Condition_List": [ "LinkingToART0" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVSigmoidByYearAndSexDiagnostic",
-                        "Abort_States": [ "LostForever", "OnART" ],
-                        "Cascade_State": "LinkingToART",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever", "InterventionStatus:OnART" ],
+                        "New_Property_Value": "InterventionStatus:LinkingToART",
                         "Days_To_Diagnosis": 0,
                         "Ramp_Min": 0,
                         "Ramp_Max": 0.75105999999999995,
@@ -1025,14 +1025,14 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "OnART0",
+                    "Trigger_Condition_List": [ "OnART0" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVMuxer",
                         "Muxer_Name": "OnART",
                         "Max_Entries": 1,
-                        "Abort_States": [ "LostForever" ],
-                        "Cascade_State": "OnART",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever" ],
+                        "New_Property_Value": "InterventionStatus:OnART",
                         "Delay_Distribution": "UNIFORM_DURATION",
                         "Delay_Period_Min": 1,
                         "Delay_Period_Max": 120,
@@ -1056,7 +1056,7 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "OnART1",
+                    "Trigger_Condition_List": [ "OnART1" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "ARTBasic"
@@ -1079,14 +1079,14 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "OnART1",
+                    "Trigger_Condition_List": [ "OnART1" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVMuxer",
                         "Muxer_Name": "ARTDropoutDelay",
                         "Max_Entries": 1,
-                        "Abort_States": [ "LostForever" ],
-                        "Cascade_State": "OnART",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever" ],
+                        "New_Property_Value": "InterventionStatus:OnART",
                         "Delay_Distribution": "EXPONENTIAL_DURATION",
                         "Delay_Period": 3650,
                         "Broadcast_Event": "OnART2"
@@ -1109,7 +1109,7 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "OnART2",
+                    "Trigger_Condition_List": [ "OnART2" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "ARTDropout"
@@ -1132,12 +1132,12 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "OnART2",
+                    "Trigger_Condition_List": [ "OnART2" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
                         "class": "HIVRandomChoice",
-                        "Abort_States": [ "LostForever" ],
-                        "Cascade_State": "OnART",
+                        "Disqualifying_Properties": [ "InterventionStatus:LostForever" ],
+                        "New_Property_Value": "InterventionStatus:OnART",
                         "Choices": 
                         { 
                             "LostForever0": 0.5,
@@ -1164,14 +1164,15 @@
                 "Intervention_Config": 
                 { 
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "LostForever0",
+                    "Trigger_Condition_List": [ "LostForever0" ],
                     "Actual_IndividualIntervention_Config": 
                     { 
-                        "class": "HIVSetCascadeState",
-                        "Abort_States": [],
-                        "Cascade_State": "LostForever",
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "LTFU6"
+                        "class": "PropertyValueChanger",
+                        "Target_Property_Key" : "InterventionStatus",
+                        "Target_Property_Value" : "LostForever",
+                        "Daily_Probability" : 1.0,
+                        "Maximum_Duration" : 0,
+                        "Revert" : 0
                     }
                 }
             },

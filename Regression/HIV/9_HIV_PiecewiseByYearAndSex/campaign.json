@@ -20,7 +20,7 @@
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "EveryUpdate",
+                    "Trigger_Condition_List": [ "EveryUpdate" ],
 
                     "Demographic_Coverage": 1,
                     "Duration": 14600,
@@ -31,8 +31,8 @@
 
                         "Days_To_Diagnosis": 0,
 
-                        "Abort_States": [],
-                        "Cascade_State": "",
+                        "Disqualifying_Properties": [],
+                        "New_Property_Value": "InterventionStatus:None",
 
                         "Interpolation_Order": 0,
                         "Female_Multiplier": 1.3,
@@ -75,7 +75,7 @@
                 "Intervention_Config":
                 {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "EveryUpdate",
+                    "Trigger_Condition_List": [ "EveryUpdate" ],
 
                     "Demographic_Coverage": 1,
                     "Duration": 14600,
@@ -86,8 +86,8 @@
 
                         "Days_To_Diagnosis": 0,
 
-                        "Abort_States": [],
-                        "Cascade_State": "",
+                        "Disqualifying_Properties": [],
+                        "New_Property_Value": "InterventionStatus:None",
 
                         "Interpolation_Order": 1,
                         "Female_Multiplier": 1.3,

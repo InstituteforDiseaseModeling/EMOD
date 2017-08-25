@@ -34,7 +34,8 @@
                     "Event_Name": "Outbreak", 
                     "Genome": 0, 
                     "Outbreak_Source": "ImportCases", 
-                    "class": "OutbreakIndividual"
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0
                 }, 
                 "Number_Repetitions": 10, 
                 "Target_Demographic": "Everyone", 

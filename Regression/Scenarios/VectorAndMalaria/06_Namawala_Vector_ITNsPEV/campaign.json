@@ -4,7 +4,6 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 0.7, 
                 "Intervention_Config": {
-                    "Bednet_Type": "ITN", 
                     "Blocking_Config": {
                         "Decay_Time_Constant": 730, 
                         "Initial_Effect": 0.9, 
@@ -15,6 +14,10 @@
                         "Decay_Time_Constant": 1460, 
                         "Initial_Effect": 0.6, 
                         "class": "WaningEffectExponential"
+                    }, 
+                    "Usage_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 1.0
                     }, 
                     "class": "SimpleBednet"
                 }, 

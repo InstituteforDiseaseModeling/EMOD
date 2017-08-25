@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,7 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IndividualEventContext.h"
 #include "NodeEventContext.h"
 
-static const char* _module = "ControlledVaccine";
+SETUP_LOGGING( "ControlledVaccine" )
 
 namespace Kernel
 {
@@ -28,8 +28,8 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        initConfigTypeMap( "Distributed_Event_Trigger",             &m_DistributedEventTrigger,           RV_Distributed_Event_Trigger_DESC_TEXT,             NO_TRIGGER_STR );
-        initConfigTypeMap( "Expired_Event_Trigger",                 &m_ExpiredEventTrigger,               RV_Expired_Event_Trigger_DESC_TEXT,                 NO_TRIGGER_STR );
+        initConfigTypeMap( "Distributed_Event_Trigger",             &m_DistributedEventTrigger,           RV_Distributed_Event_Trigger_DESC_TEXT );
+        initConfigTypeMap( "Expired_Event_Trigger",                 &m_ExpiredEventTrigger,               RV_Expired_Event_Trigger_DESC_TEXT     );
         initConfigTypeMap( "Duration_To_Wait_Before_Revaccination", &m_DurationToWaitBeforeRevaccination, RV_Duration_To_Wait_Before_Revaccination_DESC_TEXT, 0, FLT_MAX, FLT_MAX);
 
         bool configured = SimpleVaccine::Configure( inputJson );
@@ -40,8 +40,8 @@ namespace Kernel
     : SimpleVaccine()
     , m_DurationToWaitBeforeRevaccination(FLT_MAX)
     , m_TimeSinceVaccination(0.0)
-    , m_DistributedEventTrigger(NO_TRIGGER_STR)
-    , m_ExpiredEventTrigger(NO_TRIGGER_STR)
+    , m_DistributedEventTrigger()
+    , m_ExpiredEventTrigger()
     {
     }
 
@@ -82,7 +82,7 @@ namespace Kernel
             distribute = SimpleVaccine::Distribute( context, pCCO );
         }
 
-        if( distribute && (m_DistributedEventTrigger != NO_TRIGGER_STR) )
+        if( distribute && !m_DistributedEventTrigger.IsUninitialized() )
         {
             INodeTriggeredInterventionConsumer* broadcaster = nullptr;
             if (s_OK != context->GetParent()->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
@@ -92,7 +92,7 @@ namespace Kernel
                     "INodeTriggeredInterventionConsumer",
                     "INodeEventContext" );
             }
-            broadcaster->TriggerNodeEventObserversByString( context->GetParent()->GetEventContext(), m_DistributedEventTrigger );
+            broadcaster->TriggerNodeEventObservers( context->GetParent()->GetEventContext(), m_DistributedEventTrigger );
         }
 
         return distribute;
@@ -103,7 +103,7 @@ namespace Kernel
         SimpleVaccine::Update( dt );
         m_TimeSinceVaccination += dt;
 
-        if( expired && (m_ExpiredEventTrigger != NO_TRIGGER_STR) )
+        if( expired && !m_ExpiredEventTrigger.IsUninitialized() )
         {
             INodeTriggeredInterventionConsumer* broadcaster = nullptr;
             if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
@@ -113,7 +113,7 @@ namespace Kernel
                     "INodeTriggeredInterventionConsumer",
                     "INodeEventContext" );
             }
-            broadcaster->TriggerNodeEventObserversByString( parent->GetEventContext(), m_ExpiredEventTrigger );
+            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), m_ExpiredEventTrigger );
         }
     }
 

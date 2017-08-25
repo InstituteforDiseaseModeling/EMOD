@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,7 +19,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #pragma warning(disable : 4996)
 
-static const char* _module = "RapidJsonObj";
+SETUP_LOGGING( "RapidJsonObj" )
 
 namespace Kernel {
 
@@ -192,7 +192,6 @@ namespace Kernel {
         m_writer->String(val->ToString());
     }
 
-
     void RapidJsonObj::Add( const char* val )    { m_writer->String(val); }
     void RapidJsonObj::Add( const int32_t val )  { m_writer->Int(val); }
     void RapidJsonObj::Add( const uint32_t val ) { m_writer->Uint(val); }
@@ -202,6 +201,8 @@ namespace Kernel {
     void RapidJsonObj::Add( const uint64_t val ) { m_writer->Uint64(val); }
     void RapidJsonObj::Add( const bool val )     { m_writer->Bool(val); }
     void RapidJsonObj::Add( const IJsonObjectAdapter* val ) { m_writer->String(val->ToString()); }
+
+    bool RapidJsonObj::Contains(const char* key) const { return m_document->HasMember(key); }
 
     IJsonObjectAdapter* RapidJsonObj::operator[](const char* key) const { return GetJsonObject(key); }
 

@@ -25,12 +25,12 @@
                 "Intervention_Config":
                 {
                     "class": "HIVSimpleDiagnostic",
-					"Cascade_State": "",
+                    "New_Property_Value": "InterventionStatus:None",
                     "Base_Specificity": 1,
                     "Base_Sensitivity": 1,
                     "Event_Or_Config": "Event",
                     "Positive_Diagnosis_Event": "NoTrigger",
-					"Negative_Diagnosis_Event": "HIVNeedsMaleCircumcision"
+                    "Negative_Diagnosis_Event": "HIVNeedsMaleCircumcision"
                 }
             },
             "END": "MALE CIRCUMCISION FOR 50% OF UNINFECTED AGED 18-25 ON JAN 1, 2020"

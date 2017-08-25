@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version='1.0' encoding='utf-8'?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Win32">
       <UniqueIdentifier>{fe060ac6-0d5b-4696-9071-e178df876ac6}</UniqueIdentifier>
@@ -25,6 +25,8 @@
     <ClCompile Include="src\TestRunner.cpp" />
     <ClCompile Include="src\TimeConstraint.cpp" />
     <ClCompile Include="src\XmlTestReporter.cpp" />
+    <ClCompile Include="src\Posix\SignalTranslator.cpp" />
+    <ClCompile Include="src\Posix\TimeHelpers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Win32\TimeHelpers.h">
@@ -53,5 +55,7 @@
     <ClInclude Include="src\TimeHelpers.h" />
     <ClInclude Include="src\UnitTest++.h" />
     <ClInclude Include="src\XmlTestReporter.h" />
+    <ClInclude Include="src\Posix\TimeHelpers.h" />
+    <ClInclude Include="src\Posix\SignalTranslator.h" />
   </ItemGroup>
 </Project>

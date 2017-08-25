@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,18 +18,16 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ISupports.h"
 #include "CajunIncludes.h"
 
-#include "Serializer.h"
-
-#include "JsonObject.h" // For IJsonSerializable
-
 // simple wrapper around config information - reuse the QuickInterpreter functionality but 
 // handle loading explicitly on creation
 class Configuration : public json::QuickInterpreter
 {
 public:
-    static Configuration* CopyFromElement(const json::Element &elem); // creates a Configuration object representing a copy of the subtree rooted at the element passed in
+    // creates a Configuration object representing a copy of the subtree rooted at the element passed in
+    static Configuration* CopyFromElement( const json::Element &elem, const std::string& rDataLocation = "Unknown" );
 
     bool CheckElementByName(const std::string& elementName) const;
+    const std::string& GetDataLocation() const { return data_location; }
 
     static Configuration* Load(std::string configFileName);
     static Configuration* Load(std::istream& rInputStream, const std::string& rDataLocation);
@@ -38,13 +36,14 @@ public:
 
 private:
     // Don't let users create an empty one.
-    Configuration(json::Element* element) : QuickInterpreter(*element) { pElement = element; }
+    Configuration( json::Element* element, const std::string& rDataLocation );
 
-    static Configuration* loadInternal(std::istream &config_file);
+    static Configuration* loadInternal( std::istream &config_file, const std::string& rDataLocation );
 
     json::Element* pElement; // maintain the backing string containing the original data also
+    std::string data_location;
 
-    Configuration() : QuickInterpreter(json::Element()), pElement(nullptr) {} // this ctor only for serialization, the base class will be initialized to an invalid state which deserialization must repair
+    Configuration(); // this ctor only for serialization, the base class will be initialized to an invalid state which deserialization must repair
 };
 
 class JsonUtility
@@ -143,16 +142,6 @@ namespace Kernel
 {
     using namespace std;
     using namespace json;
-
-    ////////////////////////////////////////////////////////////////////////
-    // Interface for classes to implement to serialize itself
-    // to a JSon string via JsonObject library
-    class JSerializer;
-    struct IDMAPI IJsonSerializable : public ISupports
-    {
-        virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper ) const = 0;
-        virtual void JDeserialize( IJsonObjectAdapter* root, JSerializer* helper ) = 0;
-    };
 
     //////////////////////////////////////////////////////////////////////
     // Configuration Mechanism

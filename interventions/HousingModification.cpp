@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,7 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorInterventionsContainer.h"  // for IHousingModificationConsumer methods
 #include "Log.h"
 
-static const char* _module = "SimpleHousingModification";
+SETUP_LOGGING( "SimpleHousingModification" )
 
 namespace Kernel
 {
@@ -73,28 +73,25 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
+        WaningConfig   killing_config;
+        WaningConfig   blocking_config;
+
         initConfigComplexType("Killing_Config", &killing_config, HM_Killing_Config_DESC_TEXT );
         initConfigComplexType("Blocking_Config", &blocking_config, HM_Blocking_Config_DESC_TEXT );
-        bool configured = JsonConfigurable::Configure( inputJson );
-        if( !JsonConfigurable::_dryrun )
+        bool configured = BaseIntervention::Configure( inputJson );
+        if( !JsonConfigurable::_dryrun && configured )
         {
-            auto tmp_killing  = Configuration::CopyFromElement( killing_config._json  );
-            auto tmp_blocking = Configuration::CopyFromElement( blocking_config._json );
-
-            killing_effect  = WaningEffectFactory::CreateInstance( tmp_killing  );
-            blocking_effect = WaningEffectFactory::CreateInstance( tmp_blocking );
-
-            delete tmp_killing;
-            delete tmp_blocking;
-            tmp_killing  = nullptr;
-            tmp_blocking = nullptr;
+            killing_effect  = WaningEffectFactory::CreateInstance( killing_config  );
+            blocking_effect = WaningEffectFactory::CreateInstance( blocking_config );
         }
-        return JsonConfigurable::Configure( inputJson );
+        return configured;
     }
 
     SimpleHousingModification::SimpleHousingModification()
-        : killing_effect( nullptr )
-        , blocking_effect( nullptr )
+    : BaseIntervention()
+    , killing_effect(nullptr)
+    , blocking_effect(nullptr)
+    , ihmc(nullptr)
     {
         initSimTypes( 2, "VECTOR_SIM", "MALARIA_SIM" );
         initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, HM_Cost_To_Consumer_DESC_TEXT, 0, 999999, 8.0);
@@ -108,20 +105,18 @@ namespace Kernel
 
     SimpleHousingModification::SimpleHousingModification( const SimpleHousingModification& master )
     : BaseIntervention( master )
+    , killing_effect( nullptr )
+    , blocking_effect( nullptr )
+    , ihmc( nullptr )
     {
-        killing_config  = master.killing_config;
-        blocking_config = master.blocking_config;
-
-        auto tmp_killing  = Configuration::CopyFromElement( killing_config._json  );
-        auto tmp_blocking = Configuration::CopyFromElement( blocking_config._json );
-
-        killing_effect  = WaningEffectFactory::CreateInstance( tmp_killing  );
-        blocking_effect = WaningEffectFactory::CreateInstance( tmp_blocking );
-
-        delete tmp_killing;
-        delete tmp_blocking;
-        tmp_killing  = nullptr;
-        tmp_blocking = nullptr;
+        if( master.killing_effect != nullptr )
+        {
+            killing_effect = master.killing_effect->Clone();
+        }
+        if( master.blocking_effect != nullptr )
+        {
+            blocking_effect = master.blocking_effect->Clone();
+        }
     }
 
     bool
@@ -130,11 +125,18 @@ namespace Kernel
         ICampaignCostObserver * const pCCO
     )
     {
+        if( AbortDueToDisqualifyingInterventionStatus( context->GetParent() ) )
+        {
+            return false;
+        }
+
         if (s_OK != context->QueryInterface(GET_IID(IHousingModificationConsumer), (void**)&ihmc) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHousingModificationConsumer", "IIndividualHumanInterventionsContext" );
         }
+
         context->PurgeExisting( typeid(*this).name() );
+
         return BaseIntervention::Distribute( context, pCCO );
     }
 
@@ -142,16 +144,27 @@ namespace Kernel
         IIndividualHumanContext *context
     )
     {
+        BaseIntervention::SetContextTo( context );
+        if( killing_effect != nullptr )
+        {
+            killing_effect->SetContextTo( context );
+        }
+        if( blocking_effect != nullptr )
+        {
+            blocking_effect->SetContextTo( context );
+        }
+
         LOG_DEBUG("SimpleHousingModification::SetContextTo (probably deserializing)\n");
         if (s_OK != context->GetInterventionsContext()->QueryInterface(GET_IID(IHousingModificationConsumer), (void**)&ihmc) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHousingModificationConsumer", "IIndividualHumanContext" );
         }
-
     }
 
     void SimpleHousingModification::Update( float dt )
     {
+        if( !BaseIntervention::UpdateIndividualsInterventionStatus() ) return;
+
         killing_effect->Update(dt);
         blocking_effect->Update(dt);
         float current_killingrate = killing_effect->Current();
@@ -173,36 +186,5 @@ namespace Kernel
         HANDLE_INTERFACE(IDistributableIntervention)
         HANDLE_ISUPPORTS_VIA(IDistributableIntervention)
     END_QUERY_INTERFACE_BODY(SimpleHousingModification)
-/*
-    Kernel::QueryResult SimpleHousingModification::QueryInterface( iid_t iid, void **ppinstance )
-    {
-        assert(ppinstance);
-
-        if ( !ppinstance )
-            return e_NULL_POINTER;
-
-        ISupports* foundInterface;
-
-        if ( iid == GET_IID(IHousingModification))
-            foundInterface = static_cast<IHousingModification*>(this);
-        // -->> add support for other I*Consumer interfaces here <<--
-
-        else if ( iid == GET_IID(ISupports))
-            foundInterface = static_cast<ISupports*>(static_cast<IHousingModification*>(this));
-        else
-            foundInterface = 0;
-
-        QueryResult status;
-        if ( !foundInterface )
-            status = e_NOINTERFACE;
-        else
-        {
-            //foundInterface->AddRef();           // not implementing this yet!
-            status = s_OK;
-        }
-
-        *ppinstance = foundInterface;
-        return status;
-    }*/
 }
 

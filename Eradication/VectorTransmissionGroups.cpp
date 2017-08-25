@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,7 +12,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorTransmissionGroups.h"
 #include "Exceptions.h"
 #include "VectorPopulation.h"
+#ifndef DISABLE_VECTOR
 #include "NodeVector.h"
+#endif
 #include "IInfectable.h"
 #include "IContagionPopulation.h"
 
@@ -22,7 +24,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Contexts.h"
 #include "RANDOM.h"
 
-static const char* _module = "VectorNodeTransmissionGroups";
+SETUP_LOGGING( "VectorNodeTransmissionGroups" )
 
 
 namespace Kernel

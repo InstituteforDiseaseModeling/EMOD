@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -33,13 +33,17 @@ namespace Kernel
         virtual void Update_Male_Queue      ( float dt ) override;
 
         // function to support adding in new vectors (Wolbachia types, etc...)
-        virtual void AddVectors(VectorMatingStructure _vector_genetics, uint64_t releasedNumber) override;
+        virtual void AddVectors( const VectorMatingStructure& _vector_genetics, uint64_t releasedNumber ) override;
 
         // IInfectable
         virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route ) override;
 
-        virtual void Vector_Migration( IMigrationInfo* pMigInfo, VectorCohortList_t* pMigratingQueue ) override;
-        virtual uint64_t Vector_Migration(float = 0.0f, VectorCohortList_t * = nullptr) override;
+        virtual void Vector_Migration( IMigrationInfo* pMigInfo, VectorCohortVector_t* pMigratingQueue ) override;
+        virtual uint64_t Vector_Migration( float = 0.0f, VectorCohortVector_t* = nullptr ) override;
+
+        // IVectorPopulationReporting
+        virtual std::vector<int> GetNewlyInfectedSuids() const override;
+        virtual std::vector<int> GetInfectiousSuids() const override;
 
     protected:
         uint32_t m_mosquito_weight;
@@ -48,13 +52,13 @@ namespace Kernel
         // Temporary containers to store exposed vectors before exposing them to infectious strains
         // These could be moved back to the base class, VectorPopulation, if we figure out a sensible way 
         // to deal with minimal strain tracking in the cohort model
-        VectorCohortList_t IndoorExposedQueues;
-        VectorCohortList_t OutdoorExposedQueues;
+        VectorCohortVector_t IndoorExposedQueues;
+        VectorCohortVector_t OutdoorExposedQueues;
 
         VectorPopulationIndividual(uint32_t mosquito_weight);
         virtual void InitializeVectorQueues(unsigned int adults, unsigned int _infectious) override;
         virtual uint32_t ProcessFeedingCycle( float dt, IVectorCohort* cohort, VectorStateEnum::Enum state ) override;
-        void ExposeCohortList( const IContagionPopulation* cp, VectorCohortList_t& list, float success_prob, float infection_prob );
+        void ExposeCohortList( const IContagionPopulation* cp, VectorCohortVector_t& list, float success_prob, float infection_prob );
         void ResetOvipositionTimer( IVectorCohortIndividual* mosquito );
         IVectorCohortIndividual * current_vci; // added this since we have it, then call a function, and function re-qi's for it, which is unnecessary.
 

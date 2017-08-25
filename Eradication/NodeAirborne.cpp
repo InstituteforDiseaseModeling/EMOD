@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "IndividualAirborne.h"
 
-static const char * _module = "NodeAirborne";
+SETUP_LOGGING( "NodeAirborne" )
 
 namespace Kernel
 {
@@ -56,7 +56,7 @@ namespace Kernel
         if ( localWeather == nullptr )
         {
             throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "localWeather", "Climate");
-            //throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "climate_structure", "CLIMATE_OFF", "infectivity_scaling", "FUNCTION_OF_CLIMATE");
+            //throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Climate_Model", "CLIMATE_OFF", "infectivity_scaling", "FUNCTION_OF_CLIMATE");
         }
 
         float humidity = localWeather->humidity();

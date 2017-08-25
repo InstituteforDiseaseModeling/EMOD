@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,7 +21,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorContexts.h"
 #include "VectorParameters.h"
 
-static const char * _module = "VectorHabitat";
+SETUP_LOGGING( "VectorHabitat" )
 
 namespace Kernel
 {
@@ -48,7 +48,7 @@ namespace Kernel
         if( m_habitat_type != VectorHabitatType::LINEAR_SPLINE )
         {
             const char* type_str = VectorHabitatType::pairs::lookup_key( m_habitat_type );
-            initConfigTypeMap( type_str, &m_max_larval_capacity, "TBD", 0.0f, FLT_MAX, 1E10 );
+            initConfigTypeMap( type_str, &m_max_larval_capacity, Max_Larval_Capacity_DESC_TEXT, 0.0f, FLT_MAX, 1E10 );
 
         }
         return JsonConfigurable::Configure( inputJson );
@@ -56,8 +56,8 @@ namespace Kernel
 
     bool LinearSplineHabitat::Configure( const Configuration* inputJson )
     {
-        initConfigTypeMap( "Max_Larval_Capacity", &m_max_larval_capacity, "TBD", 0.0f, FLT_MAX, 1E10 );
-        initConfigComplexType( "Capacity_Distribution_Per_Year", &capacity_distribution, "TBD" );
+        initConfigTypeMap( "Max_Larval_Capacity", &m_max_larval_capacity, Max_Larval_Capacity_DESC_TEXT, 0.0f, FLT_MAX, 1E10 );
+        initConfigComplexType( "Capacity_Distribution_Per_Year", &capacity_distribution, Capacity_Distribution_Per_Year_DESC_TEXT );
 
         // -----------------------------------------------------------------------------------------------
         // --- This is a little different.  It is assumed that the inputJson element is the entire element
@@ -68,7 +68,7 @@ namespace Kernel
         if( inputJson != nullptr )
         {
             const char* type_str = VectorHabitatType::pairs::lookup_key( VectorHabitatType::LINEAR_SPLINE );
-            sub_element = Configuration::CopyFromElement( (*inputJson)[type_str] );
+            sub_element = Configuration::CopyFromElement( (*inputJson)[type_str], inputJson->GetDataLocation() );
         }
         bool ret = VectorHabitat::Configure( sub_element );
         if( ret && !JsonConfigurable::_dryrun )
@@ -106,6 +106,9 @@ namespace Kernel
                 break;
             case VectorHabitatType::BRACKISH_SWAMP: 
                 p_habitat = new BrackishSwampHabitat();
+                break;
+            case VectorHabitatType::MARSHY_STREAM:
+                p_habitat = new MarshyStreamHabitat();
                 break;
             case VectorHabitatType::LINEAR_SPLINE:
                 p_habitat = new LinearSplineHabitat();
@@ -156,7 +159,14 @@ namespace Kernel
                 {
                     if (m_new_egg_count > (larvalhabitat - total_larva_count))
                     { 
-                        m_egg_crowding_correction = float(larvalhabitat - total_larva_count) / float(m_new_egg_count);
+                        if (params()->vector_params->delayed_hatching_when_habitat_dries_up)
+                        {
+                            m_egg_crowding_correction = max(params()->vector_params->droughtEggHatchDelay, float(larvalhabitat - total_larva_count) / float(m_new_egg_count));
+                        }
+                        else 
+                        {
+                            m_egg_crowding_correction = float(larvalhabitat - total_larva_count) / float(m_new_egg_count);
+                        }                            
                     }
                     else
                     {
@@ -165,8 +175,14 @@ namespace Kernel
                 }
                 else
                 {
-                    // Habitat is full.  No new eggs.
-                    m_egg_crowding_correction = 0;
+                    if (params()->vector_params->delayed_hatching_when_habitat_dries_up)  
+                    {
+                        m_egg_crowding_correction = params()->vector_params->droughtEggHatchDelay;   // Habitat is full.  capped at 1/3 to prevent all eggs to disappear 
+                    } 
+                    else 
+                    {
+                        m_egg_crowding_correction = 0;    // Habitat is full.  No new eggs.  
+                    } 
                 }
                 break;
 
@@ -240,6 +256,49 @@ namespace Kernel
         }
     }
 
+    void MarshyStreamHabitat::UpdateCurrentLarvalCapacity(float dt, INodeContext* node)
+    {
+        const Climate* localWeather = node->GetLocalWeather();
+        LOG_DEBUG_F("Habitat type = MARSHY_STREAM, Max larval capacity = %f\n", m_max_larval_capacity);
+        float rain = localWeather->accumulated_rainfall() * float(MM_PER_METER);
+        water_table += permeability * rain;
+        stream_level += (1-permeability) * rain;
+
+        float surface_flow = max(0.0f, water_table - rainfall_to_fill);
+        if (surface_flow > 0)
+        {
+            water_table -= surface_flow;
+            stream_level += surface_flow;
+        }
+
+        float water_table_outflow = water_table * dt / water_table_outflow_days;
+        water_table -= water_table_outflow;
+        stream_level += water_table_outflow;
+
+        if (stream_level > stream_outflow_threshold)
+        {
+            float stream_flow = (stream_level - stream_outflow_threshold) * dt / stream_outflow_days;
+            stream_level -= stream_flow;
+        }
+
+        float evaporation = stream_outflow_threshold * dt / evaporation_days;
+        stream_level -= evaporation;
+        stream_level = max(0.0f, stream_level);
+
+        float scale; // = 0;
+        if (stream_level < stream_outflow_threshold)
+        {
+            scale = stream_level / stream_outflow_threshold;
+        }
+        else
+        {
+            scale = exp( (stream_outflow_threshold - stream_level) / stream_outflow_threshold );
+        }
+        m_current_larval_capacity = m_max_larval_capacity * scale * params()->lloffset * params()->lloffset;
+
+        LOG_DEBUG_F( "stream_level = %0.2f, habitat = %0.2f\n", stream_level, m_current_larval_capacity );
+    }
+
     void LinearSplineHabitat::UpdateCurrentLarvalCapacity(float dt, INodeContext* node)
     {
         float scale = capacity_distribution.getValueLinearInterpolation( day_of_year );
@@ -273,7 +332,7 @@ namespace Kernel
         m_artificial_larval_mortality = EXPCDF( -dt * ( invie->GetLarvalKilling(m_habitat_type) ) );
         m_larvicide_habitat_scaling   = 1.0f - invie->GetLarvalHabitatReduction( m_habitat_type, species );
 
-        LOG_DEBUG_F("Updated larval probabilites: oviposition-trap killing = %f, artificial larval mortality = %f, larvicide habitat reduction = %f\n", m_oviposition_trap_killing, m_artificial_larval_mortality, m_larvicide_habitat_scaling);
+        LOG_DEBUG_F("Updated larval probabilities: oviposition-trap killing = %f, artificial larval mortality = %f, larvicide habitat reduction = %f\n", m_oviposition_trap_killing, m_artificial_larval_mortality, m_larvicide_habitat_scaling);
     }
 
     void VectorHabitat::UpdateRainfallMortality(float dt, float rainfall)
@@ -333,12 +392,12 @@ namespace Kernel
         return m_habitat_type;
     }
 
-    float VectorHabitat::GetMaximumLarvalCapacity() const
+    NonNegativeFloat VectorHabitat::GetMaximumLarvalCapacity() const
     {
-        return m_max_larval_capacity;
+        return NonNegativeFloat(m_max_larval_capacity);
     }
 
-    float VectorHabitat::GetCurrentLarvalCapacity() const
+    NonNegativeFloat VectorHabitat::GetCurrentLarvalCapacity() const
     {
         // Current capacity (as driven by rainfall/evaporation/etc.)
         // and larval habitat reduction (e.g. larvicide) are evolved separately.
@@ -398,25 +457,24 @@ namespace Kernel
     float VectorHabitat::GetLocalLarvalGrowthModifier() const
     {
         int32_t previous_larva_count = GetTotalLarvaCount(PREVIOUS_TIME_STEP);
-        float larvalhabitat = GetCurrentLarvalCapacity();
+        float larvalCap = GetCurrentLarvalCapacity();
 
         // Larval growth modifier defaults to 1
         float locallarvalgrowthmod = 1.0;
 
         // However, larval growth rate can be slowed by overpopulation, using total larva count from last step
-        if ( previous_larva_count > larvalhabitat )
+        if ( previous_larva_count > larvalCap )
         {  
-            locallarvalgrowthmod = larvalhabitat / previous_larva_count;
-        }
-
-        LOG_VALID_F( "%s returning %f based on current larval count (%u), capacity (%f).\n", __FUNCTION__, locallarvalgrowthmod, previous_larva_count, larvalhabitat );
+            locallarvalgrowthmod = larvalCap / previous_larva_count;
+        } 
+        LOG_VALID_F( "%s returning %f based on current larval count (%u), capacity (%f).\n", __FUNCTION__, locallarvalgrowthmod, previous_larva_count, larvalCap ); 
         return locallarvalgrowthmod;
     }
 
     float VectorHabitat::GetLocalLarvalMortality(float species_aquatic_mortality, float progress) const
     {
-        float larvalhabitat = GetCurrentLarvalCapacity();
-        if (larvalhabitat <= 0 || progress <= 0) 
+        float larvalCap = GetCurrentLarvalCapacity();
+        if (larvalCap <= 0 || progress <= 0) 
         {
             return 1.0f;  // No habitat = complete mortality
         }
@@ -432,16 +490,16 @@ namespace Kernel
         {
             // Linear-&-uniform increase in mortality 
             case LarvalDensityDependence::UNIFORM_WHEN_OVERPOPULATION:
-                if( previous_larva_count > larvalhabitat )
+                if( previous_larva_count > larvalCap )
                 {
-                    locallarvalmortality *= ( previous_larva_count / larvalhabitat );
+                    locallarvalmortality *= ( previous_larva_count / larvalCap );
                 }
                 break;
 
             // Larval competition with Notre Dame larval dynamics
             case LarvalDensityDependence::GRADUAL_INSTAR_SPECIFIC:
-            case LarvalDensityDependence::LARVAL_AGE_DENSITY_DEPENDENT_MORTALITY_ONLY:
-                locallarvalmortality *= exp(previous_larva_count / ( (progress * params()->vector_params->larvalDensityMortalityScalar + params()->vector_params->larvalDensityMortalityOffset) * larvalhabitat) );
+            case LarvalDensityDependence::LARVAL_AGE_DENSITY_DEPENDENT_MORTALITY_ONLY: 
+                locallarvalmortality *= exp(previous_larva_count / ( (progress * params()->vector_params->larvalDensityMortalityScalar + params()->vector_params->larvalDensityMortalityOffset) * larvalCap) ); 
                 break;
 
             case LarvalDensityDependence::NO_DENSITY_DEPENDENCE:
@@ -458,7 +516,7 @@ namespace Kernel
                      locallarvalmortality,
                      previous_larva_count,
                      m_total_larva_count[CURRENT_TIME_STEP],
-                     larvalhabitat
+                     larvalCap
                     );
         return locallarvalmortality;
     }
@@ -468,8 +526,12 @@ namespace Kernel
         return m_rainfall_mortality;
     }
 
-    float VectorHabitat::GetEggCrowdingCorrection() const
+    float VectorHabitat::GetEggCrowdingCorrection( bool refresh )
     {
+        if( refresh )
+        {
+            CalculateEggCrowdingCorrection();
+        }
         return m_egg_crowding_correction;
     }
 
@@ -553,6 +615,20 @@ namespace Kernel
         /* TODO: configuration of habitat decay parameters, threshold, rainfall mortality, etc. */
     }
 
+    const float MarshyStreamHabitat::rainfall_to_fill = 80.0f;
+    const float MarshyStreamHabitat::water_table_outflow_days = 100.0f;
+    const float MarshyStreamHabitat::stream_outflow_days = 2.5f;
+    const float MarshyStreamHabitat::stream_outflow_threshold = 3.0f;
+    const float MarshyStreamHabitat::evaporation_days = 15.0f;
+    const float MarshyStreamHabitat::permeability = 0.1f;
+
+    MarshyStreamHabitat::MarshyStreamHabitat()
+        : VectorHabitat(VectorHabitatType::MARSHY_STREAM)
+        , water_table(0.0f)
+        , stream_level(0.0f)
+    {
+    }
+
     LinearSplineHabitat::LinearSplineHabitat()
         : VectorHabitat(VectorHabitatType::LINEAR_SPLINE)
         , day_of_year(0)
@@ -598,6 +674,16 @@ namespace Kernel
     {
         VectorHabitat::serialize(ar, obj);
         // no-op
+    }
+
+    REGISTER_SERIALIZABLE(MarshyStreamHabitat);
+
+    void MarshyStreamHabitat::serialize(IArchive& ar, MarshyStreamHabitat* obj)
+    {
+        VectorHabitat::serialize(ar, obj);
+        MarshyStreamHabitat& habitat = *obj;
+        ar.labelElement("water_table") & habitat.water_table;
+        ar.labelElement("stream_level") & habitat.stream_level;
     }
 
     REGISTER_SERIALIZABLE(LinearSplineHabitat);

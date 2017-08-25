@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,7 +19,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 // into rapidjsonimpl class, then this is not needed
 #include "RapidJsonImpl.h"
 
-static const char* _module = "SimpleVaccine";
+SETUP_LOGGING( "SimpleVaccine" )
 
 namespace Kernel
 {
@@ -39,31 +39,30 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        initConfigTypeMap("Vaccine_Take", &vaccine_take, SV_Vaccine_Take_DESC_TEXT, 0.0, 1.0, 1.0 ); 
+        WaningConfig waning_config;
+
+        initConfigTypeMap("Vaccine_Take", &vaccine_take, SV_Vaccine_Take_DESC_TEXT, 0.0, 1.0, 1.0 );
 
         initConfig( "Vaccine_Type", vaccine_type, inputJson, MetadataDescriptor::Enum("Vaccine_Type", SV_Vaccine_Type_DESC_TEXT, MDD_ENUM_ARGS(SimpleVaccineType)));
+        initConfigTypeMap("Efficacy_Is_Multiplicative", &efficacy_is_multiplicative, SV_Efficacy_Is_Multiplicative_DESC_TEXT, true );
 
         initConfigComplexType("Waning_Config",  &waning_config, IVM_Killing_Config_DESC_TEXT );
 
-        bool configured = JsonConfigurable::Configure( inputJson );
+        bool configured = BaseIntervention::Configure( inputJson );
         if( !JsonConfigurable::_dryrun )
         {
-            auto tmp_waning = Configuration::CopyFromElement( waning_config._json );
-            waning_effect = WaningEffectFactory::CreateInstance( tmp_waning );
-            delete tmp_waning;
-            tmp_waning = nullptr;
+            waning_effect = WaningEffectFactory::CreateInstance( waning_config );
         }
-        //release_assert( vaccine_type );
         LOG_DEBUG_F( "Vaccine configured with type %d and take %f.\n", vaccine_type, vaccine_take );
         return configured;
     }
 
     SimpleVaccine::SimpleVaccine() 
     : BaseIntervention()
-    , parent(nullptr) 
     , vaccine_type(SimpleVaccineType::Generic)
     , vaccine_take(0.0)
     , vaccine_took(false)
+    , efficacy_is_multiplicative(true)
     , waning_effect( nullptr )
     , ivc( nullptr )
     {
@@ -72,18 +71,17 @@ namespace Kernel
 
     SimpleVaccine::SimpleVaccine( const SimpleVaccine& master )
     : BaseIntervention( master )
-    , parent(nullptr) 
     , vaccine_type(master.vaccine_type)
     , vaccine_take(master.vaccine_take)
     , vaccine_took(master.vaccine_took)
-    , waning_config(master.waning_config)
+    , efficacy_is_multiplicative(master.efficacy_is_multiplicative )
     , waning_effect( nullptr )
     , ivc( nullptr )
     {
-        auto tmp_waning = Configuration::CopyFromElement( waning_config._json );
-        waning_effect = WaningEffectFactory::CreateInstance( tmp_waning );
-        delete tmp_waning;
-        tmp_waning = nullptr;
+        if( master.waning_effect != nullptr )
+        {
+            waning_effect = master.waning_effect->Clone();
+        }
     }
 
     SimpleVaccine::~SimpleVaccine()
@@ -141,21 +139,21 @@ namespace Kernel
             switch( vaccine_type )
             {
                 case SimpleVaccineType::AcquisitionBlocking:
-                    ivc->UpdateVaccineAcquireRate( waning_effect->Current() );
+                    ivc->UpdateVaccineAcquireRate( waning_effect->Current(), efficacy_is_multiplicative );
                     break;
 
                 case SimpleVaccineType::TransmissionBlocking:
-                    ivc->UpdateVaccineTransmitRate( waning_effect->Current() );
+                    ivc->UpdateVaccineTransmitRate( waning_effect->Current(), efficacy_is_multiplicative );
                     break;
 
                 case SimpleVaccineType::MortalityBlocking:
-                    ivc->UpdateVaccineMortalityRate( waning_effect->Current() );
+                    ivc->UpdateVaccineMortalityRate( waning_effect->Current(), efficacy_is_multiplicative );
                     break;
 
                 case SimpleVaccineType::Generic:
-                    ivc->UpdateVaccineAcquireRate(   waning_effect->Current() );
-                    ivc->UpdateVaccineTransmitRate(  waning_effect->Current() );
-                    ivc->UpdateVaccineMortalityRate( waning_effect->Current() );
+                    ivc->UpdateVaccineAcquireRate(   waning_effect->Current(), efficacy_is_multiplicative );
+                    ivc->UpdateVaccineTransmitRate(  waning_effect->Current(), efficacy_is_multiplicative );
+                    ivc->UpdateVaccineMortalityRate( waning_effect->Current(), efficacy_is_multiplicative );
                     break;
 
                 default:
@@ -190,7 +188,12 @@ namespace Kernel
         IIndividualHumanContext *context
     )
     {
-        parent = context;
+        BaseIntervention::SetContextTo( context );
+        if( waning_effect != nullptr )
+        {
+            waning_effect->SetContextTo( context );
+        }
+
         if (s_OK != parent->GetInterventionsContext()->QueryInterface(GET_IID(IVaccineConsumer), (void**)&ivc) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context->GetInterventionsContext()", "IVaccineConsumer", "IIndividualHumanInterventionsContext" );
@@ -204,9 +207,10 @@ namespace Kernel
     {
         BaseIntervention::serialize( ar, obj );
         SimpleVaccine& vaccine = *obj;
-        ar.labelElement("vaccine_type")  & vaccine.vaccine_type;
-        ar.labelElement("vaccine_take")  & vaccine.vaccine_take;
-        ar.labelElement("vaccine_took")  & vaccine.vaccine_took;
-        ar.labelElement("waning_effect") & vaccine.waning_effect;
+        ar.labelElement("vaccine_type"              ) & vaccine.vaccine_type;
+        ar.labelElement("vaccine_take"              ) & vaccine.vaccine_take;
+        ar.labelElement("vaccine_took"              ) & vaccine.vaccine_took;
+        ar.labelElement("efficacy_is_multiplicative") & vaccine.efficacy_is_multiplicative;
+        ar.labelElement("waning_effect"             ) & vaccine.waning_effect;
     }
 }

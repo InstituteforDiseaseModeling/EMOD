@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,8 +21,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 // !!! If you are creating a new report by copying this one, you will need to modify 
 // !!! the values below indicated by "<<<"
 
-// Module name for logging, CustomReport.json, and DLL GetType()
-static const char * _module = "ReportHumanMigrationTracking";// <<< Name of this file
+// Name for logging, CustomReport.json, and DLL GetType()
+SETUP_LOGGING( "ReportHumanMigrationTracking" ) // <<< Name of this file
 
 namespace Kernel
 {
@@ -104,10 +104,10 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         bool ret = BaseTextReportEvents::Configure( inputJson );
 
         // Manually push required events into the eventTriggerList
-        eventTriggerList.push_back( IndividualEventTriggerType::pairs::lookup_key( IndividualEventTriggerType::Emigrating      ) );
-        eventTriggerList.push_back( IndividualEventTriggerType::pairs::lookup_key( IndividualEventTriggerType::Immigrating     ) );
-        eventTriggerList.push_back( IndividualEventTriggerType::pairs::lookup_key( IndividualEventTriggerType::NonDiseaseDeaths) );
-        eventTriggerList.push_back( IndividualEventTriggerType::pairs::lookup_key( IndividualEventTriggerType::DiseaseDeaths   ) );
+        eventTriggerList.push_back( EventTrigger::Emigrating       );
+        eventTriggerList.push_back( EventTrigger::Immigrating      );
+        eventTriggerList.push_back( EventTrigger::NonDiseaseDeaths );
+        eventTriggerList.push_back( EventTrigger::DiseaseDeaths    );
         
         return ret;
     }
@@ -139,7 +139,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
     }
 
     bool ReportHumanMigrationTracking::notifyOnEvent( IIndividualHumanEventContext *context, 
-                                                      const std::string& eventStr )
+                                                      const EventTrigger& trigger )
     {
         IIndividualHuman* p_ih = nullptr;
         if (s_OK != context->QueryInterface(GET_IID(IIndividualHuman), (void**)&p_ih) )
@@ -163,8 +163,8 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         uint32_t from_node_id = p_sim->GetNodeExternalID( context->GetNodeEventContext()->GetId() ) ;
         uint32_t to_node_id = from_node_id ;
         std::string mig_type_str = "local" ;
-        bool is_emigrating  = (eventStr == IndividualEventTriggerType::pairs::lookup_key( IndividualEventTriggerType::Emigrating  ));
-        bool is_immigrating = (eventStr == IndividualEventTriggerType::pairs::lookup_key( IndividualEventTriggerType::Immigrating ));
+        bool is_emigrating  = (trigger == EventTrigger::Emigrating);
+        bool is_immigrating = (trigger == EventTrigger::Immigrating);
 
         if( is_immigrating )
         {
@@ -230,7 +230,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
                        << "," << from_node_id 
                        << "," << to_node_id 
                        << "," << mig_type_str 
-                       << "," << eventStr 
+                       << "," << trigger.ToString() 
                        << endl;
         }
         return true;

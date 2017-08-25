@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,6 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 namespace Kernel
 {
     class INodeSTI;
+    class STIInterventionsContainer;
 
     class IndividualHumanSTIConfig : public IndividualHumanConfig
     {
@@ -39,7 +40,8 @@ namespace Kernel
         static float debutAgeYrsMale_lambda;
         static float debutAgeYrsFemale_lambda;
 
-        static float sti_coinfection_mult;
+        static float sti_coinfection_acq_mult;
+        static float sti_coinfection_trans_mult;
 
         static float min_days_between_adding_relationships;
 
@@ -80,6 +82,7 @@ namespace Kernel
         virtual suids::suid GetSuid() const override { return IndividualHuman::GetSuid(); }
         virtual bool IsInfected() const override { return IndividualHuman::IsInfected(); }
         virtual suids::suid GetNodeSuid() const override;
+        virtual const IPKeyValueContainer& GetPropertiesConst() const override;
 
         virtual void Die( HumanStateChange ) override;
 
@@ -88,10 +91,12 @@ namespace Kernel
         virtual void ExposeToInfectivity(float dt, const TransmissionGroupMembership_t* transmissionGroupMembership) override;
         virtual void Expose(const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route) override;
 
+        virtual void UpdateGroupMembership() override;
+
         virtual void UpdateInfectiousness(float dt) override;
         virtual void UpdateInfectiousnessSTI(std::vector<act_prob_t> &act_prob_vec, unsigned int rel_id) override;
-        
-        virtual void AcquireNewInfection(StrainIdentity *infstrain = nullptr, int incubation_period_override = -1) override;
+
+        virtual void AcquireNewInfection( const IStrainIdentity *infstrain = nullptr, int incubation_period_override = -1 ) override;
 
         virtual bool AvailableForRelationship(RelationshipType::Enum) const override;
 
@@ -104,7 +109,8 @@ namespace Kernel
 
         virtual bool IsBehavioralSuperSpreader() const override;
         virtual unsigned int GetExtrarelationalFlags() const override;
-        virtual float GetCoInfectiveFactor() const override;
+        virtual float GetCoInfectiveTransmissionFactor() const override;
+        virtual float GetCoInfectiveAcquisitionFactor() const override;
         virtual void  SetStiCoInfectionState() override;
         virtual void  ClearStiCoInfectionState() override;
         virtual bool  HasSTICoInfection() const override;
@@ -114,12 +120,22 @@ namespace Kernel
 
         void disengageFromSociety();
         virtual ProbabilityNumber getProbabilityUsingCondomThisAct( const IRelationshipParameters* pRelParams ) const;
+        virtual void UpdateNumCoitalActs( uint32_t numActs ) override;
+        virtual uint32_t GetTotalCoitalActs() const override;
+
+        virtual void ClearAssortivityIndexes() override;
+        virtual int GetAssortivityIndex( RelationshipType::Enum type ) const override;
+        virtual void SetAssortivityIndex( RelationshipType::Enum type, int index ) override;
 
         virtual void SetContextTo(INodeContext* context) override;
 
         virtual unsigned int GetOpenRelationshipSlot() const override;
         virtual NaturalNumber GetLast6MonthRels() const override;
+        virtual NaturalNumber GetLast6MonthRels( RelationshipType::Enum ofType ) const override;
+        virtual NaturalNumber GetLast12MonthRels( RelationshipType::Enum ofType ) const override;
+        virtual NaturalNumber GetNumUniquePartners( int itp, int irel ) const override;
         virtual NaturalNumber GetLifetimeRelationshipCount() const override;
+        virtual NaturalNumber GetLifetimeRelationshipCount( RelationshipType::Enum ofType ) const override;
         virtual NaturalNumber GetNumRelationshipsAtDeath() const override;
         virtual float GetDebutAge() const override;
         virtual void CheckForMigration(float currenttime, float dt) override;
@@ -140,6 +156,7 @@ namespace Kernel
                             float initial_poverty = 0.5f );
         virtual void InitializeConcurrency();
 
+        virtual void UpdateAge( float dt ) override;
         virtual IInfection* createInfection(suids::suid _suid) override;
         virtual void setupInterventionsContainer() override;
         virtual void ReportInfectionState() override;
@@ -158,15 +175,25 @@ namespace Kernel
         uint64_t relationshipSlots;
         float delay_between_adding_relationships_timer;
         bool potential_exposure_flag;
+        STIInterventionsContainer* m_pSTIInterventionsContainer;
 
     private:
         virtual void IndividualHumanSTI::SetConcurrencyParameters( const char *prop, const char* prop_value );
 
         RelationshipSet_t relationships_at_death ;
-        unsigned int num_lifetime_relationships;
-        std::list<int> last_6_month_relationships;
+        unsigned int num_lifetime_relationships[RelationshipType::Enum::COUNT];
+        std::list<std::pair<int, float>> last_6_month_relationships;
+        std::list<std::pair<int, float>> last_12_month_relationships;
         std::map< unsigned int, suids::suid_data_t > slot2RelationshipDebugMap; // for debug only
         INodeSTI* p_sti_node;
+        int m_AssortivityIndex[RelationshipType::COUNT];
+        uint32_t m_TotalCoitalActs;
+
+        // Relationship Name to RelationshipID
+        std::map<std::string,uint32_t> relationship_properties;
+
+        typedef std::map<suids::suid, float> PartnerIdToRelEndTimeMap_t;
+        std::vector<std::vector<PartnerIdToRelEndTimeMap_t>> num_unique_partners; // vector(by time period) of vector(by relationship type) of maps of IndividualID to Relationship End Time
 
         DECLARE_SERIALIZABLE(IndividualHumanSTI);
     };

@@ -1,32 +1,27 @@
 {
-    "Campaign_Name": "3b_HCTExpansion_at_2020", 
+    "Campaign_Name": "3b_HCTExpansion_at_2020",
     "Default_Campaign_Path": "defaults/hiv_default_campaign.json",
     "Use_Defaults": 1,
-    "Events":
-    [
+    "Events": [
         {
             "BEGIN": "HCT FOR EVERYONE, STARTING JAN 1, 2020",
             "class": "CampaignEventByYear",
             "Event_Name": "1-year uniform random delay to HCT for total population",
             "Start_Year": 2020,
-            "Nodeset_Config":
-            {
+            "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Event_Coordinator_Config":
-            {
+            "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
                 "Target_Demographic": "Everyone",
-                "Property_Restrictions_Within_Node": 
-                [
-                    { "Accessibility": "Yes" }
+                "Property_Restrictions_Within_Node": [
+                    {
+                        "Accessibility": "Yes"
+                    }
                 ],
-                "Intervention_Config":
-                {
+                "Intervention_Config": {
                     "class": "HIVDelayedIntervention",
-
-                    "Cascade_State": "",
-
+                    "New_Property_Value": "InterventionStatus:None",
                     "Delay_Distribution": "UNIFORM_DURATION",
                     "Delay_Period_Min": 0,
                     "Delay_Period_Max": 365,
@@ -38,28 +33,23 @@
             "class": "CampaignEventByYear",
             "Event_Name": "birth-triggered 1-year uniform random delay to HCT for all reachable individuals",
             "Start_Year": 2020,
-            "Nodeset_Config":
-            {
+            "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Event_Coordinator_Config":
-            {
+            "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config":
-                {
+                "Intervention_Config": {
                     "class": "BirthTriggeredIV",
                     "Demographic_Coverage": 1.0,
                     "Target_Demographic": "Everyone",
-                    "Property_Restrictions_Within_Node": 
-                    [
-                        { "Accessibility": "Yes" }
+                    "Property_Restrictions_Within_Node": [
+                        {
+                            "Accessibility": "Yes"
+                        }
                     ],
-                    "Actual_IndividualIntervention_Config":
-                    {
+                    "Actual_IndividualIntervention_Config": {
                         "class": "HIVDelayedIntervention",
-
-                        "Cascade_State": "",
-
+                        "New_Property_Value": "InterventionStatus:None",
                         "Delay_Distribution": "UNIFORM_DURATION",
                         "Delay_Period_Min": 0,
                         "Delay_Period_Max": 365,
@@ -74,29 +64,37 @@
             "class": "CampaignEventByYear",
             "Event_Name": "HCTTestingLoop: state 2 (after 2020?)",
             "Start_Year": 1990,
-            "Nodeset_Config":
-            {
+            "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Event_Coordinator_Config":
-            {
+            "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config":
-                {
+                "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "HCTTestingLoop0",
-                    "Actual_IndividualIntervention_Config":
-                    {
+                    "Trigger_Condition_List": [
+                        "HCTTestingLoop0"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
                         "class": "HIVPiecewiseByYearAndSexDiagnostic",
-
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging" ],
-                        "Cascade_State": "HCTTestingLoop",
-
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART",
+                            "InterventionStatus:ARTStaging"
+                        ],
+                        "New_Property_Value": "InterventionStatus:HCTTestingLoop",
                         "Days_To_Diagnosis": 0,
-                        "Time_Value_Map" :
-                        {
-                            "Times": [  1990,    2020 ],
-                            "Values": [ 0,       1 ]
+                        "Time_Value_Map": {
+                            "Times": [
+                                1990,
+                                2020
+                            ],
+                            "Values": [
+                                0,
+                                1
+                            ]
                         },
                         "Interpolation_Order": 1,
                         "Female_Multiplier": 1,
@@ -111,24 +109,29 @@
             "class": "CampaignEventByYear",
             "Event_Name": "HCTTestingLoop: state 3 (fixed 1-year delay to next HCT)",
             "Start_Year": 1990,
-            "Nodeset_Config":
-            {
+            "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Event_Coordinator_Config":
-            {
+            "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config":
-                {
+                "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "HCTTestingLoop3",
-                    "Actual_IndividualIntervention_Config":
-                    {
+                    "Trigger_Condition_List": [
+                        "HCTTestingLoop3"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
                         "class": "HIVMuxer",
                         "Muxer_Name": "HCTTestingLoop",
                         "Max_Entries": 1,
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging" ],
-                        "Cascade_State": "HCTTestingLoop",
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART",
+                            "InterventionStatus:ARTStaging"
+                        ],
+                        "New_Property_Value": "InterventionStatus:HCTTestingLoop",
                         "Delay_Distribution": "FIXED_DURATION",
                         "Delay_Period": 365,
                         "Broadcast_Event": "HCTTestingLoop1"
@@ -140,24 +143,29 @@
             "class": "CampaignEventByYear",
             "Event_Name": "HCTTestingLoop: state 0 (exponential delay to next HCT)",
             "Start_Year": 1990,
-            "Nodeset_Config":
-            {
+            "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Event_Coordinator_Config":
-            {
+            "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config":
-                {
+                "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition": "HCTTestingLoop2",
-                    "Actual_IndividualIntervention_Config":
-                    {
+                    "Trigger_Condition_List": [
+                        "HCTTestingLoop2"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
                         "class": "HIVMuxer",
                         "Muxer_Name": "HCTTestingLoop",
                         "Max_Entries": 1,
-                        "Abort_States": [ "LostForever", "OnART", "LinkingToART", "OnPreART", "LinkingToPreART", "ARTStaging" ],
-                        "Cascade_State": "HCTTestingLoop",
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART",
+                            "InterventionStatus:ARTStaging"
+                        ],
+                        "New_Property_Value": "InterventionStatus:HCTTestingLoop",
                         "Delay_Distribution": "EXPONENTIAL_DURATION",
                         "Delay_Period": 365,
                         "Broadcast_Event": "HCTTestingLoop1"

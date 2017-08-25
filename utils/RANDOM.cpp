@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,78 +12,85 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <assert.h>
 #include <math.h>
 
-/**************************************************************************\
-* NOTE: The caller must open a registry key before using the RANDOM class. *
-*                                                                          *
-* Example:                                                                 *
-*                                                                          *
-*   #include <registry.hxx>                                                *
-*                                                                          *
-*   REGISTRY reg("Software\\XYZ_Corp\\WhizCalc");                          *
-*                                                                          *
-* Here the name of the calling application is WhizCalc and the developer   *
-* is XYZ Corp.  The state of the random sequence is stored there for later *
-* runs.                                                                    *
-\**************************************************************************/
-
-// Note: registry keys not supported on linux
-
-#define RNG_VALIDATION
-#ifdef RNG_VALIDATION
-#include "ValidationLog.h"
+#ifndef WIN32
+#include <memory.h>    // memset
+#include <climits>     // UINT_MAX
+#include <wmmintrin.h> // AES
+#include <smmintrin.h> // _mm_insert_epi64
+#include <tmmintrin.h> // _mm_shuffle_epi8
 #endif
-
-//extern REGISTRY reg;    // See note above.
-
-int RANDOMBASE::cReg = 0;
 
 double RANDOMBASE::cdf_random_num_precision = 0.01; // precision of random number obtained from a cumulative probability function
 double RANDOMBASE::tan_pi_4 = 1.0;
 double RANDOMBASE::pi = atan(tan_pi_4) * 4.0;
 
-RANDOMBASE::RANDOMBASE() : last_ul(0)
+RANDOMBASE::RANDOMBASE(uint32_t iSequence, size_t nCache)
+    : iSeq(iSequence)
+    , random_bits(reinterpret_cast<uint32_t*>(malloc(nCache*sizeof(uint32_t))))
+    , random_floats(reinterpret_cast<float*>(malloc(nCache*sizeof(float))))
+    , index(UINT_MAX)   // Make sure fill_bits() is called...
+    , bGauss(false)
+    , cache_count(nCache)
 {
-    // HACK: we now need to allow multiple instances of an RNG to exist to support serialization properly
-    //    assert(cReg==0);   // We permit only one registered sequence at a time!
-    //    cReg = 1;
-    bGauss = false;
-    bSeq   = false; //reg.bReadULONG(LPCWSTR("Sequence"),&iSeq);
-    bWrite = true;
 }
 
 RANDOMBASE::~RANDOMBASE()
 {
-    if (bWrite)
-    {
-        //reg.bWriteULONG(LPCWSTR("Sequence"),iSeq);
-        cReg = 0;
-    }
+#ifdef _DEBUG
+    free(random_bits);
+    free(random_floats);
+#endif
 }
 
-/******************************Public*Routine******************************\
-* vShuffleFloats(pe,N)                                                     *
-*                                                                          *
-* A simple routine to shuffle a list of N floats.                          *
-*                                                                          *
-*  Sat 26-Mar-1994 13:59:00 -by- Charles Whitmer [chuckwh]                 *
-* Wrote it.                                                                *
-\**************************************************************************/
-
-/* Unused
-void RANDOMBASE::vShuffleFloats(float *pe, __USHORT N)
+uint32_t RANDOMBASE::ul()
 {
-    float eTmp;
-    __USHORT ii;
-
-    while (N > 1)
+    if (index >= cache_count)
     {
-        ii = i(N--);
-        eTmp = pe[N];
-        pe[N] = pe[ii];
-        pe[ii] = eTmp;
+        fill_bits();
+        bits_to_float();
+        index = 0;
+    }
+
+    return random_bits[index++];
+}
+
+float RANDOMBASE::e()
+{
+    if (index >= cache_count)
+    {
+        fill_bits();
+        bits_to_float();
+        index = 0;
+    }
+
+    return random_floats[index++];
+}
+
+void RANDOMBASE::fill_bits()
+{
+    assert(false);
+}
+
+#define FLOAT_EXP   8
+
+void RANDOMBASE::bits_to_float()
+{
+    __m128i m = _mm_set1_epi32(0x007FFFFF);
+    __m128i o = _mm_set1_epi32(0x00000001);
+    __m128 f = _mm_set1_ps(1.0f);
+    __m128i fi = _mm_castps_si128(f);
+    for (size_t i = 0; i < cache_count; i += 4)
+    {
+        __m128i x = _mm_load_si128(reinterpret_cast<__m128i const*>(random_bits+i));    // x = bits
+//        x = _mm_and_si128(x, m);                                    // x &= 0x007FFFFF
+        x = _mm_srli_epi32(x, (FLOAT_EXP+1));                       // x = x >> 9 (we just want the 23 mantissa bits)
+        x = _mm_or_si128(x, o);                                     // x |= 0x00000001
+        __m128i y = _mm_or_si128(fi, x);                            // y = fi | x
+        __m128 z = _mm_castsi128_ps(y);                             // z = y interpreted as floating point
+        z = _mm_sub_ps(z, f);                                       // z -= 1.0f
+        _mm_store_ps(random_floats + i, z);
     }
 }
-*/
 
 /******************************Public*Routine******************************\
 * eGauss()                                                                 *
@@ -127,12 +134,12 @@ double RANDOMBASE::ee()
         double ee;
         struct
         {
-            __ULONG Low;
-            __ULONG High;
+            uint32_t Low;
+            uint32_t High;
         };
     } ee_ul;
 
-    __ULONG ll = ul();    // Choose a random 32 bits.
+    uint32_t ll = ul();    // Choose a random 32 bits.
 
     ee_ul.ee = 1.0;
     ee_ul.High += (ll >> (DOUBLE_EXP + 1));
@@ -142,13 +149,13 @@ double RANDOMBASE::ee()
 }
 
 // Poisson() added by Philip Eckhoff, uses Gaussian approximation for ratetime>10
-unsigned long long int RANDOMBASE::Poisson(double ratetime)
+uint64_t RANDOMBASE::Poisson(double ratetime)
 {
     if (ratetime <= 0)
     {
         return 0;
     }
-    unsigned long long int events = 0;
+    uint64_t events = 0;
     double Time = 0;
     double tempval;
     if (ratetime < 10)
@@ -176,14 +183,15 @@ unsigned long long int RANDOMBASE::Poisson(double ratetime)
     }
     return events;
 }
+
 // Poisson_true added by Philip Eckhoff, actual Poisson, without approximation
-unsigned long int RANDOMBASE::Poisson_true(double ratetime)
+uint32_t RANDOMBASE::Poisson_true(double ratetime)
 {
     if (ratetime <= 0)
     {
         return 0;
     }
-    unsigned long int events = 0;
+    uint32_t events = 0;
     double Time = 0;
     while (Time < 1)
     {
@@ -275,9 +283,9 @@ double RANDOMBASE::time_varying_rate_dist( std::vector <float> v_rate, float tim
 }
 
 // binomial_approx() added by Philip Eckhoff
-/*unsigned long int*/uint64_t RANDOMBASE::binomial_approx(uint64_t n, double p)
+uint64_t RANDOMBASE::binomial_approx(uint64_t n, double p)
 {
-    /*long int*/int64_t tempval = 0;
+    int64_t tempval = 0;
 
     if (n <= 0 || p <= 0)
     {
@@ -389,7 +397,7 @@ uint64_t RANDOMBASE::binomial_approx2(uint64_t n, double p)
                 }
             }
         }
-        else 
+        else
         {
             bool under_50pct = p < 0.5;
             double p_tmp = under_50pct ? p : (1-p);
@@ -398,7 +406,7 @@ uint64_t RANDOMBASE::binomial_approx2(uint64_t n, double p)
             {
                 // use poisson approximation for probabilities near p=0 or p=1
                 double poisson_tmp = Poisson_true(n * p_tmp);
-                tempval = under_50pct ? poisson_tmp : (n-poisson_tmp);
+                tempval = int64_t(under_50pct ? poisson_tmp : (n-poisson_tmp));
             }
             else
             {
@@ -424,147 +432,70 @@ uint64_t RANDOMBASE::binomial_approx2(uint64_t n, double p)
     return uint64_t(tempval);
 }
 
-// Finds an uniformally distributed number between 0 and N
-__ULONG RANDOMBASE::uniformZeroToN( __ULONG N )
+void RANDOM::fill_bits()
 {
-    __ULONGLONG ulA = __ULONGLONG(ul());
-    __ULONGLONG ulB = __ULONGLONG(ul());
+    for (size_t i = 0; i < cache_count; ++i)
+    {
+        random_bits[i] = iSeq = 69069 * iSeq + 1;
+    }
+}
+
+// Finds an uniformally distributed number between 0 and N
+uint32_t RANDOMBASE::uniformZeroToN( uint32_t N )
+{
+    uint64_t ulA = uint64_t(ul());
+    uint64_t ulB = uint64_t(ul());
     ulB <<= 32;
     ulA += ulB;
-    __ULONGLONG ll = (ulA & 0xFFFFFFFFL) * N;
+    uint64_t ll = (ulA & 0xFFFFFFFFL) * N;
     ll >>= 32;
-    return ll;
+    return uint32_t(ll);
 }
 
+const uint32_t c1[4] = {0xBAA96887L, 0x1E17D32CL, 0x03BCDC3CL, 0x0F33D1B2L};
+const uint32_t c2[4] = {0x4B0F3B58L, 0xE874F0C3L, 0x6955C5A6L, 0x55A7CA46L};
 
-__ULONG RANDOM::ul()
-{
-    iSeq = 69069 * iSeq + 1;
-    return iSeq;
-}
-
-const __ULONG c1[4] = {0xBAA96887L, 0x1E17D32CL, 0x03BCDC3CL, 0x0F33D1B2L};
-const __ULONG c2[4] = {0x4B0F3B58L, 0xE874F0C3L, 0x6955C5A6L, 0x55A7CA46L};
-
-#define HI(x) ((__ULONG) ((__USHORT *) &x)[1])
-#define LO(x) ((__ULONG) ((__USHORT *) &x)[0])
+#define HI(x) ((uint32_t) ((uint16_t*) &x)[1])
+#define LO(x) ((uint32_t) ((uint16_t*) &x)[0])
 #define XCHG(x) ((LO(x) << 16) | HI(x))
 
-__ULONG PSEUDO_DES::ul()
+void PSEUDO_DES::fill_bits()
 {
-    __ULONG kk[3], iA, iB;
-
-#ifdef RNG_VALIDATION
-    static boost::format _fmt_("%1%");
+    uint32_t kk[3];
+    uint32_t iA;
+    uint32_t iB;
+#ifdef _DEBUG
+    uint32_t ul;
 #endif
 
-    iA = iNum ^ c1[0];
-    iB = LO(iA) * LO(iA) + ~(HI(iA) * HI(iA));
-    kk[0] = iSeq ^ ((XCHG(iB) ^ c2[0]) + LO(iA) * HI(iA));
+    for (size_t i = 0; i < cache_count; ++i)
+    {
+        iA = iNum ^ c1[0];
+        iB = LO(iA) * LO(iA) + ~(HI(iA) * HI(iA));
+        kk[0] = iSeq ^ ((XCHG(iB) ^ c2[0]) + LO(iA) * HI(iA));
 
-    iA = kk[0] ^ c1[1];
-    iB = LO(iA) * LO(iA) + ~(HI(iA) * HI(iA));
-    kk[1] = iNum ^ ((XCHG(iB) ^ c2[1]) + LO(iA) * HI(iA));
+        iA = kk[0] ^ c1[1];
+        iB = LO(iA) * LO(iA) + ~(HI(iA) * HI(iA));
+        kk[1] = iNum ^ ((XCHG(iB) ^ c2[1]) + LO(iA) * HI(iA));
 
-    iNum++;
-    if (iNum == 0)
-        iSeq++;
+        iNum++;
+        if (iNum == 0)
+            iSeq++;
 
-    iA = kk[1] ^ c1[2];
-    iB = LO(iA) * LO(iA) + ~(HI(iA) * HI(iA));
-    kk[2] = kk[0] ^ ((XCHG(iB) ^ c2[2]) + LO(iA) * HI(iA));
+        iA = kk[1] ^ c1[2];
+        iB = LO(iA) * LO(iA) + ~(HI(iA) * HI(iA));
+        kk[2] = kk[0] ^ ((XCHG(iB) ^ c2[2]) + LO(iA) * HI(iA));
 
-    iA = kk[2] ^ c1[3];
-    iB = LO(iA) * LO(iA) + ~(HI(iA) * HI(iA));
+        iA = kk[2] ^ c1[3];
+        iB = LO(iA) * LO(iA) + ~(HI(iA) * HI(iA));
 
-    last_ul = kk[1] ^ ((XCHG(iB) ^ c2[3]) + LO(iA) * HI(iA));
-
-#ifdef RNG_VALIDATION
-    //VALIDATE(_fmt_ % last_ul);
+        random_bits[i] =
+#ifdef _DEBUG
+            ul =
 #endif
-
-    return last_ul;
-}
-
-__ULONGLONG ullPDes(__ULONGLONG ullIn)
-{
-    __ULONGLONG_ ull;
-    ull.Quad = ullIn;
-
-    __ULONG kk[4], iA, iB;
-
-    iA = ull.Low ^ c1[0];
-    iB = LO(iA) * LO(iA) + ~(HI(iA) * HI(iA));
-    kk[0] = ull.High ^ ((XCHG(iB) ^ c2[0]) + LO(iA) * HI(iA));
-
-    iA = kk[0] ^ c1[1];
-    iB = LO(iA) * LO(iA) + ~(HI(iA) * HI(iA));
-    kk[1] = ull.Low ^ ((XCHG(iB) ^ c2[1]) + LO(iA) * HI(iA));
-
-    iA = kk[1] ^ c1[2];
-    iB = LO(iA) * LO(iA) + ~(HI(iA) * HI(iA));
-    kk[2] = kk[0] ^ ((XCHG(iB) ^ c2[2]) + LO(iA) * HI(iA));
-
-    iA = kk[2] ^ c1[3];
-    iB = LO(iA) * LO(iA) + ~(HI(iA) * HI(iA));
-    kk[3] = kk[1] ^ ((XCHG(iB) ^ c2[3]) + LO(iA) * HI(iA));
-
-    ull.Low = kk[3];
-    ull.High = kk[2];
-
-    return ull.Quad;
-}
-
-__ULONG ulPDesTest[4][4] =
-{
-    { 1, 1, 0x604D1DCE, 0x509C0C23},
-    { 1, 99, 0xD97F8571, 0xA66CB41A},
-    {99, 1, 0x7822309D, 0x64300984},
-    {99, 99, 0xD7F376F0, 0x59BA89EB}
-};
-
-void vTestPDes()
-{
-    __ULONGLONG_ ullA, ullB;
-
-    for (int ii = 0; ii < 4; ii++)
-    {
-        ullA.High = ulPDesTest[ii][0];
-        ullA.Low = ulPDesTest[ii][1];
-        ullB.Quad = ullPDes(ullA.Quad);
-        printf("(%03d:%03d) => %08X:%08X", ullA.High, ullA.Low, ullB.High, ullB.Low);
-        if (ullB.High != ulPDesTest[ii][2] || ullB.Low != ulPDesTest[ii][3])
-            printf("  Error!\n");
-        else
-            printf("\n");
+            kk[1] ^ ((XCHG(iB) ^ c2[3]) + LO(iA) * HI(iA));
     }
 }
-
-void vTestRandomFloats()
-{
-    __UINT ii;
-
-    PSEUDO_DES randA(0);
-    PSEUDO_DES randB(0);
-    PSEUDO_DES randC(0);
-
-    for (ii = 0; ii < 100; ii++)
-    {
-        __ULONG  ul = randA.ul();
-        float  e  = randB.e();
-        double ee = randC.ee();
-
-        printf
-        (
-            "%08X %11.8f (%08X) %11.8f (%08X:%08X)\n",
-            ul,
-            e, ((__ULONG *)&e)[0],
-            ee, ((__ULONG *)&ee)[1], ((__ULONG *)&ee)[0]
-        );
-    }
-}
-
-
 
 // M Behrend
 // gamma-distributed random number
@@ -633,4 +564,154 @@ double RANDOMBASE::get_cdf_random_num_precision()
 double RANDOMBASE::get_pi()
 {
     return pi;
+}
+
+/* AES Counter PRNG ***********************************************************/
+
+inline __m128i AES_128_ASSIST(__m128i temp1, __m128i temp2)
+{
+    __m128i   temp3;
+
+    temp2 = _mm_shuffle_epi32(temp2, 0xFF);
+    temp3 = _mm_slli_si128(temp1, 0x4);
+    temp1 = _mm_xor_si128(temp1, temp3);
+    temp3 = _mm_slli_si128(temp3, 0x4);
+    temp1 = _mm_xor_si128(temp1, temp3);
+    temp3 = _mm_slli_si128(temp3, 0x4);
+    temp1 = _mm_xor_si128(temp1, temp3);
+    temp1 = _mm_xor_si128(temp1, temp2);
+
+    return temp1;
+}
+
+void AES_128_Key_Expansion(const unsigned char *userkey, AES_KEY *key)
+{
+    __m128i temp1, temp2;
+    __m128i *Key_Schedule = (__m128i*)key;
+
+    temp1            = _mm_loadu_si128((__m128i*)userkey);
+    Key_Schedule[0]  = temp1;
+    temp2            = _mm_aeskeygenassist_si128 (temp1 ,0x1);
+    temp1            = AES_128_ASSIST(temp1, temp2);
+    Key_Schedule[1]  = temp1;
+    temp2            = _mm_aeskeygenassist_si128 (temp1,0x2);
+    temp1            = AES_128_ASSIST(temp1, temp2);
+    Key_Schedule[2]  = temp1;
+    temp2            = _mm_aeskeygenassist_si128 (temp1,0x4);
+    temp1            = AES_128_ASSIST(temp1, temp2);
+    Key_Schedule[3]  = temp1;
+    temp2            = _mm_aeskeygenassist_si128 (temp1,0x8);
+    temp1            = AES_128_ASSIST(temp1, temp2);
+    Key_Schedule[4]  = temp1;
+    temp2            = _mm_aeskeygenassist_si128 (temp1,0x10);
+    temp1            = AES_128_ASSIST(temp1, temp2);
+    Key_Schedule[5]  = temp1;
+    temp2            = _mm_aeskeygenassist_si128 (temp1,0x20);
+    temp1            = AES_128_ASSIST(temp1, temp2);
+    Key_Schedule[6]  = temp1;
+    temp2            = _mm_aeskeygenassist_si128 (temp1,0x40);
+    temp1            = AES_128_ASSIST(temp1, temp2);
+    Key_Schedule[7]  = temp1;
+    temp2            = _mm_aeskeygenassist_si128 (temp1,0x80);
+    temp1            = AES_128_ASSIST(temp1, temp2);
+    Key_Schedule[8]  = temp1;
+    temp2            = _mm_aeskeygenassist_si128 (temp1,0x1b);
+    temp1            = AES_128_ASSIST(temp1, temp2);
+    Key_Schedule[9]  = temp1;
+    temp2            = _mm_aeskeygenassist_si128 (temp1,0x36);
+    temp1            = AES_128_ASSIST(temp1, temp2);
+    Key_Schedule[10] = temp1;
+}
+
+int AES_set_encrypt_key(const unsigned char *userKey, const int bits, AES_KEY *key)
+{
+    if (!userKey || !key) return -1;
+
+    AES_128_Key_Expansion(userKey, key);
+    key->nr = 10;
+    return 0;
+}
+
+void AES_Init_Ex(AES_KEY *pExpanded)
+{
+    __m128i key;
+    memset(&key, 0, sizeof(key));
+    AES_set_encrypt_key((const unsigned char *)&key, 128, pExpanded);
+}
+
+AES_COUNTER::AES_COUNTER(uint32_t iSequence, uint32_t rank, size_t nCache)
+    : RANDOMBASE(iSequence, nCache)
+    , m_nonce(uint64_t(rank) << 32 | uint64_t(iSequence))
+    , m_iteration(0)
+{
+    AES_Init_Ex(&m_keySchedule);
+}
+
+AES_COUNTER::~AES_COUNTER()
+{
+
+}
+
+void AES_Get_Bits_Ex(void *buffer, size_t bytes, uint64_t nonce, uint32_t count, AES_KEY *pKey)
+{
+    __m128i *in = (__m128i *)buffer;
+    __m128i *out = in;
+    __m128i *key = pKey->KEY;
+    size_t length;
+    unsigned int nr = pKey->nr;
+
+    __m128i ctr_block, tmp, ONE, BSWAP_EPI64;
+    unsigned int i,j;
+
+    if (bytes%16) {
+        length = bytes / 16 + 1;
+    }
+    else {
+        length = bytes / 16;
+    }
+
+    memset(&ctr_block, 0xCC, sizeof(ctr_block));
+
+    ONE         = _mm_set_epi32(0,1,0,0);
+    BSWAP_EPI64 = _mm_setr_epi8(7,6,5,4,3,2,1,0,15,14,13,12,11,10,9,8);
+    ctr_block   = _mm_insert_epi64(ctr_block, nonce, 1);
+    ctr_block   = _mm_insert_epi32(ctr_block, count, 1);
+    ctr_block   = _mm_srli_si128(ctr_block, 4);
+    ctr_block   = _mm_shuffle_epi8(ctr_block, BSWAP_EPI64);
+    ctr_block   = _mm_add_epi64(ctr_block, ONE);
+
+    {
+        memset(in, 0, sizeof(__m128i));
+        tmp       = _mm_shuffle_epi8(ctr_block, BSWAP_EPI64);
+        ctr_block = _mm_add_epi64(ctr_block, ONE);
+        tmp       = _mm_xor_si128(tmp, key[0]);
+
+        for (j = 1; j < nr; j++) {
+            tmp = _mm_aesenc_si128 (tmp, key[j]);
+        }
+
+        tmp = _mm_aesenclast_si128(tmp, key[j]);
+        tmp = _mm_xor_si128(tmp,_mm_loadu_si128(in));
+        _mm_storeu_si128(out,tmp);
+    }
+
+    for (i = 1; i < length; i++) {
+        tmp       = _mm_shuffle_epi8(ctr_block, BSWAP_EPI64);
+        ctr_block = _mm_add_epi64(ctr_block, ONE);
+        tmp       = _mm_xor_si128(tmp, key[0]);
+
+        for (j = 1; j < nr; j++) {
+            tmp = _mm_aesenc_si128(tmp, key[j]);
+        }
+
+        tmp = _mm_aesenclast_si128(tmp, key[j]);
+        tmp = _mm_xor_si128(tmp,_mm_loadu_si128(in+i-1));
+        _mm_storeu_si128(out+i,tmp);
+    }
+}
+
+void AES_COUNTER::fill_bits()
+{
+    memset(random_bits, 0, sizeof(__m128i));
+    AES_Get_Bits_Ex(random_bits, cache_count * sizeof(uint32_t), m_nonce, m_iteration++, &m_keySchedule);
 }

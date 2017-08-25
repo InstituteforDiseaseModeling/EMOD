@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,31 +19,46 @@ namespace Kernel
     struct MalariaPatient
     {
         MalariaPatient(int id_, float age_, float local_birthday_);
-        ~MalariaPatient();
+        virtual ~MalariaPatient();
 
-        int id;
-        int node_id;
+        uint32_t id;
+        uint32_t node_id;
         float initial_age;
         float local_birthday;
         std::vector< std::pair<int,int> > strain_ids;
-        std::vector<float> true_asexual_density;
-        std::vector<float> true_gametocyte_density;
-        std::vector<float> asexual_parasite_density;
-        std::vector<float> gametocyte_density;
-        std::vector<float> infectiousness;
-        std::vector<float> pos_asexual_fields;
-        std::vector<float> pos_gametocyte_fields;
-        std::vector<float> fever;
-        std::vector<float> rdt;
+        std::vector<double> true_asexual_density;
+        std::vector<double> true_gametocyte_density;
+        std::vector<double> asexual_parasite_density;
+        std::vector<double> gametocyte_density;
+        std::vector<double> infectiousness;
+        std::vector<double> pos_asexual_fields;
+        std::vector<double> pos_gametocyte_fields;
+        std::vector<double> fever;
+        std::vector<double> rdt;
 
-        // IJsonSerializable
-        virtual void JSerialize( IJsonObjectAdapter* root, JSerializer* helper );
-        virtual void JDeserialize( IJsonObjectAdapter* root );
+        virtual void Serialize( IJsonObjectAdapter& root, JSerializer& helper );
+        virtual void Deserialize( IJsonObjectAdapter& root );
+
+    };
+
+    class MalariaPatientMap : public IIntervalData
+    {
+    public:
+        MalariaPatientMap();
+        virtual ~MalariaPatientMap();
+
+        // IIntervalData methods
+        virtual void Clear() override;
+        virtual void Update( const IIntervalData& rOther ) override;
+        virtual void Serialize( IJsonObjectAdapter& rjoa, JSerializer& js ) override;
+        virtual void Deserialize( IJsonObjectAdapter& rjoa ) override;
+
+        // other methods
+        MalariaPatient* FindPatient( uint32_t id );
+        void Add( MalariaPatient* pPatient );
 
     protected:
-        void SerializeChannel( std::string channel_name, std::vector<float> &channel_data,
-                               IJsonObjectAdapter* root, JSerializer* helper );
-
+        std::map<uint32_t,MalariaPatient*> m_Map;
     };
 
     class MalariaSurveyJSONAnalyzer : public BaseEventReportIntervalOutput
@@ -54,19 +69,12 @@ namespace Kernel
 
         // BaseEventReportIntervalOutput
         virtual bool Configure( const Configuration* ) override;
-        virtual bool notifyOnEvent( IIndividualHumanEventContext *context, const std::string& StateChange ) override;
-        virtual void EndTimestep( float currentTime, float dt ) override;
-        virtual void Reduce() override;
+        virtual bool notifyOnEvent( IIndividualHumanEventContext *context, const EventTrigger& trigger ) override;
 
     protected:
         // BaseEventReportIntervalOutput
-        virtual void WriteOutput( float currentTime ) override;
-        virtual void ClearOutputData() override;
+        virtual void SerializeOutput( float currentTime, IJsonObjectAdapter& output, JSerializer& js ) override;
 
-        void SerializePatients( IJsonObjectAdapter* pIJsonObj, JSerializer& js );
-
-        typedef std::map<int, MalariaPatient*> patient_map_t;
-        patient_map_t m_patient_map;
-        bool m_PrettyFormat;
+        MalariaPatientMap* m_pPatientMap;
     };
 }

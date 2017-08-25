@@ -1,7 +1,7 @@
 {
   "individual": {
     "__class__":"IndividualHuman",
-    "suid_data":1,
+    "suid": { "id":1 },
     "m_age":9588.48,
     "m_gender":0,
     "m_mc_weight":1,
@@ -35,7 +35,7 @@
     "StateChange":0,
     "migration_mod":1,
     "migration_type"            : 1,
-    "migration_destination_data": 0,
+    "migration_destination": { "id":0 },
     "migration_time_until_trip"        : 0.0,
     "migration_time_at_destination"    : 0.0,
     "migration_is_destination_new_home": false,
@@ -44,7 +44,7 @@
     "max_waypoints":0,
     "waypoints":[],
     "waypoints_trip_type":[],
-    "home_node_id" : 1,
+    "home_node_id" : { "id" : 1 },
     "Properties":[],
     "waiting_for_family_trip"                  : false,
     "leave_on_family_trip"                     : false,
@@ -53,6 +53,6 @@
     "family_migration_time_until_trip"         : 0.0,
     "family_migration_time_at_destination"     : 0.0,
     "family_migration_is_destination_new_home" : false,
-    "family_migration_destination"             : 0
+    "family_migration_destination"             : { "id" : 0 }
   }
 }

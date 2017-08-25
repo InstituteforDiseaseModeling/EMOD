@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,6 +21,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "PropertyReport.h"
 #include "Exceptions.h"
 #include "Instrumentation.h"
+#include "Memory.h"
 #include "IMigrationInfo.h"
 #include "Node.h"
 #include "NodeDemographics.h"
@@ -31,6 +32,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ReportEventRecorder.h"
 #include "Individual.h"
 #include "LoadBalanceScheme.h"
+#include "EventTrigger.h"
 
 #include "DllLoader.h"
 
@@ -39,10 +41,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "MpiDataExchanger.h"
 #include "IdmMpi.h"
 #include "Properties.h"
+#include "NodeProperties.h"
 
 #ifdef _DEBUG
-#include <BinaryArchiveReader.h>
-#include <BinaryArchiveWriter.h>
+#include "BinaryArchiveReader.h"
+#include "BinaryArchiveWriter.h"
 #endif
 
 #include <chrono>
@@ -50,7 +53,11 @@ typedef std::chrono::high_resolution_clock _clock;
 
 using namespace std;
 
-static const char * _module = "Simulation";
+SETUP_LOGGING( "Simulation" )
+
+
+#define RUN_ALL_CUSTOM_REPORTS "RunAllCustomReports"
+#define NO_CUSTOM_REPORTS "NoCustomReports"
 
 namespace Kernel
 {
@@ -62,6 +69,8 @@ namespace Kernel
         HANDLE_INTERFACE(ISimulationContext)
         HANDLE_ISUPPORTS_VIA(ISimulationContext)
     END_QUERY_INTERFACE_BODY(Simulation)
+
+    float Simulation::base_year = 0.0f;
 
     //------------------------------------------------------------------
     //   Initialization methods
@@ -76,7 +85,7 @@ namespace Kernel
         , node_event_context_list()
         , nodeid_suid_map()
         , migratingIndividualQueues()
-        , m_simConfigObj(nullptr)
+        , m_simConfigObj((const SimulationConfig*)Environment::getSimulationConfig())
         , m_interventionFactoryObj(nullptr)
         , demographicsContext(nullptr)
         , infectionSuidGenerator(EnvPtr->MPI.Rank, EnvPtr->MPI.NumTasks)
@@ -106,9 +115,11 @@ namespace Kernel
         , enable_default_report(false)
         , enable_event_report(false)
         , campaign_filename()
+        , custom_reports_filename( RUN_ALL_CUSTOM_REPORTS )
         , loadbalance_filename()
         , Run_Number(0)
         , can_support_family_trips( false )
+        , m_IPWhiteListEnabled(true)
         , demographics_factory(nullptr)
         , new_node_observers()
     {
@@ -130,12 +141,46 @@ namespace Kernel
         initConfigTypeMap( "Enable_Property_Output", &enable_property_output, Enable_Property_Output_DESC_TEXT, false );
         initConfigTypeMap( "Campaign_Filename", &campaign_filename, Campaign_Filename_DESC_TEXT, "", "Enable_Interventions" );
         initConfigTypeMap( "Load_Balance_Filename", &loadbalance_filename, Load_Balance_Filename_DESC_TEXT );
-        initConfigTypeMap( "Base_Individual_Sample_Rate", &Ind_Sample_Rate, Base_Individual_Sample_Rate_DESC_TEXT, 0.0f, 1.0f, 1.0f, "Individual_Sampling_Type", "FIXED_SAMPLING" ); 
+        initConfigTypeMap( "Base_Individual_Sample_Rate", &Ind_Sample_Rate, Base_Individual_Sample_Rate_DESC_TEXT, 0.0f, 1.0f, 1.0f, "Individual_Sampling_Type", "FIXED_SAMPLING, ADAPTED_SAMPLING_BY_IMMUNE_STATE");
         initConfigTypeMap( "Run_Number", &Run_Number, Run_Number_DESC_TEXT, 0, INT_MAX, 1 );
+
+
+        if( (EnvPtr != nullptr) &&
+            (EnvPtr->Config != nullptr) &&
+            EnvPtr->Config->Exist( "Disable_IP_Whitelist" ) &&
+            (*(EnvPtr->Config))[ "Disable_IP_Whitelist" ].As<json::Number>() == 1 )
+        {
+            m_IPWhiteListEnabled = false;
+        }
+
+        // Initialize node demographics from file
+        if( !JsonConfigurable::_dryrun )
+        {
+            release_assert( m_simConfigObj );
+
+            demographics_factory = NodeDemographicsFactory::CreateNodeDemographicsFactory( &nodeid_suid_map,
+                EnvPtr->Config,
+                m_simConfigObj->demographics_initial,
+                m_simConfigObj->default_torus_size,
+                m_simConfigObj->default_node_population
+            );
+            if( demographics_factory == nullptr )
+            {
+                throw InitializationException( __FILE__, __LINE__, __FUNCTION__, "Failed to create NodeDemographicsFactory" );
+            }
+            demographicsContext = demographics_factory->CreateDemographicsContext();
+
+            ExternalNodeId_t first_node_id = demographics_factory->GetNodeIDs()[ 0 ];
+            JsonObjectDemog json_for_first_node = demographics_factory->GetJsonForNode( first_node_id );
+            IPFactory::GetInstance()->Initialize( first_node_id, json_for_first_node, m_IPWhiteListEnabled );
+
+            NPFactory::GetInstance()->Initialize( demographics_factory->GetNodePropertiesJson(), m_IPWhiteListEnabled );
+        }
     }
 
     Simulation::~Simulation()
     {
+/* maybe #ifdef _DEBUG?
         LOG_DEBUG( "DTOR\n" );
         for (auto& entry : nodes)
         {
@@ -157,6 +202,7 @@ namespace Kernel
             delete report;
         }
         reports.clear();
+*/        
     }
 
     bool
@@ -165,6 +211,12 @@ namespace Kernel
     )
     {
         initConfig( "Simulation_Type", sim_type, inputJson, MetadataDescriptor::Enum("sim_type", Simulation_Type_DESC_TEXT, MDD_ENUM_ARGS(SimType)) ); // simulation only (???move)
+
+        if( JsonConfigurable::_dryrun || EnvPtr->Config->Exist( "Custom_Reports_Filename" ) )
+        {
+            initConfigTypeMap( "Custom_Reports_Filename", &custom_reports_filename, Custom_Report_Filename_DESC_TEXT, RUN_ALL_CUSTOM_REPORTS );
+        }
+
         bool ret = JsonConfigurable::Configure( inputJson );
         return ret;
     }
@@ -216,27 +268,15 @@ namespace Kernel
     {
         Configure( config );
         IndividualHuman::InitializeStatics( config );
-
-        IPFactory::CreateFactory();
-
-        Kernel::SimulationConfig* SimConfig = Kernel::SimulationConfigFactory::CreateInstance(EnvPtr->Config);
-        if (SimConfig)
-        {
-            Environment::setSimulationConfig(SimConfig);
-            m_simConfigObj = SimConfig;
-        }
-        else
-        {
-            throw InitializationException( __FILE__, __LINE__, __FUNCTION__, "Failed to create SimulationConfig instance" );
-        }
-        LOG_DEBUG( "Initialize with config\n" );
+        MemoryGauge mg;
+        mg.Configure( config );
 
         m_interventionFactoryObj = InterventionFactory::getInstance();
 
         setupMigrationQueues();
         setupEventContextHost();
-        setupRng(); 
-        setParams(config); 
+        setupRng();
+        setParams(config);
         initSimulationState();
         Reports_CreateBuiltIn();
         Reports_ConfigureBuiltIn();
@@ -268,23 +308,62 @@ namespace Kernel
 
     void Simulation::setupRng()
     {
+        if ( CONFIG_PARAMETER_EXISTS(EnvPtr->Config, "Random_Number_Engine") )
+        {
+            std::string specified_enum = GET_CONFIG_STRING(EnvPtr->Config, "Random_Number_Engine");
+            std::transform(specified_enum.begin(), specified_enum.end(), specified_enum.begin(), ::toupper);
+            MetadataDescriptor::Enum descriptor("Random_Number_Engine", "Pseudo-random number generator", MDD_ENUM_ARGS(RandomType));
+            bool found = false;
+            for (auto& vs : descriptor.enum_value_specs)
+            {
+                std::string enum_option(vs.first);
+                std::transform(enum_option.begin(), enum_option.end(), enum_option.begin(), ::toupper);
+                if (specified_enum == enum_option)
+                {
+                    found = true;
+                    random_type = RandomType::Enum(vs.second);
+                    break;
+                }
+            }
 
-        if (random_type == RandomType::USE_PSEUDO_DES)
-        { 
+            if (!found)
+            {
+                std::ostringstream msg;
+                msg << "Unknown random number generator selection: '" << specified_enum << "'" << std::endl;
+                throw GeneralConfigurationException(__FILE__, __LINE__, __FUNCTION__, msg.str().c_str());
+            }
+        }
+
+        switch (random_type)
+        {
+        case RandomType::USE_PSEUDO_DES:
+        {
             uint16_t randomseed[2];
             randomseed[0] = uint16_t(Run_Number);
             randomseed[1] = uint16_t(EnvPtr->MPI.Rank);
             rng = _new_ PSEUDO_DES(*reinterpret_cast<uint32_t*>(randomseed));
             const_cast<Environment*>(Environment::getInstance())->RNG = rng;
-            
 
             LOG_INFO("Using PSEUDO_DES random number generator.\n");
         }
-        else
+        break;
+
+        case RandomType::USE_AES_COUNTER:
+        {
+            rng = _new_ AES_COUNTER(Run_Number, EnvPtr->MPI.Rank);
+            const_cast<Environment*>(Environment::getInstance())->RNG = rng;
+
+            LOG_INFO("Using AES_COUNTER random number generator.\n");
+        }
+        break;
+
+        default:
         {
             std::ostringstream oss;
             oss << "Error in " << __FUNCTION__ << ".  Only USE_PSEUDO_DES is currently supported for key 'Random_Type'." << std::endl;
-            throw NotYetImplementedException(  __FILE__, __LINE__, __FUNCTION__, oss.str().c_str() );
+            throw NotYetImplementedException(__FILE__, __LINE__, __FUNCTION__, oss.str().c_str());
+        }
+        // break;
         }
     }
 
@@ -301,7 +380,7 @@ namespace Kernel
         }
 
         loadBalanceFilename = FileSystem::Concat( EnvPtr->InputPath, loadbalance_filename );
-        currentTime.time    =  m_simConfigObj->starttime;
+        currentTime.time    = m_simConfigObj->starttime;
     }
 
     void Simulation::initSimulationState()
@@ -377,20 +456,20 @@ namespace Kernel
         }
     }
 
-    void Simulation::DistributeEventToOtherNodes( const std::string& rEventName, INodeQualifier* pQualifier )
+    void Simulation::DistributeEventToOtherNodes( const EventTrigger& rEventTrigger, INodeQualifier* pQualifier )
     {
         release_assert( pQualifier );
 
         for( auto entry : nodeRankMap.GetRankMap() )
         {
-            INodeInfo* pni = entry.second ;
+            INodeInfo* pni = entry.second;
             if( pQualifier->Qualifies( *pni ) )
             {
                 // -------------------------------------------------------------------------------------
                 // --- One could use a map to keep a node from getting more than one event per timestep
                 // --- but I think the logic for that belongs in the object processing the event
                 // -------------------------------------------------------------------------------------
-                node_events_added[ nodeRankMap.GetRankFromNodeSuid( pni->GetSuid() ) ].Add( pni->GetSuid(), rEventName ) ;
+                node_events_added[ nodeRankMap.GetRankFromNodeSuid( pni->GetSuid() ) ].Add( pni->GetSuid(), rEventTrigger ) ;
             }
         }
     }
@@ -436,10 +515,10 @@ namespace Kernel
         for( auto entry : node_events_added[ EnvPtr->MPI.Rank ].GetMap() )
         {
             suids::suid node_id = entry.first;
-            auto& event_name_list = entry.second;
-            for( auto event_name : event_name_list )
+            auto& trigger_list = entry.second;
+            for( auto trigger : trigger_list )
             {
-                node_events_to_be_processed[ node_id ].push_back( event_name );
+                node_events_to_be_processed[ node_id ].push_back( trigger );
             }
         }
         node_events_added.clear();
@@ -460,13 +539,9 @@ namespace Kernel
         // --- Allow the user to indicate that they do not want to use
         // --- any custom reports even if DLL's are present.
         // -------------------------------------------------------------
-        if( EnvPtr->Config->Exist( "Custom_Reports_Filename" ) )
+        if( custom_reports_filename.empty() || (custom_reports_filename == NO_CUSTOM_REPORTS) )
         {
-            std::string custom_reports_filename = GET_CONFIG_STRING( EnvPtr->Config, "Custom_Reports_Filename" );
-            if( custom_reports_filename == "NoCustomReports" )
-            {
-                return ;
-            }
+            return ;
         }
 
         ReportInstantiatorMap report_instantiator_map ;
@@ -502,9 +577,12 @@ namespace Kernel
     {
         Configuration* p_cr_config = nullptr ;
 
-        if( EnvPtr->Config->Exist( "Custom_Reports_Filename" ) )
+        // ------------------------------------------------------------------------------
+        // --- If the user does not define the custom_reports_filename input parameter,
+        // --- then they want to run all reports.  Returning null will do this.
+        // ------------------------------------------------------------------------------
+        if( !custom_reports_filename.empty() && (custom_reports_filename != RUN_ALL_CUSTOM_REPORTS) )
         {
-            std::string custom_reports_filename = GET_CONFIG_STRING( EnvPtr->Config, "Custom_Reports_Filename" );
             LOG_INFO_F("Looking for custom reports file = %s\n", custom_reports_filename.c_str());
             if( FileSystem::FileExists( custom_reports_filename ) )
             {
@@ -515,10 +593,11 @@ namespace Kernel
                 {
                     throw Kernel::InitializationException( __FILE__, __LINE__, __FUNCTION__, custom_reports_filename.c_str() );
                 }
-                p_cr_config = Configuration::CopyFromElement((*p_config)["Custom_Reports"]);
+                p_cr_config = Configuration::CopyFromElement( (*p_config)["Custom_Reports"], p_config->GetDataLocation() );
                 delete p_config ;
             }
         }
+
         return p_cr_config ;
     }
 
@@ -545,7 +624,7 @@ namespace Kernel
                         json::Array report_data = dll_data["Reports"].As<json::Array>() ;
                         for( int i = 0 ; i < report_data.Size() ; i++ )
                         {
-                            Configuration* p_cfg = Configuration::CopyFromElement( report_data[i] );
+                            Configuration* p_cfg = Configuration::CopyFromElement( report_data[i], p_cr_config->GetDataLocation() );
 
                             IReport* p_cr = ri_entry.second(); // creates report object
                             p_cr->Configure( p_cfg );
@@ -560,7 +639,7 @@ namespace Kernel
                     LOG_WARN_F("Did not find report configuration for report DLL %s.  Creating report with defaults.\n", class_name.c_str());
 
                     json::Object empty_json_obj ;
-                    Configuration* p_cfg = Configuration::CopyFromElement( empty_json_obj );
+                    Configuration* p_cfg = Configuration::CopyFromElement( empty_json_obj, "no file" );
 
                     IReport* p_cr = ri_entry.second();  // creates report object
                     p_cr->Configure( p_cfg );
@@ -647,6 +726,7 @@ namespace Kernel
             {
                 LOG_INFO_F( "Finalizing '%s' reporter.\n", report->GetReportName().c_str() );
                 report->Finalize();
+                LOG_INFO_F( "Finalized  '%s' reporter.\n", report->GetReportName().c_str() );
             }
         }
     }
@@ -696,10 +776,10 @@ namespace Kernel
         {
             INodeContext* n = iterator->second;
             release_assert(n);
-            n->AddEventsFromOtherNodes( node_events_to_be_processed[ n->GetSuid() ] );
+            n->AddEventsFromOtherNodes(node_events_to_be_processed[n->GetSuid()]);
             n->Update(dt);
 
-            Reports_LogNodeData( n );
+            Reports_LogNodeData(n);
         }
 
         // -----------------------
@@ -709,8 +789,8 @@ namespace Kernel
 
         for (auto iterator = nodes.rbegin(); iterator != nodes.rend(); ++iterator)
         {
-            INodeContext *n = iterator->second;
-            nodeRankMap.Update( n );
+            INodeContext* n = iterator->second;
+            nodeRankMap.Update(n);
         }
         nodeRankMap.Sync( currentTime );
 
@@ -728,14 +808,8 @@ namespace Kernel
 
         Reports_EndTimestep( currentTime.time, dt );
 
-        if(EnvPtr->Log->CheckLogLevel(Logger::DEBUG, "Memory"))
-        {
-            MemoryGauge::PrintMemoryUsage();
-            MemoryGauge::PrintMemoryFree();
-        }
-
         // Unconditionally checking against potential memory blowup with minimum cost
-        MemoryGauge::CheckMemoryFailure();
+        MemoryGauge::CheckMemoryFailure( false );
     }
 
     //------------------------------------------------------------------
@@ -748,8 +822,8 @@ namespace Kernel
 
         // Populate nodes
         LOG_INFO_F("Campaign file name identified as: %s\n", campaignFilename.c_str());
-        int nodes = populateFromDemographics(campaignFilename.c_str(), loadBalanceFilename.c_str());
-        LOG_INFO_F("populateFromDemographics() generated %d nodes.\n", nodes);
+        int node_count = populateFromDemographics(campaignFilename.c_str(), loadBalanceFilename.c_str());
+        LOG_INFO_F("populateFromDemographics() generated %d nodes.\n", node_count);
 
         LOG_INFO_F("Rank %d contributes %d nodes...\n", EnvPtr->MPI.Rank, nodeRankMap.Size());
         EnvPtr->Log->Flush();
@@ -757,14 +831,15 @@ namespace Kernel
         nodeRankMap.MergeMaps(); // merge rank maps across all processors
         LOG_INFO_F("Merged rank %d map now has %d nodes.\n", EnvPtr->MPI.Rank, nodeRankMap.Size());
 
-        if (nodeRankMap.Size() < 500)
-            LOG_INFO_F("Rank %d map contents:\n%s\n", EnvPtr->MPI.Rank, nodeRankMap.ToString().c_str());
-        else 
-            LOG_INFO("(Rank map contents not displayed due to large (> 500) number of entries.)\n");
+//        if (nodeRankMap.Size() < 500)
+//            LOG_INFO_F("Rank %d map contents:\n%s\n", EnvPtr->MPI.Rank, nodeRankMap.ToString().c_str());
+//        else 
+//            LOG_INFO("(Rank map contents not displayed due to large (> 500) number of entries.)\n");
+        LOG_INFO("Rank map contents not displayed until NodeRankMap::ToString() (re)implemented.\n");
 
         // We'd like to be able to run even if a processor has no nodes, but there are other issues.
         // So for now just bail...
-        if(nodes <= 0)
+        if(node_count <= 0)
         {
             LOG_WARN_F("Rank %d wasn't assigned any nodes! (# of procs is too big for simulation?)\n", EnvPtr->MPI.Rank);
             return false;
@@ -773,7 +848,8 @@ namespace Kernel
         for (auto report : reports)
         {
             LOG_DEBUG( "Initializing report...\n" );
-            report->Initialize( nodeRankMap.Size() );
+            report->Initialize( nodeRankMap.Size());
+            report->CheckForValidNodeIDs(demographics_factory->GetNodeIDs());
             LOG_INFO_F( "Initialized '%s' reporter\n", report->GetReportName().c_str() );
         }
 
@@ -793,14 +869,12 @@ namespace Kernel
             LOG_VALID_F( "Serializing %d id-suid bimap entries.\n", count );
             for (auto& entry : local_map)
             {
-#if defined(WIN32)
                 writer_archive.startObject();
                     writer_archive.labelElement( "id" ) & (uint32_t&)entry.left;
                     // entry.right is const which doesn't play well with IArchive operator '&'
                     suids::suid suid(entry.right);
                     writer_archive.labelElement( "suid" ) & suid;
                 writer_archive.endObject();
-#endif
             }
             writer_archive.endArray();
 
@@ -809,7 +883,7 @@ namespace Kernel
                 if (rank == EnvPtr->MPI.Rank)
                 {
                     const char* buffer = writer_archive.GetBuffer();
-                    uint32_t byte_count = writer_archive.GetBufferSize();
+                    size_t byte_count = writer_archive.GetBufferSize();
                     LOG_VALID_F( "Broadcasting serialized bimap (%d bytes)\n", byte_count );
                     EnvPtr->MPI.p_idm_mpi->PostChars( const_cast<char*>(buffer), byte_count, rank );
                 }
@@ -828,7 +902,7 @@ namespace Kernel
                             suids::suid suid;
                             reader_archive.startObject();
                                 reader_archive.labelElement( "id" ) & id;
-                                reader_archive.labelElement( "suid_data" ) & suid.data;
+                                reader_archive.labelElement( "suid" ) & suid;
                             reader_archive.endObject();
                             merged_map.insert(nodeid_suid_pair(id, suid));
                         }
@@ -855,7 +929,7 @@ namespace Kernel
         return pmf ;
     }
 
-    void Simulation::LoadInterventions( const char* campaignfilename )
+    void Simulation::LoadInterventions(const char* campaignfilename, const std::vector<ExternalNodeId_t>& demographic_node_ids)
     {
         // Set up campaign interventions from file
         release_assert( event_context_host );
@@ -885,14 +959,14 @@ namespace Kernel
 
             JsonConfigurable::_track_missing = false;
 
-            loadCampaignFromFile( campaignfilename );
+            loadCampaignFromFile( campaignfilename, demographic_node_ids);
 
             JsonConfigurable::_track_missing = true;
 
             // ------------------------------------------
             // --- Setup Individual Property Transitions
             // ------------------------------------------
-            if( IPFactory::GetInstance()->GetIPList().size() > 0 )
+            if( IPFactory::GetInstance()->HasIPs() )
             {
                 std::string transitions_file_path = FileSystem::Concat( Environment::getInstance()->OutputPath, std::string( IPFactory::transitions_dot_json_filename ) );
 
@@ -917,7 +991,7 @@ namespace Kernel
                 // Load the Individual Property Transitions
                 JsonConfigurable::_track_missing = false;
 
-                loadCampaignFromFile( transitions_file_path.c_str() );
+                loadCampaignFromFile( transitions_file_path.c_str(), demographic_node_ids);
 
                 JsonConfigurable::_track_missing = true;
             }
@@ -926,21 +1000,8 @@ namespace Kernel
 
     int Simulation::populateFromDemographics(const char* campaignfilename, const char* loadbalancefilename)
     {
-        // Initialize node demographics from file
-        demographics_factory = NodeDemographicsFactory::CreateNodeDemographicsFactory( &nodeid_suid_map, 
-                                                                                       EnvPtr->Config,
-                                                                                       m_simConfigObj->demographics_initial,
-                                                                                       m_simConfigObj->default_torus_size,
-                                                                                       m_simConfigObj->default_node_population
-                                                                                       );
-        if (demographics_factory == nullptr)
-        {
-            throw InitializationException( __FILE__, __LINE__, __FUNCTION__, "Failed to create NodeDemographicsFactory" );
-        }
-
-        demographicsContext = demographics_factory->CreateDemographicsContext();
         string idreference  = demographics_factory->GetIdReference();
-        vector<uint32_t> nodeIDs = demographics_factory->GetNodeIDs();
+        vector<ExternalNodeId_t> nodeIDs = demographics_factory->GetNodeIDs();
         ClimateFactory * climate_factory = nullptr;
 #ifndef DISABLE_CLIMATE
         // Initialize climate from file
@@ -966,20 +1027,34 @@ namespace Kernel
         }
         EnvPtr->MPI.p_idm_mpi->Barrier();
 
-        // Add nodes according to demographics-and climate file specifications
-        for (auto node_id : nodeIDs)
+        if (nodes.size() == 0)   // "Standard" initialization path
         {
-            if (getInitialRankFromNodeId(node_id) == EnvPtr->MPI.Rank) // inclusion criteria to be added to this processor's shared memory space
+            // Add nodes according to demographics-and climate file specifications
+            for (auto node_id : nodeIDs)
             {
-                suids::suid node_suid = GetNextNodeSuid();
-                LOG_DEBUG_F( "Creating/adding new node: node_id = %d, node_suid = %lu\n", node_id, node_suid.data );
-                nodeid_suid_map.insert(nodeid_suid_pair(node_id, node_suid));
+                if (getInitialRankFromNodeId(node_id) == EnvPtr->MPI.Rank) // inclusion criteria to be added to this processor's shared memory space
+                {
+                    suids::suid node_suid = GetNextNodeSuid();
+                    LOG_DEBUG_F( "Creating/adding new node: node_id = %lu, node_suid = %lu\n", node_id, node_suid.data );
+                    nodeid_suid_map.insert( nodeid_suid_pair( node_id, node_suid ) );
 
-                addNewNodeFromDemographics(node_suid, demographics_factory, climate_factory);
+                    addNewNodeFromDemographics( node_suid, demographics_factory, climate_factory, m_IPWhiteListEnabled );
+                }
+            }
+        }
+        else    // We already have nodes... must have loaded a serialized population.
+        {
+            for (auto& entry : nodes)
+            {
+                auto& suid = entry.first;
+                auto node = entry.second;
+                nodeid_suid_map.insert( nodeid_suid_pair( node->GetExternalID(), suid ) );
+                node->SetContextTo(this);
+                initializeNode( node, demographics_factory, climate_factory, m_IPWhiteListEnabled );
             }
         }
 
-        if( enable_property_output && (IPFactory::GetInstance()->GetIPList().size() == 0) )
+        if( enable_property_output && !IPFactory::GetInstance()->HasIPs() )
         {
             throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "<Number of Individual Properties>", "0", "Enable_Property_Output", "1" );
         }
@@ -1005,16 +1080,16 @@ namespace Kernel
             m_simConfigObj->demographics_initial &&
             !migration_factory->IsAtLeastOneTypeConfiguredForIndividuals() )
         {
-            LOG_WARN("Enable_Demographics_Initial is set to true,  Migration_Model != NO_MIGRATION, and no migration file names have been defined and enabled.  No file-based migration will occur.\n");
+            LOG_WARN("Enable_Demographics_Builtin is set to false,  Migration_Model != NO_MIGRATION, and no migration file names have been defined and enabled.  No file-based migration will occur.\n");
         }
 
         for (auto& entry : nodes)
         {
             release_assert(entry.second);
             (entry.second)->SetupMigration( migration_factory, m_simConfigObj->migration_structure, merged_map );
-        }
+        } 
 
-        LoadInterventions( campaignfilename );
+        LoadInterventions(campaignfilename, nodeIDs);
 
 #ifndef DISABLE_CLIMATE
         // Clean up
@@ -1025,18 +1100,20 @@ namespace Kernel
         delete migration_factory;
         migration_factory = nullptr;
 
-
         LOG_INFO_F( "populateFromDemographics() created %d nodes\n", nodes.size() );
         return int(nodes.size());
     }
 
-    void Kernel::Simulation::addNewNodeFromDemographics(suids::suid node_suid, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory)
+    void Kernel::Simulation::addNewNodeFromDemographics( suids::suid node_suid, 
+                                                         NodeDemographicsFactory *nodedemographics_factory, 
+                                                         ClimateFactory *climate_factory,
+                                                         bool white_list_enabled )
     {
         Node *node = Node::CreateNode(this, node_suid);
-        addNode_internal(node, nodedemographics_factory, climate_factory);
+        addNode_internal( node, nodedemographics_factory, climate_factory, white_list_enabled );
     }
 
-    void Kernel::Simulation::addNode_internal( INodeContext *node, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory)
+    void Kernel::Simulation::addNode_internal( INodeContext *node, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory, bool white_list_enabled )
     {
         release_assert(node);
         release_assert(nodedemographics_factory);
@@ -1045,7 +1122,7 @@ namespace Kernel
 #endif
 
         // Node initialization
-        node->SetParameters(nodedemographics_factory, climate_factory);
+        node->SetParameters( nodedemographics_factory, climate_factory, white_list_enabled );
         node->SetMonteCarloParameters(Ind_Sample_Rate);// need to define parameters
 
         // Populate node
@@ -1057,13 +1134,36 @@ namespace Kernel
         nodeRankMap.Add( EnvPtr->MPI.Rank, node );
 
         notifyNewNodeObservers(node);
-    } 
+    }
 
-    void Simulation::loadCampaignFromFile( const std::string& campaignfilename )
+    void Kernel::Simulation::initializeNode( INodeContext* node, 
+                                             NodeDemographicsFactory* nodedemographics_factory, 
+                                             ClimateFactory* climate_factory,
+                                             bool white_list_enabled )
+    {
+        release_assert( node );
+        release_assert( nodedemographics_factory );
+#ifndef DISABLE_CLIMATE
+        release_assert( climate_factory );
+#endif
+
+        node->SetParameters( nodedemographics_factory, climate_factory, white_list_enabled );
+        node->SetMonteCarloParameters( Ind_Sample_Rate );
+
+        // node->PopulateFromDemographics();    // Skip this, node already is populated.
+        node->InitializeTransmissionGroupPopulations();
+
+        node_event_context_list.push_back( node->GetEventContext() );
+        nodeRankMap.Add( EnvPtr->MPI.Rank, node );
+
+        notifyNewNodeObservers( node );
+    }
+
+    void Simulation::loadCampaignFromFile( const std::string& campaignfilename, const std::vector<ExternalNodeId_t>& demographic_node_ids)
     {
         // load in the configuration
         // parse the DM creation events, create them, and add them to an event queue
-        event_context_host->LoadCampaignFromFile( campaignfilename );
+        event_context_host->LoadCampaignFromFile( campaignfilename, demographic_node_ids);
     }
 
     void Simulation::notifyNewNodeObservers(INodeContext* node)
@@ -1274,12 +1374,31 @@ namespace Kernel
         Simulation& sim = *obj;
         ar.labelElement("serializationMask") & (uint32_t&)sim.serializationMask;
 
+        if (((sim.serializationMask & SerializationFlags::Population) != 0) ||
+            ((sim.serializationMask & SerializationFlags::Properties) != 0))
+        {
+            ar.labelElement("infectionSuidGenerator") & sim.infectionSuidGenerator;
+            ar.labelElement("individualHumanSuidGenerator") & sim.individualHumanSuidGenerator;
+        }
+
         if ((sim.serializationMask & SerializationFlags::Population) != 0) {
-            ar.labelElement("nodes"); serialize(ar, sim.nodes);
+            if (ar.IsReader()) {
+                // Read the nodes element in case it's a version 1 serialized file which includes
+                // the nodes in the nodes element.
+                // If it's a version 2+ serialized file, the nodes element will be empty and this
+                // will be harmless.
+                ar.labelElement("nodes"); serialize(ar, sim.nodes);
+            }
+            else {
+                // Write an empty element as the nodes will be serialized separately.
+                NodeMap_t empty;
+                ar.labelElement("nodes"); serialize(ar, empty);
+            }
         }
 
         if ((sim.serializationMask & SerializationFlags::Parameters) != 0) {
-            ar.labelElement("campaignFilename") & sim.campaignFilename;
+            ar.labelElement( "campaignFilename" ) & sim.campaignFilename;
+            ar.labelElement( "custom_reports_filename" ) & sim.custom_reports_filename;
 
             ar.labelElement("Ind_Sample_Rate") & sim.Ind_Sample_Rate;
 
@@ -1302,8 +1421,6 @@ namespace Kernel
 // clorton          ar.labelElement("m_simConfigObj") & sim.m_simConfigObj;
 // clorton          ar.labelElement("m_interventionFactoryObj") & sim.m_interventionFactoryObj;
 // clorton          ar.labelElement("demographicsContext") & sim.demographicsContext;
-// clorton          ar.labelElement("infectionSuidGenerator") & sim.infectionSuidGenerator;
-// clorton          ar.labelElement("individualHumanSuidGenerator") & sim.individualHumanSuidGenerator;
 // clorton          ar.labelElement("nodeSuidGenerator") & sim.nodeSuidGenerator;
             ar.labelElement("loadBalanceFilename") & sim.loadBalanceFilename;
 // clorton          ar.labelElement("rng") & sim.rng;
@@ -1335,7 +1452,9 @@ namespace Kernel
             for (auto& entry : node_map)
             {
                 ar.startObject();
-                ar.labelElement("suid_data") & (uint32_t&)(entry.first.data);
+                // entry.first is const which doesn't play well with IArchive operator '&'
+                suids::suid suid(entry.first);
+                ar.labelElement("suid") & suid;
                 ar.labelElement("node") & entry.second;
                 ar.endObject();
             }
@@ -1347,7 +1466,7 @@ namespace Kernel
                 ar.startObject();
                 suids::suid suid;
                 ISerializable* obj;
-                ar.labelElement("suid_data") & suid.data;
+                ar.labelElement("suid") & suid;
                 ar.labelElement("node") & obj;
                 ar.endObject();
                 node_map[suid] = static_cast<Node*>(obj);
@@ -1355,38 +1474,4 @@ namespace Kernel
         }
         ar.endArray();
     }
-
-#if 0
-    template<class Archive>
-    void serialize(Archive & ar, Simulation &sim, const unsigned int  file_version )
-    {
-        LOG_DEBUG("(De)serializing Simulation\n");
-
-        ar & sim.Ind_Sample_Rate;// Fraction of individuals in each community to sample, base rate, can be modified for each community
-        // Counters
-        ar & sim.currentTime;
-        ar & sim.currentTimestep; // counts number of timesteps actually taken
-
-        ar & sim.nodes;
-        ar & sim.nodeRankMap; // need to preserve this to support serializing a distributed state
-        ar & sim.nodeid_suid_map;
-
-        ar & sim.demographicsContext;
-
-        ar & sim.nodeSuidGenerator;
-        ar & sim.individualHumanSuidGenerator;
-        ar & sim.infectionSuidGenerator;
-
-        ar  & sim.campaignFilename
-        ar & sim.event_context_host;
-        ar.register_type(static_cast<PSEUDO_DES*>(nullptr));
-        ar & sim.rng;
-
-        if (typename Archive::is_loading())
-        {
-            sim.PropagateContextToDependents(); // HACK: boost serialization should have been able to do this automagically but fails on abstract classes even though it shouldn't. hopefully wont have to fix later
-        }
-    }
-#endif
-
 }

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,46 +12,61 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <sstream>
 #include "SimulationEnums.h"
 #include "BaseTextReportEvents.h"
+#include "IRelationship.h"
+
 
 #define MAX_AGE (100)
 
-namespace Kernel {
+namespace Kernel 
+{
     struct ISimulation;
-
-    namespace Yes_No { 
-        enum Yes_No { NO, YES, COUNT };
-    }
 
     class ReportHIVByAgeAndGender : public BaseTextReportEvents
     {
         GET_SCHEMA_STATIC_WRAPPER(ReportHIVByAgeAndGender)
     public:
         ReportHIVByAgeAndGender( const ISimulation *sim = nullptr, float hivPeriod = 180.0 );
+        virtual ~ReportHIVByAgeAndGender();
+
         static IReport* ReportHIVByAgeAndGender::Create(const ISimulation * parent, float hivPeriod) { return new ReportHIVByAgeAndGender( parent, hivPeriod ); }
 
         // -----------------------------
         // --- BaseTextReportEvents
         // -----------------------------
-        virtual bool Configure( const Configuration* inputJson );
-        virtual void UpdateEventRegistration( float currentTime, 
+        virtual bool Configure( const Configuration* inputJson ) override;
+        virtual void UpdateEventRegistration( float currentTime,
                                               float dt, 
-                                              std::vector<INodeEventContext*>& rNodeEventContextList );
-        virtual void Initialize( unsigned int nrmSize );
-        virtual std::string GetHeader() const ;
-        virtual bool notifyOnEvent(IIndividualHumanEventContext *context, const std::string& StateChange);
+                                              std::vector<INodeEventContext*>& rNodeEventContextList ) override;
+        virtual void Initialize( unsigned int nrmSize ) override;
+        virtual std::string GetHeader() const override;
+        virtual bool notifyOnEvent( IIndividualHumanEventContext *context, const EventTrigger& trigger ) override;
 
-        virtual bool IsCollectingIndividualData( float currentTime, float dt ) const ;
-        virtual void LogIndividualData( IIndividualHuman* individual );
-        virtual void LogNodeData( INodeContext* pNC );
-        virtual void EndTimestep(float currentTime, float dt);
+        virtual bool IsCollectingIndividualData( float currentTime, float dt ) const override;
+        virtual void LogIndividualData( IIndividualHuman* individual ) override;
+        virtual void LogNodeData( INodeContext* pNC ) override;
+        virtual void EndTimestep(float currentTime, float dt) override;
 
     protected:
 
     private:
 
-        const float report_hiv_half_period;
-        float next_report_time;
-        bool doReport;
+        void AddTransmittedData( IIndividualHumanEventContext* context );
+
+        uint64_t GetDataMapKey( IIndividualHumanEventContext* context );
+
+        uint64_t GetDataMapKey( int nodeId );
+
+        uint64_t GetDataMapKey( int indexNode, 
+                                int indexGender,
+                                int indexAge,
+                                int indexCirc,
+                                int indexHiv,
+                                int indexArt,
+                                const std::vector<int>& rIPValueIndexList,
+                                const std::vector<int>& rInterventionIndexList );
+
+        void AddDimension( const std::string& rName, bool isIncluded, const std::vector<std::string>& rValueList, int* pNumDimensions );
+        bool IncrementIndexes();
 
         struct ReportData
         {
@@ -63,16 +78,22 @@ namespace Kernel {
                 , infected_noART_cd4_350_to_500(0.0)
                 , infected_noART_cd4_above_500(0.0)
                 , newly_infected(0.0)
-                , tested_positive(0.0)
-                , tested_negative(0.0)
+                , transmitted(0.0)
+                , newly_tested_positive(0.0)
+                , newly_tested_negative(0.0)
                 , on_ART(0.0)
                 , newly_died(0.0)
                 , newly_died_from_HIV(0.0)
-                , tested_ever_HIVpos(0.0)
-                , tested_ever_HIVneg(0.0)
+                , tested_ever(0.0)
+                , diagnosed(0.0)
                 , tested_past_year_or_onART(0.0)
                 , has_intervention(0.0)
                 , event_counter_map()
+                , currently_in_relationship_by_type(RelationshipType::COUNT,0.0f)
+                , ever_in_relationship_by_type(RelationshipType::COUNT, 0.0f)
+                , has_concurrent_partners()
+                , num_partners_current_sum(0.0)
+                , num_partners_lifetime_sum(0.0)
             {
             }
 
@@ -87,39 +108,76 @@ namespace Kernel {
             float infected_noART_cd4_above_500;
 
             float newly_infected;            // Newly Infected
-            float tested_positive;           // Newly Tested Positive
-            float tested_negative;           // Newly Tested Negative
+            float transmitted;               // Number of people that tranmistted the disease
+            float newly_tested_positive;     // Newly Tested Positive
+            float newly_tested_negative;     // Newly Tested Negative
             float on_ART;                    // On ART
             float newly_died;                // Newly Died
             float newly_died_from_HIV;       // Newly Died from HIV
-            float tested_ever_HIVpos;        // Tested ever [amongst HIV+]
-            float tested_ever_HIVneg;        // Tested ever [amongst HIV-]
+            float tested_ever;               // Tested ever
+            float diagnosed;                 // Diagnosed HIV+
             float tested_past_year_or_onART; // Tested past year (or on ART)
             float has_intervention;
 
             std::map<std::string,float> event_counter_map; // count the ocurrences of events
+
+            std::vector<float> currently_in_relationship_by_type; // mc weight sum of the number of individuals with a current relationship, by type
+            std::vector<float> ever_in_relationship_by_type;      // mc weight sum of the number of individuals ever having a relationship, by type
+            float has_concurrent_partners;                        // mc weight sum of individuals with 2+ partners.
+            float num_partners_current_sum;                       // mc weight sum of the number of current partners.
+            float num_partners_lifetime_sum;                      // mc weight sum of the number of lifetime partners.
         };
 
-        bool GetNextIP( std::vector<int>& rKeyValueIndexList );
-        uint64_t GetDataMapKey( IIndividualHumanEventContext* context );
-        uint64_t GetDataMapKey( int nodeSuidIndex, int genderIndex, int ageIndex, int circIndex, int hivIndex, const std::vector<int>& rKeyValueIndexList );
-        void AddConstant();
+        struct Dimension
+        {
+            std::string name;
+            uint64_t    map_key_constant;
+            bool        included;
+            int         index;
+            std::vector<std::string> values;
 
-        std::map<uint64_t,ReportData> data_map ;
+            Dimension( const std::string& rName,
+                       uint64_t constant,
+                       bool isIncluded,
+                       const std::vector<std::string>& rValues )
+            : name(rName)
+            , map_key_constant(constant)
+            , included(isIncluded)
+            , index(0)
+            , values(rValues)
+            {
+            }
+        };
 
+        // report controls
+        const float report_hiv_half_period;
+        float start_year ;                                       // Year to start collecting data
+        float stop_year ;                                        // Year to stop  collecting data
+
+        // matrix dimenion flags - bools control if dimenion exists.  vectors have column for each value, except age_bins which has one column
+        bool                     dim_gender;
+        std::vector<float>       dim_age_bins;
+        bool                     dim_is_circumcised;
+        bool                     dim_has_hiv;
+        bool                     dim_on_art;
+        std::vector<std::string> dim_ip_key_list ;
+        std::vector<std::string> dim_intervention_name_list;
+
+        // controls for data columns
+        bool                      data_has_transmitters;
+        bool                      data_stratify_infected_by_CD4;
+        std::string               data_name_of_intervention_to_count;
+        std::vector<EventTrigger> data_event_list;
+        bool                      data_has_relationships;
+
+        // other
         const ISimulation * _parent;
-        float startYear ;                                       // Year to start collecting data
-        float stopYear ;                                        // Year to stop  collecting data
+        float next_report_time;
+        bool do_report;
         bool is_collecting_data ;
-        bool is_collecting_circumcision_data;
-        bool is_collecting_hiv_data;
-        bool is_collecting_ip_data;
-        bool stratify_infected_by_CD4;
-        std::string name_of_intervention_to_count;
-        std::vector<std::string> event_list;
-        std::vector<std::string> ip_key_list ;
-        std::map<std::string,std::vector<std::string>> ip_key_value_list_map ;
-        std::vector<uint64_t> map_key_constants ;
+        std::map<uint64_t,ReportData> data_map ;
+        std::vector<Dimension*> dimension_vector;
+        std::map<std::string,Dimension*> dimension_map; // the map contains pointers to the same objects in dimension_vector
     };
 
 }

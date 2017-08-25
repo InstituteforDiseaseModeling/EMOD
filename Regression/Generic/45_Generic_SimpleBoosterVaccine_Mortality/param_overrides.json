@@ -1,0 +1,33 @@
+{
+    "Default_Config_Path": "defaults/generic_default_config.json", 
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Population_Scale_Type": "FIXED_SCALING", 
+            "MORTALITY": {
+                "Base_Mortality": 1, 
+                "Enable_Disease_Mortality": 1, 
+                "Immunity_Mortality_Factor": 1
+            }, 
+            "Demographics_Filenames": ["../00_Generic_Default/demographics.json"]
+        }, 
+        "DISEASE": {
+            "INFECTIOUSNESS": {
+                "Base_Infectivity": 1e-05, 
+                "Infectious_Period_Distribution": "FIXED_DURATION", 
+                "Base_Infectious_Period": 1
+            }, 
+            "INCUBATION": {
+                "Base_Incubation_Period": 0
+            }
+        }, 
+        "PRIMARY": {
+            "Run_Number": 1, 
+            "Simulation_Duration": 70, 
+            "Config_Name": "45_Generic_SimpleBoosterVaccine_Mortality", 
+            "Geography": "Namawala"
+        }, 
+        "INTRANODE_TRANSMISSION": {
+            "Enable_Heterogeneous_Intranode_Transmission": 1
+        }
+    }
+}

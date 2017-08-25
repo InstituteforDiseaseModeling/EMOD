@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -25,9 +25,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <ctime>
 #include <algorithm>
 
-static const char * _module = "Relationship";
+SETUP_LOGGING( "Relationship" )
 
-#define PROPERTY_KEY_PREFIX "Relationship:"
+#define PROPERTY_KEY_PREFIX "Relationship."
 #define PROPERTY_KEY_PREFIX_LENGTH (13)
 #define SLOT_SEPARATOR ('-')
 
@@ -312,10 +312,20 @@ namespace Kernel {
 
         double ratetime = dt * coital_rate_attenuation_factor * GetCoitalRate();
         unsigned int acts_this_dt = Environment::getInstance()->RNG->Poisson( ratetime );
+
+        if( total_coital_acts == 0 && acts_this_dt == 0 && ratetime > 0)
+        {
+            acts_this_dt = 1;   // Force the first act
+        }
+
         total_coital_acts += acts_this_dt;
 
-        if( acts_this_dt > 0 ) {
-            ProbabilityNumber p_condom = (float) getProbabilityUsingCondomThisAct(); 
+        if( acts_this_dt > 0 )
+        {
+            male_partner->UpdateNumCoitalActs( acts_this_dt );
+            female_partner->UpdateNumCoitalActs( acts_this_dt );
+
+            ProbabilityNumber p_condom = (float) getProbabilityUsingCondomThisAct();
             NaturalNumber acts_using_condom_this_dt = Environment::getInstance()->RNG->binomial_approx( acts_this_dt, (float) p_condom );
             NaturalNumber acts_not_using_condom_this_dt = acts_this_dt - acts_using_condom_this_dt;
             LOG_DEBUG_F( "p_condom = %f, acts_using_condom_this_dt = %d\n", (float) p_condom, (int) acts_using_condom_this_dt );
@@ -337,11 +347,14 @@ namespace Kernel {
 
             float condomTransmissionBlockingProbability = IndividualHumanSTIConfig::condom_transmission_blocking_probability;
 
+            IIndividualHumanSTI *uninfected_individual = male_partner->IsInfected() ? female_partner : male_partner;
+            IIndividualHumanSTI *infected_individual = male_partner->IsInfected() ? male_partner : female_partner;
+
             // STI risk factor if one partner has sti, avoid double risk
-            float coInfectiveFactor1 = male_partner->GetCoInfectiveFactor();
-            float coInfectiveFactor2 = female_partner->GetCoInfectiveFactor();
+            float coInfectiveFactor1 = infected_individual->GetCoInfectiveTransmissionFactor();
+            float coInfectiveFactor2 = uninfected_individual->GetCoInfectiveAcquisitionFactor();
             float sti_mult = max( coInfectiveFactor1, coInfectiveFactor2 );
-            
+
             act_prob_vec.clear();
             act_prob_vec.resize(2);
 
@@ -352,9 +365,7 @@ namespace Kernel {
             act_prob_vec[1].prob_per_act = sti_mult * (1-condomTransmissionBlockingProbability);
             //LOG_DEBUG_F( "Setting prob_per_act to %f for %d 'unprotected' acts and prob_per_act to %f for %d 'protected' acts.\n", sti_mult, (int) acts_not_using_condom_this_dt, act_prob_vec[1].prob_per_act, (int) act_prob_vec[1].num_acts );
 
-            IIndividualHumanSTI *uninfected_individual = male_partner->IsInfected() ? female_partner : male_partner;
             uninfected_individual->NotifyPotentialExposure();
-            IIndividualHumanSTI *infected_individual = male_partner->IsInfected() ? male_partner : female_partner;
             infected_individual->UpdateInfectiousnessSTI( act_prob_vec, GetSuid().data );
         }
     }
@@ -843,7 +854,7 @@ namespace Kernel {
             }
         }
 
-        ar.labelElement("_suid"                   ) & rel._suid.data;
+        ar.labelElement("_suid"                   ) & rel._suid;
         ar.labelElement("state"                   ) & (uint32_t&)rel.state;
         ar.labelElement("previous_state"          ) & (uint32_t&)rel.previous_state;
         ar.labelElement("relationship_type"       ) & (uint32_t&)rel.relationship_type;
@@ -851,8 +862,8 @@ namespace Kernel {
         //p_rel_params don't serialize this
         //male_partner don't serialize this
         //female_partner don't serialize this
-        ar.labelElement("absent_male_partner_id"  ) & rel.absent_male_partner_id.data;
-        ar.labelElement("absent_female_partner_id") & rel.absent_female_partner_id.data;
+        ar.labelElement("absent_male_partner_id"  ) & rel.absent_male_partner_id;
+        ar.labelElement("absent_female_partner_id") & rel.absent_female_partner_id;
         ar.labelElement("rel_timer"               ) & rel.rel_timer;
         ar.labelElement("rel_duration"            ) & rel.rel_duration;
         ar.labelElement("start_time"              ) & rel.start_time;

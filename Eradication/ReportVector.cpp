@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,7 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorContexts.h"
 #include "VectorPopulation.h"
 
-static const char * _module = "VectorReporter";
+SETUP_LOGGING( "VectorReporter" )
 
 static const string _adult_vectors_label( "Adult Vectors" );
 static const string _infectious_vectors_label( "Infectious Vectors" );
@@ -72,9 +72,9 @@ ReportVector::LogNodeData(
         throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNC", "INodeVector", "INodeContext" );
     }
 
-    std::list<VectorPopulation*> vectorPopulations = pNV->GetVectorPopulations();
+    const VectorPopulationReportingList_t& vectorPopulations = pNV->GetVectorPopulationReporting();
 
-    for (auto vectorpopulation : vectorPopulations)
+    for (const auto vectorpopulation : vectorPopulations)
     {
         adult_vectors      += (float)( vectorpopulation->getAdultCount() + vectorpopulation->getInfectedCount() + vectorpopulation->getInfectiousCount() );
         infectious_vectors += (float)( vectorpopulation->getInfectiousCount() );
