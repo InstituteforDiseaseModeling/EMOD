@@ -66,8 +66,8 @@ on your local clone of the repository. The table below describes each of the dir
     Dependencies, "The ComputeClusterPack."
     Eradication, "Eradication project. Main project for Visual Studio solution."
     Regression, "Scripts to perform regression tests for modified code. It also includes a copy of the
-    |quick| Scenarios directory that contains simulation configuration, batch, input, and script files
-    that are associated with the training tutorials."
+    Scenarios directory that contains simulation configuration, batch, input, and script files
+    that are associated with tutorials."
     Scripts, "Scripts used in file creation."
     UnitTest++, "Software for early release of additional regression testing."
     baseReportLib, "Static library of classes used by |EMOD_s| built-in reports and custom reports."

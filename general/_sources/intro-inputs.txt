@@ -13,15 +13,11 @@ needed for a realistic simulation. The demographics files use :term:`JavaScript 
 (JSON)`. The other input data files use both a JSON file for metadata and an associated binary file
 that contains the actual data.
 
-.. only:: not training
 
-    The |IDM_l| provides collections of input data files for many different locations in the world
-    for download on GitHub. Except for the demographics file, you will typically use these input
-    data files in their default state. See :doc:`howto-inputs` for more information.
+The |IDM_l| provides collections of input data files for many different locations in the world
+for download on GitHub. Except for the demographics file, you will typically use these input
+data files in their default state. See :doc:`howto-inputs` for more information.
 
-.. only:: training
-
-    The |quick| includes all necessary input data files in the Scenarios/InputFiles directory.
 
 Demographics
 ============
@@ -120,13 +116,11 @@ makes the assumption that native vegetation is the best reflection of climate.
 
 .. _Koppen classification system: https://en.wikipedia.org/wiki/K%C3%B6ppen_climate_classification
 
-.. only:: not training
+Load balancing
+==============
 
-    Load balancing
-    ==============
-
-    When running a simulation on a multi-core HPC cluster, you can include a load balancing file to
-    control how the computing load is distributed across the cluster. The load balancing file is a
-    binary file that allocates the simulation of each geographic node to cores in the cluster.  If no
-    file is submitted, |EMOD_s| allocates nodes to cores according to a checkerboard pattern.
+When running a simulation on a multi-core HPC cluster, you can include a load balancing file to
+control how the computing load is distributed across the cluster. The load balancing file is a
+binary file that allocates the simulation of each geographic node to cores in the cluster.  If no
+file is submitted, |EMOD_s| allocates nodes to cores according to a checkerboard pattern.
 

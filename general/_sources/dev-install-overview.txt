@@ -2,10 +2,6 @@
 |EMOD_s| source code installation
 =================================
 
-.. remember that the Quick Start, using the EXE, and building from source have different prerequisites
-.. and, therefore, different topics with instructions. Be sure to update all necessary files when
-.. things change
-
 This section describes how to install the software needed to build the |exe_l| or |linux_binary|
 from the |EMOD_s| source code. This is necessary if you want to modify the source code to extend the
 capabilities of the model beyond what's available with the latest |EMOD_s| release. For example, you

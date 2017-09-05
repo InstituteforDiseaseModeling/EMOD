@@ -80,7 +80,7 @@
             
             
               <div class="version">
-                2.10
+                2.13
               </div>
             
           
@@ -168,36 +168,558 @@
 <h1>What’s new<a class="headerlink" href="#whats-new" title="Permalink to this headline">¶</a></h1>
 <p>This topic describes new functionality and breaking changes for recently released versions of
 Epidemiological MODeling software (EMOD).</p>
+<div class="section" id="emod-s-v2-13">
+<h2>EMOD v2.13<a class="headerlink" href="#emod-s-v2-13" title="Permalink to this headline">¶</a></h2>
+<p>The EMOD v2.13 release includes many new features for all supported simulation types.</p>
+<div class="section" id="new-configuration-parameters">
+<h3>New configuration parameters<a class="headerlink" href="#new-configuration-parameters" title="Permalink to this headline">¶</a></h3>
+<p>For the malaria simulation type, the following new configuration parameters are available:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Custom_Reports_Filename</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>UNINITIALIZED STRING</td>
+<td>The name of the file containing custom report configuration parameters. Omitting this parameter or setting it to RunAllCustomReports will load all reporters found that are valid for the given simulation type. The file must be in JSON format.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>  
+    <span class="nt">&quot;Custom_Reports_Filename&quot;</span><span class="p">:</span> <span class="s2">&quot;custom_reports.json&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Cycle_Arrhenius_1</td>
+<td>float</td>
+<td>0</td>
+<td>1.00E+15</td>
+<td>4.09E+10</td>
+<td>The Arrhenius equation, <img class="math" src="_images/math/1c4e98d68901ee4b4b9782c91fd5eb546328b6c0.png" alt="a_1^{-a_2/T}"/>, with T in degrees Kelvin, parameterizes the mosquito feeding cycle rate. This duration is a decreasing function of temperature.  The variable a1 is a temperature-independent scale factor on feeding rate. <strong>Temperature_Dependent_Feeding_Cycle</strong> must be set to ARRHENIUS_DEPENDENCE.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Temperature_Dependent_Feeding_Cycle&quot;</span><span class="p">:</span> <span class="s2">&quot;ARRHENIUS_DEPENDENCE&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Vector_Species_Params&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;arabiensis&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Cycle_Arrhenius_1&quot;</span><span class="p">:</span> <span class="mi">99</span><span class="p">,</span>
+            <span class="nt">&quot;Cycle_Arrhenius_2&quot;</span><span class="p">:</span> <span class="mi">88</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Cycle_Arrhenius_2</td>
+<td>float</td>
+<td>0</td>
+<td>1.00E+15</td>
+<td>7740</td>
+<td>The Arrhenius equation, <img class="math" src="_images/math/1c4e98d68901ee4b4b9782c91fd5eb546328b6c0.png" alt="a_1^{-a_2/T}"/>, with T in degrees Kelvin, parameterizes the mosquito feeding cycle rate. This duration is a decreasing function of temperature.  The variable a2 is a temperature-independent scale factor on feeding rate. <strong>Temperature_Dependent_Feeding_Cycle</strong> must be set to ARRHENIUS_DEPENDENCE.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Temperature_Dependent_Feeding_Cycle&quot;</span><span class="p">:</span> <span class="s2">&quot;ARRHENIUS_DEPENDENCE&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Vector_Species_Params&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;arabiensis&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Cycle_Arrhenius_1&quot;</span><span class="p">:</span> <span class="mi">99</span><span class="p">,</span>
+            <span class="nt">&quot;Cycle_Arrhenius_2&quot;</span><span class="p">:</span> <span class="mi">88</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Cycle_Arrhenius_Reduction_Factor</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>The scale factor applied to cycle duration (from oviposition to oviposition) to reduce the duration when primary follicles are at stage II rather than I in the case of newly emerged females. <strong>Temperature_Dependent_Feeding_Cycle</strong> must be set to ARRHENIUS_DEPENDENCE.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Temperature_Dependent_Feeding_Cycle&quot;</span><span class="p">:</span> <span class="s2">&quot;ARRHENIUS_DEPENDENCE&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Vector_Species_Params&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;funestus&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Cycle_Arrhenius_Reduction_Factor&quot;</span><span class="p">:</span> <span class="mf">0.44</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Drought_Egg_Hatch_Delay</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0.33</td>
+<td>Proportion of regular egg hatching that still occurs when habitat dries up. <strong>Enable_Drought_Egg_Hatch_Delay</strong> must be set to 1.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span> 
+    <span class="nt">&quot;Enable_Drought_Egg_Hatch_Delay&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;Drought_Egg_Hatch_Delay&quot;</span><span class="p">:</span> <span class="mf">0.33</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Egg_Arrhenius1</td>
+<td>float</td>
+<td>0</td>
+<td>1.00E+10</td>
+<td>6.16E+07</td>
+<td>The Arrhenius equation, math:<cite>a_1^{-a_2/T}</cite>, with T in degrees Kelvin, parameterizes the daily rate of mosquito egg hatching. This duration is a decreasing function of temperature.  The variable a1 is a temperature-independent scale factor on hatching rate. <strong>Enable_Temperature_Dependent_Egg_Hatching</strong> must be set to 1.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Enable_Temperature_Dependent_Egg_Hatching&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>     
+    <span class="nt">&quot;Egg_Arrhenius1&quot;</span><span class="p">:</span> <span class="mi">61599956</span><span class="p">,</span>
+    <span class="nt">&quot;Egg_Arrhenius2&quot;</span><span class="p">:</span> <span class="mi">5754</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Egg_Arrhenius2</td>
+<td>float</td>
+<td>0</td>
+<td>1.00E+10</td>
+<td>5754.03</td>
+<td>The Arrhenius equation, <img class="math" src="_images/math/1c4e98d68901ee4b4b9782c91fd5eb546328b6c0.png" alt="a_1^{-a_2/T}"/>, with T in degrees Kelvin, parameterizes the daily rate of mosquito egg hatching. This duration is a decreasing function of temperature.  The variable a2 is a temperature-dependent scale factor on hatching rate. <strong>Enable_Temperature_Dependent_Egg_Hatching</strong> must be set to 1.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Enable_Temperature_Dependent_Egg_Hatching&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>     
+    <span class="nt">&quot;Egg_Arrhenius1&quot;</span><span class="p">:</span> <span class="mi">61599956</span><span class="p">,</span>
+    <span class="nt">&quot;Egg_Arrhenius2&quot;</span><span class="p">:</span> <span class="mi">5754</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Egg_Hatch_Density_Dependence</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NO_DENSITY_DEPENDENCE</td>
+<td><p class="first">The effect of larval density on egg hatching rate. Possible values are:</p>
+<dl class="last docutils">
+<dt>DENSITY_DEPENDENCE </dt>
+<dd>Egg hatching is reduced when the habitat is nearing its carrying capacity.</dd>
+<dt>NO_DENSITY_DEPENDENCE</dt>
+<dd>Egg hatching is not dependent upon larval density.</dd>
+</dl>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Egg_Hatch_Density_Dependence&quot;</span><span class="p">:</span> <span class="s2">&quot;NO_DENSITY_DEPENDENCE&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Enable_Drought_Egg_Hatch_Delay</td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Controls whether or not eggs hatch at delayed rates, set by <strong>Drought_Egg_Hatch_Delay</strong>, when the habitat dries up completely.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Enable_Drought_Egg_Hatch_Delay&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
+    <span class="nt">&quot;Drought_Egg_Hatch_Delay&quot;</span><span class="p">:</span> <span class="mf">0.33</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Enable_Egg_Mortality</td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Controls whether or not to include a daily mortality rate on the egg population, which is independent of climatic factors.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Enable_Egg_Mortality&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Enable_Temperature_Dependent_Egg_Hatching</td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Controls whether or not temperature has an effect on egg hatching, defined by <strong>Egg_Arrhenius_1</strong> and <strong>Egg_Arrhenius_2</strong>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>  
+    <span class="nt">&quot;Enable_Temperature_Dependent_Egg_Hatching&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  
+    <span class="nt">&quot;Egg_Arrhenius1&quot;</span><span class="p">:</span> <span class="mf">61599956.864</span><span class="p">,</span> 
+    <span class="nt">&quot;Egg_Arrhenius2&quot;</span><span class="p">:</span> <span class="mf">5754.033</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Enable_Vector_Aging</td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Controls whether or not vectors undergo senescence as they age.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Enable_Vector_Aging&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Incubation_Period_Log_Mean</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>6</td>
+<td>The mean of log normal for the incubation period distribution. <strong>Incubation_Period_Distribution</strong> must be set to LOG_NORMAL_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Incubation_Period_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;LOG_NORMAL_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Incubation_Period_Log_Mean&quot;</span><span class="p">:</span> <span class="mf">5.758</span><span class="p">,</span>
+    <span class="nt">&quot;Incubation_Period_Log_Width&quot;</span><span class="p">:</span> <span class="mf">0.27</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Incubation_Period_Log_Width</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>1</td>
+<td>The log width of log normal for the incubation period distribution. <strong>Incubation_Period_Distribution</strong> must be set to LOG_NORMAL_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Incubation_Period_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;LOG_NORMAL_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Incubation_Period_Log_Mean&quot;</span><span class="p">:</span> <span class="mf">5.758</span><span class="p">,</span>
+    <span class="nt">&quot;Incubation_Period_Log_Width&quot;</span><span class="p">:</span> <span class="mf">0.27</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Infectivity_Exponential_Baseline</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>The scale factor applied to <strong>Base_Infectivity</strong> at the beginning of a simulation, before the infectivity begins to grow exponentially. <strong>Infectivity_Scale_Type</strong> must be set to EXPONENTIAL_FUNCTION_OF_TIME.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Infectivity_Exponential_Baseline&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Exponential_Delay&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Exponential_Rate&quot;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Scale_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;EXPONENTIAL_FUNCTION_OF_TIME&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Infectivity_Exponential_Delay</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>0</td>
+<td>The number of days before infectivity begins to ramp up exponentially. <strong>Infectivity_Scale_Type</strong> must be set to EXPONENTIAL_FUNCTION_OF_TIME.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Infectivity_Exponential_Baseline&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Exponential_Delay&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Exponential_Rate&quot;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Scale_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;EXPONENTIAL_FUNCTION_OF_TIME&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Infectivity_Exponential_Rate</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>0</td>
+<td>The daily rate of exponential growth to approach to full infectivity after the delay set by <strong>Infectivity_Exponential_Delay</strong> has passed. <strong>Infectivity_Scale_Type</strong> must be set to EXPONENTIAL_FUNCTION_OF_TIME.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Infectivity_Exponential_Rate&quot;</span><span class="p">:</span> <span class="mi">45</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Memory_Usage_Halting_Threshold_Working_Set_MB</td>
+<td>integer</td>
+<td>0</td>
+<td>1.00E+06</td>
+<td>8000</td>
+<td>The maximum size (in MB) of working set memory before the system throws an exception and halts.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Memory_Usage_Halting_Threshold_Working_Set_MB&quot;</span><span class="p">:</span> <span class="mi">4000</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Memory_Usage_Warning_Threshold_Working_Set_MB</td>
+<td>integer</td>
+<td>0</td>
+<td>1.00E+06</td>
+<td>7000</td>
+<td>The maximum size (in MB) of working set memory before memory usage statistics are written to the log regardless of log level.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Memory_Usage_Warning_Threshold_Working_Set_MB&quot;</span><span class="p">:</span> <span class="mi">3500</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Nighttime_Feeding_Fraction</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>The fraction of feeds on humans (for a specific mosquito species) that occur during the nighttime. Thus the fraction of feeds on humans that occur during the day equals 1 - (value of this parameter).</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Vector_Species_Params&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;arabiensis&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Acquire_Modifier&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> 
+            <span class="nt">&quot;Adult_Life_Expectancy&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> 
+            <span class="nt">&quot;Anthropophily&quot;</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span> 
+            <span class="nt">&quot;Aquatic_Arrhenius_1&quot;</span><span class="p">:</span> <span class="mi">84200000000</span><span class="p">,</span> 
+            <span class="nt">&quot;Aquatic_Arrhenius_2&quot;</span><span class="p">:</span> <span class="mi">8328</span><span class="p">,</span> 
+            <span class="nt">&quot;Aquatic_Mortality_Rate&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> 
+            <span class="nt">&quot;Cycle_Arrhenius_1&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+            <span class="nt">&quot;Cycle_Arrhenius_2&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+            <span class="nt">&quot;Cycle_Arrhenius_Reduction_Factor&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+            <span class="nt">&quot;Days_Between_Feeds&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> 
+            <span class="nt">&quot;Egg_Batch_Size&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> 
+            <span class="nt">&quot;Immature_Duration&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> 
+            <span class="nt">&quot;Indoor_Feeding_Fraction&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> 
+            <span class="nt">&quot;Infected_Arrhenius_1&quot;</span><span class="p">:</span> <span class="mi">117000000000</span><span class="p">,</span> 
+            <span class="nt">&quot;Infected_Arrhenius_2&quot;</span><span class="p">:</span> <span class="mi">8336</span><span class="p">,</span> 
+            <span class="nt">&quot;Infected_Egg_Batch_Factor&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span> 
+            <span class="nt">&quot;Infectious_Human_Feed_Mortality_Factor&quot;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span> 
+            <span class="nt">&quot;Larval_Habitat_Types&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;TEMPORARY_RAINFALL&quot;</span><span class="p">:</span> <span class="mi">11250000000</span>
+            <span class="p">},</span> 
+            <span class="nt">&quot;Nighttime_Feeding_Fraction&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
+            <span class="nt">&quot;Transmission_Rate&quot;</span><span class="p">:</span> <span class="mf">0.5</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>   
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Serialization_Time_Steps</td>
+<td>array of integers</td>
+<td>0</td>
+<td>2.15E+09</td>
+<td>&nbsp;</td>
+<td>The list of time steps after which to save the serialized state. 0 (zero) indicates the initial state before simulation, n indicates after the nth time step. By default, no serialized state is saved.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Serialization_Time_Steps&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mi">0</span><span class="p">,</span> 
+        <span class="mi">10</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Serialized_Population_Filenames</td>
+<td>array of strings</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>Array of filenames with serialized population data. The number of filenames must match the number of cores used for the simulation. The file must be in .dtk format.</td>
+<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Serialized_Population_Filenames&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;state-00010.dtk&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="last"></p>
+</td>
+</tr>
+<tr class="row-even"><td>Serialized_Population_Path</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>.</td>
+<td>The root path for the serialized population files.</td>
+<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Serialized_Population_Path&quot;</span><span class="p">:</span> <span class="s2">&quot;../00_Generic_Version_1_save/output&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="last"></p>
+</td>
+</tr>
+<tr class="row-odd"><td>Temperature_Dependent_Feeding_Cycle</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NO_TEMPERATURE_DEPENDENCE</td>
+<td><p class="first">The effect of temperature on the duration between blood feeds. 
+Possible values are:</p>
+<dl class="last docutils">
+<dt>NO_TEMPERATURE_DEPENDENCE </dt>
+<dd>No relation to temperature; days between feeds will be constant and specified by <strong>Days_Between_Feeds</strong> for each species.</dd>
+<dt>ARRHENIUS_DEPENDENCE</dt>
+<dd>Use the Arrhenius equation with parameters <strong>Cycle_Arrhenius_1</strong> and <strong>Cycle_Arrhenius_2</strong>.</dd>
+<dt>BOUNDED_DEPENDENCE</dt>
+<dd>Use an equation bounded at 10 days at 15C and use <strong>Days_Between_Feeds</strong> to set the duration at 30C.</dd>
+</dl>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Temperature_Dependent_Feeding_Cycle&quot;</span><span class="p">:</span> <span class="s2">&quot;BOUNDED_DEPENDENCE&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>To view all available configuration parameters, see <a class="reference internal" href="parameter-configuration.html"><span class="doc">Configuration parameters</span></a>.</p>
+</div>
+<div class="section" id="new-demographics-parameters">
+<h3>New demographics parameters<a class="headerlink" href="#new-demographics-parameters" title="Permalink to this headline">¶</a></h3>
+<p>In all simulation types, you can now assign properties like risk or quality of care to nodes using
+<strong>NodeProperties</strong>, which are configured much like <strong>IndividualProperties</strong>. In addition, a new
+property type is available for both nodes and individuals called <strong>InterventionStatus</strong>, which is
+used by the campaign file to distribute interventions based on the other interventions an individual
+or node has received. This property type was previously available only for individuals in the HIV
+simulation type and was known as the <strong>CascadeState</strong>. The relevant campaign parameters are
+described in the next section.</p>
+<p>For more information, see the table below:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>NodeProperties</td>
+<td>array of objects</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>An array that contains parameters that add properties to nodes in a simulation. For example, you can define values for intervention status, risk, and other properties and assign values to different nodes.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Risk&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HIGH&quot;</span><span class="p">,</span> <span class="s2">&quot;MEDIUM&quot;</span><span class="p">,</span> <span class="s2">&quot;LOW&quot;</span><span class="p">],</span>
+        <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Property</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td><p class="first">The individual or node property type for which you will assign arbitrary values to create groups. You can then move individuals or nodes into or out of different groups or target interventions to particular groups. Possible values are:</p>
+<dl class="last docutils">
+<dt>Age_Bin</dt>
+<dd>Assign individuals to age bins. Use with <strong>Age_Bin_Edges_In_Years</strong>. Cannot be used with <strong>NodeProperties</strong>.</dd>
+<dt>Accessibility</dt>
+<dd>Tag individuals or nodes based on their accessibility.</dd>
+<dt>Geographic</dt>
+<dd>Tag individuals or nodes based on geographic characteristics.</dd>
+<dt>HasActiveTB</dt>
+<dd>Tag individuals or nodes based on active TB status. Typically used only with HIV ART staging interventions.</dd>
+<dt>InterventionStatus</dt>
+<dd>Tag individuals or nodes based on intervention status, so that receiving an intervention can affect how other interventions are distributed. Use with <strong>Disqualifying_Properties</strong> and <strong>New_Property_Value</strong> in the campaign file.</dd>
+<dt>Place</dt>
+<dd>Tag individuals or nodes based on place.</dd>
+<dt>Risk</dt>
+<dd>Tag individuals or nodes based on disease risk.</dd>
+<dt>QualityofCare</dt>
+<dd>Tag individuals or nodes based on the quality of medical care.</dd>
+</dl>
+</td>
+<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Age_Bin&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Age_Bin_Edges_In_Years&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">-1</span> <span class="p">]</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span> <span class="s2">&quot;RECENT_SPRAY&quot;</span><span class="p">],</span>
+        <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="new-campaign-parameters">
+<h3>New campaign parameters<a class="headerlink" href="#new-campaign-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The addition of <strong>NodeProperties</strong> in the demographics file also necessitated the addition of
+<strong>Node_Property_Restrictions</strong> to control how interventions are distributed based on the
+property values assigned to each node.</p>
+<p>The new property type <strong>InterventionStatus</strong> also necessitated the new campaign parameters
+<strong>Disqualifying_Properties</strong> and <strong>New_Property_Value</strong> to control how interventions are distributed
+based on the interventions already received. <strong>Disqualifying_Properties</strong> prevents an intervention
+from being distributed to individuals or nodes with certain property values. <strong>New_Property_Value</strong>
+updates the property value after they receive an intervention. For example, a household may be
+ineligible for clinical treatment for a length of time if they already received treatment during a
+drug campaign.  These campaign parameters were previously only available for individuals in the HIV
+simulation type and were known as <strong>Abort_States</strong> and <strong>Valid_Cascade_States</strong></p>
+<p>A new <strong>CommunityHealthWorkerEventCoordinator</strong> was added to set characteristics such as size of
+shipment, days between shipments, or maximum treatments distributed per day when interventions are
+distributed by community health workers.</p>
+<p>Several new parameters were added to control effect of vaccines and disease exposure on immunity.
+For example, whether the effect of receiving more than one vaccine is multiplicative or additive or
+if there are immune boosting or priming effects.</p>
+<p>New parameters were added to set the length of time over which bednets are effective based on both
+an expiration date and a waning effect based on usage.</p>
+<p>Detailed descriptions for each of the new campaign parameters will be added shortly.</p>
+</div>
+</div>
 <div class="section" id="emod-s-v2-10">
 <h2>EMOD v2.10<a class="headerlink" href="#emod-s-v2-10" title="Permalink to this headline">¶</a></h2>
-<p>The EMOD source v2.10 release includes new and updated malaria configuration, demographic, and
+<p>The EMOD v2.10 release includes new and updated malaria configuration, demographic, and
 intervention parameters. With this release, EMOD now uses Visual Studio 2015, Boost 1.61.0, and SCons 2.5.0.</p>
-<div class="section" id="malaria">
-<h3>Malaria<a class="headerlink" href="#malaria" title="Permalink to this headline">¶</a></h3>
-<p>Several habitat parameters in the malaria model have been upgraded, creating more flexibility in
-the model and enabling the user to have more control over habitat customization. These changes
-allow the model to more accurately capture real-world habitat availability and how it affects
-different mosquito species.</p>
-<dl class="docutils">
-<dt><strong>LINEAR_SPLINE</strong> habitat type</dt>
-<dd>This new option under <strong>Larval_Habitat_Types</strong> increases model customization by allowing the
-user to specify an arbitrary functional form (derived from data) for larval habitat
-availability throughout the year, instead of relying on climatological parameters such as
-rainfall or temperature. For more information, see <a class="reference internal" href="parameter-configuration.html#config-vectorspecies"><span class="std std-ref">Vector species</span></a> parameters.</dd>
-<dt><strong>LarvalHabitatMultiplier</strong> by species</dt>
-<dd>This new feature in demographics allows larval habitat availability to be modified
-independently for each species sharing a particular habitat type. Prior versions of EMOD
-applied the same modifier to all species within a shared habitat; this upgrade enables you
-to apply modifiers to individual species within a habitat. For more information, see
-<a class="reference internal" href="parameter-demographics.html#demo-nodeattributes"><span class="std std-ref">NodeAttributes</span></a> parameters.</dd>
-<dt><strong>ScaleLarvalHabitat</strong> by species</dt>
-<dd>This new intervention enables species-specific effects of habitat interventions within
-shared habitat types, such that habitat availability is modified on a per-species level.
-For more information, see <a class="reference internal" href="parameter-campaign.html#iv-scalelarvalhabitat"><span class="std std-ref">ScaleLarvalHabitat</span></a> parameters.</dd>
-<dt>Breaking changes</dt>
-<dd>PIECEWISE_MONTHLY has been changed to LINEAR_SPLINE.</dd>
-</dl>
-</div>
 <div class="section" id="emod-s-software-upgrades">
 <h3>EMOD software upgrades<a class="headerlink" href="#emod-s-software-upgrades" title="Permalink to this headline">¶</a></h3>
 <dl class="docutils">
@@ -227,6 +749,32 @@ files, &#8220;c:python27includepymath.h(22): warning C4273: &#8216;round&#8217;:
 Upgrade to Python 2.7.11 or 2.7.12 to get rid of the warning message.</dd>
 </dl>
 <p>For more information, see <a class="reference internal" href="dev-install-prerequisites.html"><span class="doc">Prerequisites for working with EMOD source code</span></a>.</p>
+</div>
+<div class="section" id="malaria-model">
+<h3>Malaria model<a class="headerlink" href="#malaria-model" title="Permalink to this headline">¶</a></h3>
+<p>Several habitat parameters in the malaria model have been upgraded, creating more flexibility in
+the model and enabling the user to have more control over habitat customization. These changes
+allow the model to more accurately capture real-world habitat availability and how it affects
+different mosquito species.</p>
+<dl class="docutils">
+<dt><strong>LINEAR_SPLINE</strong> habitat type</dt>
+<dd>This new option under <strong>Larval_Habitat_Types</strong> increases model customization by allowing the
+user to specify an arbitrary functional form (derived from data) for larval habitat
+availability throughout the year, instead of relying on climatological parameters such as
+rainfall or temperature. For more information, see <a class="reference internal" href="parameter-configuration.html#config-larval"><span class="std std-ref">Larval habitat</span></a> parameters.</dd>
+<dt><strong>LarvalHabitatMultiplier</strong> by species</dt>
+<dd>This new feature in demographics allows larval habitat availability to be modified
+independently for each species sharing a particular habitat type. Prior versions of EMOD
+applied the same modifier to all species within a shared habitat; this upgrade enables you
+to apply modifiers to individual species within a habitat. For more information, see
+<a class="reference internal" href="parameter-demographics.html#demo-nodeattributes"><span class="std std-ref">NodeAttributes</span></a> parameters.</dd>
+<dt><strong>ScaleLarvalHabitat</strong> by species</dt>
+<dd>This new intervention enables species-specific effects of habitat interventions within
+shared habitat types, such that habitat availability is modified on a per-species level.
+For more information, see <a class="reference internal" href="parameter-campaign.html#iv-scalelarvalhabitat"><span class="std std-ref">ScaleLarvalHabitat</span></a> parameters.</dd>
+<dt>Breaking changes</dt>
+<dd>PIECEWISE_MONTHLY has been changed to LINEAR_SPLINE.</dd>
+</dl>
 </div>
 </div>
 </div>
@@ -287,6 +835,7 @@ Upgrade to Python 2.7.11 or 2.7.12 to get rid of the warning message.</dd>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
       <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
 
   
 

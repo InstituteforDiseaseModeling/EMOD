@@ -10,8 +10,7 @@ dynamics.
 Documentation structure
 =======================
 
-|IDM_s| recently separated the documentation into a training set that walks through tutorials that
-provide an introduction to disease modeling and disease-specific sets that provide guidance for
+|IDM_s| recently separated the documentation into disease-specific sets that provide guidance for
 researchers modeling particular diseases. For example, this documentation set includes general
 installation and usage instructions for the generic disease model, which can be used to model
 a variety of diseases.
@@ -31,6 +30,7 @@ the |EMOD_s| source code to add more functionality to the model.
    install-overview
    intro-overview
    intro-modeling
+   generic-simulation-tutorial-overview
    howto-overview
    parameter-overview
    file-reference-overview

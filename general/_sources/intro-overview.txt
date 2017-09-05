@@ -16,12 +16,9 @@ The illustration below shows how the simulation types are built upon one another
 available in the generic :term:`simulation type` are inherited by the vector simulation type. The
 vector simulation type adds additional parameters specific to the biology of vector-borne diseases,
 which in turn are inherited by the malaria simulation type and so on. Therefore, depending on the
-simulation type you select, different parameters are available for you to use.
-
-.. only:: not training
-
-    In addition, simulation types for broader classes of disease can be extended to build your own
-    disease-specific model.
+simulation type you select, different parameters are available for you to use. In addition,
+simulation types for broader classes of disease can be extended to build your own disease-specific
+model.
 
 .. figure:: ../images/intro/simulation-types.png
 
@@ -35,28 +32,6 @@ eradication efforts to make more data-driven decisions. The |IDM_s| research tea
 articles related to modeling, as well as the modeling concepts underpinning |EMOD_s|. For a list of
 published articles, see `IDM Publications`_.
 
-.. only:: training
-
-    While |EMOD_s| is very powerful, it can be challenging to learn if you are not already familiar
-    with epidemiology and disease modeling. If that is the case, |IDM_s| provides the |quick| for
-    you to learn more about modeling disease dynamics. It has a simpler interface for running
-    simulations and extensive tutorials that walk you through how to model several prepared real-
-    world scenarios.
-
-    The |quick| is installed separately from, and has fewer installation requirements than, the |EMOD_s|
-    source. The |quick| is built on the same  modeling software, but has a few limitations that make
-    it primarily a learning tool. It is not suitable for running large-scale simulations or
-    running simulations using your own data.
-
-    The |quick| provides the following:
-
-    * All files needed to model many different prepared real-world scenarios
-    * Extensive tutorials that walk you through how to model the scenarios
-    * An |Excel| and Windows batch files to quickly and easy run simulations
-    * Windows batch files to create graphs of the model output
-    * Built |exe_l|
-
-    .. include:: ../reuse/note-quickstart.txt
 
 This section provides the conceptual overview of |EMOD_s|. The architecture diagram below shows, at
 a high level, how the system functions. If you run simulations in parallel on a multi-node cluster,
@@ -106,13 +81,11 @@ controls the transmission mechanism of the disease. After the simulation is comp
 produces output reports that describe various aspects of the disease dynamics within the modeled
 population.
 
-.. only:: not training
+You can run simulations locally or on a multi-core cluster. Because the model is :term:`stochastic`,
+you must run simulations multiple times to produce scientifically valid results.
 
-    You can run simulations locally or on a multi-core cluster. Because the model is :term:`stochastic`,
-    you must run simulations multiple times to produce scientifically valid results.
-
-    Depending on how you run the simulation, other programs or environments external to |EMOD_s| may
-    also output error and logging files.
+Depending on how you run the simulation, other programs or environments external to |EMOD_s| may
+also output error and logging files.
 
 Output files
 ============

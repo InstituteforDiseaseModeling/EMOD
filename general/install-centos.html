@@ -81,7 +81,7 @@
             
             
               <div class="version">
-                2.10
+                2.13
               </div>
             
           
@@ -110,6 +110,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
@@ -170,11 +171,17 @@
 
   <div class="section" id="install-emod-s-on-centos">
 <h1>Install EMOD on CentOS on Azure<a class="headerlink" href="#install-emod-s-on-centos" title="Permalink to this headline">¶</a></h1>
-<p>Follow the steps below to install EMOD on CentOS 7.1 on Azure environments. The setup script installs
-most prerequisite software, including Python and the Python packages dateutil, six, pyparsing,
-NumPy, and matplotlib. Other prerequisites, such as Boost 1.61.0 and  Microsoft MPI v8, are declared
-by the script as required. Because the installation instructions will vary based on the particular
-distribution you are running, instruction information is not included here.</p>
+<p>Follow the steps below to install EMOD on CentOS 7.1 on Azure environments. This installs the pre-
+built Eradication binary and all software needed to run simulations. The setup script installs most
+prerequisite software, including Python and the Python packages dateutil, six, pyparsing, NumPy, and
+matplotlib. Other prerequisites, such as Boost 1.61.0 and  Microsoft MPI v8, are declared by the script
+as required. Because the installation instructions will vary based on the particular distribution
+you are running, instruction information is not included here.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you want to download and modify the EMOD source code and build the Eradication binary
+yourself, see <a class="reference internal" href="dev-install-overview.html"><span class="doc">EMOD source code installation</span></a>.</p>
+</div>
 <p>The Eradication binary is tested and supported on a CentOS 7.1 on Azure virtual machine.
 It has also been successfully built and run on Ubuntu, SUSE, and Arch, but has not been tested
 and is not supported on those Linux distributions.</p>
@@ -312,6 +319,7 @@ algorithms.</p>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
       <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
 
   
 

@@ -1,8 +1,14 @@
-==================================
+============================
 Install |EMOD_s| on Windows
-==================================
+============================
 
-Follow the steps below to install |EMOD_s| on computers running |Windows_supp|.
+Follow the steps below to install |EMOD_s| on computers running |Windows_supp|. This installs the
+pre-built |exe_s| and all software necessary to run simulations.
+
+.. note::
+
+    If you want to download and modify the |EMOD_s| source code and build the |exe_s|
+    yourself, see :doc:`dev-install-overview`.
 
 .. include:: ../reuse/testing-windows.txt
 

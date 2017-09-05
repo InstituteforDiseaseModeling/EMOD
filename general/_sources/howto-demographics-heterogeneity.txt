@@ -1,62 +1,40 @@
-===================================
-Configure heterogeneous populations
-===================================
+=============================================================
+Configure heterogeneity using individual and node properties
+=============================================================
 
-Demographics files are used to add heterogeneity to a population. You can define the initial
-distribution to use for age, prevalence, risk and more. You can also define values for
-accessibility, age, geography, risk, and other properties and assign individuals to groups based on
-those property values. This topic describes how to configure the population distribution and define
-heterogeneous groups.
+Demographics files can be used to add heterogeneity to a population. You can define property values
+for accessibility, age, geography, risk, and other properties and assign these values to individuals
+or nodes in the simulation. For more information about the parameters and structure of demographics
+files, see :doc:`parameter-demographics`.
 
-After you set up the groups, you may want to add more parameters to the :term:`demographics file` to
-configure how individuals transition into and out of groups, how transmission occurs between
-different groups, or how to target interventions to specific groups. For more information about the
-parameters and structure of demographics files, see :doc:`parameter-demographics`.
+These properties are most commonly used to target (or avoid targeting) particular nodes or individuals
+with interventions. For example, you might want to put individuals into different age bins and then target
+interventions to individuals in a particular age bin. Another common use is to configure treatment
+coverage to be higher for nodes that are easy to access and lower for nodes that are difficult to
+access. For more information on targeting interventions to particular nodes or individuals, see
+:doc:`howto-targeted-interventions`.
 
-For example, you might want to divide a population up into different groups based on age so you can
-target interventions to individuals in a particular age range. Another common use is to configure
-treatment coverage to be higher for individuals in areas that are easy to access and lower for
-individuals in areas that are difficult to access. For more information on targeting interventions
-to particular groups, see :doc:`howto-targeted-interventions`. For information on how tp configure
-disease transmission among groups created with any of the properties, see :doc:`howto-hint`.
+For the generic simulation type, you can also configure heterogeneous transmission between
+individuals with different property values. For more information, see :doc:`howto-hint`. For other
+simulation types, transmission is configured using mechanistic parameter settings.
 
-.. include:: ../reuse/demographic-nodes.txt
+This topic describes how to define individual properties and assign different values to individuals
+in a simulation. However, with the exception of setting up age bins, you can use the same process to
+configure heterogeneity using **NodeProperties**. To see all individual and node property parameters,
+see :ref:`demo-properties`.
 
-Define the initial population distribution
-==========================================
 
-You can configure attribute distributions in the population using the **IndividualAttributes**
-parameter in the demographics file. The initial value for an individual is a randomly selected value
-from the distribution. For example, if you use a uniform distribution to initialize age, the initial
-ages of individuals in the simulation will be evenly distributed between some minimum and maximum
-value.
-
-#.  In the demographics file, add the **IndividualAttributes** parameter and assign it an empty
-    JSON object. If you want the groups to apply to all nodes, add it in the **Defaults** section;
-    if you want the groups to be applied to specific nodes, add it to the **Nodes** section.
-
-#.  Within this object, add the parameters for different attributes (age, prevalence, etc.) and assign
-    values for available distributions (constant, Gaussian, etc.) See :doc:`parameter-demographics`
-    for more information about the available parameters.
-
-The example below shows how to set up the age distribution for all nodes in a simulation.
-
-.. literalinclude:: ../json/howto-demographics-attributes.json
-
-.. TBD we really need to provide more information about how this works as part of rewriting the
-.. demographics reference after finishing the migration to Sphinx
-
-Create groups for properties other than age
+Create individual properties other than age
 ===========================================
 
-Assigning individuals to different groups based on properties, such as accessibility or risk, uses
+Assigning property values, such as accessibility or risk, to individuals uses
 the **IndividualProperties** parameter in the demographics file. See :doc:`parameter-demographics`
-for a list of supported properties. The values you assign to properties are use-defined and can
+for a list of supported properties. The values you assign to properties are user-defined and can
 be applied to individuals in all nodes or only in particular nodes in a simulation.
 
 #.  In the demographics file, add the **IndividualProperties** parameter and set it to an empty array.
-    If you want the groups to apply to all nodes, add it in the **Defaults** section; if you want the
-    groups to be applied to specific nodes, add it to the **Nodes** section.
+    If you want the values to apply to all nodes, add it in the **Defaults** section; if you want the
+    values to be applied to specific nodes, add it to the **Nodes** section.
 
 #.  In the array, add an empty JSON object. Within it, do the following:
 
@@ -66,40 +44,41 @@ be applied to individuals in all nodes or only in particular nodes in a simulati
         be assigned to individuals. You can define any value here.
 
     #.  Add the **Initial_Distribution** parameter and set it to an array of numbers that add
-        up to 1. This configures the initial distribution of individuals assigned to each of the groups.
+        up to 1. This configures the initial distribution of the values assigned to individuals
+        in one or all nodes.
 
-    #.  To define how individuals transition into and a out of each group, add the **Transitions**
+    #.  To define how individuals transition from one property value to another, add the **Transitions**
         parameter and set it to it an empty array. Within it, do the following:
 
-            #.  Add an empty JSON object and set parameters that define the group that individuals
-                transition from, the group they transition to, the event that triggers the transition,
+            #.  Add an empty JSON object and set parameters that define the value that individuals
+                transition from, the value they transition to, the event that triggers the transition,
                 the probability of transition, and more. See doc:`parameter-demographics` for a
                 list of supported **Transitions** parameters and values.
 
-#.  If you want to add another property and associated groups, add a new JSON object in the
+#.  If you want to add another property and associated values, add a new JSON object in the
     **IndividualProperties** array as above.
 
-    .. note::
+.. note::
 
-        Multiple properties must be defined in one file. They can be defined in either the base
-        layer demographics file or an overlay file, but they cannot be split between the files.
-        The maximum number of property types that can be added is two.
+    Multiple properties must be defined in one file. They can be defined in either the base
+    layer demographics file or an overlay file, but they cannot be split between the files.
+    The maximum number of property types that can be added is two.
 
 .. TBD is this still accurate or can you add more groups?
 
-Create groups for age ranges
-============================
+Create properties for age ranges
+================================
 
-Creating groups based on age ranges works a little differently than creating groups based on other
-properties. **Age_Bin** is tied to the simulated age of an individual rather than being an
-independent property. Some of its characteristics, such as initial distribution and transitions, are
-dependent on information from the demographics file and |EMOD_s| that manages individual aging
-during the simulation. Because of this, the parameters and structures in **IndividualProperties**
-are slightly different.
+Creating properties based on age ranges works a little differently than other properties.
+**Age_Bin** is tied to the simulated age of an individual rather than being an independent property.
+Some of its characteristics, such as initial distribution and transitions, are dependent on
+information from the demographics file and |EMOD_s| that manages individual aging during the
+simulation. The **Transitions** array is not required and other parameters and structures in
+**IndividualProperties** are slightly different.
 
 #.  In the demographics file, add the **IndividualProperties** parameter and set it to an empty array.
-    If you want the groups to apply to all nodes, add it in the **Defaults** section; if you want the
-    groups to be applied to specific nodes, add it to the **Nodes** section.
+    If you want the values to apply to all nodes, add it in the **Defaults** section; if you want the
+    values to be applied to specific nodes, add it to the **Nodes** section.
 
 #.  In the array, add an empty JSON object. Within it, do the following:
 
@@ -110,13 +89,9 @@ are slightly different.
         the age bins, in years. The first number must always be 0 (zero) to indicate the age at
         birth and the last number must be -1 to indicate the maximum age in the simulation.
 
-    #.  To define how individuals transition into and a out of each group, add the **Transitions**
-        parameter and set it to it an empty array. Aging during the simulation will be handled
-        by |EMOD_s|.
 
-
-The example below shows how to set up several groups based on disease risk and physical place, and
-how to move individuals among these groups. It also defines three age bins: 0 to 5 years,
+The example below shows how to set up several property values based on disease risk and physical place, and
+how to move individuals among these values. It also defines three age bins: 0 to 5 years,
 older than 5 to 13, and older than 13 to the maximum age.
 
 .. literalinclude:: ../json/howto-demographics-groups.json

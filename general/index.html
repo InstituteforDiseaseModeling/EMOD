@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                2.10
+                2.13
               </div>
             
           
@@ -104,6 +104,7 @@
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
@@ -168,8 +169,7 @@ share this modeling software with the research community to advance the understa
 dynamics.</p>
 <div class="section" id="documentation-structure">
 <h2>Documentation structure<a class="headerlink" href="#documentation-structure" title="Permalink to this headline">¶</a></h2>
-<p>IDM recently separated the documentation into a training set that walks through tutorials that
-provide an introduction to disease modeling and disease-specific sets that provide guidance for
+<p>IDM recently separated the documentation into disease-specific sets that provide guidance for
 researchers modeling particular diseases. For example, this documentation set includes general
 installation and usage instructions for the generic disease model, which can be used to model
 a variety of diseases.</p>
@@ -195,10 +195,31 @@ the EMOD source code to add more functionality to the model.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial1SIR.html">Generic 1: SIR - Simple single-node outbreak</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial2SIR.html">Generic 2: SIR - Targeted vaccination campaigns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial3SEIR.html">Generic 3: SIER - Incubation periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial4SEIR.html">Generic 4: SEIR - Vital dynamics (birth and death)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial5SIRS.html">Generic 5: SIRS - Waning immunity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial6SEIRS.html">Generic 6: SEIRS - Disease-specific mortality and endemics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial7SI.html">Generic 7: SI - Lifelong infection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial8SIS.html">Generic 8: SIS - Reoccurring infections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial9Density.html">Generic 9: Density scaling of infectivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial-10Zoonosis.html">Generic 10: Animal reservoir zoonosis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hint-tutorial-overview.html">Heterogeneous Intra-Node Transmission (HINT) tutorials</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="hint-tutorial-scenario1.html">HINT 1: Risk groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hint-tutorial-scenario2.html">HINT 2: School closure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hint-tutorial-scenario3.html">HINT 3: Age and accessibility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hint-tutorial-scenario4.html">HINT 4: Washington state pertussis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hint-tutorial-scenario5.html">HINT 5: Seattle commuting</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="howto-inputs.html">Use input data files</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="howto-demographics-overlay.html">Use demographics overlay files</a></li>
-<li class="toctree-l3"><a class="reference internal" href="howto-demographics-heterogeneity.html">Configure heterogeneous populations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="howto-demographics-heterogeneity.html">Configure heterogeneity using individual and node properties</a></li>
 <li class="toctree-l3"><a class="reference internal" href="howto-hint.html">Configure heterogeneous disease transmission</a></li>
 </ul>
 </li>
@@ -230,14 +251,14 @@ the EMOD source code to add more functionality to the model.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="parameter-demographics.html">Demographics file structure and parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameter-demographics.html">Demographics parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="parameter-configuration.html">Configuration parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="parameter-campaign.html">Campaign parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="file-inputs.html">Input data file structure</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="parameter-demographics.html">Demographics file structure and parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter-demographics.html">Demographics parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="file-climate.html">Climate file structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="file-migration.html">Migration file structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="file-load-balancing.html">Load-balancing file structure</a></li>
@@ -347,6 +368,7 @@ the EMOD source code to add more functionality to the model.</p>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
       <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
 
   
 

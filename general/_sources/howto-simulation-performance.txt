@@ -34,20 +34,21 @@ Scaling and sampling
 **Simulation_Duration**
     Obviously, simulating a shorter timespan will take less processing time. However, the
     processing time is often driven by the number of infections or immune updates, so running a
-    simulation after all infections have cleared may not increase processing time much.
+    simulation after all infections have cleared may not increase processing time much. For more
+    information, see :ref:`config-setup` parameters.
 **Individual_Sampling_Type** and **Base_Individual_Sample_Rate**
     Instead of the default **Individual_Sampling_Type** setting of "TRACK_ALL", you can speed up
-    performance by using "FIXED_SAMPLING" with the **Base_Individual_Sample_Rate** set to less than
-    one. For example, a simulation with a population of 1 million and sample rate of 0.1 would
-    simulate 100,000 individuals, with each given a weight of 10. There are also sampling parameters
-    that sample the population at different rates by age and by the population of the node.
-
-    However, you should be especially careful not to undersample simulations to the point where they
-    are overly sensitive to rare stochastic events.
+    performance by sampling such that each individual object represents more than one person. For
+    example, a simulation with a population of 1 million and sample rate of 0.1 would simulate
+    100,000 individuals, with each given a weight of 10.Sampling can be fixed at a particular rate
+    or can adapt the rate based on certain criteria, such as age or immune state. However, you
+    should be especially careful not to undersample simulations to the point where they are overly
+    sensitive to rare stochastic events. For more information, see :ref:`config-sampling`
+    parameters.
 **Population_Scale_Type** and **Base_Population_Scale_Factor**
     Alternatively, you can simply reduce the total population of the simulation using
     **Population_Scale_Type** set to "FIXED_SCALING" and **Base_Population_Scale_Factor** set to
-    less than one.
+    less than one. For more information, see :ref:`config-scalars` parameters.
 
 Processing
 ----------

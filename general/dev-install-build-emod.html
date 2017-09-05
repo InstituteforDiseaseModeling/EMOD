@@ -81,7 +81,7 @@
             
             
               <div class="version">
-                2.10
+                2.13
               </div>
             
           
@@ -106,6 +106,7 @@
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
@@ -189,10 +190,16 @@ build only the release version without extensive debugging information.</p>
 <div class="section" id="build-a-monolithic-exe-s-with-visual-studio">
 <h2>Build a monolithic Eradication.exe with Visual Studio<a class="headerlink" href="#build-a-monolithic-exe-s-with-visual-studio" title="Permalink to this headline">¶</a></h2>
 <p>You can use the Microsoft Visual Studio solution file in the EMOD source code repository to
-build the monolithic version of the EMOD executable (Eradication.exe), which can be either a release or debug build.</p>
+build the monolithic version of the EMOD executable (Eradication.exe), which can be either a release or debug build. Visual Studio 2015 (Professional, Premium, or Ultimate)
+is the currently supported version.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Visual Studio creates a debug build by default. However, you must use a release build to
+commission simulations to COMputational Platform Service (COMPS); attempting to use a debug build will result in an error.</p>
+</div>
 <ol class="arabic simple">
 <li>Open the EradicationKernel solution in Visual Studio.</li>
-<li>From the ** Solution Configurations** ribbon, select Debug or Release.</li>
+<li>From the <strong>Solution Configurations</strong> ribbon, select <strong>Debug</strong> or <strong>Release</strong>.</li>
 <li>On the <strong>Build</strong> menu, select <strong>Build Solution</strong>.</li>
 </ol>
 <p>Eradication.exe will be in a subdirectory of the Eradication directory.</p>
@@ -202,7 +209,13 @@ build the monolithic version of the EMOD executable (Eradication.exe), which can
 <p>SCons is a software construction tool that is an alternative to the well-known &#8220;Make&#8221; build tool. It
 is implemented in Python and the SCons configuration files, SConstruct and SConscript, are executed
 as Python scripts. This allows for greater flexibility and extensibility, such as the creation of
-custom SCons abilities just for EMOD. For more information on Scons, see <a class="reference external" href="http://www.scons.org/">www.scons.org</a>.</p>
+custom SCons abilities just for EMOD. For more information on Scons, see <a class="reference external" href="http://www.scons.org/">www.scons.org</a>. SCons 2.5.0
+is the currently supported version.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">EMOD will not build if you use the <code class="docutils literal"><span class="pre">--Debug</span></code> flag. To build a debug version, you must
+use Visual Studio.</p>
+</div>
 <ol class="arabic">
 <li><p class="first">Open a command window.</p>
 </li>
@@ -295,6 +308,7 @@ For example:</p>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
       <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
 
   
 

@@ -1,0 +1,704 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>What’s new &mdash; HIV Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within HIV Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="HIV Model  documentation" href="index.html"/>
+        <link rel="next" title="EMOD installation" href="install-overview.html"/>
+        <link rel="prev" title="Welcome to IDM HIV modeling" href="index.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> HIV Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HIV-disease-overview.html">HIV disease overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HIV-model-overview.html">HIV model overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HIV-IDM.html">HIV research at IDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">HIV Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">HIV</a> &raquo;</li>
+      
+    <li>What’s new</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="whats-new">
+<h1>What’s new<a class="headerlink" href="#whats-new" title="Permalink to this headline">¶</a></h1>
+<p>This topic describes new functionality and breaking changes for recently released versions of
+Epidemiological MODeling software (EMOD).</p>
+<div class="section" id="emod-s-v2-13">
+<h2>EMOD v2.13<a class="headerlink" href="#emod-s-v2-13" title="Permalink to this headline">¶</a></h2>
+<p>The EMOD v2.13 release includes many new features for all supported simulation types.</p>
+<div class="section" id="new-configuration-parameters">
+<h3>New configuration parameters<a class="headerlink" href="#new-configuration-parameters" title="Permalink to this headline">¶</a></h3>
+<p>For the HIV simulation type, the following new configuration parameters are available:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Custom_Reports_Filename</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>UNINITIALIZED STRING</td>
+<td>The name of the file containing custom report configuration parameters. Omitting this parameter or setting it to RunAllCustomReports will load all reporters found that are valid for the given simulation type. The file must be in JSON format.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>  
+    <span class="nt">&quot;Custom_Reports_Filename&quot;</span><span class="p">:</span> <span class="s2">&quot;custom_reports.json&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Heterogeneous_Infectiousness_LogNormal_Scale</td>
+<td>float</td>
+<td>0</td>
+<td>10</td>
+<td>0</td>
+<td>Scale parameter of a log normal distribution that governs an infectiousness multiplier. The multiplier represents heterogeneity in infectivity and adjusts <strong>Base_Infectivity</strong>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Heterogeneous_Infectiousness_LogNormal_Scale&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Incubation_Period_Log_Mean</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>6</td>
+<td>The mean of log normal for the incubation period distribution. <strong>Incubation_Period_Distribution</strong> must be set to LOG_NORMAL_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Incubation_Period_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;LOG_NORMAL_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Incubation_Period_Log_Mean&quot;</span><span class="p">:</span> <span class="mf">5.758</span><span class="p">,</span>
+    <span class="nt">&quot;Incubation_Period_Log_Width&quot;</span><span class="p">:</span> <span class="mf">0.27</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Incubation_Period_Log_Width</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>1</td>
+<td>The log width of log normal for the incubation period distribution. <strong>Incubation_Period_Distribution</strong> must be set to LOG_NORMAL_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Incubation_Period_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;LOG_NORMAL_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Incubation_Period_Log_Mean&quot;</span><span class="p">:</span> <span class="mf">5.758</span><span class="p">,</span>
+    <span class="nt">&quot;Incubation_Period_Log_Width&quot;</span><span class="p">:</span> <span class="mf">0.27</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Infectivity_Exponential_Baseline</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>The scale factor applied to <strong>Base_Infectivity</strong> at the beginning of a simulation, before the infectivity begins to grow exponentially. <strong>Infectivity_Scale_Type</strong> must be set to EXPONENTIAL_FUNCTION_OF_TIME.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Infectivity_Exponential_Baseline&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Exponential_Delay&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Exponential_Rate&quot;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Scale_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;EXPONENTIAL_FUNCTION_OF_TIME&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Infectivity_Exponential_Delay</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>0</td>
+<td>The number of days before infectivity begins to ramp up exponentially. <strong>Infectivity_Scale_Type</strong> must be set to EXPONENTIAL_FUNCTION_OF_TIME.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Infectivity_Exponential_Baseline&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Exponential_Delay&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Exponential_Rate&quot;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Scale_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;EXPONENTIAL_FUNCTION_OF_TIME&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Infectivity_Exponential_Rate</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>0</td>
+<td>The daily rate of exponential growth to approach to full infectivity after the delay set by <strong>Infectivity_Exponential_Delay</strong> has passed. <strong>Infectivity_Scale_Type</strong> must be set to EXPONENTIAL_FUNCTION_OF_TIME.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Infectivity_Exponential_Rate&quot;</span><span class="p">:</span> <span class="mi">45</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Memory_Usage_Halting_Threshold_Working_Set_MB</td>
+<td>integer</td>
+<td>0</td>
+<td>1.00E+06</td>
+<td>8000</td>
+<td>The maximum size (in MB) of working set memory before the system throws an exception and halts.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Memory_Usage_Halting_Threshold_Working_Set_MB&quot;</span><span class="p">:</span> <span class="mi">4000</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Memory_Usage_Warning_Threshold_Working_Set_MB</td>
+<td>integer</td>
+<td>0</td>
+<td>1.00E+06</td>
+<td>7000</td>
+<td>The maximum size (in MB) of working set memory before memory usage statistics are written to the log regardless of log level.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Memory_Usage_Warning_Threshold_Working_Set_MB&quot;</span><span class="p">:</span> <span class="mi">3500</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Report_HIV_ByAgeAndGender_Add_Relationships</td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Sets whether or not the ReportHIVByAgeAndGender.csv output file will contain data by relationship type on population currently in a relationship and ever in a relationship.  A sum of those in two or more partnerships and a sum of the lifetime number of relationships in each bin will be included.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Report_HIV_ByAgeAndGender_Add_Relationships&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Report_HIV_ByAgeAndGender_Add_Transmitters</td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>When Set to to true (1), the &#8220;transmitters&#8221; column is included in the output report.  For a given row, &#8220;Transmitters&#8221; indicates how many people that have transmitted the disease meet the specifications of that row.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Report_HIV_ByAgeAndGender_Add_Transmitters&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Report_HIV_ByAgeAndGender_Collect_Age_Bins_Data</td>
+<td>array of floats</td>
+<td>-3.40282e+38</td>
+<td>3.40282e+38</td>
+<td>1</td>
+<td><p class="first">This array of floats allows the user to define the age bins used to stratify the report by age. Each value defines the minimum value of that bin, while the next value defines the maximum value of the bin. The maximum number of age bins is 100. 
+For example, if you had:</p>
+<p>&#8220;Report_HIV_ByAgeAndGender_Collect_Age_Bins_Data&#8221; : [ 0, 10, 20, 50, 100 ]</p>
+<p>The report would have the following age bins: From 0 up to (but not including) 10, from 10 up to (but not including) 20, from 20 up to (but not including) 50, from 50 up to (but not including) 100, and 100 and over.</p>
+<p class="last">If no values are specified in the array, then the output report will have no age binning.</p>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Report_HIV_ByAgeAndGender_Collect_Age_Bins_Data&quot;</span> <span class="p">:</span> <span class="p">[</span>
+        <span class="mi">0</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span>  <span class="mi">3</span><span class="p">,</span>  <span class="mi">4</span><span class="p">,</span>  <span class="mi">5</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span>  <span class="mi">7</span><span class="p">,</span>  <span class="mi">8</span><span class="p">,</span>  <span class="mi">9</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span>
+        <span class="mi">20</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span>
+        <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span> <span class="mi">39</span><span class="p">,</span>
+        <span class="mi">40</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">43</span><span class="p">,</span> <span class="mi">44</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">46</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">54</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="mi">57</span><span class="p">,</span> <span class="mi">58</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">62</span><span class="p">,</span> <span class="mi">63</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">65</span><span class="p">,</span> <span class="mi">66</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">68</span><span class="p">,</span> <span class="mi">69</span><span class="p">,</span>
+        <span class="mi">70</span><span class="p">,</span> <span class="mi">71</span><span class="p">,</span> <span class="mi">72</span><span class="p">,</span> <span class="mi">73</span><span class="p">,</span> <span class="mi">74</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">76</span><span class="p">,</span> <span class="mi">77</span><span class="p">,</span> <span class="mi">78</span><span class="p">,</span> <span class="mi">79</span><span class="p">,</span>
+        <span class="mi">80</span><span class="p">,</span> <span class="mi">81</span><span class="p">,</span> <span class="mi">82</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">84</span><span class="p">,</span> <span class="mi">85</span><span class="p">,</span> <span class="mi">86</span><span class="p">,</span> <span class="mi">87</span><span class="p">,</span> <span class="mi">88</span><span class="p">,</span> <span class="mi">89</span><span class="p">,</span>
+        <span class="mi">90</span><span class="p">,</span> <span class="mi">91</span><span class="p">,</span> <span class="mi">92</span><span class="p">,</span> <span class="mi">93</span><span class="p">,</span> <span class="mi">94</span><span class="p">,</span> <span class="mi">95</span><span class="p">,</span> <span class="mi">96</span><span class="p">,</span> <span class="mi">97</span><span class="p">,</span> <span class="mi">98</span><span class="p">,</span> <span class="mi">99</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Report_HIV_ByAgeAndGender_Collect_Gender_Data</td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Controls whether or not the report is stratified by gender; to enable gender stratification, set to true (1).</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Report_HIV_ByAgeAndGender_Collect_Gender_Data&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Report_HIV_ByAgeAndGender_Collect_Intervention_Data</td>
+<td>array of strings</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>Stratifies the population by adding a column of 0s and 1s depending on whether or not the person has the indicated intervention. This only works for interventions that remain with a person for a period of time, such as ART, VMMC, vaccine/PrEP, or a delay state in the cascade of care. You can name the intervention by adding a parameter <strong>Intervention_Name</strong> in the campaign file, and then give this parameter the same <strong>Intervention_Name</strong>. This allows you to have multiple types of vaccines, VMMCs, etc., but to only stratify on the type you want.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Report_HIV_ByAgeAndGender_Collect_Intervention_Data&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;ART_Intervention&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;PrEP_Intervention&quot;</span> 
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Serialization_Time_Steps</td>
+<td>array of integers</td>
+<td>0</td>
+<td>2.15E+09</td>
+<td>&nbsp;</td>
+<td>The list of time steps after which to save the serialized state. 0 (zero) indicates the initial state before simulation, n indicates after the nth time step. By default, no serialized state is saved.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Serialization_Time_Steps&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mi">0</span><span class="p">,</span> 
+        <span class="mi">10</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Serialized_Population_Filenames</td>
+<td>array of strings</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>Array of filenames with serialized population data. The number of filenames must match the number of cores used for the simulation. The file must be in .dtk format.</td>
+<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Serialized_Population_Filenames&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;state-00010.dtk&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="last"></p>
+</td>
+</tr>
+<tr class="row-even"><td>Serialized_Population_Path</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>.</td>
+<td>The root path for the serialized population files.</td>
+<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Serialized_Population_Path&quot;</span><span class="p">:</span> <span class="s2">&quot;../00_Generic_Version_1_save/output&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>To view all available configuration parameters, see <a class="reference internal" href="parameter-configuration.html"><span class="doc">Configuration parameters</span></a>.</p>
+</div>
+<div class="section" id="new-demographics-parameters">
+<h3>New demographics parameters<a class="headerlink" href="#new-demographics-parameters" title="Permalink to this headline">¶</a></h3>
+<p>In all simulation types, you can now assign properties like risk or quality of care to nodes using
+<strong>NodeProperties</strong>, which are configured much like <strong>IndividualProperties</strong>. In addition, a new
+property type is available for both nodes and individuals called <strong>InterventionStatus</strong>, which is
+used by the campaign file to distribute interventions based on the other interventions an individual
+or node has received. This property type was previously available only for individuals in the HIV
+simulation type and was known as the <strong>CascadeState</strong>. The relevant campaign parameters are
+described in the next section.</p>
+<p>For more information, see the table below:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>NodeProperties</td>
+<td>array of objects</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>An array that contains parameters that add properties to nodes in a simulation. For example, you can define values for intervention status, risk, and other properties and assign values to different nodes.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Risk&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HIGH&quot;</span><span class="p">,</span> <span class="s2">&quot;MEDIUM&quot;</span><span class="p">,</span> <span class="s2">&quot;LOW&quot;</span><span class="p">],</span>
+        <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Property</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td><p class="first">The individual or node property type for which you will assign arbitrary values to create groups. You can then move individuals or nodes into or out of different groups or target interventions to particular groups. Possible values are:</p>
+<dl class="last docutils">
+<dt>Age_Bin</dt>
+<dd>Assign individuals to age bins. Use with <strong>Age_Bin_Edges_In_Years</strong>. Cannot be used with <strong>NodeProperties</strong>.</dd>
+<dt>Accessibility</dt>
+<dd>Tag individuals or nodes based on their accessibility.</dd>
+<dt>Geographic</dt>
+<dd>Tag individuals or nodes based on geographic characteristics.</dd>
+<dt>HasActiveTB</dt>
+<dd>Tag individuals or nodes based on active TB status. Typically used only with HIV ART staging interventions.</dd>
+<dt>InterventionStatus</dt>
+<dd>Tag individuals or nodes based on intervention status, so that receiving an intervention can affect how other interventions are distributed. Use with <strong>Disqualifying_Properties</strong> and <strong>New_Property_Value</strong> in the campaign file.</dd>
+<dt>Place</dt>
+<dd>Tag individuals or nodes based on place.</dd>
+<dt>Risk</dt>
+<dd>Tag individuals or nodes based on disease risk.</dd>
+<dt>QualityofCare</dt>
+<dd>Tag individuals or nodes based on the quality of medical care.</dd>
+</dl>
+</td>
+<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Age_Bin&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Age_Bin_Edges_In_Years&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">-1</span> <span class="p">]</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span> <span class="s2">&quot;RECENT_SPRAY&quot;</span><span class="p">],</span>
+        <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="new-campaign-parameters">
+<h3>New campaign parameters<a class="headerlink" href="#new-campaign-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The addition of <strong>NodeProperties</strong> in the demographics file also necessitated the addition of
+<strong>Node_Property_Restrictions</strong> to control how interventions are distributed based on the
+property values assigned to each node.</p>
+<p>The new property type <strong>InterventionStatus</strong> also necessitated the new campaign parameters
+<strong>Disqualifying_Properties</strong> and <strong>New_Property_Value</strong> to control how interventions are distributed
+based on the interventions already received. <strong>Disqualifying_Properties</strong> prevents an intervention
+from being distributed to individuals or nodes with certain property values. <strong>New_Property_Value</strong>
+updates the property value after they receive an intervention. For example, a household may be
+ineligible for clinical treatment for a length of time if they already received treatment during a
+drug campaign.  These campaign parameters were previously only available for individuals in the HIV
+simulation type and were known as <strong>Abort_States</strong> and <strong>Valid_Cascade_States</strong></p>
+<p>A new <strong>CommunityHealthWorkerEventCoordinator</strong> was added to set characteristics such as size of
+shipment, days between shipments, or maximum treatments distributed per day when interventions are
+distributed by community health workers.</p>
+<p>Several new parameters were added to control effect of vaccines and disease exposure on immunity.
+For example, whether the effect of receiving more than one vaccine is multiplicative or additive or
+if there are immune boosting or priming effects.</p>
+<p>Detailed descriptions for each of the new campaign parameters will be added shortly.</p>
+</div>
+</div>
+<div class="section" id="emod-s-v2-10">
+<h2>EMOD v2.10<a class="headerlink" href="#emod-s-v2-10" title="Permalink to this headline">¶</a></h2>
+<p>The EMOD v2.10 release includes new and updated malaria configuration, demographic, and
+intervention parameters. With this release, EMOD now uses Visual Studio 2015, Boost 1.61.0, and SCons 2.5.0.</p>
+<div class="section" id="emod-s-software-upgrades">
+<h3>EMOD software upgrades<a class="headerlink" href="#emod-s-software-upgrades" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>Microsoft Visual Studio</dt>
+<dd>EMOD now uses Visual Studio 2015, and Visual Studio 2012 is no longer supported. The Visual Studio solution
+file in the EMOD source, EradicationKernel, has been updated for Visual Studio 2015. If you have
+custom reporter EMODules (DLLS) that were built using Visual Studio 2012, you will need to rebuild them
+with Visual Studio 2015; otherwise, your simulation will crash when it attempts to load the DLLs built
+by Visual Studio 2012.</dd>
+<dt>Boost</dt>
+<dd>EMOD now supports using Boost 1.61.0. If you continue to use Boost 1.51.0, you will get the
+following warning, &#8220;Unknown compiler version - please run the configure tests and report the
+results.&#8221;</dd>
+<dt>Environment variables</dt>
+<dd>To make it easier to use Boost and Python with Visual Studio, IDM paths have been created.
+These two paths, IDM_BOOST_PATH and IDM_PYTHON_PATH, need to be added to your  environment
+variables by using either the <strong>setx</strong> command from a command line or the Windows System
+Properties panel.</dd>
+<dt>SCons</dt>
+<dd>EMOD was tested using SCons 2.5.0, as it supports Visual Studio 2015. If you do not add the new
+IDM environment variables for Boost and Python, you will need to modify the Boost and
+Python paths in the SConstruct file in the EMOD root directory.</dd>
+<dt>Python</dt>
+<dd>EMOD was tested with Python 2.7.11 and 2.7.12. If you are building the EMOD executable (Eradication.exe) and have
+an earlier version of Python (for example, 2.7.2), you will see the following warning message on some
+files, &#8220;c:python27includepymath.h(22): warning C4273: &#8216;round&#8217;: inconsistent dll linkage.&#8221;
+Upgrade to Python 2.7.11 or 2.7.12 to get rid of the warning message.</dd>
+</dl>
+<p>For more information, see <a class="reference internal" href="dev-install-prerequisites.html"><span class="doc">Prerequisites for working with EMOD source code</span></a>.</p>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="install-overview.html" class="btn btn-neutral float-right" title="EMOD installation" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Welcome to IDM HIV modeling" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

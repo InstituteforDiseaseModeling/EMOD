@@ -81,7 +81,7 @@
             
             
               <div class="version">
-                2.10
+                2.13
               </div>
             
           
@@ -175,8 +175,7 @@
   <div class="section" id="prerequisites-for-working-with-emod-s-source-code">
 <h1>Prerequisites for working with EMOD source code<a class="headerlink" href="#prerequisites-for-working-with-emod-s-source-code" title="Permalink to this headline">¶</a></h1>
 <p>This section describes the software packages or utilities must be installed to build the EMOD executable (Eradication.exe) or
-Eradication binary from source code and run regression tests. It assumes you have already installed the
-required software to run EMOD simulations. If you have not, see <a class="reference internal" href="install-overview.html"><span class="doc">EMOD installation</span></a>.</p>
+Eradication binary from source code and run regression tests.</p>
 <p>If additional software is needed for the prerequisite software due to your specific environment, the
 installer for the prerequisite software should provide instructions. For example, if Microsoft MPI v8
 requires additional Visual C++ redistributable packages, the installer will display that
@@ -191,10 +190,16 @@ from the makers of those software packages and their user communities.</p>
 <h2>Install prerequisites for building Eradication.exe<a class="headerlink" href="#install-prerequisites-for-building-exe-s" title="Permalink to this headline">¶</a></h2>
 <p>The following software packages are required to build the Eradication.exe from EMOD source code on
 Windows 10, Windows Server 12, and Windows HPC Server 12 (64-bit).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You must also have already installed the required software to run EMOD simulations.
+If you have not, see <a class="reference internal" href="install-overview.html"><span class="doc">EMOD installation</span></a>.</p>
+</div>
 <div class="section" id="visual-studio">
 <h3>Visual Studio<a class="headerlink" href="#visual-studio" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic">
-<li><p class="first">Purchase a license from Microsoft or use an MSDN subscription to install Visual Studio 2015 (Professional, Premium, or Ultimate).</p>
+<li><p class="first">Purchase a license from Microsoft or use an MSDN subscription to install Visual Studio 2015 (Professional, Premium, or Ultimate). Other versions
+of Visual Studio are not supported.</p>
 <p>While you can use a free copy of Visual Studio Community, IDM does not test on or support this version.</p>
 </li>
 <li><p class="first">Select the Visual C++ tools for Windows desktop during installation.</p>
@@ -243,7 +248,7 @@ other software packages.</p>
 <li>Unpack the libraries to the location of your choice.</li>
 <li>From <strong>Control Panel</strong>, select <strong>Advanced system settings</strong>, and then click
 <strong>Environment Variables</strong>.</li>
-<li>Add a new variable called IMD_BOOST_PATH and set it to the directory where you installed
+<li>Add a new variable called IDM_BOOST_PATH and set it to the directory where you installed
 Boost, and then click <strong>OK</strong>.</li>
 </ol>
 </div>
@@ -414,6 +419,7 @@ algorithms.</p>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
       <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
 
   
 

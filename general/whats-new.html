@@ -80,7 +80,7 @@
             
             
               <div class="version">
-                2.10
+                2.13
               </div>
             
           
@@ -105,6 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
@@ -165,9 +166,319 @@
 <h1>What’s new<a class="headerlink" href="#whats-new" title="Permalink to this headline">¶</a></h1>
 <p>This topic describes new functionality and breaking changes for recently released versions of
 Epidemiological MODeling software (EMOD).</p>
+<div class="section" id="emod-s-v2-13">
+<h2>EMOD v2.13<a class="headerlink" href="#emod-s-v2-13" title="Permalink to this headline">¶</a></h2>
+<p>The EMOD v2.13 release includes many new features for all supported simulation types.</p>
+<div class="section" id="new-configuration-parameters">
+<h3>New configuration parameters<a class="headerlink" href="#new-configuration-parameters" title="Permalink to this headline">¶</a></h3>
+<p>For the generic simulation type, the following new configuration parameters are available:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Custom_Reports_Filename</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>UNINITIALIZED STRING</td>
+<td>The name of the file containing custom report configuration parameters. Omitting this parameter or setting it to RunAllCustomReports will load all reporters found that are valid for the given simulation type. The file must be in JSON format.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>  
+    <span class="nt">&quot;Custom_Reports_Filename&quot;</span><span class="p">:</span> <span class="s2">&quot;custom_reports.json&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Incubation_Period_Log_Mean</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>6</td>
+<td>The mean of log normal for the incubation period distribution. <strong>Incubation_Period_Distribution</strong> must be set to LOG_NORMAL_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Incubation_Period_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;LOG_NORMAL_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Incubation_Period_Log_Mean&quot;</span><span class="p">:</span> <span class="mf">5.758</span><span class="p">,</span>
+    <span class="nt">&quot;Incubation_Period_Log_Width&quot;</span><span class="p">:</span> <span class="mf">0.27</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Incubation_Period_Log_Width</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>1</td>
+<td>The log width of log normal for the incubation period distribution. <strong>Incubation_Period_Distribution</strong> must be set to LOG_NORMAL_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Incubation_Period_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;LOG_NORMAL_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Incubation_Period_Log_Mean&quot;</span><span class="p">:</span> <span class="mf">5.758</span><span class="p">,</span>
+    <span class="nt">&quot;Incubation_Period_Log_Width&quot;</span><span class="p">:</span> <span class="mf">0.27</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Infectivity_Exponential_Baseline</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>The scale factor applied to <strong>Base_Infectivity</strong> at the beginning of a simulation, before the infectivity begins to grow exponentially. <strong>Infectivity_Scale_Type</strong> must be set to EXPONENTIAL_FUNCTION_OF_TIME.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Infectivity_Exponential_Baseline&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Exponential_Delay&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Exponential_Rate&quot;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Scale_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;EXPONENTIAL_FUNCTION_OF_TIME&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Infectivity_Exponential_Delay</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>0</td>
+<td>The number of days before infectivity begins to ramp up exponentially. <strong>Infectivity_Scale_Type</strong> must be set to EXPONENTIAL_FUNCTION_OF_TIME.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Infectivity_Exponential_Baseline&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Exponential_Delay&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Exponential_Rate&quot;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Scale_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;EXPONENTIAL_FUNCTION_OF_TIME&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Infectivity_Exponential_Rate</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>0</td>
+<td>The daily rate of exponential growth to approach to full infectivity after the delay set by <strong>Infectivity_Exponential_Delay</strong> has passed. <strong>Infectivity_Scale_Type</strong> must be set to EXPONENTIAL_FUNCTION_OF_TIME.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Infectivity_Exponential_Rate&quot;</span><span class="p">:</span> <span class="mi">45</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Memory_Usage_Halting_Threshold_Working_Set_MB</td>
+<td>integer</td>
+<td>0</td>
+<td>1.00E+06</td>
+<td>8000</td>
+<td>The maximum size (in MB) of working set memory before the system throws an exception and halts.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Memory_Usage_Halting_Threshold_Working_Set_MB&quot;</span><span class="p">:</span> <span class="mi">4000</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Memory_Usage_Warning_Threshold_Working_Set_MB</td>
+<td>integer</td>
+<td>0</td>
+<td>1.00E+06</td>
+<td>7000</td>
+<td>The maximum size (in MB) of working set memory before memory usage statistics are written to the log regardless of log level.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Memory_Usage_Warning_Threshold_Working_Set_MB&quot;</span><span class="p">:</span> <span class="mi">3500</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Serialization_Time_Steps</td>
+<td>array of integers</td>
+<td>0</td>
+<td>2.15E+09</td>
+<td>&nbsp;</td>
+<td>The list of time steps after which to save the serialized state. 0 (zero) indicates the initial state before simulation, n indicates after the nth time step. By default, no serialized state is saved.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Serialization_Time_Steps&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mi">0</span><span class="p">,</span> 
+        <span class="mi">10</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Serialized_Population_Filenames</td>
+<td>array of strings</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>Array of filenames with serialized population data. The number of filenames must match the number of cores used for the simulation. The file must be in .dtk format.</td>
+<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Serialized_Population_Filenames&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;state-00010.dtk&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="last"></p>
+</td>
+</tr>
+<tr class="row-even"><td>Serialized_Population_Path</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>.</td>
+<td>The root path for the serialized population files.</td>
+<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Serialized_Population_Path&quot;</span><span class="p">:</span> <span class="s2">&quot;../00_Generic_Version_1_save/output&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>To view all available configuration parameters, see <a class="reference internal" href="parameter-configuration.html"><span class="doc">Configuration parameters</span></a>.</p>
+</div>
+<div class="section" id="new-demographics-parameters">
+<h3>New demographics parameters<a class="headerlink" href="#new-demographics-parameters" title="Permalink to this headline">¶</a></h3>
+<p>In all simulation types, you can now assign properties like risk or quality of care to nodes using
+<strong>NodeProperties</strong>, which are configured much like <strong>IndividualProperties</strong>. In addition, a new
+property type is available for both nodes and individuals called <strong>InterventionStatus</strong>, which is
+used by the campaign file to distribute interventions based on the other interventions an individual
+or node has received. This property type was previously available only for individuals in the HIV
+simulation type and was known as the <strong>CascadeState</strong>. The relevant campaign parameters are
+described in the next section.</p>
+<p>For more information, see the table below:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>NodeProperties</td>
+<td>array of objects</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>An array that contains parameters that add properties to nodes in a simulation. For example, you can define values for intervention status, risk, and other properties and assign values to different nodes.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Risk&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HIGH&quot;</span><span class="p">,</span> <span class="s2">&quot;MEDIUM&quot;</span><span class="p">,</span> <span class="s2">&quot;LOW&quot;</span><span class="p">],</span>
+        <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Property</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td><p class="first">The individual or node property type for which you will assign arbitrary values to create groups. You can then move individuals or nodes into or out of different groups or target interventions to particular groups. Possible values are:</p>
+<dl class="last docutils">
+<dt>Age_Bin</dt>
+<dd>Assign individuals to age bins. Use with <strong>Age_Bin_Edges_In_Years</strong>. Cannot be used with <strong>NodeProperties</strong>.</dd>
+<dt>Accessibility</dt>
+<dd>Tag individuals or nodes based on their accessibility.</dd>
+<dt>Geographic</dt>
+<dd>Tag individuals or nodes based on geographic characteristics.</dd>
+<dt>HasActiveTB</dt>
+<dd>Tag individuals or nodes based on active TB status. Typically used only with HIV ART staging interventions.</dd>
+<dt>InterventionStatus</dt>
+<dd>Tag individuals or nodes based on intervention status, so that receiving an intervention can affect how other interventions are distributed. Use with <strong>Disqualifying_Properties</strong> and <strong>New_Property_Value</strong> in the campaign file.</dd>
+<dt>Place</dt>
+<dd>Tag individuals or nodes based on place.</dd>
+<dt>Risk</dt>
+<dd>Tag individuals or nodes based on disease risk.</dd>
+<dt>QualityofCare</dt>
+<dd>Tag individuals or nodes based on the quality of medical care.</dd>
+</dl>
+</td>
+<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Age_Bin&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Age_Bin_Edges_In_Years&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">-1</span> <span class="p">]</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span> <span class="s2">&quot;RECENT_SPRAY&quot;</span><span class="p">],</span>
+        <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="new-campaign-parameters">
+<h3>New campaign parameters<a class="headerlink" href="#new-campaign-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The addition of <strong>NodeProperties</strong> in the demographics file also necessitated the addition of
+<strong>Node_Property_Restrictions</strong> to control how interventions are distributed based on the
+property values assigned to each node.</p>
+<p>The new property type <strong>InterventionStatus</strong> also necessitated the new campaign parameters
+<strong>Disqualifying_Properties</strong> and <strong>New_Property_Value</strong> to control how interventions are distributed
+based on the interventions already received. <strong>Disqualifying_Properties</strong> prevents an intervention
+from being distributed to individuals or nodes with certain property values. <strong>New_Property_Value</strong>
+updates the property value after they receive an intervention. For example, a household may be
+ineligible for clinical treatment for a length of time if they already received treatment during a
+drug campaign.  These campaign parameters were previously only available for individuals in the HIV
+simulation type and were known as <strong>Abort_States</strong> and <strong>Valid_Cascade_States</strong></p>
+<p>A new <strong>CommunityHealthWorkerEventCoordinator</strong> was added to set characteristics such as size of
+shipment, days between shipments, or maximum treatments distributed per day when interventions are
+distributed by community health workers.</p>
+<p>Several new parameters were added to control effect of vaccines and disease exposure on immunity.
+For example, whether the effect of receiving more than one vaccine is multiplicative or additive or
+if there are immune boosting or priming effects.</p>
+<p>Detailed descriptions for each of the new campaign parameters will be added shortly.</p>
+</div>
+</div>
 <div class="section" id="emod-s-v2-10">
 <h2>EMOD v2.10<a class="headerlink" href="#emod-s-v2-10" title="Permalink to this headline">¶</a></h2>
-<p>The EMOD source v2.10 release includes new and updated malaria configuration, demographic, and
+<p>The EMOD v2.10 release includes new and updated malaria configuration, demographic, and
 intervention parameters. With this release, EMOD now uses Visual Studio 2015, Boost 1.61.0, and SCons 2.5.0.</p>
 <div class="section" id="emod-s-software-upgrades">
 <h3>EMOD software upgrades<a class="headerlink" href="#emod-s-software-upgrades" title="Permalink to this headline">¶</a></h3>
@@ -258,6 +569,7 @@ Upgrade to Python 2.7.11 or 2.7.12 to get rid of the warning message.</dd>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
       <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
 
   
 

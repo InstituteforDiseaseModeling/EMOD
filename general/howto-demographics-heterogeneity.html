@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Configure heterogeneous populations &mdash; Generic Model  documentation</title>
+  <title>Configure heterogeneity using individual and node properties &mdash; Generic Model  documentation</title>
   
 
   
@@ -81,7 +81,7 @@
             
             
               <div class="version">
-                2.10
+                2.13
               </div>
             
           
@@ -106,10 +106,11 @@
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="howto-overview.html">How to use the software</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="howto-inputs.html">Use input data files</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="howto-demographics-overlay.html">Use demographics overlay files</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Configure heterogeneous populations</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Configure heterogeneity using individual and node properties</a></li>
 <li class="toctree-l3"><a class="reference internal" href="howto-hint.html">Configure heterogeneous disease transmission</a></li>
 </ul>
 </li>
@@ -164,7 +165,7 @@
       
           <li><a href="howto-inputs.html">Use input data files</a> &raquo;</li>
       
-    <li>Configure heterogeneous populations</li>
+    <li>Configure heterogeneity using individual and node properties</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -178,64 +179,35 @@
             
 <!-- From _templates/page.html -->
 
-  <div class="section" id="configure-heterogeneous-populations">
-<h1>Configure heterogeneous populations<a class="headerlink" href="#configure-heterogeneous-populations" title="Permalink to this headline">¶</a></h1>
-<p>Demographics files are used to add heterogeneity to a population. You can define the initial
-distribution to use for age, prevalence, risk and more. You can also define values for
-accessibility, age, geography, risk, and other properties and assign individuals to groups based on
-those property values. This topic describes how to configure the population distribution and define
-heterogeneous groups.</p>
-<p>After you set up the groups, you may want to add more parameters to the <a class="reference internal" href="glossary.html#term-demographics-file"><span class="xref std std-term">demographics file</span></a> to
-configure how individuals transition into and out of groups, how transmission occurs between
-different groups, or how to target interventions to specific groups. For more information about the
-parameters and structure of demographics files, see <a class="reference internal" href="parameter-demographics.html"><span class="doc">Demographics file structure and parameters</span></a>.</p>
-<p>For example, you might want to divide a population up into different groups based on age so you can
-target interventions to individuals in a particular age range. Another common use is to configure
-treatment coverage to be higher for individuals in areas that are easy to access and lower for
-individuals in areas that are difficult to access. For more information on targeting interventions
-to particular groups, see <a class="reference internal" href="howto-targeted-interventions.html"><span class="doc">Target interventions to nodes or groups</span></a>. For information on how tp configure
-disease transmission among groups created with any of the properties, see <a class="reference internal" href="howto-hint.html"><span class="doc">Configure heterogeneous disease transmission</span></a>.</p>
-<p>Nodes are subregions within the geographic area being modeled. Values in the <strong>Defaults</strong> section of
-the demographics file will be applied to all nodes, while values in the <strong>Nodes</strong> section will be
-applied only to the specified node. Node-level settings take precedence.</p>
-<div class="section" id="define-the-initial-population-distribution">
-<h2>Define the initial population distribution<a class="headerlink" href="#define-the-initial-population-distribution" title="Permalink to this headline">¶</a></h2>
-<p>You can configure attribute distributions in the population using the <strong>IndividualAttributes</strong>
-parameter in the demographics file. The initial value for an individual is a randomly selected value
-from the distribution. For example, if you use a uniform distribution to initialize age, the initial
-ages of individuals in the simulation will be evenly distributed between some minimum and maximum
-value.</p>
-<ol class="arabic simple">
-<li>In the demographics file, add the <strong>IndividualAttributes</strong> parameter and assign it an empty
-JSON object. If you want the groups to apply to all nodes, add it in the <strong>Defaults</strong> section;
-if you want the groups to be applied to specific nodes, add it to the <strong>Nodes</strong> section.</li>
-<li>Within this object, add the parameters for different attributes (age, prevalence, etc.) and assign
-values for available distributions (constant, Gaussian, etc.) See <a class="reference internal" href="parameter-demographics.html"><span class="doc">Demographics file structure and parameters</span></a>
-for more information about the available parameters.</li>
-</ol>
-<p>The example below shows how to set up the age distribution for all nodes in a simulation.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s2">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;AgeDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-            <span class="s2">&quot;AgeDistribution1&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
-            <span class="s2">&quot;AgeDistribution2&quot;</span><span class="p">:</span> <span class="mf">0.1</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="create-groups-for-properties-other-than-age">
-<h2>Create groups for properties other than age<a class="headerlink" href="#create-groups-for-properties-other-than-age" title="Permalink to this headline">¶</a></h2>
-<p>Assigning individuals to different groups based on properties, such as accessibility or risk, uses
-the <strong>IndividualProperties</strong> parameter in the demographics file. See <a class="reference internal" href="parameter-demographics.html"><span class="doc">Demographics file structure and parameters</span></a>
-for a list of supported properties. The values you assign to properties are use-defined and can
+  <div class="section" id="configure-heterogeneity-using-individual-and-node-properties">
+<h1>Configure heterogeneity using individual and node properties<a class="headerlink" href="#configure-heterogeneity-using-individual-and-node-properties" title="Permalink to this headline">¶</a></h1>
+<p>Demographics files can be used to add heterogeneity to a population. You can define property values
+for accessibility, age, geography, risk, and other properties and assign these values to individuals
+or nodes in the simulation. For more information about the parameters and structure of demographics
+files, see <a class="reference internal" href="parameter-demographics.html"><span class="doc">Demographics parameters</span></a>.</p>
+<p>These properties are most commonly used to target (or avoid targeting) particular nodes or individuals
+with interventions. For example, you might want to put individuals into different age bins and then target
+interventions to individuals in a particular age bin. Another common use is to configure treatment
+coverage to be higher for nodes that are easy to access and lower for nodes that are difficult to
+access. For more information on targeting interventions to particular nodes or individuals, see
+<a class="reference internal" href="howto-targeted-interventions.html"><span class="doc">Target interventions to nodes or groups</span></a>.</p>
+<p>For the generic simulation type, you can also configure heterogeneous transmission between
+individuals with different property values. For more information, see <a class="reference internal" href="howto-hint.html"><span class="doc">Configure heterogeneous disease transmission</span></a>. For other
+simulation types, transmission is configured using mechanistic parameter settings.</p>
+<p>This topic describes how to define individual properties and assign different values to individuals
+in a simulation. However, with the exception of setting up age bins, you can use the same process to
+configure heterogeneity using <strong>NodeProperties</strong>. To see all individual and node property parameters,
+see <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a>.</p>
+<div class="section" id="create-individual-properties-other-than-age">
+<h2>Create individual properties other than age<a class="headerlink" href="#create-individual-properties-other-than-age" title="Permalink to this headline">¶</a></h2>
+<p>Assigning property values, such as accessibility or risk, to individuals uses
+the <strong>IndividualProperties</strong> parameter in the demographics file. See <a class="reference internal" href="parameter-demographics.html"><span class="doc">Demographics parameters</span></a>
+for a list of supported properties. The values you assign to properties are user-defined and can
 be applied to individuals in all nodes or only in particular nodes in a simulation.</p>
 <ol class="arabic">
 <li><p class="first">In the demographics file, add the <strong>IndividualProperties</strong> parameter and set it to an empty array.
-If you want the groups to apply to all nodes, add it in the <strong>Defaults</strong> section; if you want the
-groups to be applied to specific nodes, add it to the <strong>Nodes</strong> section.</p>
+If you want the values to apply to all nodes, add it in the <strong>Defaults</strong> section; if you want the
+values to be applied to specific nodes, add it to the <strong>Nodes</strong> section.</p>
 </li>
 <li><p class="first">In the array, add an empty JSON object. Within it, do the following:</p>
 <ol class="arabic">
@@ -245,14 +217,15 @@ groups to be applied to specific nodes, add it to the <strong>Nodes</strong> sec
 be assigned to individuals. You can define any value here.</p>
 </li>
 <li><p class="first">Add the <strong>Initial_Distribution</strong> parameter and set it to an array of numbers that add
-up to 1. This configures the initial distribution of individuals assigned to each of the groups.</p>
+up to 1. This configures the initial distribution of the values assigned to individuals
+in one or all nodes.</p>
 </li>
-<li><p class="first">To define how individuals transition into and a out of each group, add the <strong>Transitions</strong>
+<li><p class="first">To define how individuals transition from one property value to another, add the <strong>Transitions</strong>
 parameter and set it to it an empty array. Within it, do the following:</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li>Add an empty JSON object and set parameters that define the group that individuals
-transition from, the group they transition to, the event that triggers the transition,
+<li>Add an empty JSON object and set parameters that define the value that individuals
+transition from, the value they transition to, the event that triggers the transition,
 the probability of transition, and more. See doc:<cite>parameter-demographics</cite> for a
 list of supported <strong>Transitions</strong> parameters and values.</li>
 </ol>
@@ -260,43 +233,40 @@ list of supported <strong>Transitions</strong> parameters and values.</li>
 </li>
 </ol>
 </li>
-<li><p class="first">If you want to add another property and associated groups, add a new JSON object in the
+<li><p class="first">If you want to add another property and associated values, add a new JSON object in the
 <strong>IndividualProperties</strong> array as above.</p>
+</li>
+</ol>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Multiple properties must be defined in one file. They can be defined in either the base
 layer demographics file or an overlay file, but they cannot be split between the files.
 The maximum number of property types that can be added is two.</p>
 </div>
-</li>
-</ol>
 </div>
-<div class="section" id="create-groups-for-age-ranges">
-<h2>Create groups for age ranges<a class="headerlink" href="#create-groups-for-age-ranges" title="Permalink to this headline">¶</a></h2>
-<p>Creating groups based on age ranges works a little differently than creating groups based on other
-properties. <strong>Age_Bin</strong> is tied to the simulated age of an individual rather than being an
-independent property. Some of its characteristics, such as initial distribution and transitions, are
-dependent on information from the demographics file and EMOD that manages individual aging
-during the simulation. Because of this, the parameters and structures in <strong>IndividualProperties</strong>
-are slightly different.</p>
+<div class="section" id="create-properties-for-age-ranges">
+<h2>Create properties for age ranges<a class="headerlink" href="#create-properties-for-age-ranges" title="Permalink to this headline">¶</a></h2>
+<p>Creating properties based on age ranges works a little differently than other properties.
+<strong>Age_Bin</strong> is tied to the simulated age of an individual rather than being an independent property.
+Some of its characteristics, such as initial distribution and transitions, are dependent on
+information from the demographics file and EMOD that manages individual aging during the
+simulation. The <strong>Transitions</strong> array is not required and other parameters and structures in
+<strong>IndividualProperties</strong> are slightly different.</p>
 <ol class="arabic simple">
 <li>In the demographics file, add the <strong>IndividualProperties</strong> parameter and set it to an empty array.
-If you want the groups to apply to all nodes, add it in the <strong>Defaults</strong> section; if you want the
-groups to be applied to specific nodes, add it to the <strong>Nodes</strong> section.</li>
+If you want the values to apply to all nodes, add it in the <strong>Defaults</strong> section; if you want the
+values to be applied to specific nodes, add it to the <strong>Nodes</strong> section.</li>
 <li>In the array, add an empty JSON object. Within it, do the following:<ol class="arabic">
 <li>Add the <strong>Property</strong> parameter and set it to &#8220;Age_Bin&#8221;.</li>
 <li>Add the <strong>Age_Bin_Edges_In_Years</strong> parameter and set it to an array that contains a comma-
 delimited list of integers in ascending order that define the boundaries used for each of
 the age bins, in years. The first number must always be 0 (zero) to indicate the age at
 birth and the last number must be -1 to indicate the maximum age in the simulation.</li>
-<li>To define how individuals transition into and a out of each group, add the <strong>Transitions</strong>
-parameter and set it to it an empty array. Aging during the simulation will be handled
-by EMOD.</li>
 </ol>
 </li>
 </ol>
-<p>The example below shows how to set up several groups based on disease risk and physical place, and
-how to move individuals among these groups. It also defines three age bins: 0 to 5 years,
+<p>The example below shows how to set up several property values based on disease risk and physical place, and
+how to move individuals among these values. It also defines three age bins: 0 to 5 years,
 older than 5 to 13, and older than 13 to the maximum age.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s2">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -407,6 +377,7 @@ older than 5 to 13, and older than 13 to the maximum age.</p>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
       <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
 
   
 

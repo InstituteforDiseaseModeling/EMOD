@@ -81,7 +81,7 @@
             
             
               <div class="version">
-                2.10
+                2.13
               </div>
             
           
@@ -106,6 +106,7 @@
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="howto-overview.html">How to use the software</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="howto-inputs.html">Use input data files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto-configuration.html">Create a configuration file</a></li>
@@ -209,20 +210,21 @@ for more information about each of the parameters.</p>
 <dt><strong>Simulation_Duration</strong></dt>
 <dd>Obviously, simulating a shorter timespan will take less processing time. However, the
 processing time is often driven by the number of infections or immune updates, so running a
-simulation after all infections have cleared may not increase processing time much.</dd>
+simulation after all infections have cleared may not increase processing time much. For more
+information, see <a class="reference internal" href="parameter-configuration.html#config-setup"><span class="std std-ref">Simulation setup</span></a> parameters.</dd>
 <dt><strong>Individual_Sampling_Type</strong> and <strong>Base_Individual_Sample_Rate</strong></dt>
-<dd><p class="first">Instead of the default <strong>Individual_Sampling_Type</strong> setting of &#8220;TRACK_ALL&#8221;, you can speed up
-performance by using &#8220;FIXED_SAMPLING&#8221; with the <strong>Base_Individual_Sample_Rate</strong> set to less than
-one. For example, a simulation with a population of 1 million and sample rate of 0.1 would
-simulate 100,000 individuals, with each given a weight of 10. There are also sampling parameters
-that sample the population at different rates by age and by the population of the node.</p>
-<p class="last">However, you should be especially careful not to undersample simulations to the point where they
-are overly sensitive to rare stochastic events.</p>
-</dd>
+<dd>Instead of the default <strong>Individual_Sampling_Type</strong> setting of &#8220;TRACK_ALL&#8221;, you can speed up
+performance by sampling such that each individual object represents more than one person. For
+example, a simulation with a population of 1 million and sample rate of 0.1 would simulate
+100,000 individuals, with each given a weight of 10.Sampling can be fixed at a particular rate
+or can adapt the rate based on certain criteria, such as age or immune state. However, you
+should be especially careful not to undersample simulations to the point where they are overly
+sensitive to rare stochastic events. For more information, see <a class="reference internal" href="parameter-configuration.html#config-sampling"><span class="std std-ref">Sampling</span></a>
+parameters.</dd>
 <dt><strong>Population_Scale_Type</strong> and <strong>Base_Population_Scale_Factor</strong></dt>
 <dd>Alternatively, you can simply reduce the total population of the simulation using
 <strong>Population_Scale_Type</strong> set to &#8220;FIXED_SCALING&#8221; and <strong>Base_Population_Scale_Factor</strong> set to
-less than one.</dd>
+less than one. For more information, see <a class="reference internal" href="parameter-configuration.html#config-scalars"><span class="std std-ref">Scalars and multipliers</span></a> parameters.</dd>
 </dl>
 </div>
 <div class="section" id="processing">
@@ -296,6 +298,7 @@ suitable to the geography being simulated. See <a class="reference internal" hre
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
       <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
 
   
 

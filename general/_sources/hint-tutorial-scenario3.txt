@@ -1,0 +1,361 @@
+=================================
+|HINT_s| 3: Age and accessibility
+=================================
+
+This tutorial illustrates the effect of heterogeneity in both mixing
+between population groups and in access to interventions, specifically vaccination. The scenarios
+simulate a measles outbreak over a single year in an initially fully susceptible population,
+highlighting differences in age and accessibility group-specific disease dynamics.
+
+It consists of three scenarios that illustrate the measles outbreak and targeted
+vaccination campaigns:
+
+A.  A measles outbreak with no interventions. The supporting configuration
+    and campaign files are in Scenarios\HINT\03_AgeAndAccess\A_BaselineOutbreak.
+
+B.  An age-targeted outreach vaccination campaign for 6 to 10 year olds. The outreach is designed to
+    reach populations who are normally inaccessible. The supporting configuration and campaign files
+    are in Scenarios\HINT\03_AgeAndAccess\B_AgeTargetedVaccine.
+
+C.  A mass measles vaccination campaign of the entire population. This is a standard campaign, not
+    an outreach campaign, as it targets individuals who are in the accessible group of the
+    population and easily reached by the vaccination campaign. The supporting configuration and
+    campaign files are in Scenarios\HINT\03_AgeAndAccess\C_AccessTargetedVaccine.
+
+
+.. note::
+
+  The fully susceptible population in this tutorial is used to illustrate the model features in the
+  most parsimonious manner. For calibration to real data, you would need to initialize a
+  distribution of immunity in the population at the beginning of the epidemic to represent past
+  history of infection and vaccination. This could be done through matching serology data and/or
+  matching vaccination dose history.
+
+
+
+This tutorial assumes that you have read the previous |HINT_s| tutorial, :doc:`hint-tutorial-scenario2`.
+
+.. contents:: Contents
+   :local:
+   :depth: 2
+
+Demographics inputs
+===================
+
+You can view the complete hint_ageandaccess_demographics and hint_ageandaccess_overlay files at
+<path_to_directory>\Regression\Scenarios\InputFiles where <path_to_directory> is the location where
+|EMOD_s| source files were installed. For more information, see :doc:`parameter-demographics`.
+
+
+IndividualProperties
+--------------------
+
+**IndividualProperties** defines two **Property** types: **Accessibility** and **Age_Bin**. The supporting software
+for **Accessibility** is the same as for the property types, **Risk** and **Place**, that were used in the
+previous tutorials. However, the **Age_Bin** property uses data from the demographics files for initial
+age distribution, and the membership in an **Age_Bin** group is updated as an individual ages.
+Therefore, the **Age_Bin** attribute has different structures than those of the other property types.
+For more information, see :ref:`demo-properties` parameters.
+
+
+Accessibility: Property and Values
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Property** and **Values** define two **Accessibility** groups: "Easy" and "Hard". These two groups
+will be used to initialize the population with differential vaccination coverage. Individuals are
+randomly assigned one of these two values at birth and do not transition afterwards.
+
+
+Accessibility: Initial_Distribution
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+At the beginning of the simulation, individuals have an equal chance of being assigned to either the
+"Easy" or "Hard" group as specified in the **Initial_Distribution array**.
+
+
+Accessibility: Transitions
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Individuals will not transition from one **Accessibility** group to the other therefore **Transitions** is
+empty.
+
+
+Accessibility: TransmissionMatrix
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**TransmissionMatrix** contains the :math:`\beta` values for the :term:`WAIFW matrix` that scales
+the base infectivity. The transmission **Route** is "Contact". The :math:`\beta` values are added to
+**Matrix**.
+
+**Matrix** specifies the interaction between the "Easy" and "Hard" groups. Individuals in the "Easy" group
+are nine times as likely to be in contact with individuals of their own group. Similarly, individuals
+in the "Hard" accessibility group are five times as likely to interact with their own group.
+
+The interpretation for this tutorial is that individuals in the "Hard" accessibility group have only
+60% of the contacts of those in the "Easy" accessibility group. As an example, "Hard" accessibility
+could be caused by geographic isolation.
+
+
+Age_Bin: Property and Age_Bin_Edges_In_Years
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The second Property is **Age_Bin**. Instead of a **Values** array there is an **Age_Bin_Edges_In_Years** array
+that specifies the upper bounds of the age groups.
+
+
+All of the middle values in the **Age_Bins_In_Years** array specify the upper bound of **Age_Bin** group
+that is neither the last nor the first group. This scenario has the following age groups:
+
+* Birth to age 6
+
+* Older than 6 to age 10
+
+* Older than 10 to age 20
+
+* Older than 20
+
+
+Age_Bin: Initial_Distribution
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The **Age_Bin** property does not support **Initial_Distribution**. As an age-dependent property, the
+distribution of the individuals in age bins is determined by the demographics file.
+
+
+Age_Bin: Transitions
+~~~~~~~~~~~~~~~~~~~~
+
+The **Age_Bin** property does not use **Transitions** in **IndividualProperties**. As an age-dependent property,
+the membership in an **Age_Bin** group is updated for individuals as they age. **Transitions** must be added
+to the IndividualProperties but it should be empty.
+
+
+Age_Bin: TransmissionMatrix
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**TransmissionMatrix** contains the :math:`\beta` values that scale the base infectivity. The transmission **Route**
+is "Contact". The :math:`\beta` values are added to **Matrix**.
+
+The assumption for this scenario is that individuals interact more frequently with their own age
+group, and those groups closer in age. Therefore, **Matrix** has higher values on the diagonal entries.
+
+
+
+IndividualProperties for Accessibility and Age_Bin
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. literalinclude:: ../json/hint3-demographics.json
+  :language: json
+
+
+
+Key configuration parameters
+============================
+
+The following sections describe the parameters that define measles pathogenesis and immunity of an
+individual for all scenarios in this tutorial. Each scenario has a directory (A_BaselineOutbreak,
+B_AgeTargetedVaccine and C_AccessTargetedVaccine) that contains a simulation configuration files
+(config.json) file. The three directories are located in Scenarios\HINT\03_AgeAndAccess. The
+configuration files are the same in each directory but are copied in each directory to make it more
+convenient to run simulations.
+
+
+Population dynamics parameters
+------------------------------
+
+The following parameters disable vital dynamics and disease mortality in the simulations. |HINT_s| is
+enabled. For more information, see :ref:`config-population` parameters.
+
+
+Set the following parameters:
+
+  * Set **Enable_Vital_Dynamics** to 0.
+
+  * Set **Death_Rate_Dependence** to "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER".
+
+  * Set **Enable_Heterogeneous_Intranode_Transmission** to 1.
+
+
+Pathogenesis and immunity parameters
+-------------------------------------
+
+Measles is a highly infectious virus that is typically transmitted by large respiratory and
+aerosolized droplets. Some transmission also occurs via fomites, however this is believed to be a
+less significant route for transmission as the virus only survives a short time on dry surfaces. The
+pathogen is characterized by a high basic :term:`reproductive number`, often estimated at 16-20 combined
+with short incubation and infectious periods on the order of days. Immunity conferred is typically
+lifelong and vaccination has high efficacy (~95%). For more information, see :ref:`config-immunity`,
+:ref:`config-incubation`, and :ref:`config-infectivity` parameters.
+
+The following parameters define measles pathogenesis and immunity of an individual.
+
+
+Set the following parameters:
+
+  * Set **Enable_Immunity** to 1.
+
+  * Set **Enable_Immune_Decay** to 0.
+
+  * Set **Base_Infectivity** to 4.
+
+  * Set **Base_Incubation_Period** to 5.
+
+  * Set **Base_Infectious_Period** to 5.
+
+  * Set **Incubation_Period_Distribution** to "FIXED_DURATION."
+
+  * Set **Infectious_Period_Distribution** to "EXPONENTIAL_DURATION."
+
+
+
+
+Interventions
+=============
+
+Run the simulation and generate graphs of the simulation output for each of the following three
+scenarios. For more information, see :doc:`howto-simulations`.
+
+
+.. include:: ../reuse/note-stochastic.txt
+
+
+A: Baseline outbreak
+--------------------
+
+The simulation seeds an initial measles outbreak with a prevalence of 1% in the age group of 10 to
+20 years old who are in the "Easy" accessibility group.
+
+Age groups do not use the **PropertyRestrictions** parameter. It uses the **Target_Demographic**
+parameter with the value set to "ExplicitAgeRanges", which will use the values in **Target_Age_Min**
+and **Target_Age_Max**. For more information, see :ref:`ec-eventcoordinator` parameters.
+
+The campaign file (campaign.json) is in the
+Scenarios\HINT\03_AgeAndAccess\A_BaselineOutbreak directory.
+
+
+.. literalinclude:: ../json/hint3-interventions.json
+  :language: json
+
+
+Expected simulation output
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In the fixed population of 1000 susceptible individuals, a total of 700 individuals become infected
+with a peak prevalence of 14% roughly 100 days into the epidemic. The number of individuals in the
+"Easy" and "Hard" groups is equal for each age group as specified in the initial distribution. Looking
+at the number of infected individuals by age and accessibility groups, notice that the numbers are
+significantly higher (peak prevalence) in the "Easy" accessibility group compared to "Hard". This is due
+to the decreased transmission rate specified in the accessibility group matrix.
+
+
+.. figure:: ../images/hint-tutorials/HINT_AgeAndAccess_output_baseLine_orig2_cropped.png
+
+  Figure 1: Baseline outbreak
+
+
+
+B: Age-targeted outreach vaccination campaign
+---------------------------------------------
+
+This simulation adds an age targeted vaccination on day 1 followed by the same outbreak seeding
+specified in the first scenario on day 2. The campaign configuration file (campaign.json) is in
+the Scenarios\HINT\03_AgeAndAccess\B_AgeTargetedVaccine directory. For more information, see
+:ref:`SimpleVaccine <iv-simplevaccine>` parameters.
+
+
+.. literalinclude:: ../json/hint3-interventions2.json
+  :language: json
+
+
+Expected simulation output
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Compare the number of infected-by-age in this simulation with the baseline outbreak scenario. Notice
+the dramatic decrease (an order of magnitude) of the infection in 6 to 10 year olds due to the
+vaccination of this group. Compare infections in other ages, noting the overall decrease in
+infection across age groups despite the fact that only 6 to 10 year olds were vaccinated.
+
+
+.. figure:: ../images/hint-tutorials/HINT_AgeAndAccess_output_6_to_10_vaccine_orig2_cropped.png
+
+  Figure 2: Age-targeted outreach vaccination campaign
+
+
+
+C: Standard vaccination campaign
+--------------------------------
+
+On day 1, a non-targeted vaccination campaign begins which reaches all those individuals in the "Easy"
+accessibility group but does not reach those in the "Hard" accessibility group.
+
+This is followed by an outbreak that originates in the "Hard" accessibility group in the 0.5 to 6
+year olds. In the first two scenarios, the outbreak originated in the "Easy" accessibility group
+among older children. This outbreak begins in the "Hard" accessibility group. For more information,
+see :ref:`iv-outbreakindividual` and  :ref:`SimpleVaccine <iv-simplevaccine>` parameters.
+
+The campaign configuration file (campaign.json) is in the
+Scenarios\HINT\03_AgeAndAccess\C_AccessTargetedVaccine directory.
+
+
+.. literalinclude:: ../json/hint3-interventions3.json
+  :language: json
+
+Expected simulation output
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Notice the dramatic decrease in cumulative incidence (~300 vs. ~700) and peak prevalence from the
+first scenario because of the vaccination campaign that targeted the "Easy" accessibility
+group.
+
+
+.. figure:: ../images/hint-tutorials/HINT_AgeAndAccess_output_easyVaccine_orig2_cropped.png
+
+  Figure 3: Easy accessibility targeted vaccine--Accessibility easy group
+
+
+
+Notice the almost complete elimination of infection in the "Easy" accessibility group due to 95%
+vaccination coverage with a 95% take. There is only a slight reduction in infection in the "Hard"
+accessibility group which was not reachable by vaccination in this campaign. Recall that the
+epidemic was seeded in the "Hard" accessibility group.
+
+
+.. figure:: ../images/hint-tutorials/HINT_AgeAndAccess_output_easyVaccine_orig_cropped.png
+
+  Figure 4: Easy accessibility targeted vaccine--Accessibility hard group
+
+
+
+Exploring the model
+===================
+
+#.  Adjust both the targeted age and accessibility groups of the initial outbreak. In
+    **IndividualProperties**, decrease the value of the off-diagonal entries in the **TransmissionMatrix**.
+    Investigate how this slows down the spread of measles to the other age and accessibility groups in
+    terms of both the speed of the disease spread and total incidence of the disease.
+
+#.  For one age and/or accessibility group, set all interactions with other groups to zero. To do this
+    for the n\ :sup:`th` population group, set all values of the n\ :sup:`th` row to 0 except for the diagonal entry
+    (n\ :sup:`th` column and n\ :sup:`th` row), which should remain unchanged.
+
+#.  Use the campaign cost output, which is proportional to the number of doses, to compare the cost-
+    effectiveness of vaccination campaigns targeted at different age and accessibility groups. Also
+    adjust coverage in different groups.
+
+    For example, the following **Matrix** values configure the interactions with other group for the third age
+    group (older than 10 to 20 years).
+
+
+    .. literalinclude:: ../json/hint3-matrix.json
+      :language: json
+
+
+
+    Verify that if the epidemic started in a different group, it cannot spread to this group.
+
+#.  How do results of the third scenario change if the
+    infection is seeded in the "Easy" accessibility group? See that the infection fails to spread to the "Hard"
+    accessibility group. Lower the vaccination coverage of the "Easy" accessibility group to find the
+    vaccination level where the spread to the "Hard" accessibility group occurs.
+
+
