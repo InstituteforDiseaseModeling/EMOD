@@ -55,13 +55,14 @@ considered when trying to eradicate disease.
 Types of compartmental models
 =============================
 
-The following diagrams illustrate common compartmental models.  See the
-`Generic simulation tutorials`_ in the Training documentation set for more information, as well as
-exercises on running |EMOD_s| simulations utilizing these models.
+The following diagrams illustrate common compartmental models.
 
-.. _Generic simulation tutorials: ./../training/generic-simulation-tutorial-overview.html
+.. See the
+.. :doc:`generic-simulation-tutorial-overview` for more information, as well as
+.. exercises on running |EMOD_s| simulations utilizing these models.
 
-.. To-do: remove links to the tutorials once the tutorials are removed.
+.. To-do: remove links to the tutorials once the tutorials are removed, add links to appropriate info
+.. culled from those tutorials
 
 .. figure:: ../images/general/SIR-Plot.jpeg
 

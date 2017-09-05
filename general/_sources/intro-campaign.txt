@@ -29,18 +29,14 @@ intervention
     to a node (such as a larvicide). Sometimes this can be an intermediate intervention that
     schedules another intervention.
 
-.. only:: not training
 
-    |IDM_s| provides complete simulation scenarios in the Regression_ directory
-    on GitHub. Within each of the simulation subdirectories, there is a campaign.json file. The
-    Scenarios subdirectory contains the files used in the |quick| tutorials.
 
-    .. _Regression: https://github.com/InstituteforDiseaseModeling/EMOD/tree/master/Regression
+|IDM_s| provides complete simulation scenarios in the Regression_ directory
+on GitHub. Within each of the simulation subdirectories, there is a campaign.json file. The
+Scenarios subdirectory contains the files used in the tutorials.
 
-.. only:: training
+.. _Regression: https://github.com/InstituteforDiseaseModeling/EMOD/tree/master/Regression
 
-    The |quick| includes complete simulation scenarios in the Scenarios directory. Within each of the
-    scenario subdirectories, there is a campaign.json file.
 
 Overlay file
 ==============
@@ -53,11 +49,6 @@ You have the option of creating an :term:`overlay file` to keep campaign paramet
 interest in a separate file from the complete campaign file that contains default values. These
 files can be flattened into a single file and the values in the overlay file will override those
 in the default file.
-
-.. only:: training
-
-    While some of the scenarios in the |quick| include an overlay file, it is only to highlight
-    certain campaign settings, not override any default values.
 
 See :doc:`parameter-campaign` for a comprehensive list and description of all parameters
 available to use in the campaign file for this simulation type.

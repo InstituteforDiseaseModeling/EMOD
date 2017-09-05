@@ -3,8 +3,7 @@ Prerequisites for working with |EMOD_s| source code
 ===================================================
 
 This section describes the software packages or utilities must be installed to build the |exe_l| or
-|linux_binary| from source code and run regression tests. It assumes you have already installed the
-required software to run |EMOD_s| simulations. If you have not, see :doc:`install-overview`.
+|linux_binary| from source code and run regression tests.
 
 If additional software is needed for the prerequisite software due to your specific environment, the
 installer for the prerequisite software should provide instructions. For example, if |MSMPI_supp|
@@ -19,10 +18,16 @@ Install prerequisites for building |exe_s|
 The following software packages are required to build the |exe_s| from |EMOD_s| source code on
 |Windows_supp|.
 
+.. note::
+
+    You must also have already installed the required software to run |EMOD_s| simulations.
+    If you have not, see :doc:`install-overview`.
+
 Visual Studio
 -------------
 
-#.  Purchase a license from Microsoft or use an MSDN subscription to install |VS_supp|.
+#.  Purchase a license from Microsoft or use an MSDN subscription to install |VS_supp|. Other versions
+    of Visual Studio are not supported.
 
     While you can use a free copy of Visual Studio Community, |IDM_s| does not test on or support this version.
 
@@ -52,7 +57,7 @@ Boost
 #.  Unpack the libraries to the location of your choice.
 #.  From **Control Panel**, select **Advanced system settings**, and then click
     **Environment Variables**.
-#.  Add a new variable called IMD_BOOST_PATH and set it to the directory where you installed
+#.  Add a new variable called IDM_BOOST_PATH and set it to the directory where you installed
     Boost, and then click **OK**.
 
 SCons

@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Custom reporters &mdash; HIV Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within HIV Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="HIV Model  documentation" href="index.html"/>
+        <link rel="up" title="Use output files" href="howto-outputs.html"/>
+        <link rel="next" title="HIV disease overview" href="HIV-disease-overview.html"/>
+        <link rel="prev" title="Use output files" href="howto-outputs.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> HIV Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="howto-overview.html">How to use the software</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="howto-inputs.html">Use input data files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-configuration.html">Create a configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-campaign.html">Create a campaign file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-simulations.html">Run simulations</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="howto-outputs.html">Use output files</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Custom reporters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="HIV-disease-overview.html">HIV disease overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HIV-model-overview.html">HIV model overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HIV-IDM.html">HIV research at IDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">HIV Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">HIV</a> &raquo;</li>
+      
+          <li><a href="howto-overview.html">How to use the software</a> &raquo;</li>
+      
+          <li><a href="howto-outputs.html">Use output files</a> &raquo;</li>
+      
+    <li>Custom reporters</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="custom-reporters">
+<h1>Custom reporters<a class="headerlink" href="#custom-reporters" title="Permalink to this headline">¶</a></h1>
+<p>Reporters extract simulation data, aggregate it, and output it to a file known as an <a class="reference internal" href="glossary.html#term-output-report"><span class="xref std std-term">output
+report</span></a>. You can process the report data using tools, such as Python or MATLAB, to create graphs and
+charts for analysis. EMOD provides built-in reporters that are part of the EMOD executable (Eradication.exe) and can be
+enabled or disabled by setting parameters in the <a class="reference internal" href="glossary.html#term-configuration-file"><span class="xref std std-term">configuration file</span></a>. See <a class="reference internal" href="file-outputs.html"><span class="doc">Output report structure</span></a>
+for a list of the reports that are available using built-in reporters.</p>
+<p>In addition, you can use custom reporters that extract data from the simulation and aren&#8217;t part of
+the Eradication.exe. A custom reporter is an <a class="reference internal" href="glossary.html#term-emodule"><span class="xref std std-term">EMODule</span></a> that you plug in to EMOD. Custom reporters
+are not supported for CentOS on Azure. There are several reporters in the GitHub <a class="reference external" href="https://github.com/InstituteforDiseaseModeling/EMOD/tree/master/reporters">reporters</a> directory that
+you can use. You may also want to build your own custom reporter to create a new output report.</p>
+<img alt="_images/Reporters.png" src="_images/Reporters.png" />
+<p>The Eradication.exe must load the reporter when running a simulation to use it. If it is loaded, the output
+report will be automatically generated at the end of the simulation. There are three ways to specify
+their location so Eradication.exe can load them. Eradication.exe attempts to load the file using the following
+methods, in the order listed:</p>
+<ol class="arabic simple">
+<li>Define the location of the <a class="reference internal" href="glossary.html#term-dynamic-link-library-dll"><span class="xref std std-term">dynamic link library (DLL)</span></a> in a JSON-formatted file (emodules_map.json).</li>
+<li>Point to the location using the <code class="docutils literal"><span class="pre">--dll-path</span></code> command-line option when invoking Eradication.exe.</li>
+<li>Place the DLL in the <a class="reference internal" href="glossary.html#term-working-directory"><span class="xref std std-term">working directory</span></a>.</li>
+</ol>
+<div class="section" id="json-file">
+<h2>JSON file<a class="headerlink" href="#json-file" title="Permalink to this headline">¶</a></h2>
+<p>First, Eradication.exe looks for an emodules_map.json file in the working directory. This map file lists
+specific reporter DLLs and their exact location. This is useful if you want to store all custom
+reporters in the same directory, but only want certain reporters to be used with each simulation.</p>
+<p>The emodules_map.json file has three sections: diseases, interventions and reporters. Each section
+is a JSON array and contains the path to each EMODule in the array. Although reporter EMODules are
+the only type currently supported, empty disease and intervention sections must be included. You
+must use either a double backslash (\\) or a single forward slash (/) to represent a single
+backslash for the path. For example:</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;disease_plugins&quot;</span><span class="p">:</span> <span class="p">[</span>
+         <span class="p">],</span>
+    <span class="nt">&quot;interventions&quot;</span><span class="p">:</span> <span class="p">[</span>
+         <span class="p">],</span>
+    <span class="nt">&quot;reporter_plugins&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;C:\\src\\EMOD\\x64\\Release\\emodules\\reporter_plugins\\libreportpluginbasic.dll&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="command-line-option">
+<h2>Command-line option<a class="headerlink" href="#command-line-option" title="Permalink to this headline">¶</a></h2>
+<p>If a map file is not provided, you can include the <code class="docutils literal"><span class="pre">--dll-path</span></code> option when you invoke Eradication.exe. It
+must point to a directory with a reporter_plugins subdirectory that contains the reporters. The name
+of the directory does not matter, but the reporter must be in a subdirectory named reporter_plugins.
+Note that this method will load all reporters in the root directory specified.</p>
+<p>If you build custom reporters as described here, the DLLs will be saved to the following
+directories, depending on the build configuration:</p>
+<ul class="simple">
+<li>&lt;EMOD source directory path&gt;x64Releasereporter_plugins</li>
+<li>&lt;EMOD source directory path&gt;x64Debugreporter_plugins</li>
+</ul>
+<p>Therefore, if you do not move your reports, you will set <code class="docutils literal"><span class="pre">--dll-path</span></code> to one of the following paths:</p>
+<ul class="simple">
+<li>&lt;EMOD source directory path&gt;x64Release</li>
+<li>&lt;EMOD source directory path&gt;x64Debug</li>
+</ul>
+<p>For more information on EMOD command-line options, see <a class="reference internal" href="howto-simulation-cli.html"><span class="doc">Run a simulation using the command line</span></a>.</p>
+</div>
+<div class="section" id="working-directory">
+<h2>Working directory<a class="headerlink" href="#working-directory" title="Permalink to this headline">¶</a></h2>
+<p>Finally, if neither the the map file or the command-line option are provided, Eradication.exe looks for the
+reporter plug-in in the current working directory.</p>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="HIV-disease-overview.html" class="btn btn-neutral float-right" title="HIV disease overview" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="howto-outputs.html" class="btn btn-neutral" title="Use output files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

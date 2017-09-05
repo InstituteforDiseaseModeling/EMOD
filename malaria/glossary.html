@@ -80,7 +80,7 @@
             
             
               <div class="version">
-                2.10
+                2.13
               </div>
             
           
@@ -168,16 +168,14 @@
 <h1>Glossary<a class="headerlink" href="#glossary" title="Permalink to this headline">¶</a></h1>
 <p>The Epidemiological MODeling software (EMOD) glossary is divided into the following subsections that define terms related to software
 usage, general epidemiology, and the particular disease being modeled.</p>
-<div class="contents local topic" id="contents">
-<p class="topic-title first">Contents</p>
+<p><strong>Contents</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="#software-terms" id="id1">Software terms</a></li>
-<li><a class="reference internal" href="#epidemiology-terms" id="id2">Epidemiology terms</a></li>
-<li><a class="reference internal" href="#malaria-and-vector-terms" id="id3">Malaria and vector terms</a></li>
+<li><a class="reference internal" href="#glossary-software"><span class="std std-ref">Software terms</span></a></li>
+<li><a class="reference internal" href="#glossary-epi"><span class="std std-ref">Epidemiology terms</span></a></li>
+<li><a class="reference internal" href="#glossary-malaria"><span class="std std-ref">Malaria and vector terms</span></a></li>
 </ul>
-</div>
 <div class="section" id="software-terms">
-<h2><a class="toc-backref" href="#id1">Software terms</a><a class="headerlink" href="#software-terms" title="Permalink to this headline">¶</a></h2>
+<span id="glossary-software"></span><h2><a class="toc-backref" href="#id1">Software terms</a><a class="headerlink" href="#software-terms" title="Permalink to this headline">¶</a></h2>
 <p>The following terms are used to describe both general computing processes and concepts and the files,
 features, and functionality related to running simulations with Epidemiological MODeling software (EMOD).</p>
 <dl class="glossary docutils">
@@ -188,6 +186,9 @@ features, and functionality related to running simulations with Epidemiological 
 <dd>Free, peer-reviewed, portable C++ source libraries aimed at a wide range of uses including
 parallel processing applications (Boost.MPI). For more information, please see the Boost
 website, <a class="reference external" href="http://www.boost.org">http://www.boost.org</a>.</dd>
+<dt id="term-boxcar-function">boxcar function</dt>
+<dd>A mathematical function that is equal to zero over the entire real line except for a single
+interval where it is equal to a constant.</dd>
 <dt id="term-campaign">campaign</dt>
 <dd>A collection of events that use interventions to modify a <a class="reference internal" href="#term-simulation"><span class="xref std std-term">simulation</span></a>.</dd>
 <dt id="term-campaign-event">campaign event</dt>
@@ -333,10 +334,10 @@ been fixed before release. EMOD releases undergo full regression testing.</dd>
 simulations and you also have the ability to create a custom reporter.</dd>
 <dt id="term-scenario">scenario</dt>
 <dd>A collection of input, configuration, and campaign files that describes a real-world
-example of a disease outbreak and interventions. Many scenarios are included with both the
-Quick Start and EMOD source installations. The Quick Start documentation includes tutorials that
-describe how to run simulations using these scenarios to learn more about epidemiology and
-disease modeling.</dd>
+example of a disease outbreak and interventions. Many scenarios are included with EMOD
+source installations or are available in the Regression directory of the EMOD GitHub repository.
+The tutorials describe how to run simulations using these scenarios to learn more about
+epidemiology and disease modeling.</dd>
 <dt id="term-schema">schema</dt>
 <dd>A text or JSON file that can be generated from the EMOD executable (Eradication.exe) that defines all
 configuration and campaign parameters.</dd>
@@ -376,7 +377,7 @@ example, a time step would process the migration data for populations moving bet
 via rail, airline, and road. The migration of individuals between nodes is the last step of
 the time step after updating states.</dd>
 <dt id="term-tutorial">tutorial</dt>
-<dd>A set of instructions in the Quick Start documentation to learn more about epidemiology and
+<dd>A set of instructions in the documentation to learn more about epidemiology and
 disease modeling. Tutorials are based on real-world scenarios and demonstrate the mechanics
 of the the model. Each tutorial consists of one or more scenarios.</dd>
 <dt id="term-working-directory">working directory</dt>
@@ -385,7 +386,7 @@ be in this directory when you invoke Eradication.exe at the command line to run 
 </dl>
 </div>
 <div class="section" id="epidemiology-terms">
-<h2><a class="toc-backref" href="#id2">Epidemiology terms</a><a class="headerlink" href="#epidemiology-terms" title="Permalink to this headline">¶</a></h2>
+<span id="glossary-epi"></span><h2><a class="toc-backref" href="#id2">Epidemiology terms</a><a class="headerlink" href="#epidemiology-terms" title="Permalink to this headline">¶</a></h2>
 <p>The following terms are used to describe general concepts and processes in the field of epidemiology
 and disease modeling.</p>
 <dl class="glossary docutils">
@@ -427,7 +428,7 @@ the risk of contracting a disease.</dd>
 <dd>A system based on the concept that native vegetation is a good expression of climate. Thus,
 climate zone boundaries have been selected with vegetation distribution in mind. It combines
 average annual and monthly temperatures and precipitation, and the seasonality of
-precipitation. The DTK has several options for configuring the climate, namely air
+precipitation. EMOD has several options for configuring the climate, namely air
 temperature, rainfall, and humidity. One option utilizes Input Files that associate
 geographic nodes with Koppen climate indices. The modified Koppen classification uses three
 letters to divide the world into five major climate regions (A, B, C, D, and E) based on
@@ -453,7 +454,7 @@ effective reproductive number takes into account non-susceptible individuals.</d
 <dt id="term-routine-immunization-ri">routine immunization (RI)</dt>
 <dd>The standard practice of vaccinating the majority of susceptible people in a population against
 vaccine-preventable diseases.</dd>
-<dt id="term-61">scenario</dt>
+<dt id="term-62">scenario</dt>
 <dd>A real-world or hypothetical situation that demonstrates or represents disease dynamics.</dd>
 <dt id="term-stochastic">stochastic</dt>
 <dd>Characterized by having a random probability distribution that may be analyzed statistically
@@ -490,10 +491,22 @@ goal of delivering vaccines to every household.</dd>
 <dt id="term-waifw-matrix">WAIFW matrix</dt>
 <dd>A matrix of values that describes the rate of transmission between different population
 groups. WAIFW is an abbrevation for Who Acquires Infection From Whom.</dd>
+<dt id="term-weibull-distribution">Weibull distribution</dt>
+<dd>A probability distribution often used in EMOD and that requires both a shape parameter
+and a scale parameter. The shape parameter governs the shape of the density function. When
+the shape parameter is equal to 1, it is an exponential distribution. For shape parameters
+above 1, it forms a unimodal (hump-shaped) density function. As the shape parameter becomes
+large, the function forms a sharp peak. The inverse of the shape parameter is sometimes
+referred to here as the “heterogeneity” of the distribution (heterogeneity = 1/shape),
+because it can be helpful to think about the degree of heterogeneity of draws from the
+distribution, especially for hump-shaped functions with heterogeneity values between 0 and 1
+(i.e., shape parameters greater than 1). The scale parameter shifts the distribution from
+left to right. When heterogeneity is small (i.e., the shape parameter is large), the scale
+parameter sets the location of the sharp peak.</dd>
 </dl>
 </div>
 <div class="section" id="malaria-and-vector-terms">
-<h2><a class="toc-backref" href="#id3">Malaria and vector terms</a><a class="headerlink" href="#malaria-and-vector-terms" title="Permalink to this headline">¶</a></h2>
+<span id="glossary-malaria"></span><h2>Malaria and vector terms<a class="headerlink" href="#malaria-and-vector-terms" title="Permalink to this headline">¶</a></h2>
 <p>The following terms are used to describe the biological processes involved in malaria and other
 vector-borne diseases.</p>
 <dl class="glossary docutils">
@@ -528,10 +541,10 @@ or express genes that limit malaria transmission.</dd>
 number of days that gravid mosquitoes take to oviposit after taking a blood meal.</dd>
 <dt id="term-hepatocyte">hepatocyte</dt>
 <dd>The cell type that comprises liver tissue.</dd>
-<dt id="term-homing-endonuclease-genes-hegs">homing endonuclease genes (HEGs)</dt>
-<dd>&#8220;Selfish&#8221; genetic elements that can spread through the mosquito population even at a cost to
+<dt id="term-homing-endonuclease-gene-heg">homing endonuclease gene (HEG)</dt>
+<dd>A &#8220;selfish&#8221; genetic element that can spread through the mosquito population even at a cost to
 the host. The HEG allele status is a tracked property of mosquitoes. Large numbers of HEG-
-positive mosquitoes may be introduced into the simulation by a <em>MosquitoRelease</em>
+positive mosquitoes may be introduced into the simulation by a <strong>MosquitoRelease</strong>
 intervention.</dd>
 <dt id="term-individual-mosquito-model">individual mosquito model</dt>
 <dd>A vector model simulation where every individual mosquito in the population is modeled, as
@@ -684,6 +697,7 @@ infected with  <em>Plasmodium</em> parasites.</dd>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
       <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
 
   
 

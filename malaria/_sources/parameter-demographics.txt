@@ -1,1 +1,150 @@
-.. include:: ../general/parameter-demographics.rst
+=======================
+Demographics parameters
+=======================
+
+.. include:: ../reuse/demo-param-intro.txt
+
+The tables below contain only parameters available when using the malaria :term:`simulation type`.
+
+
+.. include:: ../reuse/warning-case.txt
+
+.. raw:: html
+
+    <button class="collapse-table-button btn btn-info">Collapse all parameter tables</button>
+
+.. contents:: Contents
+   :local:
+
+.. _demo-metadata:
+
+Metadata
+========
+
+.. include:: ../reuse/demo-metadata.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/demo-metadata-malaria.csv
+
+.. _demo-properties:
+
+NodeProperties and IndividualProperties
+=======================================
+
+.. include:: ../reuse/demo-properties.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/demo-properties-malaria.csv
+
+
+.. _demo-transitions:
+
+Transitions
+-----------
+
+.. include:: ../reuse/demo-transitions.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/demo-transitions-malaria.csv
+
+.. _demo-nodeattributes:
+
+NodeAttributes
+==============
+
+.. include:: ../reuse/demo-nodeattributes.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/demo-nodeattributes-malaria.csv
+
+
+
+.. _demo-individualattributes:
+
+IndividualAttributes
+====================
+
+.. include:: ../reuse/demo-individualattributes.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/demo-individualattributes-malaria.csv
+
+.. _demo-simpledistro:
+
+Simple distributions
+--------------------
+
+.. include:: ../reuse/demo-simpledistro.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/demo-simpledistro-malaria.csv
+
+.. _demo-complexdistro:
+
+Complex distributions
+---------------------
+
+.. include:: ../reuse/demo-complexdistro.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/demo-complexdistro-malaria.csv
+
+
+
+

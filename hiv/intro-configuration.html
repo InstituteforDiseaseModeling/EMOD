@@ -1,0 +1,403 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Configuration file &mdash; HIV Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within HIV Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="HIV Model  documentation" href="index.html"/>
+        <link rel="up" title="Introduction to the software" href="intro-overview.html"/>
+        <link rel="next" title="Campaign file" href="intro-campaign.html"/>
+        <link rel="prev" title="Input data files" href="intro-inputs.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> HIV Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="intro-overview.html">Introduction to the software</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="intro-inputs.html">Input data files</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-campaign.html">Campaign file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-run-simulation.html">Running a simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-outputs.html">Output files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HIV-disease-overview.html">HIV disease overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HIV-model-overview.html">HIV model overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HIV-IDM.html">HIV research at IDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">HIV Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">HIV</a> &raquo;</li>
+      
+          <li><a href="intro-overview.html">Introduction to the software</a> &raquo;</li>
+      
+    <li>Configuration file</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="configuration-file">
+<h1>Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h1>
+<p>The primary means of configuring the disease simulation is the <a class="reference internal" href="glossary.html#term-configuration-file"><span class="xref std std-term">configuration file</span></a>. This
+required file is a <a class="reference internal" href="glossary.html#term-javascript-object-notation-json"><span class="xref std std-term">JavaScript Object Notation (JSON)</span></a> formatted file that is typically named
+config.json. The configuration file controls many different aspects of the simulation. For example,</p>
+<ul class="simple">
+<li>The names of the <a class="reference internal" href="glossary.html#term-campaign-file"><span class="xref std std-term">campaign file</span></a> and <a class="reference internal" href="glossary.html#term-input-data-files"><span class="xref std std-term">input data files</span></a> to use</li>
+<li>Simulation-wide demographics, climate, and migration data</li>
+<li>General disease attributes such as infectivity, immunity, mortality, and so on</li>
+<li>Attributes specific to the disease type being modeled, including treatment efficacy</li>
+<li>The reports to output from the simulation</li>
+</ul>
+<p>IDM provides complete simulation scenarios in the <a class="reference external" href="https://github.com/InstituteforDiseaseModeling/EMOD/tree/master/Regression">Regression</a> directory
+on GitHub. Within each of the simulation subdirectories, there is a config.json file. The
+Scenarios subdirectory contains the files used in the tutorials.</p>
+<p>The following is an example of configuration file.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Acquisition_Blocking_Immunity_Decay_Rate&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="nt">&quot;Acquisition_Blocking_Immunity_Duration_Before_Decay&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+        <span class="nt">&quot;Age_Initialization_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;DISTRIBUTION_SIMPLE&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Animal_Reservoir_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;NO_ZOONOSIS&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Base_Incubation_Period&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Base_Individual_Sample_Rate&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Base_Infectious_Period&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="nt">&quot;Base_Infectivity&quot;</span><span class="p">:</span> <span class="mf">3.5</span><span class="p">,</span>
+        <span class="nt">&quot;Base_Mortality&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Base_Population_Scale_Factor&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Birth_Rate_Dependence&quot;</span><span class="p">:</span> <span class="s2">&quot;POPULATION_DEP_RATE&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Birth_Rate_Time_Dependence&quot;</span><span class="p">:</span> <span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Burnin_Cache_Mode&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Burnin_Cache_Period&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Burnin_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Campaign_Filename&quot;</span><span class="p">:</span> <span class="s2">&quot;campaign.json&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Climate_Model&quot;</span><span class="p">:</span> <span class="s2">&quot;CLIMATE_OFF&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Config_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;00_DEFAULT&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Custom_Reports_Filename&quot;</span><span class="p">:</span> <span class="s2">&quot;NoCustomReports&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Death_Rate_Dependence&quot;</span><span class="p">:</span> <span class="s2">&quot;NONDISEASE_MORTALITY_OFF&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Default_Geography_Initial_Node_Population&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="nt">&quot;Default_Geography_Torus_Size&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="nt">&quot;Demographics_Filenames&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;../00_Default/demographics.json&quot;</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;Enable_Absolute_Time&quot;</span><span class="p">:</span> <span class="s2">&quot;NO&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Aging&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Birth&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Default_Reporting&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Default_Shedding_Function&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Demographics_Birth&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Demographics_Builtin&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Demographics_Gender&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Demographics_Other&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Demographics_Reporting&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Disease_Mortality&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Heterogeneous_Intranode_Transmission&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Immune_Decay&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Immunity&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Interventions&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Maternal_Infection_Transmission&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Property_Output&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Spatial_Output&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Superinfection&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Enable_Vital_Dynamics&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Geography&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Immunity_Acquisition_Factor&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Immunity_Initialization_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;DISTRIBUTION_OFF&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Immunity_Mortality_Factor&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Immunity_Transmission_Factor&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Incubation_Period_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;FIXED_DURATION&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Individual_Sampling_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;TRACK_ALL&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Infection_Updates_Per_Timestep&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Infectious_Period_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;EXPONENTIAL_DURATION&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Infectivity_Scale_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;CONSTANT_INFECTIVITY&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Job_Node_Groups&quot;</span><span class="p">:</span> <span class="s2">&quot;Chassis08&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Job_Priority&quot;</span><span class="p">:</span> <span class="s2">&quot;BELOWNORMAL&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Listed_Events&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="nt">&quot;Load_Balance_Filename&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Local_Simulation&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Maternal_Transmission_Probability&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Max_Individual_Infections&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Max_Node_Population_Samples&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+        <span class="nt">&quot;Migration_Model&quot;</span><span class="p">:</span> <span class="s2">&quot;NO_MIGRATION&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Minimum_Adult_Age_Years&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+        <span class="nt">&quot;Mortality_Blocking_Immunity_Decay_Rate&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span>
+        <span class="nt">&quot;Mortality_Blocking_Immunity_Duration_Before_Decay&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+        <span class="nt">&quot;Mortality_Time_Course&quot;</span><span class="p">:</span> <span class="s2">&quot;DAILY_MORTALITY&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Node_Grid_Size&quot;</span><span class="p">:</span> <span class="mf">0.042</span><span class="p">,</span>
+        <span class="nt">&quot;Num_Cores&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Number_Basestrains&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Number_Substrains&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;PKPD_Model&quot;</span><span class="p">:</span> <span class="s2">&quot;FIXED_DURATION_CONSTANT_EFFECT&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Population_Density_C50&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="nt">&quot;Population_Density_Infectivity_Correction&quot;</span><span class="p">:</span> <span class="s2">&quot;CONSTANT_INFECTIVITY&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Population_Scale_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;USE_INPUT_FILE&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Report_Event_Recorder&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Run_Number&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Sample_Rate_0_18mo&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Sample_Rate_10_14&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Sample_Rate_15_19&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Sample_Rate_18mo_4yr&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Sample_Rate_20_Plus&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Sample_Rate_5_9&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Sample_Rate_Birth&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Serialization_Test_Cycles&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Simulation_Duration&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>
+        <span class="nt">&quot;Simulation_Timestep&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Simulation_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GENERIC_SIM&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Start_Time&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Susceptibility_Scale_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;CONSTANT_SUSCEPTIBILITY&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Transmission_Blocking_Immunity_Decay_Rate&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="nt">&quot;Transmission_Blocking_Immunity_Duration_Before_Decay&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+        <span class="nt">&quot;x_Air_Migration&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;x_Birth&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;x_Local_Migration&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;x_Other_Mortality&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;x_Population_Immunity&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;x_Regional_Migration&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;x_Sea_Migration&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;x_Temporary_Larval_Habitat&quot;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="overlay-file">
+<h2>Overlay file<a class="headerlink" href="#overlay-file" title="Permalink to this headline">¶</a></h2>
+<p>As you work more with EMOD, you may want to change the values of a view parameters of interest
+while keeping the rest constant, for example, when running simulation experiments or testing source
+code changes.</p>
+<p>You have the option of creating an <a class="reference internal" href="glossary.html#term-overlay-file"><span class="xref std std-term">overlay file</span></a> to keep configuration parameters of
+interest in a separate file from the complete configuration file that contains default values. These
+files can be flattened into a single file and the values in the overlay file will override those
+in the default file.</p>
+<p>See <a class="reference internal" href="parameter-configuration.html"><span class="doc">Configuration parameters</span></a> for a comprehensive list and description of all parameters
+available to use in the configuration file for this simulation type.</p>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="intro-campaign.html" class="btn btn-neutral float-right" title="Campaign file" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="intro-inputs.html" class="btn btn-neutral" title="Input data files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

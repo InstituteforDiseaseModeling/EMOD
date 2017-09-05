@@ -81,7 +81,7 @@
             
             
               <div class="version">
-                2.10
+                2.13
               </div>
             
           
@@ -189,9 +189,9 @@ individuals who meet certain criteria. For example, you may want to distribute b
 where a mosquito-borne disease is endemic or vaccinate only young children who are at highest risk.
 This topic describes how to distribute interventions to specific geographic nodes or groups of
 individuals.</p>
-<div class="section" id="target-to-nodes">
-<h2>Target to nodes<a class="headerlink" href="#target-to-nodes" title="Permalink to this headline">¶</a></h2>
-<p>Targeting geographic nodes with a particular intervention is controlled by the <strong>Nodeset_Config</strong>
+<div class="section" id="target-to-nodes-using-nodeset-config">
+<h2>Target to nodes using Nodeset_Config<a class="headerlink" href="#target-to-nodes-using-nodeset-config" title="Permalink to this headline">¶</a></h2>
+<p>Targeting geographic nodes with a particular intervention can be controlled by the <strong>Nodeset_Config</strong>
 parameter in the campaign file. To distribute the intervention to all nodes, simply set it to
 &#8220;NodeSetAll&#8221;. To distribute to a subset of nodes, follow the steps below.</p>
 <ol class="arabic simple">
@@ -230,13 +230,14 @@ to all nodes within the defined bounds.</li>
 </pre></div>
 </div>
 </div>
-<div class="section" id="target-to-groups">
-<h2>Target to groups<a class="headerlink" href="#target-to-groups" title="Permalink to this headline">¶</a></h2>
-<p>To target interventions to particular groups in a population, you must first create those groups in
-the <a class="reference internal" href="glossary.html#term-demographics-file"><span class="xref std std-term">demographics file</span></a> using <strong>IndividualProperties</strong>. Then, in the campaign file, you can
-target an intervention or outbreak to a group of individuals based on the properties applied to
-them. See <a class="reference internal" href="howto-demographics-heterogeneity.html"><span class="doc">Configure heterogeneous populations</span></a> for instructions on creating the groups.</p>
-<p>Just as creating groups based on age works a little differently than groups based on other
+<div class="section" id="target-to-nodes-or-individuals-using-properties">
+<h2>Target to nodes or individuals using properties<a class="headerlink" href="#target-to-nodes-or-individuals-using-properties" title="Permalink to this headline">¶</a></h2>
+<p>To target interventions to particular individuals or nodes based on their property values, you must
+first define those properties in the <a class="reference internal" href="glossary.html#term-demographics-file"><span class="xref std std-term">demographics file</span></a> using <strong>IndividualProperties</strong> or
+<strong>NodeProperties</strong>. Then, in the campaign file, you can target an intervention or outbreak to a
+group of individuals based on the properties applied to them. See
+<a class="reference internal" href="howto-demographics-heterogeneity.html"><span class="doc">Configure heterogeneity using individual and node properties</span></a> for instructions on defining properties.</p>
+<p>Just as defining properties based on age works a little differently than other
 properties, targeting an intervention to a particular age range works a little differently than
 targeting an intervention to other properties.</p>
 <p>To target interventions to properties other than age:</p>
@@ -250,7 +251,7 @@ ignore the property restriction.</li>
 <p>To target interventions to age ranges:</p>
 <ol class="arabic">
 <li><p class="first">In the campaign file, in the event you want to target, set <strong>Target_Demographic</strong> to
-&#8220;ExplicitAgeRanges.&#8221;</p>
+ExplicitAgeRanges.</p>
 </li>
 <li><p class="first">Add the <strong>Target_Age_Min</strong> and set to the lower age bound.</p>
 </li>
@@ -296,11 +297,10 @@ risk or living in suburban settings.</p>
 </pre></div>
 </div>
 <p>Even if you have multiple properties defined in the demographics file, you can target interventions
-to a single property value in the same way. Individuals can have membership in any of the groups
-from the other property type.</p>
-<p>In this example, groups are defined for both the &#8220;Risk&#8221; and &#8220;Place&#8221; property types. The outbreak only
-targets the &#8220;Suburban&#8221; group using the &#8220;Place&#8221; property type. Individuals can have membership in
-either of the &#8220;Risk&#8221; groups.</p>
+to a single property value in the same way. Individuals can be assigned any of the values for the
+other property types.</p>
+<p>In this example, values are defined for both the &#8220;Risk&#8221; and &#8220;Place&#8221; property types. The outbreak only
+targets &#8220;Suburban&#8221; individuals using the &#8220;Place&#8221; property type. Individuals can have any &#8220;Risk&#8221; value.</p>
 <img alt="_images/howto-targeted-2.png" src="_images/howto-targeted-2.png" />
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
@@ -331,7 +331,7 @@ either of the &#8220;Risk&#8221; groups.</p>
 </div>
 <div class="section" id="single-property-multiple-values">
 <h3>Single property, multiple values<a class="headerlink" href="#single-property-multiple-values" title="Permalink to this headline">¶</a></h3>
-<p>If you want to target multiple groups with the same property type, such as both &#8220;Urban&#8221; and &#8220;Rural&#8221;
+<p>If you want to target multiple values with the same property type, such as both &#8220;Urban&#8221; and &#8220;Rural&#8221;
 values with the &#8220;Place&#8221; property, you must use multiple interventions. You cannot have more than one
 group with the same property value in one intervention or outbreak.</p>
 <p>In this example, an outbreak starts at day 0 in the both the &#8220;Rural&#8221; and &#8220;Urban&#8221; groups.</p>
@@ -386,13 +386,12 @@ group with the same property value in one intervention or outbreak.</p>
 </div>
 <div class="section" id="multiple-properties-individuals-must-match-all-values">
 <h3>Multiple properties, individuals must match all values<a class="headerlink" href="#multiple-properties-individuals-must-match-all-values" title="Permalink to this headline">¶</a></h3>
-<p>To target individuals who belong to multiple groups defined by different property types, such as
+<p>To target individuals how have values defined by different property types, such as
 people who are both urban and low risk, you can use a single intervention or outbreak. When two
-groups from multiple properties are targeted in one intervention or outbreak, the event is only
-applied to individuals that belong to both of the groups.</p>
-<p>In this example, a vaccine intervention is targeted at the &#8220;Low&#8221; risk group and the &#8220;Suburban&#8221; place
-group. Individuals that are targeted to receive the vaccine must be in both the &#8220;Suburban&#8221; group and
-the &#8220;Low&#8221; risk group.</p>
+values from multiple properties are targeted in one intervention or outbreak, the event is only
+applied to individuals that are assigned both values.</p>
+<p>In this example, a vaccine intervention is targeted at low risk, suburban place individuals.
+Individuals who are targeted to receive the vaccine must have both property values.</p>
 <img alt="_images/howto-targeted-4.png" src="_images/howto-targeted-4.png" />
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
@@ -428,12 +427,12 @@ the &#8220;Low&#8221; risk group.</p>
 </div>
 <div class="section" id="multiple-properties-individuals-must-match-at-least-one-value">
 <h3>Multiple properties, individuals must match at least one value<a class="headerlink" href="#multiple-properties-individuals-must-match-at-least-one-value" title="Permalink to this headline">¶</a></h3>
-<p>However, if you want to target multiple groups, but individuals need to be a member of only one of
-the specified groups to qualify for the intervention, you must create an intervention for each  of
-the targeted groups. The events are applied separately and are not restricted to individuals that
-belong to both of the groups. Instead, individuals can belong to either of the groups.</p>
-<p>In this example, an outbreak is targeted at the &#8220;Low&#8221; risk group in the first intervention and is
-targeted at the &#8220;Suburban&#8221; group in the second intervention.</p>
+<p>However, if you want to target multiple properties, but individuals need to have only one of the specified
+values to qualify for the intervention, you must create a separate campaign event for each  of
+the targeted property values. The events are applied separately and are applied to individuals that have
+one OR both property values; they need not have both.</p>
+<p>In this example, an outbreak is targeted at low risk individuals in the first intervention and suburban
+individuals in the second intervention.</p>
 <img alt="_images/howto-targeted-5.png" src="_images/howto-targeted-5.png" />
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
@@ -482,12 +481,51 @@ targeted at the &#8220;Suburban&#8221; group in the second intervention.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
+<p>Alternatively, if you want to target multiple properties, one of which is the age bin, you could use
+<strong>Property_Restriction_Within_Node</strong> and the <strong>Age_Bin</strong> properties and
+<strong>Age_Bin_Property_From_X_To_Y</strong> values that are automatically created by EMOD when you use the
+<strong>Age_Bin_Edges_In_Years</strong> demographics parameter (see <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters). This
+allows you to use a single campaign event instead of multiple ones as you would with
+<strong>&#8220;Target_Demographic&#8221;: &#8220;ExplicitAgeRanges&#8221;</strong>.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Distributions&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;EventCoordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeLevelHealthTriggeredIV&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;Property_Restrictions_Within_Node&quot;</span><span class="p">:</span> <span class="p">[{</span>
+                            <span class="nt">&quot;Risk&quot;</span><span class="p">:</span> <span class="s2">&quot;LOW&quot;</span><span class="p">,</span>
+                            <span class="nt">&quot;Age_Bin&quot;</span><span class="p">:</span> <span class="s2">&quot;Age_Bin_Property_From_0_To_5&quot;</span>
+                        <span class="p">},</span>
+                        <span class="p">{</span>
+                            <span class="nt">&quot;Risk&quot;</span><span class="p">:</span> <span class="s2">&quot;MEDIUM&quot;</span><span class="p">,</span>
+                            <span class="nt">&quot;Age_Bin&quot;</span><span class="p">:</span> <span class="s2">&quot;Age_Bin_Property_From_5_To_13&quot;</span>
+                        <span class="p">},</span>
+                        <span class="p">{</span>
+                            <span class="nt">&quot;Risk&quot;</span><span class="p">:</span> <span class="s2">&quot;HIGH&quot;</span><span class="p">,</span>
+                            <span class="nt">&quot;Age_Bin&quot;</span><span class="p">:</span> <span class="s2">&quot;Age_Bin_Property_From_13_To_125&quot;</span>
+                        <span class="p">}</span>
+                    <span class="p">]</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="target-an-age-range">
 <h3>Target an age range<a class="headerlink" href="#target-an-age-range" title="Permalink to this headline">¶</a></h3>
 <p>Targeting an intervention to an age range is set up differently than targeting an intervention
 to other property types. However, you can combine both kinds of restrictions. In this example, a
-vaccine campaign is targeted at the &#8220;Urban&#8221; group for individuals who are age 0 to 5.</p>
+vaccine campaign is targeted at urban individuals who are age 0 to 5.</p>
 <img alt="_images/howto-targeted-6.png" src="_images/howto-targeted-6.png" />
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
@@ -581,6 +619,7 @@ vaccine campaign is targeted at the &#8220;Urban&#8221; group for individuals wh
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
       <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
       <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
 
   
 

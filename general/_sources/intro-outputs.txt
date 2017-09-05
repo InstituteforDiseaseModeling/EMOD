@@ -2,32 +2,18 @@
 Output files
 ============
 
-.. only:: not training
+After running a simulation, the simulation data is extracted, aggregated, and saved as an
+:term:`output report`. Depending on your configuration, one or more output reports will be created,
+each of which summarize different data from the simulation. Output reports can be in JSON, CSV, or
+binary file formats.
 
-    After running a simulation, the simulation data is extracted, aggregated, and saved as an
-    :term:`output report`. Depending on your configuration, one or more output reports will be created,
-    each of which summarize different data from the simulation. Output reports can be in JSON, CSV, or
-    binary file formats.
+The |EMOD_s| functionality that produces an output report is known as a :term:`reporter`. |EMOD_s|
+provides several built-in reporters for outputting data from simulations. By default, |EMOD_s| will
+always generate the report InsetChart.json, which contains the simulation-wide average disease
+prevalence by :term:`time step`. If none of the provided reports generates the output report that
+you require, you can create a custom reporter.
 
-    The |EMOD_s| functionality that produces an output report is known as a :term:`reporter`. |EMOD_s|
-    provides several built-in reporters for outputting data from simulations. By default, |EMOD_s| will
-    always generate the report InsetChart.json, which contains the simulation-wide average disease
-    prevalence by :term:`time step`. If none of the provided reports generates the output report that
-    you require, you can create a custom reporter.
+If you want to visualize the data output from an |EMOD_s| simulation, you must use graphing
+software to plot the output reports. In addition to output reports, |EMOD_s| will generate error
+and logging files to help troubleshoot any issues you may encounter.
 
-    If you want to visualize the data output from an |EMOD_s| simulation, you must use graphing
-    software to plot the output reports. In addition to output reports, |EMOD_s| will generate error
-    and logging files to help troubleshoot any issues you may encounter.
-
-.. only:: training
-
-    After running a simulation, the simulation data is extracted, aggregated, and saved as an
-    :term:`output report` under the output subdirectory within each scenario. The |quick| produces
-    the output reports InsetChart.json, which contains the simulation-wide average disease
-    :term:`prevalence`, :term:`incidence`, and other measurements by :term:`time step`, and
-    BinnedReport.json, which contains the same information divided into bins. For example,
-    prevalence for different age ranges.
-
-    To visualize the output, you can then plot any measurement in the output data within the |Excel|
-    for the most flexibility. Or, you can run Windows batch files to plot the InsetChart.json data
-    and additional data, such as campaign cost, births, deaths, recovered population, and more.

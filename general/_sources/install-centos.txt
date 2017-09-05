@@ -1,12 +1,18 @@
-===================================
+=============================
 Install |EMOD_s| on |Centos|
-===================================
+=============================
 
-Follow the steps below to install |EMOD_s| on |Centos_supp| environments. The setup script installs
-most prerequisite software, including Python and the Python packages dateutil, six, pyparsing,
-NumPy, and matplotlib. Other prerequisites, such as |Boost_supp| and  |MSMPI_supp|, are declared
-by the script as required. Because the installation instructions will vary based on the particular
-distribution you are running, instruction information is not included here.
+Follow the steps below to install |EMOD_s| on |Centos_supp| environments. This installs the pre-
+built |linux_binary| and all software needed to run simulations. The setup script installs most
+prerequisite software, including Python and the Python packages dateutil, six, pyparsing, NumPy, and
+matplotlib. Other prerequisites, such as |Boost_supp| and  |MSMPI_supp|, are declared by the script
+as required. Because the installation instructions will vary based on the particular distribution
+you are running, instruction information is not included here.
+
+.. note::
+
+    If you want to download and modify the |EMOD_s| source code and build the |linux_binary|
+    yourself, see :doc:`dev-install-overview`.
 
 .. include:: ../reuse/testing-linux.txt
 

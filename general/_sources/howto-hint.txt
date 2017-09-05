@@ -31,10 +31,8 @@ Configure heterogeneous disease transmission
 
     This topic describes how to use the |HINT_s| feature to add heterogeneous transmission to your
     generic model by defining population groups and the transmission rate between each of these
-    groups. :doc:`hint-scaling` describes the mathematics underpinning |HINT_s|. The `training
-    documentation`_ also contains tutorials demonstrating how to use this feature.
+    groups. :doc:`hint-scaling` describes the mathematics underpinning |HINT_s|.
 
-    .. _training documentation: ./../training/hint-tutorial-overview.html
 
     #.  In the configuration file, set the following:
 
