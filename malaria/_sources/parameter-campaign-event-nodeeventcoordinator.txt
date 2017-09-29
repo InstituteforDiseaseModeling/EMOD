@@ -1,0 +1,22 @@
+====================
+NodeEventCoordinator
+====================
+
+The **NodeEventCoordinator** coordinator class distributes node-level interventions. After distribution, the
+coordinator expires. See the following JSON example and table, which shows all available parameters
+for this event coordinator.
+
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-nodeeventcoordinator.csv
+
+.. literalinclude:: ../json/campaign-nodeeventcoordinator.json
+   :language: json
+
+

@@ -1,0 +1,20 @@
+=====================================
+InsectKillingFenceHousingModification
+=====================================
+
+The **InsectKillingFenceHousingModification** intervention class is similar to
+:doc:`parameter-campaign-node-insectkillingfence`, but is individual-based instead of node-based. Vector control
+surrounds a designated house with a fence that kills mosquitoes that fly across the path
+of the fence.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-insectkillingfencehousingmodification.csv
+
+.. literalinclude:: ../json/campaign-insectkillingfencehousingmodification.json
+   :language: json

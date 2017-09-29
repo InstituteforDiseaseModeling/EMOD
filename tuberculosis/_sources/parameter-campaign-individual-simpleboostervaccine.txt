@@ -1,0 +1,1 @@
+.. include:: ../general/parameter-campaign-individual-simpleboostervaccine.rst

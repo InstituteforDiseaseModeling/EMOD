@@ -1,0 +1,22 @@
+=============================
+Events and event coordinators
+=============================
+
+.. include:: ../reuse/campaign-event-ec-overview.txt
+
+The following events and event coordinators are available to use with the malaria simulation type.
+
+.. toctree::
+   :maxdepth: 2
+   :titlesonly:
+
+   parameter-campaign-event-campaignevent
+   parameter-campaign-event-calendareventcoordinator
+   parameter-campaign-event-communityhealthworkereventcoordinator
+   parameter-campaign-event-coveragebynodeeventcoordinator
+   parameter-campaign-event-multiinterventioneventcoordinator
+   parameter-campaign-event-nchoosereventcoordinator
+   parameter-campaign-event-nodeeventcoordinator
+   parameter-campaign-event-simpleinterventiondistributioneventcoordinator
+   parameter-campaign-event-standardinterventiondistributioneventcoordinator
+

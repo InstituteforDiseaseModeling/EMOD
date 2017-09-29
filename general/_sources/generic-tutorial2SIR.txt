@@ -276,7 +276,7 @@ A. Baseline outbreak
 --------------------
 
 This scenario uses an **OutbreakIndividual** event at day 30 as the initial seeding of the infection.
-For more information, see :ref:`iv-outbreakindividual` parameters.
+For more information, see **OutbreakIndividual** parameters.
 
 .. literalinclude:: ../json/generic2-interventions1.json
   :language: JSON
@@ -291,7 +291,7 @@ B. Vaccinations for all individuals
 
 The following campaign event has three vaccination campaigns that are 7 days apart. The campaigns
 have a 100% vaccine take rate and a 50% per-campaign coverage. The vaccine is acquisition-blocking
-and full immunity lasts for 10 years. For more information, see :ref:`SimpleVaccine <iv-simplevaccine>` parameters.
+and full immunity lasts for 10 years. For more information, see **SimpleVaccine** parameters.
 
 Set the following parameters:
 

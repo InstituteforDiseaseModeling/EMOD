@@ -1,0 +1,22 @@
+================
+ActiveDiagnostic
+================
+
+The **ActiveDiagnostic** intervention class uses the same parameters as :doc:`parameter-campaign-individual-simplediagnostic`,
+but it is used specifically to identify individuals with active TB. As with **SimpleDiagnostic**,
+**Base_Sensitivity** and **Base_Specificity** are used to determine the individual’s test result.
+Typical usage includes one-time or repeated checks for active TB in the general population.
+
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-activediagnostic.csv
+
+.. literalinclude:: ../json/campaign-activediagnostic.json
+   :language: json
+

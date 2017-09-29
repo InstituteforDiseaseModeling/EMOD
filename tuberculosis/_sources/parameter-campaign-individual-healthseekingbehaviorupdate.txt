@@ -1,0 +1,19 @@
+===========================
+HealthSeekingBehaviorUpdate
+===========================
+
+The **HealthSeekingBehaviorUpdate** intervention class dynamically updates the probability of care-
+seeking behaviors. The initial probability of care is set in
+:doc:`parameter-campaign-individual-healthseekingbehaviorupdateable`.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-healthseekingbehaviorupdate.csv
+
+.. literalinclude:: ../json/campaign-healthseekingbehaviorupdate.json
+   :language: json

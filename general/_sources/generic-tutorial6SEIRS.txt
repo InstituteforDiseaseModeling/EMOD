@@ -157,7 +157,7 @@ Baseline outbreak
 
 This scenario uses an **OutbreakIndividual** event at day 1 as the initial seeding of the infection.
 The value of **Demographic_Coverage** is 0.001 which is about 10 infected individuals in a population
-of 10,000. For more information, see :ref:`iv-outbreakindividual` parameters.
+of 10,000. For more information, see **OutbreakIndividual** parameters.
 
 .. literalinclude:: ../json/generic6-interventions1.json
   :language: JSON
@@ -169,7 +169,7 @@ Vaccination campaigns
 The following campaign event adds a vaccination campaign at day 500, with 100% vaccine take rate
 (**Vaccine_Take**) and 80% coverage (**Demographic_Coverage**) for all individuals. The vaccine is
 acquisition-blocking and full immunity lasts for 10 years (3650 days). For more information, see
-:ref:`SimpleVaccine <iv-simplevaccine>` parameters.
+**SimpleVaccine** parameters.
 
 .. literalinclude:: ../json/generic6-interventions2.json
   :language: JSON

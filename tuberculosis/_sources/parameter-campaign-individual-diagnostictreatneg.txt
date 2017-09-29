@@ -1,0 +1,21 @@
+==================
+DiagnosticTreatNeg
+==================
+
+The **DiagnosticTreatNeg** intervention class is similar to :doc:`parameter-campaign-individual-simplediagnostic`,
+but enables greater specification of what occurs if an individual receives a test (particularly a
+negative test, which cannot be specified using **SimpleDiagnostic** or
+:doc:`parameter-campaign-individual-activediagnostic`) or defaults (such as getting tested but not
+receiving test results).
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-diagnostictreatneg.csv
+
+.. literalinclude:: ../json/campaign-diagnostictreatneg.json
+   :language: json

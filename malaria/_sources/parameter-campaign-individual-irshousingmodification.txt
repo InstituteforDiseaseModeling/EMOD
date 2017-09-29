@@ -1,0 +1,20 @@
+======================
+IRSHousingModification
+======================
+
+The **IRSHousingModification** intervention class includes Indoor Residual Spraying (IRS) in the
+simulation. IRS is another key vector control tool in which insecticide is sprayed on the interior
+walls of a house so that mosquitoes resting on the walls after consuming a blood meal will die. IRS
+can also have a repellency effect.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-irshousingmodification.csv
+
+.. literalinclude:: ../json/campaign-irshousingmodification.json
+   :language: json

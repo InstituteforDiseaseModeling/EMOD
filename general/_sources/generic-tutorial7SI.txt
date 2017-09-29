@@ -143,7 +143,7 @@ Initial outbreak
 ----------------
 
 This simulation uses an **OutbreakIndividual** event at day 30 for the initial seeding. For more
-information, see :ref:`iv-outbreakindividual` parameters.
+information, see **OutbreakIndividual** parameters.
 
 .. literalinclude:: ../json/generic7-interventions1.json
   :language: JSON

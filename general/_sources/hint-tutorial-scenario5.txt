@@ -131,7 +131,7 @@ Interventions
 This simulation uses an **OutbreakIndividual** event to demonstrate the ability to target an outbreak at
 a geographical region represented as a heterogeneous group. The **OutbreakIndividual** targets the
 infection at 1% of the individuals living in census tract 7 at day 20. For more information,
-see :ref:`iv-outbreakindividual` parameters.
+see **OutbreakIndividual** parameters.
 
 You can see the complete campaign.json file in the in the Scenarios\HINT\05_SeattleCommuting
 directory.

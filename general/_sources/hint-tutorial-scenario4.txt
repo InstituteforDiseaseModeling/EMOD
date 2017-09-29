@@ -315,7 +315,7 @@ Initialization of population immunity
 A ten-year burn-in allows for the age-structure of the vaccination schedule (including waning) to be
 initialized. Four vaccine-distribution events are specified in the campaign file, each targeted only
 at individuals with the "VaccineTake" value for the "Accessibility" property in the demographics
-file. For more information, see :ref:`SimpleVaccine <iv-simplevaccine>`.
+file. For more information, see **SimpleVaccine**.
 
 #.  A vaccination calendar to all children under 12 years old, so that
     the rest of their childhood vaccinations are distributed as they age: 2 month, 4 month, 6 month,

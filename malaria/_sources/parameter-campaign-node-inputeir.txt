@@ -1,0 +1,19 @@
+========
+InputEIR
+========
+
+The **InputEIR** intervention class enables the Entomological Inoculation Rate (EIR) to be configured for
+each month of the year in a particular node. The EIR is the number of mosquito bites per night
+multiplied by the proportion of those bites that are positive for sporozoites.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-inputeir.csv
+
+.. literalinclude:: ../json/campaign-inputeir.json
+   :language: json

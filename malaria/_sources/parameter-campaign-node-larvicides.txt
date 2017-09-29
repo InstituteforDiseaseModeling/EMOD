@@ -1,0 +1,22 @@
+==========
+Larvicides
+==========
+
+The **Larvicides** intervention class configures habitat reduction for mosquito breeding sites that are poisoned
+by vector-transported larvicides. This intervention accommodates vector-transported larvicides where
+resting surfaces may be treated not just with **IRSHousingModification** to kill mosquitoes, but
+also with particles that can be dispersed by mosquitoes to poison larval development sites. In
+particular, a relatively small fraction of resting events may result in a relatively large fraction
+of larval habitat.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-larvicides.csv
+
+.. literalinclude:: ../json/campaign-larvicides.json
+   :language: json

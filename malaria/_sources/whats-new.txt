@@ -24,7 +24,8 @@ different mosquito species.
 **ScaleLarvalHabitat** by species
     This new intervention enables species-specific effects of habitat interventions within
     shared habitat types, such that habitat availability is modified on a per-species level.
-    For more information, see :ref:`iv-scalelarvalhabitat` parameters.
+
+.. For more information, see :ref:`iv-scalelarvalhabitat` parameters.
 
 Breaking changes
     PIECEWISE_MONTHLY has been changed to LINEAR_SPLINE.

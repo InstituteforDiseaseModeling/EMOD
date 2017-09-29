@@ -1,0 +1,19 @@
+============================
+ScreeningHousingModification
+============================
+
+The **ScreeningHousingModification** intervention class implements housing screens as a vector
+control effort. Housing screens are used to decrease the number of mosquitoes that can enter indoors
+and therefore reduce indoor biting.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-screeninghousingmodification.csv
+
+.. literalinclude:: ../json/campaign-screeninghousingmodification.json
+   :language: json

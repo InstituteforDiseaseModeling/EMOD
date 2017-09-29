@@ -1,0 +1,23 @@
+==========
+Ivermectin
+==========
+
+The **Ivermectin** intervention class modifies the feeding outcome probabilities for both indoor-
+feeding and outdoor-feeding mosquitoes. It is an individually-distributed intervention that
+configures the waning of the drug's killing effect on the adult mosquito population. This
+intervention enables exploration of the impact of giving humans an insecticidal drug, and how the
+effectiveness and duration of the drug's killing-effect interacts with other interventions. For
+example, you can look at the impact of controlling and eliminating malaria transmission using both
+anti-parasite drugs that clear existing infections and insecticidal drugs.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-ivermectin.csv
+
+.. literalinclude:: ../json/campaign-ivermectin.json
+   :language: json

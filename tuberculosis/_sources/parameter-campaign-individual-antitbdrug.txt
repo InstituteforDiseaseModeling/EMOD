@@ -1,0 +1,19 @@
+==========
+AntiTBDrug
+==========
+
+The **AntiTBDrug** intervention class specifies how TB drugs affect individuals in the model. After
+treatment, individuals may achieve true cure, return to the latent state but quickly relapse, return
+completely to the latent state, die during treatment, or fail treatment completely.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-antitbdrug.csv
+
+.. literalinclude:: ../json/campaign-antitbdrug.json
+   :language: json
