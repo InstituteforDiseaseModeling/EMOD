@@ -204,28 +204,28 @@ easier. See <a class="reference internal" href="parameter-campaign.html"><span c
 available. See the example default campaign file below.</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Initial Seeding&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="p">{</span>
-            <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span>
-                <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-                    <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-                    <span class="nt">&quot;Outbreak_Source&quot;</span><span class="p">:</span> <span class="s2">&quot;PrevalenceIncrease&quot;</span><span class="p">,</span>
-                    <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;OutbreakIndividual&quot;</span>
-                <span class="p">},</span>
-                <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span>
-            <span class="p">},</span>
             <span class="nt">&quot;Event_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Outbreak&quot;</span><span class="p">,</span>
             <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
                 <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
             <span class="p">},</span>
             <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
-            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span>
+                <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                    <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                    <span class="nt">&quot;Outbreak_Source&quot;</span><span class="p">:</span> <span class="s2">&quot;PrevalenceIncrease&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;OutbreakIndividual&quot;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
         <span class="p">}</span>
-    <span class="p">],</span>
-    <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -297,8 +297,17 @@ nested JSON objects and any logical categories <em>retained</em>.</p>
         <span class="p">{</span>
             <span class="nt">&quot;VACCINATION&quot;</span><span class="p">:</span> <span class="s2">&quot;BEGIN&quot;</span><span class="p">,</span>
             <span class="nt">&quot;Event_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>
             <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
                 <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+                <span class="nt">&quot;Number_Repetitions&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+                <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Timesteps_Between_Repetitions&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span><span class="p">,</span>
                 <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
                     <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
                     <span class="nt">&quot;Waning_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -313,37 +322,28 @@ nested JSON objects and any logical categories <em>retained</em>.</p>
                     <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                     <span class="nt">&quot;Vaccine_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;AcquisitionBlocking&quot;</span><span class="p">,</span>
                     <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span>
-                <span class="p">},</span>
-                <span class="nt">&quot;Number_Repetitions&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-                <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Timesteps_Between_Repetitions&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
-                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span>
+                <span class="p">}</span>
             <span class="p">},</span>
-            <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
-            <span class="p">},</span>
-            <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>
             <span class="nt">&quot;VACCINATION&quot;</span><span class="p">:</span> <span class="s2">&quot;END&quot;</span>
         <span class="p">},</span>
         <span class="p">{</span>
             <span class="nt">&quot;Event_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Outbreak&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>
             <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
                 <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span>
+                <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span><span class="p">,</span>
                 <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
                     <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
                     <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
                     <span class="nt">&quot;Outbreak_Source&quot;</span><span class="p">:</span> <span class="s2">&quot;PrevalenceIncrease&quot;</span><span class="p">,</span>
                     <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;OutbreakIndividual&quot;</span>
-                <span class="p">},</span>
-                <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span>
-            <span class="p">},</span>
-            <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
-            <span class="p">},</span>
-            <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
-            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
         <span class="p">}</span>
     <span class="p">]</span>
 <span class="p">}</span>

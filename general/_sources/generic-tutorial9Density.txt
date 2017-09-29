@@ -128,7 +128,7 @@ Interventions
 
 This simulation uses an **OutbreakIndividual** event for repeated infection seeding. The campaign.json
 file is in the Scenarios\Generic\09_DensityScaling directory. For more information, see
-:ref:`iv-outbreakindividual` parameters.
+**OutbreakIndividual** parameters.
 
 
 .. literalinclude:: ../json/generic9-interventions1.json

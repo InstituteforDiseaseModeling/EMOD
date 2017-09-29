@@ -1,0 +1,19 @@
+=============
+SpaceSpraying
+=============
+
+The **SpaceSpraying** intervention class implements node-level vector control by spraying pesticides outdoors.
+This intervention targets specific habitat types, and imposes a repellent effect or mortality rate
+on all targeted mosquitoes.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-spacespraying.csv
+
+.. literalinclude:: ../json/campaign-spacespraying.json
+   :language: json

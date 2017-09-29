@@ -1,0 +1,68 @@
+==========
+Event list
+==========
+
+The following list provides possible values for built-in events. These events can be broadcast to
+nodes to trigger interventions.
+
+.. note::
+
+  Not all events are appropriate for every simulation type.
+
+
+* Births
+* DiseaseDeaths
+* EighteenMonthsOld
+* Emigrating
+* EnteredRelationship
+* EveryTimeStep
+* EveryUpdate
+* ExitedRelationship
+* FirstCoitalAct
+* FourteenWeeksPregnant
+* GaveBirth
+* HappyBirthday
+* HIVNewlyDiagnosed
+* HIVNonPreARTToART
+* HIVPreARTToART
+* HIVSymptomatic
+* HIVTestedNegative
+* HIVTestedPositive
+* Immigrating
+* InterventionDisqualified
+* NewClinicalCase
+* NewInfectionEvent
+* NewSevereCase
+* NodePropertyChange
+* NonDiseaseDeaths
+* NoTrigger
+* Pregnant
+* PropertyChange
+* ProviderOrdersTBTest
+* SixWeeksOld
+* StartedART
+* STIDebut
+* STINewInfection
+* STIPostImmigrating
+* STIPreEmigrating
+* StoppedART
+* TBActivation
+* TBActivationExtrapulm
+* TBActivationPostRelapse
+* TBActivationPresymptomatic
+* TBActivationSmearNeg
+* TBActivationSmearPos
+* TBFailedDrugRegimen
+* TBMDRTestDefault
+* TBMDRTestNegative
+* TBMDRTestPositive
+* TBPendingRelapse
+* TBRelapseAfterDrugRegimen
+* TBRestartHSB
+* TBStartDrugRegimen
+* TBStopDrugRegimen
+* TBTestDefault
+* TBTestNegative
+* TBTestPositive
+* TestPositiveOnSmear
+* TwelveWeeksPregnant

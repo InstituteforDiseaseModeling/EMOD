@@ -1,0 +1,18 @@
+==============
+AnimalFeedKill
+==============
+
+The **AnimalFeedKill** intervention class imposes node-targeted mortality to a vector that
+feeds on animals.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-animalfeedkill.csv
+
+.. literalinclude:: ../json/campaign-animalfeedkill.json
+   :language: json

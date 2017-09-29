@@ -138,7 +138,7 @@ Outbreaks
 This simulation uses an **OutbreakIndividual** event for an infrequent infection seeding. The
 **Timesteps_Between_Repetitions** and **Number_Repetitions** parameters are set to reintroduce the
 outbreak once every two years for 10 years. With larger population sizes, the endemic can sustain
-itself. For more information, see :ref:`iv-outbreakindividual` parameters.
+itself. For more information, see **OutbreakIndividual** parameters.
 
 .. literalinclude:: ../json/generic4-interventions2.json
   :language: JSON

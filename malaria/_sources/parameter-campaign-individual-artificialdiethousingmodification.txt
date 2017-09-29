@@ -1,0 +1,26 @@
+=================================
+ArtificialDietHousingModification
+=================================
+
+The **ArtificialDietHousingModification** intervention class is used to include feeding stations for
+vectors at an individual level in a simulation. For a node-level effect that takes place at the
+village level, use :doc:`parameter-campaign-node-artificialdiet` instead. An artificial diet
+diverts the vector from feeding on the human population, resulting in a two-fold benefit:
+
+#. The uninfected mosquitoes avoid biting infected humans some of the time, therefore
+   decreasing the amount of human-to-vector transmission.
+
+#. Infectious vectors are diverted to feed on the artificial diet instead of the humans, therefore
+   decreasing the amount of vector-to-human transmission.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-artificialdiethousingmodification.csv
+
+.. literalinclude:: ../json/campaign-artificialdiethousingmodification.json
+   :language: json

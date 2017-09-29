@@ -185,9 +185,15 @@
 <p>You define the initial disease outbreak and interventions used a campaign for a simulation through a
 JSON-formatted campaign file, typically called campaign.json. It is hierarchically organized into
 logical groups of parameters that can have arbitrary levels of nesting. For some interventions,
-there can be a very complex hierarchical structure, including recursion. The campaign file must
-be in the same directory as the <a class="reference internal" href="glossary.html#term-configuration-file"><span class="xref std std-term">configuration file</span></a> and the name must be specified by the
-configuration parameter <strong>Campaign_Filename</strong>. This topic describes how to create the campaign file.</p>
+there can be a very complex hierarchical structure, including recursion. This framework enables
+rigorous testing of possible control strategies to determine which events or combination of events
+will best aid in the elimination of disease for specific geographic locations.</p>
+<p>For a complete list of campaign parameters that are available to use with this simulation type and
+more detail about the campaign file structure, see <a class="reference internal" href="parameter-campaign.html"><span class="doc">Campaign parameters</span></a>. For more information about
+JSON, see <a class="reference internal" href="parameter-overview.html"><span class="doc">EMOD parameter reference</span></a>.</p>
+<p>For the interventions to take place, the campaign file must be in the same directory as the
+<a class="reference internal" href="glossary.html#term-configuration-file"><span class="xref std std-term">configuration file</span></a> and you must set the configuration parameters <strong>Enable_Interventions</strong> to
+1 and <strong>Campaign_Filename</strong> to the name of the campaign file.</p>
 <p>The EMOD <a class="reference external" href="https://github.com/InstituteforDiseaseModeling/EMOD/tree/master/Regression">Regression</a> directory contains many different subdirectories that contain
 configuration, campaign, and other associated files to run simulations that represent real-world
 scenarios. Within the each subdirectory, there is usually a single campaign file (campaign.json),
@@ -196,29 +202,17 @@ been created by combining campaign_overrides.json with one of the default files 
 <a class="reference external" href="https://github.com/InstituteforDiseaseModeling/EMOD/tree/master/Regression/defaults">Regression/defaults</a>. The naming of these files is an arbitrary convention used at IDM;
 you may name this files anything you choose. See <a class="reference internal" href="howto-campaign-overlay.html"><span class="doc">Use campaign overlay files</span></a> for more information
 flattening two campaign files.</p>
-<p>For a complete list of campaign parameters that are available to use with this simulation type,
-see <a class="reference internal" href="parameter-campaign.html"><span class="doc">Campaign parameters</span></a>. For more information about JSON, see <a class="reference internal" href="parameter-overview.html"><span class="doc">EMOD parameter reference</span></a>.</p>
-<p>To distribute an intervention, you must configure the following:</p>
-<dl class="docutils">
-<dt>Campaign event</dt>
-<dd>A JSON object that determines <strong>when</strong> and <strong>where</strong> an intervention is distributed during a campaign.</dd>
-<dt>Event coordinator</dt>
-<dd>A JSON object that determines <strong>who</strong> will receive a particular intervention during a campaign.</dd>
-<dt>Intervention</dt>
-<dd>A JSON object that determines <strong>what</strong> will be distributed to reduce the spread of a disease. An
-intervention can be distributed either to an individual (such as a vaccine, drug, or bednet) or
-to a node (such as a larvicide). Sometimes this can be an intermediate intervention that
-schedules another intervention.</dd>
-</dl>
+<p>Although you can create campaign files entirely from scratch, it is often easier to start from an
+existing campaign file and modify it to meet your needs. The simplest method is to edit the
+parameters or parameter values in the JSON file in any text editor. You may also create or modify
+the files using a scripting language, as with configuration files. See <a class="reference internal" href="howto-configuration.html"><span class="doc">Create a configuration file</span></a>
+for examples.</p>
 <p>The following is an example of campaign file that has two events (SimpleVaccine and Outbreak) that
 occur in all nodes at day 1 and day 30, respectively. Each event contains an event coordinator that
 describes who receives the intervention (everyone, with the vaccine repeated three times) and the
-configuration for the intervention itself.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">The <strong>Outbreak</strong> must be the last event in the campaign file or none of the interventions
-will take place.</p>
-</div>
+configuration for the intervention itself. Note that the nested JSON elements have been organized to
+best illustrate their hierarchy, but that many files in the Regression directory list the parameters
+and nested objects differently.</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Vaccine&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -226,8 +220,17 @@ will take place.</p>
     <span class="p">[</span>
         <span class="p">{</span>
             <span class="nt">&quot;Event_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>
             <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
                 <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+                <span class="nt">&quot;Number_Repetitions&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+                <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Timesteps_Between_Repetitions&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span><span class="p">,</span>
                 <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
                     <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
                     <span class="nt">&quot;Waning_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -242,36 +245,27 @@ will take place.</p>
                     <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                     <span class="nt">&quot;Vaccine_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;AcquisitionBlocking&quot;</span><span class="p">,</span>
                     <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span>
-                <span class="p">},</span>
-                <span class="nt">&quot;Number_Repetitions&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-                <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Timesteps_Between_Repetitions&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
-                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span>
+                <span class="p">}</span>
             <span class="p">},</span>
-            <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
-            <span class="p">},</span>
-            <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="p">{</span>
             <span class="nt">&quot;Event_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Outbreak&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>
             <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
                 <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span>
+                <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span><span class="p">,</span>
                 <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
                     <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
                     <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
                     <span class="nt">&quot;Outbreak_Source&quot;</span><span class="p">:</span> <span class="s2">&quot;PrevalenceIncrease&quot;</span><span class="p">,</span>
                     <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;OutbreakIndividual&quot;</span>
-                <span class="p">},</span>
-                <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span>
-            <span class="p">},</span>
-            <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
-            <span class="p">},</span>
-            <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
-            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
         <span class="p">}</span>
     <span class="p">]</span>
 <span class="p">}</span>
@@ -281,7 +275,13 @@ will take place.</p>
 <h2>Multiple interventions<a class="headerlink" href="#multiple-interventions" title="Permalink to this headline">¶</a></h2>
 <p>When creating multiple interventions, either of the same type or different types, they will
 generally be distributed independently without regard to whether a person has already received another
-intervention. For example, say you create two <strong>SimpleBednet</strong> interventions and both interventions
+intervention.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The event containing the outbreak &#8220;intervention&#8221; must be the last one listed in the campaign
+file or none of the disease control interventions will take place.</p>
+</div>
+<p>For example, say you create two <strong>SimpleBednet</strong> interventions and both interventions
 have <strong>Demographic_Coverage</strong> set to 0.5 (50% demographic coverage). This value is the probability
 that each individual in the target population will receive the intervention. It does not guarantee
 that the exact fraction of the target population set by <strong>Demographic_Coverage</strong> receives the
@@ -290,24 +290,6 @@ intervention.</p>
 of the distributions and the two distributions will be independent. Therefore, each individual has a
 75% chance of receiving at least one bednet.</p>
 <img alt="_images/howto-multiple.png" src="_images/howto-multiple.png" />
-</div>
-<div class="section" id="create-a-new-campaign-event">
-<h2>Create a new campaign event<a class="headerlink" href="#create-a-new-campaign-event" title="Permalink to this headline">¶</a></h2>
-<p>Although you can create campaign files entirely from scratch, it is often easier to start from an
-existing campaign file and modify it to meet your needs. Any of the campaign files in the
-<a class="reference external" href="https://github.com/InstituteforDiseaseModeling/EMOD/tree/master/Regression">Regression</a> directory may be used. The simplest method is to edit the parameters or parameter values
-in the JSON file in any text editor. You may also create or modify the files using a scripting
-language, as with configuration files. See <a class="reference internal" href="howto-configuration.html"><span class="doc">Create a configuration file</span></a> for examples.</p>
-<ol class="arabic simple">
-<li>In the <strong>Events</strong> array, create a new empty JSON object. This object will contain all parameters
-for the new campaign event.</li>
-<li>In this object, add and set values for the <strong>Event_Name</strong> and <strong>class</strong> parameters.</li>
-<li>Add the <strong>Nodeset_Config</strong> parameter to define in which geographic nodes this even will occur.</li>
-<li>Add the <strong>Event_Coordinator_Config</strong> parameter and assign a JSON object that will contain
-multiple parameters that control who receives the intervention.</li>
-<li>In this object, add the <strong>Intervention_Config</strong> parameter and assign a JSON object that will
-contain multiple parameters that control which intervention is distributed.</li>
-</ol>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="howto-schema.html">Generate a list of all available parameters (a schema)</a></li>

@@ -91,7 +91,7 @@ Migration input file parameters
 -------------------------------
 
 The following parameters enable or disable the specific type of migration. For more information, see
-:ref:`Migration <config-migration>` parameters.
+:ref:`config-migration` parameters.
 
 
 Set the following parameters:
@@ -210,9 +210,9 @@ Set the following parameters:
 Intervention
 ============
 
-This simulation uses an **Outbreak** event for repeated infection seeding. This simulation uses the
+This simulation uses an **Outbreak** intervention for repeated infection seeding. This simulation uses the
 campaign.json in the <path_to_directory>\Regression\Scenarios\Generic\10_Zoonosis directory. For more
-information, see :ref:`iv-outbreak` parameters.
+information, see :doc:`parameter-campaign-node-outbreak` parameters.
 
 .. literalinclude:: ../json/generic10-interventions1.json
   :language: JSON

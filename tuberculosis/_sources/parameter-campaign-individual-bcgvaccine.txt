@@ -1,0 +1,19 @@
+==========
+BCGVaccine
+==========
+
+The **BCGVaccine** intervention class includes vaccination in the simulation. Vaccination can reduce
+the likelihood of infection or transmission of pathogens. This intervention adds further
+functionality to vaccination by including the ability to vary vaccine take with age.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-bcgvaccine.csv
+
+.. literalinclude:: ../json/campaign-bcgvaccine.json
+   :language: json

@@ -227,7 +227,7 @@ The simulation seeds an initial measles outbreak with a prevalence of 1% in the 
 
 Age groups do not use the **PropertyRestrictions** parameter. It uses the **Target_Demographic**
 parameter with the value set to "ExplicitAgeRanges", which will use the values in **Target_Age_Min**
-and **Target_Age_Max**. For more information, see :ref:`ec-eventcoordinator` parameters.
+and **Target_Age_Max**. For more information, see event coordinator parameters.
 
 The campaign file (campaign.json) is in the
 Scenarios\HINT\03_AgeAndAccess\A_BaselineOutbreak directory.
@@ -260,7 +260,7 @@ B: Age-targeted outreach vaccination campaign
 This simulation adds an age targeted vaccination on day 1 followed by the same outbreak seeding
 specified in the first scenario on day 2. The campaign configuration file (campaign.json) is in
 the Scenarios\HINT\03_AgeAndAccess\B_AgeTargetedVaccine directory. For more information, see
-:ref:`SimpleVaccine <iv-simplevaccine>` parameters.
+**SimpleVaccine** parameters.
 
 
 .. literalinclude:: ../json/hint3-interventions2.json
@@ -291,7 +291,7 @@ accessibility group but does not reach those in the "Hard" accessibility group.
 This is followed by an outbreak that originates in the "Hard" accessibility group in the 0.5 to 6
 year olds. In the first two scenarios, the outbreak originated in the "Easy" accessibility group
 among older children. This outbreak begins in the "Hard" accessibility group. For more information,
-see :ref:`iv-outbreakindividual` and  :ref:`SimpleVaccine <iv-simplevaccine>` parameters.
+see **OutbreakIndividual** and  **SimpleVaccine** parameters.
 
 The campaign configuration file (campaign.json) is in the
 Scenarios\HINT\03_AgeAndAccess\C_AccessTargetedVaccine directory.

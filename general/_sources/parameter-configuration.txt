@@ -110,7 +110,6 @@ Incubation
     :widths: 10, 5, 5, 5, 5, 20, 5
     :file: ../csv/config-incubation-generic.csv
 
-.. no disease-specific incubation params -- even so, I should duplicate and rename these tables
 
 .. _config-infectivity:
 

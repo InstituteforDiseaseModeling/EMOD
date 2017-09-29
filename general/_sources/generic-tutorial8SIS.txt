@@ -131,7 +131,7 @@ Initial outbreak
 ----------------
 
 This simulation uses an **OutbreakIndividual** event at day 1 to provide the initial seeding.  For more
-information, see :ref:`iv-outbreakindividual` parameters.
+information, see **OutbreakIndividual** parameters.
 
 .. literalinclude:: ../json/generic8-interventions1.json
   :language: JSON

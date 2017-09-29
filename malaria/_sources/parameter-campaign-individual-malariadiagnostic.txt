@@ -1,0 +1,19 @@
+=================
+MalariaDiagnostic
+=================
+
+The **MalariaDiagnostic** intervention class is similar to :doc:`parameter-campaign-individual-simplediagnostic`,
+but distributes a test for malaria. There are three types of configurable diagnostics, each with their
+own sensitivity parameters.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-malariadiagnostic.csv
+
+.. literalinclude:: ../json/campaign-malariadiagnostic.json
+   :language: json

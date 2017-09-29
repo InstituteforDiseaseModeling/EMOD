@@ -1,0 +1,700 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>MigrateFamily &mdash; HIV Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within HIV Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="HIV Model  documentation" href="index.html"/>
+        <link rel="up" title="Node-level interventions" href="parameter-campaign-node-interventions.html"/>
+        <link rel="next" title="NodeLevelHealthTriggeredIV" href="parameter-campaign-node-nodelevelhealthtriggerediv.html"/>
+        <link rel="prev" title="ImportPressure" href="parameter-campaign-node-importpressure.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> HIV Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HIV-disease-overview.html">HIV disease overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HIV-model-overview.html">HIV model overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HIV-IDM.html">HIV research at IDM</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="parameter-demographics.html">Demographics parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameter-configuration.html">Configuration parameters</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="parameter-campaign.html">Campaign parameters</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="parameter-campaign-event-coordinators.html">Events and event coordinators</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="parameter-campaign-node-interventions.html">Node-level interventions</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="parameter-campaign-node-birthtriggerediv.html">BirthTriggeredIV</a></li>
+<li class="toctree-l4"><a class="reference internal" href="parameter-campaign-node-importpressure.html">ImportPressure</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">MigrateFamily</a></li>
+<li class="toctree-l4"><a class="reference internal" href="parameter-campaign-node-nodelevelhealthtriggerediv.html">NodeLevelHealthTriggeredIV</a></li>
+<li class="toctree-l4"><a class="reference internal" href="parameter-campaign-node-nodelevelhealthtriggeredivscaleupswitch.html">NodeLevelHealthTriggeredIVScaleUpSwitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="parameter-campaign-node-nodepropertyvaluechanger.html">NodePropertyValueChanger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="parameter-campaign-node-outbreak.html">Outbreak</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="parameter-campaign-individual-interventions.html">Individual-level interventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter-campaign-waningeffects.html">Waning effect classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter-campaign-event-list.html">Event list</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">HIV Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">HIV</a> &raquo;</li>
+      
+          <li><a href="parameter-overview.html">EMOD parameter reference</a> &raquo;</li>
+      
+          <li><a href="parameter-campaign.html">Campaign parameters</a> &raquo;</li>
+      
+          <li><a href="parameter-campaign-node-interventions.html">Node-level interventions</a> &raquo;</li>
+      
+    <li>MigrateFamily</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="migratefamily">
+<h1>MigrateFamily<a class="headerlink" href="#migratefamily" title="Permalink to this headline">¶</a></h1>
+<p>The <strong>MigrateFamily</strong> intervention class tells residents of the targeted node to go on a family trip. The
+duration of time residents wait before migration can be configured; the &#8220;timer&#8221; for this duration
+does not start until all residents are &#8220;home&#8221;.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add &#8220;dummy&#8221; parameters to add contextual information to your files.</p>
+</div>
+<p>The table below describes all possible parameters with which this class can be configured. The JSON
+example that follows shows one potential configuration.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Duration_At_Node_Exponential_Period</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>6</td>
+<td>The period (1/rate) to use for an exponential distribution for the amount of time spent at the destination node when <strong>Duration_At_Node_Distribution_Type</strong> is set to EXPONENTIAL_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Duration_At_Node_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;EXPONENTIAL_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_At_Node_Exponential_Period&quot;</span><span class="p">:</span> <span class="mi">4</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Duration_At_Node_Fixed</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>6</td>
+<td>The value to use for a fixed distribution for the amount of time spent at the destination node when <strong>Duration_At_Node_Distribution_Type</strong> is set to FIXED_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Duration_At_Node_Distribution_Type&quot;</span> <span class="p">:</span> <span class="s2">&quot;FIXED_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_At_Node_Fixed&quot;</span><span class="p">:</span> <span class="mi">10</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Duration_At_Node_Gausian_Mean</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>6</td>
+<td>The mean value to use for a Gaussian distribution for the amount of time spent at the destination node when <strong>Duration_At_Node_Distribution_Type</strong> is set to GAUSSIAN_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Duration_At_Node_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_At_Node_Gausian_Mean&quot;</span><span class="p">:</span> <span class="mf">9.0</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_At_Node_Gausian_StdDev&quot;</span><span class="p">:</span> <span class="mf">2.0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Duration_At_Node_Gausian_StdDev</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>1</td>
+<td>The standard deviation to use for a Gaussian distribution for the amount of time spent at the destination node when <strong>Duration_At_Node_Distribution_Type</strong> is set to GAUSSIAN_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Duration_At_Node_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_At_Node_Gausian_Mean&quot;</span><span class="p">:</span> <span class="mf">9.0</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_At_Node_Gausian_StdDev&quot;</span><span class="p">:</span> <span class="mf">2.0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Duration_At_Node_Poisson_Mean</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>6</td>
+<td>The mean to use for a Poisson distribution for the amount of time spent at the destination node when <strong>Duration_At_Node_Distribution_Type</strong> is set to POISSON_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Duration_At_Node_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;POISSON_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_At_Node_Poisson_Mean&quot;</span><span class="p">:</span> <span class="mi">4</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Duration_At_Node_Distribution_Type</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NOT_INITIALIZED</td>
+<td><p class="first">The shape of the distribution for the amount of time spent at the destination node for intervention-based migration. Possible values are:</p>
+<dl class="last docutils">
+<dt>NOT_INITIALIZED</dt>
+<dd>No distribution set.</dd>
+<dt>FIXED_DURATION</dt>
+<dd>A constant duration.</dd>
+<dt>UNIFORM_DURATION</dt>
+<dd>A uniform random draw for the duration.</dd>
+<dt>GAUSSIAN_DURATION</dt>
+<dd>Duration of the active period is defined by the mean and standard deviation of the Gaussian distribution. Negative values are truncated at zero.</dd>
+<dt>EXPONENTIAL_DURATION</dt>
+<dd>The active period is the mean of the exponential random draw.</dd>
+<dt>POISSON_DURATION</dt>
+<dd>The active period is the mean of the random Poisson draw.</dd>
+<dt>LOG_NORMAL_DURATION</dt>
+<dd>The active period is a log normal distribution defined by a mean and log width.</dd>
+<dt>BIMODAL_DURATION</dt>
+<dd>The distribution is bimodal, the duration is a fraction of the active period for a specified period of time and equal to the active period otherwise.</dd>
+<dt>PIECEWISE_CONSTANT</dt>
+<dd>The distribution is specified with a list of years and a matching list of values. The duration at a given year is that specified for the nearest previous year.</dd>
+<dt>PIECEWISE_LINEAR</dt>
+<dd>The distribution is specified with a list of years and matching list of values. The duration at a given year is a linear interpolation of the specified values.</dd>
+<dt>WEIBULL_DURATION</dt>
+<dd>The duration is a <a class="reference internal" href="glossary.html#term-weibull-distribution"><span class="xref std std-term">Weibull distribution</span></a> with a given scale and shape.</dd>
+<dt>DUAL_TIMESCALE_DURATION</dt>
+<dd>The duration is two exponential distributions with given means.</dd>
+</dl>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Duration_At_Node_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DURATION&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Duration_At_Node_Uniform_Max</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>0</td>
+<td>The maximum value to use for a uniform distribution for the amount of time spent at the destination node when <strong>Duration_At_Node_Distribution_Type</strong> is set to UNIFORM_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Duration_At_Node_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_At_Node_Uniform_Max&quot;</span><span class="p">:</span> <span class="mi">75</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_At_Node_Uniform_Min&quot;</span><span class="p">:</span> <span class="mi">45</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Duration_At_Node_Uniform_Min</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>0</td>
+<td>The minimum value to use for a uniform distribution for the amount of time spent at the destination node when <strong>Duration_At_Node_Distribution_Type</strong> is set to UNIFORM_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Duration_At_Node_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_At_Node_Uniform_Max&quot;</span><span class="p">:</span> <span class="mi">75</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_At_Node_Uniform_Min&quot;</span><span class="p">:</span> <span class="mi">45</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Duration_Before_Leaving_Exponential_Period</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>6</td>
+<td>The period (1/rate) to use for an exponential distribution of the number of days to wait before migrating to the destination node when <strong>Duration_Before_Leaving_Distribution_Type</strong> is set to EXPONENTIAL_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;EXPONENTIAL_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Exponential_Period&quot;</span><span class="p">:</span> <span class="mi">4</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Duration_Before_Leaving_Fixed</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>6</td>
+<td>The value to use for a fixed distribution of the number of days to wait before migrating to the destination node when <strong>Duration_Before_Leaving_Distribution_Type</strong> is set to FIXED_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;FIXED_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Fixed&quot;</span><span class="p">:</span> <span class="mi">4</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Duration_Before_Leaving_Gausian_Mean</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>6</td>
+<td>The mean value to use for a Gaussian distribution of the number of days to wait before migrating to the destination node when <strong>Duration_Before_Leaving_Distribution_Type</strong> is set to GAUSSIAN_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Gausian_Mean&quot;</span><span class="p">:</span> <span class="mf">9.0</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Gausian_StdDev&quot;</span><span class="p">:</span> <span class="mf">2.0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Duration_Before_Leaving_Gausian_StdDev</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>1</td>
+<td>The standard deviation to use for a Gaussian distribution of the number of days to wait before migrating to the destination node when <strong>Duration_Before_Leaving_Distribution_Type</strong> is set to GAUSSIAN_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Gausian_Mean&quot;</span><span class="p">:</span> <span class="mf">9.0</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Gausian_StdDev&quot;</span><span class="p">:</span> <span class="mf">2.0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Duration_Before_Leaving_Poisson_Mean</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>6</td>
+<td>The mean to use for a Poisson distribution of the number of days to wait before migrating to the destination node when <strong>Duration_Before_Leaving_Distribution_Type</strong> is set to POISSON_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;POISSON_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Poisson_Mean&quot;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Duration_Before_Leaving_Distribution_Type</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NOT_INITIALIZED</td>
+<td><p class="first">The shape of the distribution of the number of days to wait before migrating to the destination node for intervention-based migration. Possible values are:</p>
+<dl class="last docutils">
+<dt>NOT_INITIALIZED</dt>
+<dd>No distribution set.</dd>
+<dt>FIXED_DURATION</dt>
+<dd>A constant duration.</dd>
+<dt>UNIFORM_DURATION</dt>
+<dd>A uniform random draw for the duration.</dd>
+<dt>GAUSSIAN_DURATION</dt>
+<dd>Duration of the active period is defined by the mean and standard deviation of the Gaussian distribution. Negative values are truncated at zero.</dd>
+<dt>EXPONENTIAL_DURATION</dt>
+<dd>The active period is the mean of the exponential random draw.</dd>
+<dt>POISSON_DURATION</dt>
+<dd>The active period is the mean of the random Poisson draw.</dd>
+<dt>LOG_NORMAL_DURATION</dt>
+<dd>The active period is a log normal distribution defined by a mean and log width.</dd>
+<dt>BIMODAL_DURATION</dt>
+<dd>The distribution is bimodal, the duration is a fraction of the active period for a specified period of time and equal to the active period otherwise.</dd>
+<dt>PIECEWISE_CONSTANT</dt>
+<dd>The distribution is specified with a list of years and a matching list of values. The duration at a given year is that specified for the nearest previous year.</dd>
+<dt>PIECEWISE_LINEAR</dt>
+<dd>The distribution is specified with a list of years and matching list of values. The duration at a given year is a linear interpolation of the specified values.</dd>
+<dt>WEIBULL_DURATION</dt>
+<dd>The duration is a <a class="reference internal" href="glossary.html#term-weibull-distribution"><span class="xref std std-term">Weibull distribution</span></a> with a given scale and shape.</dd>
+<dt>DUAL_TIMESCALE_DURATION</dt>
+<dd>The duration is two exponential distributions with given means.</dd>
+</dl>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;FIXED_DURATION&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Duration_Before_Leaving_Uniform_Max</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>0</td>
+<td>The maximum value to use for a uniform distribution of the number of days to wait before migrating to the destination node when <strong>Duration_Before_Leaving_Distribution_Type</strong> is set to UNIFORM_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Uniform_Max&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Uniform_Min&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Duration_Before_Leaving_Uniform_Min</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>0</td>
+<td>The minimum value to use for a uniform distribution of the number of days to wait before migrating to the destination node when <strong>Duration_Before_Leaving_Distribution_Type</strong> is set to UNIFORM_DURATION.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Uniform_Max&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+    <span class="nt">&quot;Duration_Before_Leaving_Uniform_Min&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Is_Moving</td>
+<td>boolean</td>
+<td>NA</td>
+<td>NA</td>
+<td>0</td>
+<td>Set to true (1) to indicate the individual is permanently moving to a new home node for intervention-based migration.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Is_Moving&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>NodeID_To_Migrate_To</td>
+<td>integer</td>
+<td>0</td>
+<td>2.15E+0</td>
+<td>0</td>
+<td>The destination node ID for intervention-based migration.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeID_To_Migrate_To&quot;</span><span class="p">:</span> <span class="mi">26</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Disqualifying_Properties</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Intervention_Name</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>New_Property_Value</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeLevelHealthTriggeredIV&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Trigger_Condition_List&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;NewInfectionEvent&quot;</span><span class="p">],</span>
+                <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                <span class="nt">&quot;Actual_NodeIntervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;MigrateFamily&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;NodeID_To_Migrate_To&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+                    <span class="nt">&quot;Duration_Before_Leaving_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;FIXED_DURATION&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;Duration_Before_Leaving_Fixed&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                    <span class="nt">&quot;Duration_At_Node_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;FIXED_DURATION&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;Duration_At_Node_Fixed&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                    <span class="nt">&quot;Is_Moving&quot;</span><span class="p">:</span> <span class="mi">0</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="parameter-campaign-node-nodelevelhealthtriggerediv.html" class="btn btn-neutral float-right" title="NodeLevelHealthTriggeredIV" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="parameter-campaign-node-importpressure.html" class="btn btn-neutral" title="ImportPressure" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

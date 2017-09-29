@@ -152,7 +152,7 @@ Outbreak with re-seeding
 This simulation uses an **OutbreakIndividual** event for an infrequent infection seeding. The
 **Timesteps_Between_Repetitions** and **Number_Repetitions** parameters are set to reintroduce the
 outbreak once every 180 days for 10 years, to allow reintroduction of disease. For more information,
-see :ref:`iv-outbreakindividual` parameters.
+see **OutbreakIndividual** parameters.
 
 
 .. literalinclude:: ../json/generic5-interventions1.json

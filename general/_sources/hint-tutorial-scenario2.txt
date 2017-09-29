@@ -128,7 +128,7 @@ Interventions
 =============
 
 An **OutbreakIndividual** event seeds the initial infection on day 1 of the simulation. For more
-information, see :ref:`iv-outbreakindividual` parameters.
+information, see **OutbreakIndividual** parameters.
 
 You can view the campaign.json file in the in the Scenarios\HINT\02_SchoolClosure directory.
 
