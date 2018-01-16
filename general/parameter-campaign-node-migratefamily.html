@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -151,8 +157,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Generic Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Generic Model</a>
+        
       </nav>
 
 
@@ -193,15 +201,15 @@
   <div class="section" id="migratefamily">
 <h1>MigrateFamily<a class="headerlink" href="#migratefamily" title="Permalink to this headline">¶</a></h1>
 <p>The <strong>MigrateFamily</strong> intervention class tells residents of the targeted node to go on a family trip. The
-duration of time residents wait before migration can be configured; the &#8220;timer&#8221; for this duration
-does not start until all residents are &#8220;home&#8221;.</p>
+duration of time residents wait before migration can be configured; the “timer” for this duration
+does not start until all residents are “home”.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add &#8220;dummy&#8221; parameters to add contextual information to your files.</p>
+<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add “dummy” parameters to add contextual information to your files.</p>
 </div>
 <p>The table below describes all possible parameters with which this class can be configured. The JSON
 example that follows shows one potential configuration.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -610,15 +618,18 @@ example that follows shows one potential configuration.</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="parameter-campaign-node-nodelevelhealthtriggerediv.html" class="btn btn-neutral float-right" title="NodeLevelHealthTriggeredIV" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="parameter-campaign-node-nodelevelhealthtriggerediv.html" class="btn btn-neutral float-right" title="NodeLevelHealthTriggeredIV" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="parameter-campaign-node-importpressure.html" class="btn btn-neutral" title="ImportPressure" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="parameter-campaign-node-importpressure.html" class="btn btn-neutral" title="ImportPressure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -627,7 +638,7 @@ example that follows shows one potential configuration.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -654,7 +665,8 @@ example that follows shows one potential configuration.</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

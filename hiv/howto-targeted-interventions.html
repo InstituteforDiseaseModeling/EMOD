@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -145,8 +151,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">HIV Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">HIV Model</a>
+        
       </nav>
 
 
@@ -193,19 +201,19 @@ individuals.</p>
 <h2>Target to nodes using Nodeset_Config<a class="headerlink" href="#target-to-nodes-using-nodeset-config" title="Permalink to this headline">¶</a></h2>
 <p>Targeting geographic nodes with a particular intervention can be controlled by the <strong>Nodeset_Config</strong>
 parameter in the campaign file. To distribute the intervention to all nodes, simply set it to
-&#8220;NodeSetAll&#8221;. To distribute to a subset of nodes, follow the steps below.</p>
+“NodeSetAll”. To distribute to a subset of nodes, follow the steps below.</p>
 <ol class="arabic simple">
 <li>In the JSON object for the campaign event, set <strong>Nodeset_Config</strong> using one of the following
 two options:<ul>
 <li>Set it to an empty JSON object. Within that object, set the following:<ul>
-<li>Set <strong>class</strong> to &#8220;NodeSetNodeList&#8221;.</li>
+<li>Set <strong>class</strong> to “NodeSetNodeList”.</li>
 <li>Set <strong>Node_List</strong> to an array that contains a comma-delimited list of nodes that set
 where the intervention will be distributed.</li>
 </ul>
 </li>
 <li>Set it to an empty JSON object. Within that object, set the following:<ul>
-<li>Set <strong>class</strong> to &#8220;NodeSetPolygon&#8221;.</li>
-<li>Set <strong>Polygon_Format</strong> to &#8220;SHAPE&#8221;.</li>
+<li>Set <strong>class</strong> to “NodeSetPolygon”.</li>
+<li>Set <strong>Polygon_Format</strong> to “SHAPE”.</li>
 <li>Set <strong>Vertices</strong> to a comma-delimited list of latitude and longitude pairs that define
 the outer boundary of the region you want to target. The intervention will be distributed
 to all nodes within the defined bounds.</li>
@@ -242,7 +250,7 @@ properties, targeting an intervention to a particular age range works a little d
 targeting an intervention to other properties.</p>
 <p>To target interventions to properties other than age:</p>
 <ol class="arabic simple">
-<li>In the campaign file, in the event you want to target, set <strong>Target_Demographic</strong> to &#8220;Everyone&#8221;.</li>
+<li>In the campaign file, in the event you want to target, set <strong>Target_Demographic</strong> to “Everyone”.</li>
 <li>Add the <strong>Property_Restrictions</strong> parameter and set to an empty array.</li>
 <li>In that array, add a list of JSON key-value pairs of the property type and value that specifies
 the groups to apply the intervention to. If the name of the element is not valid, EMOD will
@@ -267,8 +275,8 @@ risk or living in suburban settings.</p>
 <div class="section" id="single-property-single-value">
 <h3>Single property, single value<a class="headerlink" href="#single-property-single-value" title="Permalink to this headline">¶</a></h3>
 <p>The following examples show how to target interventions based on a single property value.</p>
-<p>At day 0 of the simulation, an outbreak starts. <strong>Target_Demographic</strong> is set to &#8220;Everyone&#8221; but
-<strong>Property_Restrictions</strong> restricts the start of the outbreak to the &#8220;Urban&#8221; group.</p>
+<p>At day 0 of the simulation, an outbreak starts. <strong>Target_Demographic</strong> is set to “Everyone” but
+<strong>Property_Restrictions</strong> restricts the start of the outbreak to the “Urban” group.</p>
 <img alt="_images/howto-targeted-1.png" src="_images/howto-targeted-1.png" />
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
@@ -299,8 +307,8 @@ risk or living in suburban settings.</p>
 <p>Even if you have multiple properties defined in the demographics file, you can target interventions
 to a single property value in the same way. Individuals can be assigned any of the values for the
 other property types.</p>
-<p>In this example, values are defined for both the &#8220;Risk&#8221; and &#8220;Place&#8221; property types. The outbreak only
-targets &#8220;Suburban&#8221; individuals using the &#8220;Place&#8221; property type. Individuals can have any &#8220;Risk&#8221; value.</p>
+<p>In this example, values are defined for both the “Risk” and “Place” property types. The outbreak only
+targets “Suburban” individuals using the “Place” property type. Individuals can have any “Risk” value.</p>
 <img alt="_images/howto-targeted-2.png" src="_images/howto-targeted-2.png" />
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
@@ -331,10 +339,10 @@ targets &#8220;Suburban&#8221; individuals using the &#8220;Place&#8221; propert
 </div>
 <div class="section" id="single-property-multiple-values">
 <h3>Single property, multiple values<a class="headerlink" href="#single-property-multiple-values" title="Permalink to this headline">¶</a></h3>
-<p>If you want to target multiple values with the same property type, such as both &#8220;Urban&#8221; and &#8220;Rural&#8221;
-values with the &#8220;Place&#8221; property, you must use multiple interventions. You cannot have more than one
+<p>If you want to target multiple values with the same property type, such as both “Urban” and “Rural”
+values with the “Place” property, you must use multiple interventions. You cannot have more than one
 group with the same property value in one intervention or outbreak.</p>
-<p>In this example, an outbreak starts at day 0 in the both the &#8220;Rural&#8221; and &#8220;Urban&#8221; groups.</p>
+<p>In this example, an outbreak starts at day 0 in the both the “Rural” and “Urban” groups.</p>
 <img alt="_images/howto-targeted-3.png" src="_images/howto-targeted-3.png" />
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
@@ -486,7 +494,7 @@ individuals in the second intervention.</p>
 <strong>Age_Bin_Property_From_X_To_Y</strong> values that are automatically created by EMOD when you use the
 <strong>Age_Bin_Edges_In_Years</strong> demographics parameter (see <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters). This
 allows you to use a single campaign event instead of multiple ones as you would with
-<strong>&#8220;Target_Demographic&#8221;: &#8220;ExplicitAgeRanges&#8221;</strong>.</p>
+<strong>“Target_Demographic”: “ExplicitAgeRanges”</strong>.</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>
@@ -567,15 +575,18 @@ vaccine campaign is targeted at urban individuals who are age 0 to 5.</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="howto-simulations.html" class="btn btn-neutral float-right" title="Run simulations" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="howto-simulations.html" class="btn btn-neutral float-right" title="Run simulations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="howto-campaign-overlay.html" class="btn btn-neutral" title="Use campaign overlay files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="howto-campaign-overlay.html" class="btn btn-neutral" title="Use campaign overlay files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -584,7 +595,7 @@ vaccine campaign is targeted at urban individuals who are age 0 to 5.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -611,7 +622,8 @@ vaccine campaign is targeted at urban individuals who are age 0 to 5.</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

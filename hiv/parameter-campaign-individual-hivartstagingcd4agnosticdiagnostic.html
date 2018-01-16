@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -182,8 +188,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">HIV Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">HIV Model</a>
+        
       </nav>
 
 
@@ -228,11 +236,11 @@
 specify outcomes instead of the results of CD4 testing.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add &#8220;dummy&#8221; parameters to add contextual information to your files.</p>
+<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add “dummy” parameters to add contextual information to your files.</p>
 </div>
 <p>The table below describes all possible parameters with which this class can be configured. The JSON
 example that follows shows one potential configuration.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -398,7 +406,7 @@ This parameter uses <strong>InterpolatedValueMap</strong> to define <strong>Time
 <td>NA</td>
 <td>NA</td>
 <td>UNINITIALIZED</td>
-<td>The <strong>IndividualProperty</strong> key (&#8216;HasActiveTB&#8217;) used to determine whether the individual has TB.</td>
+<td>The <strong>IndividualProperty</strong> key (‘HasActiveTB’) used to determine whether the individual has TB.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Individual_Property_Active_TB_Key&quot;</span> <span class="p">:</span> <span class="s2">&quot;HasActiveTB&quot;</span>
 <span class="p">}</span>
@@ -411,7 +419,7 @@ This parameter uses <strong>InterpolatedValueMap</strong> to define <strong>Time
 <td>NA</td>
 <td>NA</td>
 <td>UNINITIALIZED</td>
-<td>The <strong>IndividualProperty</strong> value (&#8216;Yes&#8217;) used to determine whether the individual has TB.</td>
+<td>The <strong>IndividualProperty</strong> value (‘Yes’) used to determine whether the individual has TB.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span>   <span class="p">{</span>
       
 <span class="nt">&quot;Individual_Property_Active_TB_Value&quot;</span> <span class="p">:</span> <span class="s2">&quot;YES&quot;</span>
@@ -542,7 +550,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>0</td>
 <td>3.40E+3</td>
 <td>1</td>
-<td>The unit &#8216;cost&#8217; assigned to the diagnostic. Setting <strong>Cost_To_Consumer</strong> to zero for all other interventions, and to a non-zero amount for one intervention, provides a convenient way to track the number of times the intervention has been applied in a simulation.</td>
+<td>The unit ‘cost’ assigned to the diagnostic. Setting <strong>Cost_To_Consumer</strong> to zero for all other interventions, and to a non-zero amount for one intervention, provides a convenient way to track the number of times the intervention has been applied in a simulation.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">0.333</span>
 <span class="p">}</span>
@@ -612,7 +620,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>NA</td>
 <td>NA</td>
 <td>0</td>
-<td>If an individual&#8217;s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
+<td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
@@ -765,15 +773,18 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="parameter-campaign-individual-hivdelayedintervention.html" class="btn btn-neutral float-right" title="HIVDelayedIntervention" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="parameter-campaign-individual-hivdelayedintervention.html" class="btn btn-neutral float-right" title="HIVDelayedIntervention" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="parameter-campaign-individual-hivartstagingbycd4diagnostic.html" class="btn btn-neutral" title="HIVARTStagingByCD4Diagnostic" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="parameter-campaign-individual-hivartstagingbycd4diagnostic.html" class="btn btn-neutral" title="HIVARTStagingByCD4Diagnostic" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -782,7 +793,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -809,7 +820,8 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -58,6 +60,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -99,7 +102,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -129,8 +135,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Generic Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Generic Model</a>
+        
       </nav>
 
 
@@ -199,7 +207,7 @@ diagnostic tests, the target demographic, and the timing and cost of interventio
 location of this file is specified in the <a class="reference internal" href="#term-configuration-file"><span class="xref std std-term">configuration file</span></a> with the
 <strong>Campaign_Filename</strong> parameter. Typically, the file name is campaign.json.</dd>
 <dt id="term-channel">channel</dt>
-<dd>A property of the simulation (for example, &#8220;Parasite Prevalence&#8221;) that is accumulated once per
+<dd>A property of the simulation (for example, “Parasite Prevalence”) that is accumulated once per
 simulated <a class="reference internal" href="#term-time-step"><span class="xref std std-term">time step</span></a> and written to file, typically as an array of the accumulated values.</dd>
 <dt id="term-class-factory">class factory</dt>
 <dd>A function that instantiate objects at run-time and use information
@@ -222,7 +230,7 @@ IDM provides demographics files for many geographic regions. This file is consid
 <dt id="term-disease-specific-build">disease-specific build</dt>
 <dd>A build of the EMOD executable (Eradication.exe) built using SCons without any dynamic link libraries (DLLs).</dd>
 <dt id="term-dynamic-link-library-dll">dynamic link library (DLL)</dt>
-<dd>Microsoft&#8217;s implementation of a shared library, separate from the EMOD executable (Eradication.exe), that can be
+<dd>Microsoft’s implementation of a shared library, separate from the EMOD executable (Eradication.exe), that can be
 dynamically loaded (and unloaded when unneeded) at runtime. This loading can be explicit or
 implicit.</dd>
 <dt id="term-emodule">EMODule</dt>
@@ -278,7 +286,7 @@ able to optimize the result more effectively.</dd>
 example is the migration of individuals from one geographic location to another within EMOD
 simulations.</dd>
 <dt id="term-microsolver">microsolver</dt>
-<dd>A microsolver is a type of &#8220;miniature model&#8221; that operates within the framework of EMOD
+<dd>A microsolver is a type of “miniature model” that operates within the framework of EMOD
 to compute a particular set of parameters. Each microsolver, in effect, is creating a
 microsimulation in order to accurately capture the dynamics of that particular aspect of the
 model.</dd>
@@ -321,7 +329,7 @@ behavior. Use EMOD previews at your own discretion.</dd>
 updates, typically used to refer to one of a set of scenarios included in the EMOD
 bundle  and located in the Regression subdirectory of the bundle. Directory names of each
 subdirectory  in Regression describe the main regression attributes, for example,
-&#8220;1_Generic_Seattle_MultiNode&#8221;. Also can refer to the process of regression testing of
+“1_Generic_Seattle_MultiNode”. Also can refer to the process of regression testing of
 software.</dd>
 <dt id="term-release">release</dt>
 <dd>Software that includes new functionality, scientific tutorials leveraging new or existing
@@ -366,11 +374,11 @@ compile-time polymorphism (often more efficient than run-time polymorphism). For
 information and discussion of STL, see <a class="reference external" href="https://en.wikipedia.org/wiki/Standard_Template_Library">Wikipedia</a>.</dd>
 <dt id="term-state-transition-event">state transition event</dt>
 <dd>A change in state (e.g. healthy to infected, undiagnosed to positive diagnosis, or birth)
-that may trigger a subsequent action, often an intervention. &#8220;Campaign events&#8221; should not be
+that may trigger a subsequent action, often an intervention. “Campaign events” should not be
 confused with state transition events.</dd>
 <dt id="term-time-step">time step</dt>
-<dd>A discrete number of hours or days in which the &#8220;simulation states&#8221; of all &#8220;simulation
-objects&#8221; (interventions, infections, immune systems, or individuals) are updated in a
+<dd>A discrete number of hours or days in which the “simulation states” of all “simulation
+objects” (interventions, infections, immune systems, or individuals) are updated in a
 simulation. Each time step will complete processing before launching the next one. For
 example, a time step would process the migration data for populations moving between nodes
 via rail, airline, and road. The migration of individuals between nodes is the last step of
@@ -435,7 +443,7 @@ average annual precipitation, average monthly precipitation, and average monthly
 temperature. Each category is further divided into sub-categories based on temperature and
 precipitation. While the Koppen system does not take such things as temperature extremes,
 average cloud cover, number of days with sunshine, or wind into account, it is a good
-representation of our earth&#8217;s climate.</dd>
+representation of our earth’s climate.</dd>
 <dt id="term-loss-to-follow-up-ltfu">loss to follow-up (LTFU)</dt>
 <dd>Patients who at one point were actively participating in disease treatment or clinical
 research, but have become lost either by error or by becoming unreachable at the point of
@@ -510,15 +518,18 @@ parameter sets the location of the sharp peak.</dd>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dev-install-overview.html" class="btn btn-neutral float-right" title="EMOD source code installation" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dev-install-overview.html" class="btn btn-neutral float-right" title="EMOD source code installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="troubleshooting.html" class="btn btn-neutral" title="Troubleshooting EMOD simulations" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="troubleshooting.html" class="btn btn-neutral" title="Troubleshooting EMOD simulations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -527,7 +538,7 @@ parameter sets the location of the sharp peak.</dd>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -554,7 +565,8 @@ parameter sets the location of the sharp peak.</dd>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

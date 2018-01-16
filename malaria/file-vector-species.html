@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -145,8 +151,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Malaria Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Malaria Model</a>
+        
       </nav>
 
 
@@ -188,7 +196,7 @@
 into bins. It is identical to the <a class="reference internal" href="file-binned.html"><span class="doc">Binned output report</span></a>, with the exception that the bins are based
 on vector species. The vector species report is generated for all malaria or vector simulations that
 contain values in the <strong>Vector_Species_Names</strong> configuration parameter. For example, if
-<strong>Vector_Species_Names</strong> was set to [&#8220;funestus&#8221;, &#8220;gambiae&#8221;], you would be able to see how many
+<strong>Vector_Species_Names</strong> was set to [“funestus”, “gambiae”], you would be able to see how many
 infectious vectors there were for <em>A. funestus</em> and <em>A. gambiae</em>. The file name is
 VectorSpeciesReport.json.</p>
 <div class="section" id="example">
@@ -256,15 +264,18 @@ VectorSpeciesReport.json.</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="file-error-logging.html" class="btn btn-neutral float-right" title="Error and logging files" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="file-error-logging.html" class="btn btn-neutral float-right" title="Error and logging files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="file-spatial.html" class="btn btn-neutral" title="Spatial output report" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="file-spatial.html" class="btn btn-neutral" title="Spatial output report" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -273,7 +284,7 @@ VectorSpeciesReport.json.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -300,7 +311,8 @@ VectorSpeciesReport.json.</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

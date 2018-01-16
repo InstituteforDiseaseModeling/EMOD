@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -58,6 +60,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -99,7 +102,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -129,8 +135,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Generic Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Generic Model</a>
+        
       </nav>
 
 
@@ -174,18 +182,18 @@ understand how different situations or interventions can impact the outcome of p
 see a typical plot of a population in SIR conditions, see the plot in <a class="reference internal" href="#types-of-compartmental-models">Types of compartmental models</a>. If you would like a more in-depth introduction to epidemiology and disease modeling, you
 may want to take the <a class="reference external" href="https://www.coursera.org/learn/epidemics/home/welcome">Epidemics</a> course from The Pennsylvania State University through Coursera.</p>
 <p>An <a class="reference internal" href="glossary.html#term-agent-based-model"><span class="xref std std-term">agent-based model</span></a> (ABM) is another powerful tool used to help understand the complexity
-inherent in disease transmission systems. These models form a type of &#8220;microscale model,&#8221; where they
+inherent in disease transmission systems. These models form a type of “microscale model,” where they
 simulate the simultaneous interactions of agents in an effort to re-crate complex phenomena.  Each
-agent (such as a human, or vector) can be assigned a variety of &#8220;properties&#8221; (for example, age, gender, etc),
+agent (such as a human, or vector) can be assigned a variety of “properties” (for example, age, gender, etc),
 and their behavior and interactions with one another are determined by using decision rules. These
 models have strong predictive power, and  are able to leverage spatial and temporal dynamics.
-Further, complex environments can be developed in which the agents act, and agents may &#8220;learn&#8221; from
-interactions or &#8220;adapt&#8221; to their environment. As a result, ABMs are excellent for identifying
-&#8220;emerging properties&#8221; of the system: patterns that are not explicitly modeled, but instead occur as
+Further, complex environments can be developed in which the agents act, and agents may “learn” from
+interactions or “adapt” to their environment. As a result, ABMs are excellent for identifying
+“emerging properties” of the system: patterns that are not explicitly modeled, but instead occur as
 a consequence of the rules that govern the agents.</p>
 <p>Agent-based models are extensively used in epidemiology due to their predictive power in modeling
 the spread (or conversely, control) of epidemics.  A popular type of ABM for this is one in which
-each agent&#8217;s rules follow the dynamics specified in the compartmental models, where each agent flows
+each agent’s rules follow the dynamics specified in the compartmental models, where each agent flows
 through the compartments as a function of both “within-host” rules (such as duration of infection) and
 interactions between agents (such as becoming infected when coming into contact with an infectious
 agent). By combining the epidemiological basis of compartmental models with the flexibility of an
@@ -330,15 +338,18 @@ There is a trade-off that occurs between high transmissibility and disease-induc
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="generic-simulation-tutorial-overview.html" class="btn btn-neutral float-right" title="Generic simulation tutorials" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="generic-simulation-tutorial-overview.html" class="btn btn-neutral float-right" title="Generic simulation tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="intro-outputs.html" class="btn btn-neutral" title="Output files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="intro-outputs.html" class="btn btn-neutral" title="Output files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -347,7 +358,7 @@ There is a trade-off that occurs between high transmissibility and disease-induc
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -374,7 +385,8 @@ There is a trade-off that occurs between high transmissibility and disease-induc
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

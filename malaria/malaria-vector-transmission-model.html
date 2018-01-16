@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -144,8 +150,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Malaria Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Malaria Model</a>
+        
       </nav>
 
 
@@ -256,8 +264,8 @@ determine the lifespan of mosquitoes and the time it takes for oviposited eggs t
 to adulthood. As time progresses, the population will be comprised of only mosquitoes that are
 generated through the oviposition cycle in the model.</p>
 <p>The counters on the right side of the visualization keep track of current and total mosquitoes that
-have &#8220;spawned&#8221; (generated in the simulation), died, lived without feeding, and fed and oviposited.</p>
-<p>As an example, let&#8217;s simulate <em>Anopheles gambiae</em>.  Set <strong>Life_Expectancy</strong> to 10 (most are thought
+have “spawned” (generated in the simulation), died, lived without feeding, and fed and oviposited.</p>
+<p>As an example, let’s simulate <em>Anopheles gambiae</em>.  Set <strong>Life_Expectancy</strong> to 10 (most are thought
 to live approximately 1-2 weeks in nature), <strong>Egg_to_Adult</strong> to 5 (this is their minimum duration in
 the aquatic phase), <strong>Days_between_Feeds</strong> to 3, and <strong>Anthropophily</strong> and
 <strong>Indoor_Feeding_Fraction</strong> to 0.8. These mosquitoes prefer to primarily feed on humans, and
@@ -296,15 +304,18 @@ on the parasite life stages.</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="malaria-infection-immune-model.html" class="btn btn-neutral float-right" title="Malaria infection and immune model" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="malaria-infection-immune-model.html" class="btn btn-neutral float-right" title="Malaria infection and immune model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="malaria-larval-habitat.html" class="btn btn-neutral" title="Larval habitat" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="malaria-larval-habitat.html" class="btn btn-neutral" title="Larval habitat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -313,7 +324,7 @@ on the parasite life stages.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -340,7 +351,8 @@ on the parasite life stages.</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

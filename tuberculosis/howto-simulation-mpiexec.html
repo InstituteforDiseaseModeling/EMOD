@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -143,8 +149,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Tuberculosis Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Tuberculosis Model</a>
+        
       </nav>
 
 
@@ -182,8 +190,8 @@
 
   <div class="section" id="run-a-simulation-using-mpiexec">
 <h1>Run a simulation using mpiexec<a class="headerlink" href="#run-a-simulation-using-mpiexec" title="Permalink to this headline">¶</a></h1>
-<p>The application mpiexec is used to run multi-node simulations in parallel. Eradication.exe is &#8220;single
-threaded&#8221;, so it uses only one core for processing. If you run a simulation with multiple geographic
+<p>The application mpiexec is used to run multi-node simulations in parallel. Eradication.exe is “single
+threaded”, so it uses only one core for processing. If you run a simulation with multiple geographic
 nodes using mpiexec instead of invoking Eradication.exe directly, multiple copies of Eradication.exe will be
 running, with one copy per core processing data for a single node at a time. Message Passing
 Interface (MPI) communicates between the cores when handling the migration of individuals from one
@@ -237,15 +245,18 @@ each computer has at least three cores.</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="howto-simulation-python.html" class="btn btn-neutral float-right" title="Run a simulation using Python" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="howto-simulation-python.html" class="btn btn-neutral float-right" title="Run a simulation using Python" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="howto-simulation-cli.html" class="btn btn-neutral" title="Run a simulation using the command line" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="howto-simulation-cli.html" class="btn btn-neutral" title="Run a simulation using the command line" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -254,7 +265,7 @@ each computer has at least three cores.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -281,7 +292,8 @@ each computer has at least three cores.</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

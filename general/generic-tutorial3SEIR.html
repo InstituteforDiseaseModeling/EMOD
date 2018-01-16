@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -143,8 +149,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Generic Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Generic Model</a>
+        
       </nav>
 
 
@@ -195,7 +203,7 @@ latent individuals becoming infectious (average duration of latency is 1/<img cl
 \frac{dR}{dt} &amp; = \gamma I
 \end{aligned}"/></p>
 </div><p>with <img class="math" src="_images/math/ef9fabb639840bba89b365e09a7bd64c656cefa6.png" alt="N = S + E + I + R"/></p>
-<p>Since the latency delays the start of the individual&#8217;s infectious period, the secondary spread from
+<p>Since the latency delays the start of the individual’s infectious period, the secondary spread from
 an infected individual will occur at a later time compared with an SIR model which has no latency.
 Therefore, including a longer latency period will result in slower initial growth of the outbreak.
 However, since the model does not include mortality, the basic <a class="reference internal" href="glossary.html#term-reproductive-number"><span class="xref std std-term">reproductive number</span></a>,
@@ -227,7 +235,7 @@ waning must be disabled. For more information, see <a class="reference internal"
 <li>Set <strong>Base_Incubation_Period</strong> to 8.</li>
 <li>Set <strong>Enable_Immunity</strong> to 1.</li>
 <li>Set <strong>Enable_Immune_Decay</strong> to 0.</li>
-<li>Set <strong>Incubation_Period_Distribution</strong> to &#8220;EXPONENTIAL_DISTRIBUTION.&#8221;</li>
+<li>Set <strong>Incubation_Period_Distribution</strong> to “EXPONENTIAL_DISTRIBUTION.”</li>
 </ul>
 </div></blockquote>
 </div>
@@ -241,7 +249,7 @@ a latent period of 8 days. For more information, see <a class="reference interna
 <div><ul class="simple">
 <li>Set <strong>Base_Infectivity</strong> to 3.5.</li>
 <li>Set <strong>Base_Infectious_Period</strong> to 4.</li>
-<li>Set <strong>Infectious_Period_Distribution</strong> to &#8220;EXPONENTIAL_DURATION.&#8221;</li>
+<li>Set <strong>Infectious_Period_Distribution</strong> to “EXPONENTIAL_DURATION.”</li>
 </ul>
 </div></blockquote>
 </div>
@@ -328,15 +336,18 @@ changing to a shorter latent period (2 days).</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="generic-tutorial4SEIR.html" class="btn btn-neutral float-right" title="Generic 4: SEIR - Vital dynamics (birth and death)" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="generic-tutorial4SEIR.html" class="btn btn-neutral float-right" title="Generic 4: SEIR - Vital dynamics (birth and death)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="generic-tutorial2SIR.html" class="btn btn-neutral" title="Generic 2: SIR - Targeted vaccination campaigns" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="generic-tutorial2SIR.html" class="btn btn-neutral" title="Generic 2: SIR - Targeted vaccination campaigns" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -345,7 +356,7 @@ changing to a shorter latent period (2 days).</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -372,7 +383,8 @@ changing to a shorter latent period (2 days).</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

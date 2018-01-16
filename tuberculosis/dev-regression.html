@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -139,8 +145,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Tuberculosis Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Tuberculosis Model</a>
+        
       </nav>
 
 
@@ -176,8 +184,8 @@
 
   <div class="section" id="regression-testing">
 <h1>Regression testing<a class="headerlink" href="#regression-testing" title="Permalink to this headline">¶</a></h1>
-<p>After building the EMOD executable (Eradication.exe), it&#8217;s important to verify that Eradication.exe is performing properly. Regression
-testing is a method by which the built code is tested to see if it has &#8220;regressed&#8221; or moved
+<p>After building the EMOD executable (Eradication.exe), it’s important to verify that Eradication.exe is performing properly. Regression
+testing is a method by which the built code is tested to see if it has “regressed” or moved
 backwards in any way, such as previously reported (and fixed) issues reappearing.</p>
 <p>Within the EMOD <a class="reference external" href="https://github.com/InstituteforDiseaseModeling/EMOD/tree/master/Regression">Regression</a> directory there are many subdirectories that correspond to different
 disease scenarios in a variety of locations. Each of these contains the configuration and campaign
@@ -193,7 +201,7 @@ fails, EMOD will produce a matplotlib chart of the first 16 channels in the Inse
 the regression scenarios as a typical simulation, as described in <a class="reference internal" href="howto-simulations.html"><span class="doc">Run simulations</span></a>. However,
 this will not include the comparison and pass/fail evaluation that regression_test.py conducts. In
 addition, if you choose to do this, be sure to specify a different output directory, such as
-&#8220;testing&#8221;, so as not to overwrite the reference output.</p>
+“testing”, so as not to overwrite the reference output.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dev-regression-run.html">Run regression tests</a></li>
@@ -206,15 +214,18 @@ addition, if you choose to do this, be sure to specify a different output direct
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dev-regression-run.html" class="btn btn-neutral float-right" title="Run regression tests" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dev-regression-run.html" class="btn btn-neutral float-right" title="Run regression tests" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dev-trouble-build.html" class="btn btn-neutral" title="Troubleshooting EMOD builds" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dev-trouble-build.html" class="btn btn-neutral" title="Troubleshooting EMOD builds" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -223,7 +234,7 @@ addition, if you choose to do this, be sure to specify a different output direct
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -250,7 +261,8 @@ addition, if you choose to do this, be sure to specify a different output direct
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

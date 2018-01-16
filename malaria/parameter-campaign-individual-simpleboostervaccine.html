@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -176,8 +182,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Malaria Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Malaria Model</a>
+        
       </nav>
 
 
@@ -219,22 +227,22 @@
 <h1>SimpleBoosterVaccine<a class="headerlink" href="#simpleboostervaccine" title="Permalink to this headline">¶</a></h1>
 <p>The <strong>SimpleBoosterVaccine</strong> intervention class is derived from <a class="reference internal" href="parameter-campaign-individual-simplevaccine.html"><span class="doc">SimpleVaccine</span></a>
 and preserves many of the same parameters. The behavior is much like <strong>SimpleVaccine</strong>, except that upon distribution
-and successful take, the vaccine&#8217;s effect is determined by the recipient&#8217;s immune state. If the
+and successful take, the vaccine’s effect is determined by the recipient’s immune state. If the
 recipient’s immunity modifier in the corresponding channel (acquisition, transmission, or mortality) is
 above a user-specified threshold, then the vaccine’s initial effect will be equal to the
 corresponding priming parameter. If the recipient’s immune modifier is below this threshold, then
-the vaccine&#8217;s initial effect will be equal to the corresponding boosting parameter. After
+the vaccine’s initial effect will be equal to the corresponding boosting parameter. After
 distribution, the effect wanes, just like <strong>SimpleVaccine</strong>. In essence, this intervention
 provides a <strong>SimpleVaccine</strong> intervention with one effect to all naive (below- threshold)
 individuals, and another effect to all primed (above-threshold) individuals; this behavior is
 intended to mimic biological priming and boosting.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add &#8220;dummy&#8221; parameters to add contextual information to your files.</p>
+<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add “dummy” parameters to add contextual information to your files.</p>
 </div>
 <p>The table below describes all possible parameters with which this class can be configured. The JSON
 example that follows shows one potential configuration.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -449,7 +457,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>NA</td>
 <td>0</td>
-<td>If an individual&#8217;s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
+<td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
@@ -538,15 +546,18 @@ Possible values are:</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="parameter-campaign-individual-simplediagnostic.html" class="btn btn-neutral float-right" title="SimpleDiagnostic" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="parameter-campaign-individual-simplediagnostic.html" class="btn btn-neutral float-right" title="SimpleDiagnostic" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="parameter-campaign-individual-simplebednet.html" class="btn btn-neutral" title="SimpleBednet" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="parameter-campaign-individual-simplebednet.html" class="btn btn-neutral" title="SimpleBednet" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -555,7 +566,7 @@ Possible values are:</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -582,7 +593,8 @@ Possible values are:</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

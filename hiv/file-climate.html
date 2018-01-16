@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -143,8 +149,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">HIV Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">HIV Model</a>
+        
       </nav>
 
 
@@ -183,8 +191,8 @@
   <div class="section" id="climate-file-structure">
 <h1>Climate file structure<a class="headerlink" href="#climate-file-structure" title="Permalink to this headline">¶</a></h1>
 <p>There are two general types of climate files usable by EMOD, namely, climate files generated
-through actual data, referred to as &#8220;climate by data,&#8221; and climate files generated from the Koppen
-classification system, referred to as &#8220;climate by Koppen&#8221;. Climate data (both types) is contained in
+through actual data, referred to as “climate by data,” and climate files generated from the Koppen
+classification system, referred to as “climate by Koppen”. Climate data (both types) is contained in
 a set of two files, a metadata file with header information (&lt;name&gt;.bin.json) and a binary data file
 (&lt;name&gt;.bin). Both files are required.</p>
 <p>The metadata file is a JSON-formatted file that includes a metadata section and a node offsets
@@ -199,8 +207,8 @@ information.</p>
 <p>The binary file contains the climate data in a sequential stream. In other words, it presents
 all the data for the first node, then all the data for the second node, all the way through to the
 last node.</p>
-<p>To use the climate files, you must set <strong>Climate_Model</strong> to either &#8220;CLIMATE_BY_DATA&#8221; or
-&#8220;CLIMATE_BY_KOPPEN&#8221;, as appropriate, in the configuration file. There are also additional parameters
+<p>To use the climate files, you must set <strong>Climate_Model</strong> to either “CLIMATE_BY_DATA” or
+“CLIMATE_BY_KOPPEN”, as appropriate, in the configuration file. There are also additional parameters
 in the configuration file you can use to scale or otherwise modify the data included in the
 climate files.</p>
 <div class="section" id="climate-by-data">
@@ -212,7 +220,7 @@ the same.</p>
 <div class="section" id="metadata-file">
 <h3>Metadata file<a class="headerlink" href="#metadata-file" title="Permalink to this headline">¶</a></h3>
 <p>The following parameters in the metadata section are informational:</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="29%" />
 <col width="14%" />
@@ -248,7 +256,7 @@ the same.</p>
 </tbody>
 </table>
 <p>The following parameters in the metadata section are used by Eradication.exe:</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="29%" />
 <col width="14%" />
@@ -424,15 +432,18 @@ climate.</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="file-migration.html" class="btn btn-neutral float-right" title="Migration file structure" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="file-migration.html" class="btn btn-neutral float-right" title="Migration file structure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="file-inputs.html" class="btn btn-neutral" title="Input data file structure" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="file-inputs.html" class="btn btn-neutral" title="Input data file structure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -441,7 +452,7 @@ climate.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -468,7 +479,8 @@ climate.</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

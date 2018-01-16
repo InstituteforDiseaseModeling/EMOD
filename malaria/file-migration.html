@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -143,8 +149,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Malaria Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Malaria Model</a>
+        
       </nav>
 
 
@@ -192,7 +200,7 @@ section. The <strong>Metadata</strong> parameter contains a JSON object with par
 strictly  informational and some of which are used by Eradication.exe. However, the informational ones may
 still be important to understand the provenance and meaning of the data.</p>
 <p>The following parameters in the metadata section are informational:</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="29%" />
 <col width="14%" />
@@ -220,7 +228,7 @@ still be important to understand the provenance and meaning of the data.</p>
 </tbody>
 </table>
 <p>The following parameters in the metadata section are used by Eradication.exe:</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="22%" />
 <col width="11%" />
@@ -269,7 +277,7 @@ this rate using configuration parameters for scaling (these begin with x).</p>
 followed by a stream of 8-byte double floating point values that contain the rate associated with
 the destination node (per person per day), running from 1 to the total number of nodes.</p>
 <p>To use the migration files, you must set <strong>Migration_Model</strong> in the configuration file to a valid
-migration type except &#8220;NO_MIGRATION&#8221;. Each migration types also requires you to set another
+migration type except “NO_MIGRATION”. Each migration types also requires you to set another
 parameter to enable the particular type of migration selected. There are also additional parameters
 in the configuration file you can use to scale or otherwise modify the data included in the climate
 files.</p>
@@ -324,15 +332,18 @@ nodes.</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="file-load-balancing.html" class="btn btn-neutral float-right" title="Load-balancing file structure" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="file-load-balancing.html" class="btn btn-neutral float-right" title="Load-balancing file structure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="file-climate.html" class="btn btn-neutral" title="Climate file structure" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="file-climate.html" class="btn btn-neutral" title="Climate file structure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -341,7 +352,7 @@ nodes.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -368,7 +379,8 @@ nodes.</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

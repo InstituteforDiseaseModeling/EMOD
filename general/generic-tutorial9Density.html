@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -143,8 +149,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Generic Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Generic Model</a>
+        
       </nav>
 
 
@@ -221,7 +229,7 @@ Scenarios09_DensityScaling directory.</p>
 <blockquote>
 <div><ul class="simple">
 <li>Set <strong>Base_Incubation_Period</strong> to 3.</li>
-<li>Set <strong>Incubation_Period_Distribution</strong> to &#8220;FIXED_DURATION.&#8221;</li>
+<li>Set <strong>Incubation_Period_Distribution</strong> to “FIXED_DURATION.”</li>
 <li>Set <strong>Enable_Immunity</strong> to 1.</li>
 <li>Set <strong>Enable_Immune_Decay</strong> to 1.</li>
 </ul>
@@ -236,7 +244,7 @@ direct transmission. For more information, see <a class="reference internal" hre
 <div><ul class="simple">
 <li>Set <strong>Base_Infectivity</strong> to 0.375.</li>
 <li>Set <strong>Base_Infectious_Period</strong> to 14.</li>
-<li>Set <strong>Infectious_Period_Distribution</strong> to &#8220;FIXED_DURATION.&#8221;</li>
+<li>Set <strong>Infectious_Period_Distribution</strong> to “FIXED_DURATION.”</li>
 </ul>
 </div></blockquote>
 </div>
@@ -262,7 +270,7 @@ and <a class="reference internal" href="parameter-configuration.html#config-setu
 <p>Set the following parameters:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Set <strong>Population_Density_Infectivity_Correction</strong> to &#8220;SATURATING_FUNCTION_OF_DENSITY.&#8221;</li>
+<li>Set <strong>Population_Density_Infectivity_Correction</strong> to “SATURATING_FUNCTION_OF_DENSITY.”</li>
 <li>Set <strong>Population_Density_C50</strong> to 30.</li>
 <li>Set <strong>Node_Grid_Size</strong> to 0.1, 0.15, and 0.3 respectively for the three different simulations.</li>
 </ul>
@@ -409,15 +417,18 @@ latitude, longitude, grid size (in degrees) and population.</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="generic-tutorial-10Zoonosis.html" class="btn btn-neutral float-right" title="Generic 10: Animal reservoir zoonosis" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="generic-tutorial-10Zoonosis.html" class="btn btn-neutral float-right" title="Generic 10: Animal reservoir zoonosis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="generic-tutorial8SIS.html" class="btn btn-neutral" title="Generic 8: SIS - Reoccurring infections" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="generic-tutorial8SIS.html" class="btn btn-neutral" title="Generic 8: SIS - Reoccurring infections" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -426,7 +437,7 @@ latitude, longitude, grid size (in degrees) and population.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -453,7 +464,8 @@ latitude, longitude, grid size (in degrees) and population.</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

@@ -41,7 +41,7 @@ and nested objects differently.
 
 .. literalinclude:: ../json/howto-generic-campaign-flat-full.json
    :language: json
-   :lines: 1, 2, 4-7, 9-36, 38-60
+   :lines: 1, 2, 4-7, 9-36, 38-59
 
 .. lines is included here to remove the VACCINATION labels that are used for the overlay file
 

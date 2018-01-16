@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -143,8 +149,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">HIV Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">HIV Model</a>
+        
       </nav>
 
 
@@ -222,7 +230,7 @@ relative processing time required for each geographic node. Again, the number of
 equal to the previously read number of nodes. The series of values are set up such that the
 <img class="math" src="_images/math/f9c7e15593ad4687b34e86ead55cdd095ee0b7b5.png" alt="i^{th}"/> entry in the series is equal to the cumulative proportion of the processing load for
 all the previous nodes 0 through <img class="math" src="_images/math/df0deb143e5ac127f00bd248ee8001ecae572adc.png" alt="i"/>.</p>
-<p>The cumulative nature of each node&#8217;s value does not mean each node is assigned that amount for its
+<p>The cumulative nature of each node’s value does not mean each node is assigned that amount for its
 processing load. Rather, it is a way to make the internal calculations more efficient. For example,
 if you had ten nodes and each node was assigned 10% of the load, the values assigned from node0 to
 node9 would be the following: 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 and 1.0.</p>
@@ -235,15 +243,18 @@ node9 would be the following: 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 and 1.
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="file-outputs.html" class="btn btn-neutral float-right" title="Output report structure" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="file-outputs.html" class="btn btn-neutral float-right" title="Output report structure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="file-migration.html" class="btn btn-neutral" title="Migration file structure" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="file-migration.html" class="btn btn-neutral" title="Migration file structure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -252,7 +263,7 @@ node9 would be the following: 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 and 1.
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -279,7 +290,8 @@ node9 would be the following: 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 and 1.
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

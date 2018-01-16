@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -142,8 +148,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Malaria Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Malaria Model</a>
+        
       </nav>
 
 
@@ -225,7 +233,7 @@ and the relative path to Eradication.exe. For example:</p>
 </div>
 <p>In addition, you may need to include the following optional arguments depending on your
 testing environment or how Eradication.exe was built.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="20%" />
 <col width="20%" />
@@ -251,7 +259,7 @@ testing environment or how Eradication.exe was built.</p>
 <td>Use the debug path for EMODules.</td>
 </tr>
 <tr class="row-odd"><td><code class="docutils literal"><span class="pre">--label</span></code></td>
-<td>&nbsp;</td>
+<td>&#160;</td>
 <td>Add a custom suffix for HPC job name.</td>
 </tr>
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">--config</span></code></td>
@@ -271,7 +279,7 @@ testing environment or how Eradication.exe was built.</p>
 <td>Use all output JSON files for validation, not just InsetChart.json.</td>
 </tr>
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">--dll-path</span></code></td>
-<td>&nbsp;</td>
+<td>&#160;</td>
 <td>The path to the root directory of the EMODules to use.</td>
 </tr>
 <tr class="row-odd"><td><code class="docutils literal"><span class="pre">--skip-emodule-check</span></code></td>
@@ -313,15 +321,18 @@ email <a class="reference external" href="mailto:support&#37;&#52;&#48;idmod&#46
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dev-regression-new.html" class="btn btn-neutral float-right" title="Create a new regression test" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dev-regression-new.html" class="btn btn-neutral float-right" title="Create a new regression test" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dev-regression.html" class="btn btn-neutral" title="Regression testing" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dev-regression.html" class="btn btn-neutral" title="Regression testing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -330,7 +341,7 @@ email <a class="reference external" href="mailto:support&#37;&#52;&#48;idmod&#46
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -357,7 +368,8 @@ email <a class="reference external" href="mailto:support&#37;&#52;&#48;idmod&#46
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

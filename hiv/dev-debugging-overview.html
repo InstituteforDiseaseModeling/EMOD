@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -58,6 +60,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -99,7 +102,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -137,8 +143,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">HIV Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">HIV Model</a>
+        
       </nav>
 
 
@@ -172,8 +180,8 @@
 
   <div class="section" id="debugging-and-testing">
 <h1>Debugging and testing<a class="headerlink" href="#debugging-and-testing" title="Permalink to this headline">¶</a></h1>
-<p>When you build Eradication.exe or Eradication binary from the EMOD source code, it&#8217;s important to debug the
-code and run regression tests to be sure your changes didn&#8217;t inadvertently change EMOD functionality.
+<p>When you build Eradication.exe or Eradication binary from the EMOD source code, it’s important to debug the
+code and run regression tests to be sure your changes didn’t inadvertently change EMOD functionality.
 You can run simulations directly from Visual Studio to step through the code, troubleshoot any build
 errors you encounter, and run the standard IDM regression tests or create a new regression test.</p>
 <div class="admonition warning">
@@ -211,15 +219,18 @@ are still scientifically valid.</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dev-logging.html" class="btn btn-neutral float-right" title="Set log levels" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dev-logging.html" class="btn btn-neutral float-right" title="Set log levels" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dev-architecture-reporter.html" class="btn btn-neutral" title="Reporter component" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dev-architecture-reporter.html" class="btn btn-neutral" title="Reporter component" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -228,7 +239,7 @@ are still scientifically valid.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -255,7 +266,8 @@ are still scientifically valid.</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>
