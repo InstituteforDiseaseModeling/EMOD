@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -58,6 +60,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -99,7 +102,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -129,8 +135,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Generic Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Generic Model</a>
+        
       </nav>
 
 
@@ -219,7 +227,7 @@ error actually occurred in the code)</li>
 </ul>
 <p>Specific exceptions may also return additional information in a message format. This message
 (msg) may contain variable names or the values of those variables, the name of a file that
-wasn&#8217;t found, and other informational text regarding the nature of the problem. For example,
+wasn’t found, and other informational text regarding the nature of the problem. For example,
 a file not found exception (FileNotFoundException) might look similar to the following:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="n">E</span><span class="p">]</span> <span class="p">[</span><span class="n">Eradication</span><span class="p">]</span> <span class="n">FileNotFoundException</span> <span class="n">caught</span><span class="p">:</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">Could</span> <span class="ow">not</span> <span class="n">find</span>
 <span class="n">file</span> <span class="o">./</span><span class="n">Namawala_single_node_demographics</span><span class="o">.</span><span class="n">compiled</span><span class="o">.</span><span class="n">json</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">NodeDemographics</span><span class="o">.</span><span class="n">cpp</span><span class="p">,</span>
@@ -263,10 +271,10 @@ value, not enumeration value, read from a configuration file.</p>
 <h3><a class="toc-backref" href="#id6">DllLoadingException</a><a class="headerlink" href="#dllloadingexception" title="Permalink to this headline">¶</a></h3>
 <p>The EMOD architecture is modularized and can be built as a core Eradication.exe along with a series of
 custom reporter EMODules, as opposed to a single monolithic Eradication.exe. This exception indicates that
-EMOD couldn&#8217;t load on of the EMODule DLLs.</p>
+EMOD couldn’t load on of the EMODule DLLs.</p>
 <p>This situation could occur for several reasons:</p>
 <ul class="simple">
-<li>EMOD couldn&#8217;t find the EMODule</li>
+<li>EMOD couldn’t find the EMODule</li>
 <li>Unresolved symbols were found (Windows)</li>
 <li>EMOD could not find the necessary symbol during the <strong>GetProcAddress</strong> call</li>
 <li>The custom reporter EMODules were built using a version of Visual Studio that is no longer
@@ -284,7 +292,7 @@ these nested hierarchies, the factories do not have any knowledge yet of the inn
 hierarchies. This inner information contains information the factory needs to complete the object
 instantiation, but this information might not be correct. If that happens, then the factory will
 throw this exception.</p>
-<p>Campaign files often have this kind of nested hierarchical structure, so it&#8217;s important to t verify
+<p>Campaign files often have this kind of nested hierarchical structure, so it’s important to t verify
 that the hierarchy is set up correctly. For example, if the class name were mistyped and EMOD
 had no implementation of that class, this exception will be thrown.</p>
 </div>
@@ -326,7 +334,7 @@ the error. As a result, calling a more specific exception with more context is n
 detected. For example, if mutually exclusive parameters are set, the minimum parameter value is
 greater than the maximum value, or two distribution axes are specified in a demographics file but
 there is a mismatch with the number of axes scale factors included. The exception can also occur if
-there isn&#8217;t a corresponding mapping between an reference ID in the metadata of a demographics file
+there isn’t a corresponding mapping between an reference ID in the metadata of a demographics file
 and its corresponding data file.</p>
 </div>
 <div class="section" id="initializationexception">
@@ -423,15 +431,18 @@ to run simulations on CentOS on Azure. See <a class="reference internal" href="i
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="glossary.html" class="btn btn-neutral float-right" title="Glossary" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="glossary.html" class="btn btn-neutral float-right" title="Glossary" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="file-error-logging.html" class="btn btn-neutral" title="Error and logging files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="file-error-logging.html" class="btn btn-neutral" title="Error and logging files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -440,7 +451,7 @@ to run simulations on CentOS on Azure. See <a class="reference internal" href="i
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -467,7 +478,8 @@ to run simulations on CentOS on Azure. See <a class="reference internal" href="i
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -142,8 +148,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Generic Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Generic Model</a>
+        
       </nav>
 
 
@@ -186,7 +194,7 @@ indicate how their efficacy wanes over time. They can be used with several param
 <strong>Blocking_Config</strong>, <strong>Killing_Config</strong>, and <strong>Waning_Config</strong>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add &#8220;dummy&#8221; parameters to add contextual information to your files.</p>
+<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add “dummy” parameters to add contextual information to your files.</p>
 </div>
 <p>See the example below that uses a mix of different waning effect classes and the tables below that
 describe all parameters that can be used with each waning effect class.</p>
@@ -246,7 +254,7 @@ describe all parameters that can be used with each waning effect class.</p>
 <div class="section" id="waningeffectbox">
 <h2><a class="toc-backref" href="#id1">WaningEffectBox</a><a class="headerlink" href="#waningeffectbox" title="Permalink to this headline">¶</a></h2>
 <p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -309,7 +317,7 @@ describe all parameters that can be used with each waning effect class.</p>
 <h2><a class="toc-backref" href="#id2">WaningEffectBoxExponential</a><a class="headerlink" href="#waningeffectboxexponential" title="Permalink to this headline">¶</a></h2>
 <p>The initial efficacy is held for a specified duration, then the efficacy decays at an exponential rate.</p>
 <p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -372,7 +380,7 @@ describe all parameters that can be used with each waning effect class.</p>
 <h2><a class="toc-backref" href="#id3">WaningEffectConstant</a><a class="headerlink" href="#waningeffectconstant" title="Permalink to this headline">¶</a></h2>
 <p>The efficacy is held at a constant rate.</p>
 <p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -417,7 +425,7 @@ describe all parameters that can be used with each waning effect class.</p>
 <h2><a class="toc-backref" href="#id4">WaningEffectExponential</a><a class="headerlink" href="#waningeffectexponential" title="Permalink to this headline">¶</a></h2>
 <p>The efficacy decays at an exponential rate.</p>
 <p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -485,7 +493,7 @@ be used unless the intervention expires. If the time since start is less than th
 map, the efficacy will be zero. This can be used to define the shape of a curve whose magnitude is
 defined by the <strong>Initial_Effect</strong> multiplier.</p>
 <p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -632,7 +640,7 @@ defined by the <strong>Initial_Effect</strong> multiplier.</p>
 <p>Similar to <strong>WaningEffectMapLinear</strong>, except that the efficacy decays based on the age of the
 individual who owns the intervention instead of the time since the start of the intervention.</p>
 <p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -737,7 +745,7 @@ individual who owns the intervention instead of the time since the start of the 
 is, the time since start will reset to zero once it reaches 365.  This allows you to simulate
 seasonal effects.</p>
 <p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -842,7 +850,7 @@ seasonal effects.</p>
 time/value points (no interpolation). If the time since start falls between two points, the efficacy
 of the earlier time point is used.</p>
 <p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -990,7 +998,7 @@ of the earlier time point is used.</p>
 duration is randomly selected from an exponential distribution where <strong>Expected_Discard_Time</strong> is
 the mean.</p>
 <p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1054,15 +1062,18 @@ the mean.</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="parameter-campaign-event-list.html" class="btn btn-neutral float-right" title="Event list" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="parameter-campaign-event-list.html" class="btn btn-neutral float-right" title="Event list" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="parameter-campaign-individual-simplevaccine.html" class="btn btn-neutral" title="SimpleVaccine" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="parameter-campaign-individual-simplevaccine.html" class="btn btn-neutral" title="SimpleVaccine" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1071,7 +1082,7 @@ the mean.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -1098,7 +1109,8 @@ the mean.</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

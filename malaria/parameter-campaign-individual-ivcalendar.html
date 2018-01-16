@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -176,8 +182,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Malaria Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Malaria Model</a>
+        
       </nav>
 
 
@@ -219,18 +227,18 @@
 <h1>IVCalendar<a class="headerlink" href="#ivcalendar" title="Permalink to this headline">¶</a></h1>
 <p>The <strong>IVCalendar</strong> intervention class contains a list of ages when an individual will receive the
 actual intervention. In <strong>IVCalendar</strong>, there is a list of actual interventions where the
-distribution is dependent on whether the individual&#8217;s age matches the next date in the calendar.
+distribution is dependent on whether the individual’s age matches the next date in the calendar.
 This implies that at a certain age, the list of actual interventions will be distributed according
 to a given probability. While a typical use case might involve the distribution of calendars by a
 <a class="reference internal" href="parameter-campaign-node-birthtriggerediv.html"><span class="doc">BirthTriggeredIV</span></a> in the context of a routine vaccination schedule, calendars
 may also be distributed directly to individuals.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add &#8220;dummy&#8221; parameters to add contextual information to your files.</p>
+<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add “dummy” parameters to add contextual information to your files.</p>
 </div>
 <p>The table below describes all possible parameters with which this class can be configured. The JSON
 example that follows shows one potential configuration.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -283,7 +291,7 @@ example that follows shows one potential configuration.</p>
 <td>0</td>
 <td>45625</td>
 <td>NA</td>
-<td>An array of ages (in days). In <strong>IVCalendar</strong>, there is a list of actual interventions where the distribution is dependent on whether the individual&#8217;s age matches the next date in the calendar.</td>
+<td>An array of ages (in days). In <strong>IVCalendar</strong>, there is a list of actual interventions where the distribution is dependent on whether the individual’s age matches the next date in the calendar.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Calendar&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Age&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
@@ -417,7 +425,7 @@ If set to false (0), all calendar dates/doses are applied independently of each 
 <td>NA</td>
 <td>NA</td>
 <td>0</td>
-<td>If an individual&#8217;s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
+<td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
@@ -520,15 +528,18 @@ If set to false (0), all calendar dates/doses are applied independently of each 
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="parameter-campaign-individual-ivermectin.html" class="btn btn-neutral float-right" title="Ivermectin" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="parameter-campaign-individual-ivermectin.html" class="btn btn-neutral float-right" title="Ivermectin" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="parameter-campaign-individual-irshousingmodification.html" class="btn btn-neutral" title="IRSHousingModification" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="parameter-campaign-individual-irshousingmodification.html" class="btn btn-neutral" title="IRSHousingModification" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -537,7 +548,7 @@ If set to false (0), all calendar dates/doses are applied independently of each 
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -564,7 +575,8 @@ If set to false (0), all calendar dates/doses are applied independently of each 
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

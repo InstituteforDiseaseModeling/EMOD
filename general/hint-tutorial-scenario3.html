@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -150,8 +156,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Generic Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Generic Model</a>
+        
       </nav>
 
 
@@ -251,14 +259,14 @@ Therefore, the <strong>Age_Bin</strong> attribute has different structures than 
 For more information, see <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters.</p>
 <div class="section" id="accessibility-property-and-values">
 <h4>Accessibility: Property and Values<a class="headerlink" href="#accessibility-property-and-values" title="Permalink to this headline">¶</a></h4>
-<p><strong>Property</strong> and <strong>Values</strong> define two <strong>Accessibility</strong> groups: &#8220;Easy&#8221; and &#8220;Hard&#8221;. These two groups
+<p><strong>Property</strong> and <strong>Values</strong> define two <strong>Accessibility</strong> groups: “Easy” and “Hard”. These two groups
 will be used to initialize the population with differential vaccination coverage. Individuals are
 randomly assigned one of these two values at birth and do not transition afterwards.</p>
 </div>
 <div class="section" id="accessibility-initial-distribution">
 <h4>Accessibility: Initial_Distribution<a class="headerlink" href="#accessibility-initial-distribution" title="Permalink to this headline">¶</a></h4>
 <p>At the beginning of the simulation, individuals have an equal chance of being assigned to either the
-&#8220;Easy&#8221; or &#8220;Hard&#8221; group as specified in the <strong>Initial_Distribution array</strong>.</p>
+“Easy” or “Hard” group as specified in the <strong>Initial_Distribution array</strong>.</p>
 </div>
 <div class="section" id="accessibility-transitions">
 <h4>Accessibility: Transitions<a class="headerlink" href="#accessibility-transitions" title="Permalink to this headline">¶</a></h4>
@@ -268,13 +276,13 @@ empty.</p>
 <div class="section" id="accessibility-transmissionmatrix">
 <h4>Accessibility: TransmissionMatrix<a class="headerlink" href="#accessibility-transmissionmatrix" title="Permalink to this headline">¶</a></h4>
 <p><strong>TransmissionMatrix</strong> contains the <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values for the <a class="reference internal" href="glossary.html#term-waifw-matrix"><span class="xref std std-term">WAIFW matrix</span></a> that scales
-the base infectivity. The transmission <strong>Route</strong> is &#8220;Contact&#8221;. The <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values are added to
+the base infectivity. The transmission <strong>Route</strong> is “Contact”. The <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values are added to
 <strong>Matrix</strong>.</p>
-<p><strong>Matrix</strong> specifies the interaction between the &#8220;Easy&#8221; and &#8220;Hard&#8221; groups. Individuals in the &#8220;Easy&#8221; group
+<p><strong>Matrix</strong> specifies the interaction between the “Easy” and “Hard” groups. Individuals in the “Easy” group
 are nine times as likely to be in contact with individuals of their own group. Similarly, individuals
-in the &#8220;Hard&#8221; accessibility group are five times as likely to interact with their own group.</p>
-<p>The interpretation for this tutorial is that individuals in the &#8220;Hard&#8221; accessibility group have only
-60% of the contacts of those in the &#8220;Easy&#8221; accessibility group. As an example, &#8220;Hard&#8221; accessibility
+in the “Hard” accessibility group are five times as likely to interact with their own group.</p>
+<p>The interpretation for this tutorial is that individuals in the “Hard” accessibility group have only
+60% of the contacts of those in the “Easy” accessibility group. As an example, “Hard” accessibility
 could be caused by geographic isolation.</p>
 </div>
 <div class="section" id="age-bin-property-and-age-bin-edges-in-years">
@@ -304,7 +312,7 @@ to the IndividualProperties but it should be empty.</p>
 <div class="section" id="age-bin-transmissionmatrix">
 <h4>Age_Bin: TransmissionMatrix<a class="headerlink" href="#age-bin-transmissionmatrix" title="Permalink to this headline">¶</a></h4>
 <p><strong>TransmissionMatrix</strong> contains the <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values that scale the base infectivity. The transmission <strong>Route</strong>
-is &#8220;Contact&#8221;. The <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values are added to <strong>Matrix</strong>.</p>
+is “Contact”. The <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values are added to <strong>Matrix</strong>.</p>
 <p>The assumption for this scenario is that individuals interact more frequently with their own age
 group, and those groups closer in age. Therefore, <strong>Matrix</strong> has higher values on the diagonal entries.</p>
 </div>
@@ -361,7 +369,7 @@ enabled. For more information, see <a class="reference internal" href="parameter
 <blockquote>
 <div><ul class="simple">
 <li>Set <strong>Enable_Vital_Dynamics</strong> to 0.</li>
-<li>Set <strong>Death_Rate_Dependence</strong> to &#8220;NONDISEASE_MORTALITY_BY_AGE_AND_GENDER&#8221;.</li>
+<li>Set <strong>Death_Rate_Dependence</strong> to “NONDISEASE_MORTALITY_BY_AGE_AND_GENDER”.</li>
 <li>Set <strong>Enable_Heterogeneous_Intranode_Transmission</strong> to 1.</li>
 </ul>
 </div></blockquote>
@@ -384,8 +392,8 @@ lifelong and vaccination has high efficacy (~95%). For more information, see <a 
 <li>Set <strong>Base_Infectivity</strong> to 4.</li>
 <li>Set <strong>Base_Incubation_Period</strong> to 5.</li>
 <li>Set <strong>Base_Infectious_Period</strong> to 5.</li>
-<li>Set <strong>Incubation_Period_Distribution</strong> to &#8220;FIXED_DURATION.&#8221;</li>
-<li>Set <strong>Infectious_Period_Distribution</strong> to &#8220;EXPONENTIAL_DURATION.&#8221;</li>
+<li>Set <strong>Incubation_Period_Distribution</strong> to “FIXED_DURATION.”</li>
+<li>Set <strong>Infectious_Period_Distribution</strong> to “EXPONENTIAL_DURATION.”</li>
 </ul>
 </div></blockquote>
 </div>
@@ -402,9 +410,9 @@ those given below.</p>
 <div class="section" id="a-baseline-outbreak">
 <h3><a class="toc-backref" href="#id13">A: Baseline outbreak</a><a class="headerlink" href="#a-baseline-outbreak" title="Permalink to this headline">¶</a></h3>
 <p>The simulation seeds an initial measles outbreak with a prevalence of 1% in the age group of 10 to
-20 years old who are in the &#8220;Easy&#8221; accessibility group.</p>
+20 years old who are in the “Easy” accessibility group.</p>
 <p>Age groups do not use the <strong>PropertyRestrictions</strong> parameter. It uses the <strong>Target_Demographic</strong>
-parameter with the value set to &#8220;ExplicitAgeRanges&#8221;, which will use the values in <strong>Target_Age_Min</strong>
+parameter with the value set to “ExplicitAgeRanges”, which will use the values in <strong>Target_Age_Min</strong>
 and <strong>Target_Age_Max</strong>. For more information, see event coordinator parameters.</p>
 <p>The campaign file (campaign.json) is in the
 ScenariosHINT03_AgeAndAccessA_BaselineOutbreak directory.</p>
@@ -438,9 +446,9 @@ ScenariosHINT03_AgeAndAccessA_BaselineOutbreak directory.</p>
 <h4>Expected simulation output<a class="headerlink" href="#expected-simulation-output" title="Permalink to this headline">¶</a></h4>
 <p>In the fixed population of 1000 susceptible individuals, a total of 700 individuals become infected
 with a peak prevalence of 14% roughly 100 days into the epidemic. The number of individuals in the
-&#8220;Easy&#8221; and &#8220;Hard&#8221; groups is equal for each age group as specified in the initial distribution. Looking
+“Easy” and “Hard” groups is equal for each age group as specified in the initial distribution. Looking
 at the number of infected individuals by age and accessibility groups, notice that the numbers are
-significantly higher (peak prevalence) in the &#8220;Easy&#8221; accessibility group compared to &#8220;Hard&#8221;. This is due
+significantly higher (peak prevalence) in the “Easy” accessibility group compared to “Hard”. This is due
 to the decreased transmission rate specified in the accessibility group matrix.</p>
 <div class="figure" id="id3">
 <img alt="_images/HINT_AgeAndAccess_output_baseLine_orig2_cropped.png" src="_images/HINT_AgeAndAccess_output_baseLine_orig2_cropped.png" />
@@ -499,11 +507,11 @@ infection across age groups despite the fact that only 6 to 10 year olds were va
 </div>
 <div class="section" id="c-standard-vaccination-campaign">
 <h3><a class="toc-backref" href="#id15">C: Standard vaccination campaign</a><a class="headerlink" href="#c-standard-vaccination-campaign" title="Permalink to this headline">¶</a></h3>
-<p>On day 1, a non-targeted vaccination campaign begins which reaches all those individuals in the &#8220;Easy&#8221;
-accessibility group but does not reach those in the &#8220;Hard&#8221; accessibility group.</p>
-<p>This is followed by an outbreak that originates in the &#8220;Hard&#8221; accessibility group in the 0.5 to 6
-year olds. In the first two scenarios, the outbreak originated in the &#8220;Easy&#8221; accessibility group
-among older children. This outbreak begins in the &#8220;Hard&#8221; accessibility group. For more information,
+<p>On day 1, a non-targeted vaccination campaign begins which reaches all those individuals in the “Easy”
+accessibility group but does not reach those in the “Hard” accessibility group.</p>
+<p>This is followed by an outbreak that originates in the “Hard” accessibility group in the 0.5 to 6
+year olds. In the first two scenarios, the outbreak originated in the “Easy” accessibility group
+among older children. This outbreak begins in the “Hard” accessibility group. For more information,
 see <strong>OutbreakIndividual</strong> and  <strong>SimpleVaccine</strong> parameters.</p>
 <p>The campaign configuration file (campaign.json) is in the
 ScenariosHINT03_AgeAndAccessC_AccessTargetedVaccine directory.</p>
@@ -559,19 +567,19 @@ ScenariosHINT03_AgeAndAccessC_AccessTargetedVaccine directory.</p>
 <div class="section" id="id2">
 <h4>Expected simulation output<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <p>Notice the dramatic decrease in cumulative incidence (~300 vs. ~700) and peak prevalence from the
-first scenario because of the vaccination campaign that targeted the &#8220;Easy&#8221; accessibility
+first scenario because of the vaccination campaign that targeted the “Easy” accessibility
 group.</p>
 <div class="figure" id="id5">
 <img alt="_images/HINT_AgeAndAccess_output_easyVaccine_orig2_cropped.png" src="_images/HINT_AgeAndAccess_output_easyVaccine_orig2_cropped.png" />
-<p class="caption"><span class="caption-text">Figure 3: Easy accessibility targeted vaccine&#8211;Accessibility easy group</span></p>
+<p class="caption"><span class="caption-text">Figure 3: Easy accessibility targeted vaccine–Accessibility easy group</span></p>
 </div>
-<p>Notice the almost complete elimination of infection in the &#8220;Easy&#8221; accessibility group due to 95%
-vaccination coverage with a 95% take. There is only a slight reduction in infection in the &#8220;Hard&#8221;
+<p>Notice the almost complete elimination of infection in the “Easy” accessibility group due to 95%
+vaccination coverage with a 95% take. There is only a slight reduction in infection in the “Hard”
 accessibility group which was not reachable by vaccination in this campaign. Recall that the
-epidemic was seeded in the &#8220;Hard&#8221; accessibility group.</p>
+epidemic was seeded in the “Hard” accessibility group.</p>
 <div class="figure" id="id6">
 <img alt="_images/HINT_AgeAndAccess_output_easyVaccine_orig_cropped.png" src="_images/HINT_AgeAndAccess_output_easyVaccine_orig_cropped.png" />
-<p class="caption"><span class="caption-text">Figure 4: Easy accessibility targeted vaccine&#8211;Accessibility hard group</span></p>
+<p class="caption"><span class="caption-text">Figure 4: Easy accessibility targeted vaccine–Accessibility hard group</span></p>
 </div>
 </div>
 </div>
@@ -606,9 +614,9 @@ group (older than 10 to 20 years).</p>
 <p>Verify that if the epidemic started in a different group, it cannot spread to this group.</p>
 </li>
 <li><p class="first">How do results of the third scenario change if the
-infection is seeded in the &#8220;Easy&#8221; accessibility group? See that the infection fails to spread to the &#8220;Hard&#8221;
-accessibility group. Lower the vaccination coverage of the &#8220;Easy&#8221; accessibility group to find the
-vaccination level where the spread to the &#8220;Hard&#8221; accessibility group occurs.</p>
+infection is seeded in the “Easy” accessibility group? See that the infection fails to spread to the “Hard”
+accessibility group. Lower the vaccination coverage of the “Easy” accessibility group to find the
+vaccination level where the spread to the “Hard” accessibility group occurs.</p>
 </li>
 </ol>
 </div>
@@ -618,15 +626,18 @@ vaccination level where the spread to the &#8220;Hard&#8221; accessibility group
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="hint-tutorial-scenario4.html" class="btn btn-neutral float-right" title="HINT 4: Washington state pertussis" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="hint-tutorial-scenario4.html" class="btn btn-neutral float-right" title="HINT 4: Washington state pertussis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="hint-tutorial-scenario2.html" class="btn btn-neutral" title="HINT 2: School closure" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="hint-tutorial-scenario2.html" class="btn btn-neutral" title="HINT 2: School closure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -635,7 +646,7 @@ vaccination level where the spread to the &#8220;Hard&#8221; accessibility group
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -662,7 +673,8 @@ vaccination level where the spread to the &#8220;Hard&#8221; accessibility group
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

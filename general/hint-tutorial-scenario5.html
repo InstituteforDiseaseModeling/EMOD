@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -150,8 +156,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Generic Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Generic Model</a>
+        
       </nav>
 
 
@@ -243,7 +251,7 @@ ScenariosHINT05_SeattleCommutingscript directory.</p>
 <div class="section" id="property-and-values">
 <h4>Property and Values<a class="headerlink" href="#property-and-values" title="Permalink to this headline">¶</a></h4>
 <p>The <strong>Property</strong> and <strong>Values</strong> parameters of <strong>IndividualProperties</strong> define 125 groups based on Seattle
-census tracts. The <strong>Property</strong> type must be &#8220;Geographic&#8221; as it is the only property that supports 125
+census tracts. The <strong>Property</strong> type must be “Geographic” as it is the only property that supports 125
 <strong>Values</strong>. The <strong>Values</strong> are the 3-digit ID for the 125 Seattle census tracts for Seattle.</p>
 </div>
 <div class="section" id="initial-distribution">
@@ -258,7 +266,7 @@ file for those values.</p>
 <div class="section" id="transmissionmatrix">
 <h4>TransmissionMatrix<a class="headerlink" href="#transmissionmatrix" title="Permalink to this headline">¶</a></h4>
 <p><strong>TransmissionMatrix</strong> contains the <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values that scale the base infectivity. The transmission <strong>Route</strong>
-is &#8220;Contact&#8221;. The <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values are added to <strong>Matrix</strong>.</p>
+is “Contact”. The <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values are added to <strong>Matrix</strong>.</p>
 <p>The <strong>Matrix</strong> was created using a script with a specified return rate. The script loads the existing
 multi-node demographics and migration input files, and converts them to a single-node demographics
 file. Each component in the <strong>TransmissionMatrix</strong> is calculated based on the spatial coupling of round-
@@ -302,8 +310,8 @@ see <a class="reference internal" href="parameter-configuration.html#config-infe
 <li>Set <strong>Base_Infectious_Period</strong> to 7.</li>
 <li>Set <strong>Base_Incubation_Period</strong> to 3.</li>
 <li>Set <strong>Enable_Heterogeneous_Intranode_Transmission</strong> to 1.</li>
-<li>Set <strong>Incubation_Period_Distribution</strong> to &#8220;FIXED_DURATION.&#8221;</li>
-<li>Set <strong>Infectious_Period_Distribution</strong> to &#8220;FIXED_DURATION.&#8221;</li>
+<li>Set <strong>Incubation_Period_Distribution</strong> to “FIXED_DURATION.”</li>
+<li>Set <strong>Infectious_Period_Distribution</strong> to “FIXED_DURATION.”</li>
 </ul>
 </div></blockquote>
 </div>
@@ -377,7 +385,7 @@ between census tracts in terms of the disease spread.</p>
 demographic input and transmission matrix. In general, when the return rates are high, there is less
 coupling between census tracts so the disease curves of the outbreak are less synchronized. The
 following example shows a less synchronized behavior of disease spread when the return rate = 24
-(people spend 1 hour on average at their destination) with the outbreak targeted at &#8220;Geographic: 7&#8221; in
+(people spend 1 hour on average at their destination) with the outbreak targeted at “Geographic: 7” in
 the demographics file.</p>
 <div class="section" id="updating-a-demographics-file">
 <h3><a class="toc-backref" href="#id11">Updating a demographics file</a><a class="headerlink" href="#updating-a-demographics-file" title="Permalink to this headline">¶</a></h3>
@@ -405,15 +413,18 @@ demographics file.</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="howto-overview.html" class="btn btn-neutral float-right" title="How to use the software" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="howto-overview.html" class="btn btn-neutral float-right" title="How to use the software" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="hint-tutorial-scenario4.html" class="btn btn-neutral" title="HINT 4: Washington state pertussis" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="hint-tutorial-scenario4.html" class="btn btn-neutral" title="HINT 4: Washington state pertussis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -422,7 +433,7 @@ demographics file.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -449,7 +460,8 @@ demographics file.</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

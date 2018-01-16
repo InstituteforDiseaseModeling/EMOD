@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -143,8 +149,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Generic Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Generic Model</a>
+        
       </nav>
 
 
@@ -223,7 +231,7 @@ R_0 (1 - e p) &amp; &gt; 1\\
 R_{eff} &amp; &gt; 1
 \end{aligned}"/></p>
 </div><p>R<sub>eff</sub> is also called the effective reproductive number. Vaccination can reduce the
-disease&#8217;s ability to spread, and the outbreak can be prevented or stopped with less than 100%
+disease’s ability to spread, and the outbreak can be prevented or stopped with less than 100%
 coverage. When R<sub>eff</sub>= 1,  there exists a minimum vaccination coverage that can prevent a
 disease outbreak. This minimum coverage required to prevent an outbreak is usually called <a class="reference internal" href="glossary.html#term-herd-immunity"><span class="xref std std-term">herd
 immunity</span></a> (represented as P<sub>herd</sub>).  Therefore, the analytical form of P<sub>herd</sub> can be
@@ -331,9 +339,9 @@ Groups without Access</th>
 </div>
 <div class="section" id="demographics-inputs">
 <h2>Demographics inputs<a class="headerlink" href="#demographics-inputs" title="Permalink to this headline">¶</a></h2>
-<p>This simulation uses the demographics file &#8220;generic_scenarios_individualproperties_demographics&#8221;.
+<p>This simulation uses the demographics file “generic_scenarios_individualproperties_demographics”.
 Except for an <strong>IndividualProperties</strong> structure, the demographics file is the same as
-&#8220;generic_scenarios_demographics&#8221; used in <a class="reference internal" href="generic-tutorial1SIR.html"><span class="doc">Generic 1: SIR - Simple single-node outbreak</span></a>.</p>
+“generic_scenarios_demographics” used in <a class="reference internal" href="generic-tutorial1SIR.html"><span class="doc">Generic 1: SIR - Simple single-node outbreak</span></a>.</p>
 <div class="section" id="individual-properties">
 <h3>Individual Properties<a class="headerlink" href="#individual-properties" title="Permalink to this headline">¶</a></h3>
 <p>An <strong>IndividualProperties</strong> structure is added to <strong>Defaults</strong> in the demographics file. Its purpose for
@@ -365,7 +373,7 @@ missed group.</p>
 <p>The <strong>Property</strong> parameter specifies the property type.  This tutorial uses the property type
 <strong>Accessibility</strong>.</p>
 <p>The <strong>Values</strong> array defines the groups. Each element in the array is a group. In this tutorial, the
-groups are &#8220;Easy&#8221; and &#8220;Hard&#8221;. They represent the group that is easy to access during a vaccine campaign
+groups are “Easy” and “Hard”. They represent the group that is easy to access during a vaccine campaign
 (Easy), and the chronically missed group (Hard).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -378,8 +386,8 @@ groups must be configured with parameters in the campaign files.</p>
 <p>At the beginning of the simulation individuals are assigned a group using the probabilities in the
 <strong>Initial_Distribution</strong> array. The values in the <strong>Initial_Distribution</strong> array must be in the same order
 as the groups in the <strong>Values</strong> array.</p>
-<p>At the beginning of the simulation, each individual has a 70% of belonging to the &#8220;Easy&#8221; accessibility
-group and a 30% chance of belonging to the &#8220;Hard&#8221; accessibility group as specified by the
+<p>At the beginning of the simulation, each individual has a 70% of belonging to the “Easy” accessibility
+group and a 30% chance of belonging to the “Hard” accessibility group as specified by the
 <strong>Initial_Distribution</strong> array.</p>
 <div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -428,7 +436,7 @@ config.json file. For more information, see <a class="reference internal" href="
 <blockquote>
 <div><ul class="simple">
 <li>Set <strong>Base_Incubation_Period</strong> to 0.</li>
-<li>Set <strong>Incubation_Period_Distribution</strong> to &#8220;FIXED_DURATION.&#8221;</li>
+<li>Set <strong>Incubation_Period_Distribution</strong> to “FIXED_DURATION.”</li>
 <li>Set <strong>Enable_Immune_Decay</strong> to 0.</li>
 </ul>
 </div></blockquote>
@@ -442,7 +450,7 @@ and R<sub>0</sub> = 4.9. For more information, see <a class="reference internal"
 <div><ul class="simple">
 <li>Set <strong>Base_Infectivity</strong> to 7.</li>
 <li>Set <strong>Base_Infectious_Period</strong> to 0.7.</li>
-<li>Set <strong>Infectious_Period_Distribution</strong> to &#8220;EXPONENTIAL_DISTRIBUTION.&#8221;</li>
+<li>Set <strong>Infectious_Period_Distribution</strong> to “EXPONENTIAL_DISTRIBUTION.”</li>
 </ul>
 </div></blockquote>
 </div>
@@ -501,7 +509,7 @@ and full immunity lasts for 10 years. For more information, see <strong>SimpleVa
 <li>Set <strong>Timesteps_Between_Repetitions</strong> to 7.</li>
 <li>Set <strong>Vaccine_Take</strong> to 1.0.</li>
 <li>Set <strong>Demographic_Coverage</strong> to 3.</li>
-<li>Set <strong>Vaccine_Type</strong> to &#8220;AcquistionBlocking&#8221;.</li>
+<li>Set <strong>Vaccine_Type</strong> to “AcquistionBlocking”.</li>
 <li>Set <strong>Simulation_Duration</strong> to 120.</li>
 <li>Set <strong>Primar_Decay_Time_Constant</strong> to 3650.</li>
 </ul>
@@ -538,8 +546,8 @@ and full immunity lasts for 10 years. For more information, see <strong>SimpleVa
 <div class="section" id="c-vaccination-campaigns-for-targeted-groups">
 <h3>C. Vaccination campaigns for targeted groups<a class="headerlink" href="#c-vaccination-campaigns-for-targeted-groups" title="Permalink to this headline">¶</a></h3>
 <p>The following campaign event is the same as the campaign event in scenario B, but it restricts the
-vaccine campaign to the &#8220;Easy&#8221; accessibility group by adding a <strong>Property_Restrictions</strong> parameter
-and setting it to &#8220;Accessibility&#8221;: &#8220;Easy&#8221;. As only 70% of the population is in the &#8220;Easy&#8221;
+vaccine campaign to the “Easy” accessibility group by adding a <strong>Property_Restrictions</strong> parameter
+and setting it to “Accessibility”: “Easy”. As only 70% of the population is in the “Easy”
 accessibility group, vaccine coverage is also reduced.</p>
 <div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -633,15 +641,18 @@ intervention by varying the vaccination coverage and observe the herd immunity.<
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="generic-tutorial3SEIR.html" class="btn btn-neutral float-right" title="Generic 3: SIER - Incubation periods" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="generic-tutorial3SEIR.html" class="btn btn-neutral float-right" title="Generic 3: SIER - Incubation periods" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="generic-tutorial1SIR.html" class="btn btn-neutral" title="Generic 1: SIR - Simple single-node outbreak" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="generic-tutorial1SIR.html" class="btn btn-neutral" title="Generic 1: SIR - Simple single-node outbreak" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -650,7 +661,7 @@ intervention by varying the vaccination coverage and observe the herd immunity.<
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -677,7 +688,8 @@ intervention by varying the vaccination coverage and observe the herd immunity.<
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -138,8 +144,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Tuberculosis Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Tuberculosis Model</a>
+        
       </nav>
 
 
@@ -206,12 +214,12 @@ are still scientifically valid.</p>
 <dd>Corresponds to a geographic area. Each simulation maintains a collection of one or more nodes.</dd>
 <dt>IndividualHuman</dt>
 <dd>Represents a human being. Creates <strong>Susceptibility</strong> and <strong>Infection</strong> objects for
-the collection of individuals it maintains. The file name that defines this class is &#8220;Individual&#8221;
+the collection of individuals it maintains. The file name that defines this class is “Individual”
 and you may see it likewise shortened in diagrams.</dd>
 <dt>Susceptibility</dt>
-<dd>Manages an individual&#8217;s immunity.</dd>
+<dd>Manages an individual’s immunity.</dd>
 <dt>Infection</dt>
-<dd>Represents an individual&#8217;s infection with a disease.</dd>
+<dd>Represents an individual’s infection with a disease.</dd>
 </dl>
 <p>For generic simulations, human-to-human transmission uses a homogeneous contagion
 pool for each node. Every individual in the node sheds disease into the pool and acquires
@@ -241,7 +249,7 @@ pseudo-DES. The random seed is initialized from the configuration parameter <str
 process MPI rank. All child objects needing access to the RNG must be provided an appropriate
 (context) pointer by their owners.</p>
 <p>The <strong>Simulation</strong> class contains the following methods:</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="20%" />
 <col width="80%" />
@@ -288,7 +296,7 @@ and managed. It can also contain a <strong>Climate</strong> object and <strong>M
 enabled. The climate and migration settings are initialized based on the information in the input
 data files.</p>
 <p>The <strong>Node</strong> class contains the following methods:</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="20%" />
 <col width="80%" />
@@ -344,7 +352,7 @@ depending on the sampling strategy and value chosen.</p>
 immune mechanisms. Every <strong>IndividualHuman</strong> contains a <strong>Susceptibility</strong> object that represents the
 state of the immune system over time. Only an infected <strong>IndividualHuman</strong> contains an <strong>Infection</strong>
 object, and may contain  multiple <strong>Infection</strong> objects.. <strong>Susceptibility</strong> is passed to initialize
-the infection immunology in <strong>Infection::InitInfectionImmunology()</strong>. The state of an individual&#8217;s
+the infection immunology in <strong>Infection::InitInfectionImmunology()</strong>. The state of an individual’s
 susceptibility and infection are updated with <strong>Update()</strong> methods. Disease-specific models have
 additional derived classes with properties and methods to represent specifics of the disease biology.</p>
 <p>The <strong>InterventionsContainer</strong> is the mediating structure for how interventions interrupt disease
@@ -356,7 +364,7 @@ susceptibility update operations. If migration is enabled, at the end of each in
 step EMOD checks if the individual is scheduled for migration
 (<strong>IndividualHuman::CheckForMigration()</strong>), setting a flag accordingly.</p>
 <p>The <strong>IndividualHuman</strong> class contains the following methods:</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="20%" />
 <col width="80%" />
@@ -369,7 +377,7 @@ step EMOD checks if the individual is scheduled for migration
 <tbody valign="top">
 <tr class="row-even"><td>Update()</td>
 <td>Advances the state of both the infection and the immune system and then registers any necessary
-changes in an individual&#8217;s state resulting from those dynamics (that is, death, paralysis,
+changes in an individual’s state resulting from those dynamics (that is, death, paralysis,
 or clearance). It also updates intrinsic vital dynamics, intervention effects, migration,
 and exposure to infectivity of the appropriate social network.</td>
 </tr>
@@ -425,15 +433,18 @@ the individual’s infectiousness <img class="math" src="_images/math/9a63346d0b
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dev-architecture-campaigns.html" class="btn btn-neutral float-right" title="Campaign management" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dev-architecture-campaigns.html" class="btn btn-neutral float-right" title="Campaign management" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dev-architecture-sim-controller.html" class="btn btn-neutral" title="Simulation controller subsystem" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dev-architecture-sim-controller.html" class="btn btn-neutral" title="Simulation controller subsystem" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -442,7 +453,7 @@ the individual’s infectiousness <img class="math" src="_images/math/9a63346d0b
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -469,7 +480,8 @@ the individual’s infectiousness <img class="math" src="_images/math/9a63346d0b
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

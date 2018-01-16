@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -155,8 +161,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Malaria Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Malaria Model</a>
+        
       </nav>
 
 
@@ -196,18 +204,18 @@
 
   <div class="section" id="communityhealthworkereventcoordinator">
 <h1>CommunityHealthWorkerEventCoordinator<a class="headerlink" href="#communityhealthworkereventcoordinator" title="Permalink to this headline">¶</a></h1>
-<p>The <strong>CommunityHealthWorkerEventCoordinator</strong> coordinator class is used to model a health care worker&#8217;s ability
+<p>The <strong>CommunityHealthWorkerEventCoordinator</strong> coordinator class is used to model a health care worker’s ability
 to distribute interventions to the nodes and individual in their coverage area. This coordinator
 distributes a limited number of interventions per day, and can create a backlog of individuals or
 nodes requiring the intervention. For example, individual-level interventions could be distribution
 of drugs  and node-level interventions could be spraying houses with insecticide.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add &#8220;dummy&#8221; parameters to add contextual information to your files.</p>
+<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add “dummy” parameters to add contextual information to your files.</p>
 </div>
 <p>The table below describes all possible parameters with which this class can be configured. The JSON
 example that follows shows one potential configuration.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -427,7 +435,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>NoTrigger</td>
-<td>The list of events that are of interest to the community health worker (CHW). If one of these events occurs, the individual or node is put into a queue to receive the CHW&#8217;s intervention. The CHW processes the queue when the event coordinator is updated. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
+<td>The list of events that are of interest to the community health worker (CHW). If one of these events occurs, the individual or node is put into a queue to receive the CHW’s intervention. The CHW processes the queue when the event coordinator is updated. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Trigger_Condition_List&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ListenForEvent&quot;</span><span class="p">]</span>
 <span class="p">}</span>
@@ -636,15 +644,18 @@ example that follows shows one potential configuration.</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="parameter-campaign-event-coveragebynodeeventcoordinator.html" class="btn btn-neutral float-right" title="CoverageByNodeEventCoordinator" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="parameter-campaign-event-coveragebynodeeventcoordinator.html" class="btn btn-neutral float-right" title="CoverageByNodeEventCoordinator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="parameter-campaign-event-calendareventcoordinator.html" class="btn btn-neutral" title="CalendarEventCoordinator" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="parameter-campaign-event-calendareventcoordinator.html" class="btn btn-neutral" title="CalendarEventCoordinator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -653,7 +664,7 @@ example that follows shows one potential configuration.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -680,7 +691,8 @@ example that follows shows one potential configuration.</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

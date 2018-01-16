@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -58,6 +60,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -99,7 +102,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -133,8 +139,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Tuberculosis Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Tuberculosis Model</a>
+        
       </nav>
 
 
@@ -170,8 +178,8 @@
 <h1>EMOD source code installation<a class="headerlink" href="#emod-s-source-code-installation" title="Permalink to this headline">¶</a></h1>
 <p>This section describes how to install the software needed to build the EMOD executable (Eradication.exe) or Eradication binary
 from the EMOD source code. This is necessary if you want to modify the source code to extend the
-capabilities of the model beyond what&#8217;s available with the latest EMOD release. For example, you
-may want to model a disease that isn&#8217;t currently supported in EMOD. You can build Eradication.exe from
+capabilities of the model beyond what’s available with the latest EMOD release. For example, you
+may want to model a disease that isn’t currently supported in EMOD. You can build Eradication.exe from
 source code on computers running Windows 10, Windows Server 12, and Windows HPC Server 12 (64-bit) or build the Eradication binary on computers running
 CentOS 7.1 on Azure.</p>
 <p>After building, you should run a single simulation to verify basic functionality. We recommend the
@@ -218,15 +226,18 @@ and is not supported on those Linux distributions.</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dev-install-prerequisites.html" class="btn btn-neutral float-right" title="Prerequisites for working with EMOD source code" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dev-install-prerequisites.html" class="btn btn-neutral float-right" title="Prerequisites for working with EMOD source code" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="glossary.html" class="btn btn-neutral" title="Glossary" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="glossary.html" class="btn btn-neutral" title="Glossary" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -235,7 +246,7 @@ and is not supported on those Linux distributions.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -262,7 +273,8 @@ and is not supported on those Linux distributions.</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

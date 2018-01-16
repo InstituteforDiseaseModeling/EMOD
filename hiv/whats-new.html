@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -58,6 +60,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -99,7 +102,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -131,8 +137,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">HIV Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">HIV Model</a>
+        
       </nav>
 
 
@@ -197,7 +205,7 @@ Epidemiological MODeling software (EMOD).</p>
 <button class="collapse-table-button btn btn-info">Collapse all parameter tables</button><div class="section" id="new-configuration-parameters">
 <h3><a class="toc-backref" href="#id2">New configuration parameters</a><a class="headerlink" href="#new-configuration-parameters" title="Permalink to this headline">¶</a></h3>
 <p>For the HIV simulation type, the following new configuration parameters are available:</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -363,7 +371,7 @@ Epidemiological MODeling software (EMOD).</p>
 <td>0</td>
 <td>1</td>
 <td>0</td>
-<td>When Set to to true (1), the &#8220;transmitters&#8221; column is included in the output report.  For a given row, &#8220;Transmitters&#8221; indicates how many people that have transmitted the disease meet the specifications of that row.</td>
+<td>When Set to to true (1), the “transmitters” column is included in the output report.  For a given row, “Transmitters” indicates how many people that have transmitted the disease meet the specifications of that row.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Report_HIV_ByAgeAndGender_Add_Transmitters&quot;</span><span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
@@ -378,7 +386,7 @@ Epidemiological MODeling software (EMOD).</p>
 <td>1</td>
 <td><p class="first">This array of floats allows the user to define the age bins used to stratify the report by age. Each value defines the minimum value of that bin, while the next value defines the maximum value of the bin. The maximum number of age bins is 100. 
 For example, if you had:</p>
-<p>&#8220;Report_HIV_ByAgeAndGender_Collect_Age_Bins_Data&#8221; : [ 0, 10, 20, 50, 100 ]</p>
+<p>“Report_HIV_ByAgeAndGender_Collect_Age_Bins_Data” : [ 0, 10, 20, 50, 100 ]</p>
 <p>The report would have the following age bins: From 0 up to (but not including) 10, from 10 up to (but not including) 20, from 20 up to (but not including) 50, from 50 up to (but not including) 100, and 100 and over.</p>
 <p class="last">If no values are specified in the array, then the output report will have no age binning.</p>
 </td>
@@ -433,7 +441,7 @@ For example, if you had:</p>
 <td>array of integers</td>
 <td>0</td>
 <td>2.15E+09</td>
-<td>&nbsp;</td>
+<td>&#160;</td>
 <td>The list of time steps after which to save the serialized state. 0 (zero) indicates the initial state before simulation, n indicates after the nth time step. By default, no serialized state is saved.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Serialization_Time_Steps&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -489,7 +497,7 @@ or node has received. This property type was previously available only for indiv
 simulation type and was known as the <strong>CascadeState</strong>. The relevant campaign parameters are
 described in the next section.</p>
 <p>For more information, see the table below.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -594,12 +602,12 @@ simulation type and used parameters previously called <strong>Abort_States</stro
 <p>The following event coordinators and intervention classes are new for this simulation type.</p>
 <div class="section" id="communityhealthworkereventcoordinator">
 <h4><a class="toc-backref" href="#id5">CommunityHealthWorkerEventCoordinator</a><a class="headerlink" href="#communityhealthworkereventcoordinator" title="Permalink to this headline">¶</a></h4>
-<p>The <strong>CommunityHealthWorkerEventCoordinator</strong> coordinator class is used to model a health care worker&#8217;s ability
+<p>The <strong>CommunityHealthWorkerEventCoordinator</strong> coordinator class is used to model a health care worker’s ability
 to distribute interventions to the nodes and individual in their coverage area. This coordinator
 distributes a limited number of interventions per day, and can create a backlog of individuals or
 nodes requiring the intervention. For example, individual-level interventions could be distribution
 of drugs  and node-level interventions could be spraying houses with insecticide.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -819,7 +827,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>NA</td>
 <td>NA</td>
 <td>NoTrigger</td>
-<td>The list of events that are of interest to the community health worker (CHW). If one of these events occurs, the individual or node is put into a queue to receive the CHW&#8217;s intervention. The CHW processes the queue when the event coordinator is updated. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
+<td>The list of events that are of interest to the community health worker (CHW). If one of these events occurs, the individual or node is put into a queue to receive the CHW’s intervention. The CHW processes the queue when the event coordinator is updated. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Trigger_Condition_List&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ListenForEvent&quot;</span><span class="p">]</span>
 <span class="p">}</span>
@@ -991,7 +999,7 @@ deterministic number of cases on a scheduled day, <strong>ImportPressure</strong
 of importation of infected individuals, over a corresponding set of durations. <strong>ImportPressure</strong>
 inherits from <strong>Outbreak</strong>; the <strong>Antigen</strong> and <strong>Genome</strong> parameters are defined as they are for all
 <strong>Outbreak</strong> events.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1151,7 +1159,7 @@ alters the immune modifiers of the individual’s susceptibility object and is t
 of. Any immune waning is not governed by <a class="reference internal" href="parameter-campaign-waningeffects.html"><span class="doc">Waning effect classes</span></a>, as
 <a class="reference internal" href="parameter-campaign-individual-multieffectvaccine.html"><span class="doc">MultiEffectVaccine</span></a> is, but rather
 by the immunity waning parameters in the configuration file.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1316,7 +1324,7 @@ corresponding priming parameter. If the recipient’s immune modifier is below t
 the vaccine’s initial effect will be equal to the corresponding boost parameter. After distribution,
 the effect wanes, just like a <a class="reference internal" href="parameter-campaign-individual-multieffectvaccine.html"><span class="doc">MultiEffectVaccine</span></a>. The behavior
 is intended to mimic biological priming and boosting.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1546,7 +1554,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>NA</td>
 <td>NA</td>
 <td>0</td>
-<td>If an individual&#8217;s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
+<td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
@@ -1606,7 +1614,7 @@ probability that a node will change its node property to the target value, and t
 over which nodes will attempt to change their individual properties to the target value. This
 node-level intervention functions in a similar manner as the individual-level intervention,
 <a class="reference internal" href="parameter-campaign-individual-propertyvaluechanger.html"><span class="doc">PropertyValueChanger</span></a>.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1754,16 +1762,16 @@ node-level intervention functions in a similar manner as the individual-level in
 <h4><a class="toc-backref" href="#id10">SimpleBoosterVaccine</a><a class="headerlink" href="#simpleboostervaccine" title="Permalink to this headline">¶</a></h4>
 <p>The <strong>SimpleBoosterVaccine</strong> intervention class is derived from <a class="reference internal" href="parameter-campaign-individual-simplevaccine.html"><span class="doc">SimpleVaccine</span></a>
 and preserves many of the same parameters. The behavior is much like <strong>SimpleVaccine</strong>, except that upon distribution
-and successful take, the vaccine&#8217;s effect is determined by the recipient&#8217;s immune state. If the
+and successful take, the vaccine’s effect is determined by the recipient’s immune state. If the
 recipient’s immunity modifier in the corresponding channel (acquisition, transmission, or mortality) is
 above a user-specified threshold, then the vaccine’s initial effect will be equal to the
 corresponding priming parameter. If the recipient’s immune modifier is below this threshold, then
-the vaccine&#8217;s initial effect will be equal to the corresponding boosting parameter. After
+the vaccine’s initial effect will be equal to the corresponding boosting parameter. After
 distribution, the effect wanes, just like <strong>SimpleVaccine</strong>. In essence, this intervention
 provides a <strong>SimpleVaccine</strong> intervention with one effect to all naive (below- threshold)
 individuals, and another effect to all primed (above-threshold) individuals; this behavior is
 intended to mimic biological priming and boosting.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1978,7 +1986,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>NA</td>
 <td>0</td>
-<td>If an individual&#8217;s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
+<td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
@@ -2047,8 +2055,8 @@ with Visual Studio 2015; otherwise, your simulation will crash when it attempts 
 by Visual Studio 2012.</dd>
 <dt>Boost</dt>
 <dd>EMOD now supports using Boost 1.61.0. If you continue to use Boost 1.51.0, you will get the
-following warning, &#8220;Unknown compiler version - please run the configure tests and report the
-results.&#8221;</dd>
+following warning, “Unknown compiler version - please run the configure tests and report the
+results.”</dd>
 <dt>Environment variables</dt>
 <dd>To make it easier to use Boost and Python with Visual Studio, IDM paths have been created.
 These two paths, IDM_BOOST_PATH and IDM_PYTHON_PATH, need to be added to your  environment
@@ -2061,7 +2069,7 @@ Python paths in the SConstruct file in the EMOD root directory.</dd>
 <dt>Python</dt>
 <dd>EMOD was tested with Python 2.7.11 and 2.7.12. If you are building the EMOD executable (Eradication.exe) and have
 an earlier version of Python (for example, 2.7.2), you will see the following warning message on some
-files, &#8220;c:python27includepymath.h(22): warning C4273: &#8216;round&#8217;: inconsistent dll linkage.&#8221;
+files, “c:python27includepymath.h(22): warning C4273: ‘round’: inconsistent dll linkage.”
 Upgrade to Python 2.7.11 or 2.7.12 to get rid of the warning message.</dd>
 </dl>
 <p>For more information, see <a class="reference internal" href="dev-install-prerequisites.html"><span class="doc">Prerequisites for working with EMOD source code</span></a>.</p>
@@ -2073,15 +2081,18 @@ Upgrade to Python 2.7.11 or 2.7.12 to get rid of the warning message.</dd>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="install-overview.html" class="btn btn-neutral float-right" title="EMOD installation" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="install-overview.html" class="btn btn-neutral float-right" title="EMOD installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Welcome to IDM HIV modeling" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral" title="Welcome to IDM HIV modeling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -2090,7 +2101,7 @@ Upgrade to Python 2.7.11 or 2.7.12 to get rid of the warning message.</dd>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -2117,7 +2128,8 @@ Upgrade to Python 2.7.11 or 2.7.12 to get rid of the warning message.</dd>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>
