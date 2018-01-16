@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -134,8 +140,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Tuberculosis Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Tuberculosis Model</a>
+        
       </nav>
 
 
@@ -246,7 +254,7 @@ run the local EMOD simulation to redirect the console output to the file specifi
 the files in use, as well as other initialization information, including the default logging level
 and the logging levels set for particular modules. The file follows that information
 with log output using the following format: &lt;timestep&gt;&lt;HPC rank&gt;&lt;log level&gt;&lt;module&gt;&lt;message&gt;.</p>
-<p>By default, the logging level is set to &#8220;INFO&#8221;. If you want to change the logging level,
+<p>By default, the logging level is set to “INFO”. If you want to change the logging level,
 see <a class="reference internal" href="dev-logging.html"><span class="doc">Set log levels</span></a>.</p>
 <p>For example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">C</span><span class="p">:</span>\<span class="n">EMOD</span>\<span class="n">CampaignTesting</span>\<span class="mi">00</span><span class="n">_DefaultDemographics</span><span class="o">&gt;..</span>\<span class="n">Eradication</span><span class="o">.</span><span class="n">exe</span> <span class="o">-</span><span class="n">C</span> <span class="n">config</span><span class="o">.</span><span class="n">json</span> <span class="o">-</span><span class="n">I</span> <span class="o">../</span><span class="nb">input</span>
@@ -386,15 +394,18 @@ see <a class="reference internal" href="dev-logging.html"><span class="doc">Set 
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="troubleshooting.html" class="btn btn-neutral float-right" title="Troubleshooting EMOD simulations" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="troubleshooting.html" class="btn btn-neutral float-right" title="Troubleshooting EMOD simulations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="file-spatial.html" class="btn btn-neutral" title="Spatial output report" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="file-spatial.html" class="btn btn-neutral" title="Spatial output report" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -403,7 +414,7 @@ see <a class="reference internal" href="dev-logging.html"><span class="doc">Set 
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -430,7 +441,8 @@ see <a class="reference internal" href="dev-logging.html"><span class="doc">Set 
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -144,8 +150,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Malaria Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Malaria Model</a>
+        
       </nav>
 
 
@@ -315,7 +323,7 @@ closest to its peak towards the end of the rainy season. The decay is specified 
 per day, and this slower decay constant means that species with this habitat type will tend to have
 a proportionately higher dry-season population relative to the temporary habitat species.</p>
 <p>In the model, semi-permanent habitat increases with a constant K<sub>semi</sub>D<sub>cell</sub>2P<sub>rain</sub> and decays with a longer time constant <img class="math" src="_images/math/557d5fad862c9046d26e1a930f45a550c146d592.png" alt="\tau"/><sub>semi</sub>(<strong>Semipermanent_Habitat_Decay_Rate</strong> in the simulation configuration file). The parameter K<sub>semi</sub> is the scale factor value in <strong>Larval_Habitat_Types</strong> for species with a
-<strong>Larval_Habitat_Types</strong> of &#8220;WATER_VEGETATION&#8221;. Permanent habitat is fixed at K<sub>perm</sub>D<sub>cell</sub>2, and human population-driven habitat is calculated as population N* K<sub>pop</sub>.
+<strong>Larval_Habitat_Types</strong> of “WATER_VEGETATION”. Permanent habitat is fixed at K<sub>perm</sub>D<sub>cell</sub>2, and human population-driven habitat is calculated as population N* K<sub>pop</sub>.
 The values of k<sub>tempdecay</sub>,  <img class="math" src="_images/math/557d5fad862c9046d26e1a930f45a550c146d592.png" alt="\tau"/><sub>semi</sub>,  K<sub>semi</sub>, and K<sub>temp</sub> can be fit to local data on vector abundance by species over time or to local data on
 EIR to tailor a simulation to a specific setting.</p>
 </div>
@@ -324,7 +332,7 @@ EIR to tailor a simulation to a specific setting.</p>
 <p>For habitat type CONSTANT, larval carrying capacity is constant throughout the year and does not
 depend on weather. However, there will be a seasonal signal in adult population levels due to the
 effects of temperature upon aquatic development times. For a given carrying capacity, a faster
-development time will allow a local habitat to have a higher larval &#8220;through-put&#8221; with corresponding
+development time will allow a local habitat to have a higher larval “through-put” with corresponding
 impacts on the adult population. The scaling factor value in the <strong>Larval_Habitat_Types</strong> parameter
 is used to specify the carrying capacity per unit area D<sub>cell</sub>2.</p>
 </div>
@@ -413,7 +421,7 @@ degrees of freedom become important when there is a distinct rainy season. For e
 habitat produces the same ratio between biting rates in the wet season and dry season as seen in
 Effect of Varying Habitat Scalar.</p>
 <p>However, when varying the decay rate, the ratio between habitats is different in the wet season
-versus the dry season. As seen in the graph &#8220;Effect of Varying Temporary Habitat Decay Scalar&#8221;, a
+versus the dry season. As seen in the graph “Effect of Varying Temporary Habitat Decay Scalar”, a
 given ratio in rainy season will become exaggerated in the start of dry season (with a higher ratio
 the drier the season), as the slower decay rate extends habitat longer into the dry season.</p>
 </div>
@@ -455,15 +463,18 @@ of EMOD in which the modifier would be applied equally to all species within a s
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="malaria-vector-transmission-model.html" class="btn btn-neutral float-right" title="Vector transmission model" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="malaria-vector-transmission-model.html" class="btn btn-neutral float-right" title="Vector transmission model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="malaria-climate-demographics.html" class="btn btn-neutral" title="Climate and demographics spatial data" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="malaria-climate-demographics.html" class="btn btn-neutral" title="Climate and demographics spatial data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -472,7 +483,7 @@ of EMOD in which the modifier would be applied equally to all species within a s
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -499,7 +510,8 @@ of EMOD in which the modifier would be applied equally to all species within a s
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

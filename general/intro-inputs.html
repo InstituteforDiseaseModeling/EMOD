@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -137,8 +143,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Generic Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Generic Model</a>
+        
       </nav>
 
 
@@ -203,8 +211,8 @@ can use the HINT feature to add heterogeneous transmission to your generic model
 manually configure heterogeneous transmission using HINT with other simulation types because the
 heterogeneity in transmission for specific diseases and disease classes is already configured by the
 simulation type.</p>
-<p>You can specify multiple demographics files, which function as a &#8220;base layer&#8221; file and one
-or more &#8220;overlay&#8221; files that override the base layer configuration. Overlay files can change the
+<p>You can specify multiple demographics files, which function as a “base layer” file and one
+or more “overlay” files that override the base layer configuration. Overlay files can change the
 value of parameters already specified in the base layer or add new parameters. Support for multiple
 demographics layers allows for the following scenarios:</p>
 <ul class="simple">
@@ -279,15 +287,18 @@ file is submitted, EMOD allocates nodes to cores according to a checkerboard pat
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="intro-configuration.html" class="btn btn-neutral float-right" title="Configuration file" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="intro-configuration.html" class="btn btn-neutral float-right" title="Configuration file" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="intro-overview.html" class="btn btn-neutral" title="Introduction to the software" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="intro-overview.html" class="btn btn-neutral" title="Introduction to the software" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -296,7 +307,7 @@ file is submitted, EMOD allocates nodes to cores according to a checkerboard pat
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -323,7 +334,8 @@ file is submitted, EMOD allocates nodes to cores according to a checkerboard pat
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

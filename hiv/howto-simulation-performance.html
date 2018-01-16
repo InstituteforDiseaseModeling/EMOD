@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -146,8 +152,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">HIV Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">HIV Model</a>
+        
       </nav>
 
 
@@ -195,7 +203,7 @@ steps to improve performance and reduce processing time. This topic describes ma
 can take to speed up EMOD simulations.</p>
 <div class="section" id="parallel-processing">
 <h2>Parallel processing<a class="headerlink" href="#parallel-processing" title="Permalink to this headline">¶</a></h2>
-<p>The EMOD executable (Eradication.exe) is &#8220;single threaded&#8221;, meaning that for processing, it will use only one core. However,
+<p>The EMOD executable (Eradication.exe) is “single threaded”, meaning that for processing, it will use only one core. However,
 you can use the Message Passing Interface (MPI) to run multiple copies of Eradication.exe in parallel,
 either locally or on an HPC cluster. To run a simulation in parallel, you must invoke Eradication.exe with
 the mpiexec command. For more information, see <a class="reference internal" href="howto-simulation-mpiexec.html"><span class="doc">Run a simulation using mpiexec</span></a>.</p>
@@ -215,7 +223,7 @@ processing time is often driven by the number of infections or immune updates, s
 simulation after all infections have cleared may not increase processing time much. For more
 information, see <a class="reference internal" href="parameter-configuration.html#config-setup"><span class="std std-ref">Simulation setup</span></a> parameters.</dd>
 <dt><strong>Individual_Sampling_Type</strong> and <strong>Base_Individual_Sample_Rate</strong></dt>
-<dd>Instead of the default <strong>Individual_Sampling_Type</strong> setting of &#8220;TRACK_ALL&#8221;, you can speed up
+<dd>Instead of the default <strong>Individual_Sampling_Type</strong> setting of “TRACK_ALL”, you can speed up
 performance by sampling such that each individual object represents more than one person. For
 example, a simulation with a population of 1 million and sample rate of 0.1 would simulate
 100,000 individuals, with each given a weight of 10.Sampling can be fixed at a particular rate
@@ -225,7 +233,7 @@ sensitive to rare stochastic events. For more information, see <a class="referen
 parameters.</dd>
 <dt><strong>Population_Scale_Type</strong> and <strong>Base_Population_Scale_Factor</strong></dt>
 <dd>Alternatively, you can simply reduce the total population of the simulation using
-<strong>Population_Scale_Type</strong> set to &#8220;FIXED_SCALING&#8221; and <strong>Base_Population_Scale_Factor</strong> set to
+<strong>Population_Scale_Type</strong> set to “FIXED_SCALING” and <strong>Base_Population_Scale_Factor</strong> set to
 less than one. For more information, see <a class="reference internal" href="parameter-configuration.html#config-scalars"><span class="std std-ref">Scalars and multipliers</span></a> parameters.</dd>
 </dl>
 </div>
@@ -248,15 +256,18 @@ suitable to the geography being simulated. See <a class="reference internal" hre
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="howto-outputs.html" class="btn btn-neutral float-right" title="Use output files" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="howto-outputs.html" class="btn btn-neutral float-right" title="Use output files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="howto-simulation-matlab.html" class="btn btn-neutral" title="Run a simulation using MATLAB" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="howto-simulation-matlab.html" class="btn btn-neutral" title="Run a simulation using MATLAB" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -265,7 +276,7 @@ suitable to the geography being simulated. See <a class="reference internal" hre
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -292,7 +303,8 @@ suitable to the geography being simulated. See <a class="reference internal" hre
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

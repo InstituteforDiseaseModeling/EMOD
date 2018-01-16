@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -144,8 +150,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">HIV Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">HIV Model</a>
+        
       </nav>
 
 
@@ -186,7 +194,7 @@
 <p>The binned output report is a JSON-formatted file where the channel data has been sorted into bins.
 It is very similar to an inset chart. However, with the binned report, channels are broken down into
 sub-channels (bins) based on various criteria. For example, instead of having a single prevalence
-channel, you might have prevalence in the &#8220;0-3 years old bin&#8221; and the &#8220;4-6 years old bin, and so
+channel, you might have prevalence in the “0-3 years old bin” and the “4-6 years old bin, and so
 forth. The file name is BinnedReport.json.</p>
 <p>To generate the binned report, set the <strong>Enable_Demographics_Reporting</strong> configuration parameter
 to 1. The demographics summary output report will also be generated.</p>
@@ -194,7 +202,7 @@ to 1. The demographics summary output report will also be generated.</p>
 <div class="section" id="header">
 <h2>Header<a class="headerlink" href="#header" title="Permalink to this headline">¶</a></h2>
 <p>The header section contains the following parameters.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="21%" />
 <col width="21%" />
@@ -257,11 +265,11 @@ to 1. The demographics summary output report will also be generated.</p>
 </tr>
 <tr class="row-even"><td>ValuesPerAxis</td>
 <td>array of integers</td>
-<td>The maximum value for each bin in the axis. For example, if the axis is &#8220;Age&#8221;, the values are age maximums in days.</td>
+<td>The maximum value for each bin in the axis. For example, if the axis is “Age”, the values are age maximums in days.</td>
 </tr>
 <tr class="row-odd"><td>MeaningPerAxis</td>
 <td>array of strings</td>
-<td>The &#8220;meaning&#8221; of each element in <strong>ValuesPerAxis</strong>. For example, if the axis is &#8220;Age&#8221;, this shows those values binned by age range, such as younger than 5 years, 5 to 9, and so on.</td>
+<td>The “meaning” of each element in <strong>ValuesPerAxis</strong>. For example, if the axis is “Age”, this shows those values binned by age range, such as younger than 5 years, 5 to 9, and so on.</td>
 </tr>
 </tbody>
 </table>
@@ -273,7 +281,7 @@ to 1. The demographics summary output report will also be generated.</p>
 <div class="section" id="channels">
 <h2>Channels<a class="headerlink" href="#channels" title="Permalink to this headline">¶</a></h2>
 <p>The channels section contains the following parameters.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="37%" />
 <col width="26%" />
@@ -446,15 +454,18 @@ to 1. The demographics summary output report will also be generated.</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="file-demographic-summary.html" class="btn btn-neutral float-right" title="Demographic summary output report" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="file-demographic-summary.html" class="btn btn-neutral float-right" title="Demographic summary output report" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="file-inset-chart.html" class="btn btn-neutral" title="Inset chart output report" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="file-inset-chart.html" class="btn btn-neutral" title="Inset chart output report" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -463,7 +474,7 @@ to 1. The demographics summary output report will also be generated.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -490,7 +501,8 @@ to 1. The demographics summary output report will also be generated.</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

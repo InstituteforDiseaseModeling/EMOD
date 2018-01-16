@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -142,8 +148,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Malaria Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Malaria Model</a>
+        
       </nav>
 
 
@@ -185,7 +193,7 @@ directory. Some are logging or error output files, which you can read about more
 usually in JSON or CSV format. This topic describes how to parse and use the output reports.</p>
 <p>By default, the <a class="reference internal" href="glossary.html#term-output-report"><span class="xref std std-term">output report</span></a> InsetChart.json is always produced, which contains per-
 timestep values accumulated over the simulation in a variety of reporting channels, for example,
-“New Infections&#8221;, &#8220;Adult Vectors&#8221;, and &#8220;Parasite Prevalence&#8221;.  EMOD provides several other
+“New Infections”, “Adult Vectors”, and “Parasite Prevalence”.  EMOD provides several other
 built-in reports that you can produce if you enable them in the <a class="reference internal" href="glossary.html#term-configuration-file"><span class="xref std std-term">configuration file</span></a>. See
 <a class="reference internal" href="file-outputs.html"><span class="doc">Output report structure</span></a> for additional information about the reports and how to enable them.</p>
 <p>If none of the built-in output reports provide the data you need, you can use a custom reporter that
@@ -253,15 +261,18 @@ your working directory.</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="howto-custom-reporter.html" class="btn btn-neutral float-right" title="Custom reporters" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="howto-custom-reporter.html" class="btn btn-neutral float-right" title="Custom reporters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="howto-simulation-performance.html" class="btn btn-neutral" title="Improve EMOD performance" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="howto-simulation-performance.html" class="btn btn-neutral" title="Improve EMOD performance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -270,7 +281,7 @@ your working directory.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -297,7 +308,8 @@ your working directory.</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -143,8 +149,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Tuberculosis Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Tuberculosis Model</a>
+        
       </nav>
 
 
@@ -193,7 +201,7 @@ for the Eradication binary on CentOS on Azure.</p>
 <p>The following command-line options are available for running EMOD simulations. Paths can be
 absolute or relative to the directory you are in when running the commands, unless otherwise
 specified.</p>
-<table border="1" class="docutils" id="id1">
+<table border="1" class="colwidths-given docutils" id="id1">
 <caption><span class="caption-text">Simulation options</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="21%" />
@@ -218,7 +226,7 @@ EMOD will look for files in the current directory.</td>
 </tr>
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">--output-path</span></code></td>
 <td><code class="docutils literal"><span class="pre">-O</span></code></td>
-<td>Path to the directory where output files will be written. If not specified, EMOD will create an &#8220;output&#8221; directory and overwrite any previous output in that directory.</td>
+<td>Path to the directory where output files will be written. If not specified, EMOD will create an “output” directory and overwrite any previous output in that directory.</td>
 </tr>
 <tr class="row-odd"><td><code class="docutils literal"><span class="pre">--dll-path</span></code></td>
 <td><code class="docutils literal"><span class="pre">-D</span></code></td>
@@ -230,7 +238,7 @@ EMOD will look for files in the current directory.</td>
 <a class="reference internal" href="glossary.html#term-high-performance-computing-hpc"><span class="xref std std-term">high-performance computing (HPC)</span></a> cluster. They are optional for any simulation, but they must
 be used together. To monitor progress, listen for User Datagram Protocol (UDP) messages on the specified
 host and port.</p>
-<table border="1" class="docutils" id="id2">
+<table border="1" class="colwidths-given docutils" id="id2">
 <caption><span class="caption-text">HPC cluster options</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="23%" />
@@ -243,13 +251,13 @@ host and port.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">--monitor_host</span></code></td>
-<td>The IP address of the commissioning/monitoring host. Set to &#8220;none&#8221; for no IP address.</td>
+<td>The IP address of the commissioning/monitoring host. Set to “none” for no IP address.</td>
 </tr>
 <tr class="row-odd"><td><code class="docutils literal"><span class="pre">--monitor_port</span></code></td>
-<td>The port of the commissioning/monitoring host. Set to &#8220;0&#8221; for no port.</td>
+<td>The port of the commissioning/monitoring host. Set to “0” for no port.</td>
 </tr>
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">--sim_id</span></code></td>
-<td>The unique ID for this simulation.  This ID is needed for self-identification to the UDP host. Set to &#8220;none&#8221; for no simulation ID.</td>
+<td>The unique ID for this simulation.  This ID is needed for self-identification to the UDP host. Set to “none” for no simulation ID.</td>
 </tr>
 </tbody>
 </table>
@@ -279,15 +287,18 @@ the simulation. See <a class="reference internal" href="file-error-logging.html"
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="howto-simulation-mpiexec.html" class="btn btn-neutral float-right" title="Run a simulation using mpiexec" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="howto-simulation-mpiexec.html" class="btn btn-neutral float-right" title="Run a simulation using mpiexec" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="howto-simulations.html" class="btn btn-neutral" title="Run simulations" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="howto-simulations.html" class="btn btn-neutral" title="Run simulations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -296,7 +307,7 @@ the simulation. See <a class="reference internal" href="file-error-logging.html"
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -323,7 +334,8 @@ the simulation. See <a class="reference internal" href="file-error-logging.html"
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

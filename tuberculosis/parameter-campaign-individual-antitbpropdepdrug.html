@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -168,8 +174,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Tuberculosis Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Tuberculosis Model</a>
+        
       </nav>
 
 
@@ -212,18 +220,18 @@
 <p>The <strong>AntiTBPropDepDrug</strong> intervention class is similar to <a class="reference internal" href="parameter-campaign-individual-antitbdrug.html"><span class="doc">AntiTBDrug</span></a>,
 as it specifies how TB drugs affect individuals in the model. This intervention enables
 the simultaneous distribution of different drug treatments to specific individuals within the
-population based on those individuals&#8217; <strong>IndividualProperties</strong> (see <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a>
+population based on those individuals’ <strong>IndividualProperties</strong> (see <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a>
 parameters for more information). Further, drugs can have different efficacies based on whether the
 individual is drug-resistant or whether the individual is treatment-experienced. All drugs must be
 configured in the configuration file under <strong>TB_Drug_Types_For_This_Sim</strong> and <strong>TB_Drug_Params</strong>
 (see <a class="reference internal" href="parameter-configuration.html#config-drugs"><span class="std std-ref">Drugs and treatments</span></a> parameters for more information).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add &#8220;dummy&#8221; parameters to add contextual information to your files.</p>
+<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add “dummy” parameters to add contextual information to your files.</p>
 </div>
 <p>The table below describes all possible parameters with which this class can be configured. The JSON
 example that follows shows one potential configuration.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -249,7 +257,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>na</td>
-<td>An array of JSON objects that defines the drugs to distribute based on individual properties. Each JSON object is in the format &#8220;property:value&#8221;: &#8220;drug&#8221;. The property values are defined in the demographics file (<a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a>) using <strong>IndividualProperties</strong> and the drugs are defined in the configuration file (<a class="reference internal" href="parameter-configuration.html#config-drugs"><span class="std std-ref">Drugs and treatments</span></a>) using <strong>TB_Drug_Types_For_This_Sim</strong> and <strong>TB_Drug_Params</strong>.</td>
+<td>An array of JSON objects that defines the drugs to distribute based on individual properties. Each JSON object is in the format “property:value”: “drug”. The property values are defined in the demographics file (<a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a>) using <strong>IndividualProperties</strong> and the drugs are defined in the configuration file (<a class="reference internal" href="parameter-configuration.html#config-drugs"><span class="std std-ref">Drugs and treatments</span></a>) using <strong>TB_Drug_Types_For_This_Sim</strong> and <strong>TB_Drug_Params</strong>.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Drug_Type_by_Property&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;QualityOfCare:CDC&quot;</span><span class="p">:</span> <span class="s2">&quot;CDCDrug&quot;</span>
@@ -268,7 +276,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>1</td>
-<td>If an individual develops MDR-TB and is getting the default drug, the intervention automatically starts giving an MDR drug with different treatment outcomes when set to true (1). If this is enabled, the MDR drugs must be included in the configuration parameter <strong>TB_Drug_Params</strong> list with the same name as the original drug, but with MDR or Retx appended to the end. For example, for a &#8220;HospitalDrug&#8221;, you would also need to parameterize &#8220;HospitalDrugMDR&#8221; and &#8220;HospitalDrugRetx&#8221;.</td>
+<td>If an individual develops MDR-TB and is getting the default drug, the intervention automatically starts giving an MDR drug with different treatment outcomes when set to true (1). If this is enabled, the MDR drugs must be included in the configuration parameter <strong>TB_Drug_Params</strong> list with the same name as the original drug, but with MDR or Retx appended to the end. For example, for a “HospitalDrug”, you would also need to parameterize “HospitalDrugMDR” and “HospitalDrugRetx”.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Enable_State_Specific_Treatment&quot;</span><span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
@@ -457,7 +465,7 @@ Since drug concentrations and C50 values are often specified with different unit
 <td>NA</td>
 <td>NA</td>
 <td>0</td>
-<td>If an individual&#8217;s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
+<td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
@@ -548,15 +556,18 @@ Since drug concentrations and C50 values are often specified with different unit
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="parameter-campaign-individual-bcgvaccine.html" class="btn btn-neutral float-right" title="BCGVaccine" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="parameter-campaign-individual-bcgvaccine.html" class="btn btn-neutral float-right" title="BCGVaccine" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="parameter-campaign-individual-antitbdrug.html" class="btn btn-neutral" title="AntiTBDrug" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="parameter-campaign-individual-antitbdrug.html" class="btn btn-neutral" title="AntiTBDrug" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -565,7 +576,7 @@ Since drug concentrations and C50 values are often specified with different unit
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -592,7 +603,8 @@ Since drug concentrations and C50 values are often specified with different unit
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

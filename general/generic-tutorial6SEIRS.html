@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -143,8 +149,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Generic Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Generic Model</a>
+        
       </nav>
 
 
@@ -209,7 +217,7 @@ related deaths. For more information, see <a class="reference internal" href="pa
 <div><ul class="simple">
 <li>Set <strong>Enable_Vital_Dynamics</strong> to 1.</li>
 <li>Set <strong>Enable_Birth</strong> to 1.</li>
-<li>Set <strong>Death_Rate_Dependence</strong> to &#8220;NONDISEASE_MORTALITY_BY_AGE_AND_GENDER.&#8221;</li>
+<li>Set <strong>Death_Rate_Dependence</strong> to “NONDISEASE_MORTALITY_BY_AGE_AND_GENDER.”</li>
 <li>Set <strong>Enable_Disease_Mortality</strong> to 1.</li>
 </ul>
 </div></blockquote>
@@ -224,7 +232,7 @@ model. For more information, see <a class="reference internal" href="parameter-c
 <li>Set <strong>Base_Incubation_Period</strong> to 3.</li>
 <li>Set <strong>Enable_Immunity</strong> to 1.</li>
 <li>Set <strong>Enable_Immune_Decay</strong> to 1.</li>
-<li>Set <strong>Incubation_Period_Distribution</strong> to &#8220;EXPONENTIAL_DISTRIBUTION.&#8221;</li>
+<li>Set <strong>Incubation_Period_Distribution</strong> to “EXPONENTIAL_DISTRIBUTION.”</li>
 </ul>
 </div></blockquote>
 </div>
@@ -237,7 +245,7 @@ person direct contact. For more information, see <a class="reference internal" h
 <div><ul class="simple">
 <li>Set <strong>Base_Infectivity</strong> to 0.25.</li>
 <li>Set <strong>Base_Infectious_Period</strong> to 6.</li>
-<li>Set <strong>Infectious_Period_Distribution</strong> to &#8220;EXPONENTIAL_DURATION.&#8221;</li>
+<li>Set <strong>Infectious_Period_Distribution</strong> to “EXPONENTIAL_DURATION.”</li>
 </ul>
 </div></blockquote>
 <div class="section" id="mortality-rate">
@@ -249,14 +257,14 @@ mortality. For more information, see <a class="reference internal" href="paramet
 <blockquote>
 <div><ul class="simple">
 <li>Set <strong>Base_Mortality</strong> to 0.01.</li>
-<li>Set <strong>Mortality_Time_Course</strong> to &#8220;DAILY_MORTALITY.&#8221;</li>
+<li>Set <strong>Mortality_Time_Course</strong> to “DAILY_MORTALITY.”</li>
 </ul>
 </div></blockquote>
 </div>
 <div class="section" id="immunity-parameters">
 <h4>Immunity parameters<a class="headerlink" href="#immunity-parameters" title="Permalink to this headline">¶</a></h4>
 <p>For this scenario the <strong>Mortality_Blocking_Immunity_Duration_Before_Decay</strong> and
-<strong>Mortality_Blocking_Immunity_Decay_Rate</strong> are added. On recovery, people&#8217;s immunity decays with an
+<strong>Mortality_Blocking_Immunity_Decay_Rate</strong> are added. On recovery, people’s immunity decays with an
 average half-life of 10 days and a 100-day offset. This applies to transmission blocking,
 acquisition blocking and mortality blocking immunity. For more information, see <a class="reference internal" href="parameter-configuration.html#config-immunity"><span class="std std-ref">Immunity</span></a> parameters.</p>
 <p>Set the following parameters:</p>
@@ -403,15 +411,18 @@ observe the persistence of the outbreak again due to increased influx of suscept
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="generic-tutorial7SI.html" class="btn btn-neutral float-right" title="Generic 7: SI - Lifelong infection" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="generic-tutorial7SI.html" class="btn btn-neutral float-right" title="Generic 7: SI - Lifelong infection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="generic-tutorial5SIRS.html" class="btn btn-neutral" title="Generic 5: SIRS - Waning immunity" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="generic-tutorial5SIRS.html" class="btn btn-neutral" title="Generic 5: SIRS - Waning immunity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -420,7 +431,7 @@ observe the persistence of the outbreak again due to increased influx of suscept
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -447,7 +458,8 @@ observe the persistence of the outbreak again due to increased influx of suscept
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

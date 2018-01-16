@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -145,8 +151,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Malaria Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Malaria Model</a>
+        
       </nav>
 
 
@@ -192,11 +200,11 @@ component pages. For more information on using the software, or configuring inpu
 <h2>Simulation configuration help<a class="headerlink" href="#simulation-configuration-help" title="Permalink to this headline">¶</a></h2>
 <p>There are several options for running a vector-based model. To run a basic model that functions as an
 enhanced SEIRS model, you will need to set the parameter <strong>Simulation_Type</strong> to the value
-&#8220;VECTOR_SIM&#8221;.  However, to add complexity and include the full system of microsolvers for within-
+“VECTOR_SIM”.  However, to add complexity and include the full system of microsolvers for within-
 host parasite dynamics and other immune system interactions,  set the parameter
-<strong>Simulation_Type</strong> to the value &#8220;MALARIA_SIM&#8221;.</p>
+<strong>Simulation_Type</strong> to the value “MALARIA_SIM”.</p>
 <p>To select between the cohort model versus individual mosquito model, set the <strong>Vector_Sampling_Type</strong>
-parameter. For the cohort model, the possible values are &#8220;VECTOR_COMPARTMENTS_NUMBER&#8221; or
+parameter. For the cohort model, the possible values are “VECTOR_COMPARTMENTS_NUMBER” or
 “VECTOR_COMPARTMENTS_PERCENT”. For the individual mosquito model, the values are “TRACK_ALL_VECTORS”
 or “SAMPLE_IND_VECTORS”.</p>
 <div class="section" id="basic-species-configuration">
@@ -213,7 +221,7 @@ species that will be present in the simulation. For example, the following speci
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>For each species listed, a &#8220;VectorPopulation&#8221; object will be added to the simulation at each
+<p>For each species listed, a “VectorPopulation” object will be added to the simulation at each
 node. Each species will be defined by parameters in the simulation configuration file for the vector
 ecology and behavior of the species. This allows for a mechanistic description of vector
 abundances and behavior through the effects of climate and weather on different preferred larval
@@ -296,15 +304,18 @@ You can download the executable file to run these configuration and campaign fil
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="howto-campaign.html" class="btn btn-neutral float-right" title="Create a campaign file" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="howto-campaign.html" class="btn btn-neutral float-right" title="Create a campaign file" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="howto-config-overlay.html" class="btn btn-neutral" title="Use configuration overlay files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="howto-config-overlay.html" class="btn btn-neutral" title="Use configuration overlay files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -313,7 +324,7 @@ You can download the executable file to run these configuration and campaign fil
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -340,7 +351,8 @@ You can download the executable file to run these configuration and campaign fil
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

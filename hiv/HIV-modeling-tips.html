@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -145,8 +151,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">HIV Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">HIV Model</a>
+        
       </nav>
 
 
@@ -184,11 +192,11 @@
 
   <div class="section" id="hiv-or-sti-configuration-tips">
 <h1>HIV or STI configuration tips<a class="headerlink" href="#hiv-or-sti-configuration-tips" title="Permalink to this headline">¶</a></h1>
-<p>Currently, this page consists of notes of important modeling things that don&#8217;t seem to quite fit into a framework yet.</p>
+<p>Currently, this page consists of notes of important modeling things that don’t seem to quite fit into a framework yet.</p>
 <p>To run simulations that utilize network transmission, set the parameter <strong>Simulation_Type</strong> to the
-value &#8220;STI_SIM&#8221;. To utilize the specific components for simulating HIV, set the parameter
-<strong>Simulation_Type</strong> to the value &#8220;HIV_SIM&#8221;.
-.. Need to figure out what &#8220;HIV_SIM&#8221; adds in terms of options, complexity, etc.</p>
+value “STI_SIM”. To utilize the specific components for simulating HIV, set the parameter
+<strong>Simulation_Type</strong> to the value “HIV_SIM”.
+.. Need to figure out what “HIV_SIM” adds in terms of options, complexity, etc.</p>
 <p>Note that there are graphs and some equations for Weibull distributions (p. 10 in the pdf) that are not copied over.</p>
 <p>To define the distribution of age of sexual debut, three parameters are specified: the Weibull
 heterogeneity parameter, the Weibull scale parameter, and the minimum possible age of sexual debut.
@@ -202,15 +210,18 @@ tabulated below: [did not include the table, p. 11]</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="howto-campaign.html" class="btn btn-neutral float-right" title="Create a campaign file" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="howto-campaign.html" class="btn btn-neutral float-right" title="Create a campaign file" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="howto-config-overlay.html" class="btn btn-neutral" title="Use configuration overlay files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="howto-config-overlay.html" class="btn btn-neutral" title="Use configuration overlay files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -219,7 +230,7 @@ tabulated below: [did not include the table, p. 11]</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -246,7 +257,8 @@ tabulated below: [did not include the table, p. 11]</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

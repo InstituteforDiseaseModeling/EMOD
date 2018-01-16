@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -145,8 +151,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Generic Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Generic Model</a>
+        
       </nav>
 
 
@@ -197,7 +205,7 @@
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>Models of disease transmission often assume a homogeneous pattern of mixing between individuals that
-stems from a mechanism in which the population is sufficiently &#8220;well-mixed&#8221; to make each individual
+stems from a mechanism in which the population is sufficiently “well-mixed” to make each individual
 equally likely to next encounter each other individual. Along with this mixing assumption, simple
 models additionally suppose that susceptibility and infectivity are homogeneous across the
 population. These assumptions enable elegant mathematical calculations to be performed, including
@@ -212,10 +220,10 @@ transmission <a class="footnote-reference" href="#f1" id="id1">[1]</a>. Suscepti
 behavioral and biological factors including hand washing, viral load, and immunity. Many of these
 factors can be targeted by interventions that potentially have non-uniform uptake, for example due
 to differences in accessibility.</p>
-<p>These sources of heterogeneity are abundant in almost every infectious disease. The &#8220;right&#8221;
+<p>These sources of heterogeneity are abundant in almost every infectious disease. The “right”
 level of heterogeneity to include in a model depends on the question being asked, but rarely is
 a purely homogeneous model sufficient. The <a class="reference internal" href="glossary.html#term-epidemiological-modeling-software-emod"><span class="xref std std-term">Epidemiological MODeling software (EMOD)</span></a> has
-long-supported heterogeneity in the form of &#8220;nodes.&#8221; Each <a class="reference internal" href="glossary.html#term-node"><span class="xref std std-term">node</span></a> represents a small
+long-supported heterogeneity in the form of “nodes.” Each <a class="reference internal" href="glossary.html#term-node"><span class="xref std std-term">node</span></a> represents a small
 geographical area that can have customized parameters. Individuals migrate between nodes either
 temporarily or permanently using mobility patterns driven by local, regional, and long-distance
 transportation. While nodes have long provided the capability to model large-scale spatial
@@ -225,8 +233,8 @@ transmission parameter, <strong>Base_Infectivity</strong>, which determined <img
 <div class="section" id="hint-l">
 <h2>Heterogeneous Intra-Node Transmission (HINT)<a class="headerlink" href="#hint-l" title="Permalink to this headline">¶</a></h2>
 <p>EMOD implements the Heterogeneous Intra-Node Transmission (HINT) feature that enables the modeler to include disease transmission heterogeneities
-within each node. Intra-node heterogeneity is driven by &#8220;individuals properties,&#8221; each of which has
-an associated discrete set of &#8220;values.&#8221; Examples of individual properties, with typical values given
+within each node. Intra-node heterogeneity is driven by “individuals properties,” each of which has
+an associated discrete set of “values.” Examples of individual properties, with typical values given
 parenthetically, include risk group (low, medium, high), age group (under 5, 5 to 15, over 15),
 vaccine accessibility class (easy, hard), intra-node locale (census tracts), and place (home,
 school, work, community, non-school). All nodes in a <a class="reference internal" href="glossary.html#term-simulation"><span class="xref std std-term">simulation</span></a> must have the same
@@ -249,14 +257,14 @@ the multiplier from an infected young vaccine refuser to a susceptible young vac
 <img class="math" src="_images/math/f2a496d1601b932e1127b20d46c7b7c10c6df724.png" alt="1.5 \times 5.0 = 7.5"/>. While most multiplier matrices are symmetric, asymmetries as in the above
 example can arise for several reasons including heterogeneity in susceptibility.</p>
 <p>The product of the base infectivity, <img class="math" src="_images/math/8ecb1fee83d40575dfd2b2ba283fc19003ad7bb4.png" alt="\beta_0"/>, and the multiplier matrix, <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/>,
-governs &#8220;who acquires infection from whom,&#8221; and thus is sometimes called the <a class="reference internal" href="glossary.html#term-waifw-matrix"><span class="xref std std-term">WAIFW matrix</span></a>. The
-values in this matrix can be thought of as the &#8220;effective contact rate,&#8221; where an <em>effective
+governs “who acquires infection from whom,” and thus is sometimes called the <a class="reference internal" href="glossary.html#term-waifw-matrix"><span class="xref std std-term">WAIFW matrix</span></a>. The
+values in this matrix can be thought of as the “effective contact rate,” where an <em>effective
 contact</em> is defined as one that will result in disease transmission were it between a susceptible
 and infected individual <a class="footnote-reference" href="#f2" id="id2">[2]</a>.</p>
 </div>
 <div class="section" id="disease-dynamics">
 <h2>Disease dynamics<a class="headerlink" href="#disease-dynamics" title="Permalink to this headline">¶</a></h2>
-<p>EMOD is an exceptionally powerful software tool. Even in &#8220;generic&#8221; mode, EMOD is capable of
+<p>EMOD is an exceptionally powerful software tool. Even in “generic” mode, EMOD is capable of
 simulating spatially diverse Susceptible-Exposed-Infected-Recovered (<a class="reference internal" href="glossary.html#term-seir-model"><span class="xref std std-term">SEIR model</span></a>) and SEIRS dynamics,
 including options for non-exponential incubation and infectious periods, inter-node migration, and
 density- or frequency-dependent transmission.</p>
@@ -423,7 +431,7 @@ a node located at (lat, lon) is computed based on the corresponding area of a sp
 <div class="section" id="contact-scaling">
 <h2>Contact scaling<a class="headerlink" href="#contact-scaling" title="Permalink to this headline">¶</a></h2>
 <p>HINT and transmission scaling allow the EMOD user to specify and control heterogeneity within EMOD.
-One potential application for these features is in configuring &#8220;contact scaling,&#8217;&#8217; a particular form
+One potential application for these features is in configuring “contact scaling,’’ a particular form
 of heterogeneous mixing in which shedding and acquisition are symmetric. The best example of contact
 scaling is location-based mixing, which can be used in place of intra-day migration. Typical places
 for location-based mixing include home, school, and work. Contact scaling could also be used for
@@ -436,7 +444,7 @@ the day an individual with value <img class="math" src="_images/math/df0deb143e5
 <p>In terms of implementation, there is one main difference between contact scaling and transmission
 scaling. In contact scaling, individuals both shed into and acquire from pools of contagion
 according to the corresponding row of the <img class="math" src="_images/math/afce44aa7c55836ca9345404c22fc7b599d2ed84.png" alt="C"/> matrix. Normalization is done not by <img class="math" src="_images/math/f4170ed8938b79490d8923857962695514a8e4cb.png" alt="N"/>,
-as in frequency scaling, but instead by the &#8220;effective population&#8221; of each mixing pool, which is
+as in frequency scaling, but instead by the “effective population” of each mixing pool, which is
 computed as the <img class="math" src="_images/math/afce44aa7c55836ca9345404c22fc7b599d2ed84.png" alt="C"/>-weighted sum of the population-by-value. Transmission scaling via the
 <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> matrix directly specifies the transmission rate per susceptible between each group of
 individuals, so there is no concept of place but the overall approach is more flexible, e.g. by
@@ -490,15 +498,18 @@ list of EMOD features that make it the most powerful disease simulation framewor
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="howto-configuration.html" class="btn btn-neutral float-right" title="Create a configuration file" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="howto-configuration.html" class="btn btn-neutral float-right" title="Create a configuration file" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="howto-hint.html" class="btn btn-neutral" title="Configure heterogeneous disease transmission" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="howto-hint.html" class="btn btn-neutral" title="Configure heterogeneous disease transmission" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -507,7 +518,7 @@ list of EMOD features that make it the most powerful disease simulation framewor
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -534,7 +545,8 @@ list of EMOD features that make it the most powerful disease simulation framewor
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

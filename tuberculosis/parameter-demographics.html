@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -140,8 +146,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Tuberculosis Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Tuberculosis Model</a>
+        
       </nav>
 
 
@@ -187,7 +195,7 @@ generally control whether certain events, such as births or deaths, are enabled 
 simulation. Demographics files for several locations are available on the Institute for Disease Modeling (IDM)
 GitHub <a class="reference external" href="https://github.com/InstituteforDiseaseModeling/EMOD-InputData">EMOD-InputData</a> repository or
 you can use COMputational Platform Service (COMPS) to generate demographics and other <a class="reference internal" href="glossary.html#term-input-data-files"><span class="xref std std-term">input data files</span></a> for a particular region.
-By convention, these are named using the name of the region appended with &#8220;_demographics.json&#8221;, but
+By convention, these are named using the name of the region appended with “_demographics.json”, but
 you may name the file anything you like.</p>
 <p>Additionally, you can use more than one demographics file, with one serving as the base layer and
 the one or more others acting as overlays that override the values in the base layer. This can be
@@ -240,7 +248,7 @@ the <strong>Nodes</strong> section is identified using a unique <strong>NodeID</
 <p>The tables below contain only parameters available when using the tuberculosis <a class="reference internal" href="glossary.html#term-simulation-type"><span class="xref std std-term">simulation type</span></a>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add &#8220;dummy&#8221; parameters to add contextual information to your files.</p>
+<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add “dummy” parameters to add contextual information to your files.</p>
 </div>
 <button class="collapse-table-button btn btn-info">Collapse all parameter tables</button><div class="contents local topic" id="contents">
 <p class="topic-title first">Contents</p>
@@ -287,7 +295,7 @@ generated from the latitude and longitude of the northwest corner.</dd>
 <p>This generates a <strong>NodeID</strong> that is a 4-byte unsigned integer; the first two bytes represent the
 longitude of the node and the second two bytes represent the latitude. To reserve 0 to be used as a
 null value, 1 is added to the <strong>NodeID</strong> as part of the final calculation.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -354,7 +362,7 @@ information on setting up properties, see <a class="reference internal" href="ho
 that contains parameters that assign properties to nodes in a simulation. The
 <strong>IndividualProperties</strong> section is under either <strong>Defaults</strong> or <strong>Nodes</strong> and contains parameters
 that assign properties to individuals in a simulation.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -550,7 +558,7 @@ that assign properties to individuals in a simulation.</p>
 <td>NA</td>
 <td>NA</td>
 <td><p class="first">An object that contains <strong>Route</strong> and <strong>Matrix</strong> parameters that define how to scale the base infectivity from individuals with one property value to individuals with another. <strong>Route</strong> must be set to Contact and <strong>Matrix</strong> contains a <a class="reference internal" href="glossary.html#term-waifw-matrix"><span class="xref std std-term">WAIFW matrix</span></a> of the disease transmission multipliers. The rows and columns are in the same order that the property values were defined in <strong>Value</strong>.
-The rows represent the infectious individuals (the &#8220;whom&#8221;); the columns represent the susceptible individuals (the &#8220;who&#8221;).</p>
+The rows represent the infectious individuals (the “whom”); the columns represent the susceptible individuals (the “who”).</p>
 <p class="last">This implements the HINT feature, which is available only in the generic simulation type. For more information, see <a class="reference internal" href="howto-hint.html"><span class="doc">Configure heterogeneous disease transmission</span></a>.
 <strong>Enable_Heterogeneous_Intranode_Transmission</strong> in the configuration file must be set to 1 (see <a class="reference internal" href="parameter-configuration.html#config-infectivity"><span class="std std-ref">Infectivity and transmission</span></a> parameters). Cannot be used with <strong>NodeProperties</strong>.</p>
 </td>
@@ -608,7 +616,7 @@ The rows represent the infectious individuals (the &#8220;whom&#8221;); the colu
 <p>The <strong>Transitions</strong> array under <strong>IndividualProperties</strong> section controls how individuals transition
 from one property value to another. It cannot be used with <strong>NodeProperties</strong>. Alternatively,
 similar transitions can be configured in the campaign file as the result of campaign events.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -771,9 +779,9 @@ similar transitions can be configured in the campaign file as the result of camp
 </tr>
 <tr class="row-odd"><td>To</td>
 <td>string</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
 <td>The property value an individual will transition to.</td>
 <td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Individual_Properties&quot;</span><span class="p">:</span> <span class="p">[{</span>
@@ -818,7 +826,7 @@ similar transitions can be configured in the campaign file as the result of camp
 <p>The <strong>NodeAttributes</strong> section contains parameters that add or modify information
 regarding the location, migration, habitat, and population of node. Some <strong>NodeAttributes</strong>
 depend on values set in the configuration parameters.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1049,7 +1057,7 @@ individual is a randomly selected value from a given distribution. These distrib
 configured using a simple flag system of three parameters or a complex system of
 many more parameters. The following table contains the parameters that can be used with either
 distribution system.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1115,7 +1123,7 @@ distribution system.</p>
 and the other two are used to further define the distribution. For example, if you set the age flag
 to a uniform distribution, the initial ages of individuals in the simulation will be evenly
 distributed between some minimum and maximum value as defined by the other two parameters.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1142,7 +1150,7 @@ distributed between some minimum and maximum value as defined by the other two p
 <td>3.40282e+038</td>
 <td>0.000118</td>
 <td><p class="first">The first value, in days, in the age distribution, the meaning of which depends upon the value set in <strong>AgeDistributionFlag</strong>. The table below shows the flag value and corresponding distribution value.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="25%" />
 <col width="75%" />
@@ -1198,7 +1206,7 @@ distributed between some minimum and maximum value as defined by the other two p
 <td>3.40282e+038</td>
 <td>0</td>
 <td><p class="first">The second value, in days, in the age distribution, the meaning of which depends upon the value set in <strong>AgeDistributionFlag</strong>. The table below shows the flag value and corresponding distribution value.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="25%" />
 <col width="75%" />
@@ -1283,7 +1291,7 @@ distributed between some minimum and maximum value as defined by the other two p
 <td>3.40282e+038</td>
 <td>0</td>
 <td><p class="first">The first value in the immunity distribution, the meaning of which depends upon the value set in <strong>ImmunityDistributionFlag</strong>. <strong>Enable_Immunity</strong> in the configuration file must be set to 1. The table below shows the flag value and corresponding distribution value.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="25%" />
 <col width="75%" />
@@ -1339,7 +1347,7 @@ distributed between some minimum and maximum value as defined by the other two p
 <td>3.40282e+038</td>
 <td>0</td>
 <td><p class="first">The second value in the distribution, the meaning of which depends upon the value set in <strong>ImmunityDistributionFlag</strong>. <strong>Enable_Immunity</strong> in the configuration file must be set to 1. The table below shows the flag value and corresponding distribution value.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="25%" />
 <col width="75%" />
@@ -1424,7 +1432,7 @@ distributed between some minimum and maximum value as defined by the other two p
 <td>3.40282e+38</td>
 <td>1</td>
 <td><p class="first">The first value in the migration heterogeneity distribution, the meaning of which depends upon the value set in <strong>MigrationHeterogeneityFlag</strong>. The table below shows the flag value and corresponding distribution value.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="25%" />
 <col width="75%" />
@@ -1480,7 +1488,7 @@ distributed between some minimum and maximum value as defined by the other two p
 <td>3.40282e+038</td>
 <td>0</td>
 <td><p class="first">The second value in the distribution, the meaning of which depends upon the value set in <strong>MigrationHeterogeneityDistributionFlag</strong>. The table below shows the flag value and corresponding distribution value.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="25%" />
 <col width="75%" />
@@ -1565,7 +1573,7 @@ distributed between some minimum and maximum value as defined by the other two p
 <td>3.40282e+038</td>
 <td>1</td>
 <td><p class="first">The first value in the prevalence distribution, the meaning of which depends upon the value set in <strong>PrevalenceDistributionFlag</strong>. The table below shows the flag value and corresponding distribution value.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="25%" />
 <col width="75%" />
@@ -1621,7 +1629,7 @@ distributed between some minimum and maximum value as defined by the other two p
 <td>3.40282e+038</td>
 <td>0</td>
 <td><p class="first">The second value in the distribution, the meaning of which depends upon the value set in <strong>PrevalenceDistributionFlag</strong>. The table below shows the flag value and corresponding distribution value.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="25%" />
 <col width="75%" />
@@ -1706,7 +1714,7 @@ distributed between some minimum and maximum value as defined by the other two p
 <td>3.40282e+038</td>
 <td>0</td>
 <td><p class="first">The first value in the risk distribution, the meaning of which depends upon the value set in <strong>RiskDistributionFlag</strong>. The table below shows the flag value and corresponding distribution value.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="25%" />
 <col width="75%" />
@@ -1762,7 +1770,7 @@ distributed between some minimum and maximum value as defined by the other two p
 <td>3.40282e+038</td>
 <td>0</td>
 <td><p class="first">The second value in the distribution, the meaning of which depends upon the value set in <strong>RiskDistributionFlag</strong>. The table below shows the flag value and corresponding distribution value.</p>
-<table border="1" class="docutils">
+<table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="25%" />
 <col width="75%" />
@@ -1851,7 +1859,7 @@ where the distribution does not fit a standard. Individual attribute values are 
 linear distribution. The distribution is configured using arrays of axes (such as gender or age) and
 values at points along each of these axes. This allows you to have different distributions for
 different groups in the population.</p>
-<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
 <colgroup>
 <col width="18%" />
 <col width="9%" />
@@ -1901,20 +1909,20 @@ different groups in the population.</p>
 <td><p class="first">An array of the names used for each axis of a complex distribution. The list below shows the axis names to use (in the order given) for each of the distribution types:</p>
 <dl class="last docutils">
 <dt>MortalityDistribution</dt>
-<dd>[&#8220;gender&#8221;, &#8220;age&#8221;] <strong>Death_Rate_Dependence</strong> in the configuration file must be set to NONDISEASE_MORTALITTY_BY_AGE_AND_GENDER (see <a class="reference internal" href="parameter-configuration.html#config-mortality"><span class="std std-ref">Mortality and survival</span></a> parameters).</dd>
+<dd>[“gender”, “age”] <strong>Death_Rate_Dependence</strong> in the configuration file must be set to NONDISEASE_MORTALITTY_BY_AGE_AND_GENDER (see <a class="reference internal" href="parameter-configuration.html#config-mortality"><span class="std std-ref">Mortality and survival</span></a> parameters).</dd>
 <dt>MortalityDistributionMale</dt>
-<dd>[&#8220;age&#8221;, &#8220;year&#8221;] <strong>Death_Rate_Dependence</strong> must be set to NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER (see <a class="reference internal" href="parameter-configuration.html#config-mortality"><span class="std std-ref">Mortality and survival</span></a> parameters).</dd>
+<dd>[“age”, “year”] <strong>Death_Rate_Dependence</strong> must be set to NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER (see <a class="reference internal" href="parameter-configuration.html#config-mortality"><span class="std std-ref">Mortality and survival</span></a> parameters).</dd>
 <dt>MortalityDistributionFemale</dt>
-<dd>[&#8220;age&#8221;, &#8220;year&#8221;] <strong>Death_Rate_Dependence</strong> must be set to NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER (see <a class="reference internal" href="parameter-configuration.html#config-mortality"><span class="std std-ref">Mortality and survival</span></a> parameters).</dd>
+<dd>[“age”, “year”] <strong>Death_Rate_Dependence</strong> must be set to NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER (see <a class="reference internal" href="parameter-configuration.html#config-mortality"><span class="std std-ref">Mortality and survival</span></a> parameters).</dd>
 <dt>FertilityDistribution</dt>
 <dd><p class="first">Two options are available:</p>
 <ul class="last simple">
-<li>[&#8220;urban&#8221;, &#8220;age&#8221;] <strong>Birth_Rate_Dependence</strong> in the configuratIon file must be set to INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</li>
-<li>[&#8220;age&#8221;, &#8220;year&#8221;] <strong>Birth_Rate_Dependence</strong> must be set to INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</li>
+<li>[“urban”, “age”] <strong>Birth_Rate_Dependence</strong> in the configuratIon file must be set to INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</li>
+<li>[“age”, “year”] <strong>Birth_Rate_Dependence</strong> must be set to INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</li>
 </ul>
 </dd>
 <dt>ImmunityDistribution</dt>
-<dd>[&#8220;age&#8221;]</dd>
+<dd>[“age”]</dd>
 <dt>AgeDistribution</dt>
 <dd>No axes.</dd>
 </dl>
@@ -2314,15 +2322,18 @@ different groups in the population.</p>
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="parameter-configuration.html" class="btn btn-neutral float-right" title="Configuration parameters" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="parameter-configuration.html" class="btn btn-neutral float-right" title="Configuration parameters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="parameter-overview.html" class="btn btn-neutral" title="EMOD parameter reference" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="parameter-overview.html" class="btn btn-neutral" title="EMOD parameter reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -2331,7 +2342,7 @@ different groups in the population.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -2358,7 +2369,8 @@ different groups in the population.</p>
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

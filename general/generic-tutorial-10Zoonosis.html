@@ -15,6 +15,8 @@
   
     <link rel="shortcut icon" href="_static/favicon.ico"/>
   
+  
+  
 
   
 
@@ -59,6 +61,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -100,7 +103,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">Using the model</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
@@ -143,8 +149,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Generic Model</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Generic Model</a>
+        
       </nav>
 
 
@@ -228,9 +236,9 @@ see <a class="reference internal" href="parameter-configuration.html#config-inpu
 <p>Set the following parameters:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Set <strong>Demographics_Filename</strong> to &#8220;Seattle_30arcsec_demographics.json;Seattle_30arcsec_demographics_zoonosis.json.&#8221;</li>
-<li>Set <strong>Local_Migration__Filename</strong> to &#8220;Seattle_30arcsec_local_migration.bin.&#8221;</li>
-<li>Set <strong>Regional_Migration_Filename</strong> to &#8220;Seattle_30arcsec_regional_migration.bin.&#8221;</li>
+<li>Set <strong>Demographics_Filename</strong> to “Seattle_30arcsec_demographics.json;Seattle_30arcsec_demographics_zoonosis.json.”</li>
+<li>Set <strong>Local_Migration__Filename</strong> to “Seattle_30arcsec_local_migration.bin.”</li>
+<li>Set <strong>Regional_Migration_Filename</strong> to “Seattle_30arcsec_regional_migration.bin.”</li>
 </ul>
 </div></blockquote>
 </div>
@@ -243,7 +251,7 @@ disease related deaths. For more information, see <a class="reference internal" 
 <div><ul class="simple">
 <li>Set <strong>Enable_Vital_Dynamics</strong> to 1.</li>
 <li>Set <strong>Enable_Birth</strong> to 1.</li>
-<li>Set <strong>Death_Rate_Dependence</strong> to &#8220;NONDISEASE_MORTALITY_BY_AGE_AND_GENDER.&#8221;</li>
+<li>Set <strong>Death_Rate_Dependence</strong> to “NONDISEASE_MORTALITY_BY_AGE_AND_GENDER.”</li>
 <li>Set <strong>Enable_Disease_Mortality</strong> to 0.</li>
 </ul>
 </div></blockquote>
@@ -271,7 +279,7 @@ SEIRS-like disease model with person-to-person direct transmission. For more inf
 <blockquote>
 <div><ul class="simple">
 <li>Set <strong>Base_Incubation_Period</strong> to 3.</li>
-<li>Set <strong>Incubation_Period_Distribution</strong> to &#8220;FIXED_DURATION.&#8221;</li>
+<li>Set <strong>Incubation_Period_Distribution</strong> to “FIXED_DURATION.”</li>
 <li>Set <strong>Enable_Immunity</strong> to 1.</li>
 <li>Set <strong>Enable_Immune_Decay</strong> to 1.</li>
 </ul>
@@ -279,18 +287,18 @@ SEIRS-like disease model with person-to-person direct transmission. For more inf
 </div>
 <div class="section" id="migration-parameters">
 <h3>Migration parameters<a class="headerlink" href="#migration-parameters" title="Permalink to this headline">¶</a></h3>
-<p>In a multi-node simulation with migration enabled, individuals have a probably of &#8220;migrating&#8221; to
+<p>In a multi-node simulation with migration enabled, individuals have a probably of “migrating” to
 another node at every time step unless they have already migrated. When an individual has migrated
 to another node, they can shed or acquire infection in that node.</p>
-<p>The migration pattern for this simulation is configured as &#8220;WAYPOINTS_HOME&#8221; with
-<strong>Roundtrip_Waypoints</strong> set to 1. This means, individuals &#8220;migrate&#8221; one day and return home the next
+<p>The migration pattern for this simulation is configured as “WAYPOINTS_HOME” with
+<strong>Roundtrip_Waypoints</strong> set to 1. This means, individuals “migrate” one day and return home the next
 day. There are no intermediate nodes between the home and the destination node. For more information,
 see <a class="reference internal" href="parameter-configuration.html#config-migration"><span class="std std-ref">Migration</span></a> parameters.</p>
 <p>Set the following parameters:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Set <strong>Migration_Model</strong> to &#8220;FIXED_RATE_MIGRATION.&#8221;</li>
-<li>Set <strong>Migration_Pattern</strong> to &#8220;WAYPOINTS_HOME.&#8221;</li>
+<li>Set <strong>Migration_Model</strong> to “FIXED_RATE_MIGRATION.”</li>
+<li>Set <strong>Migration_Pattern</strong> to “WAYPOINTS_HOME.”</li>
 <li>Set <strong>Roundtrip_Waypoints</strong> to 1.</li>
 </ul>
 </div></blockquote>
@@ -304,7 +312,7 @@ to- person direct transmission. For more information, see <a class="reference in
 <div><ul class="simple">
 <li>Set <strong>Base_Infectivity</strong> to 0.25.</li>
 <li>Set <strong>Base_Infectious_Period</strong> to 7.</li>
-<li>Set <strong>Infectious_Period_Distribution</strong> to &#8220;FIXED_DURATION.&#8221;</li>
+<li>Set <strong>Infectious_Period_Distribution</strong> to “FIXED_DURATION.”</li>
 </ul>
 </div></blockquote>
 </div>
@@ -316,7 +324,7 @@ parameters.</p>
 <p>Set the following parameters:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Set <strong>Animal_Reservoir_Type</strong> to &#8220;ZOONOSIS_FROM_DEMOGRAPHICS.&#8221;</li>
+<li>Set <strong>Animal_Reservoir_Type</strong> to “ZOONOSIS_FROM_DEMOGRAPHICS.”</li>
 <li>Set <strong>Zoonosis_Rate</strong> to 0.005.</li>
 </ul>
 </div></blockquote>
@@ -328,7 +336,7 @@ transmission, and mortality are multiplied by <strong>Immunity_Acquisition_Facto
 <strong>Immunity_Transmission_Factor</strong>, and <strong>Immunity_Mortality_Factor</strong> parameters. The default values
 are set to 0 in the files, which means full and complete protection against each. For more
 information, see <a class="reference internal" href="parameter-configuration.html#config-immunity"><span class="std std-ref">Immunity</span></a> parameters.</p>
-<p>In this scenario, people&#8217;s immunity decays with an average half-life of 33 days and a 400-day
+<p>In this scenario, people’s immunity decays with an average half-life of 33 days and a 400-day
 offset. This assumption applies to transmission blocking, acquisition blocking, and mortality
 blocking immunity.</p>
 <p>Set the following parameters:</p>
@@ -416,15 +424,18 @@ outbreaks after the seeding is shown in the following graph plotting infections 
 <div id="tipue_search_content"></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="hint-tutorial-overview.html" class="btn btn-neutral float-right" title="Heterogeneous Intra-Node Transmission (HINT) tutorials" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="hint-tutorial-overview.html" class="btn btn-neutral float-right" title="Heterogeneous Intra-Node Transmission (HINT) tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="generic-tutorial9Density.html" class="btn btn-neutral" title="Generic 9: Density scaling of infectivity" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="generic-tutorial9Density.html" class="btn btn-neutral" title="Generic 9: Density scaling of infectivity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -433,7 +444,7 @@ outbreaks after the seeding is shown in the following graph plotting infections 
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
 
     </p>
   </div>
@@ -460,7 +471,8 @@ outbreaks after the seeding is shown in the following graph plotting infections 
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>
