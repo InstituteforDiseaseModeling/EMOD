@@ -1,8 +1,0 @@
-{
-    "diseases": [], 
-    "interventions": [], 
-    "reporter_plugins": [
-        "\\\\idmppfil01\\IDM\\home\\mnikolov\\emodules\\reporter_plugins\\e5bd28e976bca29cc57892789bc115b8\\libmalariaimmunity_report_plugin.dll", 
-        "\\\\idmppfil01\\IDM\\home\\mnikolov\\emodules\\reporter_plugins\\370563d561571742f957ede3cf09040f\\libmalariasummary_report_plugin.dll"
-    ]
-}

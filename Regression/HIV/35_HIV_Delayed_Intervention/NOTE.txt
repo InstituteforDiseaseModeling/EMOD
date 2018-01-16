@@ -1,1 +1,0 @@
-In output\ReportEventRecorder.csv, each individual should have LTFU0 but not LTFU1.
