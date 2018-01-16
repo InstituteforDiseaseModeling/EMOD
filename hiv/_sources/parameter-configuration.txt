@@ -1,0 +1,387 @@
+========================
+Configuration parameters
+========================
+
+.. include:: ../reuse/config-param-intro.txt
+
+The tables below contain only parameters available when using the HIV :term:`simulation type`.
+Some parameters may appear in multiple categories.
+
+.. include:: ../reuse/warning-case.txt
+
+.. raw:: html
+
+    <button class="collapse-table-button btn btn-info">Collapse all parameter tables</button>
+
+
+.. contents:: Contents
+   :local:
+
+.. _config-disease-progression:
+
+Disease progression
+===================
+
+The following parameters determine aspects of HIV progression from the acute stage to AIDS.
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-disease-progression-hiv.csv
+
+.. _config-drugs:
+
+Drugs and treatments
+====================
+
+.. include:: ../reuse/config-drugs.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-drugs-hiv.csv
+
+.. _config-enable:
+
+Enable or disable features
+==========================
+
+.. include:: ../reuse/config-enable.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-enable-hiv.csv
+
+.. _config-general-disease:
+
+General disease
+===============
+
+.. include:: ../reuse/config-general-disease.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-general-disease-generic.csv
+
+.. no disease-specific params in this category
+
+.. _config-env:
+
+Geography and environment
+=========================
+
+.. include:: ../reuse/config-env.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-env-hiv.csv
+
+
+.. _config-immunity:
+
+Immunity
+========
+
+.. include:: ../reuse/config-immunity.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-immunity-hiv.csv
+
+.. _config-incubation:
+
+Incubation
+==========
+
+.. include:: ../reuse/config-incubation.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-incubation-hiv.csv
+
+.. _config-infectivity:
+
+Infectivity and transmission
+============================
+
+.. include:: ../reuse/config-infectivity.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-infectivity-hiv.csv
+
+.. _config-input:
+
+Input data files
+================
+
+.. include:: ../reuse/config-input.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-input-hiv.csv
+
+.. _config-migration:
+
+Migration
+=========
+
+.. include:: ../reuse/config-migration.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-migration-hiv.csv
+
+.. _config-mortality:
+
+Mortality and survival
+======================
+
+.. include:: ../reuse/config-mortality.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-mortality-hiv.csv
+
+.. _config-output:
+
+Output settings
+===============
+
+.. include:: ../reuse/config-output.txt
+
+
+The following figures are examples for the parameter **Report_HIV_Period**.
+
+When **Report_HIV_Period** is set to a value that is less than the **Simulation_Timestep**, a record
+will be written during the next time step after the reported period. More than  one period may occur
+before the next time step.
+
+.. figure:: ../images/hiv/Report_HIV_Period-timeline-example1.png
+
+   Figure 1: **Report_HIV_Period < **Simulation_Timestep**
+
+
+When **Report_HIV_Period** is greater than **Simulation_Timestep**, a record will be written during
+the next time step after the period occurs. This means that a record may not be written at all time
+steps.
+
+.. figure:: ../images/hiv/Report_HIV_Period-timeline-example2.png
+
+   Figure 2: **Report_HIV_Period > **Simulation_Timestep**
+
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-output-hiv.csv
+
+.. _config-population:
+
+Population dynamics
+===================
+
+.. include:: ../reuse/config-population.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-population-hiv.csv
+
+.. _config-pairs:
+
+Relationships and pair formation
+================================
+
+The following parameters determine how individuals form relationships, such as sexual behavior,
+relationship duration, age gaps, and any gender differences in those characteristics.
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-pairs-hiv.csv
+
+.. _config-sampling:
+
+Sampling
+========
+
+.. include:: ../reuse/config-sampling.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-sampling-hiv.csv
+
+.. _config-scalars:
+
+Scalars and multipliers
+=======================
+
+.. include:: ../reuse/config-scalars.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-scalars-hiv.csv
+
+.. _config-setup:
+
+Simulation setup
+================
+
+.. include:: ../reuse/config-setup.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-setup-hiv.csv
+
+.. _config-symptoms:
+
+Symptoms and diagnosis
+======================
+
+The following parameters determine the characteristics of HIV diagnosis and HIV/AIDS symptoms, such
+as CD4 counts at various times in the progression of the disease.
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-symptoms-hiv.csv
+
+.. _config-weibull:
+
+Weibull distributions
+=====================
+
+The following parameters use a :term:`Weibull distribution`.
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-weibull-hiv.csv

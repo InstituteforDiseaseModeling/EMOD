@@ -1,0 +1,100 @@
+===================================================
+Configure heterogeneous disease transmission
+===================================================
+
+.. only:: not generic
+
+    Only generic simulations can use |HINT_l| to manually configure heterogeneous disease
+    transmission within each node. All other simulation types have preconfigured solutions for
+    heterogeneous disease transmission based on the biological processes of the disease being
+    modeled. Because |HINT_s| cannot be used with this simulation type, the parameter
+    **Enable_Heterogeneous_Intranode_Transmission** in the configuration file must be set to 0
+    (zero).
+
+.. make sure the hint tutorials indicate this only works for the generic model
+
+.. only:: generic
+
+    By default, |EMOD_l| assumes disease transmission is homogeneous across a population within each
+    node when using the generic simulation type. That is, the population within a node is "well-mixed"
+    and has a homogeneous pattern of mixing. Disease transmission is configured by the parameter
+    **Base_Infectivity**, which determines a single transmission constant, :math:`\beta_0`, to calculate
+    the transmission rate for each individual. These assumptions simplify the mathematical calculations
+    that are performed when running a :term:`simulation`.
+
+    However, these assumptions do not reflect the true complexity of disease transmission in a
+    population. The dynamics of transmission for some diseases are influenced by heterogeneous contact
+    patterns. Several studies have shown that contact pattern is not random and correlates with specific
+    characteristics, such as age, household and community structure, and spatial movement. When modeling
+    scenarios with large heterogeneities, such as accessibility to health care or age groups, a
+    simulation without heterogeneous mixing cannot incorporate these population segments in a node.
+
+    This topic describes how to use the |HINT_s| feature to add heterogeneous transmission to your
+    generic model by defining population groups and the transmission rate between each of these
+    groups. :doc:`hint-scaling` describes the mathematics underpinning |HINT_s|.
+
+
+    #.  In the configuration file, set the following:
+
+        *   **Enable_Heterogeneous_Intranode_Transmission** to 1.
+
+        *   **Base_Infectivity** to your desired value.
+
+    #.  If you have not already created population groups in the demographics file, create them using
+        the steps in :doc:`howto-demographics-heterogeneity`.
+    #.  In the demographics file, within the **IndividualProperties** array, add the **TransmissionMatrix**
+        parameter and assign it an empty JSON object.
+    #.  In the object, set the following:
+
+        *   **Route** to the the transmission route (currently "Contact" is the only supported
+            value).
+
+        *   **Matrix** to an array that contains a :term:`WAIFW matrix`
+            that scales the base infectivity set in the configuration file. This matrix is described in
+            more detail below.
+
+    Transmission matrix
+    ===================
+
+    The matrix is :math:`n \times n` sized, where :math:`n` is the number of groups defined in
+    **IndividualProperties**. Each value in the matrix contains the :math:`\beta` value by which to
+    scale the base infectivity, :math:`\beta_0`, for the simulation. Rows represent *from* whom the
+    disease is transmitted and columns represent *to* whom the disease is transmitted, in terms of the
+    group the individual belongs to.
+
+    For example, the following demographics file configures |HINT_s| for transmission between individuals
+    in high-risk and low-risk groups.
+
+    .. literalinclude:: ../json/howto-hint1.json
+       :language: json
+
+    Based on the order the property values are listed, the high-risk group is represented in the first
+    column and first row; the low-risk group is represented in the second column and second row. The
+    following matrix represents the direction of the disease transmission between the groups:
+
+    .. math::
+
+            WAIFW = \begin{pmatrix}
+            \text{High Risk} \rightarrow \text{High Risk} & \text{High Risk} \rightarrow \text{Low Risk}\\
+            \text{Low Risk} \rightarrow \text{High Risk} & \text{Low Risk} \rightarrow \text{Low Risk}\\
+            \end{pmatrix}
+
+    Multiple properties
+    ===================
+
+    When a simulation has more than one **Property**, an individual will belong to one group in each **Property** type.
+
+    The :math:`\beta` values for the different groups that an individual belongs to are multiplied
+    together to create the transmission constant. In the following example, an individual who is high
+    risk and suburban will have the following transmission multiplier when interacting with an
+    individual who is a low risk and suburban: :math:`0.1 \times 1.4 = 0.14`.
+
+    .. literalinclude:: ../json/howto-hint2.json
+       :language: json
+
+.. toctree::
+   :maxdepth: 2
+   :titlesonly:
+
+   hint-scaling
+

@@ -1,0 +1,21 @@
+=====================
+|EMOD_s| installation
+=====================
+
+
+|EMOD_l| can be installed on computers running |Windows_supp| or |Centos_supp|. For both operating
+systems, there are relatively few prerequisites required and the |exe_l| or |linux_binary| is pre-
+built from the latest |EMOD_s| source code release. After completing installation, you can run
+simulations locally or on an HPC cluster using real-world data.
+
+.. note::
+
+    If you want to download and modify the |EMOD_s| source code and build the |exe_s| or |linux_binary|
+    yourself, see :doc:`dev-install-overview`.
+
+
+.. toctree::
+   :maxdepth: 1
+
+   install-windows
+   install-centos

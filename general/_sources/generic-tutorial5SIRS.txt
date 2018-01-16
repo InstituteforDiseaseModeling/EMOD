@@ -1,0 +1,206 @@
+=================================
+Generic 5: SIRS - Waning immunity
+=================================
+
+This tutorial assumes that you have read :doc:`generic-tutorial4SEIR`.
+
+The :term:`SIR model` assumes people carry lifelong immunity to a disease upon recovery; and this is the
+case for a variety of diseases. For another class of airborne diseases, for example seasonal
+influenza, an individual's immunity may wane over time. In this case, the SIRS model is used allow
+recovered individuals return to a susceptible state. Specifically, :math:`\xi` is the rate which recovered
+individuals return to the susceptible statue due to loss of immunity. If there is sufficient influx
+to the susceptible population, at equilibrium the dynamics will be in an endemic state with damped
+oscillation.
+
+.. math::
+
+        \begin{aligned}
+        \frac{dS}{dt} & = -\frac{\beta SI}{N} + \xi R\\
+        \frac{dI}{dt} & = \frac{\beta SI}{N} - \gamma I\\
+        \frac{dR}{dt} & = \gamma I - \xi R
+        \end{aligned}
+
+
+
+The |exe_l| simulates waning immunity by a delayed exponential distribution. Individuals
+stay immune for a certain period of time then immunity wanes following an exponential distribution.
+Because the shedding and acquisition process is separate, two kinds of immunity can be waned:
+transmission and acquisition immunity.
+
+
+
+Demographic inputs
+==================
+
+This tutorial uses generic_scenarios_demographics file for demographics input. You can view the
+demographics file at <path_to_directory>\Regression\Scenarios\InputFiles where <path_to_directory> is the
+location where |EMOD_s| source files were installed. For more information on demographics files, see
+:doc:`parameter-demographics`.
+
+
+
+Key configuration parameters
+============================
+
+You can view the complete config.json in the Scenarios\Generic\05_SIRS directory.
+
+
+Population dynamics parameters
+------------------------------
+
+Set **Enable_Vital_Dynamics** to 0.  This will disable vital dynamics (birth and death) in the simulation.
+For more information, see :ref:`config-population` parameters.
+
+
+SIRS model setup parameters
+---------------------------
+
+The model setup is similar to an SIR model. The immunity decay is enabled so that recovered
+individuals can return to susceptible at a later time. For more information, see
+:ref:`config-incubation` and :ref:`config-immunity` parameters.
+
+
+Set the following parameters:
+
+  * Set **Base_Incubation_Period** to 0.
+
+  * Set **Enable_Immunity** to 1.
+
+  * Set **Enable_Immune_Decay** to 1.
+
+  * Set **Incubation_Period_Distribution** to "FIXED_DURATION."
+
+
+Disease parameters
+------------------
+
+In the following example, the average infection duration is 7 days, and R\ :sub:`0`\  = 1.75 which
+is similar to influenza. For more information, see :ref:`config-infectivity` parameters.
+
+Set the following parameters:
+
+  * Set **Base_Infectivity** to 0.25.
+
+  * Set **Base_Infectious_Period** to 7.
+
+  * Set **Infectious_Period_Distribution** to "EXPONENTIAL_DURATION."
+
+
+Immunity parameters
+-------------------
+
+There are three immunity factor parameters: **Immunity_Acquisition_Factor**,
+**Immunity_Transmission_Factor**, and **Immunity_Mortality_Factor**. At the time of recovery when the
+infection is cleared, the values of immunity against acquisition, transmission, and mortality are
+multiplied by
+
+        (1- the value of the corresponding immunity factor parameter).
+
+For example, the multiplier for **Acquisition_Blocking_Immunity_Decay_Rate** is
+**Immunity_Acquisition_Factor** and the multiplicative reduction in the probability of reacquiring the
+disease is:
+
+        **Acquisition_Blocking_Immunity_Decay_Rate** x (1 - **Immunity_Acquisition_Factor**)
+
+In this simulation, individual’s immunity decays with an average half-life of 180 days and a 90-day
+offset. This applies to both transmission blocking and acquisition blocking immunity. This tutorial
+does not use the **Mortality_Blocking_Immunity_Decay_Rate**, however, the next tutorial,
+:doc:`generic-tutorial6SEIRS`, does. For more information, see :ref:`config-immunity` parameters.
+
+
+Set the following parameters:
+
+  * Set **Acquisition_Blocking_Immunity_Duration_Before_Decay** to 90.
+
+  * Set **Transmission_Blocking_Immunity_Duration_Before_Decay** to 90.
+
+  * Set **Acquisition_Blocking_Immunity_Decay_Rate** to 0.0056.
+
+  * Set **Transmission_Blocking_Immunity_Decay_Rate** to 0.0056.
+
+  * Set **Immunity_Acquisition_Factor** to 0.
+
+  * Set **Immunity_Mortality_Factor** to 0.
+
+  * Set **Immunity_Transmission_Factor** to 0.
+
+
+
+Simulation duration parameters
+------------------------------
+
+The simulation is run for 10 years with a 1-day time step. For more information, see
+:ref:`config-setup` parameters.
+
+Set the following parameters:
+
+  * Set **Simulation_Timestep** to 1.
+
+  * Set **Simulation_Duration** to 3650.
+
+
+
+Interventions
+=============
+
+This simulation uses the campaign.json file in the Scenarios\Generic\05_SIRS directory.
+
+
+Outbreak with re-seeding
+------------------------
+
+This simulation uses an **OutbreakIndividual** event for an infrequent infection seeding. The
+**Timesteps_Between_Repetitions** and **Number_Repetitions** parameters are set to reintroduce the
+outbreak once every 180 days for 10 years, to allow reintroduction of disease. For more information,
+see **OutbreakIndividual** parameters.
+
+
+.. literalinclude:: ../json/generic5-interventions1.json
+  :language: JSON
+
+
+
+Run the simulation
+==================
+
+Run the simulation and generate graphs of the simulation output. For more information, see
+:doc:`howto-simulations`.
+
+
+.. include:: ../reuse/note-stochastic.txt
+
+
+Simulation output graphs
+------------------------
+
+Figure 1 shows damped oscillation due to people losing immunity and becoming susceptible again.
+
+.. note::
+
+    Individuals who are susceptible people due to waning immunity are not classified as susceptible
+    in the simulation. They are reported under the "Wane Population" channel.
+
+
+.. figure:: ../images/generic-tutorials/Generic_SIRS_output_plotInsetChart_default.png
+
+  Figure 1: Simulation output - damped oscillation
+
+
+.. figure:: ../images/generic-tutorials/Generic_SIRS_output_plotAllCharts_default.png
+
+  Figure 2: Simulation output - all channels
+
+
+
+Exploring the model
+===================
+
+Change the waning immunity distribution by modifying the number of days until immunity starts to
+decay and the immunity decay rate. For example, to represent a step-like function:
+
+#. Set the **Acquisition_Blocking_Immunity_Duration_Before_Decay** and
+   **Transmission_Blocking_Immunity_Duration_Before_Decay** to 180.
+
+#. Set **Acquisition_Blocking_Immunity_Duration_Before_Decay** and
+   **Transmission_Blocking_Immunity_Duration_Before_Decay** to 1.
+

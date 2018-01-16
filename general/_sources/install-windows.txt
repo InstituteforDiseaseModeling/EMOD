@@ -1,0 +1,62 @@
+============================
+Install |EMOD_s| on Windows
+============================
+
+Follow the steps below to install |EMOD_s| on computers running |Windows_supp|. This installs the
+pre-built |exe_s| and all software necessary to run simulations.
+
+.. note::
+
+    If you want to download and modify the |EMOD_s| source code and build the |exe_s|
+    yourself, see :doc:`dev-install-overview`.
+
+.. include:: ../reuse/testing-windows.txt
+
+#.  Install the |HPC_client_supp|. See |HPC_client_supp_path| for instructions.
+#.  Install the |MSMPI_supp|. See |MSMPI_supp_path| for instructions, being sure to run the MSMpiSetup.exe file.
+#.  Download the |exe_l|. See `EMOD releases`_ on GitHub.
+
+(Optional) Install plotting software
+====================================
+
+None of the following plotting software is required to run simulations with |EMOD_s|, but they
+are useful for creating graphs from and evaluating the model output. In addition, |EMOD_s|
+provides many Python scripts for analyzing data.
+
+.. include:: ../reuse/third-party-note.txt
+
+Python and Python packages
+--------------------------
+
+Python is required to install many of the software packages described below.
+
+.. include:: ../reuse/gohlke.txt
+
+.. include:: ../reuse/python-install.txt
+
+Python utilities
+~~~~~~~~~~~~~~~~
+
+.. include:: ../reuse/python-utility-install.txt
+
+NumPy
+~~~~~
+
+.. include:: ../reuse/numpy-install.txt
+
+Matplotlib
+~~~~~~~~~~
+
+.. include:: ../reuse/matplotlib-install.txt
+
+R
+-
+
+.. include:: ../reuse/r-install.txt
+
+MATLAB
+------
+
+.. include:: ../reuse/matlab-install.txt
+
+.. _EMOD releases: https://github.com/InstituteforDiseaseModeling/EMOD/releases

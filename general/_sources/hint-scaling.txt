@@ -1,0 +1,355 @@
+======================================
+Heterogeneity and transmission scaling
+======================================
+
+.. only:: not generic
+
+    This topic describes the mathematics governing the |HINT_l| feature. However, only generic
+    simulations can use |HINT_s| to manually configure heterogeneous disease transmission within
+    each node. All other simulation types have preconfigured solutions for heterogeneous disease
+    transmission based on the biological processes of the disease being modeled. See the `generic
+    disease`_ documentation for more information about |HINT_s|.
+
+    .. _generic disease: ./../general/hint-scaling.html
+
+.. only:: generic
+
+    :Author:
+        Daniel J. Klein, Senior Research Scientist, |IDM_s|
+
+    Overview
+    ========
+
+    Models of disease transmission often assume a homogeneous pattern of mixing between individuals that
+    stems from a mechanism in which the population is sufficiently "well-mixed" to make each individual
+    equally likely to next encounter each other individual. Along with this mixing assumption, simple
+    models additionally suppose that susceptibility and infectivity are homogeneous across the
+    population. These assumptions enable elegant mathematical calculations to be performed, including
+    those for the base reproductive rate, :math:`R_0`, and endemic equilibrium. Homogeneous mixing also
+    greatly simplifies implementation in the sense the only a single transmission constant,
+    :math:`\beta`, is required to describe the transmission rate per person.
+
+    However, assumptions of homogeneity quickly become invalid when considering the complexities of
+    disease transmission. Spatial effects, even at relatively small scales, can invalidate the well-
+    mixed assumption, particularly if the disease is highly infectious or the population density is
+    high. Non-uniform patterns of mixing based on age are well-documented in school-based disease
+    transmission [#f1]_. Susceptibility and infectivity are inherently heterogeneous, as governed by both
+    behavioral and biological factors including hand washing, viral load, and immunity. Many of these
+    factors can be targeted by interventions that potentially have non-uniform uptake, for example due
+    to differences in accessibility.
+
+    These sources of heterogeneity are abundant in almost every infectious disease. The "right"
+    level of heterogeneity to include in a model depends on the question being asked, but rarely is
+    a purely homogeneous model sufficient. The :term:`Epidemiological MODeling software (EMOD)` has
+    long-supported heterogeneity in the form of "nodes." Each :term:`node` represents a small
+    geographical area that can have customized parameters. Individuals migrate between nodes either
+    temporarily or permanently using mobility patterns driven by local, regional, and long-distance
+    transportation. While nodes have long provided the capability to model large-scale spatial
+    heterogeneities, disease transmission *within* each node was homogeneously governed by a single
+    transmission parameter, **Base_Infectivity**, which determined :math:`\beta`.
+
+    |HINT_l|
+    =========
+
+    |EMOD_s| implements the |HINT_l| feature that enables the modeler to include disease transmission heterogeneities
+    within each node. Intra-node heterogeneity is driven by "individuals properties," each of which has
+    an associated discrete set of "values." Examples of individual properties, with typical values given
+    parenthetically, include risk group (low, medium, high), age group (under 5, 5 to 15, over 15),
+    vaccine accessibility class (easy, hard), intra-node locale (census tracts), and place (home,
+    school, work, community, non-school). All nodes in a :term:`simulation` must have the same
+    individual properties and values, but the characteristics of the heterogeneity can vary from node to
+    node.
+
+    Associated with each individual property is a values-by-values-sized matrix of multipliers, denoted
+    :math:`\beta`, that scale base infectivity, :math:`\beta_0`. Specifically, the entry of the
+    multiplier matrix at row :math:`i` and column :math:`j` determines the transmission constant from
+    infected individuals having the :math:`i^{th}` value to susceptible individuals having the
+    :math:`j^{th}` value.
+
+    Two individual properties can be combined to achieve a higher level of transmission heterogeneity.
+    When multiple individual properties are configured, their effects are combined *independently* via
+    multiplication of the appropriate multipliers. For example if the individual properties are age
+    group (young and old) and vaccine accessibility (easy and hard),
+
+    .. math::
+
+        \beta^{\text{age}} = \begin{bmatrix}1.5 & 0.9 \\ 0.8 & 1.0\end{bmatrix} \text{and } \beta^{\text{accessibility}} = \begin{bmatrix}1.0 & 0.4 \\ 0.3 & 5.0\end{bmatrix},
+
+    the transmission multiplier from an infected individual who is a young and hard to access to a
+    susceptible individual who is old and easy to access will be :math:`0.9 \times 0.3 = 0.27`. Similarly,
+    the multiplier from an infected young vaccine refuser to a susceptible young vaccine refuser will be
+    :math:`1.5 \times 5.0 = 7.5`. While most multiplier matrices are symmetric, asymmetries as in the above
+    example can arise for several reasons including heterogeneity in susceptibility.
+
+    The product of the base infectivity, :math:`\beta_0`, and the multiplier matrix, :math:`\beta`,
+    governs "who acquires infection from whom," and thus is sometimes called the :term:`WAIFW matrix`. The
+    values in this matrix can be thought of as the "effective contact rate," where an *effective
+    contact* is defined as one that will result in disease transmission were it between a susceptible
+    and infected individual [#f2]_.
+
+    Disease dynamics
+    ================
+
+    |EMOD_s| is an exceptionally powerful software tool. Even in "generic" mode, |EMOD_s| is capable of
+    simulating spatially diverse Susceptible-Exposed-Infected-Recovered (:term:`SEIR model`) and SEIRS dynamics,
+    including options for non-exponential incubation and infectious periods, inter-node migration, and
+    density- or frequency-dependent transmission.
+
+    Single homogeneous node
+    -----------------------
+
+    The mathematical fundamentals underlying generic disease dynamics are most vividly illustrated in a
+    single well-mixed community. In |EMOD_s|, this scenario corresponds to a single node without |HINT_s|.
+    To simplify presentation of the mathematical principles, we focus on the well-known :term:`SIR model`
+    dynamics with exponentially distributed waiting times between state transitions.
+
+    In mathematical biology, disease dynamics are often presented in terms of the proportion of the
+    initial population in susceptible, infected, or recovered states (SIR). Because |EMOD_s| represents
+    individuals, and to be clear about mechanisms by which the transmission rate varies as a function of
+    the node population, we instead present the dynamics in terms of the number of individuals
+    :math:`(X, Y, Z)` in place of :math:`(S, I, R)`, respectively.
+
+    The governing dynamics can be written as an ordinary differential equation (ODE) with fixed
+    birthrate :math:`v`, death rate :math:`{\mu}`, and recovery rate :math:`{\gamma}`.
+
+    .. math::
+
+        \frac{dX}{dt} &= vN - \frac{\beta_0}{N}XY - \mu{X} \\
+        \frac{dY}{dt} &= \frac{\beta_0}{N}XY - \gamma{Y} - \mu{Y} \\
+        \frac{dZ}{dt} &= \gamma{Y} - \mu{Z}
+
+    Here :math:`N = X + Y + Z` is the total number of individuals.
+
+    The ODE dynamics in (2) are deterministic and continuous. In a finite population of individuals,
+    there is no way to precisely replicate these dynamics, and it is not clear that one would want to in
+    practice because disease transmission is an inherently stochastic process that unfolds in a
+    population of finite size.
+
+    In |EMOD_s|, the state changes at fixed time steps. The size of the :term:`time step`, denoted
+    :math:`\delta`, is selected to be small compared to the characteristic timescale of the disease
+    dynamics. Each update step consists of three primary sub-steps:
+
+    #.  **Shed**: The default behavior in a homogeneous generic simulation is for each infected
+        individual to shed contagion at a fixed rate. The total rate of contagion shedding from all
+        infected individuals is called the force of infection, :math:`\lambda = \frac{\beta}{N}Y`.
+
+    #.  **Expose**: Each susceptible individual becomes infected with probability
+        :math:`p_1 = \text{exp}(\lambda\delta)`, where :math:`\lambda` is the time step.
+
+    #.  **Finalize**: The final part of each time step contains recovery from infection and disease
+        mortality for infected individuals, along with basic demographic updates. |EMOD_s| supports advanced
+        demographics, but here we use the per-capita birth and death rates as in (2).
+
+        #.  **Recovery**: Each infected individual recovers in one time step with probability,
+            :math:`p_r = 1 - \text{exp}(-\gamma\delta)`.
+
+        #.  **Birth**: For birthrate :math:`v`, the number of new susceptible individuals will be
+            Poisson distributed with rate :math:`vN\delta`.
+
+        #.  **Natural Death**: The probability of death for each individual is :math:`p_d = 1 - \text{exp}(-\mu\delta)`.
+
+    Putting these pieces together over the course of a time step, let:
+
+    .. math::
+
+        \Delta{N_i} & \sim \text{Binomial}(X,p_i) \qquad [\text{Infection}] \\
+        \Delta{N_r} & \sim \text{Binomial}(Y,p_r) \qquad [\text{Recovery}] \\
+        \Delta{N_b} & \sim \text{Binomial}(vN\delta) \qquad [\text{Birth}] \\
+        \Delta{N_{X,d}} & \sim \text{Binomial}(X,p_d) \qquad [\text{Death of susceptibles}] \\
+        \Delta{N_{Y,d}} & \sim \text{Binomial}(Y,p_d) \qquad [\text{Death of infected}] \\
+        \Delta{N_{Z,d}} & \sim \text{Binomial}(Z,p_d) \qquad [\text{Death of recovered}]
+
+    With these numbers in mind and assuming that only one :term:`state transition event` happens to each
+    individual in a time step:
+
+    .. math::
+
+        X(t + \delta) &= X(t) - \Delta{N_i} + \Delta{N_b} - \Delta{N_{X,d}} \\
+        Y(t + \delta) &= Y(t) - \Delta{N_i} + \Delta{N_r} - \Delta{N_{Y,d}} \\
+        Z(t + \delta) &= Z(t) - \Delta{N_r} - \Delta{N_{Z,d}} \\
+        t &= t + \delta
+
+    |HINT_s| node with one individual property
+    ------------------------------------------
+
+    |HINT_s| feature adds the ability to simulate heterogeneity within each |EMOD_s| node. It is enabled
+    through individual properties defined in the demographics file. The disease dynamics parallel the
+    homogeneous case. To begin, consider a single node with one individual property having :math:`V`
+    values. The :math:`X`, :math:`Y`, and :math:`Z` disease states will gain an :math:`n` subscript to
+    index into the individual property values. Using the user-provided multiplier matrix of size
+    :math:`V \times V`, the ODE-form of the disease dynamics are:
+
+    .. math::
+
+        \frac{dX_v}{dt} &= vN - \sum^{V}_{k=1}\frac{\beta_0\beta_{k,v}}{N}X_v Y_k - \mu{X_v} \\
+        \frac{dY_v}{dt} &= \sum^V_{k=1}\frac{\beta_0\beta_{k,v}}{N}X_vY_k - \gamma{Y_v} - \mu{Y_v} \\
+        \frac{dZ_v}{dt} &= \gamma{Y_v} - \mu{Z_v}
+
+    For :math:`v \in [1...V]`. From this ODE, conversion to an individual-based implementation follows
+    the methods for a homogeneous node presented above.
+
+    At simulation initialization, individuals are assigned stochastically to values of the individual
+    property according to the distribution specified in the demographics file. Note also that intra-node
+    transmission heterogeneities can be transmission-route specific.
+
+    |HINT_s| node with multiple individual properties
+    -------------------------------------------------
+
+    Multiple individual properties can be easily configured in the |EMOD_s| demographics file. When
+    enabled, the heterogeneity induced by separate individual properties act independently. As an
+    example, consider two individual properties, :math:`p_1` and :math:`p_2`, having :math:`V_1` and
+    :math:`V_2` values, respectively. The multiplier matrices will be denoted :math:`\beta^{p_1}` and
+    :math:`\beta^{p_2}`, and have sizes :math:`V_1 \times V_1` and :math:`V_2 \times V_2`, respectively.
+    The resulting disease dynamics in ODE-form are:
+
+    .. math::
+
+        \frac{dX_{v_1,v_2}}{dt} &= vN - \sum^{v_1}_{k_1=1} \sum^{v_2}_{k_2=1}\frac{\beta_0\beta^{p_1}_{k_1,v_1}\beta^{p_2}_{k_2,k_2}}{N}X_{v_1,v_2}Y_{k_1,k_2} - \mu{X_{v_1,v_2}} \\
+
+        \frac{dX_{v_1,v_2}}{dt} &= vN - \sum^{v_1}_{k_1=1} \sum^{v_2}_{k_2=1}\frac{\beta_0\beta^{p_1}_{k_1,v_1}\beta^{p_2}_{k_2,k_2}}{N}X_{v_1,v_2}Y_{k_1,k_2} - \gamma{Y_{v_1,v_2}} - \mu{Y_{v_1,v_2}} \\
+
+        \frac{dZ_{v_1,v_2}}{dt} &= \gamma{Y_{v_1,v_2}} - \mu{Z_{v_1,v_2}}
+
+    For indices :math:`(V_1,V_2) \in [1...V_1]\times[V_1...V_2]`.
+
+    When configured for multiple individual properties, |EMOD_s| assigns individual property values to
+    individuals *independently* based on the separate probability distributions provided by the user in
+    the demographics file.
+
+    Transmission scaling
+    ====================
+
+    Disease transmission depends on the rate *effective contacts* as represented by parameter
+    :math:`\beta_0`. But what happens to the effective contact rate as the size of the population
+    changes? There are two commonly accepted answers: frequency-dependent and density-dependent
+    transmission scaling.
+
+    Frequency versus density-dependent transmission scaling
+    -------------------------------------------------------
+
+    The two common forms of transmission scaling with population (more precisely, population density) are:
+
+    Frequency dependence, true mass action
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    The number of effective contacts per person per unit time is independent of the population size. A
+    single infected person in a node with a large population will infect just as many people as they
+    would in a node with a small population. One way to think about this is that the population density
+    is fixed, so that the node with the large population is spread over a large area. For this case,
+
+    .. math::
+
+        \text{Transmission} \propto \frac{\text{Number of effective contacts per unit time}}{\text{Current size of the node population}},
+
+    so that the transmission rate *inversely proportional* to :math:`N(t)`. The dynamics described
+    above, starting from (2), are frequency-dependent because the :math:`\beta_0` parameter is divided
+    by the current node population, :math:`N(t)`.
+
+    Density dependence, pseudo mass action
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    The number of effective contacts per person per time is proportional to the population. Think of a
+    room containing :math:`N` individuals. A single highly-infectious cough would infect more people if the
+    number of people in the room (population density) was higher. For this case,
+
+    .. math::
+
+        \text{Transmission} \propto \frac{\text{Number of effective contacts per unit time}}{\text{Fixed population size}},
+
+    Usually, the denominator is taken as :math:`N(t=0)`, the initial node population. Note that the transmission
+    rate per capita is a constant in this case. Density-dependent transmission is often found in SIR
+    models which inherently neglect the total population size.
+
+    Transmission scaling in |EMOD_s|
+    --------------------------------
+
+    |EMOD_s| supports flexibility in transmission scaling above and beyond pure frequency- or
+    density-dependent scaling. The default configuration employs frequency-dependent scaling, the most commonly-
+    used form of scaling in computational epidemiology. For version 1.6, |EMOD_s| allows the transmission
+    rate to scale as a saturating function of population (density) [#f3]_, even when |HINT_s| is enabled. The
+    force of infection contributed by each infected individual under these two cases of transmission
+    scaling are as follows:
+
+    .. math::
+
+        \text{Force per infected} = \left\{
+            \begin{array}{ll}
+                \frac{\beta_0}{N} & \text{Frequency dependence} \\
+                \left[1 - \exp\left(- \frac{\rho}{\rho_{50}}\right)\right] \frac{\beta_0}{N} & \text{Saturating function of density}
+            \end{array}
+        \right.
+
+
+    Here, :math:`r` is the population density and :math:`r_{50}` is an input parameter the governs the
+    transition from density to frequency dependence. The population density is computed as
+    :math:`\rho = \frac{N}{A}` where :math:`A` is is the area of the node. This node area is in turn computed from the
+    longitude and latitude of the node center point (from the demographics file) and the node size. It
+    is assumed that all nodes have equal size in terms of the degrees of latitude and longitude, as
+    determined by configuration parameter **Node_Grid_Size**. Denoting this node grid size by :math:`w`, the area of
+    a node located at (lat, lon) is computed based on the corresponding area of a sphere,
+
+    .. math::
+
+        A = R^2\Big\lbrace\Big[\text{cos}\Big(\Big(90-\text{lat}-\frac{w}{2}\Big)\frac{\pi}{180}\Big)- \text{cos}\Big(\Big(90-\text{lat}+\frac{w}{2}\Big)\frac{\pi}{180}\Big)\Big]\frac{w\pi}{180}\Big\rbrace,
+
+    where :math:`R=6371.2213` km is the radius of Earth.
+
+    The saturating function of density is enabled by setting the following |EMOD_s| configuration parameter:
+    **Population_Density_Infectivity_Correction**: SATURATING_FUNCTION_OF_DENSITY
+
+    Finally, the :math:`r_{50}` parameter is configured using an |EMOD_s| configuration parameter
+    **Population_Density_C50**.
+
+    Contact scaling
+    ===============
+
+    |HINT_s| and transmission scaling allow the |EMOD_s| user to specify and control heterogeneity within |EMOD_s|.
+    One potential application for these features is in configuring "contact scaling,'' a particular form
+    of heterogeneous mixing in which shedding and acquisition are symmetric. The best example of contact
+    scaling is location-based mixing, which can be used in place of intra-day migration. Typical places
+    for location-based mixing include home, school, and work. Contact scaling could also be used for
+    mixing between age groups.
+
+    Contact scaling is typically specified by a matrix, :math:`\rho=\frac{N}{A}`. The entry at
+    :math:`c_{ij}` indicates that an individual with value :math:`i` sheds and acquires from mixing pool
+    :math:`j` with weight :math:`c_{ij}`. Each row of the contact scaling matrix typically sums to one,
+    especially for location-based mixing wherein :math:`c_{ij}` can be used to represent the fraction of
+    the day an individual with value :math:`i` spends at location :math:`j`.
+
+    In terms of implementation, there is one main difference between contact scaling and transmission
+    scaling. In contact scaling, individuals both shed into and acquire from pools of contagion
+    according to the corresponding row of the :math:`C` matrix. Normalization is done not by :math:`N`,
+    as in frequency scaling, but instead by the "effective population" of each mixing pool, which is
+    computed as the :math:`C`-weighted sum of the population-by-value. Transmission scaling via the
+    :math:`\beta` matrix directly specifies the transmission rate per susceptible between each group of
+    individuals, so there is no concept of place but the overall approach is more flexible, e.g. by
+    allowing asymmetries.
+
+    Interestingly, contact scaling exhibits neither frequency-dependent nor density-dependent scaling,
+    although it more closely resembles frequency-dependent transmission because the denominator is a
+    function of the current population. Currently, contact scaling is not supported as an independent
+    feature in the |EMOD_s| software, however one can simulate contact scaling to good approximation if
+    the fraction of the population in each value :math:`n_i = \frac{N_i(t)}{N(t)}` is constant or
+    stabilizes quickly. Then |EMOD_s| can be configured using,
+
+    .. math::
+
+        \beta = C[\text{diag}(C^Tn)]^{-1}C^T
+
+    Here, :math:`n` is a :math:`V`-length column vector of the equilibrium fractions of the population by value. Absent
+    mortality factors or interventions moving individuals from one value to the next, :math:`n` should be close
+    to the probability distribution used to assign values to individuals.
+
+    Conclusion
+    ==========
+
+    |EMOD_s| is a powerful software tool for simulating generic disease dynamics. Amongst the many
+    improvements offered by version 1.6 are the new capabilities described mathematically in this
+    document: |HINT_s| and transmission scaling with population density. These improvements add to the long
+    list of |EMOD_s| features that make it the most powerful disease simulation framework available today.
+
+    .. [#f1] J. Mossong, N. Hens, M. Jit, P. Beutels, K. Auranen, R. Mikolajczyk, M. Massari, S. Salmaso, G. S. Tomba, J. Wallinga, et al. Social contacts and mixing patterns relevant to the spread of infectious diseases. PLos medicine, 5(3):e74, 2008.
+
+    .. [#f2] M.J. Keeling and P. Rohani. *Modeling infectious diseases in humans and animals*. Princeton University Press, 2008.
+
+    .. [#f3] H. Hu, K. Nigmatulina, and P. Eckhoff. *The scaling of contact rates with population density for the infectious disease models*. Mathematical biosciences, 2013.

@@ -1,0 +1,1142 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Waning effect classes &mdash; Generic Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Generic Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Generic Model  documentation" href="index.html"/>
+        <link rel="up" title="Campaign parameters" href="parameter-campaign.html"/>
+        <link rel="next" title="Event list" href="parameter-campaign-event-list.html"/>
+        <link rel="prev" title="SimpleVaccine" href="parameter-campaign-individual-simplevaccine.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Generic Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="parameter-demographics.html">Demographics parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameter-configuration.html">Configuration parameters</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="parameter-campaign.html">Campaign parameters</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="parameter-campaign-event-coordinators.html">Events and event coordinators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter-campaign-node-interventions.html">Node-level interventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter-campaign-individual-interventions.html">Individual-level interventions</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Waning effect classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter-campaign-event-list.html">Event list</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Generic Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Generic</a> &raquo;</li>
+      
+          <li><a href="parameter-overview.html">EMOD parameter reference</a> &raquo;</li>
+      
+          <li><a href="parameter-campaign.html">Campaign parameters</a> &raquo;</li>
+      
+    <li>Waning effect classes</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="waning-effect-classes">
+<h1>Waning effect classes<a class="headerlink" href="#waning-effect-classes" title="Permalink to this headline">¶</a></h1>
+<p>The following classes are nested within interventions (both individual-level and node-level) to
+indicate how their efficacy wanes over time. They can be used with several parameters including
+<strong>Blocking_Config</strong>, <strong>Killing_Config</strong>, and <strong>Waning_Config</strong>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add &#8220;dummy&#8221; parameters to add contextual information to your files.</p>
+</div>
+<p>See the example below that uses a mix of different waning effect classes and the tables below that
+describe all parameters that can be used with each waning effect class.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                <span class="nt">&quot;Number_Repetitions&quot;</span><span class="p">:</span> <span class="mi">-1</span><span class="p">,</span>
+                <span class="nt">&quot;Timesteps_Between_Repetitions&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+                <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleBednet&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                    <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
+                        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                        <span class="nt">&quot;Expected_Discard_Time&quot;</span> <span class="p">:</span> <span class="mi">60</span>
+                    <span class="p">},</span>
+                    <span class="nt">&quot;Blocking_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="nt">&quot;Box_Duration&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+                        <span class="nt">&quot;Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span>
+                        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">0.5</span>
+                    <span class="p">},</span>
+                    <span class="nt">&quot;Killing_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectConstant&quot;</span><span class="p">,</span>
+                        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="contents local topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#waningeffectbox" id="id1">WaningEffectBox</a></li>
+<li><a class="reference internal" href="#waningeffectboxexponential" id="id2">WaningEffectBoxExponential</a></li>
+<li><a class="reference internal" href="#waningeffectconstant" id="id3">WaningEffectConstant</a></li>
+<li><a class="reference internal" href="#waningeffectexponential" id="id4">WaningEffectExponential</a></li>
+<li><a class="reference internal" href="#waningeffectmaplinear" id="id5">WaningEffectMapLinear</a></li>
+<li><a class="reference internal" href="#waningeffectmaplinearage" id="id6">WaningEffectMapLinearAge</a></li>
+<li><a class="reference internal" href="#waningeffectmaplinearseasonal" id="id7">WaningEffectMapLinearSeasonal</a></li>
+<li><a class="reference internal" href="#waningeffectmappiecewise" id="id8">WaningEffectMapPiecewise</a></li>
+<li><a class="reference internal" href="#waningeffectrandombox" id="id9">WaningEffectRandomBox</a></li>
+</ul>
+</div>
+<div class="section" id="waningeffectbox">
+<h2><a class="toc-backref" href="#id1">WaningEffectBox</a><a class="headerlink" href="#waningeffectbox" title="Permalink to this headline">¶</a></h2>
+<p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Box_Duration</td>
+<td>float</td>
+<td>0</td>
+<td>100000</td>
+<td>100</td>
+<td>The box duration of the effect in days. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Killing_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Box_Duration&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+        <span class="nt">&quot;Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectBoxExponential&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Initial_Effect</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>-1</td>
+<td>Initial strength of the effect. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;Expected_Discard_Time&quot;</span><span class="p">:</span> <span class="mi">60</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="waningeffectboxexponential">
+<h2><a class="toc-backref" href="#id2">WaningEffectBoxExponential</a><a class="headerlink" href="#waningeffectboxexponential" title="Permalink to this headline">¶</a></h2>
+<p>The initial efficacy is held for a specified duration, then the efficacy decays at an exponential rate.</p>
+<p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Box_Duration</td>
+<td>float</td>
+<td>0</td>
+<td>100000</td>
+<td>100</td>
+<td>The box duration of the effect in days. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Waning_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Box_Duration&quot;</span><span class="p">:</span> <span class="mi">3650</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectBox&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Decay_Time_Constant</td>
+<td>float</td>
+<td>0</td>
+<td>100000</td>
+<td>100</td>
+<td>The exponential decay length, in days.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Killing_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Box_Duration&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+        <span class="nt">&quot;Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectBoxExponential&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="waningeffectconstant">
+<h2><a class="toc-backref" href="#id3">WaningEffectConstant</a><a class="headerlink" href="#waningeffectconstant" title="Permalink to this headline">¶</a></h2>
+<p>The efficacy is held at a constant rate.</p>
+<p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Initial_Effect</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>-1</td>
+<td>Initial strength of the effect. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;Expected_Discard_Time&quot;</span><span class="p">:</span> <span class="mi">60</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="waningeffectexponential">
+<h2><a class="toc-backref" href="#id4">WaningEffectExponential</a><a class="headerlink" href="#waningeffectexponential" title="Permalink to this headline">¶</a></h2>
+<p>The efficacy decays at an exponential rate.</p>
+<p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Initial_Effect</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>-1</td>
+<td>Initial strength of the effect. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;Expected_Discard_Time&quot;</span><span class="p">:</span> <span class="mi">60</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Decay_Time_Constant</td>
+<td>float</td>
+<td>0</td>
+<td>100000</td>
+<td>100</td>
+<td>The exponential decay length, in days.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Killing_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Box_Duration&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+        <span class="nt">&quot;Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectBoxExponential&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="waningeffectmaplinear">
+<h2><a class="toc-backref" href="#id5">WaningEffectMapLinear</a><a class="headerlink" href="#waningeffectmaplinear" title="Permalink to this headline">¶</a></h2>
+<p>The efficacy decays based on the time since the start of the intervention. This change is defined
+by a map of time to efficacy values in which the time between time/value points is linearly
+interpolated. When the time since start reaches the end of the times in the map, the last value will
+be used unless the intervention expires. If the time since start is less than the first value in the
+map, the efficacy will be zero. This can be used to define the shape of a curve whose magnitude is
+defined by the <strong>Initial_Effect</strong> multiplier.</p>
+<p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Durability_Map</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The time, in days, since the intervention was distributed to a multiplier times the <strong>Initial_Effect</strong>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinearSeasonal&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="nt">&quot;Durability_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="mf">21.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">,</span> <span class="mf">31.0</span><span class="p">,</span> <span class="mf">365.0</span><span class="p">],</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Expire_At_Durability_Map_End</td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Set to 1 to let the intervention expire when the end of the map is reached.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Changing_Effect&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectConstant&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;Expire_At_Durability_Map_End&quot;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Reference_Timer</td>
+<td>integer</td>
+<td>0</td>
+<td>2.15E+0</td>
+<td>0</td>
+<td>The timestamp at which linear-map should be anchored.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Changing_Effect&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinear&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Expire_At_Durability_Map_End&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Reference_Timer&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Durability_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">385</span><span class="p">,</span> <span class="mi">390</span><span class="p">,</span> <span class="mi">10000</span><span class="p">],</span>
+            <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Times</td>
+<td>array of floats</td>
+<td>0</td>
+<td>999999</td>
+<td>NA</td>
+<td>An array of days.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Changing_Effect&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinear&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Expire_At_Durability_Map_End&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Reference_Timer&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Durability_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">385</span><span class="p">,</span> <span class="mi">390</span><span class="p">,</span> <span class="mi">10000</span><span class="p">],</span>
+            <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Values</td>
+<td>array of floats</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>NA</td>
+<td>An array of values to match the defined <strong>Times</strong>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Time_Value_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1998</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">2003</span><span class="p">,</span> <span class="mi">2006</span><span class="p">,</span> <span class="mi">2009</span><span class="p">],</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mi">0</span><span class="p">,</span>
+            <span class="mf">0.260000</span><span class="p">,</span>
+            <span class="mf">0.080000</span><span class="p">,</span>
+            <span class="mf">0.140000</span><span class="p">,</span>
+            <span class="mf">0.540000</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Initial_Effect</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>-1</td>
+<td>Initial strength of the effect. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;Expected_Discard_Time&quot;</span><span class="p">:</span> <span class="mi">60</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="waningeffectmaplinearage">
+<h2><a class="toc-backref" href="#id6">WaningEffectMapLinearAge</a><a class="headerlink" href="#waningeffectmaplinearage" title="Permalink to this headline">¶</a></h2>
+<p>Similar to <strong>WaningEffectMapLinear</strong>, except that the efficacy decays based on the age of the
+individual who owns the intervention instead of the time since the start of the intervention.</p>
+<p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Times</td>
+<td>array of floats</td>
+<td>0</td>
+<td>125</td>
+<td>NA</td>
+<td>An array of years.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinearAge&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="nt">&quot;Durability_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">12.99999</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">],</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Durability_Map</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The time, in days, since the intervention was distributed to a multiplier times the <strong>Initial_Effect</strong>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinearSeasonal&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="nt">&quot;Durability_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="mf">21.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">,</span> <span class="mf">31.0</span><span class="p">,</span> <span class="mf">365.0</span><span class="p">],</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Values</td>
+<td>array of floats</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>NA</td>
+<td>An array of values to match the defined <strong>Times</strong>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Time_Value_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1998</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">2003</span><span class="p">,</span> <span class="mi">2006</span><span class="p">,</span> <span class="mi">2009</span><span class="p">],</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mi">0</span><span class="p">,</span>
+            <span class="mf">0.260000</span><span class="p">,</span>
+            <span class="mf">0.080000</span><span class="p">,</span>
+            <span class="mf">0.140000</span><span class="p">,</span>
+            <span class="mf">0.540000</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Initial_Effect</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>-1</td>
+<td>Initial strength of the effect. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;Expected_Discard_Time&quot;</span><span class="p">:</span> <span class="mi">60</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="waningeffectmaplinearseasonal">
+<h2><a class="toc-backref" href="#id7">WaningEffectMapLinearSeasonal</a><a class="headerlink" href="#waningeffectmaplinearseasonal" title="Permalink to this headline">¶</a></h2>
+<p>Similar to <strong>WaningEffectMapLinear</strong>, except that the map will repeat itself every 365 days. That
+is, the time since start will reset to zero once it reaches 365.  This allows you to simulate
+seasonal effects.</p>
+<p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Times</td>
+<td>array of floats</td>
+<td>0</td>
+<td>365</td>
+<td>NA</td>
+<td>An array of days.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinearSeasonal&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="nt">&quot;Durability_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="mf">21.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">,</span> <span class="mf">31.0</span><span class="p">,</span> <span class="mf">365.0</span><span class="p">],</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Durability_Map</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The time, in days, since the intervention was distributed to a multiplier times the <strong>Initial_Effect</strong>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinearSeasonal&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="nt">&quot;Durability_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="mf">21.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">,</span> <span class="mf">31.0</span><span class="p">,</span> <span class="mf">365.0</span><span class="p">],</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Values</td>
+<td>array of floats</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>NA</td>
+<td>An array of values to match the defined <strong>Times</strong>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Time_Value_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1998</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">2003</span><span class="p">,</span> <span class="mi">2006</span><span class="p">,</span> <span class="mi">2009</span><span class="p">],</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mi">0</span><span class="p">,</span>
+            <span class="mf">0.260000</span><span class="p">,</span>
+            <span class="mf">0.080000</span><span class="p">,</span>
+            <span class="mf">0.140000</span><span class="p">,</span>
+            <span class="mf">0.540000</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Initial_Effect</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>-1</td>
+<td>Initial strength of the effect. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;Expected_Discard_Time&quot;</span><span class="p">:</span> <span class="mi">60</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="waningeffectmappiecewise">
+<h2><a class="toc-backref" href="#id8">WaningEffectMapPiecewise</a><a class="headerlink" href="#waningeffectmappiecewise" title="Permalink to this headline">¶</a></h2>
+<p>Similar to <strong>WaningEffectMapLinear</strong>, except that the data is assumed to be constant between
+time/value points (no interpolation). If the time since start falls between two points, the efficacy
+of the earlier time point is used.</p>
+<p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Expire_At_Durability_Map_End</td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Set to 1 to let the intervention expire when the end of the map is reached.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Changing_Effect&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectConstant&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;Expire_At_Durability_Map_End&quot;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Reference_Timer</td>
+<td>integer</td>
+<td>0</td>
+<td>2.15E+0</td>
+<td>0</td>
+<td>The timestamp at which linear-map should be anchored.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Changing_Effect&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinear&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Expire_At_Durability_Map_End&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Reference_Timer&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Durability_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">385</span><span class="p">,</span> <span class="mi">390</span><span class="p">,</span> <span class="mi">10000</span><span class="p">],</span>
+            <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Times</td>
+<td>array of floats</td>
+<td>0</td>
+<td>999999</td>
+<td>NA</td>
+<td>An array of days.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Changing_Effect&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinear&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Expire_At_Durability_Map_End&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Reference_Timer&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Durability_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">385</span><span class="p">,</span> <span class="mi">390</span><span class="p">,</span> <span class="mi">10000</span><span class="p">],</span>
+            <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Durability_Map</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The time, in days, since the intervention was distributed to a multiplier times the <strong>Initial_Effect</strong>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinearSeasonal&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="nt">&quot;Durability_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="mf">21.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">,</span> <span class="mf">31.0</span><span class="p">,</span> <span class="mf">365.0</span><span class="p">],</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Values</td>
+<td>array of floats</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>NA</td>
+<td>An array of values to match the defined <strong>Times</strong>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Time_Value_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1998</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">2003</span><span class="p">,</span> <span class="mi">2006</span><span class="p">,</span> <span class="mi">2009</span><span class="p">],</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mi">0</span><span class="p">,</span>
+            <span class="mf">0.260000</span><span class="p">,</span>
+            <span class="mf">0.080000</span><span class="p">,</span>
+            <span class="mf">0.140000</span><span class="p">,</span>
+            <span class="mf">0.540000</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Initial_Effect</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>-1</td>
+<td>Initial strength of the effect. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;Expected_Discard_Time&quot;</span><span class="p">:</span> <span class="mi">60</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="waningeffectrandombox">
+<h2><a class="toc-backref" href="#id9">WaningEffectRandomBox</a><a class="headerlink" href="#waningeffectrandombox" title="Permalink to this headline">¶</a></h2>
+<p>The efficacy is held at a constant rate until it drops to zero after a user-defined duration. This
+duration is randomly selected from an exponential distribution where <strong>Expected_Discard_Time</strong> is
+the mean.</p>
+<p>The efficacy is held at a constant rate until it drops to zero after the user-defined duration.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Expected_Discard_Time</td>
+<td>float</td>
+<td>0</td>
+<td>100000</td>
+<td>100</td>
+<td>The mean time, in days, of an exponential distribution of the duration of the effect of an intervention (such as a vaccine or bed net). Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;Expected_Discard_Time&quot;</span><span class="p">:</span> <span class="mi">60</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Initial_Effect</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>-1</td>
+<td>Initial strength of the effect. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;Expected_Discard_Time&quot;</span><span class="p">:</span> <span class="mi">60</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="parameter-campaign-event-list.html" class="btn btn-neutral float-right" title="Event list" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="parameter-campaign-individual-simplevaccine.html" class="btn btn-neutral" title="SimpleVaccine" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

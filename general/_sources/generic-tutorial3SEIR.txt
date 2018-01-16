@@ -1,0 +1,155 @@
+====================================
+Generic 3: SIER - Incubation periods
+====================================
+
+This tutorial assumes that you have read :doc:`generic-tutorial1SIR` and :doc:`generic-tutorial2SIR`.
+
+The :term:`SIR model` in :doc:`generic-tutorial1SIR` has several limitations that might not be true
+for some diseases. Many diseases have a latent phase during which the individual is infected but not
+yet infectious. This delay between the acquisition of infection and the infectious state can be
+incorporated within the existing model by adding a latent/exposed population, E, and letting
+infected (but not yet infectious) individuals move from S to E and from E to I. If :math:`sigma` is the rate of
+latent individuals becoming infectious (average duration of latency is 1/:math:`sigma`), the SEIR model becomes:
+
+.. math::
+
+        \begin{aligned}
+        \frac{dS}{dt} & = -\frac{\beta SI}{N}\\
+        \frac{dE}{dt} & = \frac{\beta SI}{N} - \sigma E\\
+        \frac{dI}{dt} & = \sigma E - \gamma I\\
+        \frac{dR}{dt} & = \gamma I
+        \end{aligned}
+
+
+with :math:`N = S + E + I + R`
+
+Since the latency delays the start of the individual's infectious period, the secondary spread from
+an infected individual will occur at a later time compared with an SIR model which has no latency.
+Therefore, including a longer latency period will result in slower initial growth of the outbreak.
+However, since the model does not include mortality, the basic :term:`reproductive number`,
+R\ :SUB:`0`\  = :math:`\beta/\gamma`, does not change.
+
+
+
+Demographics inputs
+===================
+
+This tutorial uses generic_scenarios_demographics file for demographics input, as do all of the
+generic simulation scenarios except for :doc:`generic-tutorial2SIR`, and
+:doc:`generic-tutorial-10Zoonosis`. You can view the complete demographics file at <path_to_directory>\Regression\Scenarios\InputFiles
+where <path_to_directory> is the location were |EMOD_s| source files were installed. For more information on
+demographics files, see :doc:`parameter-demographics`.
+
+
+
+Key configuration parameters
+============================
+
+This tutorial uses the config.json in <path_to_directory>\Regression\Scenarios\Generic Scenarios\03_SEIR
+directory.
+
+
+Population dynamics parameters
+------------------------------
+
+Set **Enable_Vital_Dyanamics** to 0.  This will disable vital dynamics (birth and death) in the simulation.
+For more information, see :ref:`config-population` parameters.
+
+
+SEIR model setup parameters
+---------------------------
+
+The incubation period, infection period, and immunity must be enabled for an :term:`SEIR model`. Immunity
+waning must be disabled. For more information, see :ref:`config-incubation` and :ref:`config-immunity` parameters.
+
+Set the following parameters:
+
+  * Set **Base_Incubation_Period** to 8.
+
+  * Set **Enable_Immunity** to 1.
+
+  * Set **Enable_Immune_Decay** to 0.
+
+  * Set **Incubation_Period_Distribution** to "EXPONENTIAL_DISTRIBUTION."
+
+
+
+Disease parameters
+------------------
+
+In the following example, we still use the same parameters as in the SIR model: the average
+infectious duration is 4 days; and R\ :SUB:`0`\  = 14 (measles-like). However, this time we will add
+a latent period of 8 days. For more information, see :ref:`config-infectivity` parameters.
+
+Set the following parameters:
+
+  * Set **Base_Infectivity** to 3.5.
+
+  * Set **Base_Infectious_Period** to 4.
+
+  * Set **Infectious_Period_Distribution** to "EXPONENTIAL_DURATION."
+
+
+
+Time step and duration parameters
+---------------------------------
+
+For more information, see :ref:`config-setup` parameters. Set the following parameters:
+
+  * Set **Simulation_Timestep** to 1.
+
+  * Set **Simulation_Duration** to 90.
+
+
+Interventions
+=============
+
+This tutorial uses the campaign.json file in the
+<path_to_directory>\Regression\Scenarios\Generic Scenarios\03_SEIR directory.
+
+
+Initial outbreak
+----------------
+
+This simulation uses an **OutbreakIndividual** event at day 1 to create the initial seeding.
+For more information, see **OutbreakIndividual** parameters.
+
+.. literalinclude:: ../json/generic3-interventions1.json
+  :language: JSON
+
+
+Run the simulation
+==================
+
+Run the simulation and generate graphs of the simulation output. For more information, see
+:doc:`howto-simulations`.
+
+
+.. include:: ../reuse/note-stochastic.txt
+
+Simulation output graphs
+------------------------
+
+The complete course of outbreak is observed. After the initial fast growth, the epidemic depletes
+the susceptible population. Eventually the virus cannot find enough new susceptible people and dies
+out.
+
+Although R\ :SUB:`0`\ and the cumulative number of infected individuals does not change, including
+latency slows down the growth of the epidemic.
+
+.. figure:: ../images/generic-tutorials/Generic_SEIR_output_plotInsetChart_500x386.png
+
+  Figure 1: Depletion of the susceptible population
+
+
+
+Exploring the model
+===================
+
+Change the latent period to observe the initial growth. The following figure shows the results of
+changing to a shorter latent period (2 days).
+
+
+.. figure:: ../images/generic-tutorials/Generic_SEIR_exploring_plotInsetChart_2day_500x386.png
+
+  Figure 2: Impact of the length of the latent period

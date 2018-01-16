@@ -1,0 +1,76 @@
+=============================
+Install |EMOD_s| on |Centos|
+=============================
+
+Follow the steps below to install |EMOD_s| on |Centos_supp| environments. This installs the pre-
+built |linux_binary| and all software needed to run simulations. The setup script installs most
+prerequisite software, including Python and the Python packages dateutil, six, pyparsing, NumPy, and
+matplotlib. Other prerequisites, such as |Boost_supp| and  |MSMPI_supp|, are declared by the script
+as required. Because the installation instructions will vary based on the particular distribution
+you are running, instruction information is not included here.
+
+.. note::
+
+    If you want to download and modify the |EMOD_s| source code and build the |linux_binary|
+    yourself, see :doc:`dev-install-overview`.
+
+.. include:: ../reuse/testing-linux.txt
+
+.. include:: ../reuse/third-party-note.txt
+
+The script provides the option of installing the |EMOD_s| source code and :term:`input
+data files` provided by |IDM_s|, but these steps will install a pre-built version of the |linux_binary|.
+For information on building the |linux_binary| from source code, see :doc:`dev-install-overview`.
+
+Before you begin, you must have the following:
+
+* **sudo** privileges to install packages
+* 15 GB free in your home directory (if you install the |EMOD_s| source code and input data files)
+* An Internet connection
+
+
+#.  Download and run the PrepareLinuxEnvironment.sh script on `EMOD releases`_ on GitHub.
+
+    Respond to the prompts for information while the script is running. If you choose not to
+    download the |EMOD_s| source and input data files, do the following. This example assumes that a
+    directory named |IDM_s| is in your home directory and contains the subdirectories |EMOD_s|,
+    containing the |EMOD_s| source code, and EMOD_InputData, containing the input data files
+    directory.
+
+    a.  Set the EMOD_ROOT environment variable to the path to the |EMOD_s| source path::
+
+            EMOD_ROOT=~/IDM/EMOD
+
+    b.  Put Scripts and . in the path::
+
+            export PATH=$PATH:.:$EMOD_ROOT/Scripts
+
+    c.  Create a symlink from the |EMOD_s| directory to InputDataFiles::
+
+            ln -s /home/general/IDM/EMOD-InputData $EMOD_ROOT/InputData
+
+    d.  If you run simulations using in the same session that you updated EMOD_ROOT and
+        the Scripts path, reload the .bashrc file using ``source .bashrc``.
+
+#.  Download the |linux_binary| for |Centos_supp|. See on `EMOD releases`_ on GitHub.
+
+(Optional) Install plotting software
+====================================
+
+None of the following plotting software is required to run simulations with |EMOD_s|, but they are
+useful for creating graphs from and evaluating the model output. In addition, |EMOD_s| provides many
+Python scripts for analyzing data.
+
+.. include:: ../reuse/third-party-note.txt
+
+R
+-
+
+.. include:: ../reuse/r-install.txt
+
+MATLAB
+------
+
+.. include:: ../reuse/matlab-install.txt
+
+.. _EMOD releases: https://github.com/InstituteforDiseaseModeling/EMOD/releases

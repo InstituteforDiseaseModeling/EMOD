@@ -1,0 +1,870 @@
+/**
+ * @file
+ * Styles are organized using the SMACSS technique. @see http://smacss.com/book/
+ *
+ * When you turn on CSS aggregation at admin/config/development/performance, all
+ * of these @include files will be combined into a single file.
+ */
+/* Import Sass mixins, variables, Compass modules, etc. */
+/* line 15, ../sass/styles.scss */
+p,
+h1,
+h2,
+h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+}
+
+/* line 22, ../sass/styles.scss */
+.navText p {
+  color: #858c8c;
+}
+
+/* line 25, ../sass/styles.scss */
+a {
+  text-decoration: none;
+}
+
+/* line 28, ../sass/styles.scss */
+a:link h3 {
+  color: #0073a3;
+}
+
+/* line 31, ../sass/styles.scss */
+a:visited h3 {
+  color: #0073a3;
+}
+
+/* line 34, ../sass/styles.scss */
+a:hover h3 {
+  color: black;
+}
+
+/* line 37, ../sass/styles.scss */
+a:link p {
+  color: #858c8c;
+}
+
+/* line 40, ../sass/styles.scss */
+a:hover p {
+  color: black;
+}
+
+/* line 43, ../sass/styles.scss */
+a:visited p {
+  color: #858c8c;
+}
+
+/* line 46, ../sass/styles.scss */
+body {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0px;
+  width: 100%;
+}
+
+/* Header */
+/* line 55, ../sass/styles.scss */
+.profileLogo {
+  background-color: #0073a3;
+}
+
+/* line 58, ../sass/styles.scss */
+.profileHeader {
+  clear: left;
+}
+
+/* line 61, ../sass/styles.scss */
+.container .outer {
+  width: 100%;
+  padding-top: 500px;
+  position: relative;
+}
+
+/* line 66, ../sass/styles.scss */
+.bannerWrapper {
+  width: 100%;
+  /* or whatever is required */
+  text-align: center;
+  /* ensures the image is always in the h-middle */
+  overflow: hidden;
+  /* hide the cropped portion */
+}
+
+/* line 74, ../sass/styles.scss */
+.bannerWrapperImage {
+  background-image: url(../images/docset_home_banner.jpg);
+  /* lt ie8 */
+  -ms-background-position-x: center;
+  -ms-background-position-y: bottom;
+  background-position: center bottom;
+  /* scale bg image proportionately */
+  background-size: cover;
+}
+
+/* line 83, ../sass/styles.scss */
+.idmlogo.idmlogoDesktop img {
+  height: 40px;
+  margin: 5px 0px;
+  padding: 5px 0px;
+  display: inline;
+}
+
+/* line 89, ../sass/styles.scss */
+.idmlogo.idmlogoMobile {
+  height: 50px;
+  margin: 5px 0px;
+  display: none;
+}
+
+/* line 94, ../sass/styles.scss */
+.bannerWrapperContent {
+  height: 500px;
+  position: relative;
+  /* allows repositioning */
+  left: 100%;
+  /* move the whole width of the image to the right */
+  margin-left: -200%;
+  /* magic! */
+}
+
+/* line 103, ../sass/styles.scss */
+.bannerTitle {
+  text-align: center;
+}
+
+/* line 106, ../sass/styles.scss */
+.bannerContent {
+  margin: auto;
+  max-width: 800px;
+  width: 50%;
+  position: relative;
+  top: 175px;
+  text-align: left;
+}
+
+/* line 114, ../sass/styles.scss */
+.bannerContent p {
+  text-align: left;
+}
+
+/* line 117, ../sass/styles.scss */
+.navText {
+  display: block;
+}
+
+/* line 120, ../sass/styles.scss */
+header {
+  text-align: center;
+  display: block;
+}
+
+/* line 124, ../sass/styles.scss */
+header .profileLogo .logoPlaceholder {
+  background-color: #d0cfcf;
+  width: 187px;
+  text-align: center;
+}
+
+/* line 129, ../sass/styles.scss */
+header .profileHeader h1 {
+  font-family: 'Montserrat', sans-serif;
+  color: white;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* line 136, ../sass/styles.scss */
+header .profileHeader h3 {
+  font-family: sans-serif;
+  color: #929292;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+/* line 143, ../sass/styles.scss */
+hr {
+  background-color: #d0cfcf;
+  height: 1px;
+}
+
+/* line 147, ../sass/styles.scss */
+header .profileHeader p {
+  font-family: 'Montserrat';
+  color: white;
+  font-size: 20px;
+  font-weight: 200;
+  line-height: 1.5;
+  overflow-y: auto;
+}
+
+/* Navigation bar section */
+/* line 157, ../sass/styles.scss */
+.content.news-cat-bar.not-mobile-display {
+  padding-top: 4%;
+}
+
+/* line 160, ../sass/styles.scss */
+#news-cat-bar-wrapper {
+  max-width: 90%;
+  margin: auto;
+  position: relative;
+  bottom: 1em;
+}
+
+/* line 167, ../sass/styles.scss */
+#news-cat-bar-wrapper.flex {
+  padding: 0;
+  text-align: center;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+
+/* line 174, ../sass/styles.scss */
+#news-cat-bar-wrapper > .flex-cell {
+  max-width: 200px;
+  margin: .2em;
+  padding: .2em;
+  display: inline-block;
+  /* non-flexbox browsers */
+  -webkit-flex: 0 1 18%;
+  flex: 0 1 18%;
+  text-align: center;
+  vertical-align: top;
+}
+
+/* line 185, ../sass/styles.scss */
+.flex-cell p {
+  padding: 0px 10px;
+}
+
+/* line 188, ../sass/styles.scss */
+#news-cat-bar-wrapper > .flex-cell img {
+  box-shadow: none;
+  width: 30%;
+}
+
+/* Main Content sections */
+/* line 195, ../sass/styles.scss */
+.mainContent .section1 {
+  display: block;
+}
+
+/* line 198, ../sass/styles.scss */
+.section1 .sectionTitle,
+.section2 .sectionTitle {
+  font-family: 'Montserrat', sans-serif;
+  color: #929292;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* line 206, ../sass/styles.scss */
+.section1 .sectionTitleRule,
+.section2 .sectionTitleRule {
+  margin: 0 3% 0 0;
+  float: left;
+  clear: both;
+}
+
+/* line 212, ../sass/styles.scss */
+.section1 .sectionTitleRule2,
+.section2 .sectionTitleRule2 {
+  background-color: #d0cfcf;
+  height: 1px;
+  padding: 0px;
+}
+
+/* line 218, ../sass/styles.scss */
+.mainContent .section1 .section1Content {
+  font-family: ProximaNova;
+  font-size: 14px;
+  font-weight: 100;
+  color: #d0cfcf;
+}
+
+/* line 224, ../sass/styles.scss */
+.mainContent .section1 .section1Content span {
+  color: #929292;
+  font-family: sans-serif;
+}
+
+/* line 228, ../sass/styles.scss */
+.section2 .sectionContentTitle {
+  font-family: sans-serif;
+  color: #929292;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* line 234, ../sass/styles.scss */
+.section2 .sectionContentSubTitle {
+  font-family: sans-serif;
+  color: #444343;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* line 240, ../sass/styles.scss */
+.section2 .sectionContent {
+  font-family: sans-serif;
+  color: #929292;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.8;
+}
+
+/* line 247, ../sass/styles.scss */
+.mainContent {
+  display: block;
+}
+
+/* line 250, ../sass/styles.scss */
+.mainContent .externalResourcesNav .externalResources {
+  background-color: #d0cfcf;
+  display: inline-block;
+  text-align: center;
+  margin-top: 0px;
+  padding-top: 3%;
+  cursor: pointer;
+}
+
+/* line 258, ../sass/styles.scss */
+.mainContent .externalResourcesNav .externalResources:hover {
+  background-color: #999999;
+}
+
+/* line 261, ../sass/styles.scss */
+.externalResourcesNav .externalResources a {
+  font-family: 'Montserrat', sans-serif;
+  color: white;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  text-decoration: none;
+}
+
+/* line 269, ../sass/styles.scss */
+.stretch {
+  content: '';
+  display: inline-block;
+  margin-left: 2%;
+  margin-right: 2%;
+}
+
+/* Footer */
+/* line 277, ../sass/styles.scss */
+footer .footerDisclaimer {
+  font-family: sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* line 282, ../sass/styles.scss */
+footer .footerNote {
+  font-family: sans-serif;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 700;
+}
+
+/* line 288, ../sass/styles.scss */
+footer .footerNote span {
+  font-weight: 400;
+}
+
+/* Media query for Mobile devices
+ *
+ * 
+*/
+@media only screen and (min-width: 285px) and (max-width: 480px) {
+  /* Header */
+  /* line 298, ../sass/styles.scss */
+  header {
+    width: 100%;
+    float: none;
+  }
+
+  /* line 302, ../sass/styles.scss */
+  header .profileLogo .logoPlaceholder {
+    display: inline-block;
+  }
+
+  /* line 305, ../sass/styles.scss */
+  header .profilePhoto {
+    display: inline-block;
+  }
+
+  /* line 308, ../sass/styles.scss */
+  header .idmlogoMobile {
+    text-align: left;
+  }
+
+  /* line 311, ../sass/styles.scss */
+  .idmlogoMobile h2 {
+    padding: 15px 0px 15px 20px;
+    color: white;
+    margin: 0px;
+  }
+
+  /* line 316, ../sass/styles.scss */
+  .bannerContent {
+    max-width: 500px;
+    width: 310px;
+    top: 20px;
+  }
+
+  /* line 321, ../sass/styles.scss */
+  header .profileHeader p {
+    font-family: sans-serif;
+    color: white;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 25px;
+    overflow-y: auto;
+  }
+
+  /* line 329, ../sass/styles.scss */
+  .idmlogo.idmlogoDesktop img {
+    display: none;
+  }
+
+  /* line 332, ../sass/styles.scss */
+  .idmlogo.idmlogoMobile {
+    height: 50px;
+    margin: 5px 0px;
+    display: inline;
+  }
+
+  /* line 337, ../sass/styles.scss */
+  .bannerWrapperContent {
+    height: 320px;
+  }
+
+  /* line 340, ../sass/styles.scss */
+  .content.news-cat-bar.not-mobile-display {
+    padding-top: 40px;
+  }
+
+  /* line 343, ../sass/styles.scss */
+  #news-cat-bar-wrapper.flex {
+    justify-content: center;
+  }
+
+  /* line 346, ../sass/styles.scss */
+  #news-cat-bar-wrapper > .flex-cell {
+    flex: 0 1 calc(30% - .5em);
+    -ms-flex: 0 1 30%;
+    -webkit-flex: 0 1 calc(30% - .5em);
+    text-align: center;
+  }
+
+  /* line 352, ../sass/styles.scss */
+  #news-cat-bar-wrapper > .flex-cell img {
+    width: 50px;
+  }
+
+  /* line 355, ../sass/styles.scss */
+  .flex-cell h3 {
+    font-size: 14px;
+    margin: 0px 0px 20px 0px;
+  }
+
+  /* line 359, ../sass/styles.scss */
+  .navText {
+    display: none;
+  }
+
+  /* line 362, ../sass/styles.scss */
+  header .socialNetworkNavBar {
+    text-align: center;
+    display: block;
+    margin-top: 60px;
+    clear: both;
+    margin-bottom: 15%;
+  }
+
+  /* line 369, ../sass/styles.scss */
+  header .socialNetworkNavBar .socialNetworkNav {
+    width: 60px;
+    height: 60px;
+    display: inline-block;
+    margin-right: 23px;
+  }
+
+  /* Main content sections */
+  /* line 376, ../sass/styles.scss */
+  .mainContent .section1 {
+    text-align: center;
+    margin-bottom: 10%;
+  }
+
+  /* line 380, ../sass/styles.scss */
+  .section1 .section1Title,
+  .section2 .section1Title {
+    text-align: center;
+  }
+
+  /* line 384, ../sass/styles.scss */
+  .section1 .sectionTitleRule,
+  .section2 .sectionTitleRule {
+    width: 100%;
+  }
+
+  /* line 388, ../sass/styles.scss */
+  .section1 .sectionTitleRule2,
+  .section2 .sectionTitleRule2 {
+    display: none;
+  }
+
+  /* line 392, ../sass/styles.scss */
+  .mainContent .section1 .section1Content {
+    display: inline-block;
+    text-align: left;
+    font-family: sans-serif;
+    text-align: justify;
+  }
+
+  /* line 398, ../sass/styles.scss */
+  .mainContent .section2 {
+    display: block;
+    text-align: center;
+  }
+
+  /* line 402, ../sass/styles.scss */
+  .section2 .section2Content {
+    margin-top: 10%;
+    text-align: justify;
+    margin-bottom: 10%;
+  }
+
+  /* line 407, ../sass/styles.scss */
+  .mainContent .externalResourcesNav {
+    margin-bottom: 10%;
+  }
+
+  /* line 410, ../sass/styles.scss */
+  .mainContent .externalResourcesNav .externalResources {
+    width: 100%;
+    height: 35px;
+  }
+
+  /* Footer */
+  /* line 415, ../sass/styles.scss */
+  footer {
+    display: block;
+    text-align: center;
+    font-family: sans-serif;
+  }
+}
+/* Media query for Tablet devices (Stepdown)
+ *
+ * 
+*/
+@media only screen and (min-width: 481px) and (max-width: 800px) {
+  /* Header */
+  /* line 428, ../sass/styles.scss */
+  header {
+    width: 100%;
+    float: none;
+  }
+
+  /* line 432, ../sass/styles.scss */
+  header .profileLogo .logoPlaceholder {
+    display: inline-block;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  /* line 436, ../sass/styles.scss */
+  header .profilePhoto {
+    float: left;
+    clear: both;
+    margin-right: 3%;
+    margin-top: 5%;
+  }
+
+  /* line 442, ../sass/styles.scss */
+  header .profileHeader {
+    text-align: left;
+  }
+
+  /* line 445, ../sass/styles.scss */
+  .bannerContent {
+    max-width: 450px;
+    width: 50%;
+    top: 175px;
+  }
+
+  /* line 450, ../sass/styles.scss */
+  header .profileHeader h1 {
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  /* line 455, ../sass/styles.scss */
+  header .profileHeader p {
+    font-family: 'Montserrat';
+    color: white;
+    font-size: 16px;
+    font-weight: 200;
+    line-height: 1.5;
+    overflow-y: auto;
+  }
+
+  /* line 463, ../sass/styles.scss */
+  .content.news-cat-bar.not-mobile-display {
+    padding-top: 6%;
+  }
+
+  /* line 466, ../sass/styles.scss */
+  #news-cat-bar-wrapper > .flex-cell img {
+    box-shadow: none;
+    border: none;
+    border: 0;
+    width: 25%;
+  }
+
+  /* line 472, ../sass/styles.scss */
+  .flex-cell a img:hover {
+    border: none;
+  }
+
+  /* line 476, ../sass/styles.scss */
+  #news-cat-bar-wrapper > .flex-cell {
+    flex: 0 1 calc(45% - .5em);
+    -ms-flex: 0 1 45%;
+  }
+
+  /* line 480, ../sass/styles.scss */
+  .flex-cell {
+    margin: 0px 10px;
+  }
+}
+/* Media Query for Tablets
+ *
+ *
+ */
+@media only screen and (min-width: 801px) and (max-width: 1024px) {
+  /* Header */
+  /* line 492, ../sass/styles.scss */
+  header {
+    width: 100%;
+    float: none;
+  }
+
+  /* line 496, ../sass/styles.scss */
+  header .profileLogo .logoPlaceholder {
+    display: inline-block;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  /* line 500, ../sass/styles.scss */
+  header .profilePhoto {
+    float: left;
+    clear: both;
+    margin-right: 3%;
+    margin-top: 5%;
+  }
+
+  /* line 506, ../sass/styles.scss */
+  header .profileHeader {
+    text-align: left;
+    /*	margin-top: 7%;*/
+  }
+
+  /* line 510, ../sass/styles.scss */
+  .bannerContent {
+    max-width: 700px;
+    width: 50%;
+    top: 175px;
+  }
+
+  /* line 515, ../sass/styles.scss */
+  #news-cat-bar-wrapper > .flex-cell {
+    max-width: 300px;
+    margin: .2em;
+    padding: .2em;
+    display: inline-block;
+    /* non-flexbox browsers */
+    -webkit-flex: 0 1 30%;
+    flex: 0 1 30%;
+    text-align: center;
+    vertical-align: top;
+  }
+
+  /* line 525, ../sass/styles.scss */
+  .flex-cell {
+    margin: 10px;
+  }
+
+  /* line 528, ../sass/styles.scss */
+  .section1 .section1Title,
+  .section2 .section1Title {
+    text-align: center;
+  }
+
+  /* line 532, ../sass/styles.scss */
+  .section1 .sectionTitleRule,
+  .section2 .sectionTitleRule {
+    width: 100%;
+  }
+
+  /* line 536, ../sass/styles.scss */
+  .section1 .sectionTitleRule2,
+  .section2 .sectionTitleRule2 {
+    display: none;
+  }
+
+  /* line 540, ../sass/styles.scss */
+  .mainContent .section1 .section1Content {
+    display: block;
+    margin: 0% 0% 0% 20%;
+    font-family: sans-serif;
+    margin-top: 5%;
+    margin-bottom: 5%;
+  }
+
+  /* line 547, ../sass/styles.scss */
+  .mainContent .section2 {
+    clear: both;
+  }
+
+  /* line 550, ../sass/styles.scss */
+  .section2 .section2Content {
+    padding: 0px;
+    margin-left: 20%;
+    font-family: sans-serif;
+    margin-top: 5%;
+    margin-bottom: 5%;
+  }
+
+  /* line 557, ../sass/styles.scss */
+  .mainContent .externalResourcesNav {
+    margin-left: 20%;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    text-align: center;
+    padding-top: 0px;
+    clear: both;
+  }
+}
+/* Desktops and laptops
+ *
+ *
+ */
+@media only screen and (min-width: 1025px) {
+  /* Header */
+  /* line 573, ../sass/styles.scss */
+  header .profileLogo .logoPlaceholder {
+    /*Do something different with blue stripe?*/
+    	/*	float: left;
+    margin-bottom: 50px;*/
+  }
+
+  /* line 578, ../sass/styles.scss */
+  header .profilePhoto {
+    float: left;
+    clear: both;
+    margin-right: 3%;
+  }
+
+  /* line 583, ../sass/styles.scss */
+  header .profileHeader {
+    text-align: left;
+    /*padding-top: 10%;*/
+  }
+
+  /* line 587, ../sass/styles.scss */
+  header .socialNetworkNavBar .socialNetworkNav {
+    width: 74px;
+    height: 74px;
+    display: inline-block;
+    margin-right: 23px;
+  }
+
+  /* Main content sections */
+  /* line 594, ../sass/styles.scss */
+  .section1 .sectionTitleRule,
+  .section2 .sectionTitleRule {
+    width: 22.5%;
+  }
+
+  /* line 598, ../sass/styles.scss */
+  .mainContent .section1 .section1Content {
+    display: block;
+    margin-top: 0%;
+    margin-right: 0%;
+    margin-left: 26%;
+    margin-bottom: 0%;
+    font-family: sans-serif;
+  }
+
+  /* line 606, ../sass/styles.scss */
+  .mainContent .section2 {
+    clear: both;
+  }
+
+  /* line 609, ../sass/styles.scss */
+  .section2 .section2Content {
+    padding: 0px;
+    margin-left: 26%;
+    font-family: sans-serif;
+  }
+
+  /* line 614, ../sass/styles.scss */
+  .mainContent .externalResourcesNav {
+    margin-top: 40px;
+    margin-bottom: 40px;
+    text-align: center;
+    padding-top: 0px;
+    clear: both;
+  }
+
+  /* line 621, ../sass/styles.scss */
+  .mainContent .externalResourcesNav .externalResources {
+    width: 199px;
+    height: 48px;
+  }
+
+  /* Footer */
+  /* line 626, ../sass/styles.scss */
+  footer .footerDisclaimer {
+    float: left;
+    margin-left: 3%;
+    font-family: sans-serif;
+  }
+
+  /* line 631, ../sass/styles.scss */
+  footer .footerNote {
+    float: right;
+    margin-right: 3%;
+    font-family: sans-serif;
+  }
+}
+/* line 638, ../sass/styles.scss */
+.flex {
+  padding: 0;
+  text-align: center;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+}
+/* line 643, ../sass/styles.scss */
+.flex .flex-cell {
+  margin: .2em;
+  padding: .2em;
+  display: inline-block;
+  /* non-flexbox browsers */
+  -webkit-flex: 0 1 18%;
+  flex: 0 1 18%;
+  text-align: center;
+}

@@ -1,0 +1,30 @@
+=======================
+Output report structure
+=======================
+
+This topic defines various data output reports that the |exe_l| can produce. These reports are built
+in to the |exe_s| and are either always output with each simulation, such as inset chart, or reports
+that you can configure to be included with the output. All output reports can be found in the output
+directory of the working directory, for example, 1_Generic_Seattle_MultiNode\output.
+
+If the available output reports do not meet your needs, you can use custom reporters that are
+|modules| separate from the |exe_s| code. There are several provided in the |EMOD_s| GitHub
+repository or you can even write your own custom reporter to post- process and format data as you
+desire into a new output report. For more information, see :doc:`howto-custom-reporter`.
+
+
+.. none of the STI or HIV reports are included here.
+
+.. simulation-specific reports are included in the disease-specific docsets as an additional
+.. toctree appended to this shared topic
+
+.. toctree::
+    :maxdepth: 3
+    :titlesonly:
+
+    file-inset-chart
+    file-binned
+    file-demographic-summary
+    file-property
+    file-spatial
+

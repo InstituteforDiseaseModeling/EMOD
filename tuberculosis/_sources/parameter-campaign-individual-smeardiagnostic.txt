@@ -1,0 +1,22 @@
+===============
+SmearDiagnostic
+===============
+
+The **SmearDiagnostic** intervention class identifies individuals who have active, smear-positive
+TB. This intervention is similar to :doc:`parameter-campaign-individual-simplediagnostic`, which
+identifies infected individuals (regardless of disease state) and :doc:`parameter-campaign-individual-activediagnostic`,
+which identifies individuals who have active TB (regardless of disease
+presentation). If a smear-positive diagnosis is returned, an actual intervention is distributed, or
+an event is specified that may trigger another intervention when the event occurs.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-smeardiagnostic.csv
+
+.. literalinclude:: ../json/campaign-smeardiagnostic.json
+   :language: json

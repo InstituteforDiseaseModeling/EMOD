@@ -1,0 +1,22 @@
+===============
+OvipositionTrap
+===============
+
+The **OvipositionTrap** intervention class utilizes an oviposition trap to collect host-seeking mosquitoes, and
+is based upon imposing a mortality to egg hatching from oviposition. This is a node-targeted
+intervention and affects all mosquitoes living and feeding at a given node. This trap requires the
+use of individual mosquitoes in the simulation configuration file (**Vector_Sampling_Type** must be
+set to TRACK_ALL_VECTORS or SAMPLE_IND_VECTORS), rather than the cohort model. See :ref:`config-sampling`
+configuration parameters for more information.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-ovipositiontrap.csv
+
+.. literalinclude:: ../json/campaign-ovipositiontrap.json
+   :language: json

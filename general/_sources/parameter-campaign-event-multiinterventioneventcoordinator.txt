@@ -1,0 +1,34 @@
+=================================
+MultiInterventionEventCoordinator
+=================================
+
+.. only:: not malaria
+
+    The **MultiInterventionEventCoordinator** coordinator class distributes multiple individual-level or node-
+    level interventions at the same time to the same set of covered individuals or nodes. You cannot
+    specify a mix of individual-level and node-level interventions within the same event
+    coordinator. This enables correlated distributions, such as dosing of multiple drugs with
+    different regimens. See the following JSON example and table, which shows all available
+    parameters for this event coordinator.
+
+.. only:: malaria
+
+    The **MultiInterventionEventCoordinator** coordinator class distributes multiple individual-level or node-
+    level interventions at the same time to the same set of covered individuals or nodes. You cannot
+    specify a mix of individual-level and node-level interventions within the same event
+    coordinator. This enables correlated distributions, such as dosing of multiple drugs with
+    different regimens and pharmacokinetic pharmacodynamic models. See the following JSON example
+    and table, which shows all available parameters for this event coordinator.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-multiinterventioneventcoordinator.csv
+
+
+.. literalinclude:: ../json/campaign-multiinterventioneventcoordinator.json
+   :language: json

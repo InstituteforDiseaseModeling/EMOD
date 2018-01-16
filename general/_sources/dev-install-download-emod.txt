@@ -1,0 +1,84 @@
+========================================
+Download the |EMOD_s| source code
+========================================
+
+The |EMOD_s| source code is available on GitHub. The |EMOD_s| source includes the source code,
+Visual Studio solution, sample configuration files, as well as :term:`regression test` and other
+files needed to fully build and test the |exe_l|.
+
+You can have multiple versions of the |EMOD_s| source code in separate directories on your local
+computer. For example, you might want to download a new release of |EMOD_s| but also keep a previous
+release of the source. In the following examples, the source code is downloaded to the directory
+|EMOD_s| at C:/IDM, but you can save to any location you want.
+
+You can use a Git client of your choice to download from GitHub, however, these instructions show
+how to use Git GUI and Git Bash.
+
+Install Git GUI and Git Bash
+============================
+
+To install Git GUI and Git Bash, download a 64-bit version of Git from https://git-scm.com/download.
+On the **Select Components** installer window, you can select one or both of **Git GUI Here** for a
+GUI or **Git Bash Here** for a command window.
+
+Use Git GUI to download the |EMOD_s| source
+===========================================
+
+#.  Launch the Git GUI application and click **Clone Existing Repository**.
+
+#.  From the **Clone Existing Repository** window:
+
+    #.  In **Source Location**, enter https://github.com/InstituteforDiseaseModeling/EMOD
+
+    #.  In **Target Directory**, enter the location and target directory name: C:/IDM/EMOD
+
+    #.  Click **Clone**. Git GUI will create the directory and download the source code.
+#.  Close the Git GUI window when the download completes.
+
+Use Git Bash to download the |EMOD_s| source
+============================================
+
+.. note::
+
+    For a list of the Git Bash commands, you can type ``git help git`` from Git Bash, or ``git help
+    <command>`` for information about a specific command.
+
+#.  Launch the Git Bash application. From the command line:
+
+    #.  Go to the location where you want your copy of the |EMOD_s| source located::
+
+            cd C:\IDM
+
+    #.  Clone the repository from GitHub::
+
+            git clone https://github.com/InstituteforDiseaseModeling/EMOD
+
+Git Bash will copy the |EMOD_s| source to a directory named |EMOD_s| by default as a
+different directory name was not specified after the URL.
+
+Verify that all directories on https://github.com/InstituteforDiseaseModeling/EMOD are now reflected
+on your local clone of the repository. The table below describes each of the directories.
+
+.. csv-table::
+    :header: Directory, Description
+    :widths: 10, 50
+
+    Dependencies, "The ComputeClusterPack."
+    Eradication, "Eradication project. Main project for Visual Studio solution."
+    Regression, "Scripts to perform regression tests for modified code. It also includes a copy of the
+    Scenarios directory that contains simulation configuration, batch, input, and script files
+    that are associated with tutorials."
+    Scripts, "Scripts used in file creation."
+    UnitTest++, "Software for early release of additional regression testing."
+    baseReportLib, "Static library of classes used by |EMOD_s| built-in reports and custom reports."
+    cajun, "Cajun C++ API for :term:`JavaScript Object Notation (JSON)` project."
+    campaign, "Campaign project."
+    componentTests, "Tests that work in conjunction with the UnitTest++ directory."
+    interventions, "Interventions project."
+    rapidjson, "Rapid JSON project."
+    reporters, "Collection of custom reporter projects."
+    snappy, "Compression utilities used by the |EMOD_s| software."
+    utils, "Miscellaneous utilities."
+
+Additionally, the repository includes additional files, such as the Visual Studio solution file,
+SCons scripts, the README, and more.

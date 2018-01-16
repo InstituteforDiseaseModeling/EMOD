@@ -1,0 +1,2402 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Demographics parameters &mdash; Tuberculosis Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Tuberculosis Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Tuberculosis Model  documentation" href="index.html"/>
+        <link rel="up" title="EMOD parameter reference" href="parameter-overview.html"/>
+        <link rel="next" title="Configuration parameters" href="parameter-configuration.html"/>
+        <link rel="prev" title="EMOD parameter reference" href="parameter-overview.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Tuberculosis Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="file-inputs.html">Input data file structure</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Demographics parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="file-climate.html">Climate file structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="file-migration.html">Migration file structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="file-load-balancing.html">Load-balancing file structure</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file-outputs.html">Output report structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file-error-logging.html">Error and logging files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Tuberculosis Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">TB</a> &raquo;</li>
+      
+          <li><a href="parameter-overview.html">EMOD parameter reference</a> &raquo;</li>
+      
+    <li>Demographics parameters</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="demographics-parameters">
+<h1>Demographics parameters<a class="headerlink" href="#demographics-parameters" title="Permalink to this headline">¶</a></h1>
+<p>The parameters described in this reference section can be added to the <a class="reference internal" href="glossary.html#term-javascript-object-notation-json"><span class="xref std std-term">JavaScript Object
+Notation (JSON)</span></a> formatted demographics file to determine the demographics of the population within
+each geographic <a class="reference internal" href="glossary.html#term-node"><span class="xref std std-term">node</span></a> in a simulation. For example, the number of individuals and the
+distribution for age, gender, immunity, risk, and mortality. These parameters work closely with the
+<a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters in the <a class="reference internal" href="glossary.html#term-configuration-file"><span class="xref std std-term">configuration file</span></a>, which are simulation-wide and
+generally control whether certain events, such as births or deaths, are enabled in a simulation.</p>
+<p>Generally, you will download a demographics file and modify it to meet the needs of your
+simulation. Demographics files for several locations are available on the Institute for Disease Modeling (IDM)
+GitHub <a class="reference external" href="https://github.com/InstituteforDiseaseModeling/EMOD-InputData">EMOD-InputData</a> repository or
+you can use COMputational Platform Service (COMPS) to generate demographics and other <a class="reference internal" href="glossary.html#term-input-data-files"><span class="xref std std-term">input data files</span></a> for a particular region.
+By convention, these are named using the name of the region appended with &#8220;_demographics.json&#8221;, but
+you may name the file anything you like.</p>
+<p>Additionally, you can use more than one demographics file, with one serving as the base layer and
+the one or more others acting as overlays that override the values in the base layer. This can be
+helpful if you want to experiment with different values in the overlay without modifying your base
+file. For more information, see <a class="reference internal" href="howto-demographics-overlay.html"><span class="doc">Use demographics overlay files</span></a>.</p>
+<p>At least one demographics file is required for every simulation unless you set the parameter
+<strong>Enable_Demographics_Builtin</strong> to 1 (one) in the <a class="reference internal" href="glossary.html#term-configuration-file"><span class="xref std std-term">configuration file</span></a>. This setting does not
+represent a real location and is generally only used for testing and validating code pathways rather
+than actual modeling of disease.</p>
+<p>Demographics files are organized into four main sections: <strong>Metadata</strong>, <strong>NodeProperties</strong>,
+<strong>Defaults</strong>, and <strong>Nodes</strong>. The following example shows the skeletal format of a demographics file.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+     <span class="nt">&quot;Metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;DateCreated&quot;</span><span class="p">:</span> <span class="s2">&quot;dateTime&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;Tool&quot;</span><span class="p">:</span> <span class="s2">&quot;scriptUsedToGenerate&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;Author&quot;</span><span class="p">:</span> <span class="s2">&quot;author&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;IdReference&quot;</span><span class="p">:</span> <span class="s2">&quot;Gridded world grump2.5arcmin&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;NodeCount&quot;</span><span class="p">:</span> <span class="mi">2</span>
+     <span class="p">},</span>
+     <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[</span>
+          <span class="p">{}</span>
+     <span class="p">],</span>
+     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{},</span>
+          <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{},</span>
+          <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">{},</span>
+          <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{}</span>
+     <span class="p">},</span>
+     <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
+          <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+          <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{},</span>
+          <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{},</span>
+          <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">{},</span>
+          <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{}</span>
+     <span class="p">},</span> <span class="p">{</span>
+          <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+          <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{},</span>
+          <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{},</span>
+          <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">{},</span>
+          <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{}</span>
+     <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>All parameters except those in the <strong>Metadata</strong> and <strong>NodeProperties</strong> sections below can appear in
+either the <strong>Defaults</strong> section or the <strong>Nodes</strong> section of the demographics file. Parameters under
+<strong>Defaults</strong> will be applied to all nodes in the simulation. Parameters under <strong>Nodes</strong> will be
+applied to specific nodes, overriding the values in <strong>Defaults</strong> if they appear in both. Each node in
+the <strong>Nodes</strong> section is identified using a unique <strong>NodeID</strong>.</p>
+<p>The tables below contain only parameters available when using the tuberculosis <a class="reference internal" href="glossary.html#term-simulation-type"><span class="xref std std-term">simulation type</span></a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Parameters are case-sensitive. For Boolean parameters, set to 1 for true or 0 for false. JSON does not permit comments, but you can add &#8220;dummy&#8221; parameters to add contextual information to your files.</p>
+</div>
+<button class="collapse-table-button btn btn-info">Collapse all parameter tables</button><div class="contents local topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#metadata" id="id1">Metadata</a></li>
+<li><a class="reference internal" href="#nodeproperties-and-individualproperties" id="id2">NodeProperties and IndividualProperties</a><ul>
+<li><a class="reference internal" href="#transitions" id="id3">Transitions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nodeattributes" id="id4">NodeAttributes</a></li>
+<li><a class="reference internal" href="#individualattributes" id="id5">IndividualAttributes</a><ul>
+<li><a class="reference internal" href="#simple-distributions" id="id6">Simple distributions</a></li>
+<li><a class="reference internal" href="#complex-distributions" id="id7">Complex distributions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="metadata">
+<span id="demo-metadata"></span><h2><a class="toc-backref" href="#id1">Metadata</a><a class="headerlink" href="#metadata" title="Permalink to this headline">¶</a></h2>
+<p>Metadata provides information about data provenance. <strong>NodeCount</strong> and <strong>IdReference</strong> are the
+only parameters used by EMOD, but you are encouraged to included information for your
+own reference. For example, author, date created, tool used, and more are commonly included
+in the <strong>Metadata</strong> section. You can include any information you like here provided it is
+in valid JSON format.</p>
+<p>If you generate <a class="reference internal" href="glossary.html#term-input-data-files"><span class="xref std std-term">input data files</span></a> using COMPS, the following <strong>IdReference</strong> values are
+possible and indicate how the <strong>NodeID</strong> values are generated:</p>
+<dl class="docutils">
+<dt>Gridded world grump30arcsec</dt>
+<dd>Nodes are approximately square regions defined by a 30-arc second grid and the <strong>NodeID</strong> values
+are generated from the latitude and longitude of the northwest corner.</dd>
+<dt>Gridded world grump2.5arcmin</dt>
+<dd>Nodes are approximately square regions defined by a 2.5-arc minute grid and the <strong>NodeID</strong> values
+are generated from the latitude and longitude of the northwest corner.</dd>
+<dt>Gridded world grump1degree</dt>
+<dd>Nodes are approximately square regions defined by a 1-degree grid and the <strong>NodeID</strong> values are
+generated from the latitude and longitude of the northwest corner.</dd>
+</dl>
+<p>The algorithm for encoding latitude and longitude into a <strong>NodeID</strong> is as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">unsigned</span> <span class="nb">int</span> <span class="n">xpix</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">lon</span> <span class="o">+</span> <span class="mf">180.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">resolution</span><span class="p">)</span>
+<span class="n">unsigned</span> <span class="nb">int</span> <span class="n">ypix</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">lat</span> <span class="o">+</span> <span class="mf">90.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">resolution</span><span class="p">)</span>
+<span class="n">unsigned</span> <span class="nb">int</span> <span class="o">**</span><span class="n">NodeID</span><span class="o">**</span> <span class="o">=</span> <span class="p">(</span><span class="n">xpix</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">+</span> <span class="n">ypix</span> <span class="o">+</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>This generates a <strong>NodeID</strong> that is a 4-byte unsigned integer; the first two bytes represent the
+longitude of the node and the second two bytes represent the latitude. To reserve 0 to be used as a
+null value, 1 is added to the <strong>NodeID</strong> as part of the final calculation.</p>
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>IdReference</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The identifier for a simulation; all input data files used in a simulation must have the same <strong>IdReference</strong> value. The value must be greater than 0. If the input data files are generated using COMPS, the string that indicates the method used for generating the <strong>NodeID</strong>, the identifier used for each node in the simulation.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;IdReference&quot;</span><span class="p">:</span> <span class="s2">&quot;Gridded world grump30arcsec&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>NodeCount</td>
+<td>integer</td>
+<td>1</td>
+<td>Depends on available memory</td>
+<td>NA</td>
+<td>The number of nodes to expect in the input data files.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;NodeCount&quot;</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="nodeproperties-and-individualproperties">
+<span id="demo-properties"></span><h2><a class="toc-backref" href="#id2">NodeProperties and IndividualProperties</a><a class="headerlink" href="#nodeproperties-and-individualproperties" title="Permalink to this headline">¶</a></h2>
+<p>Node properties and individual properties are set similarly and share many of the same parameters.
+Properties can be thought of as tags that are assigned to nodes or individuals and can then be used
+to either target interventions to nodes or individuals with certain properties (or prevent them from
+being targeted). For example, you could define individual properties for disease risk and then
+target an intervention to only those at high risk. Similarly, you could define properties for node
+accessibility and set lower intervention coverage for nodes that are difficult to access. For more
+information on setting up properties, see <a class="reference internal" href="howto-demographics-heterogeneity.html"><span class="doc">Configure heterogeneity using individual and node properties</span></a>.</p>
+<p>The <strong>NodeProperties</strong> section is a top-level section at the same level as <strong>Defaults and **Nodes</strong>
+that contains parameters that assign properties to nodes in a simulation. The
+<strong>IndividualProperties</strong> section is under either <strong>Defaults</strong> or <strong>Nodes</strong> and contains parameters
+that assign properties to individuals in a simulation.</p>
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Age_Bin_Edges_In_Years</td>
+<td>array</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td><p class="first">An array of integers that represents the ages, in years, at which to demarcate the age groups for individuals. Used only with the <strong>Age_Bin</strong> property type. The first number must be 0, the last must be -1, and they must be listed in ascending order. Cannot be used with <strong>NodeProperties</strong>.</p>
+<p class="last">EMOD automatically create the individual property <strong>Age_Bin</strong> with values based on the bin edges using the format <strong>Age_Bin_Property_From_X_To_Y</strong>. These appear in the property reports and can be used to target campaign interventions using <strong>Property_Restrictions_Within_Node</strong>. See <a class="reference internal" href="howto-targeted-interventions.html"><span class="doc">Target interventions to nodes or groups</span></a> for more information.</p>
+</td>
+<td><p class="first">The following example creates three age groups: 0 to 5, older than 5 to 13, and older than 13 to the maximum age.</p>
+<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Age_Bin&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Age_Bin_Edges_In_Years&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">-1</span><span class="p">]</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>IndividualProperties</td>
+<td>array of objects</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>An array that contains parameters that add properties to individuals in a simulation. For example, you can define values for accessibility, age, geography, risk, and other properties and assign values to different individuals. alues.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="s2">&quot;ARTStaging&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="p">},</span> <span class="p">{</span>
+            <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Risk&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;High&quot;</span><span class="p">,</span> <span class="s2">&quot;Medium&quot;</span><span class="p">,</span> <span class="s2">&quot;Low&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Initial_Distribution</td>
+<td>array of floats</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>An array of floats that define the proportion of property values to assign to individuals or nodes at the beginning of the simulation and when new individuals are born. Their sum must equal 1 and the number of members in this array must match the number of members in <strong>Values</strong>. For Age_Bin property types, omit this parameter as the demographics file controls the age distribution.</td>
+<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+        <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]</span>
+        <span class="p">}]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;NONE&quot;</span><span class="p">,</span> <span class="s2">&quot;RECENT_SPRAY&quot;</span> <span class="p">],</span>
+            <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span> <span class="p">]</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>NodeProperties</td>
+<td>array of objects</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>An array that contains parameters that add properties to nodes in a simulation. For example, you can define values for intervention status, risk, and other properties and assign values to different nodes.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Risk&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HIGH&quot;</span><span class="p">,</span> <span class="s2">&quot;MEDIUM&quot;</span><span class="p">,</span> <span class="s2">&quot;LOW&quot;</span><span class="p">],</span>
+        <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Property</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td><p class="first">The individual or node property type for which you will assign arbitrary values to create groups. You can then move individuals or nodes into or out of different groups or target interventions to particular groups. Possible values are:</p>
+<dl class="last docutils">
+<dt>Age_Bin</dt>
+<dd>Assign individuals to age bins. Use with <strong>Age_Bin_Edges_In_Years</strong>. Cannot be used with <strong>NodeProperties</strong>.</dd>
+<dt>Accessibility</dt>
+<dd>Tag individuals or nodes based on their accessibility.</dd>
+<dt>Geographic</dt>
+<dd>Tag individuals or nodes based on geographic characteristics.</dd>
+<dt>HasActiveTB</dt>
+<dd>Tag individuals or nodes based on active TB status. Typically used only with HIV ART staging interventions.</dd>
+<dt>InterventionStatus</dt>
+<dd>Tag individuals or nodes based on intervention status, so that receiving an intervention can affect how other interventions are distributed. Use with <strong>Disqualifying_Properties</strong> and <strong>New_Property_Value</strong> in the campaign file.</dd>
+<dt>Place</dt>
+<dd>Tag individuals or nodes based on place.</dd>
+<dt>Risk</dt>
+<dd>Tag individuals or nodes based on disease risk.</dd>
+<dt>QualityofCare</dt>
+<dd>Tag individuals or nodes based on the quality of medical care.</dd>
+</dl>
+</td>
+<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Age_Bin&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Age_Bin_Edges_In_Years&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">-1</span> <span class="p">]</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span> <span class="s2">&quot;RECENT_SPRAY&quot;</span><span class="p">],</span>
+        <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Transitions</td>
+<td>array</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>An array that contains multiple JSON objects that each define how an individual transitions from one property value to another. See the transitions array table for information about the parameters to include in the <strong>Transitions</strong> object. For Age_Bin property types, set to an empty array, as individuals will transition to the next age bin based on the passing of time. Cannot be used with <strong>NodeProperties</strong>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
+                <span class="nt">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;High&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;To&quot;</span><span class="p">:</span> <span class="s2">&quot;Medium&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;At_Age&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Coverage&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="nt">&quot;Probability_Per_Timestep&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+                <span class="nt">&quot;Age_In_Years&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                <span class="nt">&quot;Timesteps_Until_Reversion&quot;</span><span class="p">:</span> <span class="mi">0</span>
+            <span class="p">},</span> <span class="p">{</span>
+                <span class="nt">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;Medium&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;To&quot;</span><span class="p">:</span> <span class="s2">&quot;Low&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;At_Age&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Coverage&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="nt">&quot;Probability_Per_Timestep&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+                <span class="nt">&quot;Age_In_Years&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+                <span class="nt">&quot;Timesteps_Until_Reversion&quot;</span><span class="p">:</span> <span class="mi">0</span>
+            <span class="p">}]</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>TransmissionMatrix</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td><p class="first">An object that contains <strong>Route</strong> and <strong>Matrix</strong> parameters that define how to scale the base infectivity from individuals with one property value to individuals with another. <strong>Route</strong> must be set to Contact and <strong>Matrix</strong> contains a <a class="reference internal" href="glossary.html#term-waifw-matrix"><span class="xref std std-term">WAIFW matrix</span></a> of the disease transmission multipliers. The rows and columns are in the same order that the property values were defined in <strong>Value</strong>.
+The rows represent the infectious individuals (the &#8220;whom&#8221;); the columns represent the susceptible individuals (the &#8220;who&#8221;).</p>
+<p class="last">This implements the HINT feature, which is available only in the generic simulation type. For more information, see <a class="reference internal" href="howto-hint.html"><span class="doc">Configure heterogeneous disease transmission</span></a>.
+<strong>Enable_Heterogeneous_Intranode_Transmission</strong> in the configuration file must be set to 1 (see <a class="reference internal" href="parameter-configuration.html#config-infectivity"><span class="std std-ref">Infectivity and transmission</span></a> parameters). Cannot be used with <strong>NodeProperties</strong>.</p>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;TransmissionMatrix&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Route&quot;</span><span class="p">:</span> <span class="s2">&quot;Contact&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Matrix&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+                    <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Values</td>
+<td>array of strings</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td><p class="first">An array of the user-defined values that can be assigned to individuals or nodes for this property. The order of the values corresponds to the order of the <strong>Initial_Distribution</strong> array.</p>
+<p class="last">You can have up to 125 values for the Geographic and InterventionStatus property types and up to 5 values for all other types. For Age_Bin property types, omit this parameter and use <strong>Age_Bin_Edges_In_Years</strong> instead.</p>
+</td>
+<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Low&quot;</span><span class="p">,</span> <span class="s2">&quot;Medium&quot;</span><span class="p">,</span> <span class="s2">&quot;High&quot;</span><span class="p">]</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;NONE&quot;</span><span class="p">,</span> <span class="s2">&quot;RECENT_SPRAY&quot;</span> <span class="p">],</span>
+            <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span> <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="transitions">
+<span id="demo-transitions"></span><h3><a class="toc-backref" href="#id3">Transitions</a><a class="headerlink" href="#transitions" title="Permalink to this headline">¶</a></h3>
+<p>The <strong>Transitions</strong> array under <strong>IndividualProperties</strong> section controls how individuals transition
+from one property value to another. It cannot be used with <strong>NodeProperties</strong>. Alternatively,
+similar transitions can be configured in the campaign file as the result of campaign events.</p>
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Age_In_Years</td>
+<td>float</td>
+<td>0</td>
+<td>125</td>
+<td>NA</td>
+<td>The age at which individuals are eligible to transition. Do not use when <strong>Type</strong> is set to At_Timestep. Required when <strong>Type</strong> is set to At_Age.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;At_Age&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Age_In_Years&quot;</span><span class="p">:</span> <span class="mi">10</span>
+        <span class="p">}]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Age_In_Years_Restriction</td>
+<td>JSON object</td>
+<td>0</td>
+<td>100</td>
+<td>3.40E+38</td>
+<td>The age when an individual is eligible to transition. <strong>Min</strong> is optional and <strong>Max</strong> is required. Do not use this with <strong>Type</strong> set to At_Age because it will conflict with other age parameters in <strong>Age_In_Years</strong>. This is required when <strong>Type</strong> is set to At_Timestep, though it can be empty for no age restriction.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;At_Timestep&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Age_In_Years_Restriction&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Min&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                <span class="nt">&quot;Max&quot;</span><span class="p">:</span> <span class="mi">40</span>
+            <span class="p">}</span>
+        <span class="p">}]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Coverage</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>The proportion of the population that EMOD will attempt to transition. The calculation used with <strong>Probability_Per_Timeset</strong> only uses the proportion of the population specified in <strong>Coverage</strong> to calculate the probability of an individual transitioning at a given time step. <strong>Coverage</strong> has no effect when the value is set to 1. Required when <strong>Type</strong> is set to either At_Age or At_Timestep.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Individual_Properties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;Bad&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;To&quot;</span><span class="p">:</span> <span class="s2">&quot;Good&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Coverage&quot;</span><span class="p">:</span> <span class="mf">0.5</span>
+        <span class="p">}]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>From</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The property value that an individual will transition from.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Individual_Properties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;Bad&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;To&quot;</span><span class="p">:</span> <span class="s2">&quot;Good&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Coverage&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+            <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;At_Timestep&quot;</span>
+        <span class="p">}]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Probability_Per_Timestep</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>NA</td>
+<td>The daily probability of an individual transitioning given the number of individuals remaining with the same property value. Required when <strong>Type</strong> is set to At_Age or At_Timestep.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Individual_Properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;Low&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;To&quot;</span><span class="p">:</span> <span class="s2">&quot;High&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Coverage&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
+            <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;At_Timestep&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Probability_Per_Timestep&quot;</span><span class="p">:</span> <span class="mf">0.25</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Timesteps_Until_Reversion</td>
+<td>integer</td>
+<td>0</td>
+<td>NA</td>
+<td>NA</td>
+<td>The number of time steps after the start of transitioning when individuals revert back to their original property value. The start of transitioning is specified by the <strong>Start</strong> parameter in <strong>Timestep_Restriction</strong>.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Individual_Properties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Timestep_Restriction&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Start&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+                <span class="nt">&quot;Duration&quot;</span><span class="p">:</span> <span class="mi">60</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;Timesteps_Until_Reversion&quot;</span><span class="p">:</span> <span class="mi">10</span>
+        <span class="p">}]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Timestep_Restriction</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The time step when transitioning starts and stops. Required when <strong>Type</strong> is set to either At_Age or At_Timestep. <strong>Start</strong> is required and <strong>Duration</strong> is optional.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Individual_Properties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Timestep_Restriction&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Start&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+                <span class="nt">&quot;Duration&quot;</span><span class="p">:</span> <span class="mi">60</span>
+            <span class="p">}</span>
+        <span class="p">}]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>To</td>
+<td>string</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>The property value an individual will transition to.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Individual_Properties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;Bad&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;To&quot;</span><span class="p">:</span> <span class="s2">&quot;Good&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Coverage&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+            <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;At_Timestep&quot;</span>
+        <span class="p">}]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Type</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The type of condition that starts transitioning individuals. Possible values are At_Age or At_Timestep. The other parameters you must set depend on the condition type set here.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Individual_Properties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;Bad&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;To&quot;</span><span class="p">:</span> <span class="s2">&quot;Good&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Coverage&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+            <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;At_Timestep&quot;</span>
+        <span class="p">}]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="nodeattributes">
+<span id="demo-nodeattributes"></span><h2><a class="toc-backref" href="#id4">NodeAttributes</a><a class="headerlink" href="#nodeattributes" title="Permalink to this headline">¶</a></h2>
+<p>The <strong>NodeAttributes</strong> section contains parameters that add or modify information
+regarding the location, migration, habitat, and population of node. Some <strong>NodeAttributes</strong>
+depend on values set in the configuration parameters.</p>
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Airport</td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Indicates whether or not the node has an airport for air migration from (not to) the node. If set to 1, <strong>Enable_Air_Migration</strong> in the configuration file must be set to 1 or migration will not occur (see <a class="reference internal" href="parameter-configuration.html#config-migration"><span class="std std-ref">Migration</span></a> parameters). Primarily used to turn off migration in a particular node.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Airport&quot;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Altitude</td>
+<td>float</td>
+<td>-3.40282e+038</td>
+<td>3.40282e+038</td>
+<td>0</td>
+<td>The altitude, in meters, for the node. Required, but only used when <strong>Climate_Model</strong> is set to CLIMATE_KOPPEN.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Altitude&quot;</span><span class="p">:</span> <span class="mi">250</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>BirthRate</td>
+<td>double</td>
+<td>0</td>
+<td>1</td>
+<td>0.00008715</td>
+<td>The birth rate, in births per person per day. In the configuration file, <strong>Enable_Birth</strong> must be set to 1 and <strong>Birth_Rate_Dependence</strong> will affect how this rate is used (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">21</span><span class="p">,</span>
+        <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;BirthRate&quot;</span><span class="p">:</span> <span class="mf">0.0001</span>
+        <span class="p">}</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>InitialPopulation</td>
+<td>integer</td>
+<td>0</td>
+<td>2.15E+0</td>
+<td>1000</td>
+<td>The number of people that will be populated into the node at the beginning of the simulation. You can scale this number using <strong>Base_Population_Scale_Factor</strong> in the configuration file (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+        <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;InitialPopulation&quot;</span><span class="p">:</span> <span class="mi">1000</span>
+        <span class="p">}</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Latitude</td>
+<td>float</td>
+<td>3.40282e+038</td>
+<td>-3.40282e+038</td>
+<td>-1</td>
+<td>Latitude of the node in decimal degrees. This can be used for several things, including determining infectiousness by latitude and defining the size of grid cells.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+        <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Latitude&quot;</span><span class="p">:</span> <span class="mf">12.4</span><span class="p">,</span>
+            <span class="nt">&quot;Longitude&quot;</span><span class="p">:</span> <span class="mf">9.35</span>
+        <span class="p">}</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Longitude</td>
+<td>float</td>
+<td>-3.40282e+38</td>
+<td>3.40282e+38</td>
+<td>-1</td>
+<td>Longitude of the node in decimal degrees. This can be used for several things, including defining the size of grid cells.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">254</span><span class="p">,</span>
+        <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Latitude&quot;</span><span class="p">:</span> <span class="mf">25.4</span><span class="p">,</span>
+            <span class="nt">&quot;Longitude&quot;</span><span class="p">:</span> <span class="mf">9.1</span>
+        <span class="p">}</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>NodeAttributes</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The structure that contains parameters that add or modify information regarding the location, migration, habitat, and population of a simulation. Some <strong>NodeAttributes</strong> depend on values set in the configuration parameters.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">1487548419</span><span class="p">,</span> 
+            <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Latitude&quot;</span><span class="p">:</span> <span class="mf">12.4208</span><span class="p">,</span> 
+                <span class="nt">&quot;Longitude&quot;</span><span class="p">:</span> <span class="mf">9.15417</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span> 
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Region</td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Indicates whether or not the node has a road network for regional migration from (not to) the node. If set to 1, <strong>Enable_Regional_Migration</strong> in the configuration file must be set to 1 or migration will not occur (see <a class="reference internal" href="parameter-configuration.html#config-migration"><span class="std std-ref">Migration</span></a> parameters). Primarily used to turn off migration in particular nodes.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
+         <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+         <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Region&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">}</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Seaport</td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Indicates whether or not the node is connected by sea migration from (not to) the node. If set to 1, <strong>Enable_Sea_Migration</strong> in the configuration file must be set to 1 or migration will not occur (see <a class="reference internal" href="parameter-configuration.html#config-migration"><span class="std std-ref">Migration</span></a> parameters). Primarily used to turn off migration in particular nodes.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">43</span><span class="p">,</span>
+        <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Seaport&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">}</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Urban</td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Indicates whether urban settings are enabled. Used only if  <strong>Enable_Demographics_Other</strong> is set to 1 and <strong>Birth_Rate_Dependence</strong> is set to INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE and required if  <strong>Enable_Demographics_Other</strong> is set to 1 in the configuration file (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Urban&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Zoonosis</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>The daily rate of zoonotic infection per individual. In the configuration file, <strong>Animal_Reservoir_Type</strong> must be set to ZOONOSIS_FROM_DEMOGRAPHICS to use this value (see <a class="reference internal" href="parameter-configuration.html#config-general-disease"><span class="std std-ref">General disease</span></a> parameters).</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Zoonosis&quot;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="individualattributes">
+<span id="demo-individualattributes"></span><h2><a class="toc-backref" href="#id5">IndividualAttributes</a><a class="headerlink" href="#individualattributes" title="Permalink to this headline">¶</a></h2>
+<p>The <strong>IndividualAttributes</strong> section contains parameters that initialize the distribution of
+attributes across individuals, such as the age or immunity. An initial value for an
+individual is a randomly selected value from a given distribution. These distributions can be
+configured using a simple flag system of three parameters or a complex system of
+many more parameters. The following table contains the parameters that can be used with either
+distribution system.</p>
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>IndividualAttributes</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The structure that contains parameters that add or modify the distribution of attributes across individuals in a simulation. For example, the age or immunity distribution. An initial value for an individual is a randomly selected value from a distribution. For example, if you use a uniform distribution to initialize age, the initial ages of individuals in the simulation will be evenly distributed between some minimum and maximum value.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;AgeDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nt">&quot;AgeDistribution1&quot;</span><span class="p">:</span> <span class="mi">25550</span><span class="p">,</span>
+            <span class="nt">&quot;AgeDistribution2&quot;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>PercentageChildren</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>NA</td>
+<td>The percentage of individuals in the node that are children. Set <strong>Minimum_Adult_Age_Years</strong> to determine the age at which individuals transition to adults.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span>
+        <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;PercentageChildren&quot;</span><span class="p">:</span> <span class="mf">0.7</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="simple-distributions">
+<span id="demo-simpledistro"></span><h3><a class="toc-backref" href="#id6">Simple distributions</a><a class="headerlink" href="#simple-distributions" title="Permalink to this headline">¶</a></h3>
+<p>Simple distributions are defined by three parameters where one is a flag for the distribution type
+and the other two are used to further define the distribution. For example, if you set the age flag
+to a uniform distribution, the initial ages of individuals in the simulation will be evenly
+distributed between some minimum and maximum value as defined by the other two parameters.</p>
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>AgeDistribution1</td>
+<td>float</td>
+<td>-3.40282e+038</td>
+<td>3.40282e+038</td>
+<td>0.000118</td>
+<td><p class="first">The first value, in days, in the age distribution, the meaning of which depends upon the value set in <strong>AgeDistributionFlag</strong>. The table below shows the flag value and corresponding distribution value.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">AgeDistributionFlag</th>
+<th class="head">AgeDistribution1</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>Age value to assign.</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>Minimum age for a uniform distribution.</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>Mean age for a Gaussian distribution.</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>Mean age for an exponential distribution.</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>Mean age for a Poisson distribution.</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>Mean age for a log normal distribution.</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>Proportion of time to return the value specified by <strong>AgeDistribution2</strong> for a bimodal distribution. Must be between 0 and 1.</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>Scale parameter for a Weibull distribution.</td>
+</tr>
+</tbody>
+</table>
+<p class="last"><strong>Age_Initialization_Distribution_Type</strong> in the configuration file must be set to DISTRIBUTION_SIMPLE (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;AgeDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;AgeDistribution1&quot;</span><span class="p">:</span> <span class="mi">25550</span><span class="p">,</span>
+        <span class="nt">&quot;AgeDistribution2&quot;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>AgeDistribution2</td>
+<td>float</td>
+<td>-3.40282e+038</td>
+<td>3.40282e+038</td>
+<td>0</td>
+<td><p class="first">The second value, in days, in the age distribution, the meaning of which depends upon the value set in <strong>AgeDistributionFlag</strong>. The table below shows the flag value and corresponding distribution value.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">AgeDistributionFlag</th>
+<th class="head">AgeDistribution2</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>NA, set to 0.</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>Maximum age for a uniform distribution.</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>Standard deviation in age for a Gaussian distribution.</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>NA, set to 0.</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>NA, set to 0.</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>Log (standard deviation) in age for a log normal distribution.</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>A positive value to be returned for a bimodal distribution. If the value is not positive, a value of 1 is returned.</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>Shape parameter for a Weibull distribution.</td>
+</tr>
+</tbody>
+</table>
+<p class="last"><strong>Age_Initialization_Distribution_Type</strong> in the configuration file must be set to DISTRIBUTION_SIMPLE (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;AgeDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;AgeDistribution1&quot;</span><span class="p">:</span> <span class="mi">25550</span><span class="p">,</span>
+        <span class="nt">&quot;AgeDistribution2&quot;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>AgeDistributionFlag</td>
+<td>integer</td>
+<td>0</td>
+<td>7</td>
+<td>3</td>
+<td><p class="first">The type of distribution to use for age. Possible values are:</p>
+<ul class="simple">
+<li>0 (Constant, everyone in the population is the same age.)</li>
+<li>1 (Uniform, ages are randomly drawn between a minimum and maximum value.)</li>
+<li>2 (Gaussian)</li>
+<li>3 (Exponential)</li>
+<li>4 (Poisson)</li>
+<li>5 (Log normal)</li>
+<li>6 (Bimodal)</li>
+<li>7 (Weibull)</li>
+</ul>
+<p class="last"><strong>Age_Initialization_Distribution_Type</strong> in the configuration file must be set to DISTRIBUTION_SIMPLE (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;AgeDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;AgeDistribution1&quot;</span><span class="p">:</span> <span class="mi">25550</span><span class="p">,</span>
+        <span class="nt">&quot;AgeDistribution2&quot;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>ImmunityDistribution1</td>
+<td>float</td>
+<td>-3.40282e+038</td>
+<td>3.40282e+038</td>
+<td>0</td>
+<td><p class="first">The first value in the immunity distribution, the meaning of which depends upon the value set in <strong>ImmunityDistributionFlag</strong>. <strong>Enable_Immunity</strong> in the configuration file must be set to 1. The table below shows the flag value and corresponding distribution value.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">ImmunityDistributionFlag</th>
+<th class="head">ImmunityDistribution1</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>Immunity value to assign.</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>Minimum immunity for a uniform distribution.</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>Mean immunity for a Gaussian distribution.</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>Mean immunity for an exponential distribution.</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>Mean immunity for a Poisson distribution.</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>Mean immunity for a log normal distribution.</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>Proportion of time to return the value specified by <strong>ImmunityyDistribution2</strong> for a bimodal distribution. Must be between 0 and 1.</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>Scale parameter for a Weibull distribution.</td>
+</tr>
+</tbody>
+</table>
+<p class="last">In the configuration file, <strong>Enable_Demographics_Other</strong> must be set to true (1) and <strong>Immunity_Initialization_Distribution_Type</strong> must be set to DISTRIBUTION_SIMPLE (see <a class="reference internal" href="parameter-configuration.html#config-immunity"><span class="std std-ref">Immunity</span></a> parameters).</p>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
+        <span class="nt">&quot;ImmunityDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+        <span class="nt">&quot;ImmunityDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="nt">&quot;ImmunityDistribution2&quot;</span><span class="p">:</span> <span class="mi">0</span> 
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>ImmunityDistribution2</td>
+<td>float</td>
+<td>-3.40282e+038</td>
+<td>3.40282e+038</td>
+<td>0</td>
+<td><p class="first">The second value in the distribution, the meaning of which depends upon the value set in <strong>ImmunityDistributionFlag</strong>. <strong>Enable_Immunity</strong> in the configuration file must be set to 1. The table below shows the flag value and corresponding distribution value.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">ImmunityDistributionFlag</th>
+<th class="head">ImmunityDistribution2</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>NA, set to 0.</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>Maximum immunity for a uniform distribution.</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>Standard deviation in immunity for a Gaussian distribution.</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>NA, set to 0.</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>NA, set to 0.</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>Log (standard deviation) in immunity for a log normal distribution.</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>A positive value to be returned for a bimodal distribution. If the value is not positive, a value of 1 is returned.</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>Shape parameter for a Weibull distribution.</td>
+</tr>
+</tbody>
+</table>
+<p class="last">In the configuration file, <strong>Enable_Demographics_Other</strong> must be set to true (1) and <strong>Immunity_Initialization_Distribution_Type</strong> must be set to DISTRIBUTION_SIMPLE (see <a class="reference internal" href="parameter-configuration.html#config-immunity"><span class="std std-ref">Immunity</span></a> parameters).</p>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
+        <span class="nt">&quot;ImmunityDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+        <span class="nt">&quot;ImmunityDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="nt">&quot;ImmunityDistribution2&quot;</span><span class="p">:</span> <span class="mi">0</span> 
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>ImmunityDistributionFlag</td>
+<td>integer</td>
+<td>0</td>
+<td>7</td>
+<td>0</td>
+<td><p class="first">The type of distribution to use for immunity. <strong>Enable_Immunity</strong> in the configuration file must be set to 1. Possible values are:</p>
+<ul class="simple">
+<li>0 (Constant, everyone in the population has the same immunity.)</li>
+<li>1 (Uniform, immunity is randomly drawn between a minimum and maximum value.)</li>
+<li>2 (Gaussian)</li>
+<li>3 (Exponential)</li>
+<li>4 (Poisson)</li>
+<li>5 (Log normal)</li>
+<li>6 (Bimodal)</li>
+<li>7 (Weibull)</li>
+</ul>
+<p class="last">In the configuration file, <strong>Enable_Demographics_Other</strong> must be set to true (1) and  <strong>Immunity_Initialization_Distribution_Type</strong> must be set to DISTRIBUTION_SIMPLE (see <a class="reference internal" href="parameter-configuration.html#config-immunity"><span class="std std-ref">Immunity</span></a> parameters).</p>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
+        <span class="nt">&quot;ImmunityDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+        <span class="nt">&quot;ImmunityDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="nt">&quot;ImmunityDistribution2&quot;</span><span class="p">:</span> <span class="mi">0</span> 
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>MigrationHeterogeneityDistribution1</td>
+<td>float</td>
+<td>-3.40282e+38</td>
+<td>3.40282e+38</td>
+<td>1</td>
+<td><p class="first">The first value in the migration heterogeneity distribution, the meaning of which depends upon the value set in <strong>MigrationHeterogeneityFlag</strong>. The table below shows the flag value and corresponding distribution value.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">MigrationHeterogeneityDistributionFlag</th>
+<th class="head">MigrationHeterogeneityDistribution1</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>Migration heterogeneity value to assign.</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>Minimum migration heterogeneity for a uniform distribution.</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>Mean migration heterogeneity for a Gaussian distribution.</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>Mean migration heterogeneity for an exponential distribution.</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>Mean migration heterogeneity for a Poisson distribution.</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>Mean migration heterogeneity for a log normal distribution.</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>Proportion of time to return the value specified by <strong>MigrationHeterogeneityDistribution2</strong> for a bimodal distribution. Must be between 0 and 1.</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>Scale parameter for a Weibull distribution.</td>
+</tr>
+</tbody>
+</table>
+<p class="last"><strong>Enable_Migration_Heterogeneity</strong> in the configuration file must be set to 1 (see <a class="reference internal" href="parameter-configuration.html#config-migration"><span class="std std-ref">Migration</span></a> parameters).</p>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;MigrationHeterogeneityDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+        <span class="nt">&quot;MigrationHeterogeneityDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="nt">&quot;MigrationHeterogeneityDistribution2&quot;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>MigrationHeterogeneityDistribution2</td>
+<td>float</td>
+<td>-3.40282e+038</td>
+<td>3.40282e+038</td>
+<td>0</td>
+<td><p class="first">The second value in the distribution, the meaning of which depends upon the value set in <strong>MigrationHeterogeneityDistributionFlag</strong>. The table below shows the flag value and corresponding distribution value.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">MigrationHeterogeneityDistributionFlag</th>
+<th class="head">MigrationHeterogeneityDistribution2</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>NA, set to 0.</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>Maximum migration heterogeneity for a uniform distribution.</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>Standard deviation in migration heterogeneity for a Gaussian distribution.</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>NA, set to 0.</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>NA, set to 0.</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>Log (standard deviation) in migration heterogeneity for a log normal distribution.</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>A positive value to be returned for a bimodal distribution. If the value is not positive, a value of 1 is returned.</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>Shape parameter for a Weibull distribution.</td>
+</tr>
+</tbody>
+</table>
+<p class="last"><strong>Enable_Migration_Heterogeneity</strong> in the configuration file must be set to 1 (see <a class="reference internal" href="parameter-configuration.html#config-migration"><span class="std std-ref">Migration</span></a> parameters).</p>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;MigrationHeterogeneityDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+        <span class="nt">&quot;MigrationHeterogeneityDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="nt">&quot;MigrationHeterogeneityDistribution2&quot;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>MigrationHeterogeneityDistributionFlag</td>
+<td>integer</td>
+<td>0</td>
+<td>7</td>
+<td>0</td>
+<td><p class="first">The type of distribution to use for migration heterogeneity. Possible values are:</p>
+<ul class="simple">
+<li>0 (Constant, everyone in the population has the same migration value.)</li>
+<li>1 (Uniform, migration values are randomly drawn between a minimum and maximum value.)</li>
+<li>2 (Gaussian)</li>
+<li>3 (Exponential)</li>
+<li>4 (Poisson)</li>
+<li>5 (Log normal)</li>
+<li>6 (Bimodal)</li>
+<li>7 (Weibull)</li>
+</ul>
+<p class="last"><strong>Enable_Migration_Heterogeneity</strong> in the configuration file must be set to 1 (see <a class="reference internal" href="parameter-configuration.html#config-migration"><span class="std std-ref">Migration</span></a> parameters).</p>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;MigrationHeterogeneityDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+        <span class="nt">&quot;MigrationHeterogeneityDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="nt">&quot;MigrationHeterogeneityDistribution2&quot;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>PrevalenceDistribution1</td>
+<td>float</td>
+<td>-3.40282e+038</td>
+<td>3.40282e+038</td>
+<td>1</td>
+<td><p class="first">The first value in the prevalence distribution, the meaning of which depends upon the value set in <strong>PrevalenceDistributionFlag</strong>. The table below shows the flag value and corresponding distribution value.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">PrevalenceDistributionFlag</th>
+<th class="head">PrevalenceDistribution1</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>Prevalence value to assign.</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>Minimum prevalence for a uniform distribution.</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>Mean prevalence for a Gaussian distribution.</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>Mean prevalence for an exponential distribution.</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>Mean prevalence for a Poisson distribution.</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>Mean prevalence for a log normal distribution.</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>Proportion of time to return the value specified by <strong>PrevalenceDistribution2</strong> for a bimodal distribution. Must be between 0 and 1.</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>Scale parameter for a Weibull distribution.</td>
+</tr>
+</tbody>
+</table>
+<p class="last"><strong>Enable_Demographics_Other</strong> must be set to 1 in the configuration file (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
+        <span class="nt">&quot;PrevalenceDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+        <span class="nt">&quot;PrevalenceDistribution1&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> 
+        <span class="nt">&quot;PrevalenceDistribution2&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
+    <span class="p">}</span>
+<span class="p">}</span> 
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>PrevalenceDistribution2</td>
+<td>float</td>
+<td>-3.40282e+038</td>
+<td>3.40282e+038</td>
+<td>0</td>
+<td><p class="first">The second value in the distribution, the meaning of which depends upon the value set in <strong>PrevalenceDistributionFlag</strong>. The table below shows the flag value and corresponding distribution value.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">PrevalenceDistributionFlag</th>
+<th class="head">PrevalenceDistribution2</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>NA, set to 0.</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>Maximum prevalence for a uniform distribution.</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>Standard deviation in prevalence for a Gaussian distribution.</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>NA, set to 0.</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>NA, set to 0.</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>Log (standard deviation) in prevalance for a log normal distribution.</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>A positive value to be returned for a bimodal distribution. If the value is not positive, a value of 1 is returned.</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>Shape parameter for a Weibull distribution.</td>
+</tr>
+</tbody>
+</table>
+<p class="last"><strong>Enable_Demographics_Other</strong> must be set to 1 in the configuration file (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
+        <span class="nt">&quot;PrevalenceDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+        <span class="nt">&quot;PrevalenceDistribution1&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> 
+        <span class="nt">&quot;PrevalenceDistribution2&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
+    <span class="p">}</span>
+<span class="p">}</span> 
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>PrevalenceDistributionFlag</td>
+<td>integer</td>
+<td>0</td>
+<td>7</td>
+<td>0</td>
+<td><p class="first">The type of distribution to use for prevalence.  Possible values are:</p>
+<ul class="simple">
+<li>0 (Constant, everyone in the population has the same prevalence.)</li>
+<li>1 (Uniform, prevalence is randomly drawn between a minimum and maximum value.)</li>
+<li>2 (Gaussian)</li>
+<li>3 (Exponential)</li>
+<li>4 (Poisson)</li>
+<li>5 (Log normal)</li>
+<li>6 (Bimodal)</li>
+<li>7 (Weibull)</li>
+</ul>
+<p class="last"><strong>Enable_Demographics_Other</strong> must be set to 1 in the configuration file (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
+        <span class="nt">&quot;PrevalenceDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+        <span class="nt">&quot;PrevalenceDistribution1&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> 
+        <span class="nt">&quot;PrevalenceDistribution2&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
+    <span class="p">}</span>
+<span class="p">}</span> 
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>RiskDistribution1</td>
+<td>float</td>
+<td>-3.40282e+038</td>
+<td>3.40282e+038</td>
+<td>0</td>
+<td><p class="first">The first value in the risk distribution, the meaning of which depends upon the value set in <strong>RiskDistributionFlag</strong>. The table below shows the flag value and corresponding distribution value.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">RiskDistributionFlag</th>
+<th class="head">RiskDistribution1</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>Risk value to assign.</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>Minimum risk for a uniform distribution.</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>Mean risk for a Gaussian distribution.</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>Mean risk for an exponential distribution.</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>Mean risk for a Poisson distribution.</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>Mean risk for a log normal distribution.</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>Proportion of time to return the value specified by <strong>RiskDistribution2</strong> for a bimodal distribution. Must be between 0 and 1.</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>Scale parameter for a Weibull distribution.</td>
+</tr>
+</tbody>
+</table>
+<p class="last"><strong>Enable_Demographics_Other</strong> must be set to 1 in the configuration file (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
+        <span class="nt">&quot;RiskDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+        <span class="nt">&quot;RiskDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="nt">&quot;RiskDistribution2&quot;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>RiskDistribution2</td>
+<td>float</td>
+<td>-3.40282e+038</td>
+<td>3.40282e+038</td>
+<td>0</td>
+<td><p class="first">The second value in the distribution, the meaning of which depends upon the value set in <strong>RiskDistributionFlag</strong>. The table below shows the flag value and corresponding distribution value.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">RiskDistributionFlag</th>
+<th class="head">RiskDistribution2</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>NA, set to 0.</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>Maximum risk for a uniform distribution.</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>Standard deviation in risk for a Gaussian distribution.</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>NA, set to 0.</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>NA, set to 0.</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>Log (standard deviation) in risk for a log normal distribution.</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>A positive value to be returned for a bimodal distribution. If the value is not positive, a value of 1 is returned.</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>Shape parameter for a Weibull distribution.</td>
+</tr>
+</tbody>
+</table>
+<p class="last"><strong>Enable_Demographics_Other</strong> must be set to 1 in the configuration file (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
+        <span class="nt">&quot;RiskDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+        <span class="nt">&quot;RiskDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="nt">&quot;RiskDistribution2&quot;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>RiskDistributionFlag</td>
+<td>integer</td>
+<td>0</td>
+<td>7</td>
+<td>0</td>
+<td><p class="first">The type of distribution to use for risk.  Possible values are:</p>
+<ul class="simple">
+<li>0 (Constant, everyone in the population has the same risk.)</li>
+<li>1 (Uniform, risk is randomly drawn between a minimum and maximum value.)</li>
+<li>2 (Gaussian)</li>
+<li>3 (Exponential)</li>
+<li>4 (Poisson)</li>
+<li>5 (Log normal)</li>
+<li>6 (Bimodal)</li>
+<li>7 (Weibull)</li>
+</ul>
+<p class="last"><strong>Enable_Demographics_Other</strong> must be set to 1 (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
+        <span class="nt">&quot;RiskDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+        <span class="nt">&quot;RiskDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="nt">&quot;RiskDistribution2&quot;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="complex-distributions">
+<span id="demo-complexdistro"></span><h3><a class="toc-backref" href="#id7">Complex distributions</a><a class="headerlink" href="#complex-distributions" title="Permalink to this headline">¶</a></h3>
+<p>Complex distributions are more effort to configure, but are useful for representing real-world data
+where the distribution does not fit a standard. Individual attribute values are drawn from a piecewise
+linear distribution. The distribution is configured using arrays of axes (such as gender or age) and
+values at points along each of these axes. This allows you to have different distributions for
+different groups in the population.</p>
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="toggle-table docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>AgeDistribution</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The structure defining a complex age distribution. <strong>Age_Initialization_Distribution_Type</strong> in the configuration file must be set to DISTRIBUTION_COMPLEX.</td>
+<td><p class="first">The following example shows at age distribution in which 25% of individuals are under age 5, 50% are between 5 and 20, and 25% are between 20 and 35.</p>
+<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;AgeDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;ResultUnits&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;ResultScaleFactor&quot;</span><span class="p">:</span> <span class="mi">365</span><span class="p">,</span>
+            <span class="nt">&quot;ResultValues&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="nt">&quot;DistributionValues&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">35</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>AxisNames</td>
+<td>array of strings</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td><p class="first">An array of the names used for each axis of a complex distribution. The list below shows the axis names to use (in the order given) for each of the distribution types:</p>
+<dl class="last docutils">
+<dt>MortalityDistribution</dt>
+<dd>[&#8220;gender&#8221;, &#8220;age&#8221;] <strong>Death_Rate_Dependence</strong> in the configuration file must be set to NONDISEASE_MORTALITTY_BY_AGE_AND_GENDER (see <a class="reference internal" href="parameter-configuration.html#config-mortality"><span class="std std-ref">Mortality and survival</span></a> parameters).</dd>
+<dt>MortalityDistributionMale</dt>
+<dd>[&#8220;age&#8221;, &#8220;year&#8221;] <strong>Death_Rate_Dependence</strong> must be set to NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER (see <a class="reference internal" href="parameter-configuration.html#config-mortality"><span class="std std-ref">Mortality and survival</span></a> parameters).</dd>
+<dt>MortalityDistributionFemale</dt>
+<dd>[&#8220;age&#8221;, &#8220;year&#8221;] <strong>Death_Rate_Dependence</strong> must be set to NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER (see <a class="reference internal" href="parameter-configuration.html#config-mortality"><span class="std std-ref">Mortality and survival</span></a> parameters).</dd>
+<dt>FertilityDistribution</dt>
+<dd><p class="first">Two options are available:</p>
+<ul class="last simple">
+<li>[&#8220;urban&#8221;, &#8220;age&#8221;] <strong>Birth_Rate_Dependence</strong> in the configuratIon file must be set to INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</li>
+<li>[&#8220;age&#8221;, &#8220;year&#8221;] <strong>Birth_Rate_Dependence</strong> must be set to INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</li>
+</ul>
+</dd>
+<dt>ImmunityDistribution</dt>
+<dd>[&#8220;age&#8221;]</dd>
+<dt>AgeDistribution</dt>
+<dd>No axes.</dd>
+</dl>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisUnits&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;male=0,female=1&quot;</span><span class="p">,</span> <span class="s2">&quot;years&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisScaleFactors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">365</span><span class="p">],</span>
+            <span class="nt">&quot;NumPopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="nt">&quot;PopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;ResultUnits&quot;</span><span class="p">:</span> <span class="s2">&quot;annual deaths per 1000 individuals&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;ResultScaleFactor&quot;</span><span class="p">:</span> <span class="mf">2.739726027397e-06</span><span class="p">,</span>
+            <span class="nt">&quot;ResultValues&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>AxisScaleFactors</td>
+<td>array of floats</td>
+<td>3.40282e+038</td>
+<td>-3.40282e+038</td>
+<td>1</td>
+<td>A list of the scale factors used to convert axis units to data measurements in a complex distribution. For example, 365 to convert daily mortality to annual mortality. The array must contain one factor for each axis.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisUnits&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;male=0,female=1&quot;</span><span class="p">,</span> <span class="s2">&quot;years&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisScaleFactors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">365</span><span class="p">],</span>
+            <span class="nt">&quot;NumPopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="nt">&quot;PopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;ResultUnits&quot;</span><span class="p">:</span> <span class="s2">&quot;annual deaths per 1000 individuals&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;ResultScaleFactor&quot;</span><span class="p">:</span> <span class="mf">2.739726027397e-06</span><span class="p">,</span>
+            <span class="nt">&quot;ResultValues&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>AxisUnits</td>
+<td>array of floats</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>1</td>
+<td>An array of the scale factors to use to convert the units used for the axes into days. EMOD does not use this value; it is only informational.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">],</span> 
+            <span class="nt">&quot;AxisUnits&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;male=0,female=1&quot;</span><span class="p">,</span> <span class="s2">&quot;years&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisScaleFactors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">365</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>DistributionValues</td>
+<td>array of floats</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>An array of values between 0 and 1 listed in ascending order that defines a complex age distribution. Each value represents the proportion of the population below that age and the difference between two successive values is the proportion of the population in the age bin defined in <strong>ResultValues</strong>. <strong>Age_Initialization_Distribution_Type</strong> in the configuration file must be set to DISTRIBUTION_COMPLEX (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</td>
+<td><p class="first">The following example shows at age distribution in which 25% of individuals are under age 5, 50% are between 5 and 20, and 25% are between 20 and 35.</p>
+<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;AgeDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;ResultUnits&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span> 
+            <span class="nt">&quot;ResultScaleFactor&quot;</span><span class="p">:</span> <span class="mi">365</span><span class="p">,</span> 
+            <span class="nt">&quot;AxisScaleFactors&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
+            <span class="nt">&quot;DistributionValues&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="nt">&quot;ResultValues&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">35</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>FertilityDistribution</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The distribution of the fertility rate in the population. <strong>Enable_Birth</strong> in the configuration file must be set to 1 (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;FertilityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;NumDistributionAxes&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;urban&quot;</span><span class="p">,</span> <span class="s2">&quot;XXX&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisUnits&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;rural=0, urban=1&quot;</span><span class="p">,</span> <span class="s2">&quot;years&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisScaleFactors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">365</span><span class="p">],</span>
+            <span class="nt">&quot;NumPopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span>
+            <span class="nt">&quot;PopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">49</span><span class="p">]</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;ResultUnits&quot;</span><span class="p">:</span> <span class="s2">&quot;annual births per 1000 individuals&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;ResultScaleFactor&quot;</span><span class="p">:</span> <span class="mf">0.000002739726027397</span><span class="p">,</span>
+            <span class="nt">&quot;ResultValues&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">28.4</span><span class="p">,</span> <span class="mf">190.3</span><span class="p">,</span> <span class="mf">222.4</span><span class="p">,</span> <span class="mf">155.4</span><span class="p">,</span> <span class="mi">68</span><span class="p">,</span> <span class="mf">21.9</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">28.4</span><span class="p">,</span> <span class="mf">190.3</span><span class="p">,</span> <span class="mf">222.4</span><span class="p">,</span> <span class="mf">155.4</span><span class="p">,</span> <span class="mi">68</span><span class="p">,</span> <span class="mf">21.9</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>ImmunityDistribution</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The structure defining a complex immunity distribution. <strong>Immunity_Initialization_Distribution_Type</strong> in the configuration file must be set to DISTRIBUTION_COMPLEX (see <a class="reference internal" href="parameter-configuration.html#config-immunity"><span class="std std-ref">Immunity</span></a> parameters).</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;ImmunityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisUnits&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisScaleFactors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">365</span><span class="p">],</span>
+            <span class="nt">&quot;NumPopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="nt">&quot;PopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;ResultScaleFactor&quot;</span><span class="p">:</span> <span class="mf">3.6952</span><span class="p">,</span>
+            <span class="nt">&quot;ResultValues&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>MortalityDistribution</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td><p class="first">The distribution of non-disease mortality for a population. <strong>Death_Rate_Dependence</strong> in the configuration file must be set to NONDISEASE_MORTALITY_BY_AGE_AND_GENDER or NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER (see <a class="reference internal" href="parameter-configuration.html#config-mortality"><span class="std std-ref">Mortality and survival</span></a> parameters).</p>
+<div class="last admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Mortality is sampled every 30 days. To correctly attribute neonatal deaths to days 0-30, you must indicate that the threshold for the first age group in <strong>PopulationGroups</strong> is less than 30 days.</p>
+</div>
+</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;AxisScaleFactors&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;NumDistributionAxes&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="nt">&quot;NumPopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;PopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span>
+                    <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+                <span class="p">],</span>
+                <span class="p">[</span>
+                    <span class="mf">0.0</span><span class="p">,</span> <span class="mf">29.99</span><span class="p">,</span> <span class="mi">365</span><span class="p">,</span> <span class="mi">1826</span>
+                <span class="p">]</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;ResultScaleFactor&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;ResultValues&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span>
+                    <span class="mf">0.0016</span><span class="p">,</span> <span class="mf">0.000107</span><span class="p">,</span> <span class="mf">6.3e-05</span><span class="p">,</span> <span class="mf">100.0</span>
+                <span class="p">],</span>
+                <span class="p">[</span>
+                    <span class="mf">0.0016</span><span class="p">,</span> <span class="mf">0.000107</span><span class="p">,</span> <span class="mf">6.3e-05</span><span class="p">,</span> <span class="mf">100.0</span>
+                <span class="p">]</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>NumDistributionAxes</td>
+<td>integer</td>
+<td>1</td>
+<td>NA</td>
+<td>NA</td>
+<td>The number of axes to use for a complex distribution. EMOD does not use this value; it is only informational.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;NumDistributionAxes&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisScaleFactors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">365</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>NumPopulationGroups</td>
+<td>array of integers</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>An array of population groupings for each independent variable for a complex distribution. This variable defines the number of columns for each row in the population group table. The number of values in the array is often two, representing the values for gender and number of age bins. EMOD does not use this value; it is only informational.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisUnits&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;male=0,female=1&quot;</span><span class="p">,</span> <span class="s2">&quot;years&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisScaleFactors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">365</span><span class="p">],</span>
+            <span class="nt">&quot;NumPopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="nt">&quot;PopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;ResultUnits&quot;</span><span class="p">:</span> <span class="s2">&quot;annual deaths per 1000 individuals&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;ResultScaleFactor&quot;</span><span class="p">:</span> <span class="mf">2.739726027397e-06</span><span class="p">,</span>
+            <span class="nt">&quot;ResultValues&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>PopulationGroups</td>
+<td>matrix of integers</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td><p class="first">An array in which each row represents one of the distribution axes and contains the values that the independent variable can take. The values must be listed in ascending order and each defines the left edge of the bin.</p>
+<div class="last admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Mortality is sampled every 30 days. To correctly attribute neonatal deaths to days 0-30, you must indicate that the threshold for the first age group in <strong>PopulationGroups</strong> is less than 30 days.</p>
+</div>
+</td>
+<td><p class="first">The following example configures relatively high infant mortality and lower mortality at ages 10 and 40, with everyone dead by age 120.</p>
+<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisUnits&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;male=0,female=1&quot;</span><span class="p">,</span> <span class="s2">&quot;years&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisScaleFactors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">365</span><span class="p">],</span>
+            <span class="nt">&quot;NumPopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="nt">&quot;PopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">120</span><span class="p">]</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;ResultUnits&quot;</span><span class="p">:</span> <span class="s2">&quot;annual deaths per 1000 individuals&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;ResultScaleFactor&quot;</span><span class="p">:</span> <span class="mf">2.739726027397e-06</span><span class="p">,</span>
+            <span class="nt">&quot;ResultValues&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mf">51.6</span><span class="p">,</span> <span class="mf">3.7</span><span class="p">,</span> <span class="mf">5.3</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+                <span class="p">[</span><span class="mf">60.1</span><span class="p">,</span> <span class="mf">4.1</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>ResultScaleFactor</td>
+<td>float</td>
+<td>-3.40282e+038</td>
+<td>3.40282e+038</td>
+<td>1</td>
+<td>The scale factor used to convert <strong>ResultUnits</strong> to number of births, deaths, or another variable per individual per day.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;AgeDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;AxisScaleFactors&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
+            <span class="nt">&quot;DistributionValues&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mf">0.99</span><span class="p">,</span>
+                <span class="mf">1.0</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;ResultScaleFactor&quot;</span><span class="p">:</span> <span class="mi">365</span><span class="p">,</span>
+            <span class="nt">&quot;ResultUnits&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;ResultValues&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mf">0.0027</span><span class="p">,</span>
+                <span class="mf">0.0027</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>ResultUnits</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>A string that indicates the units used for the Results parameters of a complex distribution. EMOD does not use this value; it is only informational.</td>
+<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;NumPopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="nt">&quot;PopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;ResultUnits&quot;</span><span class="p">:</span> <span class="s2">&quot;annual deaths per 1000 individuals&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;ResultScaleFactor&quot;</span><span class="p">:</span> <span class="mf">2.739726027397e-06</span><span class="p">,</span>
+            <span class="nt">&quot;ResultValues&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>ResultValues</td>
+<td>array of floats</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td><p class="first">An array that contains floats in the units set by <strong>ResultUnits</strong>.</p>
+<p>For age distributions, it lists in ascending order the ages at which to bin the population. The corresponding values in <strong>DistributionValues</strong> represent the proportion of the population that is below that age. If the first member of the array is non-zero, the first bin is defined as those with that exact value (EMOD does not assume the bins start at zero).</p>
+<p class="last">For all other distributions, an array in which each row represents the values for a combination of axes. For example, a mortality distribution that includes both gender and age axes will have a row for males and a row for females that each contain the mortality rate at various ages set in <strong>PopulationGroups</strong>.</p>
+</td>
+<td><p class="first">The following example shows an age distribution in which 10% of individuals are newborn, 25% are under age 5, 50% are between 5 and 20, and 25% are between 20 and 35.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;AgeDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;DistributionValues&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="nt">&quot;ResultValues&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">35</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The following example configures relatively high infant mortality and lower mortality at ages 10 and 40, with everyone dead by age 120.</p>
+<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisUnits&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;male=0,female=1&quot;</span><span class="p">,</span> <span class="s2">&quot;years&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;AxisScaleFactors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">365</span><span class="p">],</span>
+            <span class="nt">&quot;NumPopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="nt">&quot;PopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">120</span><span class="p">]</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;ResultUnits&quot;</span><span class="p">:</span> <span class="s2">&quot;annual deaths per 1000 individuals&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;ResultScaleFactor&quot;</span><span class="p">:</span> <span class="mf">2.739726027397e-06</span><span class="p">,</span>
+            <span class="nt">&quot;ResultValues&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mf">51.6</span><span class="p">,</span> <span class="mf">3.7</span><span class="p">,</span> <span class="mf">5.3</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+                <span class="p">[</span><span class="mf">60.1</span><span class="p">,</span> <span class="mf">4.1</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="parameter-configuration.html" class="btn btn-neutral float-right" title="Configuration parameters" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="parameter-overview.html" class="btn btn-neutral" title="EMOD parameter reference" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

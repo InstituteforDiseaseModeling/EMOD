@@ -1,0 +1,275 @@
+========================
+Configuration parameters
+========================
+
+.. include:: ../reuse/config-param-intro.txt
+
+The tables below contain only parameters available when using the generic :term:`simulation type`.
+Some parameters may appear in multiple categories.
+
+.. include:: ../reuse/warning-case.txt
+
+.. raw:: html
+
+    <button class="collapse-table-button btn btn-info">Collapse all parameter tables</button>
+
+.. contents:: Contents
+   :local:
+
+
+
+.. _config-enable:
+
+Enable or disable features
+==========================
+
+.. include:: ../reuse/config-enable.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-enable-generic.csv
+
+.. _config-general-disease:
+
+General disease
+===============
+
+.. include:: ../reuse/config-general-disease.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-general-disease-generic.csv
+
+.. all general disease params are in generic
+
+.. _config-env:
+
+Geography and environment
+=========================
+
+.. include:: ../reuse/config-env.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-env-generic.csv
+
+.. _config-immunity:
+
+Immunity
+========
+
+.. include:: ../reuse/config-immunity.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-immunity-generic.csv
+
+.. _config-incubation:
+
+Incubation
+==========
+
+.. include:: ../reuse/config-incubation.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-incubation-generic.csv
+
+
+.. _config-infectivity:
+
+Infectivity and transmission
+============================
+
+.. include:: ../reuse/config-infectivity.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-infectivity-generic.csv
+
+.. _config-input:
+
+Input data files
+================
+
+.. include:: ../reuse/config-input.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-input-generic.csv
+
+.. _config-migration:
+
+Migration
+=========
+
+.. include:: ../reuse/config-migration.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-migration-generic.csv
+
+.. _config-mortality:
+
+Mortality and survival
+======================
+
+.. include:: ../reuse/config-mortality.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-mortality-generic.csv
+
+.. _config-output:
+
+Output settings
+===============
+
+.. include:: ../reuse/config-output.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-output-generic.csv
+
+.. _config-population:
+
+Population dynamics
+===================
+
+.. include:: ../reuse/config-population.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-population-generic.csv
+
+.. _config-sampling:
+
+Sampling
+========
+
+.. include:: ../reuse/config-sampling.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-sampling-generic.csv
+
+.. _config-scalars:
+
+Scalars and multipliers
+=======================
+
+.. include:: ../reuse/config-scalars.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-scalars-generic.csv
+
+.. _config-setup:
+
+Simulation setup
+================
+
+.. include:: ../reuse/config-setup.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-setup-generic.csv
+

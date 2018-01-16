@@ -1,0 +1,125 @@
+===================================================
+Prerequisites for working with |EMOD_s| source code
+===================================================
+
+This section describes the software packages or utilities must be installed to build the |exe_l| or
+|linux_binary| from source code and run regression tests.
+
+If additional software is needed for the prerequisite software due to your specific environment, the
+installer for the prerequisite software should provide instructions. For example, if |MSMPI_supp|
+requires additional Visual C++ redistributable packages, the installer will display that
+information.
+
+.. include:: ../reuse/third-party-note.txt
+
+Install prerequisites for building |exe_s|
+==========================================
+
+The following software packages are required to build the |exe_s| from |EMOD_s| source code on
+|Windows_supp|.
+
+.. note::
+
+    You must also have already installed the required software to run |EMOD_s| simulations.
+    If you have not, see :doc:`install-overview`.
+
+Visual Studio
+-------------
+
+#.  Purchase a license from Microsoft or use an MSDN subscription to install |VS_supp|. Other versions
+    of Visual Studio are not supported.
+
+    While you can use a free copy of Visual Studio Community, |IDM_s| does not test on or support this version.
+
+#.  Select the Visual C++ tools for Windows desktop during installation.
+
+
+Python
+------
+
+Python is required for building the disease-specific |exe_s| and running Python scripts.
+
+.. note::
+
+    |EMOD_s| does not support the current version of Python.
+
+.. include:: ../reuse/python-install.txt
+
+HPC SDK
+-------
+
+*  Install the |HPC_SDK_supp|. See |HPC_SDK_supp_path| for instructions.
+
+Boost
+-----
+
+#.  Go to |Boost_supp_path| and select one of the compressed files.
+#.  Unpack the libraries to the location of your choice.
+#.  From **Control Panel**, select **Advanced system settings**, and then click
+    **Environment Variables**.
+#.  Add a new variable called IDM_BOOST_PATH and set it to the directory where you installed
+    Boost, and then click **OK**.
+
+SCons
+-----
+
+SCons is required for the building disease-specific |exe_s| and is optional for the monolithic |exe_s|
+that includes all simulation types.
+
+#.  Go to |Scons_supp_path| and select the WHL file for |Scons_supp| that is compatible with
+    |Python_supp|.
+#.  Save the file to your Python installation directory.
+#.  Open a Command Prompt window and navigate to the Python installation directory, then enter the
+    following, substituting the name of the specific matplotlib WHL file you downloaded::
+
+        pip install scons-2.x.x-py2-none-any.whl
+
+Install prerequisites for building the |linux_binary|
+=====================================================
+
+For |Centos_supp|, all prerequisites for building the |linux_binary| are installed by the setup
+script described in :doc:`install-centos`. If you originally installed |EMOD_s| without including
+the source code and input data files that are optional for running simulations using a pre-built
+|linux_binary|, rerun the script and install those.
+
+Install prerequisites for running regression tests
+==================================================
+
+The following plotting software is required for running regression tests, where graphs of model
+output are created both before and after source code changes are made to see if those changes
+created a discrepancy in the regression test output. For more information, see
+:doc:`dev-regression`. For |Centos_supp|, all Python packages are installed by the setup
+script, but you may want to install R or MATLAB.
+
+.. include:: ../reuse/gohlke.txt
+
+Python utilities
+----------------
+
+.. include:: ../reuse/python-utility-install.txt
+
+NumPy
+-----
+
+.. include:: ../reuse/numpy-install.txt
+
+Matplotlib
+-----------
+
+.. include:: ../reuse/matplotlib-install.txt
+
+R
+-
+
+The |IDM_s| test team uses |R_supp| for regression testing, but it is considered optional.
+
+.. include:: ../reuse/r-install.txt
+
+MATLAB
+------
+
+The |IDM_s| test team uses |MATLAB_supp| and the |stats_supp| for regression testing, but they are both
+considered optional.
+
+.. include:: ../reuse/matlab-install.txt
+

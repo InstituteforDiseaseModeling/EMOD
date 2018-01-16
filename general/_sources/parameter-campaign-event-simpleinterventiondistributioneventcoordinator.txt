@@ -1,0 +1,22 @@
+==================================
+SimpleDistributionEventCoordinator
+==================================
+
+The **SimpleInterventionDistributionEventCoordinator** coordinator class distributes individual-
+level or node-level interventions and is a simplified version of the
+**StandardInterventionDistributionEventCoordinator**. There is reduced complexity, such as there is
+no targeting restrictions on demographics, properties, age, gender, or other target values. See the
+following JSON example and table, which shows all available parameters for this event coordinator.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-simpleinterventiondistributioneventcoordinator.csv
+
+
+.. literalinclude:: ../json/campaign-simpleinterventiondistributioneventcoordinator.json
+   :language: json

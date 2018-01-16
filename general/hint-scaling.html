@@ -1,0 +1,578 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Heterogeneity and transmission scaling &mdash; Generic Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Generic Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Generic Model  documentation" href="index.html"/>
+        <link rel="up" title="Configure heterogeneous disease transmission" href="howto-hint.html"/>
+        <link rel="next" title="Create a configuration file" href="howto-configuration.html"/>
+        <link rel="prev" title="Configure heterogeneous disease transmission" href="howto-hint.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Generic Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="howto-overview.html">How to use the software</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="howto-inputs.html">Use input data files</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="howto-demographics-overlay.html">Use demographics overlay files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="howto-demographics-heterogeneity.html">Configure heterogeneity using individual and node properties</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="howto-hint.html">Configure heterogeneous disease transmission</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Heterogeneity and transmission scaling</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="howto-configuration.html">Create a configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-campaign.html">Create a campaign file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-simulations.html">Run simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-outputs.html">Use output files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Generic Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Generic</a> &raquo;</li>
+      
+          <li><a href="howto-overview.html">How to use the software</a> &raquo;</li>
+      
+          <li><a href="howto-inputs.html">Use input data files</a> &raquo;</li>
+      
+          <li><a href="howto-hint.html">Configure heterogeneous disease transmission</a> &raquo;</li>
+      
+    <li>Heterogeneity and transmission scaling</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="heterogeneity-and-transmission-scaling">
+<h1>Heterogeneity and transmission scaling<a class="headerlink" href="#heterogeneity-and-transmission-scaling" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Author:</th><td class="field-body">Daniel J. Klein, Senior Research Scientist, IDM</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>Models of disease transmission often assume a homogeneous pattern of mixing between individuals that
+stems from a mechanism in which the population is sufficiently &#8220;well-mixed&#8221; to make each individual
+equally likely to next encounter each other individual. Along with this mixing assumption, simple
+models additionally suppose that susceptibility and infectivity are homogeneous across the
+population. These assumptions enable elegant mathematical calculations to be performed, including
+those for the base reproductive rate, <img class="math" src="_images/math/969cd0f76ae31ba09fb89bed2023267a8c4cd6f3.png" alt="R_0"/>, and endemic equilibrium. Homogeneous mixing also
+greatly simplifies implementation in the sense the only a single transmission constant,
+<img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/>, is required to describe the transmission rate per person.</p>
+<p>However, assumptions of homogeneity quickly become invalid when considering the complexities of
+disease transmission. Spatial effects, even at relatively small scales, can invalidate the well-
+mixed assumption, particularly if the disease is highly infectious or the population density is
+high. Non-uniform patterns of mixing based on age are well-documented in school-based disease
+transmission <a class="footnote-reference" href="#f1" id="id1">[1]</a>. Susceptibility and infectivity are inherently heterogeneous, as governed by both
+behavioral and biological factors including hand washing, viral load, and immunity. Many of these
+factors can be targeted by interventions that potentially have non-uniform uptake, for example due
+to differences in accessibility.</p>
+<p>These sources of heterogeneity are abundant in almost every infectious disease. The &#8220;right&#8221;
+level of heterogeneity to include in a model depends on the question being asked, but rarely is
+a purely homogeneous model sufficient. The <a class="reference internal" href="glossary.html#term-epidemiological-modeling-software-emod"><span class="xref std std-term">Epidemiological MODeling software (EMOD)</span></a> has
+long-supported heterogeneity in the form of &#8220;nodes.&#8221; Each <a class="reference internal" href="glossary.html#term-node"><span class="xref std std-term">node</span></a> represents a small
+geographical area that can have customized parameters. Individuals migrate between nodes either
+temporarily or permanently using mobility patterns driven by local, regional, and long-distance
+transportation. While nodes have long provided the capability to model large-scale spatial
+heterogeneities, disease transmission <em>within</em> each node was homogeneously governed by a single
+transmission parameter, <strong>Base_Infectivity</strong>, which determined <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/>.</p>
+</div>
+<div class="section" id="hint-l">
+<h2>Heterogeneous Intra-Node Transmission (HINT)<a class="headerlink" href="#hint-l" title="Permalink to this headline">¶</a></h2>
+<p>EMOD implements the Heterogeneous Intra-Node Transmission (HINT) feature that enables the modeler to include disease transmission heterogeneities
+within each node. Intra-node heterogeneity is driven by &#8220;individuals properties,&#8221; each of which has
+an associated discrete set of &#8220;values.&#8221; Examples of individual properties, with typical values given
+parenthetically, include risk group (low, medium, high), age group (under 5, 5 to 15, over 15),
+vaccine accessibility class (easy, hard), intra-node locale (census tracts), and place (home,
+school, work, community, non-school). All nodes in a <a class="reference internal" href="glossary.html#term-simulation"><span class="xref std std-term">simulation</span></a> must have the same
+individual properties and values, but the characteristics of the heterogeneity can vary from node to
+node.</p>
+<p>Associated with each individual property is a values-by-values-sized matrix of multipliers, denoted
+<img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/>, that scale base infectivity, <img class="math" src="_images/math/8ecb1fee83d40575dfd2b2ba283fc19003ad7bb4.png" alt="\beta_0"/>. Specifically, the entry of the
+multiplier matrix at row <img class="math" src="_images/math/df0deb143e5ac127f00bd248ee8001ecae572adc.png" alt="i"/> and column <img class="math" src="_images/math/6b21e0b0899a0d2879d3b8019087fa630bab4ea2.png" alt="j"/> determines the transmission constant from
+infected individuals having the <img class="math" src="_images/math/f9c7e15593ad4687b34e86ead55cdd095ee0b7b5.png" alt="i^{th}"/> value to susceptible individuals having the
+<img class="math" src="_images/math/1e3a0f6ca1a19c82ece8f835d17419f544328efd.png" alt="j^{th}"/> value.</p>
+<p>Two individual properties can be combined to achieve a higher level of transmission heterogeneity.
+When multiple individual properties are configured, their effects are combined <em>independently</em> via
+multiplication of the appropriate multipliers. For example if the individual properties are age
+group (young and old) and vaccine accessibility (easy and hard),</p>
+<div class="math">
+<p><img src="_images/math/a48a971dcab457d199b5ac56c697333144c44f90.png" alt="\beta^{\text{age}} = \begin{bmatrix}1.5 &amp; 0.9 \\ 0.8 &amp; 1.0\end{bmatrix} \text{and } \beta^{\text{accessibility}} = \begin{bmatrix}1.0 &amp; 0.4 \\ 0.3 &amp; 5.0\end{bmatrix},"/></p>
+</div><p>the transmission multiplier from an infected individual who is a young and hard to access to a
+susceptible individual who is old and easy to access will be <img class="math" src="_images/math/5f965e379d0591cceff42d8dcc18f0421cbc8248.png" alt="0.9 \times 0.3 = 0.27"/>. Similarly,
+the multiplier from an infected young vaccine refuser to a susceptible young vaccine refuser will be
+<img class="math" src="_images/math/f2a496d1601b932e1127b20d46c7b7c10c6df724.png" alt="1.5 \times 5.0 = 7.5"/>. While most multiplier matrices are symmetric, asymmetries as in the above
+example can arise for several reasons including heterogeneity in susceptibility.</p>
+<p>The product of the base infectivity, <img class="math" src="_images/math/8ecb1fee83d40575dfd2b2ba283fc19003ad7bb4.png" alt="\beta_0"/>, and the multiplier matrix, <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/>,
+governs &#8220;who acquires infection from whom,&#8221; and thus is sometimes called the <a class="reference internal" href="glossary.html#term-waifw-matrix"><span class="xref std std-term">WAIFW matrix</span></a>. The
+values in this matrix can be thought of as the &#8220;effective contact rate,&#8221; where an <em>effective
+contact</em> is defined as one that will result in disease transmission were it between a susceptible
+and infected individual <a class="footnote-reference" href="#f2" id="id2">[2]</a>.</p>
+</div>
+<div class="section" id="disease-dynamics">
+<h2>Disease dynamics<a class="headerlink" href="#disease-dynamics" title="Permalink to this headline">¶</a></h2>
+<p>EMOD is an exceptionally powerful software tool. Even in &#8220;generic&#8221; mode, EMOD is capable of
+simulating spatially diverse Susceptible-Exposed-Infected-Recovered (<a class="reference internal" href="glossary.html#term-seir-model"><span class="xref std std-term">SEIR model</span></a>) and SEIRS dynamics,
+including options for non-exponential incubation and infectious periods, inter-node migration, and
+density- or frequency-dependent transmission.</p>
+<div class="section" id="single-homogeneous-node">
+<h3>Single homogeneous node<a class="headerlink" href="#single-homogeneous-node" title="Permalink to this headline">¶</a></h3>
+<p>The mathematical fundamentals underlying generic disease dynamics are most vividly illustrated in a
+single well-mixed community. In EMOD, this scenario corresponds to a single node without HINT.
+To simplify presentation of the mathematical principles, we focus on the well-known <a class="reference internal" href="glossary.html#term-sir-model"><span class="xref std std-term">SIR model</span></a>
+dynamics with exponentially distributed waiting times between state transitions.</p>
+<p>In mathematical biology, disease dynamics are often presented in terms of the proportion of the
+initial population in susceptible, infected, or recovered states (SIR). Because EMOD represents
+individuals, and to be clear about mechanisms by which the transmission rate varies as a function of
+the node population, we instead present the dynamics in terms of the number of individuals
+<img class="math" src="_images/math/f664f102404a0938b0d2fc21843059f059a9eeff.png" alt="(X, Y, Z)"/> in place of <img class="math" src="_images/math/18726d04fadf3fffebd348869d83ef6d9280ad5d.png" alt="(S, I, R)"/>, respectively.</p>
+<p>The governing dynamics can be written as an ordinary differential equation (ODE) with fixed
+birthrate <img class="math" src="_images/math/8d230554a01423c4c6560104b2918b65607c9406.png" alt="v"/>, death rate <img class="math" src="_images/math/412eb00067bc47eef2e2bb5b1aace9877165cbe2.png" alt="{\mu}"/>, and recovery rate <img class="math" src="_images/math/95be00cce3c6b8b321b80e96c64eb633e3d26fd9.png" alt="{\gamma}"/>.</p>
+<div class="math">
+<p><img src="_images/math/9df7788505c850116d95f82dd022a0bbf6acec9d.png" alt="\frac{dX}{dt} &amp;= vN - \frac{\beta_0}{N}XY - \mu{X} \\
+\frac{dY}{dt} &amp;= \frac{\beta_0}{N}XY - \gamma{Y} - \mu{Y} \\
+\frac{dZ}{dt} &amp;= \gamma{Y} - \mu{Z}"/></p>
+</div><p>Here <img class="math" src="_images/math/c5bc36b9879de8db009059a50f2abefe1db425ef.png" alt="N = X + Y + Z"/> is the total number of individuals.</p>
+<p>The ODE dynamics in (2) are deterministic and continuous. In a finite population of individuals,
+there is no way to precisely replicate these dynamics, and it is not clear that one would want to in
+practice because disease transmission is an inherently stochastic process that unfolds in a
+population of finite size.</p>
+<p>In EMOD, the state changes at fixed time steps. The size of the <a class="reference internal" href="glossary.html#term-time-step"><span class="xref std std-term">time step</span></a>, denoted
+<img class="math" src="_images/math/a702e781dfc76762a3a132c2031fba8898430925.png" alt="\delta"/>, is selected to be small compared to the characteristic timescale of the disease
+dynamics. Each update step consists of three primary sub-steps:</p>
+<ol class="arabic simple">
+<li><strong>Shed</strong>: The default behavior in a homogeneous generic simulation is for each infected
+individual to shed contagion at a fixed rate. The total rate of contagion shedding from all
+infected individuals is called the force of infection, <img class="math" src="_images/math/449ec7703e2fa95b9f52fa9cb01d7b13630a42f2.png" alt="\lambda = \frac{\beta}{N}Y"/>.</li>
+<li><strong>Expose</strong>: Each susceptible individual becomes infected with probability
+<img class="math" src="_images/math/31c65e25ba9b9cea9060a63971f93b0b0145ae58.png" alt="p_1 = \text{exp}(\lambda\delta)"/>, where <img class="math" src="_images/math/76f1d8ace30435987c01a00ca53a71cba1f40e6c.png" alt="\lambda"/> is the time step.</li>
+<li><strong>Finalize</strong>: The final part of each time step contains recovery from infection and disease
+mortality for infected individuals, along with basic demographic updates. EMOD supports advanced
+demographics, but here we use the per-capita birth and death rates as in (2).<ol class="arabic">
+<li><strong>Recovery</strong>: Each infected individual recovers in one time step with probability,
+<img class="math" src="_images/math/bb0b4d1dc0868456a6d88a69df6fa513ebc8d2bc.png" alt="p_r = 1 - \text{exp}(-\gamma\delta)"/>.</li>
+<li><strong>Birth</strong>: For birthrate <img class="math" src="_images/math/8d230554a01423c4c6560104b2918b65607c9406.png" alt="v"/>, the number of new susceptible individuals will be
+Poisson distributed with rate <img class="math" src="_images/math/5f050edcc4e4a642076c617f1baab7c6a4422995.png" alt="vN\delta"/>.</li>
+<li><strong>Natural Death</strong>: The probability of death for each individual is <img class="math" src="_images/math/b24036759070646e494d83d4fac940c07042c982.png" alt="p_d = 1 - \text{exp}(-\mu\delta)"/>.</li>
+</ol>
+</li>
+</ol>
+<p>Putting these pieces together over the course of a time step, let:</p>
+<div class="math">
+<p><img src="_images/math/ecedc59f899fc625710deb4ec1d1a0f32fdc27a7.png" alt="\Delta{N_i} &amp; \sim \text{Binomial}(X,p_i) \qquad [\text{Infection}] \\
+\Delta{N_r} &amp; \sim \text{Binomial}(Y,p_r) \qquad [\text{Recovery}] \\
+\Delta{N_b} &amp; \sim \text{Binomial}(vN\delta) \qquad [\text{Birth}] \\
+\Delta{N_{X,d}} &amp; \sim \text{Binomial}(X,p_d) \qquad [\text{Death of susceptibles}] \\
+\Delta{N_{Y,d}} &amp; \sim \text{Binomial}(Y,p_d) \qquad [\text{Death of infected}] \\
+\Delta{N_{Z,d}} &amp; \sim \text{Binomial}(Z,p_d) \qquad [\text{Death of recovered}]"/></p>
+</div><p>With these numbers in mind and assuming that only one <a class="reference internal" href="glossary.html#term-state-transition-event"><span class="xref std std-term">state transition event</span></a> happens to each
+individual in a time step:</p>
+<div class="math">
+<p><img src="_images/math/8297ae53b864e55c224c7477a9a083f72dc0821d.png" alt="X(t + \delta) &amp;= X(t) - \Delta{N_i} + \Delta{N_b} - \Delta{N_{X,d}} \\
+Y(t + \delta) &amp;= Y(t) - \Delta{N_i} + \Delta{N_r} - \Delta{N_{Y,d}} \\
+Z(t + \delta) &amp;= Z(t) - \Delta{N_r} - \Delta{N_{Z,d}} \\
+t &amp;= t + \delta"/></p>
+</div></div>
+<div class="section" id="hint-s-node-with-one-individual-property">
+<h3>HINT node with one individual property<a class="headerlink" href="#hint-s-node-with-one-individual-property" title="Permalink to this headline">¶</a></h3>
+<p>HINT feature adds the ability to simulate heterogeneity within each EMOD node. It is enabled
+through individual properties defined in the demographics file. The disease dynamics parallel the
+homogeneous case. To begin, consider a single node with one individual property having <img class="math" src="_images/math/fae0e7a73748991e5540d874416000583f64f58e.png" alt="V"/>
+values. The <img class="math" src="_images/math/7a7bb470119808e2db2879fc2b2526f467b7a40b.png" alt="X"/>, <img class="math" src="_images/math/0062c26909b3e07ee8f5a6285b2563d69bc979ff.png" alt="Y"/>, and <img class="math" src="_images/math/bcb2457ac9d8995a4f34d57cadac7ecbbe58f3bd.png" alt="Z"/> disease states will gain an <img class="math" src="_images/math/e11f2701c4a39c7fe543a6c4150b421d50f1c159.png" alt="n"/> subscript to
+index into the individual property values. Using the user-provided multiplier matrix of size
+<img class="math" src="_images/math/50bf04529f7f781671921ffc761e034a94c194f1.png" alt="V \times V"/>, the ODE-form of the disease dynamics are:</p>
+<div class="math">
+<p><img src="_images/math/01778f6924614d879129df363b6c4ba690842a0e.png" alt="\frac{dX_v}{dt} &amp;= vN - \sum^{V}_{k=1}\frac{\beta_0\beta_{k,v}}{N}X_v Y_k - \mu{X_v} \\
+\frac{dY_v}{dt} &amp;= \sum^V_{k=1}\frac{\beta_0\beta_{k,v}}{N}X_vY_k - \gamma{Y_v} - \mu{Y_v} \\
+\frac{dZ_v}{dt} &amp;= \gamma{Y_v} - \mu{Z_v}"/></p>
+</div><p>For <img class="math" src="_images/math/67edf07c9c803e1301138044c084f58b718e3c56.png" alt="v \in [1...V]"/>. From this ODE, conversion to an individual-based implementation follows
+the methods for a homogeneous node presented above.</p>
+<p>At simulation initialization, individuals are assigned stochastically to values of the individual
+property according to the distribution specified in the demographics file. Note also that intra-node
+transmission heterogeneities can be transmission-route specific.</p>
+</div>
+<div class="section" id="hint-s-node-with-multiple-individual-properties">
+<h3>HINT node with multiple individual properties<a class="headerlink" href="#hint-s-node-with-multiple-individual-properties" title="Permalink to this headline">¶</a></h3>
+<p>Multiple individual properties can be easily configured in the EMOD demographics file. When
+enabled, the heterogeneity induced by separate individual properties act independently. As an
+example, consider two individual properties, <img class="math" src="_images/math/228f316f91f921b34d0d336eb51c8ffab9064b0a.png" alt="p_1"/> and <img class="math" src="_images/math/9d97f98ae30ef6d0a625749afe33bce99458f167.png" alt="p_2"/>, having <img class="math" src="_images/math/25a9944b8e9a836e2ac304f26b44f05177d00de2.png" alt="V_1"/> and
+<img class="math" src="_images/math/36e64af37ad889b862ef51e793d2fa70386ab324.png" alt="V_2"/> values, respectively. The multiplier matrices will be denoted <img class="math" src="_images/math/542f691a3411c67678993f73e4e094fd3dee7508.png" alt="\beta^{p_1}"/> and
+<img class="math" src="_images/math/434da733fb92922c856d7ba8360bed18761a0028.png" alt="\beta^{p_2}"/>, and have sizes <img class="math" src="_images/math/97dc74836ec0b25b449ae81ecb782c00816e2456.png" alt="V_1 \times V_1"/> and <img class="math" src="_images/math/cbb23c7bdcb7b00bc91efb351555ea409f6edc35.png" alt="V_2 \times V_2"/>, respectively.
+The resulting disease dynamics in ODE-form are:</p>
+<div class="math">
+<p><img src="_images/math/8a47083caf7c507df5993523f04efc09c706f67b.png" alt="\frac{dX_{v_1,v_2}}{dt} &amp;= vN - \sum^{v_1}_{k_1=1} \sum^{v_2}_{k_2=1}\frac{\beta_0\beta^{p_1}_{k_1,v_1}\beta^{p_2}_{k_2,k_2}}{N}X_{v_1,v_2}Y_{k_1,k_2} - \mu{X_{v_1,v_2}} \\
+
+\frac{dX_{v_1,v_2}}{dt} &amp;= vN - \sum^{v_1}_{k_1=1} \sum^{v_2}_{k_2=1}\frac{\beta_0\beta^{p_1}_{k_1,v_1}\beta^{p_2}_{k_2,k_2}}{N}X_{v_1,v_2}Y_{k_1,k_2} - \gamma{Y_{v_1,v_2}} - \mu{Y_{v_1,v_2}} \\
+
+\frac{dZ_{v_1,v_2}}{dt} &amp;= \gamma{Y_{v_1,v_2}} - \mu{Z_{v_1,v_2}}"/></p>
+</div><p>For indices <img class="math" src="_images/math/6b8375c149c4fa65f17534b9ba983217a36f59a9.png" alt="(V_1,V_2) \in [1...V_1]\times[V_1...V_2]"/>.</p>
+<p>When configured for multiple individual properties, EMOD assigns individual property values to
+individuals <em>independently</em> based on the separate probability distributions provided by the user in
+the demographics file.</p>
+</div>
+</div>
+<div class="section" id="transmission-scaling">
+<h2>Transmission scaling<a class="headerlink" href="#transmission-scaling" title="Permalink to this headline">¶</a></h2>
+<p>Disease transmission depends on the rate <em>effective contacts</em> as represented by parameter
+<img class="math" src="_images/math/8ecb1fee83d40575dfd2b2ba283fc19003ad7bb4.png" alt="\beta_0"/>. But what happens to the effective contact rate as the size of the population
+changes? There are two commonly accepted answers: frequency-dependent and density-dependent
+transmission scaling.</p>
+<div class="section" id="frequency-versus-density-dependent-transmission-scaling">
+<h3>Frequency versus density-dependent transmission scaling<a class="headerlink" href="#frequency-versus-density-dependent-transmission-scaling" title="Permalink to this headline">¶</a></h3>
+<p>The two common forms of transmission scaling with population (more precisely, population density) are:</p>
+<div class="section" id="frequency-dependence-true-mass-action">
+<h4>Frequency dependence, true mass action<a class="headerlink" href="#frequency-dependence-true-mass-action" title="Permalink to this headline">¶</a></h4>
+<p>The number of effective contacts per person per unit time is independent of the population size. A
+single infected person in a node with a large population will infect just as many people as they
+would in a node with a small population. One way to think about this is that the population density
+is fixed, so that the node with the large population is spread over a large area. For this case,</p>
+<div class="math">
+<p><img src="_images/math/ed0efa3137949d3455e53af66efdfe99c83614d4.png" alt="\text{Transmission} \propto \frac{\text{Number of effective contacts per unit time}}{\text{Current size of the node population}},"/></p>
+</div><p>so that the transmission rate <em>inversely proportional</em> to <img class="math" src="_images/math/03b41781adfc3867f02757d507e9d3d5e31be848.png" alt="N(t)"/>. The dynamics described
+above, starting from (2), are frequency-dependent because the <img class="math" src="_images/math/8ecb1fee83d40575dfd2b2ba283fc19003ad7bb4.png" alt="\beta_0"/> parameter is divided
+by the current node population, <img class="math" src="_images/math/03b41781adfc3867f02757d507e9d3d5e31be848.png" alt="N(t)"/>.</p>
+</div>
+<div class="section" id="density-dependence-pseudo-mass-action">
+<h4>Density dependence, pseudo mass action<a class="headerlink" href="#density-dependence-pseudo-mass-action" title="Permalink to this headline">¶</a></h4>
+<p>The number of effective contacts per person per time is proportional to the population. Think of a
+room containing <img class="math" src="_images/math/f4170ed8938b79490d8923857962695514a8e4cb.png" alt="N"/> individuals. A single highly-infectious cough would infect more people if the
+number of people in the room (population density) was higher. For this case,</p>
+<div class="math">
+<p><img src="_images/math/8cf26e3230826775920c10684023fb81fe413e71.png" alt="\text{Transmission} \propto \frac{\text{Number of effective contacts per unit time}}{\text{Fixed population size}},"/></p>
+</div><p>Usually, the denominator is taken as <img class="math" src="_images/math/4ae79702ed7cb3c75c413a4d24a82c4dcdacc63e.png" alt="N(t=0)"/>, the initial node population. Note that the transmission
+rate per capita is a constant in this case. Density-dependent transmission is often found in SIR
+models which inherently neglect the total population size.</p>
+</div>
+</div>
+<div class="section" id="transmission-scaling-in-emod-s">
+<h3>Transmission scaling in EMOD<a class="headerlink" href="#transmission-scaling-in-emod-s" title="Permalink to this headline">¶</a></h3>
+<p>EMOD supports flexibility in transmission scaling above and beyond pure frequency- or
+density-dependent scaling. The default configuration employs frequency-dependent scaling, the most commonly-
+used form of scaling in computational epidemiology. For version 1.6, EMOD allows the transmission
+rate to scale as a saturating function of population (density) <a class="footnote-reference" href="#f3" id="id3">[3]</a>, even when HINT is enabled. The
+force of infection contributed by each infected individual under these two cases of transmission
+scaling are as follows:</p>
+<div class="math">
+<p><img src="_images/math/b38816e6a9163494fc9199a20fa719c65c77ee49.png" alt="\text{Force per infected} = \left\{
+    \begin{array}{ll}
+        \frac{\beta_0}{N} &amp; \text{Frequency dependence} \\
+        \left[1 - \exp\left(- \frac{\rho}{\rho_{50}}\right)\right] \frac{\beta_0}{N} &amp; \text{Saturating function of density}
+    \end{array}
+\right."/></p>
+</div><p>Here, <img class="math" src="_images/math/eaa6ad49a7f78fe5a13b486690163bf2dc7e3e60.png" alt="r"/> is the population density and <img class="math" src="_images/math/551a8064ad8ecfc75b4c437bad5fe3b279e22fb7.png" alt="r_{50}"/> is an input parameter the governs the
+transition from density to frequency dependence. The population density is computed as
+<img class="math" src="_images/math/4eac7f0f06512549ebfad6b2cbf0ad80af388fda.png" alt="\rho = \frac{N}{A}"/> where <img class="math" src="_images/math/0043fe6507e9b1d112e07a2801e24927e267dd50.png" alt="A"/> is is the area of the node. This node area is in turn computed from the
+longitude and latitude of the node center point (from the demographics file) and the node size. It
+is assumed that all nodes have equal size in terms of the degrees of latitude and longitude, as
+determined by configuration parameter <strong>Node_Grid_Size</strong>. Denoting this node grid size by <img class="math" src="_images/math/ecd1ee2a1cd226b40c37e079aca62398d4b774f5.png" alt="w"/>, the area of
+a node located at (lat, lon) is computed based on the corresponding area of a sphere,</p>
+<div class="math">
+<p><img src="_images/math/d7140cac664af818338132c1c84fe1650d700b24.png" alt="A = R^2\Big\lbrace\Big[\text{cos}\Big(\Big(90-\text{lat}-\frac{w}{2}\Big)\frac{\pi}{180}\Big)- \text{cos}\Big(\Big(90-\text{lat}+\frac{w}{2}\Big)\frac{\pi}{180}\Big)\Big]\frac{w\pi}{180}\Big\rbrace,"/></p>
+</div><p>where <img class="math" src="_images/math/a167c7a69d47e0aacc34866c9255d3542f18a1df.png" alt="R=6371.2213"/> km is the radius of Earth.</p>
+<p>The saturating function of density is enabled by setting the following EMOD configuration parameter:
+<strong>Population_Density_Infectivity_Correction</strong>: SATURATING_FUNCTION_OF_DENSITY</p>
+<p>Finally, the <img class="math" src="_images/math/551a8064ad8ecfc75b4c437bad5fe3b279e22fb7.png" alt="r_{50}"/> parameter is configured using an EMOD configuration parameter
+<strong>Population_Density_C50</strong>.</p>
+</div>
+</div>
+<div class="section" id="contact-scaling">
+<h2>Contact scaling<a class="headerlink" href="#contact-scaling" title="Permalink to this headline">¶</a></h2>
+<p>HINT and transmission scaling allow the EMOD user to specify and control heterogeneity within EMOD.
+One potential application for these features is in configuring &#8220;contact scaling,&#8217;&#8217; a particular form
+of heterogeneous mixing in which shedding and acquisition are symmetric. The best example of contact
+scaling is location-based mixing, which can be used in place of intra-day migration. Typical places
+for location-based mixing include home, school, and work. Contact scaling could also be used for
+mixing between age groups.</p>
+<p>Contact scaling is typically specified by a matrix, <img class="math" src="_images/math/92b43f1b3f40ce1c2d37caaec4df3247b4dbde1f.png" alt="\rho=\frac{N}{A}"/>. The entry at
+<img class="math" src="_images/math/5b081855e65302dfb2148cb29a7d769330d607af.png" alt="c_{ij}"/> indicates that an individual with value <img class="math" src="_images/math/df0deb143e5ac127f00bd248ee8001ecae572adc.png" alt="i"/> sheds and acquires from mixing pool
+<img class="math" src="_images/math/6b21e0b0899a0d2879d3b8019087fa630bab4ea2.png" alt="j"/> with weight <img class="math" src="_images/math/5b081855e65302dfb2148cb29a7d769330d607af.png" alt="c_{ij}"/>. Each row of the contact scaling matrix typically sums to one,
+especially for location-based mixing wherein <img class="math" src="_images/math/5b081855e65302dfb2148cb29a7d769330d607af.png" alt="c_{ij}"/> can be used to represent the fraction of
+the day an individual with value <img class="math" src="_images/math/df0deb143e5ac127f00bd248ee8001ecae572adc.png" alt="i"/> spends at location <img class="math" src="_images/math/6b21e0b0899a0d2879d3b8019087fa630bab4ea2.png" alt="j"/>.</p>
+<p>In terms of implementation, there is one main difference between contact scaling and transmission
+scaling. In contact scaling, individuals both shed into and acquire from pools of contagion
+according to the corresponding row of the <img class="math" src="_images/math/afce44aa7c55836ca9345404c22fc7b599d2ed84.png" alt="C"/> matrix. Normalization is done not by <img class="math" src="_images/math/f4170ed8938b79490d8923857962695514a8e4cb.png" alt="N"/>,
+as in frequency scaling, but instead by the &#8220;effective population&#8221; of each mixing pool, which is
+computed as the <img class="math" src="_images/math/afce44aa7c55836ca9345404c22fc7b599d2ed84.png" alt="C"/>-weighted sum of the population-by-value. Transmission scaling via the
+<img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> matrix directly specifies the transmission rate per susceptible between each group of
+individuals, so there is no concept of place but the overall approach is more flexible, e.g. by
+allowing asymmetries.</p>
+<p>Interestingly, contact scaling exhibits neither frequency-dependent nor density-dependent scaling,
+although it more closely resembles frequency-dependent transmission because the denominator is a
+function of the current population. Currently, contact scaling is not supported as an independent
+feature in the EMOD software, however one can simulate contact scaling to good approximation if
+the fraction of the population in each value <img class="math" src="_images/math/0bd434808b7391622cf9aaa7fe0acde1e81ef7cd.png" alt="n_i = \frac{N_i(t)}{N(t)}"/> is constant or
+stabilizes quickly. Then EMOD can be configured using,</p>
+<div class="math">
+<p><img src="_images/math/d2d2ed1653676f9d89a0ef4411eed02a1cdfacc2.png" alt="\beta = C[\text{diag}(C^Tn)]^{-1}C^T"/></p>
+</div><p>Here, <img class="math" src="_images/math/e11f2701c4a39c7fe543a6c4150b421d50f1c159.png" alt="n"/> is a <img class="math" src="_images/math/fae0e7a73748991e5540d874416000583f64f58e.png" alt="V"/>-length column vector of the equilibrium fractions of the population by value. Absent
+mortality factors or interventions moving individuals from one value to the next, <img class="math" src="_images/math/e11f2701c4a39c7fe543a6c4150b421d50f1c159.png" alt="n"/> should be close
+to the probability distribution used to assign values to individuals.</p>
+</div>
+<div class="section" id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
+<p>EMOD is a powerful software tool for simulating generic disease dynamics. Amongst the many
+improvements offered by version 1.6 are the new capabilities described mathematically in this
+document: HINT and transmission scaling with population density. These improvements add to the long
+list of EMOD features that make it the most powerful disease simulation framework available today.</p>
+<table class="docutils footnote" frame="void" id="f1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><ol class="first last upperalpha simple" start="10">
+<li>Mossong, N. Hens, M. Jit, P. Beutels, K. Auranen, R. Mikolajczyk, M. Massari, S. Salmaso, G. S. Tomba, J. Wallinga, et al. Social contacts and mixing patterns relevant to the spread of infectious diseases. PLos medicine, 5(3):e74, 2008.</li>
+</ol>
+</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>M.J. Keeling and P. Rohani. <em>Modeling infectious diseases in humans and animals</em>. Princeton University Press, 2008.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td><ol class="first last upperalpha simple" start="8">
+<li>Hu, K. Nigmatulina, and P. Eckhoff. <em>The scaling of contact rates with population density for the infectious disease models</em>. Mathematical biosciences, 2013.</li>
+</ol>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="howto-configuration.html" class="btn btn-neutral float-right" title="Create a configuration file" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="howto-hint.html" class="btn btn-neutral" title="Configure heterogeneous disease transmission" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

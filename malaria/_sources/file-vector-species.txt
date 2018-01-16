@@ -1,0 +1,19 @@
+============================
+Vector species output report
+============================
+
+The vector species output report is a JSON-formatted file where the channel data has been sorted
+into bins. It is identical to the :doc:`file-binned`, with the exception that the bins are based
+on vector species. The vector species report is generated for all malaria or vector simulations that
+contain values in the **Vector_Species_Names** configuration parameter. For example, if
+**Vector_Species_Names** was set to ["funestus", "gambiae"], you would be able to see how many
+infectious vectors there were for *A. funestus* and *A. gambiae*. The file name is
+VectorSpeciesReport.json.
+
+Example
+=======
+
+The following is a sample of an VectorSpeciesReport.json file.
+
+.. literalinclude:: ../json/report-vector-species.json
+   :language: json

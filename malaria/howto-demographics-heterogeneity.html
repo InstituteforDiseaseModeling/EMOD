@@ -1,0 +1,415 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Configure heterogeneity using individual and node properties &mdash; Malaria Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Malaria Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Malaria Model  documentation" href="index.html"/>
+        <link rel="up" title="Use input data files" href="howto-inputs.html"/>
+        <link rel="next" title="Configure heterogeneous disease transmission" href="howto-hint.html"/>
+        <link rel="prev" title="Use demographics overlay files" href="howto-demographics-overlay.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Malaria Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="howto-overview.html">How to use the software</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="howto-inputs.html">Use input data files</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="howto-demographics-overlay.html">Use demographics overlay files</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Configure heterogeneity using individual and node properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="howto-hint.html">Configure heterogeneous disease transmission</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="howto-configuration.html">Create a configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-campaign.html">Create a campaign file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-simulations.html">Run simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-outputs.html">Use output files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-overview.html">Malaria disease overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-model-overview.html">Malaria model overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-IDM.html">Malaria research at IDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Malaria Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Malaria</a> &raquo;</li>
+      
+          <li><a href="howto-overview.html">How to use the software</a> &raquo;</li>
+      
+          <li><a href="howto-inputs.html">Use input data files</a> &raquo;</li>
+      
+    <li>Configure heterogeneity using individual and node properties</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="configure-heterogeneity-using-individual-and-node-properties">
+<h1>Configure heterogeneity using individual and node properties<a class="headerlink" href="#configure-heterogeneity-using-individual-and-node-properties" title="Permalink to this headline">¶</a></h1>
+<p>Demographics files can be used to add heterogeneity to a population. You can define property values
+for accessibility, age, geography, risk, and other properties and assign these values to individuals
+or nodes in the simulation. For more information about the parameters and structure of demographics
+files, see <a class="reference internal" href="parameter-demographics.html"><span class="doc">Demographics parameters</span></a>.</p>
+<p>These properties are most commonly used to target (or avoid targeting) particular nodes or individuals
+with interventions. For example, you might want to put individuals into different age bins and then target
+interventions to individuals in a particular age bin. Another common use is to configure treatment
+coverage to be higher for nodes that are easy to access and lower for nodes that are difficult to
+access. For more information on targeting interventions to particular nodes or individuals, see
+<a class="reference internal" href="howto-targeted-interventions.html"><span class="doc">Target interventions to nodes or groups</span></a>.</p>
+<p>For the generic simulation type, you can also configure heterogeneous transmission between
+individuals with different property values. For more information, see <a class="reference internal" href="howto-hint.html"><span class="doc">Configure heterogeneous disease transmission</span></a>. For other
+simulation types, transmission is configured using mechanistic parameter settings.</p>
+<p>This topic describes how to define individual properties and assign different values to individuals
+in a simulation. However, with the exception of setting up age bins, you can use the same process to
+configure heterogeneity using <strong>NodeProperties</strong>. To see all individual and node property parameters,
+see <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a>.</p>
+<div class="section" id="create-individual-properties-other-than-age">
+<h2>Create individual properties other than age<a class="headerlink" href="#create-individual-properties-other-than-age" title="Permalink to this headline">¶</a></h2>
+<p>Assigning property values, such as accessibility or risk, to individuals uses
+the <strong>IndividualProperties</strong> parameter in the demographics file. See <a class="reference internal" href="parameter-demographics.html"><span class="doc">Demographics parameters</span></a>
+for a list of supported properties. The values you assign to properties are user-defined and can
+be applied to individuals in all nodes or only in particular nodes in a simulation.</p>
+<ol class="arabic">
+<li><p class="first">In the demographics file, add the <strong>IndividualProperties</strong> parameter and set it to an empty array.
+If you want the values to apply to all nodes, add it in the <strong>Defaults</strong> section; if you want the
+values to be applied to specific nodes, add it to the <strong>Nodes</strong> section.</p>
+</li>
+<li><p class="first">In the array, add an empty JSON object. Within it, do the following:</p>
+<ol class="arabic">
+<li><p class="first">Add the <strong>Property</strong> parameter and set it to one of the supported values.</p>
+</li>
+<li><p class="first">Add the <strong>Values</strong> parameter and set it to an array of possible values that can
+be assigned to individuals. You can define any value here.</p>
+</li>
+<li><p class="first">Add the <strong>Initial_Distribution</strong> parameter and set it to an array of numbers that add
+up to 1. This configures the initial distribution of the values assigned to individuals
+in one or all nodes.</p>
+</li>
+<li><p class="first">To define how individuals transition from one property value to another, add the <strong>Transitions</strong>
+parameter and set it to it an empty array. Within it, do the following:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Add an empty JSON object and set parameters that define the value that individuals
+transition from, the value they transition to, the event that triggers the transition,
+the probability of transition, and more. See doc:<cite>parameter-demographics</cite> for a
+list of supported <strong>Transitions</strong> parameters and values.</li>
+</ol>
+</div></blockquote>
+</li>
+</ol>
+</li>
+<li><p class="first">If you want to add another property and associated values, add a new JSON object in the
+<strong>IndividualProperties</strong> array as above.</p>
+</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Multiple properties must be defined in one file. They can be defined in either the base
+layer demographics file or an overlay file, but they cannot be split between the files.
+The maximum number of property types that can be added is two.</p>
+</div>
+</div>
+<div class="section" id="create-properties-for-age-ranges">
+<h2>Create properties for age ranges<a class="headerlink" href="#create-properties-for-age-ranges" title="Permalink to this headline">¶</a></h2>
+<p>Creating properties based on age ranges works a little differently than other properties.
+<strong>Age_Bin</strong> is tied to the simulated age of an individual rather than being an independent property.
+Some of its characteristics, such as initial distribution and transitions, are dependent on
+information from the demographics file and EMOD that manages individual aging during the
+simulation. The <strong>Transitions</strong> array is not required and other parameters and structures in
+<strong>IndividualProperties</strong> are slightly different.</p>
+<ol class="arabic simple">
+<li>In the demographics file, add the <strong>IndividualProperties</strong> parameter and set it to an empty array.
+If you want the values to apply to all nodes, add it in the <strong>Defaults</strong> section; if you want the
+values to be applied to specific nodes, add it to the <strong>Nodes</strong> section.</li>
+<li>In the array, add an empty JSON object. Within it, do the following:<ol class="arabic">
+<li>Add the <strong>Property</strong> parameter and set it to &#8220;Age_Bin&#8221;.</li>
+<li>Add the <strong>Age_Bin_Edges_In_Years</strong> parameter and set it to an array that contains a comma-
+delimited list of integers in ascending order that define the boundaries used for each of
+the age bins, in years. The first number must always be 0 (zero) to indicate the age at
+birth and the last number must be -1 to indicate the maximum age in the simulation.</li>
+</ol>
+</li>
+</ol>
+<p>The example below shows how to set up several property values based on disease risk and physical place, and
+how to move individuals among these values. It also defines three age bins: 0 to 5 years,
+older than 5 to 13, and older than 13 to the maximum age.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="s2">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Risk&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Low&quot;</span><span class="p">,</span> <span class="s2">&quot;Medium&quot;</span><span class="p">,</span> <span class="s2">&quot;High&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+            <span class="s2">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
+                <span class="s2">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;High&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;To&quot;</span><span class="p">:</span> <span class="s2">&quot;Medium&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;At_Age&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Coverage&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;Probability_Per_Timestep&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+                <span class="s2">&quot;Timestep_Restriction&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+                <span class="s2">&quot;Age_In_Years&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                <span class="s2">&quot;Timesteps_Until_Reversion&quot;</span><span class="p">:</span> <span class="mi">0</span>
+            <span class="p">},</span> <span class="p">{</span>
+                <span class="s2">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;Medium&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;To&quot;</span><span class="p">:</span> <span class="s2">&quot;Low&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;At_Age&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Coverage&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;Probability_Per_Timestep&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+                <span class="s2">&quot;Timestep_Restriction&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+                <span class="s2">&quot;Age_In_Years&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+                <span class="s2">&quot;Timesteps_Until_Reversion&quot;</span><span class="p">:</span> <span class="mi">0</span>
+            <span class="p">}]</span>
+        <span class="p">},</span> <span class="p">{</span>
+            <span class="s2">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Place&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Community&quot;</span><span class="p">,</span> <span class="s2">&quot;School&quot;</span><span class="p">,</span> <span class="s2">&quot;Work&quot;</span><span class="p">,</span> <span class="s2">&quot;Vacation&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+            <span class="s2">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
+                <span class="s2">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;School&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;To&quot;</span><span class="p">:</span> <span class="s2">&quot;Vacation&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;At_Timestep&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Coverage&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;Timestep_Restriction&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;Start&quot;</span><span class="p">:</span> <span class="mi">20</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;Age_In_Years_Restriction&quot;</span><span class="p">:</span> <span class="p">{},</span>
+                <span class="s2">&quot;Probability_Per_Timestep&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;Timesteps_Until_Reversion&quot;</span><span class="p">:</span> <span class="mi">20</span>
+            <span class="p">}]</span>
+        <span class="p">},</span> <span class="p">{</span>
+            <span class="s2">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Age_Bin&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Age_Bin_Edges_In_Years&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="howto-hint.html" class="btn btn-neutral float-right" title="Configure heterogeneous disease transmission" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="howto-demographics-overlay.html" class="btn btn-neutral" title="Use demographics overlay files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

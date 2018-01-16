@@ -1,0 +1,485 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>HINT 2: School closure &mdash; Generic Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Generic Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Generic Model  documentation" href="index.html"/>
+        <link rel="up" title="Heterogeneous Intra-Node Transmission (HINT) tutorials" href="hint-tutorial-overview.html"/>
+        <link rel="next" title="HINT 3: Age and accessibility" href="hint-tutorial-scenario3.html"/>
+        <link rel="prev" title="HINT 1: Risk groups" href="hint-tutorial-scenario1.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Generic Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial1SIR.html">Generic 1: SIR - Simple single-node outbreak</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial2SIR.html">Generic 2: SIR - Targeted vaccination campaigns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial3SEIR.html">Generic 3: SIER - Incubation periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial4SEIR.html">Generic 4: SEIR - Vital dynamics (birth and death)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial5SIRS.html">Generic 5: SIRS - Waning immunity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial6SEIRS.html">Generic 6: SEIRS - Disease-specific mortality and endemics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial7SI.html">Generic 7: SI - Lifelong infection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial8SIS.html">Generic 8: SIS - Reoccurring infections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial9Density.html">Generic 9: Density scaling of infectivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial-10Zoonosis.html">Generic 10: Animal reservoir zoonosis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="hint-tutorial-overview.html">Heterogeneous Intra-Node Transmission (HINT) tutorials</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="hint-tutorial-scenario1.html">HINT 1: Risk groups</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">HINT 2: School closure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hint-tutorial-scenario3.html">HINT 3: Age and accessibility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hint-tutorial-scenario4.html">HINT 4: Washington state pertussis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hint-tutorial-scenario5.html">HINT 5: Seattle commuting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Generic Model</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Generic</a> &raquo;</li>
+      
+          <li><a href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a> &raquo;</li>
+      
+          <li><a href="hint-tutorial-overview.html">Heterogeneous Intra-Node Transmission (HINT) tutorials</a> &raquo;</li>
+      
+    <li>HINT 2: School closure</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <div class="section" id="hint-s-2-school-closure">
+<h1>HINT 2: School closure<a class="headerlink" href="#hint-s-2-school-closure" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial replicates disease transmission dynamics through the different activities of
+individuals. In this tutorial, a group is defined by the place where individuals go for similar
+activities but it is not tied to one specific geographic location. For example, &#8220;school&#8221; represents
+all of the students that are going to school instead of having a group for every school that the
+students attend. As another example, &#8220;community&#8221; represents places that people meet for varying
+activities outside of school and work, such as shopping, getting gas, or going to a movie.</p>
+<p>This tutorial also shows the effect of disease-control policies that modify group mixing during a
+disease outbreak (for example, the effect of closing schools during a hypothetical pandemic).
+Students are transitioned from the school group to another group during school closure, and reverted
+back to the school group when the school is reopened. There are two distinct groups that represent
+the different activities of school-age children during a school closure:</p>
+<ul class="simple">
+<li>Children who mostly stay at home and the contact rates were largely reduced.</li>
+<li>Children who spend more time outside of home and have more contacts with other groups</li>
+</ul>
+<div class="contents local topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#demographics-inputs" id="id2">Demographics inputs</a><ul>
+<li><a class="reference internal" href="#individualproperties" id="id3">IndividualProperties</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#key-configuration-parameters" id="id4">Key configuration parameters</a></li>
+<li><a class="reference internal" href="#interventions" id="id5">Interventions</a></li>
+<li><a class="reference internal" href="#run-the-simulation" id="id6">Run the simulation</a><ul>
+<li><a class="reference internal" href="#expected-simulation-output" id="id7">Expected simulation output</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exploring-the-model" id="id8">Exploring the model</a></li>
+</ul>
+</div>
+<div class="section" id="demographics-inputs">
+<h2><a class="toc-backref" href="#id2">Demographics inputs</a><a class="headerlink" href="#demographics-inputs" title="Permalink to this headline">¶</a></h2>
+<p>You can view the complete &#8220;hint_schoolclosure_demographics&#8221; file at
+&lt;path_to_directory&gt;RegressionScenariosInputFiles where &lt;path_to_directory&gt; is the location where
+EMOD source files were installed.</p>
+<div class="section" id="individualproperties">
+<h3><a class="toc-backref" href="#id3">IndividualProperties</a><a class="headerlink" href="#individualproperties" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="property-and-values">
+<h4>Property and values<a class="headerlink" href="#property-and-values" title="Permalink to this headline">¶</a></h4>
+<p>The <strong>Property</strong> and <strong>Values</strong> members of <strong>IndividualProperties</strong> define five groups. There are
+three groups that represent the places where individuals normally go when schools are open. There
+are two groups that represent the place where students go during a school closure. For more information,
+see <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters.</p>
+<p>Normal activity groups:</p>
+<dl class="docutils">
+<dt>School</dt>
+<dd>Students who are in school.</dd>
+<dt>Work</dt>
+<dd>People who are working outside of the home.</dd>
+<dt>Community</dt>
+<dd>General activities for people who neither work nor go to school.</dd>
+</dl>
+<p>School closure groups:</p>
+<dl class="docutils">
+<dt>SchoolBreak_Interaction</dt>
+<dd>Students who do activities outside of the home during a school break.</dd>
+<dt>SchoolBreak_NonInteraction</dt>
+<dd>Students who mostly stay at home during a school break.</dd>
+</dl>
+</div>
+<div class="section" id="initial-distribution">
+<h4>Initial_Distribution<a class="headerlink" href="#initial-distribution" title="Permalink to this headline">¶</a></h4>
+<p>At the beginning of the simulation, every individual has a 10% chance of being assigned to
+&#8220;Community&#8221;, 30% chance to &#8220;School&#8221;, and 60% chance to &#8220;Work&#8221; as specified by the <strong>Initial_Distribution</strong>
+array. Individuals are not assigned to <strong>SchoolBreak_Interaction</strong> and <strong>SchoolBreak_NonInteraction</strong> at the
+beginning of the simulation.</p>
+</div>
+<div class="section" id="transitions">
+<h4>Transitions<a class="headerlink" href="#transitions" title="Permalink to this headline">¶</a></h4>
+<p><strong>Transitions</strong> is used to move individuals from one property value (group) to another. All of the
+individuals in &#8220;School&#8221; are moved to <strong>SchoolBreak_NonInteraction</strong> on day 20 and moved back to
+&#8220;School&#8221; 20 days later (day 40). For more information, see <a class="reference internal" href="parameter-demographics.html#demo-transitions"><span class="std std-ref">Transitions</span></a>.</p>
+<p><strong>SchoolBreak_Interaction</strong> is not used in this tutorial. It is added to the demographics file so that
+you can easily run some variations of this simulation.</p>
+</div>
+<div class="section" id="transmissionmatrix">
+<h4>TransmissionMatrix<a class="headerlink" href="#transmissionmatrix" title="Permalink to this headline">¶</a></h4>
+<p><strong>TransmissionMatrix</strong> contains the <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values of the <a class="reference internal" href="glossary.html#term-waifw-matrix"><span class="xref std std-term">WAIFW matrix</span></a>. The
+transmission <strong>Route</strong> is &#8220;Contact&#8221;. The <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values are added to <strong>Matrix</strong>.</p>
+<p>The first three rows and columns of Matrix demonstrate a hypothetical transmission rate between the
+three groups: &#8220;Community&#8221;, &#8220;School&#8221;, and &#8220;Work&#8221;. Students are a main driver of disease transmission. The
+last two columns and rows demonstrate the different behaviors when students are not in school. Note
+that the fourth column and row for <strong>SchoolBreak_Interaction</strong> have a much higher transition rate than
+<strong>SchoolBreak_NonInteraction</strong> in the fifth row and column.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Place&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Community&quot;</span><span class="p">,</span> <span class="s2">&quot;School&quot;</span><span class="p">,</span> <span class="s2">&quot;Work&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;SchoolBreak_Interaction&quot;</span><span class="p">,</span> <span class="s2">&quot;SchoolBreak_NonInteraction&quot;</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+            <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
+                <span class="nt">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;School&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;To&quot;</span><span class="p">:</span> <span class="s2">&quot;SchoolBreak_NonInteraction&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;At_Timestep&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Coverage&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="nt">&quot;Timestep_Restriction&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&quot;Start&quot;</span><span class="p">:</span> <span class="mi">20</span>
+                <span class="p">},</span>
+                <span class="nt">&quot;Age_In_Years_Restriction&quot;</span><span class="p">:</span> <span class="p">{},</span>
+                <span class="nt">&quot;Probability_Per_Timestep&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="nt">&quot;Timesteps_Until_Reversion&quot;</span><span class="p">:</span> <span class="mi">20</span>
+            <span class="p">}],</span>
+            <span class="nt">&quot;TransmissionMatrix&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Route&quot;</span><span class="p">:</span> <span class="s2">&quot;Contact&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Matrix&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+                    <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                    <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+                    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                    <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="key-configuration-parameters">
+<h2><a class="toc-backref" href="#id4">Key configuration parameters</a><a class="headerlink" href="#key-configuration-parameters" title="Permalink to this headline">¶</a></h2>
+<p>The simulation simulates the person-person disease transmission of influenza-like-illness model
+(SEIR) in a hypothetical community over a short period. For more information, see
+<a class="reference internal" href="parameter-configuration.html#config-infectivity"><span class="std std-ref">Infectivity and transmission</span></a> and <a class="reference internal" href="parameter-configuration.html#config-incubation"><span class="std std-ref">Incubation</span></a> parameters.  You can view the config.json file in the
+ScenariosHINT02_SchoolClosure directory.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Base_Infectivity</strong> to 1.</li>
+<li>Set <strong>Base_Infectious_Period</strong> to 1.8.</li>
+<li>Set <strong>Base_Incubation_Period</strong> to 1.</li>
+<li>Set <strong>Enable_Heterogeneous_Intranode_Transmission</strong> to 1.</li>
+<li>Set <strong>Incubation_Period_Distribution</strong> to &#8220;EXPONENTIAL_DURATION.&#8221;</li>
+<li>Set <strong>Infectious_Period_Distribution</strong> to &#8220;EXPONENTIAL_DURATION.&#8221;</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="interventions">
+<h2><a class="toc-backref" href="#id5">Interventions</a><a class="headerlink" href="#interventions" title="Permalink to this headline">¶</a></h2>
+<p>An <strong>OutbreakIndividual</strong> event seeds the initial infection on day 1 of the simulation. For more
+information, see <strong>OutbreakIndividual</strong> parameters.</p>
+<p>You can view the campaign.json file in the in the ScenariosHINT02_SchoolClosure directory.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Number_Distributions&quot;</span><span class="p">:</span> <span class="mi">-1</span><span class="p">,</span>
+                <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                    <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                    <span class="nt">&quot;outbreak_source&quot;</span><span class="p">:</span> <span class="s2">&quot;PrevalenceIncrease&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;OutbreakIndividual&quot;</span>
+                <span class="p">},</span>
+                <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span>
+                <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="run-the-simulation">
+<h2><a class="toc-backref" href="#id6">Run the simulation</a><a class="headerlink" href="#run-the-simulation" title="Permalink to this headline">¶</a></h2>
+<p>Run the simulation and generate graphs of the simulation output. For more information, see
+<a class="reference internal" href="howto-simulations.html"><span class="doc">Run simulations</span></a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Because the EMOD model is <a class="reference internal" href="glossary.html#term-stochastic"><span class="xref std std-term">stochastic</span></a>, your graphs may appear slightly different from
+those given below.</p>
+</div>
+<div class="section" id="expected-simulation-output">
+<h3><a class="toc-backref" href="#id7">Expected simulation output</a><a class="headerlink" href="#expected-simulation-output" title="Permalink to this headline">¶</a></h3>
+<p>The output shows the effect of school break under the assumption that students will reduce their
+contact during the break (<strong>SchoolBreak_NonInteraction</strong>).</p>
+<p>The following graph shows the daily number of infected people for each group in the simulation. It
+is clear that since students are the major driver of transmission, and the fact that students do not
+interact much with other groups during the break, the school break was able to delay the epidemic
+for 20 days.</p>
+<div class="figure" id="id1">
+<img alt="_images/HINT_SchoolClosure_output_SB_nonInteraction_orig_cropped.png" src="_images/HINT_SchoolClosure_output_SB_nonInteraction_orig_cropped.png" />
+<p class="caption"><span class="caption-text">Figure 1: School closure - SchoolBreak_NonInteraction</span></p>
+</div>
+</div>
+</div>
+<div class="section" id="exploring-the-model">
+<h2><a class="toc-backref" href="#id8">Exploring the model</a><a class="headerlink" href="#exploring-the-model" title="Permalink to this headline">¶</a></h2>
+<p>Change the transition in <a class="reference internal" href="glossary.html#term-intervention"><span class="xref std std-term">intervention</span></a> to <strong>SchoolBreak_Interaction</strong>. In this case, students will
+interact more with other groups, therefore, it is expected that a school break does not necessarily
+slow down the epidemic.</p>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="hint-tutorial-scenario3.html" class="btn btn-neutral float-right" title="HINT 3: Age and accessibility" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="hint-tutorial-scenario1.html" class="btn btn-neutral" title="HINT 1: Risk groups" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+=======================
+Malaria model overview
+=======================
+
+The |EMOD_l|, malaria model, is an agent-based, discrete time, :term:`Monte Carlo` simulator used to
+simulate malaria conditions in order to evaluate the effectiveness of eradication or mitigation
+approaches. The model utilizes microsolvers to combine detailed vector population dynamics, human
+population dynamics, human immunity, within-host parasite dynamics, effects of antimalarial drugs,
+and other aspects of malaria biology to simulate malaria transmission. |EMOD_s| can be calibrated to
+particular geographic locations, and the :term:`microsolver` framework enables the model's
+functionality to be highly modifiable. Further, the framework includes the ability to add
+intervention campaigns, and those interventions can be specified to target particular populations or
+sub-populations of human or vector groups. Interventions can be deployed within simulations for a
+variety of transmission settings with different transmission intensities, vector behaviors, and
+seasonally-driven ecologies.
+
+
+
+The following pages describe the structure of the model, and then explore each of the model components.
+Additionally, the specifics of the model are discussed in detail in the articles
+`Eckhoff, Malaria Journal 2011, 10:303 <http://www.malariajournal.com/content/10/1/303>`__;
+`Eckhoff, Malaria Journal 2012, 11:419 <http://www.malariajournal.com/content/11/1/419>`__;
+`Eckhoff, PLoS ONE 2012, 7(9) <http://dx.doi.org/10.1371/journal.pone.0044950>`__;  and
+`Eckhoff, Am. J. Trop. Med. Hyg. 2013, 88(5) <https://doi.org/10.4269/ajtmh.12-0007>`__.
+
+
+
+The generic software architecture of |EMOD_s| can be found on :doc:`intro-overview`.  The malaria
+|EMOD_s| is based on the same architecture, with modifications that transform the generic model into
+a vector-based model. For example, transmission occurs via vectors (and the associated climatalogical
+impacts on vector biology), individuals can have multiple infections, and campaign interventions can
+act at the individual level or at the :term:`node` level.
+
+.. figure:: ../images/vector-malaria/DTKSchematic_vectors.png
+
+.. THIS FILE MAY NEED TO BE UPDATED; LAST SAVE WAS 2/10/17
+
+
+
+Typical SEIR models are described in :doc:`intro-modeling`. Vectors add a level of
+complexity to the interactions, as pathogens are transmitted via vector - human - vector. For
+malaria, the SEIR model would appear as follows:
+
+
+.. figure:: ../images/vector-malaria/malariaSIR.png
+
+
+While |EMOD_s| is an agent-based model, both the simulated humans and vectors move through the
+various infection states analogously to the compartmental model illustrated above.  To account for
+the real-world complexity of malaria transmission, numerous parameters have been added to |EMOD_s|
+to increase its predictive power. Further, these parameters and their associated microsolvers allow
+|EMOD_s| to model aspects of malaria infections and population dynamics that do not readily fit into
+the SEIRS framework (for example, within-host parasite dynamics, parasitalogical immunity, and
+innate and adaptive responses to antigens). Finally, as an agent- based model, |EMOD_s| enables the
+addition of spatial and temporal properties to the simulation. The following pages describe this
+complexity in detail.
+
+
+
+.. toctree::
+   :maxdepth: 3
+   :titlesonly:
+
+   malaria-model-general-info
+   malaria-model-framework

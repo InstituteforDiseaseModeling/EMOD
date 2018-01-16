@@ -1,0 +1,24 @@
+=================
+AntiTBPropDepDrug
+=================
+
+The **AntiTBPropDepDrug** intervention class is similar to :doc:`parameter-campaign-individual-antitbdrug`,
+as it specifies how TB drugs affect individuals in the model. This intervention enables
+the simultaneous distribution of different drug treatments to specific individuals within the
+population based on those individuals' **IndividualProperties** (see :ref:`demo-properties`
+parameters for more information). Further, drugs can have different efficacies based on whether the
+individual is drug-resistant or whether the individual is treatment-experienced. All drugs must be
+configured in the configuration file under **TB_Drug_Types_For_This_Sim** and **TB_Drug_Params**
+(see :ref:`config-drugs` parameters for more information).
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-antitbpropdepdrug.csv
+
+.. literalinclude:: ../json/campaign-antitbpropdepdrug.json
+   :language: json

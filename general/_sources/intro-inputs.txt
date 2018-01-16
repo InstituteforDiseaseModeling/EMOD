@@ -1,0 +1,126 @@
+================
+Input data files
+================
+
+|EMOD_s| accepts the following categories of :term:`input data files` that contain the relatively
+fixed information about the population within each geographic node. For example, the number of
+individuals, geographic data, climate, demographics, and migration data. This is in contrast to the
+demographic, geographic, and migration parameters in the :term:`configuration file` that control
+simulation-wide qualities, such as enabling air migration across all nodes in the simulation.
+
+Although a demographics file is the only required input data file, additional files are generally
+needed for a realistic simulation. The demographics files use :term:`JavaScript Object Notation
+(JSON)`. The other input data files use both a JSON file for metadata and an associated binary file
+that contains the actual data.
+
+
+The |IDM_l| provides collections of input data files for many different locations in the world
+for download on GitHub. Except for the demographics file, you will typically use these input
+data files in their default state. See :doc:`howto-inputs` for more information.
+
+
+Demographics
+============
+
+Demographics files are JSON formatted files containing information on the demographics of the
+population in a geographical region to simulate. For example, the number of individuals and the
+distribution for age, gender, immunity, risk, and mortality.
+
+In addition, demographics files are useful for creating heterogeneous groups within a population.
+You can define values for accessibility, age, geography, risk, and other properties and assign
+individuals to groups based on those property values. For example, you might want to divide a
+population up into different bins based on age so you can target interventions to individuals in a
+particular age range. Another common use is to configure treatment coverage to be higher for
+individuals in easily accessible regions and lower for individuals in areas that are difficult to
+access.
+
+|EMOD_s| assumes homogeneous mixing and disease transmission for the generic simulation type. You
+can use the |HINT_s| feature to add heterogeneous transmission to your generic model. You cannot
+manually configure heterogeneous transmission using |HINT_s| with other simulation types because the
+heterogeneity in transmission for specific diseases and disease classes is already configured by the
+simulation type.
+
+You can specify multiple demographics files, which function as a "base layer" file and one
+or more "overlay" files that override the base layer configuration. Overlay files can change the
+value of parameters already specified in the base layer or add new parameters. Support for multiple
+demographics layers allows for the following scenarios:
+
+* Separating different sets of parameters and values into individual layers (for example, to separate
+  those that are useful for specific diseases into different layers)
+* Adding new parameters for a simulation into a new layer for easier prototyping
+* Overriding certain parameters of interest in a new layer
+* Overriding certain parameters for a particular sub-region
+* Simulating subsets of a larger region for which input data files have been constructed
+
+Migration
+=========
+
+Migration files describe the rate of migration of individuals in and out of a geographic :term:`node`. There
+are four types of migration files that can be used by |EMOD_s|: local migration, regional migration,
+air migration, and sea migration.
+
+For all types, migration data is contained in a set of two files, a JSON metadata file with header
+information and a binary data file with the actual migration data. Both files are required. The
+basic file structure is identical for all types, with the only exception being the number of columns
+per row allowed to each type.
+
+Local
+-----
+
+Local migration describes the foot travel of people into and out of adjacent nodes. A local
+migration file is required for simulations that support more than one node.
+
+Regional
+--------
+
+Regional migration describes migration via a road or rail network. If a node is not part of the
+network, the regional migration of individuals to and from that node considers the closest road hub
+city. When you create the migration file, you must create a Voronoi_ tiling based on road hubs of the
+region, with each non-hub connected to the hub of its tile.
+
+.. _Voronoi: https://en.wikipedia.org/wiki/Voronoi_diagram
+
+Air
+---
+
+Air migration describes migration via airplane travel. It is usually required for simulations of an
+entire country or larger geographies.
+
+Sea
+---
+
+Sea migration describes migration via ship.
+
+Climate
+=======
+
+There are two general types of climate files usable by |EMOD_s|: climate files generated through
+actual data, referred to as “climate by data,” and climate files generated from the Koppen
+classification system, referred to as “climate by Koppen.”
+
+For both types, climate data is contained in a set of two files, a JSON metadata file with header
+information and a binary file that contains the actual climate data. Both files are required.
+
+Climate by data
+---------------
+
+Climate by data files contain real data gathered from weather stations in the region to be
+simulated. This includes rainfall, temperature, relative humidity, and so on.
+
+Climate by Koppen
+-----------------
+
+Climate by Koppen files contain the Koppen classifier for the region. The
+`Koppen classification system`_ is one of the most widely used climate classification systems. It
+makes the assumption that native vegetation is the best reflection of climate.
+
+.. _Koppen classification system: https://en.wikipedia.org/wiki/K%C3%B6ppen_climate_classification
+
+Load balancing
+==============
+
+When running a simulation on a multi-core HPC cluster, you can include a load balancing file to
+control how the computing load is distributed across the cluster. The load balancing file is a
+binary file that allocates the simulation of each geographic node to cores in the cluster.  If no
+file is submitted, |EMOD_s| allocates nodes to cores according to a checkerboard pattern.
+
