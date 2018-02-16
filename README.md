@@ -60,16 +60,104 @@ The following demographics parameters are new or updated in the Generic model an
 
 ### New campaign parameters
 
-The following campaign parameters and intervention classes were added.
 
-The addition of NodeProperties in the demographics file also necessitated the addition of **Node_Property_Restrictions** to control how interventions are distributed based on the property values assigned to each node.
+The addition of **NodeProperties** in the demographics file also necessitated the addition of
+**Node_Property_Restrictions** to control how interventions are distributed based on the
+property values assigned to each node.
 
-The new property type InterventionStatus also necessitated the new campaign parameters **Disqualifying_Properties** and **New_Property_Value** to control how interventions are distributed based on the interventions already received. Disqualifying_Properties prevents an intervention from being distributed to individuals or nodes with certain property values. **New_Property_Value** updates the property value after they receive an intervention. For example, a household may be ineligible for clinical treatment for a length of time if they already received treatment during a drug campaign. These campaign parameters were previously only available for individuals in the HIV simulation type and were known as **Abort_States** and **Valid_Cascade_States**.
+The new campaign parameters **Disqualifying_Properties** and **New_Property_Value** were added to
+every intervention to control how interventions are distributed based on properties assigned to
+individuals or nodes. **Disqualifying_Properties** prevents an intervention from being distributed
+to individuals or nodes with certain property values. **New_Property_Value** updates the property
+value after they receive an intervention.
 
-A new CommunityHealthWorkerEventCoordinator was added to set characteristics such as size of shipment, days between shipments, or maximum treatments distributed per day when interventions are distributed by community health workers.
+These are generally used with the the property type **InterventionStatus** to control how
+interventions are distributed based on the interventions already received. For example, a household
+may be ineligible for clinical treatment for a length of time if they already received treatment
+during a drug campaign. This functionality was previously only available for individuals in the HIV
+simulation type and used parameters previously called **Abort_States** and **Valid_Cascade_States**.
 
-Several new parameters were added to control effect of vaccines and disease exposure on immunity. For example, whether the effect of receiving more than one vaccine is multiplicative or additive or if there are immune boosting or priming effects.
+The following event coordinators and intervention classes are new for the Generic simulation type
+and can be used in all other models:
 
-Detailed descriptions for each of the new campaign parameters will be added shortly.
+#### CommunityHealthWorkerEventCoordinator
+
+The **CommunityHealthWorkerEventCoordinator** coordinator class is used to model a health care worker's ability
+to distribute interventions to the nodes and individual in their coverage area. This coordinator
+distributes a limited number of interventions per day, and can create a backlog of individuals or
+nodes requiring the intervention. For example, individual-level interventions could be distribution
+of drugs  and node-level interventions could be spraying houses with insecticide.
+
+
+#### ImportPressure
+
+The **ImportPressure** intervention class extends the **ImportCases** outbreak event. Rather than importing a
+deterministic number of cases on a scheduled day, **ImportPressure** applies a set of per-day rates
+of importation of infected individuals, over a corresponding set of durations. **ImportPressure**
+inherits from **Outbreak**; the **Antigen** and **Genome** parameters are defined as they are for all
+**Outbreak** events.
+
+
+#### IndividualImmunityChanger
+
+The **IndividualImmunityChanger** intervention class acts essentially as a **MultiEffectVaccine**,
+with the exception of how the behavior is implemented. Rather than attaching a persistent vaccine
+intervention object to an individual’s intervention list (as a **MultiEffectBoosterVaccine** does), the
+**IndividualImmunityChanger** directly alters the immune modifiers of the individual’s
+susceptibility object and is then immediately disposed of. Any immune waning is not governed by one
+of the waning effects classes, as **MultiEffectVaccine** is, but rather by the immunity waning
+parameters in the configuration file.
+
+
+#### MultiEffectBoosterVaccine
+
+The **MultiEffectBoosterVaccine** intervention class is derived from **MultiEffectVaccine** and
+preserves many of the same parameters. Upon distribution and successful take, the vaccine’s effect
+in each immunity compartment (acquisition, transmission,  and mortality) is determined by the
+recipient’s immune state. If the recipient’s immunity modifier in the corresponding compartment is
+above a user-specified threshold, then the vaccine’s initial effect will be equal to the
+corresponding priming parameter. If the recipient’s immune modifier is below this threshold, then
+the vaccine’s initial effect will be equal to the corresponding boost parameter. After distribution,
+the effect wanes, just like a **MultiEffectVaccine**. The behavior is intended to mimic biological
+priming and boosting.
+
+
+#### NodePropertyValueChanger
+
+The **NodePropertyValueChanger** intervention class sets a given node property to a new value. You can
+also define a duration in days before the node property reverts back to its original value, the
+probability that a node will change its node property to the target value, and the number of days
+over which nodes will attempt to change their individual properties to the target value. This
+node-level intervention functions in a similar manner as the individual-level intervention,
+**PropertyValueChanger**.
+
+
+#### SimpleBoosterVaccine
+
+The **SimpleBoosterVaccine** intervention class is derived from **SimpleVaccine** and preserves many
+of the same parameters. The behavior is much like **SimpleVaccine**, except that upon distribution
+and successful take, the vaccine's effect is determined by the recipient's immune state. If the
+recipient’s immunity modifier in the corresponding channel (acquisition, transmission, or mortality)
+is above a user-specified threshold, then the vaccine’s initial effect will be equal to the
+corresponding priming parameter. If the recipient’s immune modifier is below this threshold, then
+the vaccine's initial effect will be equal to the corresponding boosting parameter. After
+distribution, the effect wanes, just like **SimpleVaccine**. In essence, this intervention provides
+a **SimpleVaccine** intervention with one effect to all naive (below- threshold) individuals, and
+another effect to all primed (above-threshold) individuals; this behavior is intended to mimic
+biological priming and boosting.
+
+The following intervention is new for the Vector and Malaria simulation types.
+
+
+#### UsageDependentBednet
+
+The **UsageDependentBednet** intervention class is similar to **SimpleBednet**, as it
+distributes insecticide-treated nets to individuals in the simulation. However, bednet ownership
+and bednet usage are distinct in this intervention. As in **SimpleBednet**, net ownership is
+configured through the demographic coverage, and the blocking and killing rates of mosquitoes
+are time-dependent. Use of bednets is age-dependent and can vary seasonally. Once a net has
+been distributed to someone, the net usage is determined by the product of the seasonal and
+age-dependent usage probabilities until the net-retention counter runs out, and the net is
+discarded.
 
 For more information, see the complete [EMOD documentation](https://institutefordiseasemodeling.github.io/EMOD/index.html).
