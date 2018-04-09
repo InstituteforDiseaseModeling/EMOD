@@ -195,6 +195,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "https://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="hint-s-4-washington-state-pertussis">
 <h1>HINT 4: Washington state pertussis<a class="headerlink" href="#hint-s-4-washington-state-pertussis" title="Permalink to this headline">¶</a></h1>
 <p>The Washington state pertussis tutorial highlights several important features of the 2012 pertussis
@@ -255,7 +268,7 @@ EMOD source files were installed. For more information, see <a class="reference 
 county from 2013 WA State Office of Financial Management and geographic location (latitude and
 longitude) centered on county seats. The following code example is for the first county (node)
 listed in the demographics file.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;County&quot;</span><span class="p">:</span> <span class="s2">&quot;Adams&quot;</span><span class="p">,</span>
         <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -273,7 +286,7 @@ listed in the demographics file.</p>
 <h3><a class="toc-backref" href="#id8">IndividualAttributes</a><a class="headerlink" href="#individualattributes" title="Permalink to this headline">¶</a></h3>
 <p>The initial age distribution is a uniform distribution of individuals between the ages of 0 and 60
 years old. For more information, see <a class="reference internal" href="parameter-demographics.html#demo-individualattributes"><span class="std std-ref">IndividualAttributes</span></a> parameters.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{},</span>
         <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -288,7 +301,7 @@ years old. For more information, see <a class="reference internal" href="paramet
 </div>
 <p>Age-specific mortality is taken from Washington statewide numbers from CDC 1999-2010 in annual
 deaths per 1000 individuals.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{},</span>
         <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -316,7 +329,7 @@ deaths per 1000 individuals.</p>
 </pre></div>
 </div>
 <p>The birth rate used in the simulation is the value corresponding to stable population replacement.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;BirthRate_DESCRIPTION&quot;</span><span class="p">:</span> <span class="s2">&quot;Replacement of stable age distribution: Birth_Rate_Dependence=DEMOGRAPHIC_DEP_RATE (i.e. 14-45 year-old PossibleMothers)&quot;</span><span class="p">,</span>
@@ -339,7 +352,7 @@ hint_wapertussis_demographics_overlay file. For more information, see <a class="
 <strong>VaccineRefuse</strong>. <strong>Accessibility</strong> will be used to initialize the population with differential
 vaccination coverage. Individuals are randomly assigned one of these two values at birth and do not
 transition afterwards.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Accessibility&quot;</span><span class="p">,</span>
@@ -371,7 +384,7 @@ from another individual within their group and 0.3 times as likely to be exposed
 outside their group.</p>
 <p>The transmission <strong>Route</strong> is “Contact”. The <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values of the WAIFW matrix for the heterogeneous mixing
 between the <strong>Accessibility</strong> groups is defined in <strong>Matrix</strong>.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;TransmissionMatrix&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -403,7 +416,7 @@ that is neither the last nor the first group. This simulation has the following 
 <li>Older than 5 to age 13</li>
 <li>Older than 13</li>
 </ul>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Age_Bin&quot;</span><span class="p">,</span>
@@ -431,7 +444,7 @@ distribution of the individuals in age bins is determined by the demographics fi
 <p><strong>TransmissionMatrix</strong> contains the <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values of the WAIFW matrix that scale the base infectivity. The
 transmission <strong>Route</strong> is “Contact”. The heterogeneous mixing between the age groups is defined in
 <strong>Matrix</strong>.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;TransmissionMatrix&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -450,7 +463,7 @@ transmission <strong>Route</strong> is “Contact”. The heterogeneous mixing b
 </div>
 <div class="section" id="individualproperties-for-accessibility-and-age-bin">
 <h4>IndividualProperties for Accessibility and Age_Bin<a class="headerlink" href="#individualproperties-for-accessibility-and-age-bin" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Accessibility&quot;</span><span class="p">,</span>
@@ -579,7 +592,7 @@ file. For more information, see <strong>SimpleVaccine</strong>.</p>
 the rest of their childhood vaccinations are distributed as they age: 2 month, 4 month, 6 month,
 17 month, 5 year, 11.5 year with
 90% coverage at the fourth dose and 95% on each of the last two doses.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Calendar&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Age&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
         <span class="nt">&quot;Probability&quot;</span><span class="p">:</span> <span class="mi">1</span>
@@ -617,7 +630,7 @@ for their historic childhood vaccination. The acellular pertussis vaccine is con
 probability of acquiring infection per exposure and a 60% reduction in their transmission potential
 if infected. The protection wanes exponentially (DECAYDURABILITY) with a time constant of
 approximately 7 years.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">20.0</span><span class="p">,</span>
     <span class="nt">&quot;Durability_Time_Profile&quot;</span><span class="p">:</span> <span class="s2">&quot;DECAYDURABILITY&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Primary_Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">2525</span><span class="p">,</span>
@@ -644,7 +657,7 @@ nodes) and at a target population (based on <strong>IndividualProperties</strong
 simulation and infects 1% of the “VaccineTake” population in the specified list of nodes (in this case
 only Skagit county with NodeID = 57). The other intervention, distributed 100 days later, infects 10%
 of the “VaccineRefuse” population in the same county.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Washington State Pertussis Outbreak&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>

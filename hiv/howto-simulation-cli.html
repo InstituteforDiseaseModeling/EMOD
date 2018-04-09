@@ -191,6 +191,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "https://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="run-a-simulation-using-the-command-line">
 <h1>Run a simulation using the command line<a class="headerlink" href="#run-a-simulation-using-the-command-line" title="Permalink to this headline">¶</a></h1>
 <p>Using command-line options is the simplest way to run an EMOD simulation. This topic describes
@@ -218,21 +231,21 @@ specified.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">--config</span></code></td>
-<td><code class="docutils literal"><span class="pre">-C</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">--config</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">-C</span></code></td>
 <td>Path to the configuration file. If not specified, EMOD will look for a file named default-config.json in the current directory.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">--input-path</span></code></td>
-<td><code class="docutils literal"><span class="pre">-I</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">--input-path</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">-I</span></code></td>
 <td>Path to the directory containing <a class="reference internal" href="glossary.html#term-input-data-files"><span class="xref std std-term">input data files</span></a>. If not specified,
 EMOD will look for files in the current directory.</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">--output-path</span></code></td>
-<td><code class="docutils literal"><span class="pre">-O</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">--output-path</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">-O</span></code></td>
 <td>Path to the directory where output files will be written. If not specified, EMOD will create an “output” directory and overwrite any previous output in that directory.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">--dll-path</span></code></td>
-<td><code class="docutils literal"><span class="pre">-D</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">--dll-path</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">-D</span></code></td>
 <td>Path to the EMODule root directory. For more information, see <a class="reference internal" href="howto-custom-reporter.html"><span class="doc">Custom reporters</span></a>.</td>
 </tr>
 </tbody>
@@ -253,13 +266,13 @@ host and port.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">--monitor_host</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">--monitor_host</span></code></td>
 <td>The IP address of the commissioning/monitoring host. Set to “none” for no IP address.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">--monitor_port</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">--monitor_port</span></code></td>
 <td>The port of the commissioning/monitoring host. Set to “0” for no port.</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">--sim_id</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">--sim_id</span></code></td>
 <td>The unique ID for this simulation.  This ID is needed for self-identification to the UDP host. Set to “none” for no simulation ID.</td>
 </tr>
 </tbody>
@@ -273,11 +286,11 @@ configuration and campaign files.</p>
 </li>
 <li><p class="first">Enter a command like the one illustrated below, substituting the appropriate paths and file
 names for your simulation:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">../</span><span class="n">Eradication</span><span class="o">.</span><span class="n">exe</span> <span class="o">-</span><span class="n">C</span> <span class="n">config</span><span class="o">.</span><span class="n">json</span> <span class="o">-</span><span class="n">I</span> <span class="n">C</span><span class="p">:</span>\<span class="o">|</span><span class="n">EMOD_s</span><span class="o">|</span>\<span class="n">InputFiles</span> <span class="o">-</span><span class="n">O</span> <span class="n">Sim1Output</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">../</span><span class="n">Eradication</span><span class="o">.</span><span class="n">exe</span> <span class="o">-</span><span class="n">C</span> <span class="n">config</span><span class="o">.</span><span class="n">json</span> <span class="o">-</span><span class="n">I</span> <span class="n">C</span><span class="p">:</span>\<span class="o">|</span><span class="n">EMOD_s</span><span class="o">|</span>\<span class="n">InputFiles</span> <span class="o">-</span><span class="n">O</span> <span class="n">Sim1Output</span>
 </pre></div>
 </div>
 <p>If you do not specify anything when invoking Eradication.exe, it will not execute with all defaults, but
-will instead tell you how to invoke the <code class="docutils literal"><span class="pre">--help</span></code> command.</p>
+will instead tell you how to invoke the <code class="docutils literal notranslate"><span class="pre">--help</span></code> command.</p>
 </li>
 <li><p class="first">EMOD will display logging information, including an errors that occur, while running
 the simulation. See <a class="reference internal" href="file-error-logging.html"><span class="doc">Error and logging files</span></a> for more information.</p>

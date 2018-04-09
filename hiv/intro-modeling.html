@@ -172,6 +172,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "https://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="introduction-to-disease-modeling">
 <h1>Introduction to disease modeling<a class="headerlink" href="#introduction-to-disease-modeling" title="Permalink to this headline">¶</a></h1>
 <p>To understand the complex dynamics underlying disease transmission, epidemiologists utilize a set of

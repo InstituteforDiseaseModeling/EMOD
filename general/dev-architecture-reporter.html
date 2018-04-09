@@ -184,6 +184,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "https://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="reporter-component">
 <h1>Reporter component<a class="headerlink" href="#reporter-component" title="Permalink to this headline">¶</a></h1>
 <p>After running simulations, EMOD creates output reports that contain the model results. Two
@@ -208,7 +221,7 @@ reporting, each node again produces values for named channels, but no simulation
 takes place. Instead, the values of each channel for each node are written to a binary table
 (ReportNNNN.dat) where NNNN is the time step. The format of this file is simple and
 can be summarized as the maximally packed layout of this structure:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">struct</span> <span class="n">ReportDataFormat</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">struct</span> <span class="n">ReportDataFormat</span>
 <span class="p">{</span>
     <span class="n">int32_t</span> <span class="n">num_nodes</span><span class="p">;</span>
     <span class="n">int32_t</span> <span class="n">num_channels</span><span class="p">;</span>

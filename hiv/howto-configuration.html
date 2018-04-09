@@ -188,6 +188,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "https://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="create-a-configuration-file">
 <h1>Create a configuration file<a class="headerlink" href="#create-a-configuration-file" title="Permalink to this headline">¶</a></h1>
 <p>You define the general configuration and processing of a simulation through a JSON-formatted
@@ -213,7 +226,7 @@ see <a class="reference internal" href="parameter-configuration.html"><span clas
 listed alphabetically. This is the configuration file format that Eradication.exe requires for running
 simulations.</p>
 <p>Below is an example of a flattened configuration file:</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Acquisition_Blocking_Immunity_Decay_Rate&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
         <span class="nt">&quot;Acquisition_Blocking_Immunity_Duration_Before_Decay&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
@@ -329,7 +342,7 @@ names you use to create these logical categories are unimportant; the scripts us
 the files will search through the hierarchies and retain only the “leaf” values in the resulting
 flattened file. See <a class="reference internal" href="howto-config-overlay.html"><span class="doc">Use configuration overlay files</span></a> for more information on flattening files.</p>
 <p>Below is an example of a hierarchical configuration file:</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;CAMPAIGNS&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Campaign_Filename&quot;</span><span class="p">:</span> <span class="s2">&quot;campaign.json&quot;</span><span class="p">,</span>
@@ -488,7 +501,7 @@ changes, you will likely find that scripting tools are more powerful and reliabl
 and modifying files.</p>
 <p>The following example shows how to read a configuration file to a Python dictionary, modify a
 parameter, and write it back out to the file:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
 
 <span class="c1"># load the current config.json</span>
 <span class="n">config_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span> <span class="s2">&quot;config.json&quot;</span> <span class="p">)</span>
@@ -505,7 +518,7 @@ parameter, and write it back out to the file:</p>
 </pre></div>
 </div>
 <p>The following example shows how to modify a configuration file in MATLAB:</p>
-<div class="highlight-matlab"><div class="highlight"><pre><span></span><span class="n">addpath</span> <span class="n">Matlab</span>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">addpath</span> <span class="n">Matlab</span>
 <span class="n">addpath</span> <span class="n">Matlab</span><span class="o">\</span><span class="n">test</span>
 
 <span class="c">% load the simulation configuration file into MATLAB structure</span>

@@ -229,6 +229,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "https://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="hivartstagingbycd4diagnostic">
 <h1>HIVARTStagingByCD4Diagnostic<a class="headerlink" href="#hivartstagingbycd4diagnostic" title="Permalink to this headline">¶</a></h1>
 <p>The <strong>HIVARTStagingByCD4Diagnostic</strong> intervention class builds on the <a class="reference internal" href="parameter-campaign-individual-hivsimplediagnostic.html"><span class="doc">HIVSimpleDiagnostic</span></a>
@@ -269,7 +282,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>If the individual’s CD4 is not below the threshold in the <strong>Threshold</strong> table and the individual has TB (via their <strong>IndividualProperties</strong>), then the individual’s CD4 will be compared to the CD4 value retrieved from the <strong>InterpolatedValueMap</strong> matrix based on the current year.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;If_Active_TB&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span>
             <span class="mi">1990</span><span class="p">,</span>
@@ -295,7 +308,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>If the individual does not pass the diagnostic from the <strong>Threshold</strong> or TB matrices, and the individual is pregnant, then the individual’s CD4 is compared to the value found in the <strong>InterpolatedValueMap matrix</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;If_Pregnant&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span>
             <span class="mi">1990</span><span class="p">,</span>
@@ -321,7 +334,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>If the individual’s CD4 has ever been below the threshold specified, then the test will be positive.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Threshold&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span>
             <span class="mi">1990</span><span class="p">,</span>
@@ -347,7 +360,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NoTrigger</td>
 <td>If an individual tests negative, this specifies an event that may trigger another intervention when the event occurs. Only used when <strong>Event_Or_Config</strong> is set to Event. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Negative_Diagnosis_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;PreDebut&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -360,7 +373,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>UNINITIALIZED</td>
 <td>The <strong>IndividualProperty</strong> key (‘HasActiveTB’) used to determine whether the individual has TB.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Individual_Property_Active_TB_Key&quot;</span> <span class="p">:</span> <span class="s2">&quot;HasActiveTB&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -373,7 +386,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>UNINITIALIZED</td>
 <td>The <strong>IndividualProperty</strong> value (‘Yes’) used to determine whether the individual has TB.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span>   <span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span>   <span class="p">{</span>
       
 <span class="nt">&quot;Individual_Property_Active_TB_Value&quot;</span> <span class="p">:</span> <span class="s2">&quot;YES&quot;</span>
    <span class="p">}</span>
@@ -393,7 +406,7 @@ Possible values are:</p>
 <li>Config</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Event_Or_Config&quot;</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -406,7 +419,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>NA</td>
 <td>The intervention distributed to individuals if they test positive. Only used when <strong>Event_Or_Config</strong> is set to Config.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Positive_Diagnosis_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;MultiInterventionDistributor&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Intervention_List&quot;</span><span class="p">:</span> <span class="p">[{</span>
@@ -433,7 +446,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>No_Trigger</td>
 <td>If the test is positive, this specifies an event that can trigger another intervention when the event occurs. Only used if <strong>Event_Or_Config</strong> is set to Event. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Base_Sensitivity&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="nt">&quot;Base_Specificity&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -455,7 +468,7 @@ Possible values are:</p>
 <td>999999</td>
 <td>NA</td>
 <td>An array of years.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Time_Value_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1998</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">2003</span><span class="p">,</span> <span class="mi">2006</span><span class="p">,</span> <span class="mi">2009</span><span class="p">],</span>
         <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -478,7 +491,7 @@ Possible values are:</p>
 <td>1</td>
 <td>The sensitivity of the diagnostic. This sets the proportion of the time that individuals with the condition being tested receive a positive diagnostic test.
 When set to 1, the diagnostic always accurately reflects the condition. When set to zero, then individuals who have the condition always receive a false-negative diagnostic test.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Base_Sensitivity&quot;</span><span class="p">:</span> <span class="mf">0.8</span>
 <span class="p">}</span>
 </pre></div>
@@ -491,7 +504,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>1</td>
 <td>1</td>
 <td>The specificity of the diagnostic. This sets the proportion of the time that individuals without the condition being tested receive a negative diagnostic test. When set to 1, the diagnostic always accurately reflects the lack of having the condition. When set to zero, then individuals who do not have the condition always receive a false-positive diagnostic test.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Base_Specificity&quot;</span><span class="p">:</span> <span class="mf">0.9</span>
 <span class="p">}</span>
 </pre></div>
@@ -504,7 +517,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>3.40E+3</td>
 <td>1</td>
 <td>The unit ‘cost’ assigned to the diagnostic. Setting <strong>Cost_To_Consumer</strong> to zero for all other interventions, and to a non-zero amount for one intervention, provides a convenient way to track the number of times the intervention has been applied in a simulation.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">0.333</span>
 <span class="p">}</span>
 </pre></div>
@@ -517,7 +530,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>3.40E+3</td>
 <td>0</td>
 <td>The number of days from test until diagnosis.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Days_To_Diagnosis&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
 <span class="p">}</span>
 </pre></div>
@@ -530,7 +543,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>1</td>
 <td>1</td>
 <td>The fraction of positive diagnoses that are treated.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Base_Sensitivity&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="nt">&quot;Base_Specificity&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -552,7 +565,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>NA</td>
 <td>0</td>
 <td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
 </pre></div>
@@ -565,7 +578,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>NA</td>
 <td>NA</td>
 <td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
     <span class="p">]</span>
@@ -580,7 +593,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>NA</td>
 <td>NA</td>
 <td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -593,7 +606,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>NA</td>
 <td>NA</td>
 <td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -602,7 +615,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 </tr>
 </tbody>
 </table>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;2a_UniversalART&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Default_Campaign_Path&quot;</span><span class="p">:</span> <span class="s2">&quot;defaults/hiv_default_campaign.json&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>

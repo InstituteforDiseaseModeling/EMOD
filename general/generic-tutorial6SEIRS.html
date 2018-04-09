@@ -186,6 +186,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "https://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="generic-6-seirs-disease-specific-mortality-and-endemics">
 <h1>Generic 6: SEIRS - Disease-specific mortality and endemics<a class="headerlink" href="#generic-6-seirs-disease-specific-mortality-and-endemics" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial assumes that you have read <a class="reference internal" href="generic-tutorial5SIRS.html"><span class="doc">Generic 5: SIRS - Waning immunity</span></a>.</p>
@@ -303,7 +316,7 @@ acquisition blocking and mortality blocking immunity. For more information, see 
 <p>This scenario uses an <strong>OutbreakIndividual</strong> event at day 1 as the initial seeding of the infection.
 The value of <strong>Demographic_Coverage</strong> is 0.001 which is about 10 infected individuals in a population
 of 10,000. For more information, see <strong>OutbreakIndividual</strong> parameters.</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -331,7 +344,7 @@ of 10,000. For more information, see <strong>OutbreakIndividual</strong> paramet
 (<strong>Vaccine_Take</strong>) and 80% coverage (<strong>Demographic_Coverage</strong>) for all individuals. The vaccine is
 acquisition-blocking and full immunity lasts for 10 years (3650 days). For more information, see
 <strong>SimpleVaccine</strong> parameters.</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>

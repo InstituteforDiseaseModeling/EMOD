@@ -199,6 +199,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "https://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="communityhealthworkereventcoordinator">
 <h1>CommunityHealthWorkerEventCoordinator<a class="headerlink" href="#communityhealthworkereventcoordinator" title="Permalink to this headline">¶</a></h1>
 <p>The <strong>CommunityHealthWorkerEventCoordinator</strong> coordinator class is used to model a health care worker’s ability
@@ -239,7 +252,7 @@ example that follows shows one potential configuration.</p>
 <td>2.15E+0</td>
 <td>2.15E+09</td>
 <td>The number of interventions (such as vaccine doses) that a health worker or clinic receives in a shipment. Interventions can only be distributed if they are in stock; stock is updated every <strong>Days_Between_Shipments</strong> with the <strong>Amount_In_Shipment</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Amount_In_Shipment&quot;</span><span class="p">:</span> <span class="mi">10</span>
 <span class="p">}</span>
 </pre></div>
@@ -252,7 +265,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>3.40E+38</td>
 <td>The number of days to wait before a clinic or health worker receives a new shipment of interventions (such as vaccine doses). Interventions can only be distributed if they are in stock; stock is updated every <strong>Days_Between_Shipments</strong> with the <strong>Amount_In_Shipment</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Days_Between_Shipments&quot;</span><span class="p">:</span> <span class="mi">30</span>
 <span class="p">}</span>
 </pre></div>
@@ -265,7 +278,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>3.40E+38</td>
 <td>The number of days for an event coordinator to be active before it expires.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration&quot;</span><span class="p">:</span> <span class="mi">65</span>
 <span class="p">}</span>
 </pre></div>
@@ -278,7 +291,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>6</td>
 <td>The initial amount of stock of interventions (such as vaccine doses). Interventions can only be distributed if they are in stock; stock is updated every <strong>Days_Between_Shipments</strong> with the <strong>Amount_In_Shipment</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Initial_Amount&quot;</span><span class="p">:</span> <span class="mi">10</span>
 <span class="p">}</span>
 </pre></div>
@@ -318,7 +331,7 @@ example that follows shows one potential configuration.</p>
 <dd>The duration is two exponential distributions with given means.</dd>
 </dl>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Initial_Amount_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;FIXED_DURATION&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -331,7 +344,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>0</td>
 <td>The maximum amount of initial stock when <strong>Initial_Amount_Distribution_Type</strong> is set to UNIFORM_DISTRIBUTION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Initial_Amount_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Amount_Min&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Amount_Max&quot;</span><span class="p">:</span> <span class="mi">10</span>
@@ -346,7 +359,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>6</td>
 <td>The average amount of initial stock when <strong>Initial_Amount_Distribution_Type</strong> is set to GAUSSIAN_DISTRIBUTION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Initial_Amount_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DISTRIBUTION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Amount_Std_Dev&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Amount_Mean&quot;</span><span class="p">:</span> <span class="mi">5</span>
@@ -361,7 +374,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>0</td>
 <td>The minimum amount of initial stock when <strong>Initial_Amount_Distribution_Type</strong> is set to UNIFORM_DISTRIBUTION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Initial_Amount_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Amount_Min&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Amount_Max&quot;</span><span class="p">:</span> <span class="mi">10</span>
@@ -376,7 +389,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>1</td>
 <td>The standard deviation for the amount of initial stock when <strong>Initial_Amount_Distribution_Type</strong> is set to GAUSSIAN_DISTRIBUTION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Initial_Amount_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DISTRIBUTION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Amount_Std_Dev&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Amount_Mean&quot;</span><span class="p">:</span> <span class="mi">5</span>
@@ -391,7 +404,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The nested JSON of the actual intervention to be distributed by this event coordinator.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;BroadcastEvent&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Broadcast_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;EventFromIntervention&quot;</span>
@@ -407,7 +420,7 @@ example that follows shows one potential configuration.</p>
 <td>2.15E+0</td>
 <td>2.15E+09</td>
 <td>The maximum number of interventions (such as vaccine doses) that can be distributed by health workers or clinics in a given day.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Max_Distributed_Per_Day&quot;</span><span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
 </pre></div>
@@ -420,7 +433,7 @@ example that follows shows one potential configuration.</p>
 <td>2.15E+0</td>
 <td>2.15E+09</td>
 <td>The maximum number of interventions (such as vaccine doses) that can be stored by a health worker or clinic. If the amount of interventions in a new shipment and current stock exceeds this value, only the number of interventions specified by this value will be stored.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Max_Stock&quot;</span><span class="p">:</span> <span class="mi">12</span>
 <span class="p">}</span>
 </pre></div>
@@ -433,7 +446,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NoTrigger</td>
 <td>The list of events that are of interest to the community health worker (CHW). If one of these events occurs, the individual or node is put into a queue to receive the CHW’s intervention. The CHW processes the queue when the event coordinator is updated. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Trigger_Condition_List&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ListenForEvent&quot;</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
@@ -446,7 +459,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>3.40E+38</td>
 <td>The number of days a person or node can be in the queue waiting to get the intervention from the community health worker (CHW). If a person or node is in the queue, they will not be re-added to the queue if the event that would add them to the queue occurs. This allows them to maintain their priority, however they could be removed from the queue due to this waiting period.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Waiting_Period&quot;</span><span class="p">:</span> <span class="mi">15</span>
 <span class="p">}</span>
 </pre></div>
@@ -459,7 +472,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>A list of the <strong>IndividualProperty</strong> key:value pairs, as defined in the demographics file, that individuals must have to be targeted by this individual-level intervention. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Property_Restrictions&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;Risk:HIGH&quot;</span>
     <span class="p">]</span>
@@ -474,7 +487,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>A list of the <strong>NodeProperty</strong> key:value pairs, as defined in the demographics file, that nodes must have to be targeted by the intervention.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Node_Property_Restrictions&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Place&quot;</span><span class="p">:</span> <span class="s2">&quot;URBAN&quot;</span><span class="p">,</span>
             <span class="nt">&quot;Risk&quot;</span><span class="p">:</span> <span class="s2">&quot;MED&quot;</span>
@@ -495,7 +508,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>0</td>
 <td>The lower end of ages targeted for an intervention, in years. Used when <strong>Target_Demographic</strong> is set to ExplicitAgeRanges or ExplicitAgeRangesAndGender.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_Age_Max&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
     <span class="nt">&quot;Target_Age_Min&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
     <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;ExplicitAgeRanges&quot;</span>
@@ -525,7 +538,7 @@ example that follows shows one potential configuration.</p>
 <li>ExplicitDiseaseState</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_Age_Max&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
     <span class="nt">&quot;Target_Age_Min&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
     <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;ExplicitAgeRanges&quot;</span>
@@ -546,7 +559,7 @@ example that follows shows one potential configuration.</p>
 <li>All</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_Gender&quot;</span><span class="p">:</span> <span class="s2">&quot;Male&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -559,7 +572,7 @@ example that follows shows one potential configuration.</p>
 <td>1</td>
 <td>1</td>
 <td>The fraction of individuals in the target demographic that will receive this intervention.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
 </pre></div>
@@ -572,7 +585,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>A list of the <strong>IndividualProperty</strong> key:value pairs, as defined in the demographics file, that individuals must have to be targeted by this node-level intervention. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Property_Restrictions_Within_Node&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Risk&quot;</span><span class="p">:</span> <span class="s2">&quot;HIGH&quot;</span>
     <span class="p">}]</span>
@@ -587,7 +600,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>0</td>
 <td>When set to true (1), the intervention is only distributed to individuals that began the simulation in the node (i.e. those that claim the node as their residence).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_Residents_Only&quot;</span><span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
 </pre></div>
@@ -596,7 +609,7 @@ example that follows shows one potential configuration.</p>
 </tr>
 </tbody>
 </table>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>

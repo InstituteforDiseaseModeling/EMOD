@@ -189,6 +189,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "https://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="waning-effect-classes">
 <h1>Waning effect classes<a class="headerlink" href="#waning-effect-classes" title="Permalink to this headline">¶</a></h1>
 <p>The following classes are nested within interventions (both individual-level and node-level) to
@@ -200,7 +213,7 @@ indicate how their efficacy wanes over time. They can be used with several param
 </div>
 <p>See the example below that uses a mix of different waning effect classes and the tables below that
 describe all parameters that can be used with each waning effect class.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="p">{</span>
             <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>
@@ -283,7 +296,7 @@ describe all parameters that can be used with each waning effect class.</p>
 <td>100000</td>
 <td>100</td>
 <td>The box duration of the effect in days. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Killing_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Box_Duration&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
         <span class="nt">&quot;Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -301,7 +314,7 @@ describe all parameters that can be used with each waning effect class.</p>
 <td>1</td>
 <td>-1</td>
 <td>Initial strength of the effect. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -346,7 +359,7 @@ describe all parameters that can be used with each waning effect class.</p>
 <td>100000</td>
 <td>100</td>
 <td>The box duration of the effect in days. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Waning_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Box_Duration&quot;</span><span class="p">:</span> <span class="mi">3650</span><span class="p">,</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -363,7 +376,7 @@ describe all parameters that can be used with each waning effect class.</p>
 <td>100000</td>
 <td>100</td>
 <td>The exponential decay length, in days.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Killing_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Box_Duration&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
         <span class="nt">&quot;Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -409,7 +422,7 @@ describe all parameters that can be used with each waning effect class.</p>
 <td>1</td>
 <td>-1</td>
 <td>Initial strength of the effect. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -454,7 +467,7 @@ describe all parameters that can be used with each waning effect class.</p>
 <td>1</td>
 <td>-1</td>
 <td>Initial strength of the effect. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -471,7 +484,7 @@ describe all parameters that can be used with each waning effect class.</p>
 <td>100000</td>
 <td>100</td>
 <td>The exponential decay length, in days.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Killing_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Box_Duration&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
         <span class="nt">&quot;Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -522,7 +535,7 @@ defined by the <strong>Initial_Effect</strong> multiplier.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The time, in days, since the intervention was distributed to a multiplier times the <strong>Initial_Effect</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinearSeasonal&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="nt">&quot;Durability_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -540,7 +553,7 @@ defined by the <strong>Initial_Effect</strong> multiplier.</p>
 <td>1</td>
 <td>0</td>
 <td>Set to 1 to let the intervention expire when the end of the map is reached.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Changing_Effect&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectConstant&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -557,7 +570,7 @@ defined by the <strong>Initial_Effect</strong> multiplier.</p>
 <td>2.15E+0</td>
 <td>0</td>
 <td>The timestamp at which linear-map should be anchored.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Changing_Effect&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinear&quot;</span><span class="p">,</span>
@@ -579,7 +592,7 @@ defined by the <strong>Initial_Effect</strong> multiplier.</p>
 <td>999999</td>
 <td>NA</td>
 <td>An array of days.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Changing_Effect&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinear&quot;</span><span class="p">,</span>
@@ -601,7 +614,7 @@ defined by the <strong>Initial_Effect</strong> multiplier.</p>
 <td>3.40E+3</td>
 <td>NA</td>
 <td>An array of values to match the defined <strong>Times</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Time_Value_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1998</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">2003</span><span class="p">,</span> <span class="mi">2006</span><span class="p">,</span> <span class="mi">2009</span><span class="p">],</span>
         <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -623,7 +636,7 @@ defined by the <strong>Initial_Effect</strong> multiplier.</p>
 <td>1</td>
 <td>-1</td>
 <td>Initial strength of the effect. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -669,7 +682,7 @@ individual who owns the intervention instead of the time since the start of the 
 <td>125</td>
 <td>NA</td>
 <td>An array of years.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinearAge&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="nt">&quot;Durability_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -687,7 +700,7 @@ individual who owns the intervention instead of the time since the start of the 
 <td>NA</td>
 <td>NA</td>
 <td>The time, in days, since the intervention was distributed to a multiplier times the <strong>Initial_Effect</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinearSeasonal&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="nt">&quot;Durability_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -705,7 +718,7 @@ individual who owns the intervention instead of the time since the start of the 
 <td>3.40E+3</td>
 <td>NA</td>
 <td>An array of values to match the defined <strong>Times</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Time_Value_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1998</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">2003</span><span class="p">,</span> <span class="mi">2006</span><span class="p">,</span> <span class="mi">2009</span><span class="p">],</span>
         <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -727,7 +740,7 @@ individual who owns the intervention instead of the time since the start of the 
 <td>1</td>
 <td>-1</td>
 <td>Initial strength of the effect. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -774,7 +787,7 @@ seasonal effects.</p>
 <td>365</td>
 <td>NA</td>
 <td>An array of days.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinearSeasonal&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="nt">&quot;Durability_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -792,7 +805,7 @@ seasonal effects.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The time, in days, since the intervention was distributed to a multiplier times the <strong>Initial_Effect</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinearSeasonal&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="nt">&quot;Durability_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -810,7 +823,7 @@ seasonal effects.</p>
 <td>3.40E+3</td>
 <td>NA</td>
 <td>An array of values to match the defined <strong>Times</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Time_Value_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1998</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">2003</span><span class="p">,</span> <span class="mi">2006</span><span class="p">,</span> <span class="mi">2009</span><span class="p">],</span>
         <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -832,7 +845,7 @@ seasonal effects.</p>
 <td>1</td>
 <td>-1</td>
 <td>Initial strength of the effect. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -879,7 +892,7 @@ of the earlier time point is used.</p>
 <td>1</td>
 <td>0</td>
 <td>Set to 1 to let the intervention expire when the end of the map is reached.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Changing_Effect&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectConstant&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -896,7 +909,7 @@ of the earlier time point is used.</p>
 <td>2.15E+0</td>
 <td>0</td>
 <td>The timestamp at which linear-map should be anchored.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Changing_Effect&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinear&quot;</span><span class="p">,</span>
@@ -918,7 +931,7 @@ of the earlier time point is used.</p>
 <td>999999</td>
 <td>NA</td>
 <td>An array of days.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Changing_Effect&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinear&quot;</span><span class="p">,</span>
@@ -940,7 +953,7 @@ of the earlier time point is used.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The time, in days, since the intervention was distributed to a multiplier times the <strong>Initial_Effect</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectMapLinearSeasonal&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="nt">&quot;Durability_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -958,7 +971,7 @@ of the earlier time point is used.</p>
 <td>3.40E+3</td>
 <td>NA</td>
 <td>An array of values to match the defined <strong>Times</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Time_Value_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1998</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">2003</span><span class="p">,</span> <span class="mi">2006</span><span class="p">,</span> <span class="mi">2009</span><span class="p">],</span>
         <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -980,7 +993,7 @@ of the earlier time point is used.</p>
 <td>1</td>
 <td>-1</td>
 <td>Initial strength of the effect. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -1027,7 +1040,7 @@ the mean.</p>
 <td>100000</td>
 <td>100</td>
 <td>The mean time, in days, of an exponential distribution of the duration of the effect of an intervention (such as a vaccine or bed net). Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -1044,7 +1057,7 @@ the mean.</p>
 <td>1</td>
 <td>-1</td>
 <td>Initial strength of the effect. Specify how this effect decays over time using one of the <a class="reference internal" href="#"><span class="doc">Waning effect classes</span></a>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Usage_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectRandomBox&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>

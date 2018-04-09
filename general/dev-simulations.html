@@ -179,6 +179,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "https://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="run-debug-simulations-in-visual-studio">
 <h1>Run debug simulations in Visual Studio<a class="headerlink" href="#run-debug-simulations-in-visual-studio" title="Permalink to this headline">¶</a></h1>
 <p>If you have modified the EMOD source code, you can run simulations directly from Visual Studio

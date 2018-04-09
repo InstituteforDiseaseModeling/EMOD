@@ -188,6 +188,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "https://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="climate-file-structure">
 <h1>Climate file structure<a class="headerlink" href="#climate-file-structure" title="Permalink to this headline">¶</a></h1>
 <p>There are two general types of climate files usable by EMOD, namely, climate files generated
@@ -296,7 +309,7 @@ the same.</p>
 </tbody>
 </table>
 <p>An example of climate by data metadata is as follows:</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;DateCreated&quot;</span><span class="p">:</span> <span class="s2">&quot;Sun Sep 25 19:02:09 2011&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Tool&quot;</span><span class="p">:</span> <span class="s2">&quot;createclimateheader.py&quot;</span><span class="p">,</span>
@@ -386,7 +399,7 @@ climate.</p>
 </tbody>
 </table>
 <p>An example of climate by Koppen metadata is as follows:</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;DateCreated&quot;</span><span class="p">:</span> <span class="s2">&quot;Sun Sep 25 19:08:52 2011&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Tool&quot;</span><span class="p">:</span> <span class="s2">&quot;createclimateheader.py&quot;</span><span class="p">,</span>

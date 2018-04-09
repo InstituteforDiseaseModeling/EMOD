@@ -229,6 +229,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "https://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="hivdelayedintervention">
 <h1>HIVDelayedIntervention<a class="headerlink" href="#hivdelayedintervention" title="Permalink to this headline">¶</a></h1>
 <p><strong>HIVDelayedIntervention</strong> is an intermediate intervention class based on <a class="reference internal" href="parameter-campaign-individual-delayedintervention.html"><span class="doc">DelayedIntervention</span></a>,
@@ -295,7 +308,7 @@ example that follows shows one potential configuration.</p>
 <dd>The duration is two exponential distributions with given means.</dd>
 </dl>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Delay_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;WEIBULL_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Delay_Period_Scale&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
     <span class="nt">&quot;Delay_Period_Shape&quot;</span><span class="p">:</span> <span class="mi">15</span>
@@ -310,7 +323,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>No Trigger</td>
 <td>The event that should occur at the end of the delay period. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Broadcast_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;LTFU0&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -323,7 +336,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NoTrigger</td>
 <td>If the delay intervention expires before arriving at the end of the delay period, this specifies the event that should occur. For example, if loss to follow-up occurs at a high rate for the first 6 months of care, and then later transitions to a lower rate, then the <strong>Expiration_Period</strong> should be set to 183 days and <strong>Broadcast_On_Expiration_Event</strong> can link to another delay intervention with a longer average delay time until loss to follow up (LTFU). If LTFU does not occur in the first 6 months, then the expiration will allow the first rate to give way to the post-6-month rate. See the list of available events for possible values. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Broadcast_On_Expiration_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;OnART8&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -336,7 +349,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>3.40E+38</td>
 <td>A fixed time period, in days, after which the <strong>Broadcast_On_Expiration_Event</strong> occurs instead of the <strong>Broadcast_Event</strong>. Only applied if the <strong>Expiration_Period</strong> occurs earlier than the end of the delay period. For example, if loss to follow-up (LTFU) occurs at a high rate for the first 6 months of care, and then later transitions to a lower rate, then the <strong>Expiration_Period</strong> should be set to 183 days and <strong>Broadcast_On_Expiration_Event</strong> can link to another delay intervention with a longer average delay time until LTFU. If LTFU does not occur in the first 6 months, then the expiration will allow the first rate to give way to the post-6-month rate.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Expiration_Period&quot;</span><span class="p">:</span> <span class="mi">183</span>
 <span class="p">}</span>
 </pre></div>
@@ -350,7 +363,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>When <strong>Delay_Distribution</strong> is set to PIECEWISE_CONSTANT or PIECEWISE_LINEAR, this parameter maps simulation year to a delay period.
 This parameter uses InterpolatedValueMap to define <strong>Times</strong> (by year) and <strong>Values</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Time_Varying_Constants&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span>
             <span class="mi">1990</span><span class="p">,</span>
@@ -372,7 +385,7 @@ This parameter uses InterpolatedValueMap to define <strong>Times</strong> (by ye
 <td>1</td>
 <td>1</td>
 <td>The proportion of individuals who receive the <strong>DelayedIntervention</strong> that actually receive the configured interventions.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Coverage&quot;</span><span class="p">:</span> <span class="mf">1.0</span>
 <span class="p">}</span>
 </pre></div>
@@ -386,7 +399,7 @@ This parameter uses InterpolatedValueMap to define <strong>Times</strong> (by ye
 <td>6</td>
 <td>When <strong>Delay_Distribution</strong> is set to FIXED_DURATION, this will specify the time delay (in number of days). 
 When <strong>Delay_Distribution</strong> is set to EXPONENTIAL_DURATION, this represents the exponential rate that describes the distribution of the time delay (in units of 1/days).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Delay_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;FIXED_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Delay_Period&quot;</span><span class="p">:</span> <span class="mi">8</span>
 <span class="p">}</span>
@@ -400,7 +413,7 @@ When <strong>Delay_Distribution</strong> is set to EXPONENTIAL_DURATION, this re
 <td>3.40E+3</td>
 <td>6</td>
 <td>The maximum time delay (in number of days) when <strong>Delay_Distribution</strong> is set to UNIFORM_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Delay_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Delay_Period_Min&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Delay_Period_Max&quot;</span><span class="p">:</span> <span class="mi">30</span>
@@ -415,7 +428,7 @@ When <strong>Delay_Distribution</strong> is set to EXPONENTIAL_DURATION, this re
 <td>3.40E+3</td>
 <td>6</td>
 <td>The mean time delay (in number of days), when <strong>Delay_Distribution</strong> is set to GAUSSIAN_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Delay_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Delay_Period_Mean&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
     <span class="nt">&quot;Delay_Period_Std_Dev&quot;</span><span class="p">:</span> <span class="mi">5</span>
@@ -430,7 +443,7 @@ When <strong>Delay_Distribution</strong> is set to EXPONENTIAL_DURATION, this re
 <td>3.40E+3</td>
 <td>6</td>
 <td>The minimum time delay (in number of days) when <strong>Delay_Distribution</strong> is set to UNIFORM_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Delay_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Delay_Period_Min&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Delay_Period_Max&quot;</span><span class="p">:</span> <span class="mi">30</span>
@@ -445,7 +458,7 @@ When <strong>Delay_Distribution</strong> is set to EXPONENTIAL_DURATION, this re
 <td>3.40E+3</td>
 <td>16</td>
 <td>The scale parameter (lambda &gt; 0) of the distribution (in days) when <strong>Delay_Distribution</strong> is set to WEIBULL_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Delay_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;WEIBULL_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Delay_Period_Scale&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
     <span class="nt">&quot;Delay_Period_Shape&quot;</span><span class="p">:</span> <span class="mi">15</span>
@@ -460,7 +473,7 @@ When <strong>Delay_Distribution</strong> is set to EXPONENTIAL_DURATION, this re
 <td>&#160;</td>
 <td>20</td>
 <td>The shape parameter (kappa &gt; 0) of the distribution when <strong>Delay_Distribution</strong> is set to WEIBULL_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Delay_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;WEIBULL_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Delay_Period_Scale&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
     <span class="nt">&quot;Delay_Period_Shape&quot;</span><span class="p">:</span> <span class="mi">15</span>
@@ -475,7 +488,7 @@ When <strong>Delay_Distribution</strong> is set to EXPONENTIAL_DURATION, this re
 <td>3.40E+3</td>
 <td>6</td>
 <td>The standard deviation of the Gaussian distribution (in number of days) when <strong>Delay_Distribution</strong> is set to GAUSSIAN_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Delay_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Delay_Period_Mean&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
     <span class="nt">&quot;Delay_Period_Std_Dev&quot;</span><span class="p">:</span> <span class="mi">5</span>
@@ -496,7 +509,7 @@ Possible values are:</p>
 <li>Config</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Event_Or_Config&quot;</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -509,7 +522,7 @@ Possible values are:</p>
 <td>999999</td>
 <td>NA</td>
 <td>An array of years.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Time_Value_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1998</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">2003</span><span class="p">,</span> <span class="mi">2006</span><span class="p">,</span> <span class="mi">2009</span><span class="p">],</span>
         <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -531,7 +544,7 @@ Possible values are:</p>
 <td>3.40E+3</td>
 <td>NA</td>
 <td>An array of values to match the defined <strong>Times</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Time_Value_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1998</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">2003</span><span class="p">,</span> <span class="mi">2006</span><span class="p">,</span> <span class="mi">2009</span><span class="p">],</span>
         <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -553,7 +566,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>0</td>
 <td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
 </pre></div>
@@ -566,7 +579,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>NA</td>
 <td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
     <span class="p">]</span>
@@ -581,7 +594,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>NA</td>
 <td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -594,7 +607,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>NA</td>
 <td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -603,7 +616,7 @@ Possible values are:</p>
 </tr>
 </tbody>
 </table>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;35_HIV_Delayed_Intervention&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span>

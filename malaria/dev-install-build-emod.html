@@ -180,6 +180,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "https://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="build-emod-s-from-source-code">
 <h1>Build EMOD from source code<a class="headerlink" href="#build-emod-s-from-source-code" title="Permalink to this headline">¶</a></h1>
 <p>You can build the Eradication.exe for Windows 10, Windows Server 12, and Windows HPC Server 12 (64-bit) using Microsoft Visual Studio or SCons. You can build
@@ -223,27 +236,27 @@ custom SCons abilities just for EMOD. For more information on Scons, see <a clas
 is the currently supported version.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">EMOD will not build if you use the <code class="docutils literal"><span class="pre">--Debug</span></code> flag. To build a debug version, you must
+<p class="last">EMOD will not build if you use the <code class="docutils literal notranslate"><span class="pre">--Debug</span></code> flag. To build a debug version, you must
 use Visual Studio.</p>
 </div>
 <ol class="arabic">
 <li><p class="first">Open a command window.</p>
 </li>
 <li><p class="first">Go to the directory where EMOD is installed:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">C</span><span class="p">:</span>\<span class="n">IDM</span>\<span class="n">EMOD</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">C</span><span class="p">:</span>\<span class="n">IDM</span>\<span class="n">EMOD</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">Run the following command to build Eradication.exe:</p>
 <ul>
 <li><p class="first">For a monolithic build:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">scons</span> <span class="o">--</span><span class="n">Release</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scons</span> <span class="o">--</span><span class="n">Release</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">For a disease-specific build, specify one of the supported disease types using the
-<code class="docutils literal"><span class="pre">--Disease</span></code> flag:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">scons</span> <span class="o">--</span><span class="n">Release</span> <span class="o">--</span><span class="n">Disease</span><span class="o">=</span><span class="n">Vector</span>
+<code class="docutils literal notranslate"><span class="pre">--Disease</span></code> flag:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scons</span> <span class="o">--</span><span class="n">Release</span> <span class="o">--</span><span class="n">Disease</span><span class="o">=</span><span class="n">Vector</span>
 </pre></div>
 </div>
 </li>
@@ -253,10 +266,10 @@ use Visual Studio.</p>
 build\x64\Release\Eradication\ of your local EMOD source.</p>
 </li>
 </ol>
-<p>Additionally, you can parallelize the build process with the <code class="docutils literal"><span class="pre">--jobs</span></code> flag. This flag indicates
+<p>Additionally, you can parallelize the build process with the <code class="docutils literal notranslate"><span class="pre">--jobs</span></code> flag. This flag indicates
 the number of jobs that can be run at the same time (a single core can only run one job at a time).
 For example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">scons</span> <span class="o">--</span><span class="n">Release</span> <span class="o">--</span><span class="n">Disease</span><span class="o">=</span><span class="n">Vector</span> <span class="o">--</span><span class="n">jobs</span><span class="o">=</span><span class="mi">4</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scons</span> <span class="o">--</span><span class="n">Release</span> <span class="o">--</span><span class="n">Disease</span><span class="o">=</span><span class="n">Vector</span> <span class="o">--</span><span class="n">jobs</span><span class="o">=</span><span class="mi">4</span>
 </pre></div>
 </div>
 </div>

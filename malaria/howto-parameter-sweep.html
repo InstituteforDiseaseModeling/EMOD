@@ -190,6 +190,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "https://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="perform-a-parameter-sweep">
 <h1>Perform a parameter sweep<a class="headerlink" href="#perform-a-parameter-sweep" title="Permalink to this headline">¶</a></h1>
 <p>Parameter sweeps iteratively update the values of parameters to exhaustively search through the
@@ -201,7 +214,7 @@ in a JSON parameter sweep file to iteratively update the configuration or campai
 The IDM test team performs parameter sweeps as part of regression testing. See the following
 examples to see how this is implemented.</p>
 <p>The following JSON example illustrates sweeping through configuration parameter values.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;sweep&quot;</span> <span class="p">:</span>
     <span class="p">{</span>
         <span class="nt">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;43_Vector_Garki_MultiCore_VectorMigration&quot;</span><span class="p">,</span>
@@ -213,7 +226,7 @@ examples to see how this is implemented.</p>
 </div>
 <p>The following Python example illustrates how to update the configuration file with the above values.
 This is excerpted from the regression_test.py script in the <a class="reference external" href="https://github.com/InstituteforDiseaseModeling/EMOD/tree/master/Regression">Regression</a> directory.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">elif</span> <span class="s2">&quot;sweep&quot;</span> <span class="ow">in</span> <span class="n">reglistjson</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">elif</span> <span class="s2">&quot;sweep&quot;</span> <span class="ow">in</span> <span class="n">reglistjson</span><span class="p">:</span>
     <span class="k">print</span><span class="p">(</span> <span class="s2">&quot;Running sweep...</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="p">)</span>
     <span class="n">param_name</span> <span class="o">=</span> <span class="n">reglistjson</span><span class="p">[</span><span class="s2">&quot;sweep&quot;</span><span class="p">][</span><span class="s2">&quot;param_name&quot;</span><span class="p">]</span>
 

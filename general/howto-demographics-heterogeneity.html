@@ -187,6 +187,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "https://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="configure-heterogeneity-using-individual-and-node-properties">
 <h1>Configure heterogeneity using individual and node properties<a class="headerlink" href="#configure-heterogeneity-using-individual-and-node-properties" title="Permalink to this headline">¶</a></h1>
 <p>Demographics files can be used to add heterogeneity to a population. You can define property values
@@ -276,7 +289,7 @@ birth and the last number must be -1 to indicate the maximum age in the simulati
 <p>The example below shows how to set up several property values based on disease risk and physical place, and
 how to move individuals among these values. It also defines three age bins: 0 to 5 years,
 older than 5 to 13, and older than 13 to the maximum age.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s2">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="s2">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Risk&quot;</span><span class="p">,</span>

@@ -227,6 +227,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "https://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="individual-level-interventions">
 <h1>Individual-level interventions<a class="headerlink" href="#individual-level-interventions" title="Permalink to this headline">¶</a></h1>
 <p>Individual-level interventions determine <em>what</em> will be distributed to individuals to reduce the

@@ -190,6 +190,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "https://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="configure-heterogeneous-disease-transmission">
 <h1>Configure heterogeneous disease transmission<a class="headerlink" href="#configure-heterogeneous-disease-transmission" title="Permalink to this headline">¶</a></h1>
 <p>By default, Epidemiological MODeling software (EMOD) assumes disease transmission is homogeneous across a population within each
@@ -235,7 +248,7 @@ disease is transmitted and columns represent <em>to</em> whom the disease is tra
 group the individual belongs to.</p>
 <p>For example, the following demographics file configures HINT for transmission between individuals
 in high-risk and low-risk groups.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Risk&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;High&quot;</span><span class="p">,</span> <span class="s2">&quot;Low&quot;</span><span class="p">],</span>
@@ -266,7 +279,7 @@ following matrix represents the direction of the disease transmission between th
 together to create the transmission constant. In the following example, an individual who is high
 risk and suburban will have the following transmission multiplier when interacting with an
 individual who is a low risk and suburban: <img class="math" src="_images/math/7f4d125f61147d1f68d9f6c1cf786cc651797eeb.png" alt="0.1 \times 1.4 = 0.14"/>.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Risk&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;High&quot;</span><span class="p">,</span> <span class="s2">&quot;Low&quot;</span><span class="p">],</span>

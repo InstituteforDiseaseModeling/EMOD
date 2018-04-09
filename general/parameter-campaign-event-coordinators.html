@@ -197,6 +197,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "https://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="events-and-event-coordinators">
 <h1>Events and event coordinators<a class="headerlink" href="#events-and-event-coordinators" title="Permalink to this headline">¶</a></h1>
 <p>Campaign events determine <em>when</em> and <em>where</em> an intervention is distributed during a campaign. Event

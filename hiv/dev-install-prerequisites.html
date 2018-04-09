@@ -180,6 +180,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "https://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="prerequisites-for-working-with-emod-s-source-code">
 <h1>Prerequisites for working with EMOD source code<a class="headerlink" href="#prerequisites-for-working-with-emod-s-source-code" title="Permalink to this headline">¶</a></h1>
 <p>This section describes the software packages or utilities must be installed to build the EMOD executable (Eradication.exe) or
@@ -235,7 +248,7 @@ to add Python to the PATH environment variable on your computer.</li>
 Python, and then click <strong>OK</strong>.</p>
 </li>
 <li><p class="first">Open a Command Prompt window and type the following to verify installation:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">--</span><span class="n">version</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">--</span><span class="n">version</span>
 </pre></div>
 </div>
 </li>
@@ -272,7 +285,7 @@ Python 2.7.11 or 2.7.12.</p>
 </li>
 <li><p class="first">Open a Command Prompt window and navigate to the Python installation directory, then enter the
 following, substituting the name of the specific matplotlib WHL file you downloaded:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">scons</span><span class="o">-</span><span class="mf">2.</span><span class="n">x</span><span class="o">.</span><span class="n">x</span><span class="o">-</span><span class="n">py2</span><span class="o">-</span><span class="n">none</span><span class="o">-</span><span class="nb">any</span><span class="o">.</span><span class="n">whl</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">scons</span><span class="o">-</span><span class="mf">2.</span><span class="n">x</span><span class="o">.</span><span class="n">x</span><span class="o">-</span><span class="n">py2</span><span class="o">-</span><span class="n">none</span><span class="o">-</span><span class="nb">any</span><span class="o">.</span><span class="n">whl</span>
 </pre></div>
 </div>
 </li>
@@ -304,7 +317,7 @@ required by EMOD.</p>
 <li><p class="first">Open a Command Prompt window.</p>
 </li>
 <li><p class="first">Enter the following commands:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">python</span><span class="o">-</span><span class="n">dateutil</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">python</span><span class="o">-</span><span class="n">dateutil</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">pyparsing</span>
 </pre></div>
 </div>
@@ -322,7 +335,7 @@ Python 2.7.11 or 2.7.12.</p>
 </li>
 <li><p class="first">Open a Command Prompt window and navigate to the Python installation directory, then enter the
 following, substituting the name of the specific NumPy WHL file you downloaded:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">numpy</span><span class="o">-</span><span class="mf">1.</span><span class="n">x</span><span class="o">.</span><span class="n">x</span><span class="o">+</span><span class="n">mkl</span><span class="o">-</span><span class="n">cp27m</span><span class="o">-</span><span class="n">win_amd64</span><span class="o">.</span><span class="n">whl</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">numpy</span><span class="o">-</span><span class="mf">1.</span><span class="n">x</span><span class="o">.</span><span class="n">x</span><span class="o">+</span><span class="n">mkl</span><span class="o">-</span><span class="n">cp27m</span><span class="o">-</span><span class="n">win_amd64</span><span class="o">.</span><span class="n">whl</span>
 </pre></div>
 </div>
 </li>
@@ -341,7 +354,7 @@ Python 2.7.11 or 2.7.12.</p>
 </li>
 <li><p class="first">Open a Command Prompt window and navigate to the Python installation directory, then enter the
 following, substituting the name of the specific matplotlib WHL file you downloaded:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">matplotlib</span><span class="o">-</span><span class="mf">1.</span><span class="n">x</span><span class="o">.</span><span class="n">x</span><span class="o">+</span><span class="n">mkl</span><span class="o">-</span><span class="n">cp27m</span><span class="o">-</span><span class="n">win_amd64</span><span class="o">.</span><span class="n">whl</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">matplotlib</span><span class="o">-</span><span class="mf">1.</span><span class="n">x</span><span class="o">.</span><span class="n">x</span><span class="o">+</span><span class="n">mkl</span><span class="o">-</span><span class="n">cp27m</span><span class="o">-</span><span class="n">win_amd64</span><span class="o">.</span><span class="n">whl</span>
 </pre></div>
 </div>
 </li>

@@ -185,6 +185,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "https://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="run-regression-tests">
 <h1>Run regression tests<a class="headerlink" href="#run-regression-tests" title="Permalink to this headline">¶</a></h1>
 <p>The Python script regression_test.py runs a suite of regression simulations and compares the output
@@ -211,7 +224,7 @@ clusters.</li>
 </li>
 <li><p class="first">Select the suite of regression tests you want to run. This is indicated by a JSON file in the
 following format:</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;tests&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;Relative path to test directory.&quot;</span>
     <span class="p">},</span> <span class="p">{</span>
@@ -226,7 +239,7 @@ file is recommended for quickly testing a wide range of EMOD functionality.</p>
 <li><p class="first">From the Regression directory, open a Command Prompt window and run the regression test script,
 regression_test.py. It requires the name of the regression suite (without the .json extension)
 and the relative path to Eradication.exe. For example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">regression_test</span><span class="o">.</span><span class="n">py</span> <span class="n">sanity</span> <span class="o">..</span>\<span class="n">Eradication</span>\<span class="n">x64</span>\<span class="n">Release</span>\<span class="n">Eradication</span><span class="o">.</span><span class="n">exe</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">regression_test</span><span class="o">.</span><span class="n">py</span> <span class="n">sanity</span> <span class="o">..</span>\<span class="n">Eradication</span>\<span class="n">x64</span>\<span class="n">Release</span>\<span class="n">Eradication</span><span class="o">.</span><span class="n">exe</span>
 </pre></div>
 </div>
 <p>In addition, you may need to include the following optional arguments depending on your
@@ -244,51 +257,51 @@ testing environment or how Eradication.exe was built.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">--perf</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">--perf</span></code></td>
 <td>False</td>
 <td>Measure Eradication.exe performance.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">--hidegraphs</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">--hidegraphs</span></code></td>
 <td>False</td>
 <td>Suppress pop-up graphs in case of validation failures.</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">--debug</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">--debug</span></code></td>
 <td>False</td>
 <td>Use the debug path for EMODules.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">--label</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">--label</span></code></td>
 <td>&#160;</td>
 <td>Add a custom suffix for HPC job name.</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">--config</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">--config</span></code></td>
 <td>regression_test.cfg</td>
 <td>The regression test configuration file.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">--disable-schema-test</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">--disable-schema-test</span></code></td>
 <td>True</td>
 <td>Include to suppress schema testing, which is on by default.</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">--use-dlls</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">--use-dlls</span></code></td>
 <td>False</td>
 <td>Use EMODules when running tests.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">--all-outputs</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">--all-outputs</span></code></td>
 <td>False</td>
 <td>Use all output JSON files for validation, not just InsetChart.json.</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">--dll-path</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">--dll-path</span></code></td>
 <td>&#160;</td>
 <td>The path to the root directory of the EMODules to use.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">--skip-emodule-check</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">--skip-emodule-check</span></code></td>
 <td>False</td>
 <td>Skip checking if EMODules on the cluster are up-to-date, which can be slow.</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">--scons</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">--scons</span></code></td>
 <td>False</td>
 <td>Indicate that this is a SCons build so custom DLLs are found in the build/64/Release directory.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">--local</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">--local</span></code></td>
 <td>False</td>
 <td>Run all simulations locally.</td>
 </tr>

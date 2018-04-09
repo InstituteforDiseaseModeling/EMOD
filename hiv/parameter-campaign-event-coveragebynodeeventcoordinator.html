@@ -206,6 +206,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "https://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="coveragebynodeeventcoordinator">
 <h1>CoverageByNodeEventCoordinator<a class="headerlink" href="#coveragebynodeeventcoordinator" title="Permalink to this headline">¶</a></h1>
 <p>The <strong>CoverageByNodeEventCoordinator</strong> coordinator class distributes individual-level interventions and is
@@ -251,7 +264,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>An array of (nodeID, coverage) pairs configuring the demographic coverage of interventions by node for the targeted populations. The coverage value must be a float between 0 and 1.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Coverage_By_Node&quot;</span><span class="p">:</span> <span class="p">[</span>
             <span class="p">[</span>
@@ -279,7 +292,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The nested JSON of the actual intervention to be distributed by this event coordinator.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;OutbreakIndividual&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Incubation_Period_Override&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -296,7 +309,7 @@ example that follows shows one potential configuration.</p>
 <td>1000</td>
 <td>1</td>
 <td>The number of times an intervention is given, used with <strong>Timesteps_Between_Repetitions</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;Outbreak&quot;</span><span class="p">,</span>
@@ -317,7 +330,7 @@ example that follows shows one potential configuration.</p>
 <td>10000</td>
 <td>-1</td>
 <td>The repetition interval.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Timesteps_Between_Repetitions&quot;</span><span class="p">:</span> <span class="mi">50</span>
 <span class="p">}</span>
 </pre></div>
@@ -330,7 +343,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>A list of the <strong>IndividualProperty</strong> key:value pairs, as defined in the demographics file, that individuals must have to be targeted by this individual-level intervention. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Property_Restrictions&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;Risk:HIGH&quot;</span>
     <span class="p">]</span>
@@ -345,7 +358,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>A list of the <strong>NodeProperty</strong> key:value pairs, as defined in the demographics file, that nodes must have to be targeted by the intervention.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Node_Property_Restrictions&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Place&quot;</span><span class="p">:</span> <span class="s2">&quot;URBAN&quot;</span><span class="p">,</span>
             <span class="nt">&quot;Risk&quot;</span><span class="p">:</span> <span class="s2">&quot;MED&quot;</span>
@@ -366,7 +379,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>0</td>
 <td>The lower end of ages targeted for an intervention, in years. Used when <strong>Target_Demographic</strong> is set to ExplicitAgeRanges or ExplicitAgeRangesAndGender.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_Age_Max&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
     <span class="nt">&quot;Target_Age_Min&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
     <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;ExplicitAgeRanges&quot;</span>
@@ -396,7 +409,7 @@ example that follows shows one potential configuration.</p>
 <li>ExplicitDiseaseState</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_Age_Max&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
     <span class="nt">&quot;Target_Age_Min&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
     <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;ExplicitAgeRanges&quot;</span>
@@ -417,7 +430,7 @@ example that follows shows one potential configuration.</p>
 <li>All</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_Gender&quot;</span><span class="p">:</span> <span class="s2">&quot;Male&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -430,7 +443,7 @@ example that follows shows one potential configuration.</p>
 <td>1</td>
 <td>1</td>
 <td>The fraction of individuals in the target demographic that will receive this intervention.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
 </pre></div>
@@ -443,7 +456,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>A list of the <strong>IndividualProperty</strong> key:value pairs, as defined in the demographics file, that individuals must have to be targeted by this node-level intervention. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Property_Restrictions_Within_Node&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Risk&quot;</span><span class="p">:</span> <span class="s2">&quot;HIGH&quot;</span>
     <span class="p">}]</span>
@@ -458,7 +471,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>0</td>
 <td>When set to true (1), the intervention is only distributed to individuals that began the simulation in the node (i.e. those that claim the node as their residence).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_Residents_Only&quot;</span><span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
 </pre></div>
@@ -467,7 +480,7 @@ example that follows shows one potential configuration.</p>
 </tr>
 </tbody>
 </table>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
