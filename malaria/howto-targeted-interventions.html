@@ -190,6 +190,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "https://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="target-interventions-to-nodes-or-groups">
 <h1>Target interventions to nodes or groups<a class="headerlink" href="#target-interventions-to-nodes-or-groups" title="Permalink to this headline">¶</a></h1>
 <p>Generally, you want to target your outbreaks and campaign interventions to specific regions or
@@ -223,7 +236,7 @@ to all nodes within the defined bounds.</li>
 </li>
 </ol>
 <p>See the example below.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Event_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Outbreak&quot;</span><span class="p">,</span>
@@ -278,7 +291,7 @@ risk or living in suburban settings.</p>
 <p>At day 0 of the simulation, an outbreak starts. <strong>Target_Demographic</strong> is set to “Everyone” but
 <strong>Property_Restrictions</strong> restricts the start of the outbreak to the “Urban” group.</p>
 <img alt="_images/howto-targeted-1.png" src="_images/howto-targeted-1.png" />
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Number_Distributions&quot;</span><span class="p">:</span> <span class="mi">-1</span><span class="p">,</span>
@@ -310,7 +323,7 @@ other property types.</p>
 <p>In this example, values are defined for both the “Risk” and “Place” property types. The outbreak only
 targets “Suburban” individuals using the “Place” property type. Individuals can have any “Risk” value.</p>
 <img alt="_images/howto-targeted-2.png" src="_images/howto-targeted-2.png" />
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Number_Distributions&quot;</span><span class="p">:</span> <span class="mi">-1</span><span class="p">,</span>
@@ -344,7 +357,7 @@ values with the “Place” property, you must use multiple interventions. You c
 group with the same property value in one intervention or outbreak.</p>
 <p>In this example, an outbreak starts at day 0 in the both the “Rural” and “Urban” groups.</p>
 <img alt="_images/howto-targeted-3.png" src="_images/howto-targeted-3.png" />
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Number_Distributions&quot;</span><span class="p">:</span> <span class="mi">-1</span><span class="p">,</span>
@@ -401,7 +414,7 @@ applied to individuals that are assigned both values.</p>
 <p>In this example, a vaccine intervention is targeted at low risk, suburban place individuals.
 Individuals who are targeted to receive the vaccine must have both property values.</p>
 <img alt="_images/howto-targeted-4.png" src="_images/howto-targeted-4.png" />
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -442,7 +455,7 @@ one OR both property values; they need not have both.</p>
 <p>In this example, an outbreak is targeted at low risk individuals in the first intervention and suburban
 individuals in the second intervention.</p>
 <img alt="_images/howto-targeted-5.png" src="_images/howto-targeted-5.png" />
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Number_Distributions&quot;</span><span class="p">:</span> <span class="mi">-1</span><span class="p">,</span>
@@ -495,7 +508,7 @@ individuals in the second intervention.</p>
 <strong>Age_Bin_Edges_In_Years</strong> demographics parameter (see <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters). This
 allows you to use a single campaign event instead of multiple ones as you would with
 <strong>“Target_Demographic”: “ExplicitAgeRanges”</strong>.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Distributions&quot;</span><span class="p">:</span> <span class="p">[{</span>
@@ -535,7 +548,7 @@ allows you to use a single campaign event instead of multiple ones as you would 
 to other property types. However, you can combine both kinds of restrictions. In this example, a
 vaccine campaign is targeted at urban individuals who are age 0 to 5.</p>
 <img alt="_images/howto-targeted-6.png" src="_images/howto-targeted-6.png" />
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>

@@ -195,6 +195,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "https://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="hint-s-2-school-closure">
 <h1>HINT 2: School closure<a class="headerlink" href="#hint-s-2-school-closure" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial replicates disease transmission dynamics through the different activities of
@@ -282,7 +295,7 @@ three groups: “Community”, “School”, and “Work”. Students are a main
 last two columns and rows demonstrate the different behaviors when students are not in school. Note
 that the fourth column and row for <strong>SchoolBreak_Interaction</strong> have a much higher transition rate than
 <strong>SchoolBreak_NonInteraction</strong> in the fifth row and column.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Place&quot;</span><span class="p">,</span>
@@ -343,7 +356,7 @@ ScenariosHINT02_SchoolClosure directory.</p>
 <p>An <strong>OutbreakIndividual</strong> event seeds the initial infection on day 1 of the simulation. For more
 information, see <strong>OutbreakIndividual</strong> parameters.</p>
 <p>You can view the campaign.json file in the in the ScenariosHINT02_SchoolClosure directory.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="p">{</span>

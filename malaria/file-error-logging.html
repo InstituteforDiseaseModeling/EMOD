@@ -180,6 +180,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "https://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="error-and-logging-files">
 <h1>Error and logging files<a class="headerlink" href="#error-and-logging-files" title="Permalink to this headline">¶</a></h1>
 <p>When you run a simulation, EMOD will output basic error and logging information to help track
@@ -191,7 +204,7 @@ if you need help resolving an error.</p>
 <p>A status.txt file will be saved to the <a class="reference internal" href="glossary.html#term-working-directory"><span class="xref std std-term">working directory</span></a> that provides one
 output line per time step and includes the total run time of the simulation. A simulation
 with 50 time steps will look something like this:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Beginning</span> <span class="n">Simulation</span><span class="o">...</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Beginning</span> <span class="n">Simulation</span><span class="o">...</span>
 <span class="mi">1</span> <span class="n">of</span> <span class="mi">50</span> <span class="n">steps</span> <span class="n">complete</span><span class="o">.</span>
 <span class="mi">2</span> <span class="n">of</span> <span class="mi">50</span> <span class="n">steps</span> <span class="n">complete</span><span class="o">.</span>
 <span class="mi">3</span> <span class="n">of</span> <span class="mi">50</span> <span class="n">steps</span> <span class="n">complete</span><span class="o">.</span>
@@ -251,7 +264,7 @@ with 50 time steps will look something like this:</p>
 <p>When you run a simulation on an HPC cluster, it will generate a standard output logging file
 (StdOut.txt) in the working directory that captures all standard output messages. When you run a
 simulation locally, the Command Prompt window will display the same information. If you want to save
-this information to a text file instead, you can append <code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">stdout.txt</span></code> to the command used to
+this information to a text file instead, you can append <code class="docutils literal notranslate"><span class="pre">&gt;</span> <span class="pre">stdout.txt</span></code> to the command used to
 run the local EMOD simulation to redirect the console output to the file specified.</p>
 <p>The file contains information about a particular simulation, such as the EMOD version used and
 the files in use, as well as other initialization information, including the default logging level
@@ -260,7 +273,7 @@ with log output using the following format: &lt;timestep&gt;&lt;HPC rank&gt;&lt;
 <p>By default, the logging level is set to “INFO”. If you want to change the logging level,
 see <a class="reference internal" href="dev-logging.html"><span class="doc">Set log levels</span></a>.</p>
 <p>For example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">C</span><span class="p">:</span>\<span class="n">EMOD</span>\<span class="n">CampaignTesting</span>\<span class="mi">00</span><span class="n">_DefaultDemographics</span><span class="o">&gt;..</span>\<span class="n">Eradication</span><span class="o">.</span><span class="n">exe</span> <span class="o">-</span><span class="n">C</span> <span class="n">config</span><span class="o">.</span><span class="n">json</span> <span class="o">-</span><span class="n">I</span> <span class="o">../</span><span class="nb">input</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">C</span><span class="p">:</span>\<span class="n">EMOD</span>\<span class="n">CampaignTesting</span>\<span class="mi">00</span><span class="n">_DefaultDemographics</span><span class="o">&gt;..</span>\<span class="n">Eradication</span><span class="o">.</span><span class="n">exe</span> <span class="o">-</span><span class="n">C</span> <span class="n">config</span><span class="o">.</span><span class="n">json</span> <span class="o">-</span><span class="n">I</span> <span class="o">../</span><span class="nb">input</span>
 <span class="n">Intellectual</span> <span class="n">Ventures</span><span class="p">(</span><span class="n">R</span><span class="p">)</span><span class="o">/</span><span class="n">EMOD</span> <span class="n">Disease</span> <span class="n">Transmission</span> <span class="n">Kernel</span> <span class="mf">2.8</span><span class="o">.</span><span class="mf">1331.0</span>
 <span class="n">Built</span> <span class="n">on</span> <span class="n">Sep</span> <span class="mi">30</span> <span class="mi">2016</span> <span class="mi">08</span><span class="p">:</span><span class="mi">39</span><span class="p">:</span><span class="mi">43</span> <span class="n">by</span> <span class="n">cwiswell</span> <span class="kn">from</span> <span class="nn">master</span> <span class="p">(</span><span class="mi">482</span><span class="n">fdae</span><span class="p">)</span> <span class="n">checked</span> <span class="ow">in</span> <span class="n">on</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">09</span><span class="o">-</span><span class="mi">28</span> <span class="mi">14</span><span class="p">:</span><span class="mi">47</span><span class="p">:</span><span class="mi">20</span> <span class="o">-</span><span class="mi">0700</span>
 <span class="n">Supports</span> <span class="n">sim_types</span><span class="p">:</span> <span class="n">GENERIC</span><span class="p">,</span> <span class="n">VECTOR</span><span class="p">,</span> <span class="n">MALARIA</span><span class="p">,</span> <span class="n">AIRBORNE</span><span class="p">,</span> <span class="n">POLIO</span><span class="p">,</span> <span class="n">TB</span><span class="p">,</span> <span class="n">TBHIV</span><span class="p">,</span> <span class="n">STI</span><span class="p">,</span> <span class="n">HIV</span><span class="p">,</span> <span class="n">PY</span><span class="o">.</span>

@@ -190,6 +190,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "https://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="malaria-or-vector-configuration-tips">
 <h1>Malaria or vector configuration tips<a class="headerlink" href="#malaria-or-vector-configuration-tips" title="Permalink to this headline">¶</a></h1>
 <p>The following tips are useful for the initial configuration of  the vector or malaria model.
@@ -212,7 +225,7 @@ or “SAMPLE_IND_VECTORS”.</p>
 <p>The simulation configuration file has a field <strong>Vector_Species_Names</strong> which specifies the vector
 species that will be present in the simulation. For example, the following specifies that
 <em>Anopheles arabiensis</em>, <em>An. funestus</em>, and <em>An. gambiae</em> will be added to the simulation:</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Vector_Species_Names&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;arabiensis&quot;</span><span class="p">,</span>
         <span class="s2">&quot;funestus&quot;</span><span class="p">,</span>
@@ -229,7 +242,7 @@ habitats.</p>
 <p>The following example shows the syntax for configuring species parameters for <em>Anopheles arabiensis</em>.
 Note that you would also need to configure parameters for <em>An. fuenstus</em> and <em>An. gambiae</em>, if you are
 using a three species model as from the above example.</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Vector_Species_Params&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;arabiensis&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Acquire_Modifier&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
@@ -259,7 +272,7 @@ using a three species model as from the above example.</p>
 can reside in multiple habitat types. This linear-combination of habitat types allows for greater
 control over local vector ecology (especially during dry seasons as habitat availability may be
 drastically different). The following example demonstrates the syntax to include several habitat types.</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Vector_Species_Params&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;arabiensis&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Acquire_Modifier&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>

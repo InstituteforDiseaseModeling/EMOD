@@ -189,6 +189,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "https://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="antimalarial-drugs">
 <h1>Antimalarial drugs<a class="headerlink" href="#antimalarial-drugs" title="Permalink to this headline">¶</a></h1>
 <p>Antimalarial drugs are a powerful tool for malaria control and elimination.  Modeling mass
@@ -225,7 +238,7 @@ the drug kills parasites at maximum efficacy the entire time between the first d
 <strong>Drug_Decay_T1</strong> after the last dose.</span></p>
 </div>
 <p>The following example provides the syntax:</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
      <span class="nt">&quot;Malaria_Drug_Params&quot;</span><span class="p">:</span> <span class="p">{</span>
           <span class="nt">&quot;Artemether_Lumefantrine&quot;</span><span class="p">:</span> <span class="p">{</span>
                <span class="nt">&quot;Drug_Cmax&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>

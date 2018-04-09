@@ -195,6 +195,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "https://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="hint-s-1-risk-groups">
 <h1>HINT 1: Risk groups<a class="headerlink" href="#hint-s-1-risk-groups" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial is a simple simulation using risk groups to investigate the disease spread between
@@ -228,7 +241,7 @@ size. HINT uses a “who-acquires-infection-from-whom” (WAIFW) matrix with <im
 respectively, in <strong>NodeAttributes</strong>. The death rate is set in <strong>IndividualAttributes</strong> using the
 <strong>MortalityDistribution</strong> attribute. The <strong>ResultValues</strong> matrix in <strong>MortalityDistribution</strong> contains the death
 rates for males and females. Both the male and female death rate is equal to 0.</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Metadata&quot;</span><span class="p">:</span> <span class="p">{},</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">{}</span>
@@ -301,7 +314,7 @@ values of the WAIFW matrix are used to specify the disease transmission between 
 10 &amp; 0.1\\
 0.1 &amp; 1\\
 \end{pmatrix}"/></p>
-</div><div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+</div><div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Metadata&quot;</span><span class="p">:</span> <span class="p">{},</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
@@ -347,7 +360,7 @@ in a hypothetical community over a short period.</p>
 outbreak at the low risk group. For more information on targeting an <a class="reference internal" href="glossary.html#term-intervention"><span class="xref std std-term">intervention</span></a>, see
 <a class="reference external" href="./../general/howto-targeted-interventions.html">Target interventions to nodes or groups</a> in the general documentation set.</p>
 <p>This simulation uses the campaign.json file in the ScenariosHINT01_RiskGroups directory.</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>

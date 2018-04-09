@@ -189,6 +189,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "https://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="use-demographics-overlay-files">
 <h1>Use demographics overlay files<a class="headerlink" href="#use-demographics-overlay-files" title="Permalink to this headline">¶</a></h1>
 <p>You can use multiple demographic files when setting up a simulation. The “base layer” file contains
@@ -236,7 +249,7 @@ comma-delimited list of demographics files, listing the base layer file first.</
 <p>An example base layer demographics file and an overlay file is below. You can see that the overlay
 adds the <strong>TransmissionMatrix</strong> for Heterogeneous Intra-Node Transmission (HINT) to only three of the five nodes (which correspond to
 Washington state counties).</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Author&quot;</span><span class="p">:</span> <span class="s2">&quot;ewenger&quot;</span><span class="p">,</span>
         <span class="nt">&quot;NodeCount&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
@@ -348,7 +361,7 @@ Washington state counties).</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Author&quot;</span><span class="p">:</span> <span class="s2">&quot;cwiswell&quot;</span><span class="p">,</span>
         <span class="nt">&quot;NodeCount&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>

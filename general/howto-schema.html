@@ -187,6 +187,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "https://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="generate-a-list-of-all-available-parameters-a-schema">
 <h1>Generate a list of all available parameters (a schema)<a class="headerlink" href="#generate-a-list-of-all-available-parameters-a-schema" title="Permalink to this headline">¶</a></h1>
 <p>You can generate a <a class="reference internal" href="glossary.html#term-schema"><span class="xref std std-term">schema</span></a> from the EMOD executable (Eradication.exe) or Eradication binary that defines all configuration
@@ -219,21 +232,21 @@ are still scientifically valid.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">--help</span></code></td>
-<td><code class="docutils literal"><span class="pre">-help</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">--help</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">-help</span></code></td>
 <td>Shows help options for Eradication.exe.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">--version</span></code></td>
-<td><code class="docutils literal"><span class="pre">-v</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">--version</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">-v</span></code></td>
 <td>Shows the version information and supported simulation types. Note capitalization of short alternative.</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">--get-schema</span></code></td>
-<td><code class="docutils literal"><span class="pre">--get-schema</span></code></td>
-<td>Outputs the configuration and campaign parameters. Unless <code class="docutils literal"><span class="pre">--schema-path</span></code> or a redirect operator is used, the schema will print to the Command Prompt window.</td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">--get-schema</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">--get-schema</span></code></td>
+<td>Outputs the configuration and campaign parameters. Unless <code class="docutils literal notranslate"><span class="pre">--schema-path</span></code> or a redirect operator is used, the schema will print to the Command Prompt window.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">--schema-path</span></code></td>
-<td><code class="docutils literal"><span class="pre">&gt;</span></code></td>
-<td>When used with <code class="docutils literal"><span class="pre">--get-schema</span></code>, if a TXT or JSON file is specified, the schema information will be written to the file instead of the Command Prompt window.</td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">--schema-path</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">&gt;</span></code></td>
+<td>When used with <code class="docutils literal notranslate"><span class="pre">--get-schema</span></code>, if a TXT or JSON file is specified, the schema information will be written to the file instead of the Command Prompt window.</td>
 </tr>
 </tbody>
 </table>
@@ -244,7 +257,7 @@ are still scientifically valid.</p>
 <li><p class="first">Open a Command Prompt window and navigate to the directory where Eradication.exe is installed.</p>
 </li>
 <li><p class="first">To output the schema to the Command Prompt window, enter:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Eradication</span><span class="o">.</span><span class="n">exe</span> <span class="o">--</span><span class="n">get</span><span class="o">-</span><span class="n">schema</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Eradication</span><span class="o">.</span><span class="n">exe</span> <span class="o">--</span><span class="n">get</span><span class="o">-</span><span class="n">schema</span>
 </pre></div>
 </div>
 </li>
@@ -252,24 +265,24 @@ are still scientifically valid.</p>
 desired filename):</p>
 <ul>
 <li><p class="first">To output a text file that includes logging information, enter:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Eradication</span><span class="o">.</span><span class="n">exe</span> <span class="o">--</span><span class="n">get</span><span class="o">-</span><span class="n">schema</span> <span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">filename</span><span class="o">&gt;.</span><span class="n">txt</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Eradication</span><span class="o">.</span><span class="n">exe</span> <span class="o">--</span><span class="n">get</span><span class="o">-</span><span class="n">schema</span> <span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">filename</span><span class="o">&gt;.</span><span class="n">txt</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">To display logging in the Command Prompt window and output a text file
 that does not include logging information, enter:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Eradication</span><span class="o">.</span><span class="n">exe</span> <span class="o">--</span><span class="n">get</span><span class="o">-</span><span class="n">schema</span> <span class="o">--</span><span class="n">schema</span><span class="o">-</span><span class="n">path</span> <span class="o">&lt;</span><span class="n">filename</span><span class="o">&gt;.</span><span class="n">txt</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Eradication</span><span class="o">.</span><span class="n">exe</span> <span class="o">--</span><span class="n">get</span><span class="o">-</span><span class="n">schema</span> <span class="o">--</span><span class="n">schema</span><span class="o">-</span><span class="n">path</span> <span class="o">&lt;</span><span class="n">filename</span><span class="o">&gt;.</span><span class="n">txt</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">To output the schema to a JSON file that includes logging information, enter:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Eradication</span><span class="o">.</span><span class="n">exe</span> <span class="o">--</span><span class="n">get</span><span class="o">-</span><span class="n">schema</span> <span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">filename</span><span class="o">&gt;.</span><span class="n">json</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Eradication</span><span class="o">.</span><span class="n">exe</span> <span class="o">--</span><span class="n">get</span><span class="o">-</span><span class="n">schema</span> <span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">filename</span><span class="o">&gt;.</span><span class="n">json</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">To display logging in the Command Prompt window and output a JSON file
 that does not include logging information, enter:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Eradication</span><span class="o">.</span><span class="n">exe</span> <span class="o">--</span><span class="n">get</span><span class="o">-</span><span class="n">schema</span> <span class="o">--</span><span class="n">schema</span><span class="o">-</span><span class="n">path</span> <span class="o">&lt;</span><span class="n">filename</span><span class="o">&gt;.</span><span class="n">json</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Eradication</span><span class="o">.</span><span class="n">exe</span> <span class="o">--</span><span class="n">get</span><span class="o">-</span><span class="n">schema</span> <span class="o">--</span><span class="n">schema</span><span class="o">-</span><span class="n">path</span> <span class="o">&lt;</span><span class="n">filename</span><span class="o">&gt;.</span><span class="n">json</span>
 </pre></div>
 </div>
 </li>

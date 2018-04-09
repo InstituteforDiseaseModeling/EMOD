@@ -177,6 +177,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "https://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="input-and-output-file-structure">
 <h1>Input and output file structure<a class="headerlink" href="#input-and-output-file-structure" title="Permalink to this headline">¶</a></h1>
 <p>The section describes the file structure used for <a class="reference internal" href="glossary.html#term-input-data-files"><span class="xref std std-term">input data files</span></a>, each of the built-in

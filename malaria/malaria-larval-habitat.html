@@ -189,6 +189,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "https://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="larval-habitat">
 <h1>Larval habitat<a class="headerlink" href="#larval-habitat" title="Permalink to this headline">¶</a></h1>
 <p>Available larval habitat is a primary driver of local mosquito populations, and different mosquito
@@ -248,7 +261,7 @@ may utilize the same habitat, with each species existing independently. The scal
 represents the number of larvae in a 1x1-degree area. The factor multiplicatively scales the
 resulting weather or population dependent functional form. The following example shows how to use
 this parameter, using <em>Anopheles funestus</em> as the vector and CONSTANT as the scaled habitat type.</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Vector_Species_params&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;funestus&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Larval_Habitat_Types&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -371,7 +384,7 @@ adds a more flexible option in which you do not need climate data.</p>
 <p>LINEAR_SPLINE has different syntax than the other habitat types, as the user is now required to
 provide a distribution of the larval population. The following example provides the syntax for
 configuring this habitat type:</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;Vector_Species_params&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="nt">&quot;funestus&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&quot;Larval_Habitat_Types&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -442,7 +455,7 @@ transmission setting), and there would be no reduction in available habitat.</p>
 habitat types configured for the simulation, specific habitat types, or individual mosquito species
 within particular habitat types in the Nodes array of the demographics file (see NodeAttributes in
 <a class="reference internal" href="parameter-demographics.html"><span class="doc">Demographics parameters</span></a>). The following example shows the syntax:</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">340461476</span><span class="p">,</span>
         <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>

@@ -191,6 +191,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "https://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="run-a-simulation-using-mpiexec">
 <h1>Run a simulation using mpiexec<a class="headerlink" href="#run-a-simulation-using-mpiexec" title="Permalink to this headline">¶</a></h1>
 <p>The application mpiexec is used to run multi-node simulations in parallel. Eradication.exe is “single
@@ -223,12 +236,12 @@ campaign files for the simulation.</p>
 <li><p class="first">Invoke Eradication.exe using mpiexec as follows, replacing the number of cores, paths, and command options
 as necessary for your environment. See <a class="reference internal" href="howto-simulation-cli.html"><span class="doc">Run a simulation using the command line</span></a> for more information about
 the command options available for use with Eradication.exe.</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>mpiexec -n 3 ..\Eradication.exe --config config.json --input-path ..\InputDirectory\Garki --output-path OutputGarki
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mpiexec -n 3 ..\Eradication.exe --config config.json --input-path ..\InputDirectory\Garki --output-path OutputGarki
 </pre></div>
 </div>
 </li>
 </ol>
-<p>Mpiexec will start multiple copies of Eradication.exe as specified by <code class="docutils literal"><span class="pre">-n</span></code>. Those instances will
+<p>Mpiexec will start multiple copies of Eradication.exe as specified by <code class="docutils literal notranslate"><span class="pre">-n</span></code>. Those instances will
 communicate with each other via MPI. If all cores are on a single computational node or host, they
 will use internal networking to carry the MPI packets.</p>
 <div class="admonition note">
@@ -236,7 +249,7 @@ will use internal networking to carry the MPI packets.</p>
 <p class="last">The EMOD executable (Eradication.exe) does NOT use the configuration file parameter <strong>Num_Cores</strong>, which is used by the
 infrastructure that runs the simulation, such as an HPC cluster or regression script.</p>
 </div>
-<p>You can also link together several computers with MPI using the mpiexec <code class="docutils literal"><span class="pre">-host</span></code> option. For
+<p>You can also link together several computers with MPI using the mpiexec <code class="docutils literal notranslate"><span class="pre">-host</span></code> option. For
 example, if you were using six cores on two computers, you could run three copies of Eradication.exe
 on the first computer, and three more could be run on the second computer. Again, this assumes that
 each computer has at least three cores.</p>

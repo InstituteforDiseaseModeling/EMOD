@@ -169,6 +169,20 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/tuberculosis/";
+        var newBase = "https://www.idmod.org/docs/tuberculosis/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
+
   <div class="section" id="whats-new">
 <h1>What’s new<a class="headerlink" href="#whats-new" title="Permalink to this headline">¶</a></h1>
 <p>This topic describes new functionality and breaking changes for recently released versions of
@@ -229,7 +243,7 @@ Epidemiological MODeling software (EMOD).</p>
 <td>NA</td>
 <td>UNINITIALIZED STRING</td>
 <td>The name of the file containing custom report configuration parameters. Omitting this parameter or setting it to RunAllCustomReports will load all reporters found that are valid for the given simulation type. The file must be in JSON format.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>  
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>  
     <span class="nt">&quot;Custom_Reports_Filename&quot;</span><span class="p">:</span> <span class="s2">&quot;custom_reports.json&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -242,7 +256,7 @@ Epidemiological MODeling software (EMOD).</p>
 <td>3.40E+38</td>
 <td>6</td>
 <td>The mean of log normal for the incubation period distribution. <strong>Incubation_Period_Distribution</strong> must be set to LOG_NORMAL_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Incubation_Period_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;LOG_NORMAL_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Incubation_Period_Log_Mean&quot;</span><span class="p">:</span> <span class="mf">5.758</span><span class="p">,</span>
     <span class="nt">&quot;Incubation_Period_Log_Width&quot;</span><span class="p">:</span> <span class="mf">0.27</span>
@@ -257,7 +271,7 @@ Epidemiological MODeling software (EMOD).</p>
 <td>3.40E+38</td>
 <td>1</td>
 <td>The log width of log normal for the incubation period distribution. <strong>Incubation_Period_Distribution</strong> must be set to LOG_NORMAL_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Incubation_Period_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;LOG_NORMAL_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Incubation_Period_Log_Mean&quot;</span><span class="p">:</span> <span class="mf">5.758</span><span class="p">,</span>
     <span class="nt">&quot;Incubation_Period_Log_Width&quot;</span><span class="p">:</span> <span class="mf">0.27</span>
@@ -272,7 +286,7 @@ Epidemiological MODeling software (EMOD).</p>
 <td>1</td>
 <td>0</td>
 <td>The scale factor applied to <strong>Base_Infectivity</strong> at the beginning of a simulation, before the infectivity begins to grow exponentially. <strong>Infectivity_Scale_Type</strong> must be set to EXPONENTIAL_FUNCTION_OF_TIME.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Infectivity_Exponential_Baseline&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> 
     <span class="nt">&quot;Infectivity_Exponential_Delay&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> 
     <span class="nt">&quot;Infectivity_Exponential_Rate&quot;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span> 
@@ -288,7 +302,7 @@ Epidemiological MODeling software (EMOD).</p>
 <td>3.40E+38</td>
 <td>0</td>
 <td>The number of days before infectivity begins to ramp up exponentially. <strong>Infectivity_Scale_Type</strong> must be set to EXPONENTIAL_FUNCTION_OF_TIME.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Infectivity_Exponential_Baseline&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> 
     <span class="nt">&quot;Infectivity_Exponential_Delay&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> 
     <span class="nt">&quot;Infectivity_Exponential_Rate&quot;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span> 
@@ -304,7 +318,7 @@ Epidemiological MODeling software (EMOD).</p>
 <td>3.40E+38</td>
 <td>0</td>
 <td>The daily rate of exponential growth to approach to full infectivity after the delay set by <strong>Infectivity_Exponential_Delay</strong> has passed. <strong>Infectivity_Scale_Type</strong> must be set to EXPONENTIAL_FUNCTION_OF_TIME.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Infectivity_Exponential_Rate&quot;</span><span class="p">:</span> <span class="mi">45</span>
 <span class="p">}</span>
 </pre></div>
@@ -317,7 +331,7 @@ Epidemiological MODeling software (EMOD).</p>
 <td>1.00E+06</td>
 <td>8000</td>
 <td>The maximum size (in MB) of working set memory before the system throws an exception and halts.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Memory_Usage_Halting_Threshold_Working_Set_MB&quot;</span><span class="p">:</span> <span class="mi">4000</span>
 <span class="p">}</span>
 </pre></div>
@@ -330,7 +344,7 @@ Epidemiological MODeling software (EMOD).</p>
 <td>1.00E+06</td>
 <td>7000</td>
 <td>The maximum size (in MB) of working set memory before memory usage statistics are written to the log regardless of log level.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Memory_Usage_Warning_Threshold_Working_Set_MB&quot;</span><span class="p">:</span> <span class="mi">3500</span>
 <span class="p">}</span>
 </pre></div>
@@ -343,7 +357,7 @@ Epidemiological MODeling software (EMOD).</p>
 <td>2.15E+09</td>
 <td>&#160;</td>
 <td>The list of time steps after which to save the serialized state. 0 (zero) indicates the initial state before simulation, n indicates after the nth time step. By default, no serialized state is saved.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Serialization_Time_Steps&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="mi">0</span><span class="p">,</span> 
         <span class="mi">10</span>
@@ -359,7 +373,7 @@ Epidemiological MODeling software (EMOD).</p>
 <td>NA</td>
 <td>NA</td>
 <td>Array of filenames with serialized population data. The number of filenames must match the number of cores used for the simulation. The file must be in .dtk format.</td>
-<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Serialized_Population_Filenames&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;state-00010.dtk&quot;</span>
     <span class="p">]</span>
@@ -375,7 +389,7 @@ Epidemiological MODeling software (EMOD).</p>
 <td>NA</td>
 <td>.</td>
 <td>The root path for the serialized population files.</td>
-<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Serialized_Population_Path&quot;</span><span class="p">:</span> <span class="s2">&quot;../00_Generic_Version_1_save/output&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -424,7 +438,7 @@ described in the next section.</p>
 <td>NA</td>
 <td>NA</td>
 <td>An array that contains parameters that add properties to nodes in a simulation. For example, you can define values for intervention status, risk, and other properties and assign values to different nodes.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Risk&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HIGH&quot;</span><span class="p">,</span> <span class="s2">&quot;MEDIUM&quot;</span><span class="p">,</span> <span class="s2">&quot;LOW&quot;</span><span class="p">],</span>
@@ -460,7 +474,7 @@ described in the next section.</p>
 <dd>Tag individuals or nodes based on the quality of medical care.</dd>
 </dl>
 </td>
-<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Age_Bin&quot;</span><span class="p">,</span>
@@ -470,7 +484,7 @@ described in the next section.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span> <span class="s2">&quot;RECENT_SPRAY&quot;</span><span class="p">],</span>
@@ -534,7 +548,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>2.15E+0</td>
 <td>2.15E+09</td>
 <td>The number of interventions (such as vaccine doses) that a health worker or clinic receives in a shipment. Interventions can only be distributed if they are in stock; stock is updated every <strong>Days_Between_Shipments</strong> with the <strong>Amount_In_Shipment</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Amount_In_Shipment&quot;</span><span class="p">:</span> <span class="mi">10</span>
 <span class="p">}</span>
 </pre></div>
@@ -547,7 +561,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>3.40E+3</td>
 <td>3.40E+38</td>
 <td>The number of days to wait before a clinic or health worker receives a new shipment of interventions (such as vaccine doses). Interventions can only be distributed if they are in stock; stock is updated every <strong>Days_Between_Shipments</strong> with the <strong>Amount_In_Shipment</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Days_Between_Shipments&quot;</span><span class="p">:</span> <span class="mi">30</span>
 <span class="p">}</span>
 </pre></div>
@@ -560,7 +574,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>3.40E+3</td>
 <td>3.40E+38</td>
 <td>The number of days for an event coordinator to be active before it expires.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration&quot;</span><span class="p">:</span> <span class="mi">65</span>
 <span class="p">}</span>
 </pre></div>
@@ -573,7 +587,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>3.40E+3</td>
 <td>6</td>
 <td>The initial amount of stock of interventions (such as vaccine doses). Interventions can only be distributed if they are in stock; stock is updated every <strong>Days_Between_Shipments</strong> with the <strong>Amount_In_Shipment</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Initial_Amount&quot;</span><span class="p">:</span> <span class="mi">10</span>
 <span class="p">}</span>
 </pre></div>
@@ -613,7 +627,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <dd>The duration is two exponential distributions with given means.</dd>
 </dl>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Initial_Amount_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;FIXED_DURATION&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -626,7 +640,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>3.40E+3</td>
 <td>0</td>
 <td>The maximum amount of initial stock when <strong>Initial_Amount_Distribution_Type</strong> is set to UNIFORM_DISTRIBUTION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Initial_Amount_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Amount_Min&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Amount_Max&quot;</span><span class="p">:</span> <span class="mi">10</span>
@@ -641,7 +655,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>3.40E+3</td>
 <td>6</td>
 <td>The average amount of initial stock when <strong>Initial_Amount_Distribution_Type</strong> is set to GAUSSIAN_DISTRIBUTION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Initial_Amount_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DISTRIBUTION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Amount_Std_Dev&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Amount_Mean&quot;</span><span class="p">:</span> <span class="mi">5</span>
@@ -656,7 +670,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>3.40E+3</td>
 <td>0</td>
 <td>The minimum amount of initial stock when <strong>Initial_Amount_Distribution_Type</strong> is set to UNIFORM_DISTRIBUTION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Initial_Amount_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Amount_Min&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Amount_Max&quot;</span><span class="p">:</span> <span class="mi">10</span>
@@ -671,7 +685,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>3.40E+3</td>
 <td>1</td>
 <td>The standard deviation for the amount of initial stock when <strong>Initial_Amount_Distribution_Type</strong> is set to GAUSSIAN_DISTRIBUTION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Initial_Amount_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DISTRIBUTION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Amount_Std_Dev&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Initial_Amount_Mean&quot;</span><span class="p">:</span> <span class="mi">5</span>
@@ -686,7 +700,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>NA</td>
 <td>NA</td>
 <td>The nested JSON of the actual intervention to be distributed by this event coordinator.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;BroadcastEvent&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Broadcast_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;EventFromIntervention&quot;</span>
@@ -702,7 +716,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>2.15E+0</td>
 <td>2.15E+09</td>
 <td>The maximum number of interventions (such as vaccine doses) that can be distributed by health workers or clinics in a given day.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Max_Distributed_Per_Day&quot;</span><span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
 </pre></div>
@@ -715,7 +729,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>2.15E+0</td>
 <td>2.15E+09</td>
 <td>The maximum number of interventions (such as vaccine doses) that can be stored by a health worker or clinic. If the amount of interventions in a new shipment and current stock exceeds this value, only the number of interventions specified by this value will be stored.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Max_Stock&quot;</span><span class="p">:</span> <span class="mi">12</span>
 <span class="p">}</span>
 </pre></div>
@@ -728,7 +742,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>NA</td>
 <td>NoTrigger</td>
 <td>The list of events that are of interest to the community health worker (CHW). If one of these events occurs, the individual or node is put into a queue to receive the CHW’s intervention. The CHW processes the queue when the event coordinator is updated. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Trigger_Condition_List&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ListenForEvent&quot;</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
@@ -741,7 +755,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>3.40E+3</td>
 <td>3.40E+38</td>
 <td>The number of days a person or node can be in the queue waiting to get the intervention from the community health worker (CHW). If a person or node is in the queue, they will not be re-added to the queue if the event that would add them to the queue occurs. This allows them to maintain their priority, however they could be removed from the queue due to this waiting period.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Waiting_Period&quot;</span><span class="p">:</span> <span class="mi">15</span>
 <span class="p">}</span>
 </pre></div>
@@ -754,7 +768,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>NA</td>
 <td>NA</td>
 <td>A list of the <strong>IndividualProperty</strong> key:value pairs, as defined in the demographics file, that individuals must have to be targeted by this individual-level intervention. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Property_Restrictions&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;Risk:HIGH&quot;</span>
     <span class="p">]</span>
@@ -769,7 +783,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>NA</td>
 <td>NA</td>
 <td>A list of the <strong>NodeProperty</strong> key:value pairs, as defined in the demographics file, that nodes must have to be targeted by the intervention.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Node_Property_Restrictions&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Place&quot;</span><span class="p">:</span> <span class="s2">&quot;URBAN&quot;</span><span class="p">,</span>
             <span class="nt">&quot;Risk&quot;</span><span class="p">:</span> <span class="s2">&quot;MED&quot;</span>
@@ -790,7 +804,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>3.40E+3</td>
 <td>0</td>
 <td>The lower end of ages targeted for an intervention, in years. Used when <strong>Target_Demographic</strong> is set to ExplicitAgeRanges or ExplicitAgeRangesAndGender.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_Age_Max&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
     <span class="nt">&quot;Target_Age_Min&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
     <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;ExplicitAgeRanges&quot;</span>
@@ -820,7 +834,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <li>ExplicitDiseaseState</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_Age_Max&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
     <span class="nt">&quot;Target_Age_Min&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
     <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;ExplicitAgeRanges&quot;</span>
@@ -841,7 +855,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <li>All</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_Gender&quot;</span><span class="p">:</span> <span class="s2">&quot;Male&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -854,7 +868,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>1</td>
 <td>1</td>
 <td>The fraction of individuals in the target demographic that will receive this intervention.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
 </pre></div>
@@ -867,7 +881,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>NA</td>
 <td>NA</td>
 <td>A list of the <strong>IndividualProperty</strong> key:value pairs, as defined in the demographics file, that individuals must have to be targeted by this node-level intervention. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Property_Restrictions_Within_Node&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Risk&quot;</span><span class="p">:</span> <span class="s2">&quot;HIGH&quot;</span>
     <span class="p">}]</span>
@@ -882,7 +896,7 @@ of drugs  and node-level interventions could be spraying houses with insecticide
 <td>NA</td>
 <td>0</td>
 <td>When set to true (1), the intervention is only distributed to individuals that began the simulation in the node (i.e. those that claim the node as their residence).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_Residents_Only&quot;</span><span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
 </pre></div>
@@ -926,7 +940,7 @@ inherits from <strong>Outbreak</strong>; the <strong>Antigen</strong> and <stron
 <td>3.40E+3</td>
 <td>0</td>
 <td>The rate of per-day importation for each node that the intervention is distributed to.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
         <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -945,7 +959,7 @@ inherits from <strong>Outbreak</strong>; the <strong>Antigen</strong> and <stron
 <td>2.15E+0</td>
 <td>1</td>
 <td>The durations over which to apply import pressure.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
         <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -969,7 +983,7 @@ inherits from <strong>Outbreak</strong>; the <strong>Antigen</strong> and <stron
 <p class="last">This will increase the population and there is no control over demographics of these individuals.</p>
 </div>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
         <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -988,7 +1002,7 @@ inherits from <strong>Outbreak</strong>; the <strong>Antigen</strong> and <stron
 <td>43800</td>
 <td>365</td>
 <td>The age (in days) of infected import cases.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Import_Age&quot;</span><span class="p">:</span> <span class="mi">10000</span>
 <span class="p">}</span>
 </pre></div>
@@ -1001,7 +1015,7 @@ inherits from <strong>Outbreak</strong>; the <strong>Antigen</strong> and <stron
 <td>2.15E+0</td>
 <td>-1</td>
 <td>The incubation period, in days, that infected individuals will go through before becoming infectious. This value overrides the incubation period set in the configuration file. Set to -1 to honor the configuration parameter settings.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Incubation_Period_Override&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
 </pre></div>
@@ -1014,7 +1028,7 @@ inherits from <strong>Outbreak</strong>; the <strong>Antigen</strong> and <stron
 <td>10</td>
 <td>0</td>
 <td>The antigenic ID of the outbreak infection.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>  
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>  
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
         <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -1032,7 +1046,7 @@ inherits from <strong>Outbreak</strong>; the <strong>Antigen</strong> and <stron
 <td>2.15E+0</td>
 <td>0</td>
 <td>The genetic ID of the outbreak infection.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
         <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -1086,7 +1100,7 @@ by the immunity waning parameters in the configuration file.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies the boosting effect on acquisition immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine. This does not replace current immunity, it builds multiplicatively on top of it.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Boost_Acquire&quot;</span><span class="p">:</span> <span class="mf">0.7</span>
 <span class="p">}</span>
 </pre></div>
@@ -1099,7 +1113,7 @@ by the immunity waning parameters in the configuration file.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies the boosting effect on mortality immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine. This does not replace current immunity, it builds multiplicatively on top of it.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Boost_Mortality&quot;</span><span class="p">:</span> <span class="mf">1.0</span>
 <span class="p">}</span>
 </pre></div>
@@ -1112,7 +1126,7 @@ by the immunity waning parameters in the configuration file.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies how much acquisition immunity is required before the vaccine changes from a prime to a boost.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Boost_Threshold_Acquire&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
 <span class="p">}</span>
 </pre></div>
@@ -1125,7 +1139,7 @@ by the immunity waning parameters in the configuration file.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies how much mortality immunity is required before the vaccine changes from a prime to a boost.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Boost_Threshold_Mortality&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
 <span class="p">}</span>
 </pre></div>
@@ -1138,7 +1152,7 @@ by the immunity waning parameters in the configuration file.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies how much transmission immunity is required before the vaccine changes from a prime to a boost.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Boost_Threshold_Transmit&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
 <span class="p">}</span>
 </pre></div>
@@ -1151,7 +1165,7 @@ by the immunity waning parameters in the configuration file.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies the boosting effect on transmission immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine. This does not replace current immunity, it builds multiplicatively on top of it.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Boost_Transmit&quot;</span><span class="p">:</span> <span class="mf">0.5</span>
 <span class="p">}</span>
 </pre></div>
@@ -1164,7 +1178,7 @@ by the immunity waning parameters in the configuration file.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies the priming effect on acquisition immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Prime_Acquire&quot;</span><span class="p">:</span> <span class="mf">0.1</span>
 <span class="p">}</span>
 </pre></div>
@@ -1177,7 +1191,7 @@ by the immunity waning parameters in the configuration file.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies the priming effect on mortality immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Prime_Mortality&quot;</span><span class="p">:</span> <span class="mf">0.3</span>
 <span class="p">}</span>
 </pre></div>
@@ -1190,7 +1204,7 @@ by the immunity waning parameters in the configuration file.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies the priming effect on transmission immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Prime_Transmit&quot;</span><span class="p">:</span> <span class="mf">0.2</span>
 <span class="p">}</span>
 </pre></div>
@@ -1203,7 +1217,7 @@ by the immunity waning parameters in the configuration file.</p>
 <td>999999</td>
 <td>10</td>
 <td>The unit cost per vaccine (unamortized).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span>
 <span class="p">}</span>
 </pre></div>
@@ -1251,7 +1265,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The configuration for multi-effect vaccine acquisition. Specify how this effect decays over time using one of the <a class="reference internal" href="parameter-campaign-waningeffects.html"><span class="doc">Waning effect classes</span></a>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Acquire_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
         <span class="nt">&quot;Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">2525</span><span class="p">,</span>
@@ -1268,7 +1282,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The configuration for multi-effect vaccine mortality. Specify how this effect decays over time using one of the <a class="reference internal" href="parameter-campaign-waningeffects.html"><span class="doc">Waning effect classes</span></a>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Mortality_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="nt">&quot;Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">2525</span><span class="p">,</span>
@@ -1285,7 +1299,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The configuration for multi-effect vaccine transmission. Specify how this effect decays over time using one of the <a class="reference internal" href="parameter-campaign-waningeffects.html"><span class="doc">Waning effect classes</span></a>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Transmit_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
         <span class="nt">&quot;Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">2525</span><span class="p">,</span>
@@ -1302,7 +1316,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies the boosting effect on acquisition immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine. This does not replace current immunity, it builds multiplicatively on top of it.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Boost_Acquire&quot;</span><span class="p">:</span> <span class="mf">0.7</span>
 <span class="p">}</span>
 </pre></div>
@@ -1315,7 +1329,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies the boosting effect on mortality immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine. This does not replace current immunity, it builds multiplicatively on top of it.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Boost_Mortality&quot;</span><span class="p">:</span> <span class="mf">1.0</span>
 <span class="p">}</span>
 </pre></div>
@@ -1328,7 +1342,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies how much acquisition immunity is required before the vaccine changes from a prime to a boost.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Boost_Threshold_Acquire&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
 <span class="p">}</span>
 </pre></div>
@@ -1341,7 +1355,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies how much mortality immunity is required before the vaccine changes from a prime to a boost.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Boost_Threshold_Mortality&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
 <span class="p">}</span>
 </pre></div>
@@ -1354,7 +1368,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies how much transmission immunity is required before the vaccine changes from a prime to a boost.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Boost_Threshold_Transmit&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
 <span class="p">}</span>
 </pre></div>
@@ -1367,7 +1381,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies the boosting effect on transmission immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine. This does not replace current immunity, it builds multiplicatively on top of it.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Boost_Transmit&quot;</span><span class="p">:</span> <span class="mf">0.5</span>
 <span class="p">}</span>
 </pre></div>
@@ -1380,7 +1394,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies the priming effect on acquisition immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Prime_Acquire&quot;</span><span class="p">:</span> <span class="mf">0.1</span>
 <span class="p">}</span>
 </pre></div>
@@ -1393,7 +1407,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies the priming effect on mortality immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Prime_Mortality&quot;</span><span class="p">:</span> <span class="mf">0.3</span>
 <span class="p">}</span>
 </pre></div>
@@ -1406,7 +1420,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies the priming effect on transmission immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Prime_Transmit&quot;</span><span class="p">:</span> <span class="mf">0.2</span>
 <span class="p">}</span>
 </pre></div>
@@ -1419,7 +1433,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>999999</td>
 <td>10</td>
 <td>The unit cost per vaccine (unamortized).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span>
 <span class="p">}</span>
 </pre></div>
@@ -1432,7 +1446,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>1</td>
 <td>1</td>
 <td>The rate at which delivered vaccines will successfully stimulate an immune response and achieve the desired efficacy. For example, if it is set to 0.9, there will be a 90 percent chance that the vaccine will start with the specified efficacy, and a 10 percent chance that it will have no efficacy at all.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
@@ -1455,7 +1469,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>NA</td>
 <td>0</td>
 <td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
 </pre></div>
@@ -1468,7 +1482,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>NA</td>
 <td>NA</td>
 <td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
     <span class="p">]</span>
@@ -1483,7 +1497,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -1496,7 +1510,7 @@ is intended to mimic biological priming and boosting.</p>
 <td>NA</td>
 <td>NA</td>
 <td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -1541,7 +1555,7 @@ node-level intervention functions in a similar manner as the individual-level in
 <td>NA</td>
 <td>NA</td>
 <td>The <strong>NodeProperty</strong> key:value pair, as defined in the demographics file, to assign to the node.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_NP_Key_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:NONE&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -1554,7 +1568,7 @@ node-level intervention functions in a similar manner as the individual-level in
 <td>1</td>
 <td>1</td>
 <td>The probability that an individual will move to the <strong>Target_Property_Value</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;PropertyValueChanger&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[],</span>
@@ -1576,7 +1590,7 @@ node-level intervention functions in a similar manner as the individual-level in
 <td>3.40E+3</td>
 <td>3.40E+38</td>
 <td>The maximum amount of time individuals have to move to a new group. This timing works in conjunction with <strong>Daily_Probability</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;PropertyValueChanger&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[],</span>
@@ -1598,7 +1612,7 @@ node-level intervention functions in a similar manner as the individual-level in
 <td>10000</td>
 <td>0</td>
 <td>The number of days before an individual moves back to their original group.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;PropertyValueChanger&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[],</span>
@@ -1620,7 +1634,7 @@ node-level intervention functions in a similar manner as the individual-level in
 <td>NA</td>
 <td>NA</td>
 <td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
     <span class="p">]</span>
@@ -1635,7 +1649,7 @@ node-level intervention functions in a similar manner as the individual-level in
 <td>NA</td>
 <td>NA</td>
 <td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -1648,7 +1662,7 @@ node-level intervention functions in a similar manner as the individual-level in
 <td>NA</td>
 <td>NA</td>
 <td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -1698,7 +1712,7 @@ intended to mimic biological priming and boosting.</p>
 <td>1</td>
 <td>1</td>
 <td>Specifies the boosting effect on [acquisition/transmission/mortality] immunity for previously exposed individuals (either natural or vaccine-derived). This does not replace current immunity, it builds multiplicatively on top of it.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
         <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -1724,7 +1738,7 @@ intended to mimic biological priming and boosting.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies how much immunity is required before the vaccine changes from a priming effect to a boosting effect.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
         <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -1750,7 +1764,7 @@ intended to mimic biological priming and boosting.</p>
 <td>1</td>
 <td>1</td>
 <td>Specifies the priming effect on [acquisition/transmission/mortality] immunity for naive individuals (without natural or vaccine-derived immunity).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
         <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -1776,7 +1790,7 @@ intended to mimic biological priming and boosting.</p>
 <td>NA</td>
 <td>1</td>
 <td>The overall vaccine efficacy when individuals receive more than one vaccine. When set to true (1), the vaccine efficacies are multiplied together; when set to false (0), the efficacies are additive.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
@@ -1799,7 +1813,7 @@ intended to mimic biological priming and boosting.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The configuration of how the intervention efficacy wanes over time. Specify how this effect decays over time using one of the <a class="reference internal" href="parameter-campaign-waningeffects.html"><span class="doc">Waning effect classes</span></a>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Waning_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Box_Duration&quot;</span><span class="p">:</span> <span class="mi">3650</span><span class="p">,</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -1828,7 +1842,7 @@ Possible values are:</p>
 <dd>The vaccine reduces the disease-mortality rate of a vaccinated individual.</dd>
 </dl>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
@@ -1851,7 +1865,7 @@ Possible values are:</p>
 <td>999999</td>
 <td>10</td>
 <td>The unit cost per vaccine (unamortized).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span>
 <span class="p">}</span>
 </pre></div>
@@ -1864,7 +1878,7 @@ Possible values are:</p>
 <td>1</td>
 <td>1</td>
 <td>The rate at which delivered vaccines will successfully stimulate an immune response and achieve the desired efficacy. For example, if it is set to 0.9, there will be a 90 percent chance that the vaccine will start with the specified efficacy, and a 10 percent chance that it will have no efficacy at all.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
@@ -1887,7 +1901,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>0</td>
 <td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
 </pre></div>
@@ -1900,7 +1914,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>NA</td>
 <td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
     <span class="p">]</span>
@@ -1915,7 +1929,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>NA</td>
 <td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -1928,7 +1942,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>NA</td>
 <td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
 <span class="p">}</span>
 </pre></div>

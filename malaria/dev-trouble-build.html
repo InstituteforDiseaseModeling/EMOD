@@ -181,6 +181,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "https://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="troubleshooting-emod-s-builds">
 <h1>Troubleshooting EMOD builds<a class="headerlink" href="#troubleshooting-emod-s-builds" title="Permalink to this headline">¶</a></h1>
 <p>If you encounter any of the following warnings or errors when attempting to build the EMOD executable (Eradication.exe) or

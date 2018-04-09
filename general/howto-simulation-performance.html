@@ -189,6 +189,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "https://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="improve-emod-s-performance">
 <h1>Improve EMOD performance<a class="headerlink" href="#improve-emod-s-performance" title="Permalink to this headline">¶</a></h1>
 <p>While small simulations can be run quickly on a local computer, the time and memory needed to complete a
