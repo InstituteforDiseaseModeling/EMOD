@@ -1,0 +1,357 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Improve EMOD performance &mdash; Tuberculosis Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Tuberculosis Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Tuberculosis Model  documentation" href="index.html"/>
+        <link rel="up" title="Run simulations" href="howto-simulations.html"/>
+        <link rel="next" title="Use output files" href="howto-outputs.html"/>
+        <link rel="prev" title="Run a simulation using MATLAB" href="howto-simulation-matlab.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Tuberculosis Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="howto-overview.html">How to use the software</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="howto-inputs.html">Use input data files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-configuration.html">Create a configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto-campaign.html">Create a campaign file</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="howto-simulations.html">Run simulations</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="howto-simulation-cli.html">Run a simulation using the command line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="howto-simulation-mpiexec.html">Run a simulation using mpiexec</a></li>
+<li class="toctree-l3"><a class="reference internal" href="howto-simulation-python.html">Run a simulation using Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="howto-simulation-matlab.html">Run a simulation using MATLAB</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Improve EMOD performance</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="howto-outputs.html">Use output files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Tuberculosis Model</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">TB</a> &raquo;</li>
+      
+          <li><a href="howto-overview.html">How to use the software</a> &raquo;</li>
+      
+          <li><a href="howto-simulations.html">Run simulations</a> &raquo;</li>
+      
+    <li>Improve EMOD performance</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/tuberculosis/";
+        var newBase = "http://www.idmod.org/docs/tuberculosis/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
+  <div class="section" id="improve-emod-s-performance">
+<h1>Improve EMOD performance<a class="headerlink" href="#improve-emod-s-performance" title="Permalink to this headline">¶</a></h1>
+<p>While small simulations can be run quickly on a local computer, the time and memory needed to complete a
+simulation can grow significantly when simulations become larger and more complex. For example, a
+single geographical node simulation might use 3 GB with one core in order to run successfully in one
+minute or less, while another simulation job may require 32 GB in a dual-core system in order to
+complete in approximately the same amount of time.</p>
+<p>As your simulations grow, you will likely want to run simulations on an HPC cluster or take other
+steps to improve performance and reduce processing time. This topic describes many of the steps you
+can take to speed up EMOD simulations.</p>
+<div class="section" id="parallel-processing">
+<h2>Parallel processing<a class="headerlink" href="#parallel-processing" title="Permalink to this headline">¶</a></h2>
+<p>The EMOD executable (Eradication.exe) is “single threaded”, meaning that for processing, it will use only one core. However,
+you can use the Message Passing Interface (MPI) to run multiple copies of Eradication.exe in parallel,
+either locally or on an HPC cluster. To run a simulation in parallel, you must invoke Eradication.exe with
+the mpiexec command. For more information, see <a class="reference internal" href="howto-simulation-mpiexec.html"><span class="doc">Run a simulation using mpiexec</span></a>.</p>
+</div>
+<div class="section" id="parameter-settings">
+<h2>Parameter settings<a class="headerlink" href="#parameter-settings" title="Permalink to this headline">¶</a></h2>
+<p>You can also set various parameters in the <a class="reference internal" href="glossary.html#term-configuration-file"><span class="xref std std-term">configuration file</span></a> that will improve performance
+by scaling down the amount of data used or optimizing data processing. See the parameters listed
+in the sections below for guidance on making performance adjustments. See <a class="reference internal" href="parameter-configuration.html"><span class="doc">Configuration parameters</span></a>
+for more information about each of the parameters.</p>
+<div class="section" id="scaling-and-sampling">
+<h3>Scaling and sampling<a class="headerlink" href="#scaling-and-sampling" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt><strong>Simulation_Duration</strong></dt>
+<dd>Obviously, simulating a shorter timespan will take less processing time. However, the
+processing time is often driven by the number of infections or immune updates, so running a
+simulation after all infections have cleared may not increase processing time much. For more
+information, see <a class="reference internal" href="parameter-configuration.html#config-setup"><span class="std std-ref">Simulation setup</span></a> parameters.</dd>
+<dt><strong>Individual_Sampling_Type</strong> and <strong>Base_Individual_Sample_Rate</strong></dt>
+<dd>Instead of the default <strong>Individual_Sampling_Type</strong> setting of “TRACK_ALL”, you can speed up
+performance by sampling such that each individual object represents more than one person. For
+example, a simulation with a population of 1 million and sample rate of 0.1 would simulate
+100,000 individuals, with each given a weight of 10.Sampling can be fixed at a particular rate
+or can adapt the rate based on certain criteria, such as age or immune state. However, you
+should be especially careful not to undersample simulations to the point where they are overly
+sensitive to rare stochastic events. For more information, see <a class="reference internal" href="parameter-configuration.html#config-sampling"><span class="std std-ref">Sampling</span></a>
+parameters.</dd>
+<dt><strong>Population_Scale_Type</strong> and <strong>Base_Population_Scale_Factor</strong></dt>
+<dd>Alternatively, you can simply reduce the total population of the simulation using
+<strong>Population_Scale_Type</strong> set to “FIXED_SCALING” and <strong>Base_Population_Scale_Factor</strong> set to
+less than one. For more information, see <a class="reference internal" href="parameter-configuration.html#config-scalars"><span class="std std-ref">Scalars and multipliers</span></a> parameters.</dd>
+</dl>
+</div>
+<div class="section" id="processing">
+<h3>Processing<a class="headerlink" href="#processing" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt><strong>Num_Cores</strong></dt>
+<dd>For large, spatially distributed simulations, running the intra-node dynamics (for example,
+infection and immune dynamics) in parallel on multiple cores may be very advantageous. Ideally,
+the timing would be reduced inversely to the number of cores. However, there are costs to
+serializing individuals for migration over MPI, as well as considerations for balancing the CPU
+load on each core. These issues may be mitigated using a load balancing input file that is
+suitable to the geography being simulated. See <a class="reference internal" href="file-load-balancing.html"><span class="doc">Load-balancing file structure</span></a> for more information.</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="howto-outputs.html" class="btn btn-neutral float-right" title="Use output files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="howto-simulation-matlab.html" class="btn btn-neutral" title="Run a simulation using MATLAB" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,219 @@
+=======================
+Error and logging files
+=======================
+
+When you run a simulation, |EMOD_s| will output basic error and logging information to help track
+the progress and help debug any issues that may occur. If you run the simulation on an HPC
+cluster, the cluster will generate additional logging and error files. See :doc:`troubleshooting`
+if you need help resolving an error.
+
+Status
+======
+
+A status.txt file will be saved to the :term:`working directory` that provides one
+output line per time step and includes the total run time of the simulation. A simulation
+with 50 time steps will look something like this::
+
+    Beginning Simulation...
+    1 of 50 steps complete.
+    2 of 50 steps complete.
+    3 of 50 steps complete.
+    4 of 50 steps complete.
+    5 of 50 steps complete.
+    6 of 50 steps complete.
+    7 of 50 steps complete.
+    8 of 50 steps complete.
+    9 of 50 steps complete.
+    10 of 50 steps complete.
+    11 of 50 steps complete.
+    12 of 50 steps complete.
+    13 of 50 steps complete.
+    14 of 50 steps complete.
+    15 of 50 steps complete.
+    16 of 50 steps complete.
+    17 of 50 steps complete.
+    18 of 50 steps complete.
+    19 of 50 steps complete.
+    20 of 50 steps complete.
+    21 of 50 steps complete.
+    22 of 50 steps complete.
+    23 of 50 steps complete.
+    24 of 50 steps complete.
+    25 of 50 steps complete.
+    26 of 50 steps complete.
+    27 of 50 steps complete.
+    28 of 50 steps complete.
+    29 of 50 steps complete.
+    30 of 50 steps complete.
+    31 of 50 steps complete.
+    32 of 50 steps complete.
+    33 of 50 steps complete.
+    34 of 50 steps complete.
+    35 of 50 steps complete.
+    36 of 50 steps complete.
+    37 of 50 steps complete.
+    38 of 50 steps complete.
+    39 of 50 steps complete.
+    40 of 50 steps complete.
+    41 of 50 steps complete.
+    42 of 50 steps complete.
+    43 of 50 steps complete.
+    44 of 50 steps complete.
+    45 of 50 steps complete.
+    46 of 50 steps complete.
+    47 of 50 steps complete.
+    48 of 50 steps complete.
+    49 of 50 steps complete.
+    50 of 50 steps complete.
+    Done - 0:00:02
+
+Standard output
+===============
+
+When you run a simulation on an HPC cluster, it will generate a standard output logging file
+(StdOut.txt) in the working directory that captures all standard output messages. When you run a
+simulation locally, the Command Prompt window will display the same information. If you want to save
+this information to a text file instead, you can append ``> stdout.txt`` to the command used to
+run the local |EMOD_s| simulation to redirect the console output to the file specified.
+
+The file contains information about a particular simulation, such as the |EMOD_s| version used and
+the files in use, as well as other initialization information, including the default logging level
+and the logging levels set for particular modules. The file follows that information
+with log output using the following format: <timestep><HPC rank><log level><module><message>.
+
+By default, the logging level is set to "INFO". If you want to change the logging level,
+see :doc:`dev-logging`.
+
+For example::
+
+
+    C:\EMOD\CampaignTesting\00_DefaultDemographics>..\Eradication.exe -C config.json -I ../input
+    Intellectual Ventures(R)/EMOD Disease Transmission Kernel 2.8.1331.0
+    Built on Sep 30 2016 08:39:43 by cwiswell from master (482fdae) checked in on 2016-09-28 14:47:20 -0700
+    Supports sim_types: GENERIC, VECTOR, MALARIA, AIRBORNE, POLIO, TB, TBHIV, STI, HIV, PY.
+    Using config file: config.json
+    Using input path: ../input
+    Using output path: output
+    using dll path:
+    --python-script-path (-P) not on command line - not using embedded python
+    Initializing environment...
+    Log-levels:
+            Default -> INFO
+            Eradication -> INFO
+    00:00:00 [0] [I] [Eradication] Loaded Configuration...
+    00:00:00 [0] [I] [Eradication] 99 parameters found.
+    00:00:00 [0] [I] [Eradication] Initializing Controller...
+    00:00:00 [0] [I] [Controller] DefaultController::execute_internal()...
+    00:00:00 [0] [I] [Simulation] Using PSEUDO_DES random number generator.
+    00:00:00 [0] [I] [Controller] DefaultController::execute_internal() populate simulation...
+    00:00:00 [0] [I] [Simulation] Campaign file name identified as: campaign.json
+    00:00:00 [0] [I] [NodeDemographics] Using default 3x3 torus geography
+    00:00:00 [0] [I] [Climate] Initialize
+    00:00:00 [0] [I] [LoadBalanceScheme] Using Checkerboard Load Balance Scheme.
+    00:00:01 [0] [I] [Simulation] Looking for campaign file campaign.json
+    00:00:01 [0] [I] [Simulation] Found campaign file successfully.
+    00:00:01 [0] [I] [DllLoader] ReadEmodulesJson: no file, returning.
+    00:00:01 [0] [I] [DllLoader] dllPath not passed in, getting from EnvPtr
+    00:00:01 [0] [I] [DllLoader] Trying to copy from string to wstring.
+    00:00:01 [0] [I] [DllLoader] DLL ws root path:
+    00:00:01 [0] [W] [Simulation] Failed to load intervention emodules for SimType: GENERIC_SIM from path: interventions
+    00:00:01 [0] [I] [JsonConfigurable] Using the default value ( "Number_Repetitions" : -1 ) for unspecified parameter.
+    00:00:01 [0] [I] [JsonConfigurable] Using the default value ( "Timesteps_Between_Repetitions" : -1 ) for unspecified parameter.
+    00:00:01 [0] [I] [JsonConfigurable] Using the default value ( "Intervention_Name" : "struct Kernel::BaseIntervention" ) for unspecified parameter.
+    00:00:01 [0] [I] [JsonConfigurable] Using the default value ( "Intervention_Name" : "struct Kernel::BaseIntervention" ) for unspecified parameter.
+    00:00:01 [0] [I] [JsonConfigurable] Using the default value ( "Intervention_Name" : "struct Kernel::BaseIntervention" ) for unspecified parameter.
+    00:00:01 [0] [I] [Simulation] populateFromDemographics() created 9 nodes
+    00:00:01 [0] [I] [Simulation] populateFromDemographics() generated 9 nodes.
+    00:00:01 [0] [I] [Simulation] Rank 0 contributes 9 nodes...
+    00:00:01 [0] [I] [Simulation] Merging node rank maps...
+    00:00:01 [0] [I] [Simulation] Merged rank 0 map now has 9 nodes.
+    00:00:01 [0] [I] [Simulation] Rank 0 map contents:
+    { NodeRankMap:
+    [1,000000000C10A960]
+    [2,000000000BF4EAF0]
+    [3,000000000BFA2250]
+    [4,000000000BFF1C10]
+    [5,000000000BE37B60]
+    [6,000000000BE87380]
+    [7,000000000BEE74F0]
+    [8,000000000B721980]
+    [9,000000000B7AE280]
+    }
+
+    00:00:01 [0] [I] [Simulation] Initialized 'InsetChart.json' reporter
+    00:00:01 [0] [I] [Simulation] Initialized 'BinnedReport.json' reporter
+    00:00:01 [0] [I] [Simulation] Initialized 'DemographicsSummary.json' reporter
+    00:00:01 [0] [I] [Simulation] Update(): Time: 1.0 Rank: 0 StatPop: 900 Infected: 0
+    00:00:01 [0] [I] [SimulationEventContext] Time for campaign event. Calling Dispatch...
+    00:00:01 [0] [I] [SimulationEventContext] 9 node(s) visited.
+    00:00:01 [0] [I] [JsonConfigurable] Using the default value ( "Intervention_Name" : "struct Kernel::BaseIntervention" ) for unspecified parameter.
+    00:00:01 [0] [I] [JsonConfigurable] Using the default value ( "Intervention_Name" : "struct Kernel::BaseIntervention" ) for unspecified parameter.
+    00:00:01 [0] [I] [StandardEventCoordinator] UpdateNodes() gave out 0 'OutbreakIndividual' interventions at node 1
+    00:00:01 [0] [I] [StandardEventCoordinator] UpdateNodes() gave out 2 'OutbreakIndividual' interventions at node 2
+    00:00:01 [0] [I] [StandardEventCoordinator] UpdateNodes() gave out 0 'OutbreakIndividual' interventions at node 3
+    00:00:01 [0] [I] [StandardEventCoordinator] UpdateNodes() gave out 0 'OutbreakIndividual' interventions at node 4
+    00:00:01 [0] [I] [StandardEventCoordinator] UpdateNodes() gave out 0 'OutbreakIndividual' interventions at node 5
+    00:00:01 [0] [I] [StandardEventCoordinator] UpdateNodes() gave out 0 'OutbreakIndividual' interventions at node 6
+    00:00:01 [0] [I] [StandardEventCoordinator] UpdateNodes() gave out 0 'OutbreakIndividual' interventions at node 7
+    00:00:01 [0] [I] [StandardEventCoordinator] UpdateNodes() gave out 1 'OutbreakIndividual' interventions at node 8
+    00:00:01 [0] [I] [StandardEventCoordinator] UpdateNodes() gave out 1 'OutbreakIndividual' interventions at node 9
+    00:00:01 [0] [I] [Simulation] Update(): Time: 2.0 Rank: 0 StatPop: 900 Infected: 4
+    00:00:01 [0] [I] [Simulation] Update(): Time: 3.0 Rank: 0 StatPop: 900 Infected: 18
+    00:00:01 [0] [I] [Simulation] Update(): Time: 4.0 Rank: 0 StatPop: 900 Infected: 63
+    00:00:01 [0] [I] [Simulation] Update(): Time: 5.0 Rank: 0 StatPop: 900 Infected: 161
+    00:00:01 [0] [I] [Simulation] Update(): Time: 6.0 Rank: 0 StatPop: 900 Infected: 232
+    00:00:01 [0] [I] [Simulation] Update(): Time: 7.0 Rank: 0 StatPop: 900 Infected: 203
+    00:00:01 [0] [I] [Simulation] Update(): Time: 8.0 Rank: 0 StatPop: 900 Infected: 165
+    00:00:01 [0] [I] [Simulation] Update(): Time: 9.0 Rank: 0 StatPop: 900 Infected: 132
+    00:00:01 [0] [I] [Simulation] Update(): Time: 10.0 Rank: 0 StatPop: 900 Infected: 110
+    00:00:01 [0] [I] [Simulation] Update(): Time: 11.0 Rank: 0 StatPop: 900 Infected: 83
+    00:00:01 [0] [I] [Simulation] Update(): Time: 12.0 Rank: 0 StatPop: 900 Infected: 69
+    00:00:01 [0] [I] [Simulation] Update(): Time: 13.0 Rank: 0 StatPop: 900 Infected: 54
+    00:00:01 [0] [I] [Simulation] Update(): Time: 14.0 Rank: 0 StatPop: 900 Infected: 40
+    00:00:01 [0] [I] [Simulation] Update(): Time: 15.0 Rank: 0 StatPop: 900 Infected: 30
+    00:00:01 [0] [I] [Simulation] Update(): Time: 16.0 Rank: 0 StatPop: 900 Infected: 22
+    00:00:01 [0] [I] [Simulation] Update(): Time: 17.0 Rank: 0 StatPop: 900 Infected: 17
+    00:00:01 [0] [I] [Simulation] Update(): Time: 18.0 Rank: 0 StatPop: 900 Infected: 14
+    00:00:01 [0] [I] [Simulation] Update(): Time: 19.0 Rank: 0 StatPop: 900 Infected: 12
+    00:00:01 [0] [I] [Simulation] Update(): Time: 20.0 Rank: 0 StatPop: 900 Infected: 9
+    00:00:01 [0] [I] [Simulation] Update(): Time: 21.0 Rank: 0 StatPop: 900 Infected: 7
+    00:00:01 [0] [I] [Simulation] Update(): Time: 22.0 Rank: 0 StatPop: 900 Infected: 7
+    00:00:01 [0] [I] [Simulation] Update(): Time: 23.0 Rank: 0 StatPop: 900 Infected: 7
+    00:00:01 [0] [I] [Simulation] Update(): Time: 24.0 Rank: 0 StatPop: 900 Infected: 5
+    00:00:01 [0] [I] [Simulation] Update(): Time: 25.0 Rank: 0 StatPop: 900 Infected: 3
+    00:00:01 [0] [I] [Simulation] Update(): Time: 26.0 Rank: 0 StatPop: 900 Infected: 3
+    00:00:01 [0] [I] [Simulation] Update(): Time: 27.0 Rank: 0 StatPop: 900 Infected: 1
+    00:00:02 [0] [I] [Simulation] Update(): Time: 28.0 Rank: 0 StatPop: 900 Infected: 1
+    00:00:02 [0] [I] [Simulation] Update(): Time: 29.0 Rank: 0 StatPop: 900 Infected: 1
+    00:00:02 [0] [I] [Simulation] Update(): Time: 30.0 Rank: 0 StatPop: 900 Infected: 1
+    00:00:02 [0] [I] [Simulation] Update(): Time: 31.0 Rank: 0 StatPop: 900 Infected: 1
+    00:00:02 [0] [I] [Simulation] Update(): Time: 32.0 Rank: 0 StatPop: 900 Infected: 1
+    00:00:02 [0] [I] [Simulation] Update(): Time: 33.0 Rank: 0 StatPop: 900 Infected: 1
+    00:00:02 [0] [I] [Simulation] Update(): Time: 34.0 Rank: 0 StatPop: 900 Infected: 1
+    00:00:02 [0] [I] [Simulation] Update(): Time: 35.0 Rank: 0 StatPop: 900 Infected: 1
+    00:00:02 [0] [I] [Simulation] Update(): Time: 36.0 Rank: 0 StatPop: 900 Infected: 1
+    00:00:02 [0] [I] [Simulation] Update(): Time: 37.0 Rank: 0 StatPop: 900 Infected: 1
+    00:00:02 [0] [I] [Simulation] Update(): Time: 38.0 Rank: 0 StatPop: 900 Infected: 1
+    00:00:02 [0] [I] [Simulation] Update(): Time: 39.0 Rank: 0 StatPop: 900 Infected: 1
+    00:00:02 [0] [I] [Simulation] Update(): Time: 40.0 Rank: 0 StatPop: 900 Infected: 1
+    00:00:02 [0] [I] [Simulation] Update(): Time: 41.0 Rank: 0 StatPop: 900 Infected: 1
+    00:00:02 [0] [I] [Simulation] Update(): Time: 42.0 Rank: 0 StatPop: 900 Infected: 0
+    00:00:02 [0] [I] [Simulation] Update(): Time: 43.0 Rank: 0 StatPop: 900 Infected: 0
+    00:00:02 [0] [I] [Simulation] Update(): Time: 44.0 Rank: 0 StatPop: 900 Infected: 0
+    00:00:02 [0] [I] [Simulation] Update(): Time: 45.0 Rank: 0 StatPop: 900 Infected: 0
+    00:00:02 [0] [I] [Simulation] Update(): Time: 46.0 Rank: 0 StatPop: 900 Infected: 0
+    00:00:02 [0] [I] [Simulation] Update(): Time: 47.0 Rank: 0 StatPop: 900 Infected: 0
+    00:00:02 [0] [I] [Simulation] Update(): Time: 48.0 Rank: 0 StatPop: 900 Infected: 0
+    00:00:02 [0] [I] [Simulation] Update(): Time: 49.0 Rank: 0 StatPop: 900 Infected: 0
+    00:00:02 [0] [I] [Simulation] Update(): Time: 50.0 Rank: 0 StatPop: 900 Infected: 0
+    00:00:02 [0] [I] [Simulation] Finalizing 'InsetChart.json' reporter.
+    00:00:02 [0] [I] [Simulation] Finalizing 'BinnedReport.json' reporter.
+    00:00:02 [0] [I] [Simulation] Finalizing 'DemographicsSummary.json' reporter.
+    00:00:02 [0] [I] [Eradication] Controller executed successfully.
+
+
+Standard error
+==============
+
+When you run a simulation on an HPC cluster, it will also generate a standard error logging file
+(StdErr.txt) in the working directory that captures all standard error messages.

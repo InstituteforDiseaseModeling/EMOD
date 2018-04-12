@@ -1,0 +1,20 @@
+===========
+RTSSVaccine
+===========
+
+The **RTSSVaccine** intervention class protects individuals against infection acquisition by
+directly boosting the :term:`circumsporozoite protein (CSP)` antibody concentration. This contrasts
+with the :doc:`parameter-campaign-individual-simplevaccine` intervention, which is used to modify
+the probability of acquisition or transmission.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-rtssvaccine.csv
+
+.. literalinclude:: ../json/campaign-rtssvaccine.json
+   :language: json

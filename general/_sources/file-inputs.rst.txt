@@ -1,0 +1,37 @@
+=========================
+Input data file structure
+=========================
+
+The :term:`input data files` described in this section determine the demographics, migration, climate, and other
+relatively fixed information about the population within each geographic node. These files are in
+contrast to the population, geographic, and migration parameters in the :term:`configuration file`
+that control simulation-wide qualities, such as enabling air migration across all nodes in the
+simulation.
+
+Generally, you will download and use input data files without modification. For instructions, see
+:doc:`howto-inputs`. However, demographics files can include many user-defined parameter values and
+will likely require modification. Only the demographics file is required for a simulation.
+
+Each type of input data generally requires both a metadata file that contains provenance information
+and a binary file that contains the actual data for each node. Some input files included with
+|EMOD_s| were prepared using CIESIN Gridded Population of the World (GPW) population distribution
+and a corresponding spatial resolution grid (for example, 2.5 arc minutes) to define the initial
+population and extent of the nodes for country-wide input files. Therefore, the naming convention
+for this files usually leads with the geographic location, followed by the spatial resolution, and
+input file type.
+
+All input files include the parameter **IdReference** in the metadata, which is used to generate the
+**NodeID** associated with each node in a simulation. The values for **IdReference** and **NodeID**
+must be the same across all input data files used in a simulation. See :doc:`parameter-demographics`
+for more information about **NodeID** generation.
+
+
+
+.. toctree::
+   :maxdepth: 2
+   :titlesonly:
+
+   parameter-demographics
+   file-climate
+   file-migration
+   file-load-balancing

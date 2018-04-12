@@ -1,0 +1,14 @@
+===============================
+Input and output file structure
+===============================
+
+The section describes the file structure used for :term:`input data files`, each of the built-in
+:term:`output report` types, and error logs to help debug issues you may encounter.
+
+.. toctree::
+   :maxdepth: 3
+   :titlesonly:
+
+   file-inputs
+   file-outputs
+   file-error-logging

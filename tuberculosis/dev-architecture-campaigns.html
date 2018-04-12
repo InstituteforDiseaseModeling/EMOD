@@ -1,0 +1,557 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Campaign management &mdash; Tuberculosis Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Tuberculosis Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Tuberculosis Model  documentation" href="index.html"/>
+        <link rel="up" title="Simulation controller subsystem" href="dev-architecture-sim-controller.html"/>
+        <link rel="next" title="Reporter component" href="dev-architecture-reporter.html"/>
+        <link rel="prev" title="Simulation core components" href="dev-architecture-core.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Tuberculosis Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dev-architecture-environment.html">Environment subsystem</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="dev-architecture-sim-controller.html">Simulation controller subsystem</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dev-architecture-core.html">Simulation core components</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Campaign management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dev-architecture-reporter.html">Reporter component</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Tuberculosis Model</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">TB</a> &raquo;</li>
+      
+          <li><a href="dev-architecture-overview.html">EMOD architecture</a> &raquo;</li>
+      
+          <li><a href="dev-architecture-sim-controller.html">Simulation controller subsystem</a> &raquo;</li>
+      
+    <li>Campaign management</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/tuberculosis/";
+        var newBase = "http://www.idmod.org/docs/tuberculosis/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
+  <div class="section" id="campaign-management">
+<h1>Campaign management<a class="headerlink" href="#campaign-management" title="Permalink to this headline">¶</a></h1>
+<p>Campaigns are structured into campaign events that determine when, where, and to whom the
+intervention will be distributed and interventions that determine what is distributed, for example
+vaccines or other treatments. This section describes the software architecture used for managing
+campaigns.</p>
+<p>Campaigns can be very simple, such as a single intervention with fixed parameters at a point
+in time, or a complex, adaptive, repetitive, and responsive combination of interventions.
+A Campaign is a collection of events that modify a simulation. An Event is a distribution within a
+campaign, and an Intervention is an item that is given out, such as a vaccine, a drug or a bednet.</p>
+<div class="figure">
+<img alt="_images/ArchCampaignManagement.png" src="_images/ArchCampaignManagement.png" />
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If you modify the source code to add or remove configuration or campaign parameters, you may
+need to update the code used to produce the schema. You must also verify that your simulations
+are still scientifically valid.</p>
+</div>
+<div class="contents local topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#campaign-events" id="id2">Campaign events</a><ul>
+<li><a class="reference internal" href="#simulationeventcontext" id="id3">SimulationEventContext</a></li>
+<li><a class="reference internal" href="#campaignevent" id="id4">CampaignEvent</a></li>
+<li><a class="reference internal" href="#nodeset" id="id5">NodeSet</a></li>
+<li><a class="reference internal" href="#eventcoordinator" id="id6">EventCoordinator</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#interventions" id="id7">Interventions</a><ul>
+<li><a class="reference internal" href="#individual-distributed-interventions" id="id8">Individual-distributed interventions</a></li>
+<li><a class="reference internal" href="#node-distributed-interventions" id="id9">Node-distributed interventions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="campaign-events">
+<h2><a class="toc-backref" href="#id2">Campaign events</a><a class="headerlink" href="#campaign-events" title="Permalink to this headline">¶</a></h2>
+<p>A campaign event triggers the campaign management system to evaluate when, where, and to whom the
+intervention will be distributed. This section describes the <strong>SimulationEventContext</strong>,
+<strong>CampaignEvent</strong>, <strong>NodeSet</strong>, and <strong>EventCoordinator</strong> classes used to manage this process.</p>
+<p>For more information on setting up campaign files, see <a class="reference internal" href="howto-campaign.html"><span class="doc">Create a campaign file</span></a>.</p>
+<div class="section" id="simulationeventcontext">
+<h3><a class="toc-backref" href="#id3">SimulationEventContext</a><a class="headerlink" href="#simulationeventcontext" title="Permalink to this headline">¶</a></h3>
+<p>The <strong>Simulation</strong> class has a nested helper class called <strong>SimulationEventContextHost</strong>, referred
+to as <strong>SimulationEventContext</strong>. It serves as the interface to, or manager of, <strong>CampaignEvents</strong>
+for the <strong>Simulation</strong> class.</p>
+<p><strong>Incoming</strong>: The <strong>Simulation</strong> to <strong>SimulationEventContext</strong> interface contains the following methods:</p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Method</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>LoadCampaignFromFile()</td>
+<td>Loads the campaign file during simulation initialization (t=0).</td>
+</tr>
+<tr class="row-odd"><td>RegisterEventCoordinator()</td>
+<td>Registers new event coordinators. Also used by <strong>CampaignEvent</strong> during activation to notify the
+<strong>SimulationEventContext</strong> of a new active <strong>EventCoordinator</strong>.</td>
+</tr>
+<tr class="row-even"><td>Update()</td>
+<td>Advances the state at each time step.</td>
+</tr>
+<tr class="row-odd"><td>VisitNodes()</td>
+<td>Called from <strong>CampaignEvent</strong> during its activation. <strong>CampaignEvent</strong> is not a <strong>Node</strong>
+container, so it needs to communicate with the <strong>Simulation</strong> class to do anything with nodes.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Outgoing</strong>: The <strong>SimulationEventContext</strong> communicates with <strong>CampaignEvents</strong> and
+<strong>EventCoordinators</strong>, which are described below.</p>
+</div>
+<div class="section" id="campaignevent">
+<h3><a class="toc-backref" href="#id4">CampaignEvent</a><a class="headerlink" href="#campaignevent" title="Permalink to this headline">¶</a></h3>
+<p>The <strong>CampaignEvent</strong> class exists primarily as an initialization-time, minimal intelligence
+container with a 1-to-1 mapping for <strong>CampaignEvents</strong> found in the JSON campaign file. They do not
+do much in the way of run-time campaign distribution or control.</p>
+<p><strong>Incoming</strong>: The public interface for <strong>CampaignEvent</strong> contains the following methods:</p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Method</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>CreateInstance()</td>
+<td>For each campaign event that the <strong>SimulationEventContext</strong> finds in the campaign file,
+it creates a corresponding <strong>CampaignEvent</strong> instance via <strong>CampaignEventFactory</strong>.
+The nested JSON elements in a campaign event are stored as an opaque (that is, unparsed)
+JSON object known as <strong>Event_Coordinator_Config</strong>. Immediate parameters like <strong>Start_Day</strong>
+are parsed out of the JSON and stored in explicit variables in the <strong>CampaignEvent</strong> class.</td>
+</tr>
+<tr class="row-odd"><td>Dispatch()</td>
+<td>In its steady-state, the <strong>SimulationEventContext</strong> checks the start day for all existing
+<strong>CampaignEvents</strong> and invokes this method to when the time step matches the start day.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Outgoing</strong>: The <strong>CampaignEvent</strong> communicates with two other classes: <strong>NodeSet</strong> and
+<strong>EventCoordinator</strong>.</p>
+</div>
+<div class="section" id="nodeset">
+<h3><a class="toc-backref" href="#id5">NodeSet</a><a class="headerlink" href="#nodeset" title="Permalink to this headline">¶</a></h3>
+<p>The <strong>NodeSet</strong> class parses the <strong>Nodeset_Config</strong> and helps the <strong>EventCoordinator</strong>
+determine if a given node is included in a particular intervention distribution. It can be as simple
+as <strong>NodeSetAll</strong>, which includes all nodes, or something much more involved. Usual cases include
+<strong>NodeSetPolygon</strong> and <strong>NodeSetCommunityList</strong>.</p>
+<p><strong>Incoming</strong>: The public interface for <strong>NodeSet</strong> contains the following methods:</p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Method</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Contains()</td>
+<td>The caller passes a <strong>Node</strong> via the <strong>INodeEventContext</strong> interface and gets back a Boolean.
+The <strong>NodeSet</strong> class completely encapsulates whatever logic is used to evaluate node
+membership.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="eventcoordinator">
+<h3><a class="toc-backref" href="#id6">EventCoordinator</a><a class="headerlink" href="#eventcoordinator" title="Permalink to this headline">¶</a></h3>
+<p><strong>EventCoordinator</strong> is a base type that contains most of the functionality in the event
+distribution mechanism. There are two actual <strong>EventCoordinator</strong> classes implemented, but you can
+new implementations easily by creating a new <strong>EventCoordinator</strong> class.</p>
+<p><strong>Incoming</strong>: There are four classes or class groups that make calls into <strong>EventCoordinator</strong>:</p>
+<ul class="simple">
+<li><strong>CampaignEvents</strong>, which create and activate them.</li>
+<li>The <strong>SimulationEventContext</strong> that invokes their steady-state methods.</li>
+<li><strong>Nodes</strong> (via the <strong>NodeEventContext</strong> helper class)</li>
+<li><strong>Interventions</strong>, which get <strong>EventCoordinator</strong>-level configuration data needed for intervention
+execution.</li>
+</ul>
+<p>The public interface for <strong>EventCoordinator</strong> contains the following methods:</p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Method</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>AddNode()</td>
+<td><p class="first">Invoked by <strong>CampaignEvent::Dispatch()</strong> to allow the <strong>EventCoordinator</strong> to act as a
+node container and have access to all its constituent nodes via the <strong>INodeEventContext</strong>
+interface.</p>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <strong>AddNode</strong> calls actually come via a delegate function that is in the <strong>EventCoordinator</strong>,
+but is invoked from the <strong>VisitNodes</strong> method up in the <strong>SimulationEventContext</strong>.
+The <strong>CampaignEvent</strong> passes the delegate function it wants used when it calls <strong>SimulationEventContext::VisitNodes()</strong> . This circuitous journey is needed because
+EMOD operates on a node-by-node basis and the <strong>SimulationEventContext</strong>, not the
+<strong>CampaignEvent</strong>, is the primary node container.</p>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>CreateInstance()</td>
+<td>During their instantiation, <strong>CampaignEvents</strong> create <strong>EventCoordinators</strong> as the
+<strong>CampaignEvents</strong> parse the <strong>Event_Coordinator_Config</strong>, which specifies the class name and is
+passed by <strong>SimulationEventContext</strong>. Nothing then happens until <strong>CampaignEvent::Dispatch()</strong> is
+called.</td>
+</tr>
+<tr class="row-even"><td>IsFinished()</td>
+<td>When an <strong>EventCoordinator</strong> determines that it is finished distributing its interventions,
+it sets an internal flag. The <strong>SimulationEventContext</strong> queries the <strong>IsFinished()</strong>
+function on each registered <strong>EventCoordinator</strong> and disposes of it if true. An <strong>EventCoordinator</strong>
+can activate and complete in a single time step, or it could last the entire length of the simulation.</td>
+</tr>
+<tr class="row-odd"><td>Update()</td>
+<td>The <strong>SimulationEventContext</strong> calls this on all registered <strong>EventCoordinators</strong> to advance
+their state at each time step. This method exists for global <strong>EventCoordinator</strong> communication and logic.</td>
+</tr>
+<tr class="row-even"><td>UpdateNodes()</td>
+<td>Distributes the actual intervention. For the simplest possible use case, an <strong>EventCoordinator</strong>
+will distribute an intervention on its start day and then finish in that same time step.
+However, an <strong>EventCoordinator</strong> may implement repeating interventions, phased distributions,
+or sustained distributions that are contingent on node or individual attributes.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Outgoing</strong>: The outgoing function calls consist of the distribution of the intervention either to
+individuals or nodes.  For the interface between the <strong>EventCoordinator</strong> and the actual
+<strong>Intervention</strong>, the <strong>EventCoordinator</strong> calls <strong>InterventionFactory</strong> and passes it the remaining
+unparsed JSON from the campaign file. Namely, this is the <strong>Intervention_Config</strong>, the actual
+intervention-level campaign parameters including the intervention class. The <strong>InterventionFactory</strong>
+returns the newly created intervention instance for each individual via a one of two types of
+<strong>IDistributableIntervention</strong> interfaces.</p>
+</div>
+</div>
+<div class="section" id="interventions">
+<h2><a class="toc-backref" href="#id7">Interventions</a><a class="headerlink" href="#interventions" title="Permalink to this headline">¶</a></h2>
+<p>Interventions are the actual objects aimed at reducing the spread of disease, such as a vaccine or
+drug. THey can be either distributed to individuals or to nodes. For example, a vaccine is an
+individual-distributed intervention and a larvicide is a node-distributed intervention.
+<strong>Intervention</strong> is an abstract type class and specific interventions are classes that implement
+either <strong>IDistributableIntervention</strong>, for individual-distributed interventions, or
+<strong>INodeDistributableIntervention</strong>, for node-distributed interventions.</p>
+<p>The determination of whether an intervention is individual-distributed or node-distributed is
+contained by logic in <strong>InterventionFactory</strong>. At the beginning of the
+<strong>EventCoordinator::UpdateNodes()**method, the **InterventionFactory</strong> is queried with the unparsed
+JSON campaign file to see if it returns an <strong>INodeDistributableInterface</strong> pointer. If it does, the
+intervention is executed as a node-distributed intervention; if it does not, the individual-
+distributed intervention execution is used.</p>
+<p><strong>Incoming</strong>: The interface to the abstract type <strong>Intervention</strong> class is the <strong>Distribute()</strong>
+method. It functions slightly differently for each intervention type.</p>
+<p><strong>Outgoing</strong>: <strong>Intervention</strong> is an abstract type that interacts with <strong>Nodes</strong> or <strong>IndividualHumans</strong>
+with an interface specific to that intervention type. The intervention calls <strong>QueryInterface</strong> on
+the container to ask for a consumer interface, for example <strong>IBednetConsumer</strong>. If supported, a
+<strong>Give</strong> method specific to that intervention will be called, for example, <strong>GiveBednet(this)</strong> to
+give itself to this individual. It is then up to the internal <strong>IndividualHuman</strong> or <strong>Node</strong> logic to
+decide what to do with this intervention.</p>
+<div class="section" id="individual-distributed-interventions">
+<h3><a class="toc-backref" href="#id8">Individual-distributed interventions</a><a class="headerlink" href="#individual-distributed-interventions" title="Permalink to this headline">¶</a></h3>
+<p>An individual-distributed intervention implements <strong>IDistributableIntervention</strong>, a container for
+the actual parameter name-value pairs from the campaign file, that is contained by an
+<strong>IndividualContainer</strong>, an <strong>IndividualHuman</strong> helper class. The <strong>EventCoordinator</strong> calls
+<strong>IDistributableIntervention::Distribute()</strong>, passing the pointer
+<strong>IIndividualHumanDistributionContext</strong>, which provides an <strong>ISupports</strong> interface to the individual
+by which the intervention can request a consumer interface. This interface can then be used with
+<strong>Give()</strong>.</p>
+<p>In the <strong>EventCoordinator::UpdateNodes()</strong> method, the <strong>EventCoordinator</strong> organizes the
+distribution of <strong>Interventions</strong> to <strong>IndividualHumans</strong> mediated by <strong>Nodes</strong>, which contain the
+<strong>IndividualHuman</strong> objects. The <strong>EventCoordinator</strong> also applies campaign parameters at the
+event coordinator level (for example, <strong>Target_Demographic</strong>, <strong>Demographic_Coverage</strong>,
+<strong>Num_Repetitions</strong>, and <strong>Days_Between_Reps</strong>) which mainly consists of filtering the distribution
+to individuals based on individual attributes.</p>
+</div>
+<div class="section" id="node-distributed-interventions">
+<h3><a class="toc-backref" href="#id9">Node-distributed interventions</a><a class="headerlink" href="#node-distributed-interventions" title="Permalink to this headline">¶</a></h3>
+<p>A node-distributed intervention implements <strong>INodeDistributableIntervention</strong>, a container for the
+actual parameter name-value pairs from the campaign file, that is contained by a <strong>Node</strong>. The
+<strong>EventCoordinator</strong> calls <strong>INodeDistributableIntervention::Distribute()</strong>, passing the pointer
+<strong>INodeEventContext</strong>, which provides an <strong>ISupports</strong> interface to the individual by which the
+intervention can request a consumer interface. This interface can then be used with <strong>Give()</strong>.
+Similar to individual-distributed interventions, the <strong>EventCoordinator</strong> also applies campaign
+parameters for filtering the distribution.</p>
+<p>The architectural diagram below illustrates how campaign file settings are processed by an
+EMOD simulation.</p>
+<div class="figure" id="id1">
+<img alt="_images/ArchCampaignFlow.png" src="_images/ArchCampaignFlow.png" />
+<p class="caption"><span class="caption-text">EMOD campaign architecture</span></p>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dev-architecture-reporter.html" class="btn btn-neutral float-right" title="Reporter component" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dev-architecture-core.html" class="btn btn-neutral" title="Simulation core components" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

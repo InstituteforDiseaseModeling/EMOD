@@ -1,0 +1,11 @@
+.. include:: ../general/file-outputs.rst
+
+.. toctree::
+   :maxdepth: 3
+   :titlesonly:
+
+   file-vector-species
+
+.. added this way even though it adds a blank link in the toc links because it's safer--
+.. if new built-in reports are added to generic, we can update only the generic file instead
+.. of all files that inherit from it.

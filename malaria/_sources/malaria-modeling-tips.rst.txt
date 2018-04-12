@@ -1,0 +1,88 @@
+====================================
+Malaria or vector configuration tips
+====================================
+
+The following tips are useful for the initial configuration of  the vector or malaria model.
+Configuration tips for a specific :term:`microsolver` in the model will be found on their respective
+component pages. For more information on using the software, or configuring input files, see
+:doc:`howto-overview`.
+
+
+Simulation configuration help
+=============================
+
+There are several options for running a vector-based model. To run a basic model that functions as an
+enhanced SEIRS model, you will need to set the parameter **Simulation_Type** to the value
+"VECTOR_SIM".  However, to add complexity and include the full system of microsolvers for within-
+host parasite dynamics and other immune system interactions,  set the parameter
+**Simulation_Type** to the value "MALARIA_SIM".
+
+To select between the cohort model versus individual mosquito model, set the **Vector_Sampling_Type**
+parameter. For the cohort model, the possible values are "VECTOR_COMPARTMENTS_NUMBER" or
+“VECTOR_COMPARTMENTS_PERCENT”. For the individual mosquito model, the values are “TRACK_ALL_VECTORS”
+or “SAMPLE_IND_VECTORS”.
+
+
+
+Basic species configuration
+---------------------------
+
+The simulation configuration file has a field **Vector_Species_Names** which specifies the vector
+species that will be present in the simulation. For example, the following specifies that
+*Anopheles arabiensis*, *An. funestus*, and *An. gambiae* will be added to the simulation:
+
+.. literalinclude:: ../json/malaria-larval-habitat1.json
+  :language: JSON
+
+
+For each species listed, a "VectorPopulation" object will be added to the simulation at each
+node. Each species will be defined by parameters in the simulation configuration file for the vector
+ecology and behavior of the species. This allows for a mechanistic description of vector
+abundances and behavior through the effects of climate and weather on different preferred larval
+habitats.
+
+
+The following example shows the syntax for configuring species parameters for *Anopheles arabiensis*.
+Note that you would also need to configure parameters for *An. fuenstus* and *An. gambiae*, if you are
+using a three species model as from the above example.
+
+.. literalinclude:: ../json/malaria-training1.json
+  :language: JSON
+
+
+While the above example shows the mosquito residing in one habitat, it is worth noting that mosquitoes
+can reside in multiple habitat types. This linear-combination of habitat types allows for greater
+control over local vector ecology (especially during dry seasons as habitat availability may be
+drastically different). The following example demonstrates the syntax to include several habitat types.
+
+.. literalinclude:: ../json/malaria-training2.json
+  :language: JSON
+
+
+.. NOTE: we could add in a section on spatial models with migration (scenario 4), since there's no
+.. tutorial on this. Not sure if it's necessary here or not.
+
+
+Example scenarios with configuration and campaign files
+=======================================================
+
+There are example configuration and campaign files available to run the vector and malaria models.
+To download these files, go to the
+`Vector and Malaria Scenarios <https://github.com/InstituteforDiseaseModeling/EMOD-QuickStart/tree/master/Scenarios/VectorAndMalaria>`__.
+You can download the executable file to run these configuration and campaign files here:
+`Quickstart <https://github.com/InstituteforDiseaseModeling/EMOD-QuickStart>`__.
+
+.. make sure these are the appropriate links for the public!
+
+
+Descriptions of the scenarios these files simulate can be found in the
+`Vector and malaria tutorials`_.
+
+.. _Vector and malaria tutorials: ./../training/malaria-VM-tutorials-overview.html
+
+.. need to get the public link. Also, if these go away, we will have to provide a description of the
+.. scenarios (my vote is having a read-me file in Git with the json files)
+
+.. To-do: remove links to the tutorials once the tutorials are removed.
+
+

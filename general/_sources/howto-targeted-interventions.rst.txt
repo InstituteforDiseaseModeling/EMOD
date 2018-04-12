@@ -1,0 +1,173 @@
+=======================================
+Target interventions to nodes or groups
+=======================================
+
+Generally, you want to target your outbreaks and campaign interventions to specific regions or
+individuals who meet certain criteria. For example, you may want to distribute bednets only to areas
+where a mosquito-borne disease is endemic or vaccinate only young children who are at highest risk.
+This topic describes how to distribute interventions to specific geographic nodes or groups of
+individuals.
+
+Target to nodes using Nodeset_Config
+====================================
+
+Targeting geographic nodes with a particular intervention can be controlled by the **Nodeset_Config**
+parameter in the campaign file. To distribute the intervention to all nodes, simply set it to
+"NodeSetAll". To distribute to a subset of nodes, follow the steps below.
+
+
+#.  In the JSON object for the campaign event, set **Nodeset_Config** using one of the following
+    two options:
+
+    *   Set it to an empty JSON object. Within that object, set the following:
+
+        *   Set **class** to "NodeSetNodeList".
+        *   Set **Node_List** to an array that contains a comma-delimited list of nodes that set
+            where the intervention will be distributed.
+
+    *   Set it to an empty JSON object. Within that object, set the following:
+
+        *   Set **class** to "NodeSetPolygon".
+        *   Set **Polygon_Format** to "SHAPE".
+        *   Set **Vertices** to a comma-delimited list of latitude and longitude pairs that define
+            the outer boundary of the region you want to target. The intervention will be distributed
+            to all nodes within the defined bounds.
+
+See the example below.
+
+.. literalinclude:: ../json/howto-campaign-nodeset.json
+   :language: json
+
+.. TODO: add more here about targeting to nodes based on node properties
+
+Target to nodes or individuals using properties
+===============================================
+
+To target interventions to particular individuals or nodes based on their property values, you must
+first define those properties in the :term:`demographics file` using **IndividualProperties** or
+**NodeProperties**. Then, in the campaign file, you can target an intervention or outbreak to a
+group of individuals based on the properties applied to them. See
+:doc:`howto-demographics-heterogeneity` for instructions on defining properties.
+
+Just as defining properties based on age works a little differently than other
+properties, targeting an intervention to a particular age range works a little differently than
+targeting an intervention to other properties.
+
+To target interventions to properties other than age:
+
+#.  In the campaign file, in the event you want to target, set **Target_Demographic** to "Everyone".
+#.  Add the **Property_Restrictions** parameter and set to an empty array.
+#.  In that array, add a list of JSON key-value pairs of the property type and value that specifies
+    the groups to apply the intervention to. If the name of the element is not valid, |EMOD_s| will
+    ignore the property restriction.
+
+To target interventions to age ranges:
+
+#.  In the campaign file, in the event you want to target, set **Target_Demographic** to
+    ExplicitAgeRanges.
+#.  Add the **Target_Age_Min** and set to the lower age bound.
+#.  Add the **Target_Age_Max** and set to the upper age bound.
+
+    Both of these values must match one the values listed in **Age_Bin_Edges_In_Years** in the
+    demographics file. |EMOD_s| does not verify this range.
+
+The following examples illustrate how to target interventions to different groups. This includes how
+to configure interventions when there are multiple relevant properties, such as targeting
+individuals who are *both* low-risk and in a suburban setting or individuals who are *either* low-
+risk or living in suburban settings.
+
+Single property, single value
+-----------------------------
+
+The following examples show how to target interventions based on a single property value.
+
+At day 0 of the simulation, an outbreak starts. **Target_Demographic** is set to "Everyone" but
+**Property_Restrictions** restricts the start of the outbreak to the "Urban" group.
+
+.. image:: ../images/user-guide/howto-targeted-1.png
+
+.. literalinclude:: ../json/howto-targeted-1.json
+   :language: json
+
+Even if you have multiple properties defined in the demographics file, you can target interventions
+to a single property value in the same way. Individuals can be assigned any of the values for the
+other property types.
+
+In this example, values are defined for both the "Risk" and "Place" property types. The outbreak only
+targets "Suburban" individuals using the "Place" property type. Individuals can have any "Risk" value.
+
+.. image:: ../images/user-guide/howto-targeted-2.png
+
+.. literalinclude:: ../json/howto-targeted-2.json
+   :language: json
+
+Single property, multiple values
+--------------------------------
+
+If you want to target multiple values with the same property type, such as both "Urban" and "Rural"
+values with the "Place" property, you must use multiple interventions. You cannot have more than one
+group with the same property value in one intervention or outbreak.
+
+In this example, an outbreak starts at day 0 in the both the "Rural" and "Urban" groups.
+
+.. image:: ../images/user-guide/howto-targeted-3.png
+
+.. literalinclude:: ../json/howto-targeted-3.json
+   :language: json
+
+Multiple properties, individuals must match all values
+------------------------------------------------------
+
+To target individuals how have values defined by different property types, such as
+people who are both urban and low risk, you can use a single intervention or outbreak. When two
+values from multiple properties are targeted in one intervention or outbreak, the event is only
+applied to individuals that are assigned both values.
+
+In this example, a vaccine intervention is targeted at low risk, suburban place individuals.
+Individuals who are targeted to receive the vaccine must have both property values.
+
+.. image:: ../images/user-guide/howto-targeted-4.png
+
+.. literalinclude:: ../json/howto-targeted-4.json
+   :language: json
+
+
+Multiple properties, individuals must match at least one value
+--------------------------------------------------------------
+
+However, if you want to target multiple properties, but individuals need to have only one of the specified
+values to qualify for the intervention, you must create a separate campaign event for each  of
+the targeted property values. The events are applied separately and are applied to individuals that have
+one OR both property values; they need not have both.
+
+In this example, an outbreak is targeted at low risk individuals in the first intervention and suburban
+individuals in the second intervention.
+
+.. image:: ../images/user-guide/howto-targeted-5.png
+
+.. literalinclude:: ../json/howto-targeted-5.json
+   :language: json
+
+
+Alternatively, if you want to target multiple properties, one of which is the age bin, you could use
+**Property_Restriction_Within_Node** and the **Age_Bin** properties and
+**Age_Bin_Property_From_X_To_Y** values that are automatically created by |EMOD_s| when you use the
+**Age_Bin_Edges_In_Years** demographics parameter (see :ref:`demo-properties` parameters). This
+allows you to use a single campaign event instead of multiple ones as you would with
+**"Target_Demographic": "ExplicitAgeRanges"**.
+
+.. literalinclude:: ../json/howto-targeted-7.json
+   :language: json
+
+Target an age range
+-------------------
+
+Targeting an intervention to an age range is set up differently than targeting an intervention
+to other property types. However, you can combine both kinds of restrictions. In this example, a
+vaccine campaign is targeted at urban individuals who are age 0 to 5.
+
+.. image:: ../images/user-guide/howto-targeted-6.png
+
+.. literalinclude:: ../json/howto-targeted-6.json
+   :language: json
+

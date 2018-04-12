@@ -1,0 +1,403 @@
+========================
+Configuration parameters
+========================
+
+.. include:: ../reuse/config-param-intro.txt
+
+The tables below contain only parameters available when using the malaria :term:`simulation type`.
+Some parameters may appear in multiple categories.
+
+.. include:: ../reuse/warning-case.txt
+
+.. raw:: html
+
+    <button class="collapse-table-button btn btn-info">Collapse all parameter tables</button>
+
+.. contents:: Contents
+   :local:
+
+.. _config-drugs:
+
+Drugs and treatments
+====================
+
+.. include:: ../reuse/config-drugs.txt
+
+For more information on the drugs used to treat malaria, see :doc:`malaria-antimalarial-drugs`.
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-drugs-malaria.csv
+
+.. _config-enable:
+
+Enable or disable features
+==========================
+
+.. include:: ../reuse/config-enable.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-enable-malaria.csv
+
+.. _config-general-disease:
+
+General disease
+===============
+
+.. include:: ../reuse/config-general-disease.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-general-disease-generic.csv
+
+.. no disease-specific params in this category
+
+.. _config-env:
+
+Geography and environment
+=========================
+
+.. include:: ../reuse/config-env.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-env-malaria.csv
+
+.. _config-immunity:
+
+Immunity
+========
+
+.. include:: ../reuse/config-immunity.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-immunity-malaria.csv
+
+.. _config-incubation:
+
+Incubation
+==========
+
+.. include:: ../reuse/config-incubation.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-incubation-malaria.csv
+
+.. _config-infectivity:
+
+Infectivity and transmission
+============================
+
+.. include:: ../reuse/config-infectivity.txt
+
+The vector transmission model does not use many of the parameters provided by the generic simulation
+type. Instead, :term:`gametocyte` abundances and :term:`cytokine` mediated infectiousness are
+modeled explicitly. See :doc:`malaria-vector-transmission-model` for more information.
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-infectivity-malaria.csv
+
+.. _config-input:
+
+Input data files
+================
+
+.. include:: ../reuse/config-input.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-input-malaria.csv
+
+.. _config-larval:
+
+Larval habitat
+==============
+
+The following parameters determine mosquito larval development related to habitat and climate. For
+more information, see :doc:`malaria-larval-habitat`. Parameters for the vector life cycle more
+broadly are described in :ref:`config-vector-lifecycle`.
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-larval-malaria.csv
+
+.. _config-migration:
+
+Migration
+=========
+
+.. include:: ../reuse/config-migration.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-migration-malaria.csv
+
+.. _config-mortality:
+
+Mortality and survival
+======================
+
+.. include:: ../reuse/config-mortality.txt
+
+See :ref:`malaria-severe-mortality` for more information about how fever, anemia, and
+parasite counts lead to severe malaria and mortality.
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-mortality-malaria.csv
+
+.. _config-output:
+
+Output settings
+===============
+
+.. include:: ../reuse/config-output.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-output-malaria.csv
+
+.. _config-parasite:
+
+Parasite dynamics
+=================
+
+The following parameters determine the dynamics of the *Plasmodium falciparum* parasite life cycle,
+including dynamics within the host and human population. For more information, see
+:doc:`malaria-infection-immune-model`.
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-parasite-malaria.csv
+
+.. _config-population:
+
+Population dynamics
+===================
+
+.. include:: ../reuse/config-population.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-population-malaria.csv
+
+.. _config-sampling:
+
+Sampling
+========
+
+.. include:: ../reuse/config-sampling.txt
+
+For vector and malaria simulations, the same concepts apply to sampling the vector population.
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-sampling-malaria.csv
+
+.. _config-scalars:
+
+Scalars and multipliers
+=======================
+
+.. include:: ../reuse/config-scalars.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-scalars-malaria.csv
+
+.. _config-setup:
+
+Simulation setup
+================
+
+.. include:: ../reuse/config-setup.txt
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-setup-malaria.csv
+
+.. _config-symptoms:
+
+Symptoms and diagnosis
+======================
+
+The following parameters determine the characteristics of malaria diagnosis and symptoms as the
+disease progresses, such as anemia and fever. See :doc:`malaria-symptoms-diagnosis` for more
+information on malaria diagnostics and symptoms.
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-symptoms-malaria.csv
+
+.. _config-vector-control:
+
+Vector control
+==============
+
+The following parameters determine the characteristics of campaign interventions aimed at vector
+control, such as the :term:`homing endonuclease gene (HEG)`, sugar feeding, and :term:`Wolbachia`
+infection. When, to whom, and how those interventions are distributed is determined by the
+:term:`campaign file`.
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-vector-control-malaria.csv
+
+.. _config-vector-lifecycle:
+
+Vector life cycle
+=================
+
+The following parameters determine the characteristics of the vector life cycle. Set the vector species
+to include in the simulation and the feeding, egg-laying, migration, and larval development habits
+of each using these parameters. The parameters for larval development related to habitat and
+climate are described in :ref:`config-larval`.
+
+.. raw:: html
+
+    <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+.. rst-class:: toggle-table
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/config-vector-lifecycle-malaria.csv
+

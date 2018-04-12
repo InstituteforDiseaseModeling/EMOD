@@ -1,0 +1,19 @@
+==================
+InsectKillingFence
+==================
+
+The **InsectKillingFence** intervention class is a vector control intervention uses a photonic fence, a type of
+insect-killing fence in which the system directs lethal doses of focused laser energy onto flying
+insects.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-insectkillingfence.csv
+
+.. literalinclude:: ../json/campaign-insectkillingfence.json
+   :language: json

@@ -1,0 +1,1 @@
+.. include:: ../general/dev-architecture-sim-controller.rst

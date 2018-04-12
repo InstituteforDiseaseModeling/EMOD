@@ -1,0 +1,28 @@
+=======================
+How to use the software
+=======================
+
+This section contains detailed procedural information about how to use |EMOD_l|. For example, how to
+download :term:`input data files`, how to set up groups in a population, how to create a
+:term:`configuration file` and :term:`campaign file`, how to run simulations both locally and on a
+remote HPC cluster, and more.
+
+The architecture diagram below shows, at a high level, how the system functions.
+
+.. figure:: ../images/intro/architecture.png
+
+   High-level |EMOD_s| system architecture
+
+For more information about how each component of the system fits together, see :doc:`intro-overview`.
+That section provides a conceptual overview of |EMOD_s| and describes each required or optional
+component for running a simulation.
+
+.. toctree::
+   :maxdepth: 3
+   :titlesonly:
+
+   howto-inputs
+   howto-configuration
+   howto-campaign
+   howto-simulations
+   howto-outputs

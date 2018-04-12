@@ -1,0 +1,392 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Input data files &mdash; Generic Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Generic Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Generic Model  documentation" href="index.html"/>
+        <link rel="up" title="Introduction to the software" href="intro-overview.html"/>
+        <link rel="next" title="Configuration file" href="intro-configuration.html"/>
+        <link rel="prev" title="Introduction to the software" href="intro-overview.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Generic Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="intro-overview.html">Introduction to the software</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Input data files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-configuration.html">Configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-campaign.html">Campaign file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-run-simulation.html">Running a simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-outputs.html">Output files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Generic Model</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Generic</a> &raquo;</li>
+      
+          <li><a href="intro-overview.html">Introduction to the software</a> &raquo;</li>
+      
+    <li>Input data files</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "http://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
+  <div class="section" id="input-data-files">
+<h1>Input data files<a class="headerlink" href="#input-data-files" title="Permalink to this headline">¶</a></h1>
+<p>EMOD accepts the following categories of <a class="reference internal" href="glossary.html#term-input-data-files"><span class="xref std std-term">input data files</span></a> that contain the relatively
+fixed information about the population within each geographic node. For example, the number of
+individuals, geographic data, climate, demographics, and migration data. This is in contrast to the
+demographic, geographic, and migration parameters in the <a class="reference internal" href="glossary.html#term-configuration-file"><span class="xref std std-term">configuration file</span></a> that control
+simulation-wide qualities, such as enabling air migration across all nodes in the simulation.</p>
+<p>Although a demographics file is the only required input data file, additional files are generally
+needed for a realistic simulation. The demographics files use <a class="reference internal" href="glossary.html#term-javascript-object-notation-json"><span class="xref std std-term">JavaScript Object Notation
+(JSON)</span></a>. The other input data files use both a JSON file for metadata and an associated binary file
+that contains the actual data.</p>
+<p>The Institute for Disease Modeling (IDM) provides collections of input data files for many different locations in the world
+for download on GitHub. Except for the demographics file, you will typically use these input
+data files in their default state. See <a class="reference internal" href="howto-inputs.html"><span class="doc">Use input data files</span></a> for more information.</p>
+<div class="section" id="demographics">
+<h2>Demographics<a class="headerlink" href="#demographics" title="Permalink to this headline">¶</a></h2>
+<p>Demographics files are JSON formatted files containing information on the demographics of the
+population in a geographical region to simulate. For example, the number of individuals and the
+distribution for age, gender, immunity, risk, and mortality.</p>
+<p>In addition, demographics files are useful for creating heterogeneous groups within a population.
+You can define values for accessibility, age, geography, risk, and other properties and assign
+individuals to groups based on those property values. For example, you might want to divide a
+population up into different bins based on age so you can target interventions to individuals in a
+particular age range. Another common use is to configure treatment coverage to be higher for
+individuals in easily accessible regions and lower for individuals in areas that are difficult to
+access.</p>
+<p>EMOD assumes homogeneous mixing and disease transmission for the generic simulation type. You
+can use the HINT feature to add heterogeneous transmission to your generic model. You cannot
+manually configure heterogeneous transmission using HINT with other simulation types because the
+heterogeneity in transmission for specific diseases and disease classes is already configured by the
+simulation type.</p>
+<p>You can specify multiple demographics files, which function as a “base layer” file and one
+or more “overlay” files that override the base layer configuration. Overlay files can change the
+value of parameters already specified in the base layer or add new parameters. Support for multiple
+demographics layers allows for the following scenarios:</p>
+<ul class="simple">
+<li>Separating different sets of parameters and values into individual layers (for example, to separate
+those that are useful for specific diseases into different layers)</li>
+<li>Adding new parameters for a simulation into a new layer for easier prototyping</li>
+<li>Overriding certain parameters of interest in a new layer</li>
+<li>Overriding certain parameters for a particular sub-region</li>
+<li>Simulating subsets of a larger region for which input data files have been constructed</li>
+</ul>
+</div>
+<div class="section" id="migration">
+<h2>Migration<a class="headerlink" href="#migration" title="Permalink to this headline">¶</a></h2>
+<p>Migration files describe the rate of migration of individuals in and out of a geographic <a class="reference internal" href="glossary.html#term-node"><span class="xref std std-term">node</span></a>. There
+are four types of migration files that can be used by EMOD: local migration, regional migration,
+air migration, and sea migration.</p>
+<p>For all types, migration data is contained in a set of two files, a JSON metadata file with header
+information and a binary data file with the actual migration data. Both files are required. The
+basic file structure is identical for all types, with the only exception being the number of columns
+per row allowed to each type.</p>
+<div class="section" id="local">
+<h3>Local<a class="headerlink" href="#local" title="Permalink to this headline">¶</a></h3>
+<p>Local migration describes the foot travel of people into and out of adjacent nodes. A local
+migration file is required for simulations that support more than one node.</p>
+</div>
+<div class="section" id="regional">
+<h3>Regional<a class="headerlink" href="#regional" title="Permalink to this headline">¶</a></h3>
+<p>Regional migration describes migration via a road or rail network. If a node is not part of the
+network, the regional migration of individuals to and from that node considers the closest road hub
+city. When you create the migration file, you must create a <a class="reference external" href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi</a> tiling based on road hubs of the
+region, with each non-hub connected to the hub of its tile.</p>
+</div>
+<div class="section" id="air">
+<h3>Air<a class="headerlink" href="#air" title="Permalink to this headline">¶</a></h3>
+<p>Air migration describes migration via airplane travel. It is usually required for simulations of an
+entire country or larger geographies.</p>
+</div>
+<div class="section" id="sea">
+<h3>Sea<a class="headerlink" href="#sea" title="Permalink to this headline">¶</a></h3>
+<p>Sea migration describes migration via ship.</p>
+</div>
+</div>
+<div class="section" id="climate">
+<h2>Climate<a class="headerlink" href="#climate" title="Permalink to this headline">¶</a></h2>
+<p>There are two general types of climate files usable by EMOD: climate files generated through
+actual data, referred to as “climate by data,” and climate files generated from the Koppen
+classification system, referred to as “climate by Koppen.”</p>
+<p>For both types, climate data is contained in a set of two files, a JSON metadata file with header
+information and a binary file that contains the actual climate data. Both files are required.</p>
+<div class="section" id="climate-by-data">
+<h3>Climate by data<a class="headerlink" href="#climate-by-data" title="Permalink to this headline">¶</a></h3>
+<p>Climate by data files contain real data gathered from weather stations in the region to be
+simulated. This includes rainfall, temperature, relative humidity, and so on.</p>
+</div>
+<div class="section" id="climate-by-koppen">
+<h3>Climate by Koppen<a class="headerlink" href="#climate-by-koppen" title="Permalink to this headline">¶</a></h3>
+<p>Climate by Koppen files contain the Koppen classifier for the region. The
+<a class="reference external" href="https://en.wikipedia.org/wiki/K%C3%B6ppen_climate_classification">Koppen classification system</a> is one of the most widely used climate classification systems. It
+makes the assumption that native vegetation is the best reflection of climate.</p>
+</div>
+</div>
+<div class="section" id="load-balancing">
+<h2>Load balancing<a class="headerlink" href="#load-balancing" title="Permalink to this headline">¶</a></h2>
+<p>When running a simulation on a multi-core HPC cluster, you can include a load balancing file to
+control how the computing load is distributed across the cluster. The load balancing file is a
+binary file that allocates the simulation of each geographic node to cores in the cluster.  If no
+file is submitted, EMOD allocates nodes to cores according to a checkerboard pattern.</p>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="intro-configuration.html" class="btn btn-neutral float-right" title="Configuration file" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="intro-overview.html" class="btn btn-neutral" title="Introduction to the software" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

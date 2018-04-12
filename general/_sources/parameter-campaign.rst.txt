@@ -1,0 +1,18 @@
+===================
+Campaign parameters
+===================
+
+.. include:: ../reuse/campaign-param-intro.txt
+
+The topics below contain only parameters available when using the generic :term:`simulation type`.
+
+
+.. toctree::
+   :maxdepth: 2
+
+   parameter-campaign-event-coordinators
+   parameter-campaign-node-interventions
+   parameter-campaign-individual-interventions
+   parameter-campaign-waningeffects
+   parameter-campaign-event-list
+

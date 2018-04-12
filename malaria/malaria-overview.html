@@ -1,0 +1,493 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Malaria disease overview &mdash; Malaria Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Malaria Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Malaria Model  documentation" href="index.html"/>
+        <link rel="next" title="Malaria model overview" href="malaria-model-overview.html"/>
+        <link rel="prev" title="Custom reporters" href="howto-custom-reporter.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Malaria Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Malaria disease overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-model-overview.html">Malaria model overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-IDM.html">Malaria research at IDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Malaria Model</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Malaria</a> &raquo;</li>
+      
+    <li>Malaria disease overview</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "http://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
+  <div class="section" id="malaria-disease-overview">
+<h1>Malaria disease overview<a class="headerlink" href="#malaria-disease-overview" title="Permalink to this headline">¶</a></h1>
+<p>Welcome to malaria modeling at the Institute for Disease Modeling (IDM)! We are committed to supporting data-driven malaria
+control and elimination efforts. This page will provide information about the disease itself. The
+following pages will provide information about the the vector class of Epidemiological MODeling software (EMOD), the software
+developed by IDM to aid in malaria elimination.</p>
+<div class="section" id="malaria-biology">
+<h2>Malaria biology<a class="headerlink" href="#malaria-biology" title="Permalink to this headline">¶</a></h2>
+<p>Malaria is a mosquito-borne disease caused by <em>plasmodium</em> parasites  transmitted through the bite of
+blood-feeding <em>Anopheles</em> mosquitos. There are roughly 30 species of Anophelenes capable of serving
+as malaria vectors, and only females bite (i.e. seek blood meals) to gain nutrients necessary for
+<a class="reference internal" href="glossary.html#term-oviposition"><span class="xref std std-term">oviposition</span></a>.  After taking blood meals, females lay eggs in water sources, where the emerging larvae
+hatch and mature. Each species of <em>Anopheles</em> has different aquatic habitat preferences, ranging from
+small, ephemeral pools to large swampy areas, and in some cases, brackish water.</p>
+<p>Transmission of malaria depends on both biotic and abiotic factors. Mosquito lifespan is positively
+correlated to transmission intensity. Mosquito populations, and therefore transmission, tend to be
+seasonal with dependence on climatic conditions such as rainfall patterns, humidity, and
+temperature. Typically, malaria transmission peaks during and after the rainy season, when
+conditions are prime for mosquito reproduction. Additionally, transmission is dependent on human
+immunity: people living in areas of high exposure to malaria can develop partial immunity, which
+reduces the risk of developing severe disease. Unfortunately, such partial immunity may mask
+symptoms of disease (and obscure infection), which may hinder control or elimination efforts.</p>
+<p>Once an infected mosquito bites a human and transmits parasites, the parasites multiply in the
+host’s liver, then infect and destroy red blood cells (erythrocytes). During the blood stage, the
+parasites that infect and destroy erythrocytes release <a class="reference internal" href="glossary.html#term-merozoites"><span class="xref std std-term">merozoites</span></a> which then infect other
+erythrocytes.  The <a class="reference internal" href="glossary.html#term-gametocyte"><span class="xref std std-term">gametocyte</span></a> form of the blood-stage parasite are ingested
+by female Anophelenes during future blood meals, where the mosquito-based life cycle continues.</p>
+<p>In the mosquito, the ingested gametocytes generate zygotes in the mosquito’s gut. Those zygotes
+undergo development, embed into the mosquito’s midgut wall, and mature into oocytes. Oocytes develop
+and in turn rupture, releasing the <a class="reference internal" href="glossary.html#term-sporozoite"><span class="xref std std-term">sporozoite</span></a> form of the parasite. The sporozoites travel
+to and reside in the mosquito’s salivary glands. Then, when the female takes a blood meal, the
+sporozoites are  injected into the host, starting another infection cycle. The mosquito is the
+<a class="reference internal" href="glossary.html#term-vector"><span class="xref std std-term">vector</span></a> that transmits pathogens between human hosts.  See the below figure and figure
+caption for an illustrated description of this process.</p>
+<div class="figure" id="id3">
+<img alt="_images/malaria_lifecycle.gif" src="_images/malaria_lifecycle.gif" />
+<p class="caption"><span class="caption-text"><em>Plasmodium</em> life cycle, adapted from the CDC, <a class="reference external" href="https://www.cdc.gov/malaria/about/biology/index.html">Malaria Biology</a>.
+During a blood meal, a malaria-infected female <em>Anopheles</em> mosquito inoculates sporozoites into
+the human host (1) . Sporozoites infect liver cells (2) and mature into schizonts (3), which
+rupture and release merozoites (4). After this initial replication in the liver (exo-erythrocytic
+schizogony, “A”), the parasites undergo asexual multiplication in the erythrocytes (erythrocytic
+schizogony, “B”). Merozoites infect red blood cells (5). Some parasites differentiate into sexual
+erythrocytic stages (gametocytes) (7). The gametocytes are ingested by an Anopheles mosquito
+during a blood meal (8). The parasites’ multiplication in the mosquito is known as the sporogonic
+cycle, “C”. While in the mosquito’s stomach, the gametocytes generate zygotes (9). The zygotes in
+turn become motile and elongated (ookinetes) (10) which invade the midgut wall of the mosquito where
+they develop into oocysts (11). The oocysts grow, rupture, and release sporozoites (12), which make
+their way to the mosquito’s salivary glands. Inoculation of the sporozoites into a new human host (1)
+perpetuates the malaria life cycle.</span></p>
+</div>
+</div>
+<div class="section" id="symptoms">
+<h2>Symptoms<a class="headerlink" href="#symptoms" title="Permalink to this headline">¶</a></h2>
+<p>All the clinical symptoms associated with malaria are caused by the asexual erythrocytic (or blood
+stage) parasites. Malaria has a long incubation period, so symptoms do not develop immediately after
+a person has been bitten by an infectious mosquito; they can occur  7 days after
+infection, but this may vary up to 30 days.</p>
+<p>Symptoms of malaria range in severity, but include fever, headache, body-ache, chills, and vomiting.
+Severe malaria can develop when the infection is not treated, and may result in organ failure or even
+death. Examples of severe malaria include cerebral malaria, severe anemia, respiratory distress (due
+to accumulated fluid in the lungs), kidney failure, metabolic acidosis, hypoglycemia, and other
+maladies. Death can occur from anemia, hypoglycemia, or cerebral malaria (where capillaries leading
+to the brain are blocked; typically resulting in coma, brain damage or learning disabilities).</p>
+<p>Confirmed diagnosis of malaria is done through observation of parasites in the blood, as seen on the
+below microscopic image.  In highly endemic areas, treatment typically occurs prior to diagnostic
+confirmation, as malaria is more easily cured with prompt treatment.</p>
+<div class="figure" id="id4">
+<img alt="_images/malaria-blood-smear.jpg" src="_images/malaria-blood-smear.jpg" />
+<p class="caption"><span class="caption-text">Human red blood cells infected with <em>Plasmodium falciparum</em> (the parasite is shown in dark purple).
+Photo credit Le Roch lab, UC Riverside.</span></p>
+</div>
+</div>
+<div class="section" id="prevention-control-efforts">
+<h2>Prevention &amp; control efforts<a class="headerlink" href="#prevention-control-efforts" title="Permalink to this headline">¶</a></h2>
+<p>There are numerous types of strategies used to control malaria.  As a vector-borne disease, there are
+multiple stages at which the transmission cycle can be broken.</p>
+<ul class="simple">
+<li>Vector control: strategies that take into account vector ecology. These include:<ul>
+<li>Chemical control, such as insecticide spraying or use of larvicides.</li>
+<li>Reduction of or elimination of mosquito larval habitat, through drainage or use of biological controls.</li>
+<li>Potential use of genetic modification (with tools such as <a class="reference internal" href="glossary.html#term-crispr"><span class="xref std std-term">CRISPR</span></a>) to create mosquitoes
+that are resistant to infection from <em>Plasmodium</em> parasites.</li>
+<li>Potential use of the bacterium <em>Wolbachia</em> to prevent mosquitoes from becoming infectious.</li>
+</ul>
+</li>
+<li>Personal protection: strategies that avoid infection (by avoiding bites by infectious
+mosquitoes), or by preventing disease. These include:<ul>
+<li>The use of <a class="reference internal" href="glossary.html#term-insecticide-treated-nets-itn"><span class="xref std std-term">insecticide-treated nets (ITN)</span></a></li>
+<li>Administration of antimalarial drugs to particularly vulnerable groups, such as children or pregnant women</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="global-malaria-burden">
+<h2>Global malaria burden<a class="headerlink" href="#global-malaria-burden" title="Permalink to this headline">¶</a></h2>
+<p>While progress towards reducing the malaria burden has been largely successful, malaria nevertheless
+remains a major health problem and target of focused, global efforts for elimination and eradication.
+According to the CDC, 3.2 billion people worldwide are at risk of malaria. In 2015, there were 214 million
+cases with 483,000 deaths. Malaria is especially harmful to children: more than 70% of all malaria deaths
+occur in children under the age of 5.  To put that in perspective, a child dies from malaria roughly
+every 2 minutes.</p>
+<p>While malaria is a global problem, the burden is not distributed equally across the globe. Sub-Saharan
+Africa experiences a disproportionately high burden, with about 76% of all cases and 75% of all deaths.
+South East Asia, Latin America, and the Middle East are also at high risk for malaria.</p>
+</div>
+<div class="section" id="benefits-of-mathematical-models-in-malaria-control-and-eradication">
+<h2>Benefits of mathematical models in malaria control and eradication<a class="headerlink" href="#benefits-of-mathematical-models-in-malaria-control-and-eradication" title="Permalink to this headline">¶</a></h2>
+<p>Controlling and eventual eradication of malaria will require multifaceted and geographically-specific
+intervention efforts. Heterogeneity in transmission, and transmission potential, creates a need for
+combinations of interventions that can adapt to the particular malaria epidemiology of the target area.</p>
+<p>For malaria, mathematical modeling and simulations are key to achieving eradication. Species-
+specific vector ecology is a fundamental driver of transmission, and transmission also impacted by
+the interactions of climate, human behavior, and land usage, across varying spatial scales. Modeling
+these factors enables accurate representations of baseline transmission, which in turn provides a
+platform to test various interventions (such as <a class="reference internal" href="glossary.html#term-insecticide-treated-nets-itn"><span class="xref std std-term">insecticide-treated nets (ITN)</span></a>, <a class="reference internal" href="glossary.html#term-indoor-residual-spraying-irs"><span class="xref std std-term">indoor
+residual spraying (IRS)</span></a>, or <a class="reference internal" href="glossary.html#term-mass-drug-administration-mda"><span class="xref std std-term">mass drug administration (MDA)</span></a>) and combinations of interventions.
+These simulation results can inform policy to develop effective–and cost effective–strategies by
+exploring the many possible dimensions of coverage, frequency of distribution, and combinations of
+interventions targeted to particular locations.</p>
+<p>It should be noted that such a multifaceted and integrated approach to vector control and health
+management is the most likely path towards elimination, as heavy reliance on singular approaches can
+be problematic. For example, vector control has been widely implemented and quite successful;
+however, mosquitoes are developing resistance to pyrethroids, one of the most common classes of
+insecticides currently recommended for ITN or IRS to control mosquito populations.  Through modeling
+approaches, researchers will be able to develop strategies that lessen dependence on particular
+insecticides while maintaining successful control efforts.</p>
+</div>
+<div class="section" id="a-brief-history-of-malaria-modeling">
+<h2>A brief history of malaria modeling<a class="headerlink" href="#a-brief-history-of-malaria-modeling" title="Permalink to this headline">¶</a></h2>
+<p>Malaria has a long history of posing risks to public health, and as such, also has long been the
+target of mathematical models tasked with providing solutions to ease the burden. For a more detailed
+history of malaria models, see
+<a class="reference external" href="http://dx.doi.org/10.1371/journal.ppat.1002588">Smith et al. PLOS Pathogens 2012 8(4)</a>,
+and  <a class="reference external" href="https://doi.org/10.1093/trstmh/tru026">Smith et al. Trans R Soc Trop Med Hyg 2014 108(4)</a>.
+The EMOD malaria model builds upon this rich history of disease modeling to provide a novel and
+rigorous approach to help guide efforts towards malaria elimination and eradication.  To fully
+understand the strengths of EMOD, it is helpful to understand the modeling background from which
+EMOD developed.</p>
+<p>Arguably, the quantitative analysis of mosquito-borne diseases, specifically malaria,
+began with Ronald Ross. In 1897 Ross confirmed that mosquitoes serve as the vector for malaria
+parasites, and embarked on a career focused on disease prevention through vector control. Further,
+Ross developed the modeling framework that serves as the basis for studying malaria transmission
+dynamics.</p>
+<p>Ross’s work inspired researchers focused on controlling mosquito-borne
+diseases. His emphasis on the development of metrics useful for measuring the intensity of
+transmission led to the development of :term:` entomological inoculation rate (EIR)` and motivated
+research aimed at understanding mosquito movement and the relevant spatial scales for mosquito
+ecology. Later, in the 1950s, George MacDonald formalized Ross’s models, and introduced the
+concepts of <a class="reference internal" href="glossary.html#term-vectorial-capacity"><span class="xref std std-term">vectorial capacity</span></a> and <a class="reference internal" href="glossary.html#term-reproductive-number"><span class="xref std std-term">reproductive number</span></a>.  This framework is now known as
+the Ross-Macdonald model, and is still widely implemented in current modeling work. In fact, the
+vast majority of models created in the last 40 years share most of their assumptions with the Ross-Macdonald
+model (see <a class="reference external" href="http://rsif.royalsocietypublishing.org/content/10/81/20120921.short">Reiner et al. 2013, Journal of the Royal Society Interface</a>.)</p>
+<div class="section" id="the-garki-project">
+<h3>The Garki project<a class="headerlink" href="#the-garki-project" title="Permalink to this headline">¶</a></h3>
+<p>The Garki project was a major milestone in malaria research.  From 1969 to 1976 this study was
+conducted by the World Health Organization (WHO) and the local government of the Jigawa State,
+Nigeria, to understand the impacts of <a class="reference internal" href="glossary.html#term-indoor-residual-spraying-irs"><span class="xref std std-term">indoor residual spraying (IRS)</span></a> and <a class="reference internal" href="glossary.html#term-mass-drug-administration-mda"><span class="xref std std-term">mass drug
+administration (MDA)</span></a> on malaria transmission, as well as to evaluate the utility of mathematical
+modeling. While the interventions used did not interrupt transmission at the desired level, the
+model proved to be a success. The epidemiology of the <em>Plasmodium</em> parasite was realistically
+replicated, even with a simplistic model, and as a result understanding of the parasite’s
+epidemiology was greatly increased.</p>
+<p>While the project was largely considered a failure in terms of malaria control, much was gained from
+the project. Basic tenets of malaria control were learned– namely, that malaria ecology needs to be
+fundamentally altered: either by modification of mosquito ecology, or by changing human ecology such
+as by improving housing conditions. <a class="reference internal" href="glossary.html#term-superinfection"><span class="xref std std-term">Superinfection</span></a>,  a fundamental malaria concept modeled by
+Macdonald in his first malaria model publication <a class="reference internal" href="#macdonald-1950" id="id1">[Macdonald-1950]</a>, was more correctly described by
+Dietz <a class="reference internal" href="#dietz-1974" id="id2">[Dietz-1974]</a>. Further, the data set from the project is publicly available, and has become a
+fundamental tool for use in malaria modeling.  For more information on this project, see
+<a class="reference external" href="http://garkiproject.nd.edu/">The Garki Project</a>.</p>
+</div>
+<div class="section" id="moving-forward">
+<h3>Moving forward<a class="headerlink" href="#moving-forward" title="Permalink to this headline">¶</a></h3>
+<p>The Ross-Macdonald model, while extremely useful and influential, has some shortcomings. The model
+assumes homogeneous transmission within a well-mixed population. Host-vector ratios and numerous
+aspects of mosquito feeding and development biology is assumed to remain constant. Further, all
+hosts are assumed to be identical, with equal exposure to pathogens, and the probability of
+transmission is proportional to host and vector densities. Interestingly, despite work demonstrating
+that these assumptions are not realistic, many models still utilize them.</p>
+<p>To improve on the Ross- Macdonald model, it is necessary to understand and implement increased
+complexity into the transmission dynamics of the model. Transmission dynamics are not linear, and
+instead depend on fine-scale heterogeneities; ecological as well as social contexts are extremely
+relevant for potential host-vector interactions, and both human and mosquito movement across
+relevant spatial scales also impact malaria transmission.</p>
+<p>Modern research has continued to improve our understanding of both parasite biology (and genetics)
+as well as within-host immune system interactions.  To fully understand the complex nature of
+malaria epidemiology and how to control it, it is important to include these aspects into models.</p>
+<p>The malaria EMOD leverages the history of malaria modeling by staring with these important
+fundamentals and building upon them. EMOD combines detailed vector population dynamics and
+interactions with human populations, and includes microsimulations for human immunity and within-
+host parasite dynamics. The model builds on the work of Ross and MacDonald, leverages the Garki
+model, and incorporates current modeling efforts to model multiple vector species simultaneously
+interacting with a human population.</p>
+<div class="section" id="references">
+<h4>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h4>
+<table class="docutils citation" frame="void" id="macdonald-1950" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[Macdonald-1950]</a></td><td>Macdonald G (1950) The analysis of infection rates in diseases in which superinfection occurs. Trop Dis Bull 47: 907–915.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="dietz-1974" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[Dietz-1974]</a></td><td>Dietz K, Molineaux L, Thomas A (1974) A malaria model tested in the African savannah. Bull World Health Organ 50: 347–357</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="malaria-model-overview.html" class="btn btn-neutral float-right" title="Malaria model overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="howto-custom-reporter.html" class="btn btn-neutral" title="Custom reporters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

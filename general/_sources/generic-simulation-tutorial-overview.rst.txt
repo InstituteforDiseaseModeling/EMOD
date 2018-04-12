@@ -1,0 +1,40 @@
+============================
+Generic simulation tutorials
+============================
+
+The generic simulation tutorials consist of a group of scenarios that guide you through simulations
+that will help you understand how to use a :term:`configuration file`, :term:`campaign file`, and
+input data files to run |EMOD_s| simulations. Each scenario has a corresponding directory and a
+demographics file in the Regression\Scenarios\InputFiles directory so you can run the simulation on your
+computer. All of these configuration files (config.json) have **Simulation_Type** set to
+GENERIC_SIM.
+
+There are two ways to use the tutorials. You can read the tutorials information and graphs to learn
+about the model; installing |EMOD_s| is not required. Or, for a more hands-on approach, you can also
+run the simulations that are associated with the tutorials and make the suggested changes to the
+configuration files to see the impact on the output graphs. See :doc:`install-overview` for
+installation instructions and :doc:`howto-simulations` for information on how to run |EMOD_s|
+simulations.
+
+You can refer to :doc:`parameter-overview` for more information regarding individual parameters that
+you are interested in modifying.
+
+
+.. include:: ../reuse/note-scenarios.txt
+
+
+.. toctree::
+   :maxdepth: 3
+   :titlesonly:
+
+   generic-tutorial1SIR
+   generic-tutorial2SIR
+   generic-tutorial3SEIR
+   generic-tutorial4SEIR
+   generic-tutorial5SIRS
+   generic-tutorial6SEIRS
+   generic-tutorial7SI
+   generic-tutorial8SIS
+   generic-tutorial9Density
+   generic-tutorial-10Zoonosis
+   hint-tutorial-overview

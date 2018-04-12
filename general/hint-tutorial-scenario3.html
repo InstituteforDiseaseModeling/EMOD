@@ -1,0 +1,731 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>HINT 3: Age and accessibility &mdash; Generic Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Generic Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Generic Model  documentation" href="index.html"/>
+        <link rel="up" title="Heterogeneous Intra-Node Transmission (HINT) tutorials" href="hint-tutorial-overview.html"/>
+        <link rel="next" title="HINT 4: Washington state pertussis" href="hint-tutorial-scenario4.html"/>
+        <link rel="prev" title="HINT 2: School closure" href="hint-tutorial-scenario2.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Generic Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial1SIR.html">Generic 1: SIR - Simple single-node outbreak</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial2SIR.html">Generic 2: SIR - Targeted vaccination campaigns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial3SEIR.html">Generic 3: SIER - Incubation periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial4SEIR.html">Generic 4: SEIR - Vital dynamics (birth and death)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial5SIRS.html">Generic 5: SIRS - Waning immunity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial6SEIRS.html">Generic 6: SEIRS - Disease-specific mortality and endemics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial7SI.html">Generic 7: SI - Lifelong infection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial8SIS.html">Generic 8: SIS - Reoccurring infections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial9Density.html">Generic 9: Density scaling of infectivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial-10Zoonosis.html">Generic 10: Animal reservoir zoonosis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="hint-tutorial-overview.html">Heterogeneous Intra-Node Transmission (HINT) tutorials</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="hint-tutorial-scenario1.html">HINT 1: Risk groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hint-tutorial-scenario2.html">HINT 2: School closure</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">HINT 3: Age and accessibility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hint-tutorial-scenario4.html">HINT 4: Washington state pertussis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hint-tutorial-scenario5.html">HINT 5: Seattle commuting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Generic Model</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Generic</a> &raquo;</li>
+      
+          <li><a href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a> &raquo;</li>
+      
+          <li><a href="hint-tutorial-overview.html">Heterogeneous Intra-Node Transmission (HINT) tutorials</a> &raquo;</li>
+      
+    <li>HINT 3: Age and accessibility</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "http://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
+  <div class="section" id="hint-s-3-age-and-accessibility">
+<h1>HINT 3: Age and accessibility<a class="headerlink" href="#hint-s-3-age-and-accessibility" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial illustrates the effect of heterogeneity in both mixing
+between population groups and in access to interventions, specifically vaccination. The scenarios
+simulate a measles outbreak over a single year in an initially fully susceptible population,
+highlighting differences in age and accessibility group-specific disease dynamics.</p>
+<p>It consists of three scenarios that illustrate the measles outbreak and targeted
+vaccination campaigns:</p>
+<ol class="upperalpha simple">
+<li>A measles outbreak with no interventions. The supporting configuration
+and campaign files are in ScenariosHINT03_AgeAndAccessA_BaselineOutbreak.</li>
+<li>An age-targeted outreach vaccination campaign for 6 to 10 year olds. The outreach is designed to
+reach populations who are normally inaccessible. The supporting configuration and campaign files
+are in ScenariosHINT03_AgeAndAccessB_AgeTargetedVaccine.</li>
+<li>A mass measles vaccination campaign of the entire population. This is a standard campaign, not
+an outreach campaign, as it targets individuals who are in the accessible group of the
+population and easily reached by the vaccination campaign. The supporting configuration and
+campaign files are in ScenariosHINT03_AgeAndAccessC_AccessTargetedVaccine.</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The fully susceptible population in this tutorial is used to illustrate the model features in the
+most parsimonious manner. For calibration to real data, you would need to initialize a
+distribution of immunity in the population at the beginning of the epidemic to represent past
+history of infection and vaccination. This could be done through matching serology data and/or
+matching vaccination dose history.</p>
+</div>
+<p>This tutorial assumes that you have read the previous HINT tutorial, <a class="reference internal" href="hint-tutorial-scenario2.html"><span class="doc">HINT 2: School closure</span></a>.</p>
+<div class="contents local topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#demographics-inputs" id="id7">Demographics inputs</a><ul>
+<li><a class="reference internal" href="#individualproperties" id="id8">IndividualProperties</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#key-configuration-parameters" id="id9">Key configuration parameters</a><ul>
+<li><a class="reference internal" href="#population-dynamics-parameters" id="id10">Population dynamics parameters</a></li>
+<li><a class="reference internal" href="#pathogenesis-and-immunity-parameters" id="id11">Pathogenesis and immunity parameters</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#interventions" id="id12">Interventions</a><ul>
+<li><a class="reference internal" href="#a-baseline-outbreak" id="id13">A: Baseline outbreak</a></li>
+<li><a class="reference internal" href="#b-age-targeted-outreach-vaccination-campaign" id="id14">B: Age-targeted outreach vaccination campaign</a></li>
+<li><a class="reference internal" href="#c-standard-vaccination-campaign" id="id15">C: Standard vaccination campaign</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exploring-the-model" id="id16">Exploring the model</a></li>
+</ul>
+</div>
+<div class="section" id="demographics-inputs">
+<h2><a class="toc-backref" href="#id7">Demographics inputs</a><a class="headerlink" href="#demographics-inputs" title="Permalink to this headline">¶</a></h2>
+<p>You can view the complete hint_ageandaccess_demographics and hint_ageandaccess_overlay files at
+&lt;path_to_directory&gt;RegressionScenariosInputFiles where &lt;path_to_directory&gt; is the location where
+EMOD source files were installed. For more information, see <a class="reference internal" href="parameter-demographics.html"><span class="doc">Demographics parameters</span></a>.</p>
+<div class="section" id="individualproperties">
+<h3><a class="toc-backref" href="#id8">IndividualProperties</a><a class="headerlink" href="#individualproperties" title="Permalink to this headline">¶</a></h3>
+<p><strong>IndividualProperties</strong> defines two <strong>Property</strong> types: <strong>Accessibility</strong> and <strong>Age_Bin</strong>. The supporting software
+for <strong>Accessibility</strong> is the same as for the property types, <strong>Risk</strong> and <strong>Place</strong>, that were used in the
+previous tutorials. However, the <strong>Age_Bin</strong> property uses data from the demographics files for initial
+age distribution, and the membership in an <strong>Age_Bin</strong> group is updated as an individual ages.
+Therefore, the <strong>Age_Bin</strong> attribute has different structures than those of the other property types.
+For more information, see <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters.</p>
+<div class="section" id="accessibility-property-and-values">
+<h4>Accessibility: Property and Values<a class="headerlink" href="#accessibility-property-and-values" title="Permalink to this headline">¶</a></h4>
+<p><strong>Property</strong> and <strong>Values</strong> define two <strong>Accessibility</strong> groups: “Easy” and “Hard”. These two groups
+will be used to initialize the population with differential vaccination coverage. Individuals are
+randomly assigned one of these two values at birth and do not transition afterwards.</p>
+</div>
+<div class="section" id="accessibility-initial-distribution">
+<h4>Accessibility: Initial_Distribution<a class="headerlink" href="#accessibility-initial-distribution" title="Permalink to this headline">¶</a></h4>
+<p>At the beginning of the simulation, individuals have an equal chance of being assigned to either the
+“Easy” or “Hard” group as specified in the <strong>Initial_Distribution array</strong>.</p>
+</div>
+<div class="section" id="accessibility-transitions">
+<h4>Accessibility: Transitions<a class="headerlink" href="#accessibility-transitions" title="Permalink to this headline">¶</a></h4>
+<p>Individuals will not transition from one <strong>Accessibility</strong> group to the other therefore <strong>Transitions</strong> is
+empty.</p>
+</div>
+<div class="section" id="accessibility-transmissionmatrix">
+<h4>Accessibility: TransmissionMatrix<a class="headerlink" href="#accessibility-transmissionmatrix" title="Permalink to this headline">¶</a></h4>
+<p><strong>TransmissionMatrix</strong> contains the <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values for the <a class="reference internal" href="glossary.html#term-waifw-matrix"><span class="xref std std-term">WAIFW matrix</span></a> that scales
+the base infectivity. The transmission <strong>Route</strong> is “Contact”. The <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values are added to
+<strong>Matrix</strong>.</p>
+<p><strong>Matrix</strong> specifies the interaction between the “Easy” and “Hard” groups. Individuals in the “Easy” group
+are nine times as likely to be in contact with individuals of their own group. Similarly, individuals
+in the “Hard” accessibility group are five times as likely to interact with their own group.</p>
+<p>The interpretation for this tutorial is that individuals in the “Hard” accessibility group have only
+60% of the contacts of those in the “Easy” accessibility group. As an example, “Hard” accessibility
+could be caused by geographic isolation.</p>
+</div>
+<div class="section" id="age-bin-property-and-age-bin-edges-in-years">
+<h4>Age_Bin: Property and Age_Bin_Edges_In_Years<a class="headerlink" href="#age-bin-property-and-age-bin-edges-in-years" title="Permalink to this headline">¶</a></h4>
+<p>The second Property is <strong>Age_Bin</strong>. Instead of a <strong>Values</strong> array there is an <strong>Age_Bin_Edges_In_Years</strong> array
+that specifies the upper bounds of the age groups.</p>
+<p>All of the middle values in the <strong>Age_Bins_In_Years</strong> array specify the upper bound of <strong>Age_Bin</strong> group
+that is neither the last nor the first group. This scenario has the following age groups:</p>
+<ul class="simple">
+<li>Birth to age 6</li>
+<li>Older than 6 to age 10</li>
+<li>Older than 10 to age 20</li>
+<li>Older than 20</li>
+</ul>
+</div>
+<div class="section" id="age-bin-initial-distribution">
+<h4>Age_Bin: Initial_Distribution<a class="headerlink" href="#age-bin-initial-distribution" title="Permalink to this headline">¶</a></h4>
+<p>The <strong>Age_Bin</strong> property does not support <strong>Initial_Distribution</strong>. As an age-dependent property, the
+distribution of the individuals in age bins is determined by the demographics file.</p>
+</div>
+<div class="section" id="age-bin-transitions">
+<h4>Age_Bin: Transitions<a class="headerlink" href="#age-bin-transitions" title="Permalink to this headline">¶</a></h4>
+<p>The <strong>Age_Bin</strong> property does not use <strong>Transitions</strong> in <strong>IndividualProperties</strong>. As an age-dependent property,
+the membership in an <strong>Age_Bin</strong> group is updated for individuals as they age. <strong>Transitions</strong> must be added
+to the IndividualProperties but it should be empty.</p>
+</div>
+<div class="section" id="age-bin-transmissionmatrix">
+<h4>Age_Bin: TransmissionMatrix<a class="headerlink" href="#age-bin-transmissionmatrix" title="Permalink to this headline">¶</a></h4>
+<p><strong>TransmissionMatrix</strong> contains the <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values that scale the base infectivity. The transmission <strong>Route</strong>
+is “Contact”. The <img class="math" src="_images/math/410a9d0df9c135dd73b269cba7ef04dcfd932b1f.png" alt="\beta"/> values are added to <strong>Matrix</strong>.</p>
+<p>The assumption for this scenario is that individuals interact more frequently with their own age
+group, and those groups closer in age. Therefore, <strong>Matrix</strong> has higher values on the diagonal entries.</p>
+</div>
+<div class="section" id="individualproperties-for-accessibility-and-age-bin">
+<h4>IndividualProperties for Accessibility and Age_Bin<a class="headerlink" href="#individualproperties-for-accessibility-and-age-bin" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Accessibility&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Easy&quot;</span><span class="p">,</span> <span class="s2">&quot;Hard&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+            <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="nt">&quot;TransmissionMatrix&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Route&quot;</span><span class="p">:</span> <span class="s2">&quot;Contact&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Matrix&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+                    <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">},</span> <span class="p">{</span>
+            <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Age_Bin&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Age_Bin_Edges_In_Years&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">-1</span><span class="p">],</span>
+            <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="nt">&quot;TransmissionMatrix&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Route&quot;</span><span class="p">:</span> <span class="s2">&quot;Contact&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Matrix&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+                    <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+                    <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+                    <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="key-configuration-parameters">
+<h2><a class="toc-backref" href="#id9">Key configuration parameters</a><a class="headerlink" href="#key-configuration-parameters" title="Permalink to this headline">¶</a></h2>
+<p>The following sections describe the parameters that define measles pathogenesis and immunity of an
+individual for all scenarios in this tutorial. Each scenario has a directory (A_BaselineOutbreak,
+B_AgeTargetedVaccine and C_AccessTargetedVaccine) that contains a simulation configuration files
+(config.json) file. The three directories are located in ScenariosHINT03_AgeAndAccess. The
+configuration files are the same in each directory but are copied in each directory to make it more
+convenient to run simulations.</p>
+<div class="section" id="population-dynamics-parameters">
+<h3><a class="toc-backref" href="#id10">Population dynamics parameters</a><a class="headerlink" href="#population-dynamics-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The following parameters disable vital dynamics and disease mortality in the simulations. HINT is
+enabled. For more information, see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Enable_Vital_Dynamics</strong> to 0.</li>
+<li>Set <strong>Death_Rate_Dependence</strong> to “NONDISEASE_MORTALITY_BY_AGE_AND_GENDER”.</li>
+<li>Set <strong>Enable_Heterogeneous_Intranode_Transmission</strong> to 1.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="pathogenesis-and-immunity-parameters">
+<h3><a class="toc-backref" href="#id11">Pathogenesis and immunity parameters</a><a class="headerlink" href="#pathogenesis-and-immunity-parameters" title="Permalink to this headline">¶</a></h3>
+<p>Measles is a highly infectious virus that is typically transmitted by large respiratory and
+aerosolized droplets. Some transmission also occurs via fomites, however this is believed to be a
+less significant route for transmission as the virus only survives a short time on dry surfaces. The
+pathogen is characterized by a high basic <a class="reference internal" href="glossary.html#term-reproductive-number"><span class="xref std std-term">reproductive number</span></a>, often estimated at 16-20 combined
+with short incubation and infectious periods on the order of days. Immunity conferred is typically
+lifelong and vaccination has high efficacy (~95%). For more information, see <a class="reference internal" href="parameter-configuration.html#config-immunity"><span class="std std-ref">Immunity</span></a>,
+<a class="reference internal" href="parameter-configuration.html#config-incubation"><span class="std std-ref">Incubation</span></a>, and <a class="reference internal" href="parameter-configuration.html#config-infectivity"><span class="std std-ref">Infectivity and transmission</span></a> parameters.</p>
+<p>The following parameters define measles pathogenesis and immunity of an individual.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Enable_Immunity</strong> to 1.</li>
+<li>Set <strong>Enable_Immune_Decay</strong> to 0.</li>
+<li>Set <strong>Base_Infectivity</strong> to 4.</li>
+<li>Set <strong>Base_Incubation_Period</strong> to 5.</li>
+<li>Set <strong>Base_Infectious_Period</strong> to 5.</li>
+<li>Set <strong>Incubation_Period_Distribution</strong> to “FIXED_DURATION.”</li>
+<li>Set <strong>Infectious_Period_Distribution</strong> to “EXPONENTIAL_DURATION.”</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="interventions">
+<h2><a class="toc-backref" href="#id12">Interventions</a><a class="headerlink" href="#interventions" title="Permalink to this headline">¶</a></h2>
+<p>Run the simulation and generate graphs of the simulation output for each of the following three
+scenarios. For more information, see <a class="reference internal" href="howto-simulations.html"><span class="doc">Run simulations</span></a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Because the EMOD model is <a class="reference internal" href="glossary.html#term-stochastic"><span class="xref std std-term">stochastic</span></a>, your graphs may appear slightly different from
+those given below.</p>
+</div>
+<div class="section" id="a-baseline-outbreak">
+<h3><a class="toc-backref" href="#id13">A: Baseline outbreak</a><a class="headerlink" href="#a-baseline-outbreak" title="Permalink to this headline">¶</a></h3>
+<p>The simulation seeds an initial measles outbreak with a prevalence of 1% in the age group of 10 to
+20 years old who are in the “Easy” accessibility group.</p>
+<p>Age groups do not use the <strong>PropertyRestrictions</strong> parameter. It uses the <strong>Target_Demographic</strong>
+parameter with the value set to “ExplicitAgeRanges”, which will use the values in <strong>Target_Age_Min</strong>
+and <strong>Target_Age_Max</strong>. For more information, see event coordinator parameters.</p>
+<p>The campaign file (campaign.json) is in the
+ScenariosHINT03_AgeAndAccessA_BaselineOutbreak directory.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
+            <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="nt">&quot;outbreak_source&quot;</span><span class="p">:</span> <span class="s2">&quot;PrevalenceIncrease&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;OutbreakIndividual&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;ExplicitAgeRanges&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Target_Age_Min&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="nt">&quot;Target_Age_Max&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+            <span class="nt">&quot;Property_Restrictions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Accessibility:Easy&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="expected-simulation-output">
+<h4>Expected simulation output<a class="headerlink" href="#expected-simulation-output" title="Permalink to this headline">¶</a></h4>
+<p>In the fixed population of 1000 susceptible individuals, a total of 700 individuals become infected
+with a peak prevalence of 14% roughly 100 days into the epidemic. The number of individuals in the
+“Easy” and “Hard” groups is equal for each age group as specified in the initial distribution. Looking
+at the number of infected individuals by age and accessibility groups, notice that the numbers are
+significantly higher (peak prevalence) in the “Easy” accessibility group compared to “Hard”. This is due
+to the decreased transmission rate specified in the accessibility group matrix.</p>
+<div class="figure" id="id3">
+<img alt="_images/HINT_AgeAndAccess_output_baseLine_orig2_cropped.png" src="_images/HINT_AgeAndAccess_output_baseLine_orig2_cropped.png" />
+<p class="caption"><span class="caption-text">Figure 1: Baseline outbreak</span></p>
+</div>
+</div>
+</div>
+<div class="section" id="b-age-targeted-outreach-vaccination-campaign">
+<h3><a class="toc-backref" href="#id14">B: Age-targeted outreach vaccination campaign</a><a class="headerlink" href="#b-age-targeted-outreach-vaccination-campaign" title="Permalink to this headline">¶</a></h3>
+<p>This simulation adds an age targeted vaccination on day 1 followed by the same outbreak seeding
+specified in the first scenario on day 2. The campaign configuration file (campaign.json) is in
+the ScenariosHINT03_AgeAndAccessB_AgeTargetedVaccine directory. For more information, see
+<strong>SimpleVaccine</strong> parameters.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span>
+                <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+                    <span class="nt">&quot;Durability_Time_Profile&quot;</span><span class="p">:</span> <span class="s2">&quot;BOXDURABILITY&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;Primary_Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">3650</span><span class="p">,</span>
+                    <span class="nt">&quot;Reduced_Acquire&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="nt">&quot;Reduced_Transmit&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                    <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span>
+                    <span class="nt">&quot;Vaccine_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;AcquisitionBlocking&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span>
+                <span class="p">},</span>
+                <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;ExplicitAgeRanges&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Target_Age_Min&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+                <span class="nt">&quot;Target_Age_Max&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id1">
+<h4>Expected simulation output<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<p>Compare the number of infected-by-age in this simulation with the baseline outbreak scenario. Notice
+the dramatic decrease (an order of magnitude) of the infection in 6 to 10 year olds due to the
+vaccination of this group. Compare infections in other ages, noting the overall decrease in
+infection across age groups despite the fact that only 6 to 10 year olds were vaccinated.</p>
+<div class="figure" id="id4">
+<img alt="_images/HINT_AgeAndAccess_output_6_to_10_vaccine_orig2_cropped.png" src="_images/HINT_AgeAndAccess_output_6_to_10_vaccine_orig2_cropped.png" />
+<p class="caption"><span class="caption-text">Figure 2: Age-targeted outreach vaccination campaign</span></p>
+</div>
+</div>
+</div>
+<div class="section" id="c-standard-vaccination-campaign">
+<h3><a class="toc-backref" href="#id15">C: Standard vaccination campaign</a><a class="headerlink" href="#c-standard-vaccination-campaign" title="Permalink to this headline">¶</a></h3>
+<p>On day 1, a non-targeted vaccination campaign begins which reaches all those individuals in the “Easy”
+accessibility group but does not reach those in the “Hard” accessibility group.</p>
+<p>This is followed by an outbreak that originates in the “Hard” accessibility group in the 0.5 to 6
+year olds. In the first two scenarios, the outbreak originated in the “Easy” accessibility group
+among older children. This outbreak begins in the “Hard” accessibility group. For more information,
+see <strong>OutbreakIndividual</strong> and  <strong>SimpleVaccine</strong> parameters.</p>
+<p>The campaign configuration file (campaign.json) is in the
+ScenariosHINT03_AgeAndAccessC_AccessTargetedVaccine directory.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Number_Distributions&quot;</span><span class="p">:</span> <span class="mi">-1</span><span class="p">,</span>
+            <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="nt">&quot;outbreak_source&quot;</span><span class="p">:</span> <span class="s2">&quot;PrevalenceIncrease&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;OutbreakIndividual&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
+            <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;ExplicitAgeRanges&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Target_Age_Min&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+            <span class="nt">&quot;Target_Age_Max&quot;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span>
+            <span class="nt">&quot;Property_Restrictions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Accessibility:Hard&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span>
+    <span class="p">},</span> <span class="p">{</span>
+        <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span>
+            <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+                <span class="nt">&quot;Durability_Time_Profile&quot;</span><span class="p">:</span> <span class="s2">&quot;BOXDURABILITY&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;Primary_Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">36500</span><span class="p">,</span>
+                <span class="nt">&quot;Reduced_Acquire&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="nt">&quot;Reduced_Transmit&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span>
+                <span class="nt">&quot;Vaccine_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;AcquisitionBlocking&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Property_Restrictions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Accessibility:Easy&quot;</span><span class="p">],</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetAll&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id2">
+<h4>Expected simulation output<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>Notice the dramatic decrease in cumulative incidence (~300 vs. ~700) and peak prevalence from the
+first scenario because of the vaccination campaign that targeted the “Easy” accessibility
+group.</p>
+<div class="figure" id="id5">
+<img alt="_images/HINT_AgeAndAccess_output_easyVaccine_orig2_cropped.png" src="_images/HINT_AgeAndAccess_output_easyVaccine_orig2_cropped.png" />
+<p class="caption"><span class="caption-text">Figure 3: Easy accessibility targeted vaccine–Accessibility easy group</span></p>
+</div>
+<p>Notice the almost complete elimination of infection in the “Easy” accessibility group due to 95%
+vaccination coverage with a 95% take. There is only a slight reduction in infection in the “Hard”
+accessibility group which was not reachable by vaccination in this campaign. Recall that the
+epidemic was seeded in the “Hard” accessibility group.</p>
+<div class="figure" id="id6">
+<img alt="_images/HINT_AgeAndAccess_output_easyVaccine_orig_cropped.png" src="_images/HINT_AgeAndAccess_output_easyVaccine_orig_cropped.png" />
+<p class="caption"><span class="caption-text">Figure 4: Easy accessibility targeted vaccine–Accessibility hard group</span></p>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="exploring-the-model">
+<h2><a class="toc-backref" href="#id16">Exploring the model</a><a class="headerlink" href="#exploring-the-model" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p class="first">Adjust both the targeted age and accessibility groups of the initial outbreak. In
+<strong>IndividualProperties</strong>, decrease the value of the off-diagonal entries in the <strong>TransmissionMatrix</strong>.
+Investigate how this slows down the spread of measles to the other age and accessibility groups in
+terms of both the speed of the disease spread and total incidence of the disease.</p>
+</li>
+<li><p class="first">For one age and/or accessibility group, set all interactions with other groups to zero. To do this
+for the n<sup>th</sup> population group, set all values of the n<sup>th</sup> row to 0 except for the diagonal entry
+(n<sup>th</sup> column and n<sup>th</sup> row), which should remain unchanged.</p>
+</li>
+<li><p class="first">Use the campaign cost output, which is proportional to the number of doses, to compare the cost-
+effectiveness of vaccination campaigns targeted at different age and accessibility groups. Also
+adjust coverage in different groups.</p>
+<p>For example, the following <strong>Matrix</strong> values configure the interactions with other group for the third age
+group (older than 10 to 20 years).</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Matrix&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Verify that if the epidemic started in a different group, it cannot spread to this group.</p>
+</li>
+<li><p class="first">How do results of the third scenario change if the
+infection is seeded in the “Easy” accessibility group? See that the infection fails to spread to the “Hard”
+accessibility group. Lower the vaccination coverage of the “Easy” accessibility group to find the
+vaccination level where the spread to the “Hard” accessibility group occurs.</p>
+</li>
+</ol>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="hint-tutorial-scenario4.html" class="btn btn-neutral float-right" title="HINT 4: Washington state pertussis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="hint-tutorial-scenario2.html" class="btn btn-neutral" title="HINT 2: School closure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

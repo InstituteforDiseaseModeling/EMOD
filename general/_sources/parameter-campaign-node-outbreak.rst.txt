@@ -1,0 +1,23 @@
+========
+Outbreak
+========
+
+The **Outbreak** class allows the introduction of a disease outbreak event by the addition of
+infected individuals or by the infection of existing individuals in the specified node set. The type
+of disease outbreak to be added must be configured. **Outbreak** is a node-level intervention; to
+distribute an outbreak intervention to specific categories of individuals within a targeted node,
+use **OutbreakIndividual**.
+
+.. include:: ../reuse/warning-outbreak.txt
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-outbreak.csv
+
+.. literalinclude:: ../json/campaign-outbreak.json
+   :language: json

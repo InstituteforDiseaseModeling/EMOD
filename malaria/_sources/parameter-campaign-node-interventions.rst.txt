@@ -1,0 +1,64 @@
+========================
+Node-level interventions
+========================
+
+.. include:: ../reuse/campaign-node-intervention-overview.txt
+
+The following node-level interventions are available for use with the malaria simulation type.
+
+
+Vector control
+==============
+
+The following node-level interventions are commonly used for vector control in malaria simulations.
+
+ .. raw:: html
+
+     <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+ .. rst-class:: toggle-table
+
+ .. csv-table::
+   :header: "Intervention", "Target life stage", "Target biting preference", "Target biting location", "Effect"
+
+   :doc:`parameter-campaign-node-animalfeedkill`,node,feeding cycle,animal,killing
+   :doc:`parameter-campaign-node-artificialdiet`,feeding cycle,human,all,blocking
+   :doc:`parameter-campaign-node-insectkillingfence`,feeding cycle,all,all,killing
+   :doc:`parameter-campaign-node-larvicides`,larva,all,all,"killing, reduction"
+   :doc:`parameter-campaign-node-mosquitorelease`,,,,
+   :doc:`parameter-campaign-node-outdoorrestkill`,feeding cycle,human,outdoor,killing
+   :doc:`parameter-campaign-node-ovipositiontrap`,feeding cycle,all,all,killing
+   :doc:`parameter-campaign-node-scalelarvalhabitat`,larva,all,all,reduction
+   :doc:`parameter-campaign-node-spacespraying`,feeding cycle,human ,outdoor ,killing
+   :doc:`parameter-campaign-node-spatialrepellent`,feeding cycle,all ,outdoor ,blocking
+   :doc:`parameter-campaign-node-sugartrap`,adults,all,all,killing
+
+.. taken from Jaline's wiki page,
+.. https://wiki.idmod.org/pages/viewpage.action?spaceKey=EMOD&postingDay=2016%2F7%2F15&title=Vector+control+interventions+in+DTK
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 2
+
+   parameter-campaign-node-animalfeedkill
+   parameter-campaign-node-artificialdiet
+   parameter-campaign-node-birthtriggerediv
+   parameter-campaign-node-importpressure
+   parameter-campaign-node-inputeir
+   parameter-campaign-node-insectkillingfence
+   parameter-campaign-node-larvicides
+   parameter-campaign-node-malariachallenge
+   parameter-campaign-node-migratefamily
+   parameter-campaign-node-mosquitorelease
+   parameter-campaign-node-nodelevelhealthtriggerediv
+   parameter-campaign-node-nodelevelhealthtriggeredivscaleupswitch
+   parameter-campaign-node-nodepropertyvaluechanger
+   parameter-campaign-node-outbreak
+   parameter-campaign-node-outdoorrestkill
+   parameter-campaign-node-ovipositiontrap
+   parameter-campaign-node-scalelarvalhabitat
+   parameter-campaign-node-spacespraying
+   parameter-campaign-node-spatialrepellent
+   parameter-campaign-node-sugartrap
+
+

@@ -1,0 +1,18 @@
+========
+ARTBasic
+========
+
+The **ArtBasic** intervention class begins antiretroviral therapy (ART) for specified individuals.
+To remove an individual from ART, use :doc:`parameter-campaign-individual-artdropout`.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-artbasic.csv
+
+.. literalinclude:: ../json/campaign-artbasic.json
+   :language: json

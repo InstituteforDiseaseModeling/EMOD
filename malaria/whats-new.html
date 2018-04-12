@@ -1,0 +1,2717 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>What’s new &mdash; Malaria Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Malaria Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Malaria Model  documentation" href="index.html"/>
+        <link rel="next" title="EMOD installation" href="install-overview.html"/>
+        <link rel="prev" title="Welcome to IDM malaria modeling" href="index.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Malaria Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-overview.html">Malaria disease overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-model-overview.html">Malaria model overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-IDM.html">Malaria research at IDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Malaria Model</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Malaria</a> &raquo;</li>
+      
+    <li>What’s new</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "http://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
+  <div class="section" id="whats-new">
+<h1>What’s new<a class="headerlink" href="#whats-new" title="Permalink to this headline">¶</a></h1>
+<p>This topic describes new functionality and breaking changes for recently released versions of
+Epidemiological MODeling software (EMOD).</p>
+<div class="contents local topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#emod-s-v2-13" id="id1">EMOD v2.13</a><ul>
+<li><a class="reference internal" href="#new-configuration-parameters" id="id2">New configuration parameters</a></li>
+<li><a class="reference internal" href="#new-demographics-parameters" id="id3">New demographics parameters</a></li>
+<li><a class="reference internal" href="#new-campaign-parameters" id="id4">New campaign parameters</a><ul>
+<li><a class="reference internal" href="#communityhealthworkereventcoordinator" id="id5">CommunityHealthWorkerEventCoordinator</a></li>
+<li><a class="reference internal" href="#importpressure" id="id6">ImportPressure</a></li>
+<li><a class="reference internal" href="#individualimmunitychanger" id="id7">IndividualImmunityChanger</a></li>
+<li><a class="reference internal" href="#multieffectboostervaccine" id="id8">MultiEffectBoosterVaccine</a></li>
+<li><a class="reference internal" href="#nodepropertyvaluechanger" id="id9">NodePropertyValueChanger</a></li>
+<li><a class="reference internal" href="#simpleboostervaccine" id="id10">SimpleBoosterVaccine</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#emod-s-v2-10" id="id11">EMOD v2.10</a><ul>
+<li><a class="reference internal" href="#emod-s-software-upgrades" id="id12">EMOD software upgrades</a></li>
+<li><a class="reference internal" href="#malaria-model" id="id13">Malaria model</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="emod-s-v2-13">
+<h2><a class="toc-backref" href="#id1">EMOD v2.13</a><a class="headerlink" href="#emod-s-v2-13" title="Permalink to this headline">¶</a></h2>
+<p>The EMOD v2.13 release includes many new features for all supported simulation types.</p>
+<button class="collapse-table-button btn btn-info">Collapse all parameter tables</button><div class="section" id="new-configuration-parameters">
+<h3><a class="toc-backref" href="#id2">New configuration parameters</a><a class="headerlink" href="#new-configuration-parameters" title="Permalink to this headline">¶</a></h3>
+<p>For the malaria simulation type, the following new configuration parameters are available:</p>
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Custom_Reports_Filename</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>UNINITIALIZED STRING</td>
+<td>The name of the file containing custom report configuration parameters. Omitting this parameter or setting it to RunAllCustomReports will load all reporters found that are valid for the given simulation type. The file must be in JSON format.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>  
+    <span class="nt">&quot;Custom_Reports_Filename&quot;</span><span class="p">:</span> <span class="s2">&quot;custom_reports.json&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Cycle_Arrhenius_1</td>
+<td>float</td>
+<td>0</td>
+<td>1.00E+15</td>
+<td>4.09E+10</td>
+<td>The Arrhenius equation, <img class="math" src="_images/math/1c4e98d68901ee4b4b9782c91fd5eb546328b6c0.png" alt="a_1^{-a_2/T}"/>, with T in degrees Kelvin, parameterizes the mosquito feeding cycle rate. This duration is a decreasing function of temperature.  The variable a1 is a temperature-independent scale factor on feeding rate. <strong>Temperature_Dependent_Feeding_Cycle</strong> must be set to ARRHENIUS_DEPENDENCE.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Temperature_Dependent_Feeding_Cycle&quot;</span><span class="p">:</span> <span class="s2">&quot;ARRHENIUS_DEPENDENCE&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Vector_Species_Params&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;arabiensis&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Cycle_Arrhenius_1&quot;</span><span class="p">:</span> <span class="mi">99</span><span class="p">,</span>
+            <span class="nt">&quot;Cycle_Arrhenius_2&quot;</span><span class="p">:</span> <span class="mi">88</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Cycle_Arrhenius_2</td>
+<td>float</td>
+<td>0</td>
+<td>1.00E+15</td>
+<td>7740</td>
+<td>The Arrhenius equation, <img class="math" src="_images/math/1c4e98d68901ee4b4b9782c91fd5eb546328b6c0.png" alt="a_1^{-a_2/T}"/>, with T in degrees Kelvin, parameterizes the mosquito feeding cycle rate. This duration is a decreasing function of temperature.  The variable a2 is a temperature-independent scale factor on feeding rate. <strong>Temperature_Dependent_Feeding_Cycle</strong> must be set to ARRHENIUS_DEPENDENCE.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Temperature_Dependent_Feeding_Cycle&quot;</span><span class="p">:</span> <span class="s2">&quot;ARRHENIUS_DEPENDENCE&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Vector_Species_Params&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;arabiensis&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Cycle_Arrhenius_1&quot;</span><span class="p">:</span> <span class="mi">99</span><span class="p">,</span>
+            <span class="nt">&quot;Cycle_Arrhenius_2&quot;</span><span class="p">:</span> <span class="mi">88</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Cycle_Arrhenius_Reduction_Factor</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>The scale factor applied to cycle duration (from oviposition to oviposition) to reduce the duration when primary follicles are at stage II rather than I in the case of newly emerged females. <strong>Temperature_Dependent_Feeding_Cycle</strong> must be set to ARRHENIUS_DEPENDENCE.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Temperature_Dependent_Feeding_Cycle&quot;</span><span class="p">:</span> <span class="s2">&quot;ARRHENIUS_DEPENDENCE&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Vector_Species_Params&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;funestus&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Cycle_Arrhenius_Reduction_Factor&quot;</span><span class="p">:</span> <span class="mf">0.44</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Drought_Egg_Hatch_Delay</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0.33</td>
+<td>Proportion of regular egg hatching that still occurs when habitat dries up. <strong>Enable_Drought_Egg_Hatch_Delay</strong> must be set to 1.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> 
+    <span class="nt">&quot;Enable_Drought_Egg_Hatch_Delay&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;Drought_Egg_Hatch_Delay&quot;</span><span class="p">:</span> <span class="mf">0.33</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Egg_Arrhenius1</td>
+<td>float</td>
+<td>0</td>
+<td>1.00E+10</td>
+<td>6.16E+07</td>
+<td>The Arrhenius equation, math:<cite>a_1^{-a_2/T}</cite>, with T in degrees Kelvin, parameterizes the daily rate of mosquito egg hatching. This duration is a decreasing function of temperature.  The variable a1 is a temperature-independent scale factor on hatching rate. <strong>Enable_Temperature_Dependent_Egg_Hatching</strong> must be set to 1.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Enable_Temperature_Dependent_Egg_Hatching&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>     
+    <span class="nt">&quot;Egg_Arrhenius1&quot;</span><span class="p">:</span> <span class="mi">61599956</span><span class="p">,</span>
+    <span class="nt">&quot;Egg_Arrhenius2&quot;</span><span class="p">:</span> <span class="mi">5754</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Egg_Arrhenius2</td>
+<td>float</td>
+<td>0</td>
+<td>1.00E+10</td>
+<td>5754.03</td>
+<td>The Arrhenius equation, <img class="math" src="_images/math/1c4e98d68901ee4b4b9782c91fd5eb546328b6c0.png" alt="a_1^{-a_2/T}"/>, with T in degrees Kelvin, parameterizes the daily rate of mosquito egg hatching. This duration is a decreasing function of temperature.  The variable a2 is a temperature-dependent scale factor on hatching rate. <strong>Enable_Temperature_Dependent_Egg_Hatching</strong> must be set to 1.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Enable_Temperature_Dependent_Egg_Hatching&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>     
+    <span class="nt">&quot;Egg_Arrhenius1&quot;</span><span class="p">:</span> <span class="mi">61599956</span><span class="p">,</span>
+    <span class="nt">&quot;Egg_Arrhenius2&quot;</span><span class="p">:</span> <span class="mi">5754</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Egg_Hatch_Density_Dependence</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NO_DENSITY_DEPENDENCE</td>
+<td><p class="first">The effect of larval density on egg hatching rate. Possible values are:</p>
+<dl class="last docutils">
+<dt>DENSITY_DEPENDENCE </dt>
+<dd>Egg hatching is reduced when the habitat is nearing its carrying capacity.</dd>
+<dt>NO_DENSITY_DEPENDENCE</dt>
+<dd>Egg hatching is not dependent upon larval density.</dd>
+</dl>
+</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Egg_Hatch_Density_Dependence&quot;</span><span class="p">:</span> <span class="s2">&quot;NO_DENSITY_DEPENDENCE&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Enable_Drought_Egg_Hatch_Delay</td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Controls whether or not eggs hatch at delayed rates, set by <strong>Drought_Egg_Hatch_Delay</strong>, when the habitat dries up completely.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Enable_Drought_Egg_Hatch_Delay&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
+    <span class="nt">&quot;Drought_Egg_Hatch_Delay&quot;</span><span class="p">:</span> <span class="mf">0.33</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Enable_Egg_Mortality</td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Controls whether or not to include a daily mortality rate on the egg population, which is independent of climatic factors.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Enable_Egg_Mortality&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Enable_Temperature_Dependent_Egg_Hatching</td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Controls whether or not temperature has an effect on egg hatching, defined by <strong>Egg_Arrhenius_1</strong> and <strong>Egg_Arrhenius_2</strong>.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>  
+    <span class="nt">&quot;Enable_Temperature_Dependent_Egg_Hatching&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  
+    <span class="nt">&quot;Egg_Arrhenius1&quot;</span><span class="p">:</span> <span class="mf">61599956.864</span><span class="p">,</span> 
+    <span class="nt">&quot;Egg_Arrhenius2&quot;</span><span class="p">:</span> <span class="mf">5754.033</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Enable_Vector_Aging</td>
+<td>boolean</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Controls whether or not vectors undergo senescence as they age.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Enable_Vector_Aging&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Incubation_Period_Log_Mean</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>6</td>
+<td>The mean of log normal for the incubation period distribution. <strong>Incubation_Period_Distribution</strong> must be set to LOG_NORMAL_DURATION.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Incubation_Period_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;LOG_NORMAL_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Incubation_Period_Log_Mean&quot;</span><span class="p">:</span> <span class="mf">5.758</span><span class="p">,</span>
+    <span class="nt">&quot;Incubation_Period_Log_Width&quot;</span><span class="p">:</span> <span class="mf">0.27</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Incubation_Period_Log_Width</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>1</td>
+<td>The log width of log normal for the incubation period distribution. <strong>Incubation_Period_Distribution</strong> must be set to LOG_NORMAL_DURATION.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Incubation_Period_Distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;LOG_NORMAL_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Incubation_Period_Log_Mean&quot;</span><span class="p">:</span> <span class="mf">5.758</span><span class="p">,</span>
+    <span class="nt">&quot;Incubation_Period_Log_Width&quot;</span><span class="p">:</span> <span class="mf">0.27</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Infectivity_Exponential_Baseline</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>The scale factor applied to <strong>Base_Infectivity</strong> at the beginning of a simulation, before the infectivity begins to grow exponentially. <strong>Infectivity_Scale_Type</strong> must be set to EXPONENTIAL_FUNCTION_OF_TIME.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Infectivity_Exponential_Baseline&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Exponential_Delay&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Exponential_Rate&quot;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Scale_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;EXPONENTIAL_FUNCTION_OF_TIME&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Infectivity_Exponential_Delay</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>0</td>
+<td>The number of days before infectivity begins to ramp up exponentially. <strong>Infectivity_Scale_Type</strong> must be set to EXPONENTIAL_FUNCTION_OF_TIME.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Infectivity_Exponential_Baseline&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Exponential_Delay&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Exponential_Rate&quot;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span> 
+    <span class="nt">&quot;Infectivity_Scale_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;EXPONENTIAL_FUNCTION_OF_TIME&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Infectivity_Exponential_Rate</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+38</td>
+<td>0</td>
+<td>The daily rate of exponential growth to approach to full infectivity after the delay set by <strong>Infectivity_Exponential_Delay</strong> has passed. <strong>Infectivity_Scale_Type</strong> must be set to EXPONENTIAL_FUNCTION_OF_TIME.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Infectivity_Exponential_Rate&quot;</span><span class="p">:</span> <span class="mi">45</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Memory_Usage_Halting_Threshold_Working_Set_MB</td>
+<td>integer</td>
+<td>0</td>
+<td>1.00E+06</td>
+<td>8000</td>
+<td>The maximum size (in MB) of working set memory before the system throws an exception and halts.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Memory_Usage_Halting_Threshold_Working_Set_MB&quot;</span><span class="p">:</span> <span class="mi">4000</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Memory_Usage_Warning_Threshold_Working_Set_MB</td>
+<td>integer</td>
+<td>0</td>
+<td>1.00E+06</td>
+<td>7000</td>
+<td>The maximum size (in MB) of working set memory before memory usage statistics are written to the log regardless of log level.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Memory_Usage_Warning_Threshold_Working_Set_MB&quot;</span><span class="p">:</span> <span class="mi">3500</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Nighttime_Feeding_Fraction</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>The fraction of feeds on humans (for a specific mosquito species) that occur during the nighttime. Thus the fraction of feeds on humans that occur during the day equals 1 - (value of this parameter).</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Vector_Species_Params&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;arabiensis&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Acquire_Modifier&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> 
+            <span class="nt">&quot;Adult_Life_Expectancy&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> 
+            <span class="nt">&quot;Anthropophily&quot;</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span> 
+            <span class="nt">&quot;Aquatic_Arrhenius_1&quot;</span><span class="p">:</span> <span class="mi">84200000000</span><span class="p">,</span> 
+            <span class="nt">&quot;Aquatic_Arrhenius_2&quot;</span><span class="p">:</span> <span class="mi">8328</span><span class="p">,</span> 
+            <span class="nt">&quot;Aquatic_Mortality_Rate&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> 
+            <span class="nt">&quot;Cycle_Arrhenius_1&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+            <span class="nt">&quot;Cycle_Arrhenius_2&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+            <span class="nt">&quot;Cycle_Arrhenius_Reduction_Factor&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+            <span class="nt">&quot;Days_Between_Feeds&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> 
+            <span class="nt">&quot;Egg_Batch_Size&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> 
+            <span class="nt">&quot;Immature_Duration&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> 
+            <span class="nt">&quot;Indoor_Feeding_Fraction&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> 
+            <span class="nt">&quot;Infected_Arrhenius_1&quot;</span><span class="p">:</span> <span class="mi">117000000000</span><span class="p">,</span> 
+            <span class="nt">&quot;Infected_Arrhenius_2&quot;</span><span class="p">:</span> <span class="mi">8336</span><span class="p">,</span> 
+            <span class="nt">&quot;Infected_Egg_Batch_Factor&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span> 
+            <span class="nt">&quot;Infectious_Human_Feed_Mortality_Factor&quot;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span> 
+            <span class="nt">&quot;Larval_Habitat_Types&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;TEMPORARY_RAINFALL&quot;</span><span class="p">:</span> <span class="mi">11250000000</span>
+            <span class="p">},</span> 
+            <span class="nt">&quot;Nighttime_Feeding_Fraction&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
+            <span class="nt">&quot;Transmission_Rate&quot;</span><span class="p">:</span> <span class="mf">0.5</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>   
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Serialization_Time_Steps</td>
+<td>array of integers</td>
+<td>0</td>
+<td>2.15E+09</td>
+<td>&#160;</td>
+<td>The list of time steps after which to save the serialized state. 0 (zero) indicates the initial state before simulation, n indicates after the nth time step. By default, no serialized state is saved.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Serialization_Time_Steps&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mi">0</span><span class="p">,</span> 
+        <span class="mi">10</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Serialized_Population_Filenames</td>
+<td>array of strings</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>Array of filenames with serialized population data. The number of filenames must match the number of cores used for the simulation. The file must be in .dtk format.</td>
+<td><div class="first highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Serialized_Population_Filenames&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;state-00010.dtk&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="last"></p>
+</td>
+</tr>
+<tr class="row-even"><td>Serialized_Population_Path</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>.</td>
+<td>The root path for the serialized population files.</td>
+<td><div class="first highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Serialized_Population_Path&quot;</span><span class="p">:</span> <span class="s2">&quot;../00_Generic_Version_1_save/output&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="last"></p>
+</td>
+</tr>
+<tr class="row-odd"><td>Temperature_Dependent_Feeding_Cycle</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NO_TEMPERATURE_DEPENDENCE</td>
+<td><p class="first">The effect of temperature on the duration between blood feeds. 
+Possible values are:</p>
+<dl class="last docutils">
+<dt>NO_TEMPERATURE_DEPENDENCE </dt>
+<dd>No relation to temperature; days between feeds will be constant and specified by <strong>Days_Between_Feeds</strong> for each species.</dd>
+<dt>ARRHENIUS_DEPENDENCE</dt>
+<dd>Use the Arrhenius equation with parameters <strong>Cycle_Arrhenius_1</strong> and <strong>Cycle_Arrhenius_2</strong>.</dd>
+<dt>BOUNDED_DEPENDENCE</dt>
+<dd>Use an equation bounded at 10 days at 15C and use <strong>Days_Between_Feeds</strong> to set the duration at 30C.</dd>
+</dl>
+</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Temperature_Dependent_Feeding_Cycle&quot;</span><span class="p">:</span> <span class="s2">&quot;BOUNDED_DEPENDENCE&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>To view all available configuration parameters, see <a class="reference internal" href="parameter-configuration.html"><span class="doc">Configuration parameters</span></a>.</p>
+</div>
+<div class="section" id="new-demographics-parameters">
+<h3><a class="toc-backref" href="#id3">New demographics parameters</a><a class="headerlink" href="#new-demographics-parameters" title="Permalink to this headline">¶</a></h3>
+<p>In all simulation types, you can now assign properties like risk or quality of care to nodes using
+<strong>NodeProperties</strong>, which are configured much like <strong>IndividualProperties</strong>. In addition, a new
+property type is available for both nodes and individuals called <strong>InterventionStatus</strong>, which is
+used by the campaign file to distribute interventions based on the other interventions an individual
+or node has received. This property type was previously available only for individuals in the HIV
+simulation type and was known as the <strong>CascadeState</strong>. The relevant campaign parameters are
+described in the next section.</p>
+<p>For more information, see the table below.</p>
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>NodeProperties</td>
+<td>array of objects</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>An array that contains parameters that add properties to nodes in a simulation. For example, you can define values for intervention status, risk, and other properties and assign values to different nodes.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Risk&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HIGH&quot;</span><span class="p">,</span> <span class="s2">&quot;MEDIUM&quot;</span><span class="p">,</span> <span class="s2">&quot;LOW&quot;</span><span class="p">],</span>
+        <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Property</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td><p class="first">The individual or node property type for which you will assign arbitrary values to create groups. You can then move individuals or nodes into or out of different groups or target interventions to particular groups. Possible values are:</p>
+<dl class="last docutils">
+<dt>Age_Bin</dt>
+<dd>Assign individuals to age bins. Use with <strong>Age_Bin_Edges_In_Years</strong>. Cannot be used with <strong>NodeProperties</strong>.</dd>
+<dt>Accessibility</dt>
+<dd>Tag individuals or nodes based on their accessibility.</dd>
+<dt>Geographic</dt>
+<dd>Tag individuals or nodes based on geographic characteristics.</dd>
+<dt>HasActiveTB</dt>
+<dd>Tag individuals or nodes based on active TB status. Typically used only with HIV ART staging interventions.</dd>
+<dt>InterventionStatus</dt>
+<dd>Tag individuals or nodes based on intervention status, so that receiving an intervention can affect how other interventions are distributed. Use with <strong>Disqualifying_Properties</strong> and <strong>New_Property_Value</strong> in the campaign file.</dd>
+<dt>Place</dt>
+<dd>Tag individuals or nodes based on place.</dd>
+<dt>Risk</dt>
+<dd>Tag individuals or nodes based on disease risk.</dd>
+<dt>QualityofCare</dt>
+<dd>Tag individuals or nodes based on the quality of medical care.</dd>
+</dl>
+</td>
+<td><div class="first highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Age_Bin&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Age_Bin_Edges_In_Years&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">-1</span> <span class="p">]</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span> <span class="s2">&quot;RECENT_SPRAY&quot;</span><span class="p">],</span>
+        <span class="nt">&quot;Initial_Distribution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="new-campaign-parameters">
+<h3><a class="toc-backref" href="#id4">New campaign parameters</a><a class="headerlink" href="#new-campaign-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The addition of <strong>NodeProperties</strong> in the demographics file also necessitated the addition of
+<strong>Node_Property_Restrictions</strong> to control how interventions are distributed based on the
+property values assigned to each node.</p>
+<p>The new campaign parameters <strong>Disqualifying_Properties</strong> and <strong>New_Property_Value</strong> were added to
+every intervention to control how interventions are distributed based on properties assigned to
+individuals or nodes. <strong>Disqualifying_Properties</strong> prevents an intervention from being distributed
+to individuals or nodes with certain property values. <strong>New_Property_Value</strong> updates the property
+value after they receive an intervention.</p>
+<p>These are generally used with the the property type <strong>InterventionStatus</strong> to control how
+interventions are distributed based on the interventions already received. For example, a household
+may be ineligible for clinical treatment for a length of time if they already received treatment
+during a drug campaign. This functionality was previously only available for individuals in the HIV
+simulation type and used parameters previously called <strong>Abort_States</strong> and <strong>Valid_Cascade_States</strong>.</p>
+<p>The following event coordinators and intervention classes are new for this simulation type.</p>
+<div class="section" id="communityhealthworkereventcoordinator">
+<h4><a class="toc-backref" href="#id5">CommunityHealthWorkerEventCoordinator</a><a class="headerlink" href="#communityhealthworkereventcoordinator" title="Permalink to this headline">¶</a></h4>
+<p>The <strong>CommunityHealthWorkerEventCoordinator</strong> coordinator class is used to model a health care worker’s ability
+to distribute interventions to the nodes and individual in their coverage area. This coordinator
+distributes a limited number of interventions per day, and can create a backlog of individuals or
+nodes requiring the intervention. For example, individual-level interventions could be distribution
+of drugs  and node-level interventions could be spraying houses with insecticide.</p>
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Amount_In_Shipment</td>
+<td>integer</td>
+<td>1</td>
+<td>2.15E+0</td>
+<td>2.15E+09</td>
+<td>The number of interventions (such as vaccine doses) that a health worker or clinic receives in a shipment. Interventions can only be distributed if they are in stock; stock is updated every <strong>Days_Between_Shipments</strong> with the <strong>Amount_In_Shipment</strong>.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Amount_In_Shipment&quot;</span><span class="p">:</span> <span class="mi">10</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Days_Between_Shipments</td>
+<td>float</td>
+<td>1</td>
+<td>3.40E+3</td>
+<td>3.40E+38</td>
+<td>The number of days to wait before a clinic or health worker receives a new shipment of interventions (such as vaccine doses). Interventions can only be distributed if they are in stock; stock is updated every <strong>Days_Between_Shipments</strong> with the <strong>Amount_In_Shipment</strong>.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Days_Between_Shipments&quot;</span><span class="p">:</span> <span class="mi">30</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Duration</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>3.40E+38</td>
+<td>The number of days for an event coordinator to be active before it expires.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Duration&quot;</span><span class="p">:</span> <span class="mi">65</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Initial_Amount</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>6</td>
+<td>The initial amount of stock of interventions (such as vaccine doses). Interventions can only be distributed if they are in stock; stock is updated every <strong>Days_Between_Shipments</strong> with the <strong>Amount_In_Shipment</strong>.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Initial_Amount&quot;</span><span class="p">:</span> <span class="mi">10</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Initial_Amount_Distribution_Type</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NOT_INITIALIZED</td>
+<td><p class="first">The distribution type to set when initializing <strong>Initial_Amount</strong>. Possible values are:</p>
+<dl class="last docutils">
+<dt>NOT_INITIALIZED</dt>
+<dd>No distribution set.</dd>
+<dt>FIXED_DURATION</dt>
+<dd>A constant duration.</dd>
+<dt>UNIFORM_DURATION</dt>
+<dd>A uniform random draw for the duration.</dd>
+<dt>GAUSSIAN_DURATION</dt>
+<dd>Duration of the active period is defined by the mean and standard deviation of the Gaussian distribution. Negative values are truncated at zero.</dd>
+<dt>EXPONENTIAL_DURATION</dt>
+<dd>The active period is the mean of the exponential random draw.</dd>
+<dt>POISSON_DURATION</dt>
+<dd>The active period is the mean of the random Poisson draw.</dd>
+<dt>LOG_NORMAL_DURATION</dt>
+<dd>The active period is a log normal distribution defined by a mean and log width.</dd>
+<dt>BIMODAL_DURATION</dt>
+<dd>The distribution is bimodal, the duration is a fraction of the active period for a specified period of time and equal to the active period otherwise.</dd>
+<dt>PIECEWISE_CONSTANT</dt>
+<dd>The distribution is specified with a list of years and a matching list of values. The duration at a given year is that specified for the nearest previous year.</dd>
+<dt>PIECEWISE_LINEAR</dt>
+<dd>The distribution is specified with a list of years and matching list of values. The duration at a given year is a linear interpolation of the specified values.</dd>
+<dt>WEIBULL_DURATION</dt>
+<dd>The duration is a <a class="reference internal" href="glossary.html#term-weibull-distribution"><span class="xref std std-term">Weibull distribution</span></a> with a given scale and shape.</dd>
+<dt>DUAL_TIMESCALE_DURATION</dt>
+<dd>The duration is two exponential distributions with given means.</dd>
+</dl>
+</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Initial_Amount_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;FIXED_DURATION&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Initial_Amount_Max</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>0</td>
+<td>The maximum amount of initial stock when <strong>Initial_Amount_Distribution_Type</strong> is set to UNIFORM_DISTRIBUTION.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Initial_Amount_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Initial_Amount_Min&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="nt">&quot;Initial_Amount_Max&quot;</span><span class="p">:</span> <span class="mi">10</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Initial_Amount_Mean</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>6</td>
+<td>The average amount of initial stock when <strong>Initial_Amount_Distribution_Type</strong> is set to GAUSSIAN_DISTRIBUTION.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Initial_Amount_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DISTRIBUTION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Initial_Amount_Std_Dev&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;Initial_Amount_Mean&quot;</span><span class="p">:</span> <span class="mi">5</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Initial_Amount_Min</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>0</td>
+<td>The minimum amount of initial stock when <strong>Initial_Amount_Distribution_Type</strong> is set to UNIFORM_DISTRIBUTION.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Initial_Amount_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Initial_Amount_Min&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="nt">&quot;Initial_Amount_Max&quot;</span><span class="p">:</span> <span class="mi">10</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Initial_Amount_Std_Dev</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>1</td>
+<td>The standard deviation for the amount of initial stock when <strong>Initial_Amount_Distribution_Type</strong> is set to GAUSSIAN_DISTRIBUTION.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Initial_Amount_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DISTRIBUTION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Initial_Amount_Std_Dev&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;Initial_Amount_Mean&quot;</span><span class="p">:</span> <span class="mi">5</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Intervention_Config</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The nested JSON of the actual intervention to be distributed by this event coordinator.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;BroadcastEvent&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Broadcast_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;EventFromIntervention&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Max_Distributed_Per_Day</td>
+<td>integer</td>
+<td>1</td>
+<td>2.15E+0</td>
+<td>2.15E+09</td>
+<td>The maximum number of interventions (such as vaccine doses) that can be distributed by health workers or clinics in a given day.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Max_Distributed_Per_Day&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Max_Stock</td>
+<td>integer</td>
+<td>0</td>
+<td>2.15E+0</td>
+<td>2.15E+09</td>
+<td>The maximum number of interventions (such as vaccine doses) that can be stored by a health worker or clinic. If the amount of interventions in a new shipment and current stock exceeds this value, only the number of interventions specified by this value will be stored.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Max_Stock&quot;</span><span class="p">:</span> <span class="mi">12</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Trigger_Condition_List</td>
+<td>array of strings</td>
+<td>NA</td>
+<td>NA</td>
+<td>NoTrigger</td>
+<td>The list of events that are of interest to the community health worker (CHW). If one of these events occurs, the individual or node is put into a queue to receive the CHW’s intervention. The CHW processes the queue when the event coordinator is updated. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Trigger_Condition_List&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ListenForEvent&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Waiting_Period</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>3.40E+38</td>
+<td>The number of days a person or node can be in the queue waiting to get the intervention from the community health worker (CHW). If a person or node is in the queue, they will not be re-added to the queue if the event that would add them to the queue occurs. This allows them to maintain their priority, however they could be removed from the queue due to this waiting period.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Waiting_Period&quot;</span><span class="p">:</span> <span class="mi">15</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Property_Restrictions</td>
+<td>array of JSON objects</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>A list of the <strong>IndividualProperty</strong> key:value pairs, as defined in the demographics file, that individuals must have to be targeted by this individual-level intervention. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Property_Restrictions&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;Risk:HIGH&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Node_Property_Restrictions</td>
+<td>array of JSON objects</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>A list of the <strong>NodeProperty</strong> key:value pairs, as defined in the demographics file, that nodes must have to be targeted by the intervention.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Node_Property_Restrictions&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="nt">&quot;Place&quot;</span><span class="p">:</span> <span class="s2">&quot;URBAN&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Risk&quot;</span><span class="p">:</span> <span class="s2">&quot;MED&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;Place&quot;</span><span class="p">:</span> <span class="s2">&quot;RURAL&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Risk&quot;</span><span class="p">:</span> <span class="s2">&quot;LOW&quot;</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Target_Age_Min</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>0</td>
+<td>The lower end of ages targeted for an intervention, in years. Used when <strong>Target_Demographic</strong> is set to ExplicitAgeRanges or ExplicitAgeRangesAndGender.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Target_Age_Max&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="nt">&quot;Target_Age_Min&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;ExplicitAgeRanges&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Target_Demographic</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>Everyone</td>
+<td><p class="first">The target demographic group. Possible values are:</p>
+<ul class="last simple">
+<li>Everyone</li>
+<li>ExplicitAgeRanges</li>
+<li>ExplicitAgeRangesAndGender</li>
+<li>ExplicitGender</li>
+<li>PossibleMothers</li>
+<li>ArrivingAirTravellers</li>
+<li>DepartingAirTravellers</li>
+<li>ArrivingRoadTravellers</li>
+<li>DepartingRoadTravellers</li>
+<li>AllArrivingTravellers</li>
+<li>AllDepartingTravellers</li>
+<li>ExplicitDiseaseState</li>
+</ul>
+</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Target_Age_Max&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="nt">&quot;Target_Age_Min&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;ExplicitAgeRanges&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Target_Gender</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>All</td>
+<td><p class="first">Specifies the gender restriction for the intervention. Possible values are:</p>
+<ul class="last simple">
+<li>Male</li>
+<li>Female</li>
+<li>All</li>
+</ul>
+</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Target_Gender&quot;</span><span class="p">:</span> <span class="s2">&quot;Male&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Demographic_Coverage</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>The fraction of individuals in the target demographic that will receive this intervention.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Property_Restrictions_Within_Node</td>
+<td>array of JSON objects</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>A list of the <strong>IndividualProperty</strong> key:value pairs, as defined in the demographics file, that individuals must have to be targeted by this node-level intervention. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Property_Restrictions_Within_Node&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Risk&quot;</span><span class="p">:</span> <span class="s2">&quot;HIGH&quot;</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Target_Residents_Only</td>
+<td>boolean</td>
+<td>NA</td>
+<td>NA</td>
+<td>0</td>
+<td>When set to true (1), the intervention is only distributed to individuals that began the simulation in the node (i.e. those that claim the node as their residence).</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Target_Residents_Only&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="importpressure">
+<h4><a class="toc-backref" href="#id6">ImportPressure</a><a class="headerlink" href="#importpressure" title="Permalink to this headline">¶</a></h4>
+<p>The <strong>ImportPressure</strong> intervention class extends the <strong>ImportCases</strong> outbreak event. Rather than importing a
+deterministic number of cases on a scheduled day, <strong>ImportPressure</strong> applies a set of per-day rates
+of importation of infected individuals, over a corresponding set of durations. <strong>ImportPressure</strong>
+inherits from <strong>Outbreak</strong>; the <strong>Antigen</strong> and <strong>Genome</strong> parameters are defined as they are for all
+<strong>Outbreak</strong> events.</p>
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Daily_Import_Pressures</td>
+<td>array of floats</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>0</td>
+<td>The rate of per-day importation for each node that the intervention is distributed to.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Durations&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+        <span class="nt">&quot;Daily_Import_Pressures&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">],</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;ImportPressure&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Durations</td>
+<td>array of integers</td>
+<td>0</td>
+<td>2.15E+0</td>
+<td>1</td>
+<td>The durations over which to apply import pressure.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Durations&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+        <span class="nt">&quot;Daily_Import_Pressures&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">],</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;ImportPressure&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Number_Cases_Per_Node</td>
+<td>integer</td>
+<td>0</td>
+<td>2.15E+0</td>
+<td>1</td>
+<td><p class="first">The number of new cases of <strong>Outbreak</strong> to import (per node).</p>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This will increase the population and there is no control over demographics of these individuals.</p>
+</div>
+</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Outbreak_Source&quot;</span><span class="p">:</span> <span class="s2">&quot;ImportCases&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Number_Cases_Per_Node&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;Outbreak&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Import_Age</td>
+<td>float</td>
+<td>0</td>
+<td>43800</td>
+<td>365</td>
+<td>The age (in days) of infected import cases.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Import_Age&quot;</span><span class="p">:</span> <span class="mi">10000</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Incubation_Period_Override</td>
+<td>integer</td>
+<td>-1</td>
+<td>2.15E+0</td>
+<td>-1</td>
+<td>The incubation period, in days, that infected individuals will go through before becoming infectious. This value overrides the incubation period set in the configuration file. Set to -1 to honor the configuration parameter settings.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Incubation_Period_Override&quot;</span><span class="p">:</span> <span class="mi">0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Antigen</td>
+<td>integer</td>
+<td>0</td>
+<td>10</td>
+<td>0</td>
+<td>The antigenic ID of the outbreak infection.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>  
+    <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Outbreak_Source&quot;</span><span class="p">:</span> <span class="s2">&quot;PrevalenceIncrease&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;OutbreakIndividual&quot;</span>
+    <span class="p">}</span>   
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Genome</td>
+<td>integer</td>
+<td>-2.15E+0</td>
+<td>2.15E+0</td>
+<td>0</td>
+<td>The genetic ID of the outbreak infection.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Outbreak_Source&quot;</span><span class="p">:</span> <span class="s2">&quot;PrevalenceIncrease&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;OutbreakIndividual&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Incubation_Period_Override&quot;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="individualimmunitychanger">
+<h4><a class="toc-backref" href="#id7">IndividualImmunityChanger</a><a class="headerlink" href="#individualimmunitychanger" title="Permalink to this headline">¶</a></h4>
+<p>The <strong>IndividualImmunityChanger</strong> intervention class acts essentially as a
+<a class="reference internal" href="parameter-campaign-individual-multieffectvaccine.html"><span class="doc">MultiEffectVaccine</span></a>,
+with the exception of how the behavior is implemented. Rather than
+attaching a persistent vaccine intervention object to an individual’s intervention list (as a
+campaign-individual-multieffectboostervaccine does), the <strong>IndividualImmunityChanger</strong> directly
+alters the immune modifiers of the individual’s susceptibility object and is then immediately disposed
+of. Any immune waning is not governed by <a class="reference internal" href="parameter-campaign-waningeffects.html"><span class="doc">Waning effect classes</span></a>, as
+<a class="reference internal" href="parameter-campaign-individual-multieffectvaccine.html"><span class="doc">MultiEffectVaccine</span></a> is, but rather
+by the immunity waning parameters in the configuration file.</p>
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Boost_Acquire</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies the boosting effect on acquisition immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine. This does not replace current immunity, it builds multiplicatively on top of it.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Boost_Acquire&quot;</span><span class="p">:</span> <span class="mf">0.7</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Boost_Mortality</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies the boosting effect on mortality immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine. This does not replace current immunity, it builds multiplicatively on top of it.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Boost_Mortality&quot;</span><span class="p">:</span> <span class="mf">1.0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Boost_Threshold_Acquire</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies how much acquisition immunity is required before the vaccine changes from a prime to a boost.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Boost_Threshold_Acquire&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Boost_Threshold_Mortality</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies how much mortality immunity is required before the vaccine changes from a prime to a boost.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Boost_Threshold_Mortality&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Boost_Threshold_Transmit</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies how much transmission immunity is required before the vaccine changes from a prime to a boost.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Boost_Threshold_Transmit&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Boost_Transmit</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies the boosting effect on transmission immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine. This does not replace current immunity, it builds multiplicatively on top of it.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Boost_Transmit&quot;</span><span class="p">:</span> <span class="mf">0.5</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Prime_Acquire</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies the priming effect on acquisition immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Prime_Acquire&quot;</span><span class="p">:</span> <span class="mf">0.1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Prime_Mortality</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies the priming effect on mortality immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Prime_Mortality&quot;</span><span class="p">:</span> <span class="mf">0.3</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Prime_Transmit</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies the priming effect on transmission immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Prime_Transmit&quot;</span><span class="p">:</span> <span class="mf">0.2</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Cost_To_Consumer</td>
+<td>float</td>
+<td>0</td>
+<td>999999</td>
+<td>10</td>
+<td>The unit cost per vaccine (unamortized).</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="multieffectboostervaccine">
+<h4><a class="toc-backref" href="#id8">MultiEffectBoosterVaccine</a><a class="headerlink" href="#multieffectboostervaccine" title="Permalink to this headline">¶</a></h4>
+<p>The <strong>MultiEffectBoosterVaccine</strong> intervention class is derived from <strong>MultiEffectVaccine</strong> and
+preserves many of the same parameters. Upon distribution and successful take, the vaccine’s effect
+in each immunity compartment (acquisition, transmission,  and mortality) is determined by the
+recipient’s immune state. If the recipient’s immunity modifier in the corresponding compartment is
+above a user-specified threshold, then the vaccine’s initial effect will be equal to the
+corresponding priming parameter. If the recipient’s immune modifier is below this threshold, then
+the vaccine’s initial effect will be equal to the corresponding boost parameter. After distribution,
+the effect wanes, just like a <a class="reference internal" href="parameter-campaign-individual-multieffectvaccine.html"><span class="doc">MultiEffectVaccine</span></a>. The behavior
+is intended to mimic biological priming and boosting.</p>
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Acquire_Config</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The configuration for multi-effect vaccine acquisition. Specify how this effect decays over time using one of the <a class="reference internal" href="parameter-campaign-waningeffects.html"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Acquire_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
+        <span class="nt">&quot;Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">2525</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectExponential&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Mortality_Config</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The configuration for multi-effect vaccine mortality. Specify how this effect decays over time using one of the <a class="reference internal" href="parameter-campaign-waningeffects.html"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Mortality_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">2525</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectExponential&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Transmit_Config</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The configuration for multi-effect vaccine transmission. Specify how this effect decays over time using one of the <a class="reference internal" href="parameter-campaign-waningeffects.html"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Transmit_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
+        <span class="nt">&quot;Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">2525</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectExponential&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Boost_Acquire</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies the boosting effect on acquisition immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine. This does not replace current immunity, it builds multiplicatively on top of it.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Boost_Acquire&quot;</span><span class="p">:</span> <span class="mf">0.7</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Boost_Mortality</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies the boosting effect on mortality immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine. This does not replace current immunity, it builds multiplicatively on top of it.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Boost_Mortality&quot;</span><span class="p">:</span> <span class="mf">1.0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Boost_Threshold_Acquire</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies how much acquisition immunity is required before the vaccine changes from a prime to a boost.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Boost_Threshold_Acquire&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Boost_Threshold_Mortality</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies how much mortality immunity is required before the vaccine changes from a prime to a boost.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Boost_Threshold_Mortality&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Boost_Threshold_Transmit</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies how much transmission immunity is required before the vaccine changes from a prime to a boost.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Boost_Threshold_Transmit&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Boost_Transmit</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies the boosting effect on transmission immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine. This does not replace current immunity, it builds multiplicatively on top of it.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Boost_Transmit&quot;</span><span class="p">:</span> <span class="mf">0.5</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Prime_Acquire</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies the priming effect on acquisition immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Prime_Acquire&quot;</span><span class="p">:</span> <span class="mf">0.1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Prime_Mortality</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies the priming effect on mortality immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Prime_Mortality&quot;</span><span class="p">:</span> <span class="mf">0.3</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Prime_Transmit</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies the priming effect on transmission immunity for naive individuals (without natural or vaccine-derived immunity) for a multi-effect booster vaccine.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Prime_Transmit&quot;</span><span class="p">:</span> <span class="mf">0.2</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Cost_To_Consumer</td>
+<td>float</td>
+<td>0</td>
+<td>999999</td>
+<td>10</td>
+<td>The unit cost per vaccine (unamortized).</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Vaccine_Take</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>The rate at which delivered vaccines will successfully stimulate an immune response and achieve the desired efficacy. For example, if it is set to 0.9, there will be a 90 percent chance that the vaccine will start with the specified efficacy, and a 10 percent chance that it will have no efficacy at all.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="nt">&quot;Vaccine_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;AcquisitionBlocking&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Efficacy_Is_Multiplicative&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Waning_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectConstant&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">0.3</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Dont_Allow_Duplicates</td>
+<td>boolean</td>
+<td>NA</td>
+<td>NA</td>
+<td>0</td>
+<td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Disqualifying_Properties</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Intervention_Name</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>New_Property_Value</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="nodepropertyvaluechanger">
+<h4><a class="toc-backref" href="#id9">NodePropertyValueChanger</a><a class="headerlink" href="#nodepropertyvaluechanger" title="Permalink to this headline">¶</a></h4>
+<p>The <strong>NodePropertyValueChanger</strong> intervention class sets a given node property to a new value. You can
+also define a duration in days before the node property reverts back to its original value, the
+probability that a node will change its node property to the target value, and the number of days
+over which nodes will attempt to change their individual properties to the target value. This
+node-level intervention functions in a similar manner as the individual-level intervention,
+<a class="reference internal" href="parameter-campaign-individual-propertyvaluechanger.html"><span class="doc">PropertyValueChanger</span></a>.</p>
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Target_NP_Key_Value</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The <strong>NodeProperty</strong> key:value pair, as defined in the demographics file, to assign to the node.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Target_NP_Key_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:NONE&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Daily_Probability</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>The probability that an individual will move to the <strong>Target_Property_Value</strong>.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;PropertyValueChanger&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Target_Property_Key&quot;</span><span class="p">:</span> <span class="s2">&quot;Risk&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Target_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;LOW&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Daily_Probability&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;Maximum_Duration&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Revert&quot;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Maximum_Duration</td>
+<td>float</td>
+<td>-1</td>
+<td>3.40E+3</td>
+<td>3.40E+38</td>
+<td>The maximum amount of time individuals have to move to a new group. This timing works in conjunction with <strong>Daily_Probability</strong>.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;PropertyValueChanger&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Target_Property_Key&quot;</span><span class="p">:</span> <span class="s2">&quot;Risk&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Target_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;LOW&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Daily_Probability&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;Maximum_Duration&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Revert&quot;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Revert</td>
+<td>float</td>
+<td>0</td>
+<td>10000</td>
+<td>0</td>
+<td>The number of days before an individual moves back to their original group.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;PropertyValueChanger&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Target_Property_Key&quot;</span><span class="p">:</span> <span class="s2">&quot;Risk&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Target_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;LOW&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Daily_Probability&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;Maximum_Duration&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Revert&quot;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Disqualifying_Properties</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Intervention_Name</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>New_Property_Value</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="simpleboostervaccine">
+<h4><a class="toc-backref" href="#id10">SimpleBoosterVaccine</a><a class="headerlink" href="#simpleboostervaccine" title="Permalink to this headline">¶</a></h4>
+<p>The <strong>SimpleBoosterVaccine</strong> intervention class is derived from <a class="reference internal" href="parameter-campaign-individual-simplevaccine.html"><span class="doc">SimpleVaccine</span></a>
+and preserves many of the same parameters. The behavior is much like <strong>SimpleVaccine</strong>, except that upon distribution
+and successful take, the vaccine’s effect is determined by the recipient’s immune state. If the
+recipient’s immunity modifier in the corresponding channel (acquisition, transmission, or mortality) is
+above a user-specified threshold, then the vaccine’s initial effect will be equal to the
+corresponding priming parameter. If the recipient’s immune modifier is below this threshold, then
+the vaccine’s initial effect will be equal to the corresponding boosting parameter. After
+distribution, the effect wanes, just like <strong>SimpleVaccine</strong>. In essence, this intervention
+provides a <strong>SimpleVaccine</strong> intervention with one effect to all naive (below- threshold)
+individuals, and another effect to all primed (above-threshold) individuals; this behavior is
+intended to mimic biological priming and boosting.</p>
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Boost_Effect</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Specifies the boosting effect on [acquisition/transmission/mortality] immunity for previously exposed individuals (either natural or vaccine-derived). This does not replace current immunity, it builds multiplicatively on top of it.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+        <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Vaccine_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;MortalityBlocking&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Prime_Effect&quot;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span>
+        <span class="nt">&quot;Boost_Effect&quot;</span><span class="p">:</span> <span class="mf">0.45</span><span class="p">,</span>
+        <span class="nt">&quot;Boost_Threshold&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="nt">&quot;Waning_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Box_Duration&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectBox&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleBoosterVaccine&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Boost_Threshold</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Specifies how much immunity is required before the vaccine changes from a priming effect to a boosting effect.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+        <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Vaccine_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;MortalityBlocking&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Prime_Effect&quot;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span>
+        <span class="nt">&quot;Boost_Effect&quot;</span><span class="p">:</span> <span class="mf">0.45</span><span class="p">,</span>
+        <span class="nt">&quot;Boost_Threshold&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="nt">&quot;Waning_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Box_Duration&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectBox&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleBoosterVaccine&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Prime_Effect</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Specifies the priming effect on [acquisition/transmission/mortality] immunity for naive individuals (without natural or vaccine-derived immunity).</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+        <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Vaccine_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;MortalityBlocking&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Prime_Effect&quot;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span>
+        <span class="nt">&quot;Boost_Effect&quot;</span><span class="p">:</span> <span class="mf">0.45</span><span class="p">,</span>
+        <span class="nt">&quot;Boost_Threshold&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="nt">&quot;Waning_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Box_Duration&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectBox&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleBoosterVaccine&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Efficacy_Is_Multiplicative</td>
+<td>boolean</td>
+<td>NA</td>
+<td>NA</td>
+<td>1</td>
+<td>The overall vaccine efficacy when individuals receive more than one vaccine. When set to true (1), the vaccine efficacies are multiplied together; when set to false (0), the efficacies are additive.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="nt">&quot;Vaccine_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;AcquisitionBlocking&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Efficacy_Is_Multiplicative&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Waning_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectConstant&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">0.3</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Waning_Config</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The configuration of how the intervention efficacy wanes over time. Specify how this effect decays over time using one of the <a class="reference internal" href="parameter-campaign-waningeffects.html"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Waning_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Box_Duration&quot;</span><span class="p">:</span> <span class="mi">3650</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectBox&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Vaccine_Type</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>Generic</td>
+<td><p class="first">The type of vaccine to distribute in a vaccine intervention. 
+Possible values are:</p>
+<dl class="last docutils">
+<dt>Generic</dt>
+<dd>The vaccine can reduce transmission, acquisition, and mortality.</dd>
+<dt>TransmissionBlocking</dt>
+<dd>The vaccine will reduce pathogen transmission.</dd>
+<dt>AcquisitionBlocking</dt>
+<dd>The vaccine will reduce the acquisition of the pathogen by reducing the force of infection experienced by the vaccinated individual.</dd>
+<dt>MortalityBlocking</dt>
+<dd>The vaccine reduces the disease-mortality rate of a vaccinated individual.</dd>
+</dl>
+</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="nt">&quot;Vaccine_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;AcquisitionBlocking&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Efficacy_Is_Multiplicative&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Waning_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectConstant&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">0.3</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Cost_To_Consumer</td>
+<td>float</td>
+<td>0</td>
+<td>999999</td>
+<td>10</td>
+<td>The unit cost per vaccine (unamortized).</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Vaccine_Take</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>The rate at which delivered vaccines will successfully stimulate an immune response and achieve the desired efficacy. For example, if it is set to 0.9, there will be a 90 percent chance that the vaccine will start with the specified efficacy, and a 10 percent chance that it will have no efficacy at all.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="nt">&quot;Vaccine_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;AcquisitionBlocking&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;Efficacy_Is_Multiplicative&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;Waning_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectConstant&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">0.3</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Dont_Allow_Duplicates</td>
+<td>boolean</td>
+<td>NA</td>
+<td>NA</td>
+<td>0</td>
+<td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Disqualifying_Properties</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Intervention_Name</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>New_Property_Value</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="usagedependentbednet">
+<h4>UsageDependentBednet<a class="headerlink" href="#usagedependentbednet" title="Permalink to this headline">¶</a></h4>
+<p>The <strong>UsageDependentBednet</strong> intervention class is similar to <strong>SimpleBednet</strong>, as it
+distributes insecticide-treated nets to individuals in the simulation. However, bednet ownership
+and bednet usage are distinct in this intervention. As in <strong>SimpleBednet</strong>, net ownership is
+configured through the demographic coverage, and the blocking and killing rates of mosquitoes
+are time-dependent. Use of bednets is age-dependent and can vary seasonally. Once a net has
+been distributed to someone, the net usage is determined by the product of the seasonal and
+age-dependent usage probabilities until the net-retention counter runs out, and the net is
+discarded.</p>
+<button class="toggle-button btn btn-info">Toggle parameter table</button><table border="1" class="colwidths-given toggle-table docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="36%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Data type</th>
+<th class="head">Minimum</th>
+<th class="head">Maximum</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Discard_Event</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NoTrigger</td>
+<td>The event that is broadcast when an individual discards their bed net, either by replacing an existing net or due to the expiration timer. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Received_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;Bednet_Got_New_One&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Using_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;Bednet_Using&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Discard_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;Bednet_Discarded&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;FIXED_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Period&quot;</span><span class="p">:</span> <span class="mi">50</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Expiration_Distribution_Type</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NOT_INITIALIZED</td>
+<td><p class="first">The type of distribution to use when calculating the time to discard a bed net. Possible values are:</p>
+<dl class="last docutils">
+<dt>NOT_INITIALIZED</dt>
+<dd>No distribution set.</dd>
+<dt>FIXED_DURATION</dt>
+<dd>A constant duration.</dd>
+<dt>UNIFORM_DURATION</dt>
+<dd>A uniform random draw for the duration.</dd>
+<dt>GAUSSIAN_DURATION</dt>
+<dd>Duration of the active period is defined by the mean and standard deviation of the Gaussian distribution. Negative values are truncated at zero.</dd>
+<dt>EXPONENTIAL_DURATION</dt>
+<dd>The active period is the mean of the exponential random draw.</dd>
+<dt>POISSON_DURATION</dt>
+<dd>The active period is the mean of the random Poisson draw.</dd>
+<dt>LOG_NORMAL_DURATION</dt>
+<dd>The active period is a log normal distribution defined by a mean and log width.</dd>
+<dt>BIMODAL_DURATION</dt>
+<dd>The distribution is bimodal, the duration is a fraction of the active period for a specified period of time and equal to the active period otherwise.</dd>
+<dt>PIECEWISE_CONSTANT</dt>
+<dd>The distribution is specified with a list of years and a matching list of values. The duration at a given year is that specified for the nearest previous year.</dd>
+<dt>PIECEWISE_LINEAR</dt>
+<dd>The distribution is specified with a list of years and matching list of values. The duration at a given year is a linear interpolation of the specified values.</dd>
+<dt>WEIBULL_DURATION</dt>
+<dd>The duration is a <a class="reference internal" href="glossary.html#term-weibull-distribution"><span class="xref std std-term">Weibull distribution</span></a> with a given scale and shape.</dd>
+<dt>DUAL_TIMESCALE_DURATION</dt>
+<dd>The duration is two exponential distributions with given means.</dd>
+</dl>
+</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Received_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;Bednet_Got_New_One&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Using_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;Bednet_Using&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Discard_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;Bednet_Discarded&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;FIXED_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Period&quot;</span><span class="p">:</span> <span class="mi">50</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Expiration_Percentage_Period_1</td>
+<td>float</td>
+<td>0</td>
+<td>1</td>
+<td>0.5</td>
+<td>The percentage of draws where the first time-scale is used. <strong>Expiration_Distribution_Type</strong> must be set to DUAL_TIMESCALE_DURATION.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Expiration_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;DUAL_TIMESCALE_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Period_1&quot;</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Period_2&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Percentage_Period_1&quot;</span><span class="p">:</span> <span class="mf">0.9</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Expiration_Period_1</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>6</td>
+<td>The decay length of the first time-scale, when <strong>Expiration_Distribution_Type</strong> is set to DUAL_TIMESCALE_DURATION.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Expiration_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;DUAL_TIMESCALE_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Period_1&quot;</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Period_2&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Percentage_Period_1&quot;</span><span class="p">:</span> <span class="mf">0.9</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Expiration_Period_2</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>6</td>
+<td>The decay length of the second time-scale, when <strong>Expiration_Distribution_Type</strong> is set to DUAL_TIMESCALE_DURATION.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Expiration_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;DUAL_TIMESCALE_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Period_1&quot;</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Period_2&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Percentage_Period_1&quot;</span><span class="p">:</span> <span class="mf">0.9</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Expiration_Period</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>6.00E+00</td>
+<td>The distribution period for when a bed net expires. <strong>Expiration_Distribution_Type</strong> must be set to FIXED_DURATION or EXPONENTIAL_DURATION.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Expiration_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;FIXED_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Period&quot;</span><span class="p">:</span> <span class="mi">50</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Expiration_Period_Max</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>0</td>
+<td>The maximum duration of use for a bed net when <strong>Expiration_Distribution_Type</strong> is set to UNIFORM_DURATION.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Expiration_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Period_Max&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Period_Min&quot;</span><span class="p">:</span> <span class="mi">20</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Expiration_Period_Mean</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>6</td>
+<td>The mean of the duration of use for a bed net when <strong>Expiration_Distribution_Type</strong> is set to GAUSSIAN_DURATION.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Expiration_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Period_Mean&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Period_Std_Dev&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Expiration_Period_Min</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>0</td>
+<td>The minimum duration of use for a bed net when <strong>Expiration_Distribution_Type</strong> is set to UNIFORM_DURATION.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Expiration_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Period_Max&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Period_Min&quot;</span><span class="p">:</span> <span class="mi">20</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Expiration_Period_Std_Dev</td>
+<td>float</td>
+<td>0</td>
+<td>3.40E+3</td>
+<td>1</td>
+<td>The standard deviation for the duration of use for a bed net when <strong>Expiration_Distribution_Type</strong> is set to GAUSSIAN_DURATION.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Expiration_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DURATION&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Period_Mean&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="nt">&quot;Expiration_Period_Std_Dev&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Received_Event</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NoTrigger</td>
+<td>This parameter broadcasts when a new net is received, either the first net or a replacement net. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Received_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;Bednet_Got_New_One&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Using_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;Bednet_Using&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Discard_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;Bednet_Discarded&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Usage_Config_List</td>
+<td>array of JSON objects</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The list of <strong>WaningEffects</strong> whose effects are multiplied together to get the usage effect. Specify how this effect decays over time using one of the <a class="reference internal" href="parameter-campaign-waningeffects.html"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Usage_Config_List&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectConstant&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">1.0</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Using_Event</td>
+<td>enum</td>
+<td>NA</td>
+<td>NA</td>
+<td>NoTrigger</td>
+<td>This parameter broadcasts each time step in which a bed net is used. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Received_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;Bednet_Got_New_One&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Using_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;Bednet_Using&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Discard_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;Bednet_Discarded&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Blocking_Config</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>Configures the rate of blocking for indoor mosquito feeds on individuals with an ITN. Specify how this effect decays over time using one of the <a class="reference internal" href="parameter-campaign-waningeffects.html"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Blocking_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Box_Duration&quot;</span><span class="p">:</span> <span class="mi">3650</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectBox&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Cost_To_Consumer</td>
+<td>float</td>
+<td>0</td>
+<td>999999</td>
+<td>3.75</td>
+<td>The unit cost per bednet (unamortized)</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">4.5</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Killing_Config</td>
+<td>JSON object</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The configuration of the rate at which mosquitoes die, conditional on a successfully blocked feed.  Specify how this effect decays over time using one of the <a class="reference internal" href="parameter-campaign-waningeffects.html"><span class="doc">Waning effect classes</span></a>.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Killing_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Box_Duration&quot;</span><span class="p">:</span> <span class="mi">3650</span><span class="p">,</span>
+        <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mf">0.53429</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;WaningEffectBox&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Dont_Allow_Duplicates</td>
+<td>boolean</td>
+<td>NA</td>
+<td>NA</td>
+<td>0</td>
+<td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Disqualifying_Properties</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Intervention_Name</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>New_Property_Value</td>
+<td>string</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="emod-s-v2-10">
+<h2><a class="toc-backref" href="#id11">EMOD v2.10</a><a class="headerlink" href="#emod-s-v2-10" title="Permalink to this headline">¶</a></h2>
+<p>The EMOD v2.10 release includes new and updated malaria configuration, demographic, and
+intervention parameters. With this release, EMOD now uses Visual Studio 2015, Boost 1.61.0, and SCons 2.5.0.</p>
+<div class="section" id="emod-s-software-upgrades">
+<h3><a class="toc-backref" href="#id12">EMOD software upgrades</a><a class="headerlink" href="#emod-s-software-upgrades" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>Microsoft Visual Studio</dt>
+<dd>EMOD now uses Visual Studio 2015, and Visual Studio 2012 is no longer supported. The Visual Studio solution
+file in the EMOD source, EradicationKernel, has been updated for Visual Studio 2015. If you have
+custom reporter EMODules (DLLS) that were built using Visual Studio 2012, you will need to rebuild them
+with Visual Studio 2015; otherwise, your simulation will crash when it attempts to load the DLLs built
+by Visual Studio 2012.</dd>
+<dt>Boost</dt>
+<dd>EMOD now supports using Boost 1.61.0. If you continue to use Boost 1.51.0, you will get the
+following warning, “Unknown compiler version - please run the configure tests and report the
+results.”</dd>
+<dt>Environment variables</dt>
+<dd>To make it easier to use Boost and Python with Visual Studio, IDM paths have been created.
+These two paths, IDM_BOOST_PATH and IDM_PYTHON_PATH, need to be added to your  environment
+variables by using either the <strong>setx</strong> command from a command line or the Windows System
+Properties panel.</dd>
+<dt>SCons</dt>
+<dd>EMOD was tested using SCons 2.5.0, as it supports Visual Studio 2015. If you do not add the new
+IDM environment variables for Boost and Python, you will need to modify the Boost and
+Python paths in the SConstruct file in the EMOD root directory.</dd>
+<dt>Python</dt>
+<dd>EMOD was tested with Python 2.7.11 and 2.7.12. If you are building the EMOD executable (Eradication.exe) and have
+an earlier version of Python (for example, 2.7.2), you will see the following warning message on some
+files, “c:python27includepymath.h(22): warning C4273: ‘round’: inconsistent dll linkage.”
+Upgrade to Python 2.7.11 or 2.7.12 to get rid of the warning message.</dd>
+</dl>
+<p>For more information, see <a class="reference internal" href="dev-install-prerequisites.html"><span class="doc">Prerequisites for working with EMOD source code</span></a>.</p>
+</div>
+<div class="section" id="malaria-model">
+<h3><a class="toc-backref" href="#id13">Malaria model</a><a class="headerlink" href="#malaria-model" title="Permalink to this headline">¶</a></h3>
+<p>Several habitat parameters in the malaria model have been upgraded, creating more flexibility in
+the model and enabling the user to have more control over habitat customization. These changes
+allow the model to more accurately capture real-world habitat availability and how it affects
+different mosquito species.</p>
+<dl class="docutils">
+<dt><strong>LINEAR_SPLINE</strong> habitat type</dt>
+<dd>This new option under <strong>Larval_Habitat_Types</strong> increases model customization by allowing the
+user to specify an arbitrary functional form (derived from data) for larval habitat
+availability throughout the year, instead of relying on climatological parameters such as
+rainfall or temperature. For more information, see <a class="reference internal" href="parameter-configuration.html#config-larval"><span class="std std-ref">Larval habitat</span></a> parameters.</dd>
+<dt><strong>LarvalHabitatMultiplier</strong> by species</dt>
+<dd>This new feature in demographics allows larval habitat availability to be modified
+independently for each species sharing a particular habitat type. Prior versions of EMOD
+applied the same modifier to all species within a shared habitat; this upgrade enables you
+to apply modifiers to individual species within a habitat. For more information, see
+<a class="reference internal" href="parameter-demographics.html#demo-nodeattributes"><span class="std std-ref">NodeAttributes</span></a> parameters.</dd>
+<dt><strong>ScaleLarvalHabitat</strong> by species</dt>
+<dd>This new intervention enables species-specific effects of habitat interventions within
+shared habitat types, such that habitat availability is modified on a per-species level.</dd>
+</dl>
+<dl class="docutils">
+<dt>Breaking changes</dt>
+<dd>PIECEWISE_MONTHLY has been changed to LINEAR_SPLINE.</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="install-overview.html" class="btn btn-neutral float-right" title="EMOD installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Welcome to IDM malaria modeling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

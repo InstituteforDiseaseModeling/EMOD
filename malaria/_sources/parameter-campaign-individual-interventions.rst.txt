@@ -1,0 +1,72 @@
+==============================
+Individual-level interventions
+==============================
+
+.. include:: ../reuse/campaign-individual-intervention-overview.txt
+
+The following individual-level interventions are available for use with the malaria simulation type.
+
+
+Vector control
+==============
+
+The following individual-level interventions are commonly used for vector control in malaria simulations.
+
+ .. raw:: html
+
+     <button class="toggle-button btn btn-info">Toggle parameter table</button>
+
+ .. rst-class:: toggle-table
+
+ .. csv-table::
+   :header: "Intervention", "Target life stage", "Target biting preference", "Target biting location", "Effect"
+
+   :doc:`parameter-campaign-individual-humanhostseekingtrap`,feeding cycle,human,,killing
+   :doc:`parameter-campaign-individual-insectkillingfencehousingmodification`,,,,killing
+   :doc:`parameter-campaign-individual-irshousingmodification`,feeding cycle,human,indoor,"killing, blocking"
+   :doc:`parameter-campaign-individual-ivermectin`,feeding cycle,human,all,killing
+   :doc:`parameter-campaign-individual-screeninghousingmodification`,feeding cycle,human,indoor,"killing, blocking"
+   :doc:`parameter-campaign-individual-simplebednet`,feeding cycle,human,indoor,"killing, blocking"
+   :doc:`parameter-campaign-individual-simpleindividualrepellent`,feeding cycle,human,all,blocking
+   :doc:`parameter-campaign-individual-spatialrepellenthousingmodification`,feeding cycle,human,indoor,"killing, blocking"
+
+.. taken from Jaline's wiki page,
+.. https://wiki.idmod.org/pages/viewpage.action?spaceKey=EMOD&postingDay=2016%2F7%2F15&title=Vector+control+interventions+in+DTK
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 2
+
+   parameter-campaign-individual-antimalarialdrug
+   parameter-campaign-individual-artificialdiethousingmodification
+   parameter-campaign-individual-broadcastevent
+   parameter-campaign-individual-broadcasteventtoothernodes
+   parameter-campaign-individual-controlledvaccine
+   parameter-campaign-individual-delayedintervention
+   parameter-campaign-individual-humanhostseekingtrap
+   parameter-campaign-individual-individualimmunitychanger
+   parameter-campaign-individual-insectkillingfencehousingmodification
+   parameter-campaign-individual-irshousingmodification
+   parameter-campaign-individual-ivcalendar
+   parameter-campaign-individual-ivermectin
+   parameter-campaign-individual-malariadiagnostic
+   parameter-campaign-individual-migrateindividuals
+   parameter-campaign-individual-multieffectboostervaccine
+   parameter-campaign-individual-multieffectvaccine
+   parameter-campaign-individual-multiinterventiondistributor
+   parameter-campaign-individual-outbreakindividual
+   parameter-campaign-individual-propertyvaluechanger
+   parameter-campaign-individual-rtssvaccine
+   parameter-campaign-individual-screeninghousingmodification
+   parameter-campaign-individual-simplebednet
+   parameter-campaign-individual-simpleboostervaccine
+   parameter-campaign-individual-simplediagnostic
+   parameter-campaign-individual-simplehealthseekingbehavior
+   parameter-campaign-individual-simplehousingmodification
+   parameter-campaign-individual-simpleindividualrepellent
+   parameter-campaign-individual-simplevaccine
+   parameter-campaign-individual-spatialrepellenthousingmodification
+   parameter-campaign-individual-usagedependentbednet
+

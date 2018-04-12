@@ -1,0 +1,42 @@
+==================
+Configuration file
+==================
+
+The primary means of configuring the disease simulation is the :term:`configuration file`. This
+required file is a :term:`JavaScript Object Notation (JSON)` formatted file that is typically named
+config.json. The configuration file controls many different aspects of the simulation. For example,
+
+* The names of the :term:`campaign file` and :term:`input data files` to use
+* Simulation-wide demographics, climate, and migration data
+* General disease attributes such as infectivity, immunity, mortality, and so on
+* Attributes specific to the disease type being modeled, including treatment efficacy
+* The reports to output from the simulation
+
+
+|IDM_s| provides complete simulation scenarios in the Regression_ directory
+on GitHub. Within each of the simulation subdirectories, there is a config.json file. The
+Scenarios subdirectory contains the files used in the tutorials.
+
+.. _Regression: https://github.com/InstituteforDiseaseModeling/EMOD/tree/master/Regression
+
+
+The following is an example of configuration file.
+
+.. literalinclude:: ../json/howto-generic-config-flat-full.json
+   :language: json
+
+Overlay file
+==============
+
+As you work more with |EMOD_s|, you may want to change the values of a view parameters of interest
+while keeping the rest constant, for example, when running simulation experiments or testing source
+code changes.
+
+You have the option of creating an :term:`overlay file` to keep configuration parameters of
+interest in a separate file from the complete configuration file that contains default values. These
+files can be flattened into a single file and the values in the overlay file will override those
+in the default file.
+
+
+See :doc:`parameter-configuration` for a comprehensive list and description of all parameters
+available to use in the configuration file for this simulation type.

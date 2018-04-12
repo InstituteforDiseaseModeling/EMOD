@@ -1,0 +1,366 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Malaria model general information &mdash; Malaria Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Malaria Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Malaria Model  documentation" href="index.html"/>
+        <link rel="up" title="Malaria model overview" href="malaria-model-overview.html"/>
+        <link rel="next" title="Malaria model structure and framework" href="malaria-model-framework.html"/>
+        <link rel="prev" title="Malaria model overview" href="malaria-model-overview.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Malaria Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-overview.html">Malaria disease overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="malaria-model-overview.html">Malaria model overview</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Malaria model general information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="malaria-model-framework.html">Malaria model structure and framework</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="malaria-IDM.html">Malaria research at IDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Malaria Model</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Malaria</a> &raquo;</li>
+      
+          <li><a href="malaria-model-overview.html">Malaria model overview</a> &raquo;</li>
+      
+    <li>Malaria model general information</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "http://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
+  <div class="section" id="malaria-model-general-information">
+<h1>Malaria model general information<a class="headerlink" href="#malaria-model-general-information" title="Permalink to this headline">¶</a></h1>
+<p>Here we describe the broad overview of how the malaria model functions. As there are numerous
+parameters in the model, it is useful to categorize parameters into components, which are described
+in the <a class="reference internal" href="malaria-model-framework.html"><span class="doc">Malaria model structure and framework</span></a> section.</p>
+<p>The core of the simulation consists of <a class="reference internal" href="glossary.html#term-solvers"><span class="xref std std-term">solvers</span></a> for mosquito population dynamics, pathogen
+transmission to and from the human host population, and dynamics of the infection within the human
+host. While the human population is fully individual-based, the mosquito population can be
+represented by discrete cohorts or individual agent mosquitoes. As an agent-based model,
+interactions between humans and vectors advance during each time step. The mosquito population is
+advanced, for example, through discrete 1-day time steps during which mosquitoes may engage in host-
+seeking or feeding behaviors, mating, maturation through a life-stage, or even death. Successful
+feeds on humans can result in infection of the human host, or conversely, susceptible mosquitoes may
+become infected from an infectious human.</p>
+<div class="section" id="model-implementation-structure">
+<h2>Model implementation structure<a class="headerlink" href="#model-implementation-structure" title="Permalink to this headline">¶</a></h2>
+<p>There are two categories of possible implementations of the basic model, each with different
+computational efficiencies, resolutions, and flexibilities. The first is an individual model, where
+it simulates every individual mosquito in the population or can utilize a sampled subset
+of mosquitoes to represent the population as the whole. The second is a modified cohort
+simulation, with or without explicit mosquito ages.</p>
+<div class="section" id="individual-mosquito-model">
+<h3>Individual mosquito model<a class="headerlink" href="#individual-mosquito-model" title="Permalink to this headline">¶</a></h3>
+<p>This basic model can be implemented through simulation of every individual mosquito, or by
+simulation of a subset of individual mosquitoes to represent the full population. Each mosquito’s
+state contains status (susceptible, latently infected, and infectious), timers for transition to
+adult from immature and infected to infectious, mating status and <a class="reference internal" href="glossary.html#term-wolbachia"><span class="xref std std-term">Wolbachia</span></a> infection, and
+age. An <a class="reference internal" href="glossary.html#term-oviposition"><span class="xref std std-term">oviposition</span></a> timer to enforce a fixed feeding cycle may be included as well. If
+mosquitoes are sampled and a subset used to represent the local population, each sampled mosquito
+will have an associated sampling weight as well.</p>
+</div>
+<div class="section" id="cohort-model">
+<h3>Cohort model<a class="headerlink" href="#cohort-model" title="Permalink to this headline">¶</a></h3>
+<p>In the modified cohort simulation, rather than representing the entire population by three
+compartments for susceptible, latently infected, and infectious mosquitoes, the simulation
+dynamically allocates a cohort for every distinct state, and the cohort maintains the count of all
+mosquitoes in that state. This allows temperature-dependent progression through <a class="reference internal" href="glossary.html#term-sporogony"><span class="xref std std-term">sporogony</span></a>,
+even with a different mean temperature each day, with no mosquitoes passing from susceptible to
+infectious before the full discrete latency. For the cohort simulation with explicit ages, in order
+to allow modeling of senescence, mosquito age is part of the state definition, and many more cohorts
+are required to represent the population.</p>
+</div>
+</div>
+<div class="section" id="discrete-and-continuous-processes">
+<h2>Discrete and continuous processes<a class="headerlink" href="#discrete-and-continuous-processes" title="Permalink to this headline">¶</a></h2>
+<p>The model implements a hybrid of discrete and continuous processes that work together to capture
+system latencies and discrete events inherent in the population dynamics of humans, mosquitoes, and
+parasites. Discrete events, such as latencies in the infected <a class="reference internal" href="glossary.html#term-hepatocyte"><span class="xref std std-term">hepatocyte</span></a> stage, the length
+of the asexual cycle from <a class="reference internal" href="glossary.html#term-merozoite"><span class="xref std std-term">merozoite</span></a> invasion to <a class="reference internal" href="glossary.html#term-schizont"><span class="xref std std-term">schizont</span></a> rupture, and
+<a class="reference internal" href="glossary.html#term-gametocyte"><span class="xref std std-term">gametocyte</span></a> maturation have particular time durations. State changes occur after the
+completion of the required amount of time (with specific time durations set for each state).
+See the figure of the <em>Plasmodium</em> life-cycle in <a class="reference internal" href="malaria-overview.html"><span class="doc">Malaria disease overview</span></a> for more information
+regarding the life-cycle stages used in this example.</p>
+<p>Other processes, such as the decay of antibodies and the clearance of parasites, are represented by
+continuous-time processes. These are solved with a one-hour time step <a class="reference internal" href="glossary.html#term-euler-method"><span class="xref std std-term">Euler method</span></a>. All parasite
+quantities, such as the number of hepatocytes, number of merozoites, number of infected red blood
+cells of each antigenic variant, and gametocytes of each stage are represented as discrete integers.
+The infection is not cleared until each category is reduced to zero. This allows resolution of model
+dynamics at <a class="reference internal" href="glossary.html#term-subpatent"><span class="xref std std-term">subpatent</span></a> levels.</p>
+</div>
+<div class="section" id="spatial-scale-dynamics-and-migration">
+<h2>Spatial-scale dynamics and migration<a class="headerlink" href="#spatial-scale-dynamics-and-migration" title="Permalink to this headline">¶</a></h2>
+<p>Extensive multi-<a class="reference internal" href="glossary.html#term-node"><span class="xref std std-term">node</span></a> simulations with location-specific climate, intervention deployments,
+larval habitat, and migration may be configured within the EMOD framework. Nodes can be
+configured to  best represent the spatial scale being simulated: a node can be  the household level,
+village level, county level, country level, or other desired geographic scale. Migration can be
+enabled between nodes,  such that EMOD can most accurately represent the dynamics of the
+location.  By varying spatial-scale resolution,  relevant factors for transmission dynamics can be
+more clearly elucidated.</p>
+<p>The following visualization shows an example of a gridded representation of malaria transmission on
+the island of Madagascar.</p>
+<div class="figure">
+<img alt="_images/5_Madagascar_Vector_Daily_Bites.gif" src="_images/5_Madagascar_Vector_Daily_Bites.gif" />
+</div>
+<p>For information on configuring nodes and migration parameters, see <a class="reference internal" href="file-migration.html"><span class="doc">Migration file structure</span></a>.</p>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="malaria-model-framework.html" class="btn btn-neutral float-right" title="Malaria model structure and framework" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="malaria-model-overview.html" class="btn btn-neutral" title="Malaria model overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

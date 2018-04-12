@@ -1,0 +1,529 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Generic 10: Animal reservoir zoonosis &mdash; Generic Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Generic Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Generic Model  documentation" href="index.html"/>
+        <link rel="up" title="Generic simulation tutorials" href="generic-simulation-tutorial-overview.html"/>
+        <link rel="next" title="Heterogeneous Intra-Node Transmission (HINT) tutorials" href="hint-tutorial-overview.html"/>
+        <link rel="prev" title="Generic 9: Density scaling of infectivity" href="generic-tutorial9Density.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Generic Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install-overview.html">EMOD installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial1SIR.html">Generic 1: SIR - Simple single-node outbreak</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial2SIR.html">Generic 2: SIR - Targeted vaccination campaigns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial3SEIR.html">Generic 3: SIER - Incubation periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial4SEIR.html">Generic 4: SEIR - Vital dynamics (birth and death)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial5SIRS.html">Generic 5: SIRS - Waning immunity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial6SEIRS.html">Generic 6: SEIRS - Disease-specific mortality and endemics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial7SI.html">Generic 7: SI - Lifelong infection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial8SIS.html">Generic 8: SIS - Reoccurring infections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-tutorial9Density.html">Generic 9: Density scaling of infectivity</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Generic 10: Animal reservoir zoonosis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hint-tutorial-overview.html">Heterogeneous Intra-Node Transmission (HINT) tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Generic Model</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">Generic</a> &raquo;</li>
+      
+          <li><a href="generic-simulation-tutorial-overview.html">Generic simulation tutorials</a> &raquo;</li>
+      
+    <li>Generic 10: Animal reservoir zoonosis</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "http://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
+  <div class="section" id="generic-10-animal-reservoir-zoonosis">
+<h1>Generic 10: Animal reservoir zoonosis<a class="headerlink" href="#generic-10-animal-reservoir-zoonosis" title="Permalink to this headline">¶</a></h1>
+<p>Zoonosis represents a list of diseases that transmit from animals to humans. They are of particular
+interest because typically a zoonosis disease has previously not been in the population, and the
+whole population is susceptible. This tutorial demonstrates an animal reservoir, independently of
+human infections, reintroducing zoonotic cases at a specified rate.</p>
+<p>This tutorial is important because for many zoonotic diseases, there is a background animal
+reservoir that continuously exposes humans to infection. In these situations, the interest is not
+only in a single large outbreak which can be simulated by an <strong>Outbreak</strong> event, but also in the
+population-level dynamics where there is a continuous background rate of introducing a new zoonotic
+infection to the human population which can be configured by parameter <strong>Zoonosis_Rate</strong>.</p>
+<p>In this tutorial, the rate of infection from the animal reservoir can be adjusted with respect to
+the human-to-human infectiousness to vary along a spectrum, from a low rate of primary zoonotic
+infection with substantial secondary human transmission to a high zoonosis rate with low human
+transmission. This shifts the fraction of cases that are primary zoonotic infections. By varying the
+parameter <strong>Zoonosis_Rate</strong>, you can observe the daily rate of zoonotic infection per individual and the
+impact of the parameter changes on the outbreak.</p>
+<div class="section" id="input-files">
+<h2>Input files<a class="headerlink" href="#input-files" title="Permalink to this headline">¶</a></h2>
+<p>The input files for this tutorial differ from the previous tutorials. The previous tutorials were
+simple single-node simulations without migration. This tutorial uses Seattle as an example of a
+multi-node simulation with migration rates. The input files include not a only a human population
+demographics file but also a zoonosis demographics file and local and regional migration files.</p>
+<ul class="simple">
+<li>Seattle_30arcsec_demographics_zoonosis</li>
+<li>Seattle_Seattle_30arcsec_local_migration</li>
+<li>Seattle_Seattle_30arcsec_regional_migration</li>
+</ul>
+<p>You can view these files at &lt;path_to_directory&gt;RegressionScenariosInputFiles where &lt;path_to_directory&gt; is
+the location where EMOD source files were installed. For more information on data input files, see
+<a class="reference internal" href="intro-inputs.html"><span class="doc">Input data files</span></a>.</p>
+</div>
+<div class="section" id="key-configuration-parameters">
+<h2>Key configuration parameters<a class="headerlink" href="#key-configuration-parameters" title="Permalink to this headline">¶</a></h2>
+<p>This tutorial uses the config.json file in the &lt;path_to_directory&gt;RegressionScenariosGeneric10_Zoonosis
+directory.</p>
+<div class="section" id="input-file-parameters">
+<h3>Input file parameters<a class="headerlink" href="#input-file-parameters" title="Permalink to this headline">¶</a></h3>
+<p>This tutorial uses two demographics files. The first demographics file provides information about
+the people in the region while the second provides information on zoonosis. Multiple demographics
+file are listed under one parameter. When there is more than one demographics file, the file names
+are separated by a semi-colon.</p>
+<p>This is a multi-node simulation that also supports migration between the nodes. This simulation
+supports only local and regional migration. The input files for the different types of migration are
+specified with different parameters.</p>
+<p>The following parameters specify the demographic and migration input files. For more information,
+see <a class="reference internal" href="parameter-configuration.html#config-input"><span class="std std-ref">Input data files</span></a> parameters.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Demographics_Filename</strong> to “Seattle_30arcsec_demographics.json;Seattle_30arcsec_demographics_zoonosis.json.”</li>
+<li>Set <strong>Local_Migration__Filename</strong> to “Seattle_30arcsec_local_migration.bin.”</li>
+<li>Set <strong>Regional_Migration_Filename</strong> to “Seattle_30arcsec_regional_migration.bin.”</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="population-dynamics-parameters">
+<h3>Population dynamics parameters<a class="headerlink" href="#population-dynamics-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The following parameters enable vital dynamics for birth but disable non-disease related death and
+disease related deaths. For more information, see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Enable_Vital_Dynamics</strong> to 1.</li>
+<li>Set <strong>Enable_Birth</strong> to 1.</li>
+<li>Set <strong>Death_Rate_Dependence</strong> to “NONDISEASE_MORTALITY_BY_AGE_AND_GENDER.”</li>
+<li>Set <strong>Enable_Disease_Mortality</strong> to 0.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="migration-input-file-parameters">
+<h3>Migration input file parameters<a class="headerlink" href="#migration-input-file-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The following parameters enable or disable the specific type of migration. For more information, see
+<a class="reference internal" href="parameter-configuration.html#config-migration"><span class="std std-ref">Migration</span></a> parameters.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Enable_Air_Migration</strong> to 0.</li>
+<li>Set <strong>Enable_Local_Migration</strong> to 1.</li>
+<li>Set <strong>Enable_Regional_Migration</strong> to 1.</li>
+<li>Set <strong>Enable_Sea_Migration</strong> to 0.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="seirs-model-setup-parameters">
+<h3>SEIRS model setup parameters<a class="headerlink" href="#seirs-model-setup-parameters" title="Permalink to this headline">¶</a></h3>
+<p>This tutorial uses an <a class="reference internal" href="glossary.html#term-seirs-model"><span class="xref std std-term">SEIRS model</span></a>. The following parameters configure the EMOD executable to run an
+SEIRS-like disease model with person-to-person direct transmission. For more information, see
+<a class="reference internal" href="parameter-configuration.html#config-incubation"><span class="std std-ref">Incubation</span></a> and <a class="reference internal" href="parameter-configuration.html#config-enable"><span class="std std-ref">Enable or disable features</span></a> parameters.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Base_Incubation_Period</strong> to 3.</li>
+<li>Set <strong>Incubation_Period_Distribution</strong> to “FIXED_DURATION.”</li>
+<li>Set <strong>Enable_Immunity</strong> to 1.</li>
+<li>Set <strong>Enable_Immune_Decay</strong> to 1.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="migration-parameters">
+<h3>Migration parameters<a class="headerlink" href="#migration-parameters" title="Permalink to this headline">¶</a></h3>
+<p>In a multi-node simulation with migration enabled, individuals have a probably of “migrating” to
+another node at every time step unless they have already migrated. When an individual has migrated
+to another node, they can shed or acquire infection in that node.</p>
+<p>The migration pattern for this simulation is configured as “WAYPOINTS_HOME” with
+<strong>Roundtrip_Waypoints</strong> set to 1. This means, individuals “migrate” one day and return home the next
+day. There are no intermediate nodes between the home and the destination node. For more information,
+see <a class="reference internal" href="parameter-configuration.html#config-migration"><span class="std std-ref">Migration</span></a> parameters.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Migration_Model</strong> to “FIXED_RATE_MIGRATION.”</li>
+<li>Set <strong>Migration_Pattern</strong> to “WAYPOINTS_HOME.”</li>
+<li>Set <strong>Roundtrip_Waypoints</strong> to 1.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="disease-parameters">
+<h3>Disease parameters<a class="headerlink" href="#disease-parameters" title="Permalink to this headline">¶</a></h3>
+<p>These parameters configure the EMOD executable to run an SEIRS-like disease model with person-
+to- person direct transmission. For more information, see <a class="reference internal" href="parameter-configuration.html#config-infectivity"><span class="std std-ref">Infectivity and transmission</span></a> parameters.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Base_Infectivity</strong> to 0.25.</li>
+<li>Set <strong>Base_Infectious_Period</strong> to 7.</li>
+<li>Set <strong>Infectious_Period_Distribution</strong> to “FIXED_DURATION.”</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="zoonosis-parameters">
+<h3>Zoonosis parameters<a class="headerlink" href="#zoonosis-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The following parameters configure the animal zoonosis. The <strong>Zoonosis_Rate</strong> is multiplied with the
+<strong>Zoonosis</strong> rate in the demographic file. For more information, see <a class="reference internal" href="parameter-configuration.html#config-general-disease"><span class="std std-ref">General disease</span></a>
+parameters.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Animal_Reservoir_Type</strong> to “ZOONOSIS_FROM_DEMOGRAPHICS.”</li>
+<li>Set <strong>Zoonosis_Rate</strong> to 0.005.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="immunity-parameters">
+<h3>Immunity parameters<a class="headerlink" href="#immunity-parameters" title="Permalink to this headline">¶</a></h3>
+<p>At the time of recovery when the infection is cleared, the values of immunity against acquisition,
+transmission, and mortality are multiplied by <strong>Immunity_Acquisition_Factor</strong>,
+<strong>Immunity_Transmission_Factor</strong>, and <strong>Immunity_Mortality_Factor</strong> parameters. The default values
+are set to 0 in the files, which means full and complete protection against each. For more
+information, see <a class="reference internal" href="parameter-configuration.html#config-immunity"><span class="std std-ref">Immunity</span></a> parameters.</p>
+<p>In this scenario, people’s immunity decays with an average half-life of 33 days and a 400-day
+offset. This assumption applies to transmission blocking, acquisition blocking, and mortality
+blocking immunity.</p>
+<p>Set the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set <strong>Acquisition_Blocking_Immunity_Duration_Before_Decay</strong> to 400.</li>
+<li>Set <strong>Acquisition_Blocking_Immunity_Decay_Rate</strong> to 0.03.</li>
+<li>Set <strong>Transmission_Blocking_Immunity_Duration_Before_Decay</strong> to 400.</li>
+<li>Set <strong>Transmission_Blocking_Immunity_Decay_Rate</strong> to 0.03.</li>
+<li>Set <strong>Immunity_Acquisition_Factor</strong> to 0.</li>
+<li>Set <strong>Immunity_Mortality_Factor</strong> to 0.</li>
+<li>Set <strong>Immunity_Transmission_Factor</strong> to 0.</li>
+<li>Set <strong>Mortality_Blocking_Immunity_Duration_Before_Decay</strong> to 400.</li>
+<li>Set <strong>Mortality_Blocking_Immunity_Decay_Rate</strong> to 0.03.</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="intervention">
+<h2>Intervention<a class="headerlink" href="#intervention" title="Permalink to this headline">¶</a></h2>
+<p>This simulation uses an <strong>Outbreak</strong> intervention for repeated infection seeding. This simulation uses the
+campaign.json in the &lt;path_to_directory&gt;RegressionScenariosGeneric10_Zoonosis directory. For more
+information, see <a class="reference internal" href="parameter-campaign-node-outbreak.html"><span class="doc">Outbreak</span></a> parameters.</p>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Generic Seattle Regression Campaign&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="nt">&quot;Genome&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="nt">&quot;Outbreak_Source&quot;</span><span class="p">:</span> <span class="s2">&quot;ImportCases&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;Outbreak&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;Number_Distributions&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;StandardInterventionDistributionEventCoordinator&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Nodeset_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;Polygon_Format&quot;</span><span class="p">:</span> <span class="s2">&quot;SHAPE&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Vertices&quot;</span><span class="p">:</span> <span class="s2">&quot;-122.320726936496,47.6597902588541 -122.320406460197,47.6520988276782 -122.308388598985,47.6471314450438 -122.301658596706,47.6541819236217 -122.315118601264,47.6644371651896 -122.320726936496,47.6597902588541&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeSetPolygon&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+        <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="run-the-simulation">
+<h2>Run the simulation<a class="headerlink" href="#run-the-simulation" title="Permalink to this headline">¶</a></h2>
+<p>Run the simulation and generate graphs of the simulation output. For more information, see
+<a class="reference internal" href="howto-simulations.html"><span class="doc">Run simulations</span></a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Because the EMOD model is <a class="reference internal" href="glossary.html#term-stochastic"><span class="xref std std-term">stochastic</span></a>, your graphs may appear slightly different from
+those given below.</p>
+</div>
+<div class="section" id="simulation-output-graphs">
+<h3>Simulation output graphs<a class="headerlink" href="#simulation-output-graphs" title="Permalink to this headline">¶</a></h3>
+<p>After the initial outbreak, there are no additional imported cases set in the campaign file.
+However, because of the non-zero zoonosis rate, there are several introductions of infections in the
+background, as shown in the Log Prevalence chart in Figure 1.</p>
+<p>When enough susceptible individuals are accumulated due to immunity waning, one of the seeds starts
+a disease outbreak later due to zoonosis (see Figure 1 and Figure 2). The seeding and occasional
+outbreaks after the seeding is shown in the following graph plotting infections over time.</p>
+<div class="figure" id="id1">
+<img alt="_images/Generic_Zoonosis_output_zoonosis_allcharts.png" src="_images/Generic_Zoonosis_output_zoonosis_allcharts.png" />
+<p class="caption"><span class="caption-text">Figure 1: Animal reservoir zoonosis charts</span></p>
+</div>
+<div class="figure" id="id2">
+<img alt="_images/Generic_Zoonosis_output_zoonosis_insetchart.png" src="_images/Generic_Zoonosis_output_zoonosis_insetchart.png" />
+<p class="caption"><span class="caption-text">Figure 2: Re-seeding of infections cased by zoonosis and waning immunity</span></p>
+</div>
+</div>
+</div>
+<div class="section" id="exploring-the-model">
+<h2>Exploring the model<a class="headerlink" href="#exploring-the-model" title="Permalink to this headline">¶</a></h2>
+<p>Change the <strong>Zoonosis_Rate</strong> in the configuration file to see the changing frequency of outbreaks.</p>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="hint-tutorial-overview.html" class="btn btn-neutral float-right" title="Heterogeneous Intra-Node Transmission (HINT) tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="generic-tutorial9Density.html" class="btn btn-neutral" title="Generic 9: Density scaling of infectivity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

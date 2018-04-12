@@ -1,6 +1,0 @@
-{
-    "tests": [
-        { "path" : "Airborne/1_Airborne_Namawala" },
-        { "path" : "Multicore_Nosibe/1_Airborne_Namawala" }
-    ]
-}

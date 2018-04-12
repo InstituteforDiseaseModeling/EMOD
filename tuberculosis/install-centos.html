@@ -1,0 +1,378 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Install EMOD on CentOS on Azure &mdash; Tuberculosis Model  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+      <link rel="search" type="application/opensearchdescription+xml" title="Search within Tuberculosis Model  documentation" href="_static/opensearch.xml"/>
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/tipuesearch/tipuesearch.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Tuberculosis Model  documentation" href="index.html"/>
+        <link rel="up" title="EMOD installation" href="install-overview.html"/>
+        <link rel="next" title="Introduction to the software" href="intro-overview.html"/>
+        <link rel="prev" title="Install EMOD on Windows" href="install-windows.html"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Open+Sans" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Tuberculosis Model
+          
+
+          
+            
+            <img src="_static/IDM_white.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13
+              </div>
+            
+          
+
+          <div role="search">
+  <form id='rtd-search-form' class='wy-form' action="search-local.html" method="get">
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off"
+           placeholder="Search docs" required>
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the model</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="install-overview.html">EMOD installation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="install-windows.html">Install EMOD on Windows</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Install EMOD on CentOS on Azure</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="intro-overview.html">Introduction to the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-modeling.html">Introduction to disease modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howto-overview.html">How to use the software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advancing the model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-install-overview.html">EMOD source code installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-architecture-overview.html">EMOD architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-debugging-overview.html">Debugging and testing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Tuberculosis Model</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">IDM docs</a> &raquo;</li>
+    <li><a href="index.html">TB</a> &raquo;</li>
+      
+          <li><a href="install-overview.html">EMOD installation</a> &raquo;</li>
+      
+    <li>Install EMOD on CentOS on Azure</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+<!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/tuberculosis/";
+        var newBase = "http://www.idmod.org/docs/tuberculosis/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
+  <div class="section" id="install-emod-s-on-centos">
+<h1>Install EMOD on CentOS on Azure<a class="headerlink" href="#install-emod-s-on-centos" title="Permalink to this headline">¶</a></h1>
+<p>Follow the steps below to install EMOD on CentOS 7.1 on Azure environments. This installs the pre-
+built Eradication binary and all software needed to run simulations. The setup script installs most
+prerequisite software, including Python and the Python packages dateutil, six, pyparsing, NumPy, and
+matplotlib. Other prerequisites, such as Boost 1.61.0 and  Microsoft MPI v8, are declared by the script
+as required. Because the installation instructions will vary based on the particular distribution
+you are running, instruction information is not included here.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you want to download and modify the EMOD source code and build the Eradication binary
+yourself, see <a class="reference internal" href="dev-install-overview.html"><span class="doc">EMOD source code installation</span></a>.</p>
+</div>
+<p>The Eradication binary is tested and supported on a CentOS 7.1 on Azure virtual machine.
+It has also been successfully built and run on Ubuntu, SUSE, and Arch, but has not been tested
+and is not supported on those Linux distributions.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">IDM does not provide support or guarantees for any third-party software, even software
+that we recommend you install. Send feedback if you encounter any issues, but any support must come
+from the makers of those software packages and their user communities.</p>
+</div>
+<p>The script provides the option of installing the EMOD source code and <a class="reference internal" href="glossary.html#term-input-data-files"><span class="xref std std-term">input
+data files</span></a> provided by IDM, but these steps will install a pre-built version of the Eradication binary.
+For information on building the Eradication binary from source code, see <a class="reference internal" href="dev-install-overview.html"><span class="doc">EMOD source code installation</span></a>.</p>
+<p>Before you begin, you must have the following:</p>
+<ul class="simple">
+<li><strong>sudo</strong> privileges to install packages</li>
+<li>15 GB free in your home directory (if you install the EMOD source code and input data files)</li>
+<li>An Internet connection</li>
+</ul>
+<ol class="arabic">
+<li><p class="first">Download and run the PrepareLinuxEnvironment.sh script on <a class="reference external" href="https://github.com/InstituteforDiseaseModeling/EMOD/releases">EMOD releases</a> on GitHub.</p>
+<p>Respond to the prompts for information while the script is running. If you choose not to
+download the EMOD source and input data files, do the following. This example assumes that a
+directory named IDM is in your home directory and contains the subdirectories EMOD,
+containing the EMOD source code, and EMOD_InputData, containing the input data files
+directory.</p>
+<ol class="loweralpha">
+<li><p class="first">Set the EMOD_ROOT environment variable to the path to the EMOD source path:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EMOD_ROOT</span><span class="o">=~/</span><span class="n">IDM</span><span class="o">/</span><span class="n">EMOD</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Put Scripts and . in the path:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export PATH=$PATH:.:$EMOD_ROOT/Scripts
+</pre></div>
+</div>
+</li>
+<li><p class="first">Create a symlink from the EMOD directory to InputDataFiles:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>ln -s /home/general/IDM/EMOD-InputData $EMOD_ROOT/InputData
+</pre></div>
+</div>
+</li>
+<li><p class="first">If you run simulations using in the same session that you updated EMOD_ROOT and
+the Scripts path, reload the .bashrc file using <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">.bashrc</span></code>.</p>
+</li>
+</ol>
+</li>
+<li><p class="first">Download the Eradication binary for CentOS 7.1 on Azure. See on <a class="reference external" href="https://github.com/InstituteforDiseaseModeling/EMOD/releases">EMOD releases</a> on GitHub.</p>
+</li>
+</ol>
+<div class="section" id="optional-install-plotting-software">
+<h2>(Optional) Install plotting software<a class="headerlink" href="#optional-install-plotting-software" title="Permalink to this headline">¶</a></h2>
+<p>None of the following plotting software is required to run simulations with EMOD, but they are
+useful for creating graphs from and evaluating the model output. In addition, EMOD provides many
+Python scripts for analyzing data.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">IDM does not provide support or guarantees for any third-party software, even software
+that we recommend you install. Send feedback if you encounter any issues, but any support must come
+from the makers of those software packages and their user communities.</p>
+</div>
+<div class="section" id="r">
+<h3>R<a class="headerlink" href="#r" title="Permalink to this headline">¶</a></h3>
+<p>R is a free software environment for statistical computing and graphics.</p>
+<ul class="simple">
+<li>Go to <a class="reference external" href="https://www.r-project.org/">https://www.r-project.org/</a> and install R 3.2.0 (64-bit).</li>
+</ul>
+</div>
+<div class="section" id="matlab">
+<h3>MATLAB<a class="headerlink" href="#matlab" title="Permalink to this headline">¶</a></h3>
+<p>MATLAB is a high-level language and interactive environment for numerical computation,
+visualization, and programming. The MATLAB Statistics and Machine Learning Toolbox™ provides
+functions and applications to describe, analyze and model data using statistics and machine learning
+algorithms.</p>
+<ol class="arabic simple">
+<li>Go to <a class="reference external" href="http://www.mathworks.com/products/matlab/">http://www.mathworks.com/products/matlab/</a> and install MATLAB R2015a.</li>
+<li>If desired, go to <a class="reference external" href="https://www.mathworks.com/products/statistics.html">https://www.mathworks.com/products/statistics.html</a> and install the MATLAB Statistics and Machine Learning Toolbox™ R2015a.</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+<div id="tipue_search_content"></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="intro-overview.html" class="btn btn-neutral float-right" title="Introduction to the software" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="install-windows.html" class="btn btn-neutral" title="Install EMOD on Windows" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Intellectual Ventures Management, LLC (IVM). All rights reserved.
+
+    </p>
+  </div>
+<p>EMOD is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License</a>.</p>
+<p>Send documentation feedback to <a href="mailto:feedback@idmod.org" target="_top">feedback@idmod.org</a>.</p>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_content.js"></script>
+      <script type="text/javascript" src="_static/tipuesearch/tipuesearch_set.js"></script>
+      <script type="text/javascript" src="_static/runsearch.js"></script>
+      <script type="text/javascript" src="_static/tablecollapse.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<!-- Google analytics for IDM docs -->
+ 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-87656833-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>

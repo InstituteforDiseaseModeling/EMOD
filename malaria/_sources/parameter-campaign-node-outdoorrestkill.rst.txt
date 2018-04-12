@@ -1,0 +1,18 @@
+===============
+OutdoorRestKill
+===============
+
+The **OutdoorRestKill** intervention class imposes node-targeted mortality to a vector that is at
+rest in an outdoor environment after an outdoor feed on a human.
+
+.. include:: ../reuse/warning-case.txt
+
+.. include:: ../reuse/campaign-example-intro.txt
+
+.. csv-table::
+    :header: Parameter, Data type, Minimum, Maximum, Default, Description, Example
+    :widths: 10, 5, 5, 5, 5, 20, 5
+    :file: ../csv/campaign-outdoorrestkill.csv
+
+.. literalinclude:: ../json/campaign-outdoorrestkill.json
+   :language: json
