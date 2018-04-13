@@ -187,6 +187,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "http://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="demographic-summary-output-report">
 <h1>Demographic summary output report<a class="headerlink" href="#demographic-summary-output-report" title="Permalink to this headline">¶</a></h1>
 <p>The demographic summary output report is a JSON-formatted file with the demographic
@@ -281,7 +294,7 @@ parameter to 1. The binned output report will also be generated.</p>
 <div class="section" id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
 <p>The following is a sample of a DemographicsSummary.json file.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Header&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;DateTime&quot;</span><span class="p">:</span> <span class="s2">&quot;Mon Mar 16 07:45:10 2015&quot;</span><span class="p">,</span>
         <span class="nt">&quot;DTK_Version&quot;</span><span class="p">:</span> <span class="s2">&quot;4777 v2.0-HIV 2015/02/26 10:51:25&quot;</span><span class="p">,</span>

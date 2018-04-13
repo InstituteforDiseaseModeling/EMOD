@@ -188,6 +188,18 @@
            <div itemprop="articleBody">
             
 <!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "http://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
 
   <div class="section" id="inset-chart-output-report">
 <h1>Inset chart output report<a class="headerlink" href="#inset-chart-output-report" title="Permalink to this headline">¶</a></h1>
@@ -283,7 +295,7 @@ output a chart.</p>
 <div class="section" id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
 <p>The following is a sample of an InsetChart.json file.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Header&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;DateTime&quot;</span><span class="p">:</span> <span class="s2">&quot;Thu Dec 03 11:28:34 2015&quot;</span><span class="p">,</span>
         <span class="nt">&quot;DTK_Version&quot;</span><span class="p">:</span> <span class="s2">&quot;5738 HIV-Ongoing 2015/11/18 13:00:39&quot;</span><span class="p">,</span>

@@ -213,6 +213,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "http://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="mosquitorelease">
 <h1>MosquitoRelease<a class="headerlink" href="#mosquitorelease" title="Permalink to this headline">¶</a></h1>
 <p>The <strong>MosquitoRelease</strong> intervention class adds mosquito release vector control programs to the simulation.
@@ -252,7 +265,7 @@ example that follows shows one potential configuration.</p>
 <td>999999</td>
 <td>0</td>
 <td>The cost of each mosquito release.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">1.5</span>
 <span class="p">}</span>
 </pre></div>
@@ -266,7 +279,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>The genetic properties of the mate if released mosquitoes have mated, e.g. HEG and pesticide resistance.
 The characteristics are set under <strong>ResistanceHegGenetics</strong>. Used when <strong>Released_Gender</strong> is set to VECTOR_FEMALE.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Mated_Genetics&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;HEG&quot;</span><span class="p">:</span> <span class="s2">&quot;NotMated&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Pesticide_Resistance&quot;</span><span class="p">:</span> <span class="s2">&quot;NotMated&quot;</span>
@@ -287,7 +300,7 @@ The characteristics are set under <strong>ResistanceHegGenetics</strong>. Used w
 <li>VECTOR_MALE</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Released_Gender&quot;</span><span class="p">:</span> <span class="s2">&quot;VECTOR_FEMALE&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -301,7 +314,7 @@ The characteristics are set under <strong>ResistanceHegGenetics</strong>. Used w
 <td>NA</td>
 <td>The genetic properties of the released mosquito, e.g. HEG and pesticide resistance.
 The characteristics are set under the <strong>ResistanceHegGenetics</strong> parameter.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Released_Genetics&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;HEG&quot;</span><span class="p">:</span> <span class="s2">&quot;WILD&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Pesticide_Resistance&quot;</span><span class="p">:</span> <span class="s2">&quot;WILD&quot;</span>
@@ -317,7 +330,7 @@ The characteristics are set under the <strong>ResistanceHegGenetics</strong> par
 <td>1.00E+0</td>
 <td>10000</td>
 <td>The number of mosquitoes released in the intervention.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Released_Number&quot;</span><span class="p">:</span> <span class="mi">10000</span>
 <span class="p">}</span>
 </pre></div>
@@ -337,7 +350,7 @@ The characteristics are set under the <strong>ResistanceHegGenetics</strong> par
 <li>NotMated</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Released_Genetics&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;HEG&quot;</span><span class="p">:</span> <span class="s2">&quot;WILD&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Pesticide_Resistance&quot;</span><span class="p">:</span> <span class="s2">&quot;WILD&quot;</span>
@@ -353,7 +366,7 @@ The characteristics are set under the <strong>ResistanceHegGenetics</strong> par
 <td>NA</td>
 <td>NA</td>
 <td>The name of the released mosquito species, such as “<em>arabiensis</em>”. The simulation configuration parameter, <strong>Vector_Species_Params</strong>, needs to contain that specific mosquito species as does the <strong>Vector_Species_Names</strong> array.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Released_Species&quot;</span><span class="p">:</span> <span class="s2">&quot;gambiae&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -371,7 +384,7 @@ The characteristics are set under the <strong>ResistanceHegGenetics</strong> par
 <li>VECTOR_STERILE</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Released_Sterility&quot;</span><span class="p">:</span> <span class="s2">&quot;VECTOR_FERTILE&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -391,7 +404,7 @@ The characteristics are set under the <strong>ResistanceHegGenetics</strong> par
 <li>VECTOR_WOLBACHIA_AB</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Released_Wolbachia&quot;</span><span class="p">:</span> <span class="s2">&quot;VECTOR_WOLBACHIA_A&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -404,7 +417,7 @@ The characteristics are set under the <strong>ResistanceHegGenetics</strong> par
 <td>NA</td>
 <td>0</td>
 <td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
 </pre></div>
@@ -417,7 +430,7 @@ The characteristics are set under the <strong>ResistanceHegGenetics</strong> par
 <td>NA</td>
 <td>NA</td>
 <td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
     <span class="p">]</span>
@@ -432,7 +445,7 @@ The characteristics are set under the <strong>ResistanceHegGenetics</strong> par
 <td>NA</td>
 <td>NA</td>
 <td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -445,7 +458,7 @@ The characteristics are set under the <strong>ResistanceHegGenetics</strong> par
 <td>NA</td>
 <td>NA</td>
 <td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -454,7 +467,7 @@ The characteristics are set under the <strong>ResistanceHegGenetics</strong> par
 </tr>
 </tbody>
 </table>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Event_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;MosquitoRelease&quot;</span><span class="p">,</span>

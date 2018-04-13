@@ -170,6 +170,18 @@
            <div itemprop="articleBody">
             
 <!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "http://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
 
   <div class="section" id="welcome-to-idm-s-hiv-modeling">
 <h1>Welcome to IDM HIV modeling<a class="headerlink" href="#welcome-to-idm-s-hiv-modeling" title="Permalink to this headline">¶</a></h1>

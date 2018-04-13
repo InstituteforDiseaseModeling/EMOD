@@ -194,6 +194,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "http://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="heterogeneity-and-transmission-scaling">
 <h1>Heterogeneity and transmission scaling<a class="headerlink" href="#heterogeneity-and-transmission-scaling" title="Permalink to this headline">¶</a></h1>
 <p>This topic describes the mathematics governing the Heterogeneous Intra-Node Transmission (HINT) feature. However, only generic

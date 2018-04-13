@@ -179,6 +179,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "http://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="install-emod-s-on-centos">
 <h1>Install EMOD on CentOS on Azure<a class="headerlink" href="#install-emod-s-on-centos" title="Permalink to this headline">¶</a></h1>
 <p>Follow the steps below to install EMOD on CentOS 7.1 on Azure environments. This installs the pre-
@@ -219,22 +232,22 @@ containing the EMOD source code, and EMOD_InputData, containing the input data f
 directory.</p>
 <ol class="loweralpha">
 <li><p class="first">Set the EMOD_ROOT environment variable to the path to the EMOD source path:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">EMOD_ROOT</span><span class="o">=~/</span><span class="n">IDM</span><span class="o">/</span><span class="n">EMOD</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EMOD_ROOT</span><span class="o">=~/</span><span class="n">IDM</span><span class="o">/</span><span class="n">EMOD</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">Put Scripts and . in the path:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>export PATH=$PATH:.:$EMOD_ROOT/Scripts
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export PATH=$PATH:.:$EMOD_ROOT/Scripts
 </pre></div>
 </div>
 </li>
 <li><p class="first">Create a symlink from the EMOD directory to InputDataFiles:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>ln -s /home/general/IDM/EMOD-InputData $EMOD_ROOT/InputData
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>ln -s /home/general/IDM/EMOD-InputData $EMOD_ROOT/InputData
 </pre></div>
 </div>
 </li>
 <li><p class="first">If you run simulations using in the same session that you updated EMOD_ROOT and
-the Scripts path, reload the .bashrc file using <code class="docutils literal"><span class="pre">source</span> <span class="pre">.bashrc</span></code>.</p>
+the Scripts path, reload the .bashrc file using <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">.bashrc</span></code>.</p>
 </li>
 </ol>
 </li>

@@ -191,12 +191,25 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "http://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="run-a-simulation-using-python">
 <h1>Run a simulation using Python<a class="headerlink" href="#run-a-simulation-using-python" title="Permalink to this headline">¶</a></h1>
 <p>If you used Python to create or modify JSON files as shown in <a class="reference internal" href="howto-configuration.html"><span class="doc">Create a configuration file</span></a> or
 <a class="reference internal" href="howto-campaign.html"><span class="doc">Create a campaign file</span></a>, it may be convenient to invoke Eradication.exe to run a simulation from a
 Python script. One way of doing this is shown below using the <a class="reference external" href="https://docs.python.org/3/library/subprocess.html">subprocess</a> package.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">subprocess</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">subprocess</span>
 
 <span class="c1"># specify paths</span>
 <span class="n">binary_path</span> <span class="o">=</span> <span class="s2">&quot;binDirectory\Eradication.exe&quot;</span>

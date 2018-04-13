@@ -181,6 +181,18 @@
            <div itemprop="articleBody">
             
 <!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/tuberculosis/";
+        var newBase = "http://www.idmod.org/docs/tuberculosis/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
 
   <div class="section" id="use-output-files">
 <h1>Use output files<a class="headerlink" href="#use-output-files" title="Permalink to this headline">¶</a></h1>
@@ -204,7 +216,7 @@ and charts for analysis.</p>
 <p>The example below uses the Python package <a class="reference external" href="http://docs.python.org/library/json.html">JSON</a> to parse the file and the Python package
 <a class="reference external" href="http://matplotlib.org/api/pyplot_api.html">matplotlib.pyplot</a> to plot the output. This is a very simple example and not likely the most robust
 or elegant. Be sure to set the actual path to your working directory.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 
@@ -226,7 +238,7 @@ or elegant. Be sure to set the actual path to your working directory.</p>
 This script uses JSONLab to parse the file into a usable form in MATLAB. This is a very simple
 example and not likely the most robust or elegant. Be sure to set the actual paths to JSONlab and
 your working directory.</p>
-<div class="highlight-matlab"><div class="highlight"><pre><span></span><span class="c">% this sample uses JSONLab toolbox</span>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">% this sample uses JSONLab toolbox</span>
 <span class="n">addpath</span><span class="p">(</span><span class="s">&#39;PATH TO/jsonlab&#39;</span><span class="p">);</span>
 
 <span class="c">% open and parse InsetChart.json</span>

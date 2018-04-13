@@ -199,6 +199,18 @@
            <div itemprop="articleBody">
             
 <!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "http://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
 
   <div class="section" id="nodelevelhealthtriggerediv">
 <h1>NodeLevelHealthTriggeredIV<a class="headerlink" href="#nodelevelhealthtriggerediv" title="Permalink to this headline">¶</a></h1>
@@ -242,7 +254,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NoTrigger</td>
 <td>The event to broadcast if an intervention cannot be distributed due to the <strong>Blackout_Period</strong>. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Blackout_Event_Trigger&quot;</span> <span class="p">:</span> <span class="s2">&quot;Blackout&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -255,7 +267,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>0</td>
 <td>If set to true (1), individuals will enter the blackout period after the first occurrence of an event in the <strong>Trigger_Condition_List</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Blackout_On_First_Occurrence&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
 </pre></div>
@@ -268,7 +280,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>0</td>
 <td>After the initial intervention distribution, the time, in days, to wait before distributing the intervention again. If it cannot distribute due to the blackout period, it will broadcast the user-defined <strong>Blackout_Event_Trigger</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Blackout_Period&quot;</span> <span class="p">:</span> <span class="mf">0.0</span>
 <span class="p">}</span>
 </pre></div>
@@ -281,7 +293,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The configuration of the actual node-level intervention sought. This parameter selects a class for the intervention and configures the parameters specific for that intervention class.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>  
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>  
     <span class="nt">&quot;Actual_NodeIntervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;OutbreakIndividual&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -299,7 +311,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>0</td>
 <td>When set to true (1), individuals will receive an intervention upon returning home if that intervention was originally distributed while the individual was away.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Distribute_On_Return_Home&quot;</span> <span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
 </pre></div>
@@ -324,7 +336,7 @@ If the value is set to TriggerList, the Trigger_Condition_List parameter specifi
 <td>NA</td>
 <td>NA</td>
 <td>This parameter configures <strong>NodeLevelHealthTriggeredIV</strong> to listen for multiple events at once. The events contained in the list can be built-in events (see <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible events) or the custom events defined in <strong>Listed_Events</strong> in the simulation configuration file.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Trigger_Condition_List&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;OnART3&quot;</span>
     <span class="p">]</span>
@@ -339,7 +351,7 @@ If the value is set to TriggerList, the Trigger_Condition_List parameter specifi
 <td>NA</td>
 <td>NA</td>
 <td>A list of the <strong>NodeProperty</strong> key:value pairs, as defined in the demographics file, that nodes must have to be targeted by the intervention. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Node_Property_Restrictions&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Place&quot;</span><span class="p">:</span> <span class="s2">&quot;URBAN&quot;</span><span class="p">,</span>
             <span class="nt">&quot;Risk&quot;</span><span class="p">:</span> <span class="s2">&quot;MED&quot;</span>
@@ -360,7 +372,7 @@ If the value is set to TriggerList, the Trigger_Condition_List parameter specifi
 <td>3.40E+3</td>
 <td>3.40E+38</td>
 <td>The upper end of ages targeted for an intervention, in years. Used when <strong>Target_Demographic</strong> is set to ExplicitAgeRanges or ExplicitAgeRangesAndGender.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_Age_Max&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
     <span class="nt">&quot;Target_Age_Min&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
     <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;ExplicitAgeRanges&quot;</span>
@@ -375,7 +387,7 @@ If the value is set to TriggerList, the Trigger_Condition_List parameter specifi
 <td>NA</td>
 <td>NA</td>
 <td>The configuration of an actual individual intervention sought. Selects a class for the intervention and configures the parameters specific for that intervention class.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>  
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>  
     <span class="nt">&quot;Actual_IndividualIntervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;OutbreakIndividual&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -398,7 +410,7 @@ If the value is set to TriggerList, the Trigger_Condition_List parameter specifi
 <p class="last">For <strong>BirthTriggeredIV</strong>, specifying a value of -1 results in indefinite persistence of the birth-triggered intervention.</p>
 </div>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration&quot;</span><span class="p">:</span> <span class="mi">-1</span>
 <span class="p">}</span>
 </pre></div>
@@ -411,7 +423,7 @@ If the value is set to TriggerList, the Trigger_Condition_List parameter specifi
 <td>1</td>
 <td>1</td>
 <td>The fraction of individuals in the target demographic that will receive this intervention.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
 </pre></div>
@@ -424,7 +436,7 @@ If the value is set to TriggerList, the Trigger_Condition_List parameter specifi
 <td>NA</td>
 <td>NA</td>
 <td>A list of the <strong>IndividualProperty</strong> key:value pairs, as defined in the demographics file, that individuals must have to be targeted by this node-level intervention. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Property_Restrictions_Within_Node&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Risk&quot;</span><span class="p">:</span> <span class="s2">&quot;HIGH&quot;</span>
     <span class="p">}]</span>
@@ -445,7 +457,7 @@ If the value is set to TriggerList, the Trigger_Condition_List parameter specifi
 <li>All</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_Gender&quot;</span><span class="p">:</span> <span class="s2">&quot;Male&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -458,7 +470,7 @@ If the value is set to TriggerList, the Trigger_Condition_List parameter specifi
 <td>NA</td>
 <td>0</td>
 <td>When set to true (1), the intervention is only distributed to individuals that began the simulation in the node (i.e. those that claim the node as their residence).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_Residents_Only&quot;</span><span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
 </pre></div>
@@ -471,7 +483,7 @@ If the value is set to TriggerList, the Trigger_Condition_List parameter specifi
 <td>NA</td>
 <td>NA</td>
 <td>A list of the <strong>IndividualProperty</strong> key:value pairs, as defined in the demographics file, that individuals must have to be targeted by this individual-level intervention. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Property_Restrictions&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;Risk:HIGH&quot;</span>
     <span class="p">]</span>
@@ -501,7 +513,7 @@ If the value is set to TriggerList, the Trigger_Condition_List parameter specifi
 <li>ExplicitDiseaseState</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_Age_Max&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
     <span class="nt">&quot;Target_Age_Min&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
     <span class="nt">&quot;Target_Demographic&quot;</span><span class="p">:</span> <span class="s2">&quot;ExplicitAgeRanges&quot;</span>
@@ -516,7 +528,7 @@ If the value is set to TriggerList, the Trigger_Condition_List parameter specifi
 <td>NA</td>
 <td>NA</td>
 <td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
     <span class="p">]</span>
@@ -531,7 +543,7 @@ If the value is set to TriggerList, the Trigger_Condition_List parameter specifi
 <td>NA</td>
 <td>NA</td>
 <td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -544,7 +556,7 @@ If the value is set to TriggerList, the Trigger_Condition_List parameter specifi
 <td>NA</td>
 <td>NA</td>
 <td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -553,7 +565,7 @@ If the value is set to TriggerList, the Trigger_Condition_List parameter specifi
 </tr>
 </tbody>
 </table>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>

@@ -198,6 +198,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "http://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="nodepropertyvaluechanger">
 <h1>NodePropertyValueChanger<a class="headerlink" href="#nodepropertyvaluechanger" title="Permalink to this headline">¶</a></h1>
 <p>The <strong>NodePropertyValueChanger</strong> intervention class sets a given node property to a new value. You can
@@ -239,7 +252,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The <strong>NodeProperty</strong> key:value pair, as defined in the demographics file, to assign to the node.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Target_NP_Key_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:NONE&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -252,7 +265,7 @@ example that follows shows one potential configuration.</p>
 <td>1</td>
 <td>1</td>
 <td>The probability that an individual will move to the <strong>Target_Property_Value</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;PropertyValueChanger&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[],</span>
@@ -274,7 +287,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>3.40E+38</td>
 <td>The maximum amount of time individuals have to move to a new group. This timing works in conjunction with <strong>Daily_Probability</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;PropertyValueChanger&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[],</span>
@@ -296,7 +309,7 @@ example that follows shows one potential configuration.</p>
 <td>10000</td>
 <td>0</td>
 <td>The number of days before an individual moves back to their original group.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;PropertyValueChanger&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[],</span>
@@ -318,7 +331,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
     <span class="p">]</span>
@@ -333,7 +346,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -346,7 +359,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -355,7 +368,7 @@ example that follows shows one potential configuration.</p>
 </tr>
 </tbody>
 </table>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>

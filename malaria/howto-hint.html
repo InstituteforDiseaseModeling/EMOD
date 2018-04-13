@@ -192,6 +192,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "http://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="configure-heterogeneous-disease-transmission">
 <h1>Configure heterogeneous disease transmission<a class="headerlink" href="#configure-heterogeneous-disease-transmission" title="Permalink to this headline">¶</a></h1>
 <p>Only generic simulations can use Heterogeneous Intra-Node Transmission (HINT) to manually configure heterogeneous disease

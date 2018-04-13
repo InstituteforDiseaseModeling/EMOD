@@ -183,6 +183,18 @@
            <div itemprop="articleBody">
             
 <!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/tuberculosis/";
+        var newBase = "http://www.idmod.org/docs/tuberculosis/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
 
   <div class="section" id="use-input-data-files">
 <h1>Use input data files<a class="headerlink" href="#use-input-data-files" title="Permalink to this headline">¶</a></h1>
@@ -212,7 +224,7 @@ steps below.</p>
 </li>
 <li><p class="first">Using a Git client or Command Prompt window, clone the input data repository to retrieve
 the metadata:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">InstituteforDiseaseModeling</span><span class="o">/</span><span class="n">EMOD</span><span class="o">-</span><span class="n">InputData</span><span class="o">.</span><span class="n">git</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">InstituteforDiseaseModeling</span><span class="o">/</span><span class="n">EMOD</span><span class="o">-</span><span class="n">InputData</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>
 </li>
@@ -220,12 +232,12 @@ the metadata:</p>
 input data files.</p>
 </li>
 <li><p class="first">Cache the actual data on your local machine:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">lfs</span> <span class="n">fetch</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">lfs</span> <span class="n">fetch</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">Replace the metadata in the files with the actual contents:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">lfs</span> <span class="n">checkout</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">lfs</span> <span class="n">checkout</span>
 </pre></div>
 </div>
 </li>
@@ -244,7 +256,7 @@ directory above, in the appropriate parameter. Generally, these parameters are a
 </ol>
 <p>For example, the example below shows the relevant portion of a configuration file. See :doc
 :<cite>parameter-configuration</cite> for a complete list of the parameters.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Air_Temperature_Filename&quot;</span><span class="p">:</span> <span class="s2">&quot;Namawala_single_node_air_temperature_daily.bin&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Air_Temperature_Offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>

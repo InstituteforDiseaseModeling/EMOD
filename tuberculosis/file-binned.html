@@ -185,6 +185,18 @@
            <div itemprop="articleBody">
             
 <!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/tuberculosis/";
+        var newBase = "http://www.idmod.org/docs/tuberculosis/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
 
   <div class="section" id="binned-output-report">
 <h1>Binned output report<a class="headerlink" href="#binned-output-report" title="Permalink to this headline">¶</a></h1>
@@ -309,7 +321,7 @@ to 1. The demographics summary output report will also be generated.</p>
 <div class="section" id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
 <p>The following is a sample of an BinnedReport.json file.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Header&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;DateTime&quot;</span><span class="p">:</span> <span class="s2">&quot;Wed Oct 01 14:49:22 2014&quot;</span><span class="p">,</span>
         <span class="nt">&quot;DTK_Version&quot;</span><span class="p">:</span> <span class="s2">&quot;4284 trunk 2014/09/23 11:50:52&quot;</span><span class="p">,</span>

@@ -214,6 +214,18 @@
            <div itemprop="articleBody">
             
 <!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/tuberculosis/";
+        var newBase = "http://www.idmod.org/docs/tuberculosis/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
 
   <div class="section" id="antitbdrug">
 <h1>AntiTBDrug<a class="headerlink" href="#antitbdrug" title="Permalink to this headline">¶</a></h1>
@@ -253,7 +265,7 @@ example that follows shows one potential configuration.</p>
 <td>99999</td>
 <td>1</td>
 <td>The interval between doses, in days.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Dose_Interval&quot;</span><span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
 </pre></div>
@@ -267,7 +279,7 @@ example that follows shows one potential configuration.</p>
 <td>1</td>
 <td>The maximum drug concentration that can be used, and is in the same units as <strong>Drug_PKPD_C50</strong>.
 Since drug concentrations and C50 values are often specified with different unit systems, these two parameters have been designed to be flexible provided that the units are the same for each. This parameter is used when <strong>Durability_Profile</strong> is set to CONCENTRATION_VERSUS_TIME.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Durability_Profile&quot;</span><span class="p">:</span> <span class="s2">&quot;CONCENTRATION_VERSUS_TIME&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Drug_Cmax&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
     <span class="nt">&quot;Drug_PKPD_C50&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> 
@@ -283,7 +295,7 @@ Since drug concentrations and C50 values are often specified with different unit
 <td>10000</td>
 <td>1</td>
 <td>The concentration at which drug killing rates are half of the maximum. Must use the same units as <strong>Drug_Cmax</strong>. This parameter is used when <strong>Durability_Profile</strong> is set to CONCENTRATION_VERSUS_TIME.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Durability_Profile&quot;</span><span class="p">:</span> <span class="s2">&quot;CONCENTRATION_VERSUS_TIME&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Drug_Cmax&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
     <span class="nt">&quot;Drug_PKPD_C50&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> 
@@ -299,7 +311,7 @@ Since drug concentrations and C50 values are often specified with different unit
 <td>10000</td>
 <td>1</td>
 <td>The volume of drug distribution. This value is the ratio of the volume of the second compartment to the volume of the first compartment in a two-compartment model, and is dimensionless. This parameter is used when <strong>Durability_Profile</strong> is set to CONCENTRATION_VERSUS_TIME.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Durability_Profile&quot;</span><span class="p">:</span> <span class="s2">&quot;CONCENTRATION_VERSUS_TIME&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Drug_Cmax&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
     <span class="nt">&quot;Drug_PKPD_C50&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> 
@@ -322,7 +334,7 @@ Since drug concentrations and C50 values are often specified with different unit
 <dd>Conditionally loads the following parameters: <strong>Drug_Cmax</strong>, <strong>Drug_PKPD_C50</strong>, and <strong>Drug_Vd</strong>.</dd>
 </dl>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Durability_Profile&quot;</span><span class="p">:</span> <span class="s2">&quot;CONCENTRATION_VERSUS_TIME&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Drug_Cmax&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
     <span class="nt">&quot;Drug_PKPD_C50&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> 
@@ -338,7 +350,7 @@ Since drug concentrations and C50 values are often specified with different unit
 <td>1</td>
 <td>0</td>
 <td>The fraction of individuals who will not finish their drug treatment.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Fraction_Defaulters&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
 </pre></div>
@@ -351,7 +363,7 @@ Since drug concentrations and C50 values are often specified with different unit
 <td>999999</td>
 <td>0</td>
 <td>The remaining doses in an intervention; enter a negative number for unlimited doses.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Remaining_Doses&quot;</span><span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
 </pre></div>
@@ -365,7 +377,7 @@ Since drug concentrations and C50 values are often specified with different unit
 <td>0</td>
 <td>The rate of TB clearance per day when an individual is on a drug regimen.
 This parameter, <strong>TB_Drug_Inactivation</strong>, <strong>TB_Drug_Relapse_Rate</strong>, and <strong>TB_Drug_Mortality_Rate</strong> specify the daily probability of a change in the TB disease state during the course of treatment. The sum of these rates and the total duration of treatment specify the probability that any event occurs. If no event occurs, the individual fails drug treatment.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Actual_IndividualIntervention_Configs&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;AntiTBDrug&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>
@@ -390,7 +402,7 @@ This parameter, <strong>TB_Drug_Inactivation</strong>, <strong>TB_Drug_Relapse_R
 <td>1</td>
 <td>0</td>
 <td>The rate of TB inactivation per day when an individual is on a drug regimen. This parameter, <strong>TB_Drug_Clearance_Rate</strong>, <strong>TB_Drug_Relapse_Rate</strong>, and <strong>TB_Drug_Mortality_Rate</strong>, specify the daily probability of a change in the TB disease state during the course of treatment. The sum of these rates and the total duration of treatment specify the probability that any event occurs. If no event occurs, the individual fails drug treatment.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Actual_IndividualIntervention_Configs&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;AntiTBDrug&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>
@@ -415,7 +427,7 @@ This parameter, <strong>TB_Drug_Inactivation</strong>, <strong>TB_Drug_Relapse_R
 <td>1</td>
 <td>0</td>
 <td>The rate of TB mortality per day when an individual is on a drug regimen. This parameter, <strong>TB_Drug_Inactivation</strong>, <strong>TB_Drug_Relapse_Rate</strong>, and <strong>TB_Drug_Clearance_Rate</strong> specify the daily probability of a change in the TB disease state during the course of treatment. The sum of these rates and the total duration of treatment specify the probability that any event occurs. If no event occurs, the individual fails drug treatment.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Actual_IndividualIntervention_Configs&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;AntiTBDrug&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>
@@ -440,7 +452,7 @@ This parameter, <strong>TB_Drug_Inactivation</strong>, <strong>TB_Drug_Relapse_R
 <td>1</td>
 <td>1</td>
 <td>The transmission reduction ratio, or the reduced infectiousness when an individual receives drugs.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
         <span class="nt">&quot;Drug_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;FirstLineCombo&quot;</span><span class="p">,</span>
@@ -465,7 +477,7 @@ This parameter, <strong>TB_Drug_Inactivation</strong>, <strong>TB_Drug_Relapse_R
 <td>1</td>
 <td>0</td>
 <td>The rate of TB relapse per day when an individual is on a drug regimen. This parameter, <strong>TB_Drug_Inactivation</strong>, <strong>TB_Drug_Clearance_Rate</strong>, and <strong>TB_Drug_Mortality_Rate</strong> specify the daily probability of a change in the TB disease state during the course of treatment. The sum of these rates and the total duration of treatment specify the probability that any event occurs. If no event occurs, the individual fails drug treatment.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Actual_IndividualIntervention_Configs&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;AntiTBDrug&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>
@@ -490,7 +502,7 @@ This parameter, <strong>TB_Drug_Inactivation</strong>, <strong>TB_Drug_Relapse_R
 <td>1</td>
 <td>0</td>
 <td>This parameter determines the daily probability that an individual with drug-sensitive TB will acquire MDR-TB. Only individuals who return to the latent state or fail can acquire MDR-TB.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Actual_IndividualIntervention_Configs&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;AntiTBDrug&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>
@@ -525,7 +537,7 @@ This parameter, <strong>TB_Drug_Inactivation</strong>, <strong>TB_Drug_Relapse_R
 <li>LatentTreatment</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
         <span class="nt">&quot;Drug_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;FirstLineCombo&quot;</span><span class="p">,</span>
@@ -550,7 +562,7 @@ This parameter, <strong>TB_Drug_Inactivation</strong>, <strong>TB_Drug_Relapse_R
 <td>1.00E+0</td>
 <td>0</td>
 <td>The primary decay time constant (in days) of the decay profile.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Primary_Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">180</span>
 <span class="p">}</span>
 </pre></div>
@@ -563,7 +575,7 @@ This parameter, <strong>TB_Drug_Inactivation</strong>, <strong>TB_Drug_Relapse_R
 <td>999999</td>
 <td>1</td>
 <td>The secondary decay time constant of the durability profile. This parameter is used when <strong>Durability_Profile</strong> is set to CONCENTRATION_VERSUS_TIME.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Durability_Profile&quot;</span><span class="p">:</span> <span class="s2">&quot;CONCENTRATION_VERSUS_TIME&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Secondary_Decay_Time_Constant&quot;</span><span class="p">:</span> <span class="mi">730</span>
 <span class="p">}</span>
@@ -577,7 +589,7 @@ This parameter, <strong>TB_Drug_Inactivation</strong>, <strong>TB_Drug_Relapse_R
 <td>99999</td>
 <td>1</td>
 <td>The unit cost per drug (unamortized).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">10</span>
 <span class="p">}</span>
 </pre></div>
@@ -590,7 +602,7 @@ This parameter, <strong>TB_Drug_Inactivation</strong>, <strong>TB_Drug_Relapse_R
 <td>NA</td>
 <td>0</td>
 <td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
 </pre></div>
@@ -603,7 +615,7 @@ This parameter, <strong>TB_Drug_Inactivation</strong>, <strong>TB_Drug_Relapse_R
 <td>NA</td>
 <td>NA</td>
 <td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
     <span class="p">]</span>
@@ -618,7 +630,7 @@ This parameter, <strong>TB_Drug_Inactivation</strong>, <strong>TB_Drug_Relapse_R
 <td>NA</td>
 <td>NA</td>
 <td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -631,7 +643,7 @@ This parameter, <strong>TB_Drug_Inactivation</strong>, <strong>TB_Drug_Relapse_R
 <td>NA</td>
 <td>NA</td>
 <td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -640,7 +652,7 @@ This parameter, <strong>TB_Drug_Inactivation</strong>, <strong>TB_Drug_Relapse_R
 </tr>
 </tbody>
 </table>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Basic TB Treatment&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="p">{</span>

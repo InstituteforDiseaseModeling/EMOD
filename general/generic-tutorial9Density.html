@@ -186,6 +186,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "http://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="generic-9-density-scaling-of-infectivity">
 <h1>Generic 9: Density scaling of infectivity<a class="headerlink" href="#generic-9-density-scaling-of-infectivity" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial explores the effect of population density on the transmissibility of disease.</p>
@@ -282,7 +295,7 @@ and <a class="reference internal" href="parameter-configuration.html#config-setu
 <p>This simulation uses an <strong>OutbreakIndividual</strong> event for repeated infection seeding. The campaign.json
 file is in the ScenariosGeneric09_DensityScaling directory. For more information, see
 <strong>OutbreakIndividual</strong> parameters.</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Infections&quot;</span><span class="p">,</span>

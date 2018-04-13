@@ -183,6 +183,18 @@
            <div itemprop="articleBody">
             
 <!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/tuberculosis/";
+        var newBase = "http://www.idmod.org/docs/tuberculosis/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
 
   <div class="section" id="custom-reporters">
 <h1>Custom reporters<a class="headerlink" href="#custom-reporters" title="Permalink to this headline">¶</a></h1>
@@ -202,7 +214,7 @@ their location so Eradication.exe can load them. Eradication.exe attempts to loa
 methods, in the order listed:</p>
 <ol class="arabic simple">
 <li>Define the location of the <a class="reference internal" href="glossary.html#term-dynamic-link-library-dll"><span class="xref std std-term">dynamic link library (DLL)</span></a> in a JSON-formatted file (emodules_map.json).</li>
-<li>Point to the location using the <code class="docutils literal"><span class="pre">--dll-path</span></code> command-line option when invoking Eradication.exe.</li>
+<li>Point to the location using the <code class="docutils literal notranslate"><span class="pre">--dll-path</span></code> command-line option when invoking Eradication.exe.</li>
 <li>Place the DLL in the <a class="reference internal" href="glossary.html#term-working-directory"><span class="xref std std-term">working directory</span></a>.</li>
 </ol>
 <div class="section" id="json-file">
@@ -215,7 +227,7 @@ is a JSON array and contains the path to each EMODule in the array. Although rep
 the only type currently supported, empty disease and intervention sections must be included. You
 must use either a double backslash (\) or a single forward slash (/) to represent a single
 backslash for the path. For example:</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;disease_plugins&quot;</span><span class="p">:</span> <span class="p">[</span>
          <span class="p">],</span>
     <span class="nt">&quot;interventions&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -229,7 +241,7 @@ backslash for the path. For example:</p>
 </div>
 <div class="section" id="command-line-option">
 <h2>Command-line option<a class="headerlink" href="#command-line-option" title="Permalink to this headline">¶</a></h2>
-<p>If a map file is not provided, you can include the <code class="docutils literal"><span class="pre">--dll-path</span></code> option when you invoke Eradication.exe. It
+<p>If a map file is not provided, you can include the <code class="docutils literal notranslate"><span class="pre">--dll-path</span></code> option when you invoke Eradication.exe. It
 must point to a directory with a reporter_plugins subdirectory that contains the reporters. The name
 of the directory does not matter, but the reporter must be in a subdirectory named reporter_plugins.
 Note that this method will load all reporters in the root directory specified.</p>
@@ -239,7 +251,7 @@ directories, depending on the build configuration:</p>
 <li>&lt;EMOD source directory path&gt;x64Releasereporter_plugins</li>
 <li>&lt;EMOD source directory path&gt;x64Debugreporter_plugins</li>
 </ul>
-<p>Therefore, if you do not move your reports, you will set <code class="docutils literal"><span class="pre">--dll-path</span></code> to one of the following paths:</p>
+<p>Therefore, if you do not move your reports, you will set <code class="docutils literal notranslate"><span class="pre">--dll-path</span></code> to one of the following paths:</p>
 <ul class="simple">
 <li>&lt;EMOD source directory path&gt;x64Release</li>
 <li>&lt;EMOD source directory path&gt;x64Debug</li>

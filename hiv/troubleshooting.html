@@ -171,6 +171,18 @@
            <div itemprop="articleBody">
             
 <!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "http://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
 
   <div class="section" id="troubleshooting-emod-s-simulations">
 <h1>Troubleshooting EMOD simulations<a class="headerlink" href="#troubleshooting-emod-s-simulations" title="Permalink to this headline">¶</a></h1>
@@ -231,7 +243,7 @@ error actually occurred in the code)</li>
 (msg) may contain variable names or the values of those variables, the name of a file that
 wasn’t found, and other informational text regarding the nature of the problem. For example,
 a file not found exception (FileNotFoundException) might look similar to the following:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="n">E</span><span class="p">]</span> <span class="p">[</span><span class="n">Eradication</span><span class="p">]</span> <span class="n">FileNotFoundException</span> <span class="n">caught</span><span class="p">:</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">Could</span> <span class="ow">not</span> <span class="n">find</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="n">E</span><span class="p">]</span> <span class="p">[</span><span class="n">Eradication</span><span class="p">]</span> <span class="n">FileNotFoundException</span> <span class="n">caught</span><span class="p">:</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">Could</span> <span class="ow">not</span> <span class="n">find</span>
 <span class="n">file</span> <span class="o">./</span><span class="n">Namawala_single_node_demographics</span><span class="o">.</span><span class="n">compiled</span><span class="o">.</span><span class="n">json</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">NodeDemographics</span><span class="o">.</span><span class="n">cpp</span><span class="p">,</span>
 <span class="n">lineNumber</span> <span class="o">=</span> <span class="mi">227</span>
 </pre></div>
@@ -324,7 +336,7 @@ deprecated version of a parameter name.</p>
 <p>In STI and HIV simulation types, this may occur when referring to CD4MeasuredX and AgeMeasuredX in the
 <strong>ReportEventRecorder</strong> settings. These are built-in triggers that must be explicitly defined in the
 <strong>Listed_Events</strong> array of the configuration file. For example:</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Listed_Events&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;CD4Measured0&quot;</span><span class="p">,</span>
         <span class="s2">&quot;CD4Measured1&quot;</span><span class="p">,</span>

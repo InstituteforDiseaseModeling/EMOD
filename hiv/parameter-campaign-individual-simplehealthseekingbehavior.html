@@ -228,6 +228,18 @@
            <div itemprop="articleBody">
             
 <!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "http://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
 
   <div class="section" id="simplehealthseekingbehavior">
 <h1>SimpleHealthSeekingBehavior<a class="headerlink" href="#simplehealthseekingbehavior" title="Permalink to this headline">¶</a></h1>
@@ -273,7 +285,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The configuration of an actual intervention sought. Selects a class for the intervention and configures the parameters specific for that intervention class.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Actual_IndividualIntervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
         <span class="nt">&quot;Drug_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;FirstLineCombo&quot;</span><span class="p">,</span>
@@ -296,7 +308,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NoTrigger</td>
 <td>The event of an actual intervention sought. Selects a class for the intervention and configures the parameters specific for that intervention class. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Actual_IndividualIntervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Actual_IndividualIntervention_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;ProviderOrdersTBTest&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Tendency&quot;</span><span class="p">:</span> <span class="mf">0.005</span><span class="p">,</span>
@@ -314,7 +326,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>1</td>
 <td>If set to true (1), the health-seeking behavior gets used once and discarded. If set to false (0), it remains indefinitely.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Single_Use&quot;</span><span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
 </pre></div>
@@ -327,7 +339,7 @@ example that follows shows one potential configuration.</p>
 <td>1</td>
 <td>1</td>
 <td>The probability of seeking healthcare.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Tendency&quot;</span><span class="p">:</span> <span class="mf">0.01</span>
 <span class="p">}</span>
 </pre></div>
@@ -346,7 +358,7 @@ Possible values are:</p>
 <li>Config</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Event_Or_Config&quot;</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -359,7 +371,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>0</td>
 <td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
 </pre></div>
@@ -372,7 +384,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>NA</td>
 <td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
     <span class="p">]</span>
@@ -387,7 +399,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>NA</td>
 <td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -400,7 +412,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>NA</td>
 <td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -409,7 +421,7 @@ Possible values are:</p>
 </tr>
 </tbody>
 </table>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
      <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
      <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
           <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>

@@ -172,6 +172,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/malaria/";
+        var newBase = "http://www.idmod.org/docs/malaria/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="malaria-research-at-idm-s">
 <h1>Malaria research at IDM<a class="headerlink" href="#malaria-research-at-idm-s" title="Permalink to this headline">¶</a></h1>
 <p>Malaria research at IDM is progressive and dynamic. For the current research, research team

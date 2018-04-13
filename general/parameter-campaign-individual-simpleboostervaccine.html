@@ -207,6 +207,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "http://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="simpleboostervaccine">
 <h1>SimpleBoosterVaccine<a class="headerlink" href="#simpleboostervaccine" title="Permalink to this headline">¶</a></h1>
 <p>The <strong>SimpleBoosterVaccine</strong> intervention class is derived from <a class="reference internal" href="parameter-campaign-individual-simplevaccine.html"><span class="doc">SimpleVaccine</span></a>
@@ -253,7 +266,7 @@ example that follows shows one potential configuration.</p>
 <td>1</td>
 <td>1</td>
 <td>Specifies the boosting effect on [acquisition/transmission/mortality] immunity for previously exposed individuals (either natural or vaccine-derived). This does not replace current immunity, it builds multiplicatively on top of it.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
         <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -279,7 +292,7 @@ example that follows shows one potential configuration.</p>
 <td>1</td>
 <td>0</td>
 <td>Specifies how much immunity is required before the vaccine changes from a priming effect to a boosting effect.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
         <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -305,7 +318,7 @@ example that follows shows one potential configuration.</p>
 <td>1</td>
 <td>1</td>
 <td>Specifies the priming effect on [acquisition/transmission/mortality] immunity for naive individuals (without natural or vaccine-derived immunity).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
         <span class="nt">&quot;Vaccine_Take&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -331,7 +344,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>1</td>
 <td>The overall vaccine efficacy when individuals receive more than one vaccine. When set to true (1), the vaccine efficacies are multiplied together; when set to false (0), the efficacies are additive.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
@@ -354,7 +367,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The configuration of how the intervention efficacy wanes over time. Specify how this effect decays over time using one of the <a class="reference internal" href="parameter-campaign-waningeffects.html"><span class="doc">Waning effect classes</span></a>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Waning_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Box_Duration&quot;</span><span class="p">:</span> <span class="mi">3650</span><span class="p">,</span>
         <span class="nt">&quot;Initial_Effect&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -383,7 +396,7 @@ Possible values are:</p>
 <dd>The vaccine reduces the disease-mortality rate of a vaccinated individual.</dd>
 </dl>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
@@ -406,7 +419,7 @@ Possible values are:</p>
 <td>999999</td>
 <td>10</td>
 <td>The unit cost per vaccine (unamortized).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">10.0</span>
 <span class="p">}</span>
 </pre></div>
@@ -419,7 +432,7 @@ Possible values are:</p>
 <td>1</td>
 <td>1</td>
 <td>The rate at which delivered vaccines will successfully stimulate an immune response and achieve the desired efficacy. For example, if it is set to 0.9, there will be a 90 percent chance that the vaccine will start with the specified efficacy, and a 10 percent chance that it will have no efficacy at all.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleVaccine&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
@@ -442,7 +455,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>0</td>
 <td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
 </pre></div>
@@ -455,7 +468,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>NA</td>
 <td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
     <span class="p">]</span>
@@ -470,7 +483,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>NA</td>
 <td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -483,7 +496,7 @@ Possible values are:</p>
 <td>NA</td>
 <td>NA</td>
 <td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -492,7 +505,7 @@ Possible values are:</p>
 </tr>
 </tbody>
 </table>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Generic Seattle Regression Campaign&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>

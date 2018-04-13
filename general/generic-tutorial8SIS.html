@@ -186,6 +186,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "http://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="generic-8-sis-reoccurring-infections">
 <h1>Generic 8: SIS - Reoccurring infections<a class="headerlink" href="#generic-8-sis-reoccurring-infections" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial assumes that you have read <a class="reference internal" href="generic-tutorial7SI.html"><span class="doc">Generic 7: SI - Lifelong infection</span></a> and <a class="reference internal" href="generic-tutorial1SIR.html"><span class="doc">Generic 1: SIR - Simple single-node outbreak</span></a>.</p>
@@ -278,7 +291,7 @@ directory where &lt;path_to_directory&gt; is the location where EMOD source file
 <h3>Initial outbreak<a class="headerlink" href="#initial-outbreak" title="Permalink to this headline">¶</a></h3>
 <p>This simulation uses an <strong>OutbreakIndividual</strong> event at day 1 to provide the initial seeding.  For more
 information, see <strong>OutbreakIndividual</strong> parameters.</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Initial Seeding&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>

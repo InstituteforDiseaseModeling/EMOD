@@ -116,19 +116,13 @@
 <li class="toctree-l1"><a class="reference internal" href="HIV-disease-overview.html">HIV disease overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HIV-model-overview.html">HIV model overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HIV-IDM.html">HIV research at IDM</a></li>
-<li class="toctree-l1"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="file-inputs.html">Input data file structure</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Demographics parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="file-climate.html">Climate file structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="file-migration.html">Migration file structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="file-load-balancing.html">Load-balancing file structure</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="parameter-overview.html">EMOD parameter reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Demographics parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameter-configuration.html">Configuration parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameter-campaign.html">Campaign parameters</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="file-outputs.html">Output report structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="file-error-logging.html">Error and logging files</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="file-reference-overview.html">Input and output file structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting EMOD simulations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
 </ul>
@@ -185,6 +179,18 @@
            <div itemprop="articleBody">
             
 <!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "http://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
 
   <div class="section" id="demographics-parameters">
 <h1>Demographics parameters<a class="headerlink" href="#demographics-parameters" title="Permalink to this headline">¶</a></h1>
@@ -210,7 +216,7 @@ represent a real location and is generally only used for testing and validating 
 than actual modeling of disease.</p>
 <p>Demographics files are organized into four main sections: <strong>Metadata</strong>, <strong>NodeProperties</strong>,
 <strong>Defaults</strong>, and <strong>Nodes</strong>. The following example shows the skeletal format of a demographics file.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
      <span class="nt">&quot;Metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
           <span class="nt">&quot;DateCreated&quot;</span><span class="p">:</span> <span class="s2">&quot;dateTime&quot;</span><span class="p">,</span>
           <span class="nt">&quot;Tool&quot;</span><span class="p">:</span> <span class="s2">&quot;scriptUsedToGenerate&quot;</span><span class="p">,</span>
@@ -300,7 +306,7 @@ are generated from the latitude and longitude of the northwest corner.</dd>
 generated from the latitude and longitude of the northwest corner.</dd>
 </dl>
 <p>The algorithm for encoding latitude and longitude into a <strong>NodeID</strong> is as follows:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">unsigned</span> <span class="nb">int</span> <span class="n">xpix</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">lon</span> <span class="o">+</span> <span class="mf">180.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">resolution</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">unsigned</span> <span class="nb">int</span> <span class="n">xpix</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">lon</span> <span class="o">+</span> <span class="mf">180.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">resolution</span><span class="p">)</span>
 <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">ypix</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">lat</span> <span class="o">+</span> <span class="mf">90.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">resolution</span><span class="p">)</span>
 <span class="n">unsigned</span> <span class="nb">int</span> <span class="o">**</span><span class="n">NodeID</span><span class="o">**</span> <span class="o">=</span> <span class="p">(</span><span class="n">xpix</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">+</span> <span class="n">ypix</span> <span class="o">+</span> <span class="mi">1</span>
 </pre></div>
@@ -335,7 +341,7 @@ null value, 1 is added to the <strong>NodeID</strong> as part of the final calcu
 <td>NA</td>
 <td>NA</td>
 <td>The identifier for a simulation; all input data files used in a simulation must have the same <strong>IdReference</strong> value. The value must be greater than 0. If the input data files are generated using COMPS, the string that indicates the method used for generating the <strong>NodeID</strong>, the identifier used for each node in the simulation.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IdReference&quot;</span><span class="p">:</span> <span class="s2">&quot;Gridded world grump30arcsec&quot;</span>
     <span class="p">}</span>
@@ -350,7 +356,7 @@ null value, 1 is added to the <strong>NodeID</strong> as part of the final calcu
 <td>Depends on available memory</td>
 <td>NA</td>
 <td>The number of nodes to expect in the input data files.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;NodeCount&quot;</span><span class="p">:</span> <span class="mi">2</span>
     <span class="p">}</span>
@@ -405,7 +411,7 @@ that assign properties to individuals in a simulation.</p>
 <p class="last">EMOD automatically create the individual property <strong>Age_Bin</strong> with values based on the bin edges using the format <strong>Age_Bin_Property_From_X_To_Y</strong>. These appear in the property reports and can be used to target campaign interventions using <strong>Property_Restrictions_Within_Node</strong>. See <a class="reference internal" href="howto-targeted-interventions.html"><span class="doc">Target interventions to nodes or groups</span></a> for more information.</p>
 </td>
 <td><p class="first">The following example creates three age groups: 0 to 5, older than 5 to 13, and older than 13 to the maximum age.</p>
-<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Age_Bin&quot;</span><span class="p">,</span>
@@ -423,7 +429,7 @@ that assign properties to individuals in a simulation.</p>
 <td>NA</td>
 <td>NA</td>
 <td>An array that contains parameters that add properties to individuals in a simulation. For example, you can define values for accessibility, age, geography, risk, and other properties and assign values to different individuals. alues.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus&quot;</span><span class="p">,</span>
@@ -446,7 +452,7 @@ that assign properties to individuals in a simulation.</p>
 <td>1</td>
 <td>1</td>
 <td>An array of floats that define the proportion of property values to assign to individuals or nodes at the beginning of the simulation and when new individuals are born. Their sum must equal 1 and the number of members in this array must match the number of members in <strong>Values</strong>. For Age_Bin property types, omit this parameter as the demographics file controls the age distribution.</td>
-<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
@@ -456,7 +462,7 @@ that assign properties to individuals in a simulation.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus&quot;</span><span class="p">,</span>
@@ -475,7 +481,7 @@ that assign properties to individuals in a simulation.</p>
 <td>NA</td>
 <td>NA</td>
 <td>An array that contains parameters that add properties to nodes in a simulation. For example, you can define values for intervention status, risk, and other properties and assign values to different nodes.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Risk&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HIGH&quot;</span><span class="p">,</span> <span class="s2">&quot;MEDIUM&quot;</span><span class="p">,</span> <span class="s2">&quot;LOW&quot;</span><span class="p">],</span>
@@ -511,7 +517,7 @@ that assign properties to individuals in a simulation.</p>
 <dd>Tag individuals or nodes based on the quality of medical care.</dd>
 </dl>
 </td>
-<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Age_Bin&quot;</span><span class="p">,</span>
@@ -521,7 +527,7 @@ that assign properties to individuals in a simulation.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span> <span class="s2">&quot;RECENT_SPRAY&quot;</span><span class="p">],</span>
@@ -538,7 +544,7 @@ that assign properties to individuals in a simulation.</p>
 <td>NA</td>
 <td>NA</td>
 <td>An array that contains multiple JSON objects that each define how an individual transitions from one property value to another. See the transitions array table for information about the parameters to include in the <strong>Transitions</strong> object. For Age_Bin property types, set to an empty array, as individuals will transition to the next age bin based on the passing of time. Cannot be used with <strong>NodeProperties</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
@@ -575,7 +581,7 @@ The rows represent the infectious individuals (the “whom”); the columns repr
 <p class="last">This implements the HINT feature, which is available only in the generic simulation type. For more information, see <a class="reference internal" href="howto-hint.html"><span class="doc">Configure heterogeneous disease transmission</span></a>.
 <strong>Enable_Heterogeneous_Intranode_Transmission</strong> in the configuration file must be set to 1 (see <a class="reference internal" href="parameter-configuration.html#config-infectivity"><span class="std std-ref">Infectivity and transmission</span></a> parameters). Cannot be used with <strong>NodeProperties</strong>.</p>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;TransmissionMatrix&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -600,7 +606,7 @@ The rows represent the infectious individuals (the “whom”); the columns repr
 <td><p class="first">An array of the user-defined values that can be assigned to individuals or nodes for this property. The order of the values corresponds to the order of the <strong>Initial_Distribution</strong> array.</p>
 <p class="last">You can have up to 125 values for the Geographic and InterventionStatus property types and up to 5 values for all other types. For Age_Bin property types, omit this parameter and use <strong>Age_Bin_Edges_In_Years</strong> instead.</p>
 </td>
-<td><div class="first highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Low&quot;</span><span class="p">,</span> <span class="s2">&quot;Medium&quot;</span><span class="p">,</span> <span class="s2">&quot;High&quot;</span><span class="p">]</span>
@@ -609,7 +615,7 @@ The rows represent the infectious individuals (the “whom”); the columns repr
 <span class="p">}</span>
 </pre></div>
 </div>
-<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;NodeProperties&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="p">{</span>
             <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus&quot;</span><span class="p">,</span>
@@ -656,7 +662,7 @@ similar transitions can be configured in the campaign file as the result of camp
 <td>125</td>
 <td>NA</td>
 <td>The age at which individuals are eligible to transition. Do not use when <strong>Type</strong> is set to At_Timestep. Required when <strong>Type</strong> is set to At_Age.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;At_Age&quot;</span><span class="p">,</span>
@@ -674,7 +680,7 @@ similar transitions can be configured in the campaign file as the result of camp
 <td>100</td>
 <td>3.40E+38</td>
 <td>The age when an individual is eligible to transition. <strong>Min</strong> is optional and <strong>Max</strong> is required. Do not use this with <strong>Type</strong> set to At_Age because it will conflict with other age parameters in <strong>Age_In_Years</strong>. This is required when <strong>Type</strong> is set to At_Timestep, though it can be empty for no age restriction.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;At_Timestep&quot;</span><span class="p">,</span>
@@ -695,7 +701,7 @@ similar transitions can be configured in the campaign file as the result of camp
 <td>1</td>
 <td>1</td>
 <td>The proportion of the population that EMOD will attempt to transition. The calculation used with <strong>Probability_Per_Timeset</strong> only uses the proportion of the population specified in <strong>Coverage</strong> to calculate the probability of an individual transitioning at a given time step. <strong>Coverage</strong> has no effect when the value is set to 1. Required when <strong>Type</strong> is set to either At_Age or At_Timestep.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Individual_Properties&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;Bad&quot;</span><span class="p">,</span>
@@ -714,7 +720,7 @@ similar transitions can be configured in the campaign file as the result of camp
 <td>NA</td>
 <td>NA</td>
 <td>The property value that an individual will transition from.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Individual_Properties&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;Bad&quot;</span><span class="p">,</span>
@@ -734,7 +740,7 @@ similar transitions can be configured in the campaign file as the result of camp
 <td>1</td>
 <td>NA</td>
 <td>The daily probability of an individual transitioning given the number of individuals remaining with the same property value. Required when <strong>Type</strong> is set to At_Age or At_Timestep.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Individual_Properties&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;Low&quot;</span><span class="p">,</span>
@@ -755,7 +761,7 @@ similar transitions can be configured in the campaign file as the result of camp
 <td>NA</td>
 <td>NA</td>
 <td>The number of time steps after the start of transitioning when individuals revert back to their original property value. The start of transitioning is specified by the <strong>Start</strong> parameter in <strong>Timestep_Restriction</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Individual_Properties&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Timestep_Restriction&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -776,7 +782,7 @@ similar transitions can be configured in the campaign file as the result of camp
 <td>NA</td>
 <td>NA</td>
 <td>The time step when transitioning starts and stops. Required when <strong>Type</strong> is set to either At_Age or At_Timestep. <strong>Start</strong> is required and <strong>Duration</strong> is optional.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Individual_Properties&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Timestep_Restriction&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -796,7 +802,7 @@ similar transitions can be configured in the campaign file as the result of camp
 <td>&#160;</td>
 <td>&#160;</td>
 <td>The property value an individual will transition to.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Individual_Properties&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;Bad&quot;</span><span class="p">,</span>
@@ -816,7 +822,7 @@ similar transitions can be configured in the campaign file as the result of camp
 <td>NA</td>
 <td>NA</td>
 <td>The type of condition that starts transitioning individuals. Possible values are At_Age or At_Timestep. The other parameters you must set depend on the condition type set here.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Individual_Properties&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Transitions&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;From&quot;</span><span class="p">:</span> <span class="s2">&quot;Bad&quot;</span><span class="p">,</span>
@@ -866,7 +872,7 @@ depend on values set in the configuration parameters.</p>
 <td>1</td>
 <td>0</td>
 <td>Indicates whether or not the node has an airport for air migration from (not to) the node. If set to 1, <strong>Enable_Air_Migration</strong> in the configuration file must be set to 1 or migration will not occur (see <a class="reference internal" href="parameter-configuration.html#config-migration"><span class="std std-ref">Migration</span></a> parameters). Primarily used to turn off migration in a particular node.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Airport&quot;</span><span class="p">:</span> <span class="mi">0</span>
@@ -883,7 +889,7 @@ depend on values set in the configuration parameters.</p>
 <td>3.40282e+038</td>
 <td>0</td>
 <td>The altitude, in meters, for the node. Required, but only used when <strong>Climate_Model</strong> is set to CLIMATE_KOPPEN.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Altitude&quot;</span><span class="p">:</span> <span class="mi">250</span>
@@ -900,7 +906,7 @@ depend on values set in the configuration parameters.</p>
 <td>1</td>
 <td>0.00008715</td>
 <td>The birth rate, in births per person per day. In the configuration file, <strong>Enable_Birth</strong> must be set to 1 and <strong>Birth_Rate_Dependence</strong> will affect how this rate is used (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">21</span><span class="p">,</span>
         <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -918,7 +924,7 @@ depend on values set in the configuration parameters.</p>
 <td>2.15E+0</td>
 <td>1000</td>
 <td>The number of people that will be populated into the node at the beginning of the simulation. You can scale this number using <strong>Base_Population_Scale_Factor</strong> in the configuration file (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
         <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -936,7 +942,7 @@ depend on values set in the configuration parameters.</p>
 <td>-3.40282e+038</td>
 <td>-1</td>
 <td>Latitude of the node in decimal degrees. This can be used for several things, including determining infectiousness by latitude and defining the size of grid cells.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
         <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -955,7 +961,7 @@ depend on values set in the configuration parameters.</p>
 <td>3.40282e+38</td>
 <td>-1</td>
 <td>Longitude of the node in decimal degrees. This can be used for several things, including defining the size of grid cells.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">254</span><span class="p">,</span>
         <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -974,7 +980,7 @@ depend on values set in the configuration parameters.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The structure that contains parameters that add or modify information regarding the location, migration, habitat, and population of a simulation. Some <strong>NodeAttributes</strong> depend on values set in the configuration parameters.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="p">{</span>
             <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">1487548419</span><span class="p">,</span> 
@@ -995,7 +1001,7 @@ depend on values set in the configuration parameters.</p>
 <td>1</td>
 <td>0</td>
 <td>Indicates whether or not the node has a road network for regional migration from (not to) the node. If set to 1, <strong>Enable_Regional_Migration</strong> in the configuration file must be set to 1 or migration will not occur (see <a class="reference internal" href="parameter-configuration.html#config-migration"><span class="std std-ref">Migration</span></a> parameters). Primarily used to turn off migration in particular nodes.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
          <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
          <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -1013,7 +1019,7 @@ depend on values set in the configuration parameters.</p>
 <td>1</td>
 <td>0</td>
 <td>Indicates whether or not the node is connected by sea migration from (not to) the node. If set to 1, <strong>Enable_Sea_Migration</strong> in the configuration file must be set to 1 or migration will not occur (see <a class="reference internal" href="parameter-configuration.html#config-migration"><span class="std std-ref">Migration</span></a> parameters). Primarily used to turn off migration in particular nodes.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">43</span><span class="p">,</span>
         <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -1031,7 +1037,7 @@ depend on values set in the configuration parameters.</p>
 <td>1</td>
 <td>0</td>
 <td>Indicates whether urban settings are enabled. Used only if  <strong>Enable_Demographics_Other</strong> is set to 1 and <strong>Birth_Rate_Dependence</strong> is set to INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE and required if  <strong>Enable_Demographics_Other</strong> is set to 1 in the configuration file (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Urban&quot;</span><span class="p">:</span> <span class="mi">1</span>
@@ -1048,7 +1054,7 @@ depend on values set in the configuration parameters.</p>
 <td>1</td>
 <td>0</td>
 <td>The daily rate of zoonotic infection per individual. In the configuration file, <strong>Animal_Reservoir_Type</strong> must be set to ZOONOSIS_FROM_DEMOGRAPHICS to use this value (see <a class="reference internal" href="parameter-configuration.html#config-general-disease"><span class="std std-ref">General disease</span></a> parameters).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;NodeAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Zoonosis&quot;</span><span class="p">:</span> <span class="mi">0</span>
@@ -1097,7 +1103,7 @@ distribution system.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The structure that contains parameters that add or modify the distribution of attributes across individuals in a simulation. For example, the age or immunity distribution. An initial value for an individual is a randomly selected value from a distribution. For example, if you use a uniform distribution to initialize age, the initial ages of individuals in the simulation will be evenly distributed between some minimum and maximum value.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;AgeDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -1116,7 +1122,7 @@ distribution system.</p>
 <td>1</td>
 <td>NA</td>
 <td>The percentage of individuals in the node that are children. Set <strong>Minimum_Adult_Age_Years</strong> to determine the age at which individuals transition to adults.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;NodeID&quot;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span>
         <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -1202,7 +1208,7 @@ distributed between some minimum and maximum value as defined by the other two p
 </table>
 <p class="last"><strong>Age_Initialization_Distribution_Type</strong> in the configuration file must be set to DISTRIBUTION_SIMPLE (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;AgeDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
         <span class="nt">&quot;AgeDistribution1&quot;</span><span class="p">:</span> <span class="mi">25550</span><span class="p">,</span>
@@ -1258,7 +1264,7 @@ distributed between some minimum and maximum value as defined by the other two p
 </table>
 <p class="last"><strong>Age_Initialization_Distribution_Type</strong> in the configuration file must be set to DISTRIBUTION_SIMPLE (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;AgeDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
         <span class="nt">&quot;AgeDistribution1&quot;</span><span class="p">:</span> <span class="mi">25550</span><span class="p">,</span>
@@ -1287,7 +1293,7 @@ distributed between some minimum and maximum value as defined by the other two p
 </ul>
 <p class="last"><strong>Age_Initialization_Distribution_Type</strong> in the configuration file must be set to DISTRIBUTION_SIMPLE (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;AgeDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
         <span class="nt">&quot;AgeDistribution1&quot;</span><span class="p">:</span> <span class="mi">25550</span><span class="p">,</span>
@@ -1343,7 +1349,7 @@ distributed between some minimum and maximum value as defined by the other two p
 </table>
 <p class="last">In the configuration file, <strong>Enable_Demographics_Other</strong> must be set to true (1) and <strong>Immunity_Initialization_Distribution_Type</strong> must be set to DISTRIBUTION_SIMPLE (see <a class="reference internal" href="parameter-configuration.html#config-immunity"><span class="std std-ref">Immunity</span></a> parameters).</p>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
         <span class="nt">&quot;ImmunityDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
         <span class="nt">&quot;ImmunityDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
@@ -1399,7 +1405,7 @@ distributed between some minimum and maximum value as defined by the other two p
 </table>
 <p class="last">In the configuration file, <strong>Enable_Demographics_Other</strong> must be set to true (1) and <strong>Immunity_Initialization_Distribution_Type</strong> must be set to DISTRIBUTION_SIMPLE (see <a class="reference internal" href="parameter-configuration.html#config-immunity"><span class="std std-ref">Immunity</span></a> parameters).</p>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
         <span class="nt">&quot;ImmunityDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
         <span class="nt">&quot;ImmunityDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
@@ -1428,7 +1434,7 @@ distributed between some minimum and maximum value as defined by the other two p
 </ul>
 <p class="last">In the configuration file, <strong>Enable_Demographics_Other</strong> must be set to true (1) and  <strong>Immunity_Initialization_Distribution_Type</strong> must be set to DISTRIBUTION_SIMPLE (see <a class="reference internal" href="parameter-configuration.html#config-immunity"><span class="std std-ref">Immunity</span></a> parameters).</p>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
         <span class="nt">&quot;ImmunityDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
         <span class="nt">&quot;ImmunityDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
@@ -1484,7 +1490,7 @@ distributed between some minimum and maximum value as defined by the other two p
 </table>
 <p class="last"><strong>Enable_Migration_Heterogeneity</strong> in the configuration file must be set to 1 (see <a class="reference internal" href="parameter-configuration.html#config-migration"><span class="std std-ref">Migration</span></a> parameters).</p>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;MigrationHeterogeneityDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
         <span class="nt">&quot;MigrationHeterogeneityDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
@@ -1540,7 +1546,7 @@ distributed between some minimum and maximum value as defined by the other two p
 </table>
 <p class="last"><strong>Enable_Migration_Heterogeneity</strong> in the configuration file must be set to 1 (see <a class="reference internal" href="parameter-configuration.html#config-migration"><span class="std std-ref">Migration</span></a> parameters).</p>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;MigrationHeterogeneityDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
         <span class="nt">&quot;MigrationHeterogeneityDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
@@ -1569,7 +1575,7 @@ distributed between some minimum and maximum value as defined by the other two p
 </ul>
 <p class="last"><strong>Enable_Migration_Heterogeneity</strong> in the configuration file must be set to 1 (see <a class="reference internal" href="parameter-configuration.html#config-migration"><span class="std std-ref">Migration</span></a> parameters).</p>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;MigrationHeterogeneityDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
         <span class="nt">&quot;MigrationHeterogeneityDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
@@ -1625,7 +1631,7 @@ distributed between some minimum and maximum value as defined by the other two p
 </table>
 <p class="last"><strong>Enable_Demographics_Other</strong> must be set to 1 in the configuration file (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
         <span class="nt">&quot;PrevalenceDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
         <span class="nt">&quot;PrevalenceDistribution1&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> 
@@ -1681,7 +1687,7 @@ distributed between some minimum and maximum value as defined by the other two p
 </table>
 <p class="last"><strong>Enable_Demographics_Other</strong> must be set to 1 in the configuration file (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
         <span class="nt">&quot;PrevalenceDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
         <span class="nt">&quot;PrevalenceDistribution1&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> 
@@ -1710,7 +1716,7 @@ distributed between some minimum and maximum value as defined by the other two p
 </ul>
 <p class="last"><strong>Enable_Demographics_Other</strong> must be set to 1 in the configuration file (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
         <span class="nt">&quot;PrevalenceDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
         <span class="nt">&quot;PrevalenceDistribution1&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> 
@@ -1766,7 +1772,7 @@ distributed between some minimum and maximum value as defined by the other two p
 </table>
 <p class="last"><strong>Enable_Demographics_Other</strong> must be set to 1 in the configuration file (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
         <span class="nt">&quot;RiskDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
         <span class="nt">&quot;RiskDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
@@ -1822,7 +1828,7 @@ distributed between some minimum and maximum value as defined by the other two p
 </table>
 <p class="last"><strong>Enable_Demographics_Other</strong> must be set to 1 in the configuration file (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
         <span class="nt">&quot;RiskDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
         <span class="nt">&quot;RiskDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
@@ -1851,7 +1857,7 @@ distributed between some minimum and maximum value as defined by the other two p
 </ul>
 <p class="last"><strong>Enable_Demographics_Other</strong> must be set to 1 (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</p>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span> 
         <span class="nt">&quot;RiskDistributionFlag&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
         <span class="nt">&quot;RiskDistribution1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
@@ -1900,7 +1906,7 @@ different groups in the population.</p>
 <td>NA</td>
 <td>The structure defining a complex age distribution. <strong>Age_Initialization_Distribution_Type</strong> in the configuration file must be set to DISTRIBUTION_COMPLEX.</td>
 <td><p class="first">The following example shows at age distribution in which 25% of individuals are under age 5, 50% are between 5 and 20, and 25% are between 20 and 35.</p>
-<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;AgeDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;ResultUnits&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span>
@@ -1940,7 +1946,7 @@ different groups in the population.</p>
 <dd>No axes.</dd>
 </dl>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">],</span>
@@ -1970,7 +1976,7 @@ different groups in the population.</p>
 <td>-3.40282e+038</td>
 <td>1</td>
 <td>A list of the scale factors used to convert axis units to data measurements in a complex distribution. For example, 365 to convert daily mortality to annual mortality. The array must contain one factor for each axis.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">],</span>
@@ -2000,7 +2006,7 @@ different groups in the population.</p>
 <td>3.40E+3</td>
 <td>1</td>
 <td>An array of the scale factors to use to convert the units used for the axes into days. EMOD does not use this value; it is only informational.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">],</span> 
@@ -2020,7 +2026,7 @@ different groups in the population.</p>
 <td>1</td>
 <td>An array of values between 0 and 1 listed in ascending order that defines a complex age distribution. Each value represents the proportion of the population below that age and the difference between two successive values is the proportion of the population in the age bin defined in <strong>ResultValues</strong>. <strong>Age_Initialization_Distribution_Type</strong> in the configuration file must be set to DISTRIBUTION_COMPLEX (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</td>
 <td><p class="first">The following example shows at age distribution in which 25% of individuals are under age 5, 50% are between 5 and 20, and 25% are between 20 and 35.</p>
-<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;AgeDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;ResultUnits&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span> 
@@ -2041,7 +2047,7 @@ different groups in the population.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The distribution of the fertility rate in the population. <strong>Enable_Birth</strong> in the configuration file must be set to 1 (see <a class="reference internal" href="parameter-configuration.html#config-population"><span class="std std-ref">Population dynamics</span></a> parameters).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;FertilityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;NumDistributionAxes&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
@@ -2072,7 +2078,7 @@ different groups in the population.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The structure defining a complex immunity distribution. <strong>Immunity_Initialization_Distribution_Type</strong> in the configuration file must be set to DISTRIBUTION_COMPLEX (see <a class="reference internal" href="parameter-configuration.html#config-immunity"><span class="std std-ref">Immunity</span></a> parameters).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;ImmunityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">],</span>
@@ -2104,7 +2110,7 @@ different groups in the population.</p>
 <p class="last">Mortality is sampled every 30 days. To correctly attribute neonatal deaths to days 0-30, you must indicate that the threshold for the first age group in <strong>PopulationGroups</strong> is less than 30 days.</p>
 </div>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -2147,7 +2153,7 @@ different groups in the population.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The number of axes to use for a complex distribution. EMOD does not use this value; it is only informational.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;NumDistributionAxes&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
@@ -2166,7 +2172,7 @@ different groups in the population.</p>
 <td>NA</td>
 <td>NA</td>
 <td>An array of population groupings for each independent variable for a complex distribution. This variable defines the number of columns for each row in the population group table. The number of values in the array is often two, representing the values for gender and number of age bins. EMOD does not use this value; it is only informational.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">],</span>
@@ -2202,7 +2208,7 @@ different groups in the population.</p>
 </div>
 </td>
 <td><p class="first">The following example configures relatively high infant mortality and lower mortality at ages 10 and 40, with everyone dead by age 120.</p>
-<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">],</span>
@@ -2232,7 +2238,7 @@ different groups in the population.</p>
 <td>3.40282e+038</td>
 <td>1</td>
 <td>The scale factor used to convert <strong>ResultUnits</strong> to number of births, deaths, or another variable per individual per day.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;AgeDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;AxisScaleFactors&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> 
@@ -2259,7 +2265,7 @@ different groups in the population.</p>
 <td>NA</td>
 <td>NA</td>
 <td>A string that indicates the units used for the Results parameters of a complex distribution. EMOD does not use this value; it is only informational.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;NumPopulationGroups&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
@@ -2290,7 +2296,7 @@ different groups in the population.</p>
 <p class="last">For all other distributions, an array in which each row represents the values for a combination of axes. For example, a mortality distribution that includes both gender and age axes will have a row for males and a row for females that each contain the mortality rate at various ages set in <strong>PopulationGroups</strong>.</p>
 </td>
 <td><p class="first">The following example shows an age distribution in which 10% of individuals are newborn, 25% are under age 5, 50% are between 5 and 20, and 25% are between 20 and 35.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;AgeDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;DistributionValues&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
@@ -2301,7 +2307,7 @@ different groups in the population.</p>
 </pre></div>
 </div>
 <p>The following example configures relatively high infant mortality and lower mortality at ages 10 and 40, with everyone dead by age 120.</p>
-<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;IndividualAttributes&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;MortalityDistribution&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;AxisNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">],</span>
@@ -2369,7 +2375,7 @@ used across all relationship types.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The structure that defines basic relationship, pair formation, and concurrency parameters for transactional relationships involving commercial sex work (CSW).</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;COMMERCIAL&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Relationship_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -2403,7 +2409,7 @@ used across all relationship types.</p>
 <td>NA</td>
 <td>The structure that determines how concurrent relationships are formed, for <em>all</em> relationship types. To apply to all individuals regardless of individual property values, nest parameters under NONE. To apply only to individuals with certain property values, nest parameters under the property value.</td>
 <td><p class="first">The following example sets extra-relational flags independently to everyone regardless of individual properties.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Concurrency_Configuration&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Probability_Person_Is_Behavioral_Super_Spreader&quot;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -2418,7 +2424,7 @@ used across all relationship types.</p>
 </pre></div>
 </div>
 <p>The following example sets different extra-relational flag types to low-risk and high-risk groups.</p>
-<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Concurrency_Configuration&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Individual_Property_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Risk&quot;</span><span class="p">,</span>
@@ -2443,7 +2449,7 @@ used across all relationship types.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The structure that defines basic relationship, pair formation, and concurrency parameters for longer-term non-marital relationships.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;INFORMAL&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Relationship_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -2476,7 +2482,7 @@ used across all relationship types.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The structure that defines basic relationship, pair formation, and concurrency parameters for marital relationships.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;MARITAL&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Relationship_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -2522,7 +2528,7 @@ used across all relationship types.</p>
 <dd>All parameters for transactional relationships involving commercial sex work (CSW).</dd>
 </dl>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Concurrency_Configuration&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;NONE&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -2564,7 +2570,7 @@ used across all relationship types.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The structure that defines basic relationship, pair formation, and concurrency parameters for brief relationships lasting one night, weekend, or week.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Relationship_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -2626,7 +2632,7 @@ partnerships are distributed.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The relationship types listed in order of the correlated probabilities. The array must contain all relationship types and <strong>Extra_Relational_Flag_Type</strong> must be set to Correlated.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Concurrency_Configuration&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;NONE&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -2650,7 +2656,7 @@ partnerships are distributed.</p>
 <p class="last">The probability of receiving a flag is defined in <strong>Prob_Extra_Relationship_Male</strong> and <strong>Prob_Extra_Relationship_Female</strong> in <a class="reference internal" href="#demo-concurrency-param"><span class="std std-ref">Concurrency_Parameters</span></a>.</p>
 </td>
 <td><p class="first">In the following example, the extra-transitory flag is randomly distributed, the extra-informal flag is provided only to those who possess the extra-transitory flag, and so on.</p>
-<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Concurrency_Configuration&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;NONE&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -2670,7 +2676,7 @@ partnerships are distributed.</p>
 <td>1</td>
 <td>0.001</td>
 <td>The probability that an individual is a behavioral super spreader, where they are allowed multiple relationships of all types.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Social&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Concurrency_Configuration&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Probability_Person_Is_Behavioral_Super_Spreader&quot;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span>
@@ -2719,7 +2725,7 @@ happens if one member of a relationship migrates, and condom usage.</p>
 <td>20</td>
 <td>0.33</td>
 <td>The probability of a coital act occurring at each time step.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Relationship_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -2749,7 +2755,7 @@ happens if one member of a relationship migrates, and condom usage.</p>
 <dd>The rate proportional to the slope at the inflection point (-100 to 100, default is 1).</dd>
 </dl>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span> <span class="p">:{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Relationship_Parameters&quot;</span> <span class="p">:</span> <span class="p">{</span> 
@@ -2773,7 +2779,7 @@ happens if one member of a relationship migrates, and condom usage.</p>
 <td>100</td>
 <td>1</td>
 <td>Inverse of the Weibull shape (1/kappa) parameter of relationship duration in years.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Relationship_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -2793,7 +2799,7 @@ happens if one member of a relationship migrates, and condom usage.</p>
 <td>3.40282e+038</td>
 <td>1</td>
 <td>Weibull scale parameter of relationship duration in years.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Relationship_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -2822,7 +2828,7 @@ happens if one member of a relationship migrates, and condom usage.</p>
 <dd>Partners in the relationship migrate simultaneously and continue the relationship. Person migrating tells their partner to cancel all of their relationships and migrate during the current time step. This avoids a cascade of people migration.</dd>
 </dl>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span> <span class="p">:{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Relationship_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -2842,7 +2848,7 @@ happens if one member of a relationship migrates, and condom usage.</p>
 <td>1</td>
 <td>NA</td>
 <td>A list of the proportion of relationships that take a given action when one member of the relationship migrates. The sum of all values must be 1 and the order of the list corresponds to the order in <strong>Migration_Actions</strong>. <strong>Migration_Model</strong> in the configuration file must be set to FIXED_RATE_MIGRATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span> <span class="p">:{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Relationship_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -2862,7 +2868,7 @@ happens if one member of a relationship migrates, and condom usage.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The structure that determines basic aspects of the relationship, such as duration, condom usage, or how to handle migration.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Relationship_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -2911,7 +2917,7 @@ partners based on their age and the <strong>Joint_Probabilities</strong> matrix.
 <td>100</td>
 <td>1</td>
 <td>The maximum age for the first age bin when dividing the female population into age bins for pair formation.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Pair_Formation_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -2933,7 +2939,7 @@ partners based on their age and the <strong>Joint_Probabilities</strong> matrix.
 <td>100</td>
 <td>1</td>
 <td>The maximum age for the first age bin when dividing the male population into age bins for pair formation.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Pair_Formation_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -2955,7 +2961,7 @@ partners based on their age and the <strong>Joint_Probabilities</strong> matrix.
 <td>NA</td>
 <td>NA</td>
 <td>The object that defines how people will preferentially form pairs based on their membership in different groups.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Pair_Formation_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -2991,7 +2997,7 @@ partners based on their age and the <strong>Joint_Probabilities</strong> matrix.
 <td>3.40282e+038</td>
 <td>1</td>
 <td>For women, the rate ratio for having extra-relational sex for this relationship type, where the ratio is the event over the period of time defined in <strong>Update_Period</strong>.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;INFORMAL&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Pair_Formation_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -3012,7 +3018,7 @@ partners based on their age and the <strong>Joint_Probabilities</strong> matrix.
 <td>1</td>
 <td>0.001</td>
 <td>If <strong>Formation_Rate_Type</strong> is set to CONSTANT, the number of new relationships per day for this relationship type.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span> <span class="p">:{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Pair_Formation_Parameters&quot;</span> <span class="p">:</span> <span class="p">{</span>
@@ -3034,7 +3040,7 @@ partners based on their age and the <strong>Joint_Probabilities</strong> matrix.
 <td>NA</td>
 <td>NA</td>
 <td>The structure that contains two arrays of floats specifying <strong>Times</strong> and <strong>Values</strong> arrays that will be interpolated to provide the formation rate when <strong>Formation_Rate_Type</strong> is set to INTERPOLATED_VALUES. The years listed in <strong>Times</strong> must be in ascending order; the first year must be prior to the current year and if the last year is prior to the current year, the last value in <strong>Values</strong> will be used for the formation rate.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;INFORMAL&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Pair_Formation_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -3068,7 +3074,7 @@ partners based on their age and the <strong>Joint_Probabilities</strong> matrix.
 <dd>The rate proportional to the slope at the inflection point (-100 to 100, default 1).</dd>
 </dl>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;INFORMAL&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Pair_Formation_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -3093,7 +3099,7 @@ partners based on their age and the <strong>Joint_Probabilities</strong> matrix.
 <td>3.40282e+038,</td>
 <td>0</td>
 <td>The relative preference of members of one age bin to form relationships with members of another age bin. The columns represent female bins and rows represent male bins.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;INFORMAL&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Pair_Formation_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -3124,7 +3130,7 @@ partners based on their age and the <strong>Joint_Probabilities</strong> matrix.
 <td>1000</td>
 <td>1</td>
 <td>The number of age bins to divide the female population into for pair formation.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;INFORMAL&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Pair_Formation_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -3155,7 +3161,7 @@ partners based on their age and the <strong>Joint_Probabilities</strong> matrix.
 <td>1000</td>
 <td>1</td>
 <td>The number of age bins to divide the male population into for pair formation.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;INFORMAL&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Pair_Formation_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -3186,7 +3192,7 @@ partners based on their age and the <strong>Joint_Probabilities</strong> matrix.
 <td>100</td>
 <td>1</td>
 <td>For the female population, the number of years covered in each age bin.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;INFORMAL&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Pair_Formation_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -3217,7 +3223,7 @@ partners based on their age and the <strong>Joint_Probabilities</strong> matrix.
 <td>100</td>
 <td>1</td>
 <td>For the male population, the number of years covered in each age bin.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;INFORMAL&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Pair_Formation_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -3276,7 +3282,7 @@ based on other criteria.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The axes defined in <strong>Group</strong> to use for the weighting matrix for pair formation. The order of the array defines the order of the weighting matrix.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Pair_Formation_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -3331,7 +3337,7 @@ based on other criteria.</p>
 <dd>Pair with someone who has received similar HIV test results (UNKNOWN, POSITIVE, NEGATIVE axes).</dd>
 </dl>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Pair_Formation_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -3367,7 +3373,7 @@ based on other criteria.</p>
 <td>NA</td>
 <td>NA</td>
 <td>If <strong>Group</strong> is set to INDIVIDUAL_PROPERTY, the name of the individual property as defined in the <strong>IndividualProperties</strong> section.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Pair_Formation_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -3410,7 +3416,7 @@ based on other criteria.</p>
 <li>HIV_RECEIVED_RESULTS_STATUS</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Pair_Formation_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -3439,7 +3445,7 @@ based on other criteria.</p>
 <td>0</td>
 <td>The weights to apply to pair formation rates for individuals belonging to the groups defined in <strong>Axes</strong>. Rows are indexed by the male attribute and columns by the female attribute as defined in <strong>Axes</strong>.&nbsp; A single row or column cannot be all zeros.&nbsp; The matrix must be square with the number of dimensions defined by the number of entries in <strong>Axes</strong>.</td>
 <td><p class="first">The following example shows that males who are negative for STI coinfection are 3 times more likely to form relationships with females who are negative and, likewise, individuals positive for STI coinfection are more likely to form relationships with others of the same status.</p>
-<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Pair_Formation_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -3505,7 +3511,7 @@ use “NONE”.</p>
 <td>NA</td>
 <td>The structure that determines how concurrent relationships are formed, for a <em>specific</em> relationship type. This parameter is nested under a parameter for one of the supported relationship types. To apply to all individuals regardless of individual property values, nest parameters under NONE. To apply only to individuals with certain property values, nest parameters under the property value as set in <strong>Concurrency_Configuration</strong>.</td>
 <td><p class="first">The following example sets concurrency for transitory relationships regardless of individual properties.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;TRANSITORY&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Concurrency_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -3530,7 +3536,7 @@ use “NONE”.</p>
 <td>63</td>
 <td>1</td>
 <td>For females, the maximum number of concurrent relationships. The individual sets the value at initialization and whenever they change relationship type.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;INFORMAL&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Concurrency_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -3554,7 +3560,7 @@ use “NONE”.</p>
 <td>63</td>
 <td>1</td>
 <td>For males, the maximum number of concurrent relationships.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;INFORMAL&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Concurrency_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -3578,7 +3584,7 @@ use “NONE”.</p>
 <td>1</td>
 <td>0</td>
 <td>The probability of a female receiving a flag that allows her to seek additional relationships while currently in another relationship.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Concurrency_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;NONE&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -3600,7 +3606,7 @@ use “NONE”.</p>
 <td>1</td>
 <td>0</td>
 <td>The probability of a male receiving a flag that allows him to seek additional relationships while currently in another relationship.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Society&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Concurrency_Parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;NONE&quot;</span><span class="p">:</span> <span class="p">{</span>

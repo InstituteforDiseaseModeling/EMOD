@@ -228,6 +228,18 @@
            <div itemprop="articleBody">
             
 <!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "http://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
 
   <div class="section" id="modifysticoinfectionstatus">
 <h1>ModifyStiCoInfectionStatus<a class="headerlink" href="#modifysticoinfectionstatus" title="Permalink to this headline">¶</a></h1>
@@ -267,7 +279,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>0</td>
 <td>Determines whether to apply STI co-infection, or cure/remove STI co-infection. Set to true (1) to include co-infection; set to false (0) to remove co-infection.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;ModifyStiCoInfectionStatus&quot;</span><span class="p">,</span>
         <span class="nt">&quot;New_STI_CoInfection_Status&quot;</span><span class="p">:</span> <span class="mi">1</span>
@@ -279,7 +291,7 @@ example that follows shows one potential configuration.</p>
 </tr>
 </tbody>
 </table>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;HIV Outbreak via Prevalence Increase&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[</span>

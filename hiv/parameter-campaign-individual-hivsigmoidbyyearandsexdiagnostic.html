@@ -228,6 +228,18 @@
            <div itemprop="articleBody">
             
 <!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "http://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
 
   <div class="section" id="hivsigmoidbyyearandsexdiagnostic">
 <h1>HIVSigmoidByYearAndSexDiagnostic<a class="headerlink" href="#hivsigmoidbyyearandsexdiagnostic" title="Permalink to this headline">¶</a></h1>
@@ -267,7 +279,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>1</td>
 <td>Allows for the sigmoid time-varying probability to be different for males and females, by multiplying the female probability by a constant value.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Female_Multiplier&quot;</span><span class="p">:</span> <span class="mf">1.3</span>
 <span class="p">}</span>
 </pre></div>
@@ -280,7 +292,7 @@ example that follows shows one potential configuration.</p>
 <td>1</td>
 <td>1</td>
 <td>The right asymptote for the sigmoid trend over time.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Ramp_Min&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
     <span class="nt">&quot;Ramp_Max&quot;</span><span class="p">:</span> <span class="mf">0.60</span><span class="p">,</span>
     <span class="nt">&quot;Ramp_MidYear&quot;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>
@@ -296,7 +308,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>2000</td>
 <td>The time of the infection point in the sigmoid trend over time.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Ramp_Min&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
     <span class="nt">&quot;Ramp_Max&quot;</span><span class="p">:</span> <span class="mf">0.60</span><span class="p">,</span>
     <span class="nt">&quot;Ramp_MidYear&quot;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>
@@ -312,7 +324,7 @@ example that follows shows one potential configuration.</p>
 <td>1</td>
 <td>1</td>
 <td>The left asymptote for the sigmoid trend over time.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Ramp_Min&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
     <span class="nt">&quot;Ramp_Max&quot;</span><span class="p">:</span> <span class="mf">0.60</span><span class="p">,</span>
     <span class="nt">&quot;Ramp_MidYear&quot;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>
@@ -328,7 +340,7 @@ example that follows shows one potential configuration.</p>
 <td>1</td>
 <td>1</td>
 <td>The slope of the inflection point in the sigmoid trend over time. A Rate of 1 sets the slope to a 25% change in probability per year.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Ramp_Min&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
     <span class="nt">&quot;Ramp_Max&quot;</span><span class="p">:</span> <span class="mf">0.60</span><span class="p">,</span>
     <span class="nt">&quot;Ramp_MidYear&quot;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>
@@ -344,7 +356,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The years (times) and matching probabilities for test results. This parameter uses InterpolatedValueMap to define <strong>Times</strong> (by year) and <strong>Values</strong> for the history and expected treatment guidelines for future years. This creates a JSON structure containing one array of <strong>Times</strong> and one for <strong>Values</strong>, which allows for a time-variable probability that can take on any shape over time. When queried at a simulation year corresponding to one of the listed <strong>Times</strong>, it returns the corresponding <strong>Value</strong>. When queried earlier than the first listed <strong>Time</strong>, it returns the default <strong>Value</strong>. When queried in between listed <strong>Times</strong>, it either returns the <strong>Value</strong> for the most recent past time (when Interpolation_Order is 0) or linearly interpolates Values between <strong>Times</strong> (when Interpolation_Order is 1). When queried after the last <strong>Time</strong> in the list, it returns the last <strong>Value</strong>. The <strong>Times</strong> and <strong>Values</strong> must be of equal length, and can consist of a single value. <strong>Times</strong> must monotonically increase.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Time_Value_Map&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Times&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1998</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">2003</span><span class="p">,</span> <span class="mi">2006</span><span class="p">,</span> <span class="mi">2009</span><span class="p">],</span>
         <span class="nt">&quot;Values&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -366,7 +378,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NoTrigger</td>
 <td>If an individual tests negative, this specifies an event that may trigger another intervention when the event occurs. Only used when <strong>Event_Or_Config</strong> is set to Event. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Negative_Diagnosis_Event&quot;</span><span class="p">:</span> <span class="s2">&quot;PreDebut&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -379,7 +391,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The intervention distributed to individuals if they test positive. Only used when <strong>Event_Or_Config</strong> is set to Config.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Positive_Diagnosis_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;MultiInterventionDistributor&quot;</span><span class="p">,</span>
         <span class="nt">&quot;Intervention_List&quot;</span><span class="p">:</span> <span class="p">[{</span>
@@ -406,7 +418,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>No_Trigger</td>
 <td>If the test is positive, this specifies an event that can trigger another intervention when the event occurs. Only used if <strong>Event_Or_Config</strong> is set to Event. See <a class="reference internal" href="parameter-campaign-event-list.html"><span class="doc">Event list</span></a> for possible values.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Base_Sensitivity&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="nt">&quot;Base_Specificity&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -434,7 +446,7 @@ Possible values are:</p>
 <li>Config</li>
 </ul>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Event_Or_Config&quot;</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -448,7 +460,7 @@ Possible values are:</p>
 <td>1</td>
 <td>The sensitivity of the diagnostic. This sets the proportion of the time that individuals with the condition being tested receive a positive diagnostic test.
 When set to 1, the diagnostic always accurately reflects the condition. When set to zero, then individuals who have the condition always receive a false-negative diagnostic test.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Base_Sensitivity&quot;</span><span class="p">:</span> <span class="mf">0.8</span>
 <span class="p">}</span>
 </pre></div>
@@ -461,7 +473,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>1</td>
 <td>1</td>
 <td>The specificity of the diagnostic. This sets the proportion of the time that individuals without the condition being tested receive a negative diagnostic test. When set to 1, the diagnostic always accurately reflects the lack of having the condition. When set to zero, then individuals who do not have the condition always receive a false-positive diagnostic test.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Base_Specificity&quot;</span><span class="p">:</span> <span class="mf">0.9</span>
 <span class="p">}</span>
 </pre></div>
@@ -474,7 +486,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>3.40E+3</td>
 <td>1</td>
 <td>The unit ‘cost’ assigned to the diagnostic. Setting <strong>Cost_To_Consumer</strong> to zero for all other interventions, and to a non-zero amount for one intervention, provides a convenient way to track the number of times the intervention has been applied in a simulation.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Cost_To_Consumer&quot;</span><span class="p">:</span> <span class="mf">0.333</span>
 <span class="p">}</span>
 </pre></div>
@@ -487,7 +499,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>3.40E+3</td>
 <td>0</td>
 <td>The number of days from test until diagnosis.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Days_To_Diagnosis&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
 <span class="p">}</span>
 </pre></div>
@@ -500,7 +512,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>1</td>
 <td>1</td>
 <td>The fraction of positive diagnoses that are treated.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Base_Sensitivity&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="nt">&quot;Base_Specificity&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -522,7 +534,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>NA</td>
 <td>0</td>
 <td>If an individual’s container has an intervention, set to true (1) to prevent them from receiving another copy of the intervention. Supported by all intervention classes.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Dont_Allow_Duplicates&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
 </pre></div>
@@ -535,7 +547,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>NA</td>
 <td>NA</td>
 <td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
     <span class="p">]</span>
@@ -550,7 +562,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>NA</td>
 <td>NA</td>
 <td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -563,7 +575,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 <td>NA</td>
 <td>NA</td>
 <td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -572,7 +584,7 @@ When set to 1, the diagnostic always accurately reflects the condition. When set
 </tr>
 </tbody>
 </table>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;1d_MaleCircumcision_at_Age_18&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Default_Campaign_Path&quot;</span><span class="p">:</span> <span class="s2">&quot;defaults/hiv_default_campaign.json&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>

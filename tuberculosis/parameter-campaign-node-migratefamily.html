@@ -196,6 +196,18 @@
            <div itemprop="articleBody">
             
 <!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/tuberculosis/";
+        var newBase = "http://www.idmod.org/docs/tuberculosis/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
 
   <div class="section" id="migratefamily">
 <h1>MigrateFamily<a class="headerlink" href="#migratefamily" title="Permalink to this headline">¶</a></h1>
@@ -235,7 +247,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>6</td>
 <td>The period (1/rate) to use for an exponential distribution for the amount of time spent at the destination node when <strong>Duration_At_Node_Distribution_Type</strong> is set to EXPONENTIAL_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration_At_Node_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;EXPONENTIAL_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Duration_At_Node_Exponential_Period&quot;</span><span class="p">:</span> <span class="mi">4</span>
 <span class="p">}</span>
@@ -249,7 +261,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>6</td>
 <td>The value to use for a fixed distribution for the amount of time spent at the destination node when <strong>Duration_At_Node_Distribution_Type</strong> is set to FIXED_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration_At_Node_Distribution_Type&quot;</span> <span class="p">:</span> <span class="s2">&quot;FIXED_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Duration_At_Node_Fixed&quot;</span><span class="p">:</span> <span class="mi">10</span>
 <span class="p">}</span>
@@ -263,7 +275,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>6</td>
 <td>The mean value to use for a Gaussian distribution for the amount of time spent at the destination node when <strong>Duration_At_Node_Distribution_Type</strong> is set to GAUSSIAN_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration_At_Node_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Duration_At_Node_Gausian_Mean&quot;</span><span class="p">:</span> <span class="mf">9.0</span><span class="p">,</span>
     <span class="nt">&quot;Duration_At_Node_Gausian_StdDev&quot;</span><span class="p">:</span> <span class="mf">2.0</span>
@@ -278,7 +290,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>1</td>
 <td>The standard deviation to use for a Gaussian distribution for the amount of time spent at the destination node when <strong>Duration_At_Node_Distribution_Type</strong> is set to GAUSSIAN_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration_At_Node_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Duration_At_Node_Gausian_Mean&quot;</span><span class="p">:</span> <span class="mf">9.0</span><span class="p">,</span>
     <span class="nt">&quot;Duration_At_Node_Gausian_StdDev&quot;</span><span class="p">:</span> <span class="mf">2.0</span>
@@ -293,7 +305,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>6</td>
 <td>The mean to use for a Poisson distribution for the amount of time spent at the destination node when <strong>Duration_At_Node_Distribution_Type</strong> is set to POISSON_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration_At_Node_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;POISSON_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Duration_At_Node_Poisson_Mean&quot;</span><span class="p">:</span> <span class="mi">4</span>
 <span class="p">}</span>
@@ -334,7 +346,7 @@ example that follows shows one potential configuration.</p>
 <dd>The duration is two exponential distributions with given means.</dd>
 </dl>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration_At_Node_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DURATION&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -347,7 +359,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>0</td>
 <td>The maximum value to use for a uniform distribution for the amount of time spent at the destination node when <strong>Duration_At_Node_Distribution_Type</strong> is set to UNIFORM_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration_At_Node_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Duration_At_Node_Uniform_Max&quot;</span><span class="p">:</span> <span class="mi">75</span><span class="p">,</span>
     <span class="nt">&quot;Duration_At_Node_Uniform_Min&quot;</span><span class="p">:</span> <span class="mi">45</span>
@@ -362,7 +374,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>0</td>
 <td>The minimum value to use for a uniform distribution for the amount of time spent at the destination node when <strong>Duration_At_Node_Distribution_Type</strong> is set to UNIFORM_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration_At_Node_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Duration_At_Node_Uniform_Max&quot;</span><span class="p">:</span> <span class="mi">75</span><span class="p">,</span>
     <span class="nt">&quot;Duration_At_Node_Uniform_Min&quot;</span><span class="p">:</span> <span class="mi">45</span>
@@ -377,7 +389,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>6</td>
 <td>The period (1/rate) to use for an exponential distribution of the number of days to wait before migrating to the destination node when <strong>Duration_Before_Leaving_Distribution_Type</strong> is set to EXPONENTIAL_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration_Before_Leaving_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;EXPONENTIAL_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Duration_Before_Leaving_Exponential_Period&quot;</span><span class="p">:</span> <span class="mi">4</span>
 <span class="p">}</span>
@@ -391,7 +403,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>6</td>
 <td>The value to use for a fixed distribution of the number of days to wait before migrating to the destination node when <strong>Duration_Before_Leaving_Distribution_Type</strong> is set to FIXED_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration_Before_Leaving_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;FIXED_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Duration_Before_Leaving_Fixed&quot;</span><span class="p">:</span> <span class="mi">4</span>
 <span class="p">}</span>
@@ -405,7 +417,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>6</td>
 <td>The mean value to use for a Gaussian distribution of the number of days to wait before migrating to the destination node when <strong>Duration_Before_Leaving_Distribution_Type</strong> is set to GAUSSIAN_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration_Before_Leaving_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Duration_Before_Leaving_Gausian_Mean&quot;</span><span class="p">:</span> <span class="mf">9.0</span><span class="p">,</span>
     <span class="nt">&quot;Duration_Before_Leaving_Gausian_StdDev&quot;</span><span class="p">:</span> <span class="mf">2.0</span>
@@ -420,7 +432,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>1</td>
 <td>The standard deviation to use for a Gaussian distribution of the number of days to wait before migrating to the destination node when <strong>Duration_Before_Leaving_Distribution_Type</strong> is set to GAUSSIAN_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration_Before_Leaving_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;GAUSSIAN_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Duration_Before_Leaving_Gausian_Mean&quot;</span><span class="p">:</span> <span class="mf">9.0</span><span class="p">,</span>
     <span class="nt">&quot;Duration_Before_Leaving_Gausian_StdDev&quot;</span><span class="p">:</span> <span class="mf">2.0</span>
@@ -435,7 +447,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>6</td>
 <td>The mean to use for a Poisson distribution of the number of days to wait before migrating to the destination node when <strong>Duration_Before_Leaving_Distribution_Type</strong> is set to POISSON_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration_Before_Leaving_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;POISSON_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Duration_Before_Leaving_Poisson_Mean&quot;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span>
 <span class="p">}</span>
@@ -476,7 +488,7 @@ example that follows shows one potential configuration.</p>
 <dd>The duration is two exponential distributions with given means.</dd>
 </dl>
 </td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration_Before_Leaving_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;FIXED_DURATION&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -489,7 +501,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>0</td>
 <td>The maximum value to use for a uniform distribution of the number of days to wait before migrating to the destination node when <strong>Duration_Before_Leaving_Distribution_Type</strong> is set to UNIFORM_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration_Before_Leaving_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Duration_Before_Leaving_Uniform_Max&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
     <span class="nt">&quot;Duration_Before_Leaving_Uniform_Min&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -504,7 +516,7 @@ example that follows shows one potential configuration.</p>
 <td>3.40E+3</td>
 <td>0</td>
 <td>The minimum value to use for a uniform distribution of the number of days to wait before migrating to the destination node when <strong>Duration_Before_Leaving_Distribution_Type</strong> is set to UNIFORM_DURATION.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Duration_Before_Leaving_Distribution_Type&quot;</span><span class="p">:</span> <span class="s2">&quot;UNIFORM_DURATION&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Duration_Before_Leaving_Uniform_Max&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
     <span class="nt">&quot;Duration_Before_Leaving_Uniform_Min&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -519,7 +531,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>0</td>
 <td>Set to true (1) to indicate the individual is permanently moving to a new home node for intervention-based migration.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Is_Moving&quot;</span><span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
 </pre></div>
@@ -532,7 +544,7 @@ example that follows shows one potential configuration.</p>
 <td>2.15E+0</td>
 <td>0</td>
 <td>The destination node ID for intervention-based migration.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;NodeID_To_Migrate_To&quot;</span><span class="p">:</span> <span class="mi">26</span>
 <span class="p">}</span>
 </pre></div>
@@ -545,7 +557,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>A list of <strong>IndividualProperty</strong> key:value pairs that cause an intervention to be aborted (persistent interventions will stop being distributed to individuals with these values). See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to control the flow of health care access. For example, to prevent the same individual from accessing health care via two different routes at the same time.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Disqualifying_Properties&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;InterventionStatus:LostForever&quot;</span>
     <span class="p">]</span>
@@ -560,7 +572,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>The optional name used to refer to this intervention as a means to differentiate it from others that use the same class.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Intervention_Name&quot;</span><span class="p">:</span><span class="s2">&quot;Diagnostic_Sample&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -573,7 +585,7 @@ example that follows shows one potential configuration.</p>
 <td>NA</td>
 <td>NA</td>
 <td>An optional <strong>IndividualProperty</strong> key:value pair that will be assigned when the intervention is distributed. See <a class="reference internal" href="parameter-demographics.html#demo-properties"><span class="std std-ref">NodeProperties and IndividualProperties</span></a> parameters for more information. Generally used to indicate the broad category of health care cascade to which an intervention belongs to prevent individuals from accessing care through multiple pathways. For example, if an individual must already be taking a particular medication to be prescribed a new one.</td>
-<td><div class="first last highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<td><div class="first last highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;New_Property_Value&quot;</span><span class="p">:</span> <span class="s2">&quot;InterventionStatus:None&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -582,7 +594,7 @@ example that follows shows one potential configuration.</p>
 </tr>
 </tbody>
 </table>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;CampaignEvent&quot;</span><span class="p">,</span>

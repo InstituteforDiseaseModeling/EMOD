@@ -189,12 +189,25 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "http://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="run-a-simulation-using-matlab">
 <h1>Run a simulation using MATLAB<a class="headerlink" href="#run-a-simulation-using-matlab" title="Permalink to this headline">¶</a></h1>
 <p>If you used MATLAB to create or modify JSON files as shown in <a class="reference internal" href="howto-configuration.html"><span class="doc">Create a configuration file</span></a> or
 <a class="reference internal" href="howto-campaign.html"><span class="doc">Create a campaign file</span></a>, it may be convenient to invoke Eradication.exe to run a simulation from a
 MATLAB script. One way of doing this is shown below using the <a class="reference external" href="http://www.mathworks.com/help/matlab/ref/dos.html">dos</a> command.</p>
-<div class="highlight-matlab"><div class="highlight"><pre><span></span><span class="n">exe_name</span> <span class="p">=</span> <span class="n">fullfile</span><span class="p">(</span> <span class="n">binDirectory</span><span class="p">,</span> <span class="s">&#39;Eradication.exe&#39;</span> <span class="p">);</span>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">exe_name</span> <span class="p">=</span> <span class="n">fullfile</span><span class="p">(</span> <span class="n">binDirectory</span><span class="p">,</span> <span class="s">&#39;Eradication.exe&#39;</span> <span class="p">);</span>
 <span class="n">exe_args</span> <span class="p">=</span> <span class="p">[</span> <span class="s">&#39;-C config.json -I &#39;</span><span class="p">,</span> <span class="n">fullfile</span><span class="p">(</span> <span class="n">inputDirectory</span><span class="p">,</span> <span class="s">&#39;Namawala&#39;</span> <span class="p">)</span> <span class="p">];</span>
 <span class="p">[</span><span class="n">status</span><span class="p">,</span><span class="n">result</span><span class="p">]</span> <span class="p">=</span> <span class="n">dos</span><span class="p">(</span> <span class="p">[</span><span class="s">&#39;cd &#39;</span><span class="p">,</span> <span class="n">WorkDirectory</span><span class="p">,</span> <span class="s">&#39; &amp;&amp; &#39;</span><span class="p">,</span> <span class="n">exe_name</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">exe_args</span> <span class="p">],</span> <span class="s">&#39;-echo&#39;</span> <span class="p">);</span>
 </pre></div>

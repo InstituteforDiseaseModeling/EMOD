@@ -176,6 +176,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "http://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="debugging-and-testing">
 <h1>Debugging and testing<a class="headerlink" href="#debugging-and-testing" title="Permalink to this headline">¶</a></h1>
 <p>When you build Eradication.exe or Eradication binary from the EMOD source code, it’s important to debug the

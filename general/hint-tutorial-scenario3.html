@@ -195,6 +195,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "http://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="hint-s-3-age-and-accessibility">
 <h1>HINT 3: Age and accessibility<a class="headerlink" href="#hint-s-3-age-and-accessibility" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial illustrates the effect of heterogeneity in both mixing
@@ -318,7 +331,7 @@ group, and those groups closer in age. Therefore, <strong>Matrix</strong> has hi
 </div>
 <div class="section" id="individualproperties-for-accessibility-and-age-bin">
 <h4>IndividualProperties for Accessibility and Age_Bin<a class="headerlink" href="#individualproperties-for-accessibility-and-age-bin" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Accessibility&quot;</span><span class="p">,</span>
@@ -416,7 +429,7 @@ parameter with the value set to “ExplicitAgeRanges”, which will use the valu
 and <strong>Target_Age_Max</strong>. For more information, see event coordinator parameters.</p>
 <p>The campaign file (campaign.json) is in the
 ScenariosHINT03_AgeAndAccessA_BaselineOutbreak directory.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
@@ -462,7 +475,7 @@ to the decreased transmission rate specified in the accessibility group matrix.<
 specified in the first scenario on day 2. The campaign configuration file (campaign.json) is in
 the ScenariosHINT03_AgeAndAccessB_AgeTargetedVaccine directory. For more information, see
 <strong>SimpleVaccine</strong> parameters.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="p">{</span>
@@ -515,7 +528,7 @@ among older children. This outbreak begins in the “Hard” accessibility group
 see <strong>OutbreakIndividual</strong> and  <strong>SimpleVaccine</strong> parameters.</p>
 <p>The campaign configuration file (campaign.json) is in the
 ScenariosHINT03_AgeAndAccessC_AccessTargetedVaccine directory.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nt">&quot;Start_Day&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
@@ -601,7 +614,7 @@ effectiveness of vaccination campaigns targeted at different age and accessibili
 adjust coverage in different groups.</p>
 <p>For example, the following <strong>Matrix</strong> values configure the interactions with other group for the third age
 group (older than 10 to 20 years).</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Matrix&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
         <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>

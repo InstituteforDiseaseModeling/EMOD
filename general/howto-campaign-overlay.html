@@ -188,6 +188,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "http://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="use-campaign-overlay-files">
 <h1>Use campaign overlay files<a class="headerlink" href="#use-campaign-overlay-files" title="Permalink to this headline">¶</a></h1>
 <p>You can use two campaign files when setting up a simulation. One file contains default campaign
@@ -211,7 +224,7 @@ take several hours if run locally. More guidance on modifying the EMOD source co
 parameters into logical categories of nested JSON objects to make managing the parameters
 easier. See <a class="reference internal" href="parameter-campaign.html"><span class="doc">Campaign parameters</span></a> for a complete list of all parameters that are
 available. See the example default campaign file below.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Initial Seeding&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -244,7 +257,7 @@ available. See the example default campaign file below.</p>
 location of the flatten_campaign.py script in the EMOD <a class="reference external" href="https://github.com/InstituteforDiseaseModeling/EMOD/tree/master/Regression">Regression</a> folder. Again, you may
 organize these into logical categories if you desire. See the example overlay campaign
 file below.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Vaccine&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Default_Campaign_Path&quot;</span><span class="p">:</span> <span class="s2">&quot;defaults/generic-default-campaign.json&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Events&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -291,13 +304,13 @@ file below.</p>
 <li><p class="first">Run the flatten_campaign.py script, providing the relative path to the overlay file and the
 path to and name of the new flattened campaign file that will be saved, using the arguments
 as shown below:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">flatten_campaign</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">overlay</span> <span class="n">experiment</span><span class="o">/</span><span class="n">campaign_overlay</span><span class="o">.</span><span class="n">json</span> <span class="o">--</span><span class="n">saveto</span> <span class="n">experiment</span><span class="o">/</span><span class="n">campaign</span><span class="o">.</span><span class="n">json</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">flatten_campaign</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">overlay</span> <span class="n">experiment</span><span class="o">/</span><span class="n">campaign_overlay</span><span class="o">.</span><span class="n">json</span> <span class="o">--</span><span class="n">saveto</span> <span class="n">experiment</span><span class="o">/</span><span class="n">campaign</span><span class="o">.</span><span class="n">json</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">Open the resulting campaign.json file and see that it has been flattened into a single file with
 nested JSON objects and any logical categories <em>retained</em>.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Vaccine&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Default_Campaign_Path&quot;</span><span class="p">:</span> <span class="s2">&quot;defaults/generic-default-campaign.json&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Use_Defaults&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>

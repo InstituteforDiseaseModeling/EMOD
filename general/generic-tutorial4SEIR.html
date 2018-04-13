@@ -186,6 +186,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "http://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="generic-4-seir-vital-dynamics-birth-and-death">
 <h1>Generic 4: SEIR - Vital dynamics (birth and death)<a class="headerlink" href="#generic-4-seir-vital-dynamics-birth-and-death" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial assumes that you have read <a class="reference internal" href="generic-tutorial3SEIR.html"><span class="doc">Generic 3: SIER - Incubation periods</span></a>.</p>
@@ -202,7 +215,7 @@ equal to 20 per 1000 individuals per year (0.0000548 per day).</p>
 <p>The birth rate and initial population values are set in NodeAttributes using <strong>BirthRate</strong> and
 <strong>InitialPopulation</strong>, respectively. The death rate is set in <strong>IndividualAttributes</strong> using the
 <strong>MortalityDistribution</strong>. Both the male and female death rate is equal to 0.0000548 per day.</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="p">},</span>
     <span class="nt">&quot;Nodes&quot;</span><span class="p">:</span> <span class="p">[{</span>
@@ -314,7 +327,7 @@ equals the mortality rate. For more information, see <a class="reference interna
 <h3>Prior immunity<a class="headerlink" href="#prior-immunity" title="Permalink to this headline">¶</a></h3>
 <p>This tutorial assumes that 80% of individuals are immune at the beginning of the simulation. This is
 simulated using a vaccination campaign with 80% coverage and 100% take at day 1.</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Pre-outbreak Immunity&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
@@ -346,7 +359,7 @@ simulated using a vaccination campaign with 80% coverage and 100% take at day 1.
 <strong>Timesteps_Between_Repetitions</strong> and <strong>Number_Repetitions</strong> parameters are set to reintroduce the
 outbreak once every two years for 10 years. With larger population sizes, the endemic can sustain
 itself. For more information, see <strong>OutbreakIndividual</strong> parameters.</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Campaign_Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Outbreak&quot;</span><span class="p">,</span>
     <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span>

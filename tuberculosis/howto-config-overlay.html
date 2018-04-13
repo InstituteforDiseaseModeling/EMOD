@@ -185,6 +185,18 @@
            <div itemprop="articleBody">
             
 <!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/tuberculosis/";
+        var newBase = "http://www.idmod.org/docs/tuberculosis/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
 
   <div class="section" id="use-configuration-overlay-files">
 <h1>Use configuration overlay files<a class="headerlink" href="#use-configuration-overlay-files" title="Permalink to this headline">¶</a></h1>
@@ -210,7 +222,7 @@ code is in the “Advance the model” section.</p>
 parameters into logical categories of nested JSON objects to make managing the parameters
 easier. See <a class="reference internal" href="parameter-configuration.html"><span class="doc">Configuration parameters</span></a> for a complete list of all parameters that are
 available. See the example default configuration file below.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;CAMPAIGNS&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Campaign_Filename&quot;</span><span class="p">:</span> <span class="s2">&quot;campaign.json&quot;</span><span class="p">,</span>
@@ -361,7 +373,7 @@ available. See the example default configuration file below.</p>
 location of the flatten_config.py script in the EMOD <a class="reference external" href="https://github.com/InstituteforDiseaseModeling/EMOD/tree/master/Regression">Regression</a> folder. Again, you may
 organize the parameters into logical categories if you desire. See the example overlay
 configuration file below.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
      <span class="nt">&quot;Default_Config_Path&quot;</span><span class="p">:</span> <span class="s2">&quot;defaults/generic-default-config.json&quot;</span><span class="p">,</span>
      <span class="nt">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
           <span class="nt">&quot;DEMOGRAPHICS&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -393,14 +405,14 @@ configuration file below.</p>
 <li><p class="first">In a Command Prompt window, navigate to the Regression folder.</p>
 </li>
 <li><p class="first">Run the flatten_config.py script, providing the relative path to the overlay file:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">flatten_config</span><span class="o">.</span><span class="n">py</span> <span class="n">experiment</span><span class="o">/</span><span class="n">param_overlay</span><span class="o">.</span><span class="n">json</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">flatten_config</span><span class="o">.</span><span class="n">py</span> <span class="n">experiment</span><span class="o">/</span><span class="n">param_overlay</span><span class="o">.</span><span class="n">json</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">Open the resulting config.json file in the same folder as param_overlay.json and see that it
 has been flattened into a single layer with all parameters listed alphabetically and any logical
 categories <em>removed</em>. Eradication.exe will not accept a configuration file with nested JSON objects.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Acquisition_Blocking_Immunity_Decay_Rate&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
         <span class="nt">&quot;Acquisition_Blocking_Immunity_Duration_Before_Decay&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>

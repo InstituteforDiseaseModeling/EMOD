@@ -186,6 +186,19 @@
             
 <!-- From _templates/page.html -->
 
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/general/";
+        var newBase = "http://www.idmod.org/docs/general/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
+
   <div class="section" id="generic-2-sir-targeted-vaccination-campaigns">
 <h1>Generic 2: SIR - Targeted vaccination campaigns<a class="headerlink" href="#generic-2-sir-targeted-vaccination-campaigns" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial assumes that you have read <a class="reference internal" href="generic-tutorial1SIR.html"><span class="doc">Generic 1: SIR - Simple single-node outbreak</span></a>.</p>
@@ -350,7 +363,7 @@ configured differently. In the third scenario, a vaccine campaign will be target
 the groups but not the other group. This models the situation where individuals in the general
 population have a chance of receiving a vaccine while the other individuals are in the chronically
 missed group.</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;Metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
   <span class="p">},</span>
   <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -389,7 +402,7 @@ as the groups in the <strong>Values</strong> array.</p>
 <p>At the beginning of the simulation, each individual has a 70% of belonging to the “Easy” accessibility
 group and a 30% chance of belonging to the “Hard” accessibility group as specified by the
 <strong>Initial_Distribution</strong> array.</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;IndividualProperties&quot;</span><span class="p">:</span> <span class="p">[{</span>
             <span class="nt">&quot;Property&quot;</span><span class="p">:</span> <span class="s2">&quot;Accessibility&quot;</span><span class="p">,</span>
@@ -473,7 +486,7 @@ and R<sub>0</sub> = 4.9. For more information, see <a class="reference internal"
 <h3>A. Baseline outbreak<a class="headerlink" href="#a-baseline-outbreak" title="Permalink to this headline">¶</a></h3>
 <p>This scenario uses an <strong>OutbreakIndividual</strong> event at day 30 as the initial seeding of the infection.
 For more information, see <strong>OutbreakIndividual</strong> parameters.</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;Antigen&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -516,7 +529,7 @@ and full immunity lasts for 10 years. For more information, see <strong>SimpleVa
 </div></blockquote>
 <p>You can also view campaign.json at
 &lt;path_to_directory&gt;RegressionScenariosGeneric Scenarios02_SIR_VaccinationsB_Vaccinations.</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
         <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -549,7 +562,7 @@ and full immunity lasts for 10 years. For more information, see <strong>SimpleVa
 vaccine campaign to the “Easy” accessibility group by adding a <strong>Property_Restrictions</strong> parameter
 and setting it to “Accessibility”: “Easy”. As only 70% of the population is in the “Easy”
 accessibility group, vaccine coverage is also reduced.</p>
-<div class="highlight-JSON"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;Event_Coordinator_Config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;Demographic_Coverage&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
         <span class="nt">&quot;Intervention_Config&quot;</span><span class="p">:</span> <span class="p">{</span>

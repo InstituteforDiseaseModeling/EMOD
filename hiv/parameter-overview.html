@@ -176,6 +176,18 @@
            <div itemprop="articleBody">
             
 <!-- From _templates/page.html -->
+  <script>
+     window.addEventListener("DOMContentLoaded", function() {
+        var href = window.location.href;
+        var oldBase = "https://institutefordiseasemodeling.github.io/EMOD/hiv/";
+        var newBase = "http://www.idmod.org/docs/hiv/";
+        var oldBasePattern = new RegExp(oldBase,"i");
+        if (oldBasePattern.test(href)) {
+           window.location.replace(href.replace(oldBasePattern,newBase));
+        }
+     }, true);
+  </script>
+
 
   <div class="section" id="emod-s-parameter-reference">
 <h1>EMOD parameter reference<a class="headerlink" href="#emod-s-parameter-reference" title="Permalink to this headline">¶</a></h1>
@@ -211,7 +223,7 @@ often use nested objects and arrays. See <a class="reference external" href="htt
 <li>Every opening brace or bracket ({ or [) requires a corresponding closing brace or bracket (} or ]).</li>
 </ul>
 <p>The following is an example of a JSON formatted file.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;A_Complex_Key&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;An_Array_with_a_Nested_Object_Value&quot;</span><span class="p">:</span> <span class="p">[</span>
             <span class="p">{</span>
