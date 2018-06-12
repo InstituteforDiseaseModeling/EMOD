@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -143,7 +143,7 @@ namespace Kernel
     AntigenId TransmissionGroupsBase::ContagionPopulationImpl::GetGeneticID() const
     {
         // Never valid code path, have to implement this method due to interface.
-        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__ );
+        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Not valid for ContagionPopulationImpl" );
     }
 
     float TransmissionGroupsBase::ContagionPopulationImpl::GetTotalContagion( void ) const

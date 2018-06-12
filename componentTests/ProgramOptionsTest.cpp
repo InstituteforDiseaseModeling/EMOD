@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -457,6 +457,34 @@ SUITE(ProgramOptionsTest)
         string got = got_oss.str() ;
 
         CHECK_EQUAL( exp, got );
+    }    
+    
+    TEST(TestLastArgumentNoValue)
+    {
+        ProgramOptions po("test description");
+        po.AddOptionWithValue("strLongName1", "dv_1", "description for first option");
+        po.AddOptionWithValue("strLongName2", "T", "dv_2", "T is for 'two'");
+
+        CHECK(po.CommandLineHas("strLongName1"));
+        CHECK(po.CommandLineHas("strLongName2"));
+        CHECK_EQUAL("dv_1", po.GetCommandLineValueString("strLongName1"));
+        CHECK_EQUAL("dv_2", po.GetCommandLineValueString("strLongName2"));
+
+        // --------------------------------------------------------------
+        // --- Test parsing when one of the arguments has no string value
+        // --------------------------------------------------------------
+        int t1_argc = 4;
+        char* t1_argv[] =
+        {
+            "Eradication.exe",
+            "--strLongName1",
+            "abcd",
+            "--strLongName2"
+        };
+
+        string t1_errmsg = po.ParseCommandLine(t1_argc, t1_argv);
+        CHECK( !t1_errmsg.empty() );
+        CHECK_EQUAL("Error parsing command line: missing value for option 'strLongName2'", t1_errmsg);
     }
 
     TEST(TestOptionWithValueStringList)
@@ -555,39 +583,36 @@ SUITE(ProgramOptionsTest)
         po.AddOption( "help",         "Show this help message." );
         po.AddOption( "version", "v", "Get version info." );
         po.AddOption("get-schema",     "Request the kernel to write all its input definition schema json to the current working directory and exit." );
-        po.AddOptionWithValue( "schema-path", "stdout",                        "Path to write schema(s) to instead of writing to stdout." );
-        po.AddOptionWithValue( "config",       "C",          "default-config.json", "Name of config.json file to use" );
-        po.AddOptionWithValue( "input-path",   "I",          ".",                   "Relative or absolute path to location of model input files" );       
-        po.AddOptionWithValue( "output-path",  "O",          "output",              "Relative or absolute path for output files" );
-        po.AddOptionWithValue( "dll-path",     "D",          "",                    "Relative (to the executable) or absolute path for dlls" );
-// 2.5        po.AddOptionWithValue( "state-path",   "S",          ".",                   "Relative or absolute path for state files" );  // should we remove this...?
-        po.AddOptionWithValue( "monitor_host",               "none",                "IP of commissioning/monitoring host" );
-        po.AddOptionWithValue( "monitor_port",               0,                     "port of commissioning/monitoring host" );
-        po.AddOptionWithValue( "sim_id",                    "none",                 "Unique id of this simulation, formerly sim_guid. Needed for self-identification to UDP host" );
+        po.AddOptionWithValue( "schema-path", "stdout",                     "Path to write schema(s) to instead of writing to stdout." );
+        po.AddOptionWithValue( "config",       "C",          "config.json", "Name of config.json file to use" );
+        po.AddOptionWithValue( "input-path",   "I",          ".",           "Relative or absolute path to location of model input files" );       
+        po.AddOptionWithValue( "output-path",  "O",          "output",      "Relative or absolute path for output files" );
+        po.AddOptionWithValue( "dll-path",     "D",          "",            "Relative (to the executable) or absolute path for dlls" );
+        po.AddOptionWithValue( "monitor_host",               "none",        "IP of commissioning/monitoring host" );
+        po.AddOptionWithValue( "monitor_port",               0,             "port of commissioning/monitoring host" );
+        po.AddOptionWithValue( "sim_id",                    "none",         "Unique id of this simulation, formerly sim_guid. Needed for self-identification to UDP host" );
         po.AddOption( "progress",        "Send updates on the progress of the simulation to the HPC job scheduler." );
 
-        CHECK( !po.CommandLineHas( "help"                       ) );
-        CHECK( !po.CommandLineHas( "version"                    ) );
-        CHECK( !po.CommandLineHas( "get-schema"                 ) );
-        CHECK(  po.CommandLineHas( "schema-path"                ) );
-        CHECK(  po.CommandLineHas( "config"                     ) );
-        CHECK(  po.CommandLineHas( "input-path"                 ) );
-        CHECK(  po.CommandLineHas( "output-path"                ) );
-        CHECK(  po.CommandLineHas( "dll-path"                   ) );
-// 2.5        CHECK(  po.CommandLineHas( "state-path"                 ) );
-        CHECK(  po.CommandLineHas( "monitor_host"               ) );
-        CHECK(  po.CommandLineHas( "monitor_port"               ) );
-        CHECK(  po.CommandLineHas( "sim_id"                     ) );
-        CHECK( !po.CommandLineHas( "progress"                   ) );
-        CHECK_EQUAL( "stdout",              po.GetCommandLineValueString( "schema-path"                ) );
-        CHECK_EQUAL( "default-config.json", po.GetCommandLineValueString( "config"                     ) );
-        CHECK_EQUAL( ".",                   po.GetCommandLineValueString( "input-path"                 ) );
-        CHECK_EQUAL( "output",              po.GetCommandLineValueString( "output-path"                ) );
-        CHECK_EQUAL( "",                    po.GetCommandLineValueString( "dll-path"                   ) );
-// 2.5        CHECK_EQUAL( ".",                   po.GetCommandLineValueString( "state-path"                 ) );
-        CHECK_EQUAL( "none",                po.GetCommandLineValueString( "monitor_host"               ) );
-        CHECK_EQUAL( 0,                     po.GetCommandLineValueInt(    "monitor_port"               ) );
-        CHECK_EQUAL( "none",                po.GetCommandLineValueString( "sim_id"                     ) );
+        CHECK( !po.CommandLineHas( "help"         ) );
+        CHECK( !po.CommandLineHas( "version"      ) );
+        CHECK( !po.CommandLineHas( "get-schema"   ) );
+        CHECK(  po.CommandLineHas( "schema-path"  ) );
+        CHECK(  po.CommandLineHas( "config"       ) );
+        CHECK(  po.CommandLineHas( "input-path"   ) );
+        CHECK(  po.CommandLineHas( "output-path"  ) );
+        CHECK(  po.CommandLineHas( "dll-path"     ) );
+        CHECK(  po.CommandLineHas( "monitor_host" ) );
+        CHECK(  po.CommandLineHas( "monitor_port" ) );
+        CHECK(  po.CommandLineHas( "sim_id"       ) );
+        CHECK( !po.CommandLineHas( "progress"     ) );
+        CHECK_EQUAL( "stdout",      po.GetCommandLineValueString( "schema-path"  ) );
+        CHECK_EQUAL( "config.json", po.GetCommandLineValueString( "config"       ) );
+        CHECK_EQUAL( ".",           po.GetCommandLineValueString( "input-path"   ) );
+        CHECK_EQUAL( "output",      po.GetCommandLineValueString( "output-path"  ) );
+        CHECK_EQUAL( "",            po.GetCommandLineValueString( "dll-path"     ) );
+        CHECK_EQUAL( "none",        po.GetCommandLineValueString( "monitor_host" ) );
+        CHECK_EQUAL( 0,             po.GetCommandLineValueInt(    "monitor_port" ) );
+        CHECK_EQUAL( "none",        po.GetCommandLineValueString( "sim_id"       ) );
 
         // -----------------------------------------------------------------
         // --- Test parsing with default values in Visual Studio
@@ -607,28 +632,26 @@ SUITE(ProgramOptionsTest)
         string t1_errmsg = po.ParseCommandLine( t1_argc, t1_argv );
         CHECK( t1_errmsg.empty() );
 
-        CHECK( !po.CommandLineHas( "help"                       ) );
-        CHECK( !po.CommandLineHas( "version"                    ) );
-        CHECK( !po.CommandLineHas( "get-schema"                 ) );
-        CHECK(  po.CommandLineHas( "schema-path"                ) );
-        CHECK(  po.CommandLineHas( "config"                     ) );
-        CHECK(  po.CommandLineHas( "input-path"                 ) );
-        CHECK(  po.CommandLineHas( "output-path"                ) );
-        CHECK(  po.CommandLineHas( "dll-path"                   ) );
-// 2.5        CHECK(  po.CommandLineHas( "state-path"                 ) );
-        CHECK(  po.CommandLineHas( "monitor_host"               ) );
-        CHECK(  po.CommandLineHas( "monitor_port"               ) );
-        CHECK(  po.CommandLineHas( "sim_id"                     ) );
-        CHECK( !po.CommandLineHas( "progress"                   ) );
-        CHECK_EQUAL( "stdout",              po.GetCommandLineValueString( "schema-path"                ) );
-        CHECK_EQUAL( "config.json",         po.GetCommandLineValueString( "config"                     ) );
-        CHECK_EQUAL( ".",                   po.GetCommandLineValueString( "input-path"                 ) );
-        CHECK_EQUAL( "testing",             po.GetCommandLineValueString( "output-path"                ) );
-        CHECK_EQUAL( "",                    po.GetCommandLineValueString( "dll-path"                   ) );
-// 2.5        CHECK_EQUAL( ".",                   po.GetCommandLineValueString( "state-path"                 ) );
-        CHECK_EQUAL( "none",                po.GetCommandLineValueString( "monitor_host"               ) );
-        CHECK_EQUAL( 0,                     po.GetCommandLineValueInt(    "monitor_port"               ) );
-        CHECK_EQUAL( "none",                po.GetCommandLineValueString( "sim_id"                     ) );
+        CHECK( !po.CommandLineHas( "help"         ) );
+        CHECK( !po.CommandLineHas( "version"      ) );
+        CHECK( !po.CommandLineHas( "get-schema"   ) );
+        CHECK(  po.CommandLineHas( "schema-path"  ) );
+        CHECK(  po.CommandLineHas( "config"       ) );
+        CHECK(  po.CommandLineHas( "input-path"   ) );
+        CHECK(  po.CommandLineHas( "output-path"  ) );
+        CHECK(  po.CommandLineHas( "dll-path"     ) );
+        CHECK(  po.CommandLineHas( "monitor_host" ) );
+        CHECK(  po.CommandLineHas( "monitor_port" ) );
+        CHECK(  po.CommandLineHas( "sim_id"       ) );
+        CHECK( !po.CommandLineHas( "progress"     ) );
+        CHECK_EQUAL( "stdout",      po.GetCommandLineValueString( "schema-path"  ) );
+        CHECK_EQUAL( "config.json", po.GetCommandLineValueString( "config"       ) );
+        CHECK_EQUAL( ".",           po.GetCommandLineValueString( "input-path"   ) );
+        CHECK_EQUAL( "testing",     po.GetCommandLineValueString( "output-path"  ) );
+        CHECK_EQUAL( "",            po.GetCommandLineValueString( "dll-path"     ) );
+        CHECK_EQUAL( "none",        po.GetCommandLineValueString( "monitor_host" ) );
+        CHECK_EQUAL( 0,             po.GetCommandLineValueInt(    "monitor_port" ) );
+        CHECK_EQUAL( "none",        po.GetCommandLineValueString( "sim_id"       ) );
 
         // -----------------------------------------------------------------
         // --- Test parsing help
@@ -645,28 +668,26 @@ SUITE(ProgramOptionsTest)
         string t2_errmsg = po.ParseCommandLine( t2_argc, t2_argv );
         CHECK( t2_errmsg.empty() );
 
-        CHECK(  po.CommandLineHas( "help"                       ) );
-        CHECK( !po.CommandLineHas( "version"                    ) );
-        CHECK( !po.CommandLineHas( "get-schema"                 ) );
-        CHECK(  po.CommandLineHas( "schema-path"                ) );
-        CHECK(  po.CommandLineHas( "config"                     ) );
-        CHECK(  po.CommandLineHas( "input-path"                 ) );
-        CHECK(  po.CommandLineHas( "output-path"                ) );
-        CHECK(  po.CommandLineHas( "dll-path"                   ) );
-// 2.5        CHECK(  po.CommandLineHas( "state-path"                 ) );
-        CHECK(  po.CommandLineHas( "monitor_host"               ) );
-        CHECK(  po.CommandLineHas( "monitor_port"               ) );
-        CHECK(  po.CommandLineHas( "sim_id"                     ) );
-        CHECK( !po.CommandLineHas( "progress"                   ) );
-        CHECK_EQUAL( "stdout",              po.GetCommandLineValueString( "schema-path"                ) );
-        CHECK_EQUAL( "default-config.json", po.GetCommandLineValueString( "config"                     ) );
-        CHECK_EQUAL( ".",                   po.GetCommandLineValueString( "input-path"                 ) );
-        CHECK_EQUAL( "output",              po.GetCommandLineValueString( "output-path"                ) );
-        CHECK_EQUAL( "",                    po.GetCommandLineValueString( "dll-path"                   ) );
-// 2.5        CHECK_EQUAL( ".",                   po.GetCommandLineValueString( "state-path"                 ) );
-        CHECK_EQUAL( "none",                po.GetCommandLineValueString( "monitor_host"               ) );
-        CHECK_EQUAL( 0,                     po.GetCommandLineValueInt(    "monitor_port"               ) );
-        CHECK_EQUAL( "none",                po.GetCommandLineValueString( "sim_id"                     ) );
+        CHECK(  po.CommandLineHas( "help"         ) );
+        CHECK( !po.CommandLineHas( "version"      ) );
+        CHECK( !po.CommandLineHas( "get-schema"   ) );
+        CHECK(  po.CommandLineHas( "schema-path"  ) );
+        CHECK(  po.CommandLineHas( "config"       ) );
+        CHECK(  po.CommandLineHas( "input-path"   ) );
+        CHECK(  po.CommandLineHas( "output-path"  ) );
+        CHECK(  po.CommandLineHas( "dll-path"     ) );
+        CHECK(  po.CommandLineHas( "monitor_host" ) );
+        CHECK(  po.CommandLineHas( "monitor_port" ) );
+        CHECK(  po.CommandLineHas( "sim_id"       ) );
+        CHECK( !po.CommandLineHas( "progress"     ) );
+        CHECK_EQUAL( "stdout",      po.GetCommandLineValueString( "schema-path"  ) );
+        CHECK_EQUAL( "config.json", po.GetCommandLineValueString( "config"       ) );
+        CHECK_EQUAL( ".",           po.GetCommandLineValueString( "input-path"   ) );
+        CHECK_EQUAL( "output",      po.GetCommandLineValueString( "output-path"  ) );
+        CHECK_EQUAL( "",            po.GetCommandLineValueString( "dll-path"     ) );
+        CHECK_EQUAL( "none",        po.GetCommandLineValueString( "monitor_host" ) );
+        CHECK_EQUAL( 0,             po.GetCommandLineValueInt(    "monitor_port" ) );
+        CHECK_EQUAL( "none",        po.GetCommandLineValueString( "sim_id"       ) );
 
         // ------------------------------------
         // --- Test printing of these arguments
@@ -680,16 +701,13 @@ SUITE(ProgramOptionsTest)
         exp += "                                        current working directory and exit.\n";
         exp += "  --schema-path arg (=stdout)           Path to write schema(s) to instead of \n";
         exp += "                                        writing to stdout.\n";
-        exp += "  -C [ --config ] arg (=default-config.json)\n";
-        exp += "                                        Name of config.json file to use\n";
+        exp += "  -C [ --config ] arg (=config.json)    Name of config.json file to use\n";
         exp += "  -I [ --input-path ] arg (=.)          Relative or absolute path to location \n";
         exp += "                                        of model input files\n";
         exp += "  -O [ --output-path ] arg (=output)    Relative or absolute path for output \n";
         exp += "                                        files\n";
         exp += "  -D [ --dll-path ] arg                 Relative (to the executable) or \n";
         exp += "                                        absolute path for dlls\n";
-// 2.5        exp += "  -S [ --state-path ] arg (=.)          Relative or absolute path for state \n";
-// 2.5        exp += "                                        files\n";
         exp += "  --monitor_host arg (=none)            IP of commissioning/monitoring host\n";
         exp += "  --monitor_port arg (=0)               port of commissioning/monitoring host\n";
         exp += "  --sim_id arg (=none)                  Unique id of this simulation, formerly \n";

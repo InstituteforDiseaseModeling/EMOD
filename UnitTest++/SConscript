@@ -68,7 +68,7 @@ msvc = GetOption( "MSVC" )
 if msvc is not None and msvc != False and msvc != "":
 
     bvar = env['BUILD_VARIANT'] + '|x64'
-    print "unitTest: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar
+    print( "unitTest: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar )
     
     env.MSVSProject(target = 'UnitTestScons' + env['MSVSPROJECTSUFFIX'],
         srcs = unitTestSrcFiles,

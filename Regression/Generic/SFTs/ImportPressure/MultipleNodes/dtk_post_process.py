@@ -34,8 +34,8 @@ def load_campaign_file(campaign_filename="campaign.json", debug = False):
     campaign_obj[KEY_NODE_LIST_COUNT] = len(node_list)
 
     if debug:
-        # print "Durations is: {0}.\n Daily_Import_Pressures is: {1}.".format(durations, daily_import_pressures)
-        print campaign_obj
+        # print( "Durations is: {0}.\n Daily_Import_Pressures is: {1}.".format(durations, daily_import_pressures) )
+        print( campaign_obj )
 
     return campaign_obj
 
@@ -56,7 +56,7 @@ def load_demographics_file(demographics_filename="demographics_multiplenodes.jso
     demographics_obj[KEY_NODE_COUNT] = node_count
 
     if debug:
-        print demographics_obj
+        print( demographics_obj )
 
     return demographics_obj
 
@@ -97,12 +97,12 @@ def create_report_file(param_obj, campaign_obj, demographics_obj, report_data_ob
         # test statistical population channel
         diff_population = math.fabs(calculate_new_population - statistical_population[-1])
         if debug:
-            print "calculated population is {0}, statistical population " \
+            print( "calculated population is {0}, statistical population " 
                   "from InsetChart is {1}.".format(calculate_new_population,
-                                                   statistical_population[-1])
+                                                   statistical_population[-1]) )
         error_tolerance = math.fabs(calculate_new_population - initial_population)* 0.1
         if debug:
-            print "diff_population is {0}, error_tolerance is {1}".format(diff_population, error_tolerance)
+            print( "diff_population is {0}, error_tolerance is {1}".format(diff_population, error_tolerance) )
         if diff_population  > error_tolerance:
             success = False
             outfile.write("BAD: statistical population is {0}, expected about {1}.\n".format(statistical_population[-1], calculate_new_population))
@@ -112,12 +112,12 @@ def create_report_file(param_obj, campaign_obj, demographics_obj, report_data_ob
             dist = new_infections_dict[rate]
             title = "rate = " + str(rate)
             result = sft.test_poisson(dist, rate, route = title, report_file = outfile, normal_approximation = False)
-            # print result, rate, len(dist)
+            # print( result, rate, len(dist) )
             if not result:
                 success = False
                 outfile.write("BAD: ks poisson test for {0} is {1}.\n".format(title, result))
             numpy_distro = np.random.poisson(rate, len(dist))
-            sft.plot_data(dist, sorted(numpy_distro),
+            sft.plot_data_sorted(dist, numpy_distro,
                           title="new infections for {}".format(title),
                               label1="new infection from model, {}".format(title),
                               label2="Poisson distro from numpy",
@@ -131,7 +131,7 @@ def create_report_file(param_obj, campaign_obj, demographics_obj, report_data_ob
 
         outfile.write(sft.format_success_msg(success))
         if debug:
-            print "SUMMARY: Success={0}\n".format(success)
+            print( "SUMMARY: Success={0}\n".format(success) )
         return success
 
 def application( output_folder="output", stdout_filename="test.txt",
@@ -141,14 +141,14 @@ def application( output_folder="output", stdout_filename="test.txt",
                  report_name=sft.sft_output_filename,
                  debug=False):
     if debug:
-        print "output_folder: " + output_folder
-        print "stdout_filename: " + stdout_filename+ "\n"
-        print "config_filename: " + config_filename + "\n"
-        print "campaign_filename: " + campaign_filename + "\n"
-        print "demographics_filename: " + demographics_filename + "\n"
-        print "insetchart_name: " + insetchart_name + "\n"
-        print "report_name: " + report_name + "\n"
-        print "debug: " + str(debug) + "\n"
+        print( "output_folder: " + output_folder )
+        print( "stdout_filename: " + stdout_filename+ "\n" )
+        print( "config_filename: " + config_filename + "\n" )
+        print( "campaign_filename: " + campaign_filename + "\n" )
+        print( "demographics_filename: " + demographics_filename + "\n" )
+        print( "insetchart_name: " + insetchart_name + "\n" )
+        print( "report_name: " + report_name + "\n" )
+        print( "debug: " + str(debug) + "\n" )
 
     sft.wait_for_done()
 
@@ -157,14 +157,14 @@ def application( output_folder="output", stdout_filename="test.txt",
     demographics_obj = load_demographics_file(demographics_filename, debug)
     report_data_obj = ips.parse_json_report(output_folder, insetchart_name, debug)
 
-    sft.plot_data_unsorted(report_data_obj[KEY_NEW_INFECTIONS],
+    sft.plot_data(report_data_obj[KEY_NEW_INFECTIONS],
                            title="new infections",
                            label1= "New Infections",
                            label2 = "NA",
                            xlabel="time steps", ylabel="new infection",
                            category = 'New_infections',
                            show = True )
-    sft.plot_data_unsorted(report_data_obj[KEY_STATISTICAL_POPULATION],
+    sft.plot_data(report_data_obj[KEY_STATISTICAL_POPULATION],
                            title="Statistical Population",
                            label1= "Statistical Population",
                            label2 = "NA",

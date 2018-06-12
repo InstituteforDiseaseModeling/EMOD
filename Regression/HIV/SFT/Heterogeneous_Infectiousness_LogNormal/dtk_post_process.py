@@ -34,7 +34,7 @@ def load_emod_parameters(config_filename="config.json", debug = False):
     param_obj[Param_keys.LOGNORMAL_SCALE] = cdj[Param_keys.LOGNORMAL_SCALE]
     param_obj[Param_keys.BASE_INFECTIVITY] = cdj[Param_keys.BASE_INFECTIVITY]
     if debug:
-        print param_obj
+        print( param_obj )
     return param_obj
 
 def parse_output_file(output_filename="test.txt", debug=False):
@@ -88,7 +88,7 @@ def create_report_file(param_obj, multipliers, infectiousness, report_name, debu
             outfile.write("size is {}\n".format(size))
             scale = math.exp(mu)
             dist_lognormal = stats.lognorm.rvs(sigma, 0, scale, size)
-            sft.plot_data(multipliers, dist_lognormal,
+            sft.plot_data_sorted(multipliers, dist_lognormal,
                           label1="Emod", label2="Scipy",
                           ylabel="Multiplier", xlabel="data point",
                           category="Emod_vs_Scipy",
@@ -117,11 +117,11 @@ def create_report_file(param_obj, multipliers, infectiousness, report_name, debu
                     success = False
                     outfile.write("BAD: multiplier is {0} when {1} set to {2}, expected 1.0.\n".format(multiplier, Param_keys.LOGNORMAL_SCALE, sigma))
             # plotting
-            sft.plot_data(multipliers, label1="Multiplier", label2="NA",
+            sft.plot_data_sorted(multipliers, label1="Multiplier", label2="NA",
                           category="Multiplier", title="Multiplier_Sigma={}".format(sigma),
                           ylabel="Multiplier", xlabel="data point",
                           show=True)
-            sft.plot_data(infectiousness, label1="Infectiousness",
+            sft.plot_data_sorted(infectiousness, label1="Infectiousness",
                           label2="NA",category="Infectiousness",
                           title="Infectiousness_Sigma={0}_BaseInfectivity={1}".format(sigma,base_infectivity),
                           ylabel="Infectiousness",xlabel="data point",
@@ -129,7 +129,7 @@ def create_report_file(param_obj, multipliers, infectiousness, report_name, debu
         outfile.write(sft.format_success_msg(success))
 
     if debug:
-        print "SUMMARY: Success={0}\n".format(success)
+        print( "SUMMARY: Success={0}\n".format(success) )
     return success
 
 def application( output_folder="output", stdout_filename="test.txt",
@@ -137,11 +137,11 @@ def application( output_folder="output", stdout_filename="test.txt",
                  report_name=sft.sft_output_filename,
                  debug=False):
     if debug:
-        print "output_folder: " + output_folder
-        print "stdout_filename: " + stdout_filename+ "\n"
-        print "config_filename: " + config_filename + "\n"
-        print "report_name: " + report_name + "\n"
-        print "debug: " + str(debug) + "\n"
+        print( "output_folder: " + output_folder )
+        print( "stdout_filename: " + stdout_filename+ "\n" )
+        print( "config_filename: " + config_filename + "\n" )
+        print( "report_name: " + report_name + "\n" )
+        print( "debug: " + str(debug) + "\n" )
 
     sft.wait_for_done()
     param_obj = load_emod_parameters(config_filename,debug)

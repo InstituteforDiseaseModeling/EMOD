@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,6 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
+    struct IGenomeMarkers;
     class MalariaDrugTypeParameters;
 
     struct MalariaParameters
@@ -30,6 +31,10 @@ namespace Kernel
         int falciparumPfEMP1Vars;
 
         float feverDetectionThreshold;
+
+        std::vector<std::string> genome_marker_names; // temporary variable used to initialize pGenomeMarkers
+        IGenomeMarkers* pGenomeMarkers;
+
         std::map< std::string, MalariaDrugTypeParameters * > MalariaDrugMap;
 
 
@@ -41,6 +46,8 @@ namespace Kernel
         , falciparumNonSpecTypes(0)
         , falciparumPfEMP1Vars(0)
         , feverDetectionThreshold(-42.0f)
+        , genome_marker_names()
+        , pGenomeMarkers(nullptr)
         , MalariaDrugMap()
         {
         }

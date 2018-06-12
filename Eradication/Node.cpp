@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -26,7 +26,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContextHost.h"
 #include "TransmissionGroupMembership.h"
 #include "TransmissionGroupsFactory.h"
-#include "Simulation.h"
+#include "Report.h" // before we were including Simulation.h to get IReport! Very bad.
 #include "SimulationConfig.h"
 #include "StatusReporter.h" // for initialization progress
 #include "StrainIdentity.h"
@@ -39,6 +39,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Serialization.h"
 #include "IdmMpi.h"
 #include "EventTrigger.h"
+#include "Susceptibility.h" // for susceptibility_initialization_distribution_type
 
 #ifdef ENABLE_TBHIV
 #include "TBHIVParameters.h"
@@ -48,8 +49,6 @@ SETUP_LOGGING( "Node" )
 
 
 #include "Properties.h"
-
-#define RELATIVE_SAMPLE_RATE_IMMUNE_MINIMUM (0.001f)
 
 namespace Kernel
 {
@@ -64,106 +63,7 @@ namespace Kernel
     // TODO: Make simulation object initialization more consistent.  Either all pass contexts to constructors or just have empty constructors
     Node::Node(ISimulationContext *_parent_sim, suids::suid _suid)
         : serializationMask(SerializationFlags(uint32_t(SerializationFlags::Population) | uint32_t(SerializationFlags::Parameters)))
-        , _latitude(FLT_MAX)
-        , _longitude(FLT_MAX)
-        , ind_sampling_type( IndSamplingType::TRACK_ALL )
-        , age_initialization_distribution_type(DistributionType::DISTRIBUTION_OFF)
-        , population_scaling(PopulationScaling::USE_INPUT_FILE)
-        , population_density_infectivity_correction(PopulationDensityInfectivityCorrection::CONSTANT_INFECTIVITY)
-        , suid(_suid)
-        , urban(false)
-        , birthrate(DEFAULT_BIRTHRATE)
-        , Above_Poverty(DEFAULT_POVERTY_THRESHOLD)
-        , individualHumans()
-        , home_individual_ids()
-        , family_waiting_to_migrate(false)
-        , family_migration_destination(suids::nil_suid())
-        , family_migration_type(MigrationType::NO_MIGRATION)
-        , family_time_until_trip(0.0f)
-        , family_time_at_destination(0.0f)
-        , family_is_destination_new_home(false)
-        , Ind_Sample_Rate(1.0f)
-        , transmissionGroups(nullptr)
-        , susceptibility_dynamic_scaling(1.0f)
-        , localWeather(nullptr)
-        , migration_info(nullptr)
-        , demographics()
-        , externalId(0)
-        , node_properties()
-        , event_context_host(nullptr)
-        , events_from_other_nodes()
-        , statPop(0)
-        , Infected(0)
-        , Births(0.0f)
-        , Disease_Deaths(0.0f)
-        , new_infections(0.0f)
-        , new_reportedinfections(0.0f)
-        , Cumulative_Infections(0.0f)
-        , Cumulative_Reported_Infections(0.0f)
-        , Campaign_Cost(0.0f)
-        , Possible_Mothers(0)
-        , mean_age_infection(0.0f)
-        , newInfectedPeopleAgeProduct(0.0f)           // counters starting with this one were only used for old spatial reporting and can probably now be removed
-        , infected_people_prior()
-        , infected_age_people_prior()
-        , infectionrate(0.0f)
-        , mInfectivity(0.0f)
-        , parent(nullptr)
-        , demographics_birth(false)
-        , demographics_gender(false)
-        , demographics_other(false)
-        , max_sampling_cell_pop(0.0f)
-        , sample_rate_birth(0.0f)
-        , sample_rate_0_18mo(0.0f)
-        , sample_rate_18mo_4yr(0.0f)
-        , sample_rate_5_9(0.0f)
-        , sample_rate_10_14(0.0f)
-        , sample_rate_15_19(0.0f)
-        , sample_rate_20_plus(0.0f)
-        , sample_rate_immune(0.0f)
-        , immune_threshold_for_downsampling(0.0f)
-        , prob_maternal_transmission(0.0f)
-        , population_density_c50(0.0f)
-        , population_scaling_factor(1.0f)
-        , maternal_transmission(false)
-        , vital_birth(false)
-        , vital_birth_dependence(VitalBirthDependence::FIXED_BIRTH_RATE)
-        , vital_birth_time_dependence(VitalBirthTimeDependence::NONE)
-        , x_birth(0.0f)
-        , immunity_dist_type(DistributionFunction::NOT_INITIALIZED)
-        , immunity_dist1(0.0f)
-        , immunity_dist2(0.0f)
-        , risk_dist_type(DistributionFunction::NOT_INITIALIZED)
-        , risk_dist1(0.0f)
-        , risk_dist2(0.0f)
-        , migration_dist_type(DistributionFunction::NOT_INITIALIZED)
-        , migration_dist1(0.0f)
-        , migration_dist2(0.0f)
-        , animal_reservoir_type(AnimalReservoir::NO_ZOONOSIS)
-        , infectivity_scaling(InfectivityScaling::CONSTANT_INFECTIVITY)
-        , zoonosis_rate(0.0f)
-        , routes()
-        , infectivity_sinusoidal_forcing_amplitude( 1.0f )
-        , infectivity_sinusoidal_forcing_phase( 0.0f )
-        , infectivity_boxcar_forcing_amplitude( 1.0f )
-        , infectivity_boxcar_start_time( 0.0 )
-        , infectivity_boxcar_end_time( 0.0 )
-        , infectivity_exponential_baseline( 1.0f )
-        , infectivity_exponential_rate( 1.0f )
-        , infectivity_exponential_delay (0.0f )
-        , birth_rate_sinusoidal_forcing_amplitude( 1.0f )
-        , birth_rate_sinusoidal_forcing_phase( 0.0f )
-        , birth_rate_boxcar_forcing_amplitude( 1.0f )
-        , birth_rate_boxcar_start_time( 0.0 )
-        , birth_rate_boxcar_end_time( 0.0 )
-    {
-        SetContextTo(_parent_sim);  // TODO - this should be a virtual function call, but it isn't because the constructor isn't finished running yet.
-        setupEventContextHost();
-    }
-
-    Node::Node()
-        : serializationMask(SerializationFlags(uint32_t(SerializationFlags::Population) | uint32_t(SerializationFlags::Parameters)))
-        , ImmunityDistribution(nullptr)
+        , SusceptibilityDistribution(nullptr)
         , FertilityDistribution( nullptr )
         , MortalityDistribution( nullptr )
         , MortalityDistributionMale( nullptr )
@@ -172,13 +72,15 @@ namespace Kernel
         , _latitude(FLT_MAX)
         , _longitude(FLT_MAX)
         , ind_sampling_type( IndSamplingType::TRACK_ALL )
+        , population_density_infectivity_correction( PopulationDensityInfectivityCorrection::CONSTANT_INFECTIVITY )
         , age_initialization_distribution_type(DistributionType::DISTRIBUTION_OFF)
         , population_scaling(PopulationScaling::USE_INPUT_FILE)
-        , population_density_infectivity_correction(PopulationDensityInfectivityCorrection::CONSTANT_INFECTIVITY)
-        , suid(suids::nil_suid())
-        , urban(false)
+        , susceptibility_scaling_type( SusceptibilityScalingType::CONSTANT_SUSCEPTIBILITY )
+        , susceptibility_scaling( false )
+        , susceptibility_scaling_rate( 1.0f )
+        , susceptibility_dynamic_scaling( 1.0f )
+        , suid(_suid)
         , birthrate(DEFAULT_BIRTHRATE)
-        , Above_Poverty(DEFAULT_POVERTY_THRESHOLD)
         , individualHumans()
         , home_individual_ids()
         , family_waiting_to_migrate(false)
@@ -187,9 +89,7 @@ namespace Kernel
         , family_time_until_trip(0.0f)
         , family_time_at_destination(0.0f)
         , family_is_destination_new_home(false)
-        , Ind_Sample_Rate(1.0f)
-        , transmissionGroups(nullptr)
-        , susceptibility_dynamic_scaling(1.0f)
+        , transmissionGroups( nullptr )
         , localWeather(nullptr)
         , migration_info(nullptr)
         , demographics()
@@ -216,7 +116,8 @@ namespace Kernel
         , parent(nullptr)
         , demographics_birth(false)
         , demographics_gender(false)
-        , demographics_other(false)
+        , enable_demographics_risk(false)
+        , base_sample_rate(1.0f)
         , max_sampling_cell_pop(0.0f)
         , sample_rate_birth(0.0f)
         , sample_rate_0_18mo(0.0f)
@@ -225,19 +126,24 @@ namespace Kernel
         , sample_rate_10_14(0.0f)
         , sample_rate_15_19(0.0f)
         , sample_rate_20_plus(0.0f)
-        , sample_rate_immune(0.0f)
+        , rel_sample_rate_immune(0.0f)
         , immune_threshold_for_downsampling(0.0f)
-        , prob_maternal_transmission(0.0f)
+        , prob_maternal_infection_transmission(0.0f)
         , population_density_c50(0.0f)
-        , population_scaling_factor(0.0f)
-        , maternal_transmission(false)
+        , population_scaling_factor(1.0f)
+        , vital_dynamics(false)
+        , enable_natural_mortality(false)
+        , enable_maternal_infection_transmission(false)
+        , enable_initial_prevalence(false)
         , vital_birth(false)
         , vital_birth_dependence(VitalBirthDependence::FIXED_BIRTH_RATE)
         , vital_birth_time_dependence(VitalBirthTimeDependence::NONE)
-        , x_birth(0.0f)
-        , immunity_dist_type(DistributionFunction::NOT_INITIALIZED)
-        , immunity_dist1(0.0f)
-        , immunity_dist2(0.0f)
+        , x_birth(1.0f)
+        , x_othermortality(1.0f)
+        , enable_demographics_immunity_dist(false)
+        , susceptibility_dist_type(DistributionFunction::NOT_INITIALIZED)
+        , susceptibility_dist1(0.0f)
+        , susceptibility_dist2(0.0f)
         , risk_dist_type(DistributionFunction::NOT_INITIALIZED)
         , risk_dist1(0.0f)
         , risk_dist2(0.0f)
@@ -261,6 +167,125 @@ namespace Kernel
         , birth_rate_boxcar_forcing_amplitude( 1.0f )
         , birth_rate_boxcar_start_time( 0.0 )
         , birth_rate_boxcar_end_time( 0.0 )
+        , bSkipping( false )
+        , maxInfectionProb()
+        , gap(0)
+        , vital_death_dependence(VitalDeathDependence::NOT_INITIALIZED)
+    {
+        SetContextTo(_parent_sim);  // TODO - this should be a virtual function call, but it isn't because the constructor isn't finished running yet.
+        setupEventContextHost();
+    }
+
+    Node::Node()
+        : serializationMask(SerializationFlags(uint32_t(SerializationFlags::Population) | uint32_t(SerializationFlags::Parameters)))
+        , SusceptibilityDistribution(nullptr)
+        , FertilityDistribution( nullptr )
+        , MortalityDistribution( nullptr )
+        , MortalityDistributionMale( nullptr )
+        , MortalityDistributionFemale( nullptr )
+        , AgeDistribution( nullptr )
+        , _latitude(FLT_MAX)
+        , _longitude(FLT_MAX)
+        , ind_sampling_type( IndSamplingType::TRACK_ALL )
+        , population_density_infectivity_correction( PopulationDensityInfectivityCorrection::CONSTANT_INFECTIVITY )
+        , age_initialization_distribution_type(DistributionType::DISTRIBUTION_OFF)
+        , population_scaling(PopulationScaling::USE_INPUT_FILE)
+        , susceptibility_scaling_type( SusceptibilityScalingType::CONSTANT_SUSCEPTIBILITY )
+        , susceptibility_scaling( false )
+        , susceptibility_scaling_rate( 1.0f )
+        , susceptibility_dynamic_scaling( 1.0f )
+        , suid()
+        , birthrate(DEFAULT_BIRTHRATE)
+        , individualHumans()
+        , home_individual_ids()
+        , family_waiting_to_migrate(false)
+        , family_migration_destination(suids::nil_suid())
+        , family_migration_type(MigrationType::NO_MIGRATION)
+        , family_time_until_trip(0.0f)
+        , family_time_at_destination(0.0f)
+        , family_is_destination_new_home(false)
+        , transmissionGroups( nullptr )
+        , localWeather(nullptr)
+        , migration_info(nullptr)
+        , demographics()
+        , externalId(0)
+        , node_properties()
+        , event_context_host(nullptr)
+        , events_from_other_nodes()
+        , statPop(0)
+        , Infected(0)
+        , Births(0.0f)
+        , Disease_Deaths(0.0f)
+        , new_infections(0.0f)
+        , new_reportedinfections(0.0f)
+        , Cumulative_Infections(0.0f)
+        , Cumulative_Reported_Infections(0.0f)
+        , Campaign_Cost(0.0f)
+        , Possible_Mothers(0)
+        , mean_age_infection(0.0f)
+        , newInfectedPeopleAgeProduct(0.0f)           // counters starting with this one were only used for old spatial reporting and can probably now be removed
+        , infected_people_prior()
+        , infected_age_people_prior()
+        , infectionrate(0.0f)
+        , mInfectivity(0.0f)
+        , parent(nullptr)
+        , demographics_birth(false)
+        , demographics_gender(false)
+        , enable_demographics_risk(false)
+        , base_sample_rate(1.0f)
+        , max_sampling_cell_pop(0.0f)
+        , sample_rate_birth(0.0f)
+        , sample_rate_0_18mo(0.0f)
+        , sample_rate_18mo_4yr(0.0f)
+        , sample_rate_5_9(0.0f)
+        , sample_rate_10_14(0.0f)
+        , sample_rate_15_19(0.0f)
+        , sample_rate_20_plus(0.0f)
+        , rel_sample_rate_immune(0.0f)
+        , immune_threshold_for_downsampling(0.0f)
+        , prob_maternal_infection_transmission(0.0f)
+        , population_density_c50(0.0f)
+        , population_scaling_factor(1.0f)
+        , vital_dynamics(false)
+        , enable_natural_mortality(false)
+        , enable_maternal_infection_transmission(false)
+        , enable_initial_prevalence(false)
+        , vital_birth(false)
+        , vital_birth_dependence(VitalBirthDependence::FIXED_BIRTH_RATE)
+        , vital_birth_time_dependence(VitalBirthTimeDependence::NONE)
+        , x_birth(1.0f)
+        , x_othermortality(1.0f)
+        , enable_demographics_immunity_dist(false)
+        , susceptibility_dist_type(DistributionFunction::NOT_INITIALIZED)
+        , susceptibility_dist1(0.0f)
+        , susceptibility_dist2(0.0f)
+        , risk_dist_type(DistributionFunction::NOT_INITIALIZED)
+        , risk_dist1(0.0f)
+        , risk_dist2(0.0f)
+        , migration_dist_type(DistributionFunction::NOT_INITIALIZED)
+        , migration_dist1(0.0f)
+        , migration_dist2(0.0f)
+        , animal_reservoir_type(AnimalReservoir::NO_ZOONOSIS)
+        , infectivity_scaling(InfectivityScaling::CONSTANT_INFECTIVITY)
+        , zoonosis_rate(0.0f)
+        , routes()
+        , infectivity_sinusoidal_forcing_amplitude( 1.0f )
+        , infectivity_sinusoidal_forcing_phase( 0.0f )
+        , infectivity_boxcar_forcing_amplitude( 1.0f )
+        , infectivity_boxcar_start_time( 0.0 )
+        , infectivity_boxcar_end_time( 0.0 )
+        , infectivity_exponential_baseline( 1.0f )
+        , infectivity_exponential_rate( 1.0f )
+        , infectivity_exponential_delay (0.0f )
+        , birth_rate_sinusoidal_forcing_amplitude( 1.0f )
+        , birth_rate_sinusoidal_forcing_phase( 0.0f )
+        , birth_rate_boxcar_forcing_amplitude( 1.0f )
+        , birth_rate_boxcar_start_time( 0.0 )
+        , birth_rate_boxcar_end_time( 0.0 )
+        , bSkipping( false )
+        , maxInfectionProb()
+        , gap(0)
+        , vital_death_dependence(VitalDeathDependence::NOT_INITIALIZED)
     {
         setupEventContextHost();
     }
@@ -284,7 +309,7 @@ namespace Kernel
 
         delete event_context_host;
 
-        delete ImmunityDistribution;
+        delete SusceptibilityDistribution;
         delete FertilityDistribution;
         delete MortalityDistribution;
         delete MortalityDistributionMale;
@@ -346,23 +371,35 @@ namespace Kernel
 
     bool Node::Configure( const Configuration* config )
     {
+        initConfigTypeMap( "Enable_Vital_Dynamics", &vital_dynamics, Enable_Vital_Dynamics_DESC_TEXT, true );
+        initConfigTypeMap( "Enable_Natural_Mortality", &enable_natural_mortality, Enable_Natural_Mortality_DESC_TEXT, false, "Enable_Vital_Dynamics" );
+        initConfig( "Death_Rate_Dependence", vital_death_dependence, config, MetadataDescriptor::Enum(Death_Rate_Dependence_DESC_TEXT, Death_Rate_Dependence_DESC_TEXT, MDD_ENUM_ARGS(VitalDeathDependence)), "Enable_Natural_Mortality" ); // node only (move) 
+        LOG_DEBUG_F( "Death_Rate_Dependence configured as %s\n", VitalDeathDependence::pairs::lookup_key( vital_death_dependence ) );
+
+        // Susceptibility scaling options
+        initConfigTypeMap("Enable_Susceptibility_Scaling", &susceptibility_scaling, Enable_Susceptibility_Scaling_DESC_TEXT, false);
+        initConfig("Susceptibility_Scaling_Type", susceptibility_scaling_type, config, MetadataDescriptor::Enum("Susceptibility_Scaling_Type", Susceptibility_Scaling_Type_DESC_TEXT, MDD_ENUM_ARGS(SusceptibilityScalingType)),"Enable_Susceptibility_Scaling");
+        initConfigTypeMap("Susceptibility_Scaling_Rate", &susceptibility_scaling_rate, Susceptibility_Scaling_Rate_DESC_TEXT, 0.0f, FLT_MAX, 0.0f, "Susceptibility_Scaling_Type", "LOG_LINEAR_FUNCTION_OF_TIME");
+
         initConfig( "Age_Initialization_Distribution_Type", age_initialization_distribution_type, config, MetadataDescriptor::Enum(Age_Initialization_Distribution_Type_DESC_TEXT, Age_Initialization_Distribution_Type_DESC_TEXT, MDD_ENUM_ARGS(DistributionType)) );
 
         initConfig( "Infectivity_Scale_Type", infectivity_scaling, config, MetadataDescriptor::Enum("infectivity_scaling", Infectivity_Scale_Type_DESC_TEXT, MDD_ENUM_ARGS(InfectivityScaling)) );
-        initConfigTypeMap( "Infectivity_Sinusoidal_Forcing_Amplitude", &infectivity_sinusoidal_forcing_amplitude, Sinusoidal_Infectivity_Forcing_Amplitude_DESC_TEXT, 0.0f, 1.0f,    0.0f, "Infectivity_Scale_Type", "SINUSOIDAL_FUNCTION_OF_TIME" );
-        initConfigTypeMap( "Infectivity_Sinusoidal_Forcing_Phase",     &infectivity_sinusoidal_forcing_phase,     Sinusoidal_Infectivity_Forcing_Phase_DESC_TEXT,     0.0f, 365.0f,  0.0f, "Infectivity_Scale_Type", "SINUSOIDAL_FUNCTION_OF_TIME" );
+        initConfigTypeMap( "Infectivity_Sinusoidal_Forcing_Amplitude", &infectivity_sinusoidal_forcing_amplitude, Infectivity_Sinusoidal_Forcing_Amplitude_DESC_TEXT, 0.0f, 1.0f,    0.0f, "Infectivity_Scale_Type", "SINUSOIDAL_FUNCTION_OF_TIME" );
+        initConfigTypeMap( "Infectivity_Sinusoidal_Forcing_Phase",     &infectivity_sinusoidal_forcing_phase,     Infectivity_Sinusoidal_Forcing_Phase_DESC_TEXT,     0.0f, 365.0f,  0.0f, "Infectivity_Scale_Type", "SINUSOIDAL_FUNCTION_OF_TIME" );
         initConfigTypeMap( "Infectivity_Exponential_Baseline",         &infectivity_exponential_baseline,         Infectivity_Exponential_Baseline_DESC_TEXT,         0.0f, 1.0f,    0.0f, "Infectivity_Scale_Type", "EXPONENTIAL_FUNCTION_OF_TIME" );
         initConfigTypeMap( "Infectivity_Exponential_Delay",            &infectivity_exponential_delay,            Infectivity_Exponential_Delay_DESC_TEXT,            0.0f, FLT_MAX, 0.0f, "Infectivity_Scale_Type", "EXPONENTIAL_FUNCTION_OF_TIME" );
         initConfigTypeMap( "Infectivity_Exponential_Rate",             &infectivity_exponential_rate,             Infectivity_Exponential_Rate_DESC_TEXT,             0.0f, FLT_MAX, 0.0f, "Infectivity_Scale_Type", "EXPONENTIAL_FUNCTION_OF_TIME" );
-        initConfigTypeMap( "Infectivity_Boxcar_Forcing_Amplitude",     &infectivity_boxcar_forcing_amplitude,     Boxcar_Infectivity_Forcing_Amplitude_DESC_TEXT,     0.0f, FLT_MAX, 0.0f, "Infectivity_Scale_Type", "ANNUAL_BOXCAR_FUNCTION" );
-        initConfigTypeMap( "Infectivity_Boxcar_Forcing_Start_Time",    &infectivity_boxcar_start_time,            Boxcar_Infectivity_Forcing_Start_Time_DESC_TEXT,    0.0f, 365.0f,  0.0f, "Infectivity_Scale_Type", "ANNUAL_BOXCAR_FUNCTION" );
-        initConfigTypeMap( "Infectivity_Boxcar_Forcing_End_Time",      &infectivity_boxcar_end_time,              Boxcar_Infectivity_Forcing_End_Time_DESC_TEXT,      0.0f, 365.0f,  0.0f, "Infectivity_Scale_Type", "ANNUAL_BOXCAR_FUNCTION" );
+        initConfigTypeMap( "Infectivity_Boxcar_Forcing_Amplitude",     &infectivity_boxcar_forcing_amplitude,     Infectivity_Boxcar_Forcing_Amplitude_DESC_TEXT,     0.0f, FLT_MAX, 0.0f, "Infectivity_Scale_Type", "ANNUAL_BOXCAR_FUNCTION" );
+        initConfigTypeMap( "Infectivity_Boxcar_Forcing_Start_Time",    &infectivity_boxcar_start_time,            Infectivity_Boxcar_Forcing_Start_Time_DESC_TEXT,    0.0f, 365.0f,  0.0f, "Infectivity_Scale_Type", "ANNUAL_BOXCAR_FUNCTION" );
+        initConfigTypeMap( "Infectivity_Boxcar_Forcing_End_Time",      &infectivity_boxcar_end_time,              Infectivity_Boxcar_Forcing_End_Time_DESC_TEXT,      0.0f, 365.0f,  0.0f, "Infectivity_Scale_Type", "ANNUAL_BOXCAR_FUNCTION" );
 
         initConfig( "Animal_Reservoir_Type", animal_reservoir_type, config, MetadataDescriptor::Enum( "animal_reservoir_type", Animal_Reservoir_Type_DESC_TEXT, MDD_ENUM_ARGS(AnimalReservoir) ) );
         initConfigTypeMap( "Zoonosis_Rate", &zoonosis_rate, Zoonosis_Rate_DESC_TEXT, 0.0f, 1.0f, 0.0f, "Animal_Reservoir_Type", "CONSTANT_ZOONOSIS,ZOONOSIS_FROM_DEMOGRAPHICS" );
-        if( animal_reservoir_type != AnimalReservoir::NO_ZOONOSIS && !JsonConfigurable::_dryrun )
+
+        if( animal_reservoir_type != AnimalReservoir::NO_ZOONOSIS )
         {
-            if( GET_CONFIGURABLE(SimulationConfig) &&
+            if( !JsonConfigurable::_dryrun &&
+                GET_CONFIGURABLE(SimulationConfig) &&
                 ( GET_CONFIGURABLE(SimulationConfig)->heterogeneous_intranode_transmission_enabled || 
                   GET_CONFIGURABLE(SimulationConfig)->number_basestrains > 1 ||
                   GET_CONFIGURABLE(SimulationConfig)->number_substrains > 1 ) )
@@ -371,28 +408,36 @@ namespace Kernel
             }
         }
 
+        initConfigTypeMap( "Zoonosis_Rate", &zoonosis_rate, Zoonosis_Rate_DESC_TEXT, 0.0f, 1.0f, 0.0f, "Animal_Reservoir_Type", "CONSTANT_ZOONOSIS,ZOONOSIS_FROM_DEMOGRAPHICS" );
+
         // TODO: there is conditionality in which of the following configurable parameters need to be read in based on the values of certain enums/booleans
-        initConfigTypeMap( "Enable_Birth",                    &vital_birth,             Enable_Birth_DESC_TEXT,                   true,  "Enable_Vital_Dynamics"  );
+        initConfigTypeMap( "x_Other_Mortality",               &x_othermortality,        x_Other_Mortality_DESC_TEXT,    0.0f, FLT_MAX, 1.0f, "Enable_Natural_Mortality" );
+        
+        initConfigTypeMap( "Enable_Initial_Prevalence",       &enable_initial_prevalence,             Enable_Initial_Prevalence_DESC_TEXT, false, "Simulation_Type", "GENERIC_SIM, VECTOR_SIM, STI_SIM, ENVIRONMENTAL_SIM, MALARIA_SIM");
+        initConfigTypeMap( "Enable_Birth",                    &vital_birth,             Enable_Birth_DESC_TEXT,         true,                "Enable_Vital_Dynamics" );
 
-        initConfigTypeMap( "Enable_Demographics_Other",       &demographics_other,      Enable_Demographics_Other_DESC_TEXT,      false );  // DJK*: Should be "Enable_Risk_Factor_Heterogeneity_At_Birth"
-        initConfigTypeMap( "Enable_Demographics_Gender",      &demographics_gender,     Enable_Demographics_Gender_DESC_TEXT,     true  );  // DJK*: This needs to be configurable!
+        initConfigTypeMap( "Enable_Demographics_Risk",        &enable_demographics_risk,       Enable_Demographics_Risk_DESC_TEXT,       false, "Simulation_Type", "VECTOR_SIM,MALARIA_SIM,TBHIV_SIM,DENGUE_SIM");  // DJK*: Should be "Enable_Risk_Factor_Heterogeneity_At_Birth"
+        initConfigTypeMap( "Enable_Demographics_Gender",      &demographics_gender,     Enable_Demographics_Gender_DESC_TEXT,     true );  // DJK*: This needs to be configurable!
+        initConfigTypeMap( "Enable_Immunity_Distribution",     &enable_demographics_immunity_dist, Enable_Immunity_Distribution_DESC_TEXT, false, "Enable_Immunity" );
 
-        initConfigTypeMap( "Enable_Maternal_Transmission",    &maternal_transmission,   Enable_Maternal_Transmission_DESC_TEXT,   false, "Enable_Birth" );
-        initConfigTypeMap( "Maternal_Transmission_Probability", &prob_maternal_transmission, Maternal_Transmission_Probability_DESC_TEXT, 0.0f, 1.0f,    0.0f, "Enable_Maternal_Transmission"  );
+        initConfigTypeMap( "Enable_Maternal_Infection_Transmission",    &enable_maternal_infection_transmission,   Enable_Maternal_Infection_Transmission_DESC_TEXT,   false, "Enable_Birth" );
+        initConfigTypeMap( "Maternal_Infection_Transmission_Probability", &prob_maternal_infection_transmission, Maternal_Infection_Transmission_Probability_DESC_TEXT, 0.0f, 1.0f,    0.0f, "Enable_Maternal_Infection_Transmission" );
 
         initConfigTypeMap( "Enable_Demographics_Birth",       &demographics_birth,      Enable_Demographics_Birth_DESC_TEXT,      false, "Enable_Birth" );  // DJK*: Should be "Enable_Disease_Heterogeneity_At_Birth"
         initConfig( "Birth_Rate_Dependence", vital_birth_dependence, config, MetadataDescriptor::Enum(Birth_Rate_Dependence_DESC_TEXT, Birth_Rate_Dependence_DESC_TEXT, MDD_ENUM_ARGS(VitalBirthDependence)), "Enable_Birth" );
 
         initConfig( "Individual_Sampling_Type", ind_sampling_type, config, MetadataDescriptor::Enum("ind_sampling_type", Individual_Sampling_Type_DESC_TEXT, MDD_ENUM_ARGS(IndSamplingType)) );
-        initConfigTypeMap( "Relative_Sample_Rate_Immune",       &sample_rate_immune,                Sample_Rate_Immune_DESC_TEXT, RELATIVE_SAMPLE_RATE_IMMUNE_MINIMUM,  1.0f,  0.1f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_IMMUNE_STATE" );
+
+        initConfigTypeMap( "Base_Individual_Sample_Rate",       &base_sample_rate,                  Base_Individual_Sample_Rate_DESC_TEXT,       0.001f,  1.0f,  1.0f, "Individual_Sampling_Type", "FIXED_SAMPLING,ADAPTED_SAMPLING_BY_IMMUNE_STATE");
+        initConfigTypeMap( "Relative_Sample_Rate_Immune",       &rel_sample_rate_immune,            Relative_Sample_Rate_Immune_DESC_TEXT,       0.001f,  1.0f,  0.1f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_IMMUNE_STATE" );
         initConfigTypeMap( "Immune_Threshold_For_Downsampling", &immune_threshold_for_downsampling, Immune_Threshold_For_Downsampling_DESC_TEXT, 0.0f,    1.0f,  0.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_IMMUNE_STATE" );
-        initConfigTypeMap( "Sample_Rate_Birth",                 &sample_rate_birth,                 Sample_Rate_Birth_DESC_TEXT,                 0.0f, 1000.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE");
-        initConfigTypeMap( "Sample_Rate_0_18mo",                &sample_rate_0_18mo,                Sample_Rate_0_18mo_DESC_TEXT,                0.0f, 1000.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
-        initConfigTypeMap( "Sample_Rate_18mo_4yr",              &sample_rate_18mo_4yr,              Sample_Rate_18mo_4yr_DESC_TEXT,              0.0f, 1000.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
-        initConfigTypeMap( "Sample_Rate_5_9",                   &sample_rate_5_9,                   Sample_Rate_5_9_DESC_TEXT,                   0.0f, 1000.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
-        initConfigTypeMap( "Sample_Rate_10_14",                 &sample_rate_10_14,                 Sample_Rate_10_14_DESC_TEXT,                 0.0f, 1000.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
-        initConfigTypeMap( "Sample_Rate_15_19",                 &sample_rate_15_19,                 Sample_Rate_15_19_DESC_TEXT,                 0.0f, 1000.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
-        initConfigTypeMap( "Sample_Rate_20_Plus",               &sample_rate_20_plus,               Sample_Rate_20_Plus_DESC_TEXT,               0.0f, 1000.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
+        initConfigTypeMap( "Sample_Rate_Birth",                 &sample_rate_birth,                 Sample_Rate_Birth_DESC_TEXT,                 0.001f,  1.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
+        initConfigTypeMap( "Sample_Rate_0_18mo",                &sample_rate_0_18mo,                Sample_Rate_0_18mo_DESC_TEXT,                0.001f,  1.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
+        initConfigTypeMap( "Sample_Rate_18mo_4yr",              &sample_rate_18mo_4yr,              Sample_Rate_18mo_4yr_DESC_TEXT,              0.001f,  1.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
+        initConfigTypeMap( "Sample_Rate_5_9",                   &sample_rate_5_9,                   Sample_Rate_5_9_DESC_TEXT,                   0.001f,  1.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
+        initConfigTypeMap( "Sample_Rate_10_14",                 &sample_rate_10_14,                 Sample_Rate_10_14_DESC_TEXT,                 0.001f,  1.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
+        initConfigTypeMap( "Sample_Rate_15_19",                 &sample_rate_15_19,                 Sample_Rate_15_19_DESC_TEXT,                 0.001f,  1.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
+        initConfigTypeMap( "Sample_Rate_20_Plus",               &sample_rate_20_plus,               Sample_Rate_20_plus_DESC_TEXT,               0.001f,  1.0f,  1.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
         initConfigTypeMap( "Max_Node_Population_Samples",       &max_sampling_cell_pop,             Max_Node_Population_Samples_DESC_TEXT,       1.0f, FLT_MAX, 30.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_POPULATION_SIZE,ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE" );
 
         initConfig( "Population_Scale_Type", population_scaling,  config, MetadataDescriptor::Enum(Population_Scale_Type_DESC_TEXT, Population_Scale_Type_DESC_TEXT, MDD_ENUM_ARGS(PopulationScaling)) );
@@ -403,14 +448,16 @@ namespace Kernel
 
         initConfigTypeMap( "x_Birth",                           &x_birth,                    x_Birth_DESC_TEXT,                           0.0f, FLT_MAX, 1.0f, "Enable_Birth" );
 
+
         initConfig( "Birth_Rate_Time_Dependence", vital_birth_time_dependence, config, MetadataDescriptor::Enum("vital_birth_time_dependence", Birth_Rate_Time_Dependence_DESC_TEXT, MDD_ENUM_ARGS(VitalBirthTimeDependence)), "Enable_Birth" ); // node only (move)
-        initConfigTypeMap( "Birth_Rate_Sinusoidal_Forcing_Amplitude", &birth_rate_sinusoidal_forcing_amplitude, Sinusoidal_Birth_Rate_Forcing_Amplitude_DESC_TEXT, 0.0f,    1.0f, 0.0f, "Birth_Rate_Time_Dependence", "SINUSOIDAL_FUNCTION_OF_TIME" );
-        initConfigTypeMap( "Birth_Rate_Sinusoidal_Forcing_Phase",     &birth_rate_sinusoidal_forcing_phase,     Sinusoidal_Birth_Rate_Forcing_Phase_DESC_TEXT,     0.0f,  365.0f, 0.0f, "Birth_Rate_Time_Dependence", "SINUSOIDAL_FUNCTION_OF_TIME" );
-        initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_Amplitude",     &birth_rate_boxcar_forcing_amplitude,     Boxcar_Birth_Rate_Forcing_Amplitude_DESC_TEXT,     0.0f, FLT_MAX, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );
-        initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_Start_Time",    &birth_rate_boxcar_start_time,            Boxcar_Birth_Rate_Forcing_Start_Time_DESC_TEXT,    0.0f,  365.0f, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );
-        initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_End_Time",      &birth_rate_boxcar_end_time,              Boxcar_Birth_Rate_Forcing_End_Time_DESC_TEXT,      0.0f,  365.0f, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );      
+        initConfigTypeMap( "Birth_Rate_Sinusoidal_Forcing_Amplitude", &birth_rate_sinusoidal_forcing_amplitude, Birth_Rate_Sinusoidal_Forcing_Amplitude_DESC_TEXT, 0.0f,    1.0f, 0.0f, "Birth_Rate_Time_Dependence", "SINUSOIDAL_FUNCTION_OF_TIME" );
+        initConfigTypeMap( "Birth_Rate_Sinusoidal_Forcing_Phase",     &birth_rate_sinusoidal_forcing_phase,     Birth_Rate_Sinusoidal_Forcing_Phase_DESC_TEXT,     0.0f,  365.0f, 0.0f, "Birth_Rate_Time_Dependence", "SINUSOIDAL_FUNCTION_OF_TIME" );
+        initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_Amplitude",     &birth_rate_boxcar_forcing_amplitude,     Birth_Rate_Boxcar_Forcing_Amplitude_DESC_TEXT,     0.0f, FLT_MAX, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );
+        initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_Start_Time",    &birth_rate_boxcar_start_time,            Birth_Rate_Boxcar_Forcing_Start_Time_DESC_TEXT,    0.0f,  365.0f, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );
+        initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_End_Time",      &birth_rate_boxcar_end_time,              Birth_Rate_Boxcar_Forcing_End_Time_DESC_TEXT,      0.0f,  365.0f, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );      
        
         bool ret = JsonConfigurable::Configure( config );
+        // something is really screwed up with this. Don't initconfig it above if we're just using SimConfig's
         return ret;
     }
 
@@ -418,7 +465,7 @@ namespace Kernel
     {
         Configure( EnvPtr->Config );
 
-        if(GET_CONFIGURABLE(SimulationConfig)->susceptibility_scaling == SusceptibilityScaling::LOG_LINEAR_FUNCTION_OF_TIME)
+        if(susceptibility_scaling_type == SusceptibilityScalingType::LOG_LINEAR_FUNCTION_OF_TIME)
         {
             susceptibility_dynamic_scaling = 0.0f; // set susceptibility to zero so it may ramp up over time according to the scaling function
         }
@@ -459,16 +506,6 @@ namespace Kernel
         }
     }
 
-    void Node::SetMonteCarloParameters(float indsamplerate, int nummininf)
-    {
-        Ind_Sample_Rate         = indsamplerate;
-
-        if ((ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_IMMUNE_STATE) && (sample_rate_immune * Ind_Sample_Rate <= RELATIVE_SAMPLE_RATE_IMMUNE_MINIMUM))
-        {
-            throw IncoherentConfigurationException(__FILE__, __LINE__, __FUNCTION__, "Relative_Sample_Rate_Immune", sample_rate_immune, "Base_Individual_Sample_Rate", Ind_Sample_Rate, "and Individual_Sampling_Type: ADAPTED_SAMPLING_BY_IMMUNE_STATE" );
-        }
-    }
-
     void Node::SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory, bool white_list_enabled )
     {
         // Parameters set from an input filestream
@@ -481,50 +518,52 @@ namespace Kernel
 
 
         //////////////////////////////////////////////////////////////////////////////////////
-        node_properties = NPFactory::GetInstance()->GetInitialValues( GetRng(), demographics.GetJsonObject() );
+        // Hack: commenting out for pymod work. Need real solution once I understand all this.
+        if( NPFactory::GetInstance() )
+        {
+            node_properties = NPFactory::GetInstance()->GetInitialValues( GetRng(), demographics.GetJsonObject() );
+        }
 
         LOG_DEBUG( "Looking for Individual_Properties in demographics.json file(s)\n" );
-        IPFactory::GetInstance()->Initialize( GetExternalID(), demographics.GetJsonObject(), white_list_enabled );
-
+        if( IPFactory::GetInstance() )
+        {
+            IPFactory::GetInstance()->Initialize( GetExternalID(), demographics.GetJsonObject(), white_list_enabled );
+        }
         //////////////////////////////////////////////////////////////////////////////////////
 
         birthrate = float(demographics["NodeAttributes"]["BirthRate"].AsDouble());
         
         release_assert(params());
-        if (demographics_other) 
+
+        if (enable_natural_mortality) // this break pymod
         {
-            Above_Poverty = float(demographics["NodeAttributes"]["AbovePoverty"].AsDouble());
-            urban = (demographics["NodeAttributes"]["Urban"].AsInt() != 0);
+            if( vital_death_dependence == VitalDeathDependence::NONDISEASE_MORTALITY_BY_AGE_AND_GENDER )
+            {
+                LOG_DEBUG( "Parsing IndividualAttributes->MortalityDistribution tag in node demographics file.\n" );
+                MortalityDistribution = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["MortalityDistribution"], "gender", "age");
+            }
+            else if( vital_death_dependence == VitalDeathDependence::NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER )
+            {
+                if (vital_death_dependence == VitalDeathDependence::NONDISEASE_MORTALITY_BY_AGE_AND_GENDER)
+                {
+                    LOG_DEBUG("Parsing IndividualAttributes->MortalityDistribution tag in node demographics file.\n");
+                    MortalityDistribution = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["MortalityDistribution"], "gender", "age");
+                }
+                else if (vital_death_dependence == VitalDeathDependence::NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER)
+                {
+                    LOG_DEBUG("Parsing IndividualAttributes->MortalityDistributionMale and IndividualAttributes->MortalityDistributionFemale tags in node demographics file.\n");
+                    MortalityDistributionMale = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["MortalityDistributionMale"], "age", "year");
+                    MortalityDistributionFemale = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["MortalityDistributionFemale"], "age", "year");
+                }
+            }
         }
 
-        VitalDeathDependence::Enum vital_death_dependence = GET_CONFIGURABLE(SimulationConfig)->vital_death_dependence;
-        if( vital_death_dependence == VitalDeathDependence::NONDISEASE_MORTALITY_BY_AGE_AND_GENDER )
-        {
-            LOG_DEBUG( "Parsing IndividualAttributes->MortalityDistribution tag in node demographics file.\n" );
-            MortalityDistribution = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["MortalityDistribution"], "gender", "age");
-        }
-        else if( vital_death_dependence == VitalDeathDependence::NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER )
-        {
-            LOG_DEBUG( "Parsing IndividualAttributes->MortalityDistributionMale and IndividualAttributes->MortalityDistributionFemale tags in node demographics file.\n" );
-            MortalityDistributionMale   = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["MortalityDistributionMale"  ], "age", "year");
-            MortalityDistributionFemale = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["MortalityDistributionFemale"], "age", "year");
-        }
-
-        if (params()->immunity_initialization_distribution_type == DistributionType::DISTRIBUTION_COMPLEX)
-        {
-            LoadImmunityDemographicsDistribution();
-        }
         LoadOtherDiseaseSpecificDistributions();
 
         if (vital_birth_dependence != VitalBirthDependence::FIXED_BIRTH_RATE)// births per cell per day is population dependent
         {
             // If individual pregnancies will begin based on age-dependent fertility rates, create the relevant distribution here:
-            if(vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE) 
-            {
-                LOG_DEBUG( "Parsing IndividualAttributes->FertilityDistribution tag in node demographics file.\n" );
-                FertilityDistribution = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["FertilityDistribution"], "urban", "age");
-            }
-            else if(vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR)
+            if (vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR)
             {
                 LOG_DEBUG( "Parsing IndividualAttributes->FertilityDistribution tag in node demographics file.\n" );
                 FertilityDistribution = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["FertilityDistribution"], "age", "year");
@@ -544,7 +583,6 @@ namespace Kernel
                 }
                 else if ( vital_birth_dependence == VitalBirthDependence::DEMOGRAPHIC_DEP_RATE   ||
                     vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES ||
-                    vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE ||
                     vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR )
                 {
                     birthrate = float(INDIVIDUAL_BIRTHRATE); // TBD: literal should be defined as float // DJK: why is this even needed for age-specific fertility?
@@ -578,10 +616,10 @@ namespace Kernel
 
     void Node::LoadImmunityDemographicsDistribution()
     {
-        // For GENERIC_SIM (and related human-immune-model classes), "ImmunityDistribution" is an age-specific probability of being immune
-        // For derived classes, similar age-dependent distributions relate specifically to vaccine dose history (POLIO_SIM) and MSP/PfEMP1 antibodies (MALARIA_SIM)
-        LOG_DEBUG( "Parsing IndividualAttributes->ImmunityDistribution tag in node demographics file.\n" );
-        ImmunityDistribution = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["ImmunityDistribution"], "age");
+        // Overridden in derived classes POLIO_SIM and MALARIA_SIM
+        // If not overridden, "SusceptibilityDistribution" provides age-specific probabilities of being susceptible (1.0 = not immune; 0.0 = immune)
+        LOG_DEBUG( "Parsing IndividualAttributes->SusceptibilityDistribution tag in node demographics file.\n" );
+        SusceptibilityDistribution = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["SusceptibilityDistribution"]);
     }
 
     ITransmissionGroups* Node::CreateTransmissionGroups()
@@ -615,7 +653,7 @@ namespace Kernel
 
         transmissionGroups = CreateTransmissionGroups();
 
-        if( IPFactory::GetInstance()->HasIPs() && params()->heterogeneous_intranode_transmission_enabled )
+        if( IPFactory::GetInstance() && IPFactory::GetInstance()->HasIPs() && params()->heterogeneous_intranode_transmission_enabled ) 
         {
             ValidateIntranodeTransmissionConfiguration();
 
@@ -653,11 +691,23 @@ namespace Kernel
     }
 
     std::map< std::string, float >
-    Node::GetTotalContagion()
+    Node::GetContagionByRoute()
     const
     {
         // Honestly not sure how to implement this in the general case yet.
-        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "This function is only supported in NodeTyphoid at this time." );
+        //throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "This function is only supported in NodeTyphoid at this time." );
+        std::map< std::string, float > returnThis;
+        release_assert( GetTransmissionRoutes().size() > 0 ); 
+        for( auto & route: GetTransmissionRoutes() )
+        {
+            // how do we get membership? That's from an individual, but we are at node level here?????
+            // Need to get proper mapping for route name, route idx, and group id. Just hacking it here.
+            // This shouldn't be so "exposed". The tx group class should worry about indices.
+            // I don't want to know/worry about route indices here but don't want to rearch tx groups API either.
+            auto contagion = transmissionGroups->GetTotalContagion( nullptr ); // This nullptr thing enables skipping-specific (test) functionality in the function
+            returnThis.insert( std::make_pair( route, contagion ) );
+        }
+        return returnThis;
     }
 
     float Node::GetTotalContagion(const TransmissionGroupMembership_t* membership)
@@ -677,10 +727,10 @@ namespace Kernel
 
     void Node::ExposeIndividual(IInfectable* candidate, const TransmissionGroupMembership_t* individual, float dt)
     {
-        /*if( bSkipping )
+        if( bSkipping )
         {
             return;
-        }*/
+        }
         transmissionGroups->ExposeToContagion(candidate, individual, dt);
     }
 
@@ -755,19 +805,24 @@ namespace Kernel
         }
     }
 
-    /*inline int Node::calcGap( float maxInfectionProb )
+    void Node::PreUpdate()
     {
-        float gap = 1;
-        if (maxInfectionProb>=1.0)
+        if( IndividualHumanConfig::enable_skipping )
         {
-            gap=1;
+            if( gap == 1 )
+            {
+                bSkipping = false;
+                //ProbabilityNumber max_prob = std::max( maxInfectionProb[ TransmissionRoute::TRANSMISSIONROUTE_CONTACT ], maxInfectionProb[ TransmissionRoute::TRANSMISSIONROUTE_ENVIRONMENTAL ] );
+                gap = calcGap();
+                LOG_DEBUG_F( "The (next) gap to skip for this node is calculated as: %d.\n", gap );
+            }
+            else
+            {
+                bSkipping=true;
+                gap--;
+            }
         }
-        else if (maxInfectionProb>0.0)
-        {
-            gap=int(ceil(log(1.0-randgen->e())/log(1.0-maxInfectionProb))); //geometric based on fMaxInfectionProb
-        }
-        return gap;
-    }*/
+    }
 
     void Node::Update(float dt)
     {
@@ -811,23 +866,14 @@ namespace Kernel
         // !!! GH-798 - I had to change this for loop to use an index so that a user could have an Outbreak intervention within
         // !!! a NLHTIV. Outbreak will import/add people to the scenario.  This gets around the issue of the iterator being violated.
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //bSkipping = false; // changes from individual to individual. Initialize to false
         for( int i = 0 ; i < individualHumans.size() ; ++i )
         {
             IIndividualHuman* individual = individualHumans[i];
 
             // TBD: Move this to Typhoid layer without copy-pasting the entire function
             // Each route has separate max prob and so separate gap. Has to be handled
-            /*if( gap == 1 )
-            {
-                bSkipping = false;
-                gap = calcGap( maxInfectionProb[ TransmissionRoute::TRANSMISSIONROUTE_CONTACT ] ); // TBD HACK: Pass map
-            }
-            else
-            {
-                bSkipping=true;
-                gap--;
-            }*/
+            PreUpdate();
+
             individual->Update(GetTime().time, dt);
 
             // JPS: Should we do this later, after updateVitalDynamics() instead?  
@@ -845,7 +891,8 @@ namespace Kernel
         //----------------------------------------------------------------
 
         // Vital dynamics for this time step at community level (handles mainly births)
-        if (params()->vital_dynamics)
+
+        if (vital_dynamics)
         {
             updateVitalDynamics(dt);
         }
@@ -856,9 +903,9 @@ namespace Kernel
             for (auto individual : individualHumans) 
             {
                 float current_mc_weight = float(individual->GetMonteCarloWeight());
-                if (current_mc_weight == 1.0f/Ind_Sample_Rate)  //KM: In immune state downsampling, there is only the regular sampling and downsampled; don't need to go through the logic if we've already been downsampled.
+                if (current_mc_weight == 1.0f/base_sample_rate)  //KM: In immune state downsampling, there is only the regular sampling and downsampled; don't need to go through the logic if we've already been downsampled.
                 {
-                   float desired_mc_weight = 1.0f/float(adjustSamplingRateByImmuneState(Ind_Sample_Rate, ( individual->GetAcquisitionImmunity() < immune_threshold_for_downsampling ) && !individual->IsInfected() ));
+                   float desired_mc_weight = 1.0f/float(adjustSamplingRateByImmuneState(base_sample_rate, ( individual->GetAcquisitionImmunity() < immune_threshold_for_downsampling ) && !individual->IsInfected() ));
                    if (desired_mc_weight > current_mc_weight)
                    {
                        LOG_DEBUG_F("MC Sampling: acq. immunity = %f, is infected = %i, current MC weight = %f, desired MC weight = %f\n", individual->GetAcquisitionImmunity(), individual->IsInfected(), current_mc_weight,desired_mc_weight);
@@ -921,12 +968,14 @@ namespace Kernel
             }
         }
 
-        if(GET_CONFIGURABLE(SimulationConfig)->susceptibility_scaling == SusceptibilityScaling::LOG_LINEAR_FUNCTION_OF_TIME)
+        if(susceptibility_scaling_type == SusceptibilityScalingType::LOG_LINEAR_FUNCTION_OF_TIME)
         {
-            susceptibility_dynamic_scaling += dt * GET_CONFIGURABLE(SimulationConfig)->susceptibility_scaling_rate;
+            susceptibility_dynamic_scaling += dt*susceptibility_scaling_rate;
 
             if(susceptibility_dynamic_scaling > 1.0f)
-                susceptibility_dynamic_scaling = 1.0f; // once susceptibility reaches its nominal value it stays there
+            {
+                susceptibility_dynamic_scaling = 1.0f;
+            }
         }
 
         // Increment simulation time counter
@@ -1006,24 +1055,37 @@ namespace Kernel
         }        
         transmissionGroups->EndUpdate(infectivity_correction);
         LOG_DEBUG_F("[updateInfectivity] final infectionrate = %f\n", infectionrate);
+
+        if( IndividualHumanConfig::enable_skipping )
+        {
+            computeMaxInfectionProb( dt );
+            gap = calcGap();
+            LOG_INFO_F( "The (initial) gap to skip for this node is calculated as: %d.\n", int(gap) );
+        }
+    }
+
+    void Node::accumulateIndividualPopStatsByValue(
+        float mcw, float infectiousness, bool poss_mom, bool is_infected
+    )
+    {
+        // These are zeroed out in ResetNodeStateCounters before being accumulated each time step
+        statPop          += mcw;
+        Possible_Mothers += long( poss_mom ? mcw : 0);
+        mInfectivity     += infectiousness;
+        Infected         += is_infected ? mcw : 0;
     }
 
     void Node::accumulateIndividualPopulationStatistics(float dt, IIndividualHuman* individual)
     {
-        float mc_weight = float(individual->GetMonteCarloWeight());
-
         individual->UpdateInfectiousness(dt);
-        float infectiousness = mc_weight * individual->GetInfectiousness();
+
+        float mcw = float(individual->GetMonteCarloWeight());
+        float infectiousness = mcw * individual->GetInfectiousness();
         if( infectiousness > 0 )
         {
             LOG_DEBUG_F( "infectiousness = %f\n", infectiousness );
         }
-
-        // These are zeroed out in ResetNodeStateCounters before being accumulated each time step
-        statPop          += mc_weight;
-        Possible_Mothers += long(individual->IsPossibleMother() ? mc_weight : 0);
-        mInfectivity     += infectiousness;
-        Infected         += individual->IsInfected() ? mc_weight : 0;
+        accumulateIndividualPopStatsByValue( mcw, infectiousness, individual->IsPossibleMother(), individual->IsInfected() );
     }
 
     void Node::updatePopulationStatistics(float dt)
@@ -1110,6 +1172,98 @@ namespace Kernel
         return correction;
     }
 
+    // This allows subclass to override this function and replace it, specifically PyMod in which node has no individuals and
+    // individual parameters are passed
+    void Node::considerPregnancyForIndividual(
+        bool bPossibleMother,
+        bool bIsPregnant,
+        float age,
+        int individual_id,
+        float dt,
+        IIndividualHuman* pIndividual
+    )
+    {
+        if( vital_birth_dependence == VitalBirthDependence::FIXED_BIRTH_RATE ||
+            vital_birth_dependence == VitalBirthDependence::POPULATION_DEP_RATE ||
+            vital_birth_dependence == VitalBirthDependence::DEMOGRAPHIC_DEP_RATE
+          )
+        {
+            return;
+        }
+
+        if( bIsPregnant )
+        {
+            if( pIndividual != nullptr )
+            {
+                if( pIndividual->UpdatePregnancy( dt ) )
+                {
+                    populateNewIndividualFromMotherPointer( pIndividual );
+                }
+            }
+            else
+            {
+                // UPDATE PREGNANCY BY INDIVIDUAL (MOTHER) ID
+                if( updatePregnancyForIndividual( individual_id, dt ) )
+                {
+                    populateNewIndividualFromMotherId( individual_id );
+                }
+            }
+        }
+        else if( bPossibleMother )
+        {
+            ProbabilityNumber step_birthrate = birthrate * dt * x_birth;
+
+            // If we are using an age-dependent fertility rate, then this needs to be accessed/interpolated based on the current possible-mother's age.
+            if( vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR  ) 
+            {
+                // "FertilityDistribution" is added to map in Node::SetParameters if 'vital_birth_dependence' flag is set to INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR 
+                float temp_birthrate = FertilityDistribution->DrawResultValue(age, float(GetTime().Year()));
+                LOG_DEBUG_F("%d-year-old possible mother has annual fertility rate = %f\n", int(age/DAYSPERYEAR), temp_birthrate * DAYSPERYEAR);
+
+                // In the limit of low birth rate, the probability of becoming pregnant is equivalent to the birth rate.
+                // However, at higher birth rates, some fraction of possible mothers will already be pregnant.  
+                // Roughly speaking, if we want women to give birth every other year, and they gestate for one year,
+                // then the expected time between pregnancy has to be one year, not two.
+                // Hence, the maximum possible birth rate is 1 child per woman per gestation period.
+                if ( temp_birthrate * DAYSPERWEEK * WEEKS_FOR_GESTATION >= 1.0 )
+                {
+                    throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Check birthrate/vital_birth_dependence mismatch in Node::updateVitalDynamics()" );
+                }
+                else
+                {
+                    temp_birthrate /= (1.0F - temp_birthrate * DAYSPERWEEK * WEEKS_FOR_GESTATION);
+                }
+
+                step_birthrate = temp_birthrate * dt * x_birth;
+            }
+
+            if( step_birthrate > 0 && randgen->e() < step_birthrate ) // don't use SMART_DRAW macro; breaks pymod
+            {
+                LOG_DEBUG_F("New pregnancy for %d-year-old\n", int(age/DAYSPERYEAR));
+                float duration = (DAYSPERWEEK * WEEKS_FOR_GESTATION) - (randgen->e() *dt);
+                if( pIndividual != nullptr )
+                {
+                    pIndividual->InitiatePregnancy( duration );
+                }
+                else
+                {
+                    initiatePregnancyForIndividual( individual_id, duration );
+                }
+            }
+        }
+    }
+
+    // These functions are for implementation in derived classes.
+    float Node::initiatePregnancyForIndividual( int individual_id, float duration )
+    {
+        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Should be implemented by derived class" );
+    }
+
+    bool Node::updatePregnancyForIndividual( int individual_id, float dt )
+    {
+        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Should be implemented by derived class" );
+    }
+
     void Node::updateVitalDynamics(float dt)
     {
         long int newborns    = 0;
@@ -1147,85 +1301,79 @@ namespace Kernel
 
             case VitalBirthDependence::POPULATION_DEP_RATE:
             //  Birthrate dependent on current population, determined by census
-            if (ind_sampling_type) {  newborns = long(randgen->Poisson(step_birthrate * statPop)); }        // KTO !TRACK_ALL?  is this right?
-            else {  newborns = long(randgen->Poisson(step_birthrate * individualHumans.size())); }
+            if (ind_sampling_type) { newborns = long(randgen->Poisson(step_birthrate * statPop)); }
+            else { newborns = long(randgen->Poisson(step_birthrate * individualHumans.size())); }
+            LOG_DEBUG_F( "Poisson draw based on birthrate of %f and POPULATION_DEP_RATE mode, with pop = %f says we need %d new babies.\n",
+                         step_birthrate, statPop, newborns
+                       );
             populateNewIndividualsByBirth(newborns);
             break;
 
             case VitalBirthDependence::DEMOGRAPHIC_DEP_RATE:
             // Birthrate dependent on current census females in correct age range
-            if (ind_sampling_type) {  newborns = long(randgen->Poisson(step_birthrate * Possible_Mothers)); }       // KTO !TRACK_ALL?  is this right?
-            else {  newborns = long(randgen->Poisson(step_birthrate * Possible_Mothers)); }
+            if (ind_sampling_type)
+            {
+                newborns = long(randgen->Poisson(step_birthrate * Possible_Mothers));
+            }       // KTO !TRACK_ALL?  is this right?
+            else
+            {
+                newborns = long(randgen->Poisson(step_birthrate * Possible_Mothers));
+            }
+            LOG_DEBUG_F( "Poisson draw based on birthrate of %f and DEMOGRPHIC_DEP_RATE mode, with possible moms = %d says we need %d new babies.\n",
+                         step_birthrate, Possible_Mothers, newborns
+                       );
             populateNewIndividualsByBirth(newborns);
             break;
 
             case VitalBirthDependence::INDIVIDUAL_PREGNANCIES:
-            case VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE:
             case VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR:
             // Birthrate dependent on current census females in correct age range, who have carried a nine-month pregnancy
             // need to process list of people, count down pregnancy counters, if a birth occurs, call Populate(pointer to mother), then come up with new pregnancies
             for( int iHuman = 0 ; iHuman < individualHumans.size() ; iHuman++ )
             {
                 auto individual = individualHumans.at( iHuman );
-
-                if (!individual->IsPossibleMother())
-                {
-                    continue;
-                }
-
-                if (individual->IsPregnant())
-                {
-                    if (individual->UpdatePregnancy(dt))
-                    {
-                        populateNewIndividualFromPregnancy(individual);
-                    }
-                }
-                else
-                {
-                    // If we are using an age-dependent fertility rate, then this needs to be accessed/interpolated based on the current possible-mother's age.
-                    if( vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE || 
-                        vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR  ) 
-                    { 
-                        // "FertilityDistribution" is added to map in Node::SetParameters if 'vital_birth_dependence' flag is set to INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE or INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR 
-                        float temp_birthrate = 0.0f;
-                        if( vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE )
-                        {
-                            temp_birthrate = FertilityDistribution->DrawResultValue(GetUrban(), individual->GetAge());
-                        }
-                        else    // INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR
-                        {
-                            temp_birthrate =FertilityDistribution->DrawResultValue(individual->GetAge(), float(GetTime().Year()));
-                        }
-
-                        LOG_DEBUG_F("%d-year-old possible mother has annual fertility rate = %f\n", int(individual->GetAge()/DAYSPERYEAR), temp_birthrate * DAYSPERYEAR);
-
-                        // In the limit of low birth rate, the probability of becoming pregnant is equivalent to the birth rate.
-                        // However, at higher birth rates, some fraction of possible mothers will already be pregnant.  
-                        // Roughly speaking, if we want women to give birth every other year, and they gestate for one year,
-                        // then the expected time between pregnancy has to be one year, not two.
-                        // Hence, the maximum possible birth rate is 1 child per woman per gestation period.
-                        if ( temp_birthrate * DAYSPERWEEK * WEEKS_FOR_GESTATION >= 1.0 )
-                        {
-                            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Check birthrate/vital_birth_dependence mismatch in Node::updateVitalDynamics()" );
-                        }
-                        else
-                        {
-                            temp_birthrate /= (1.0F - temp_birthrate * DAYSPERWEEK * WEEKS_FOR_GESTATION);
-                        }
-
-                        step_birthrate = temp_birthrate * dt * x_birth;
-                    }
-
-                    if (randgen->e() < step_birthrate) 
-                    {
-                        LOG_DEBUG_F("New pregnancy for %d-year-old\n", int(individual->GetAge()/DAYSPERYEAR));
-                        float duration = (DAYSPERWEEK * WEEKS_FOR_GESTATION) - (randgen->e() *dt);
-                        individual->InitiatePregnancy( duration );
-                    }
-                }
+                considerPregnancyForIndividual( individual->IsPossibleMother(), individual->IsPregnant(), individual->GetAge(), individual->GetSuid().data, dt, individual );
             }
             break;
         }
+    }
+
+    float Node::GetNonDiseaseMortalityRateByAgeAndSex( float age, Gender::Enum sex ) const
+    {
+        if( enable_natural_mortality == false )
+        {
+            return 0.0f;
+        }
+
+        float rate = 0;
+        if ( vital_death_dependence == VitalDeathDependence::NONDISEASE_MORTALITY_BY_AGE_AND_GENDER ||
+             vital_death_dependence == VitalDeathDependence::NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER )
+        {
+            // DJK TODO: Compute natural death at initiation and use timer <ERAD-1857>
+            // for performance, cache and recalculate mortality rate only every month
+            {
+                if( vital_death_dependence == VitalDeathDependence::NONDISEASE_MORTALITY_BY_AGE_AND_GENDER )
+                {
+                    // "MortalityDistribution" is added to map in Node::SetParameters if Death_Rate_Dependence is NONDISEASE_MORTALITY_BY_AGE_AND_GENDER
+                    rate = MortalityDistribution->DrawResultValue( sex == Gender::FEMALE, age);
+                }
+                else
+                {
+                    float year = GetTime().Year(); 
+                    release_assert( MortalityDistributionMale );
+                    if( sex == Gender::MALE )
+                    {
+                        rate = MortalityDistributionMale->DrawResultValue( age, year);
+                    }
+                    else
+                    {
+                        rate = MortalityDistributionFemale->DrawResultValue( age, year);
+                    }
+                }
+            }
+            rate *= x_othermortality;
+        }
+        return rate;
     }
 
     //------------------------------------------------------------------
@@ -1250,14 +1398,14 @@ namespace Kernel
     // (1) ind_sampling_type: TRACK_ALL, FIXED_SAMPLING, ADAPTED_SAMPLING_BY_POPULATION_SIZE, ADAPTED_SAMPLING_BY_AGE_GROUP, ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE
     // (2) demographics_initial, demographics_gender
     // (3) enable_age_initialization, age_initialization_distribution_type
-    // (4) vital_birth_dependence: INDIVIDUAL_PREGNANCIES, INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE must have initial pregnancies initialized
+    // (4) vital_birth_dependence: INDIVIDUAL_PREGNANCIES must have initial pregnancies initialized
     void Node::populateNewIndividualsFromDemographics(int count_new_individuals)
     {
-        if ((ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_IMMUNE_STATE) && (count_new_individuals * RELATIVE_SAMPLE_RATE_IMMUNE_MINIMUM < 1.0)) // At least one individual must be sampled
+        if ((ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_IMMUNE_STATE) && (count_new_individuals*rel_sample_rate_immune*base_sample_rate < 1.0)) // At least one individual must be sampled
         {
-            throw IncoherentConfigurationException(__FILE__, __LINE__, __FUNCTION__, "Relative_Sample_Rate_Immune", sample_rate_immune, "Number of Individuals", float(individualHumans.size()), "and Individual_Sampling_Type: ADAPTED_SAMPLING_BY_IMMUNE_STATE");
+            throw IncoherentConfigurationException(__FILE__, __LINE__, __FUNCTION__, "Sample Rate Immune", rel_sample_rate_immune*base_sample_rate, "Number of Individuals", float(count_new_individuals), "and Individual_Sampling_Type: ADAPTED_SAMPLING_BY_IMMUNE_STATE");
         }
-        
+
         int32_t num_adults = 0 ;
         int32_t num_children = 0 ;
 
@@ -1268,8 +1416,14 @@ namespace Kernel
         double initial_prevalence = 0;
         double female_ratio       = 0.5;
         const double default_age  = 20 * DAYSPERYEAR; // age to use by default if age_initialization_distribution_type config parameter is off.
+        float temp_sampling_rate  = 1.0f;             // default sampling rate
 
-        float temp_sampling_rate  = (ind_sampling_type == IndSamplingType::TRACK_ALL) ? 1.0F : float(Ind_Sample_Rate); // default sampling rate from config if we're doing sampling at all.  modified in case of adapted sampling.
+        // Base sampling rate is only modified for FIXED_SAMPLING or ADAPTED_SAMPLING_BY_IMMUNE_STATE
+        if(ind_sampling_type == IndSamplingType::FIXED_SAMPLING ||
+           ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_IMMUNE_STATE)
+        {
+            temp_sampling_rate = base_sample_rate;
+        }
 
         // Cache pointers to the initial age distribution with the node, so it doesn't have to be created for each individual.
         // After the demographic initialization is complete, it can be removed from the map and deleted
@@ -1283,14 +1437,17 @@ namespace Kernel
             AgeDistribution = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["AgeDistribution"]);
         }
 
-        LOG_DEBUG( "Parsing IndividualAttributes->PrevalenceDistributionFlag tag in node demographics file.\n" );
-        auto prevalence_distribution_type = DistributionFunction::Enum(demographics["IndividualAttributes"]["PrevalenceDistributionFlag"].AsInt());
-        LOG_DEBUG( "Parsing IndividualAttributes->PrevalenceDistribution1 tag in node demographics file.\n" );
-        float prevdist1 = float(demographics["IndividualAttributes"]["PrevalenceDistribution1"].AsDouble());
-        LOG_DEBUG( "Parsing IndividualAttributes->PrevalenceDistribution2 tag in node demographics file.\n" );
-        float prevdist2 = float(demographics["IndividualAttributes"]["PrevalenceDistribution2"].AsDouble());
-        initial_prevalence = Probability::getInstance()->fromDistribution(prevalence_distribution_type, prevdist1, prevdist2, 0, 0);
-
+        //set initial prevalence
+        if (enable_initial_prevalence)
+        {
+            LOG_DEBUG("Parsing IndividualAttributes->PrevalenceDistributionFlag tag in node demographics file.\n");
+            auto prevalence_distribution_type = DistributionFunction::Enum(demographics["IndividualAttributes"]["PrevalenceDistributionFlag"].AsInt());
+            LOG_DEBUG("Parsing IndividualAttributes->PrevalenceDistribution1 tag in node demographics file.\n");
+            float prevdist1 = float(demographics["IndividualAttributes"]["PrevalenceDistribution1"].AsDouble());
+            LOG_DEBUG("Parsing IndividualAttributes->PrevalenceDistribution2 tag in node demographics file.\n");
+            float prevdist2 = float(demographics["IndividualAttributes"]["PrevalenceDistribution2"].AsDouble());
+            initial_prevalence = Probability::getInstance()->fromDistribution(prevalence_distribution_type, prevdist1, prevdist2, 0, 0);
+        }
         // Male/Female ratio implemented as a Gaussian at 50 +/- 1%.
         // TODO: it would be useful to add the possibility to read this from demographics (e.g. as part of enable_age_initialization_distribution by age + gender)
         if (demographics_gender) { female_ratio = randgen->eGauss() * 0.01 + 0.5; }
@@ -1374,7 +1531,7 @@ namespace Kernel
 
             IIndividualHuman* tempind = configureAndAddNewIndividual(1.0F / temp_sampling_rate, float(temp_age), float(initial_prevalence), float(female_ratio));
             
-            if(tempind->GetAge() == 0)
+            if(tempind && tempind->GetAge() == 0)
             {
                 tempind->setupMaternalAntibodies(nullptr, this);
             }
@@ -1383,7 +1540,7 @@ namespace Kernel
             MemoryGauge::CheckMemoryFailure( true );
 
             // Every 1000 individuals, do a StatusReport...
-            if( individualHumans.size() % 1000 == 0 )
+            if( individualHumans.size() % 1000 == 0 && EnvPtr && EnvPtr->getStatusReporter() )
             {
                 EnvPtr->getStatusReporter()->ReportInitializationProgress( individualHumans.size(), count_new_individuals );
             }
@@ -1399,6 +1556,15 @@ namespace Kernel
             delete AgeDistribution;
             AgeDistribution = nullptr;
         }
+
+        if(enable_demographics_immunity_dist)
+        {
+            if( SusceptibilityConfig::susceptibility_initialization_distribution_type == DistributionType::DISTRIBUTION_COMPLEX )
+            {
+                delete SusceptibilityDistribution;
+                SusceptibilityDistribution = nullptr;
+            }
+        }
     }
 
     void Node::InitializeTransmissionGroupPopulations()
@@ -1412,27 +1578,48 @@ namespace Kernel
 
     void Node::ExtractDataFromDemographics()
     {
-        // ----------------------------------------------------------------------------
-        // --- The following values are used for each individual for a given node.
-        // --- These are extracted here and then used later when creating individuals.
-        // ----------------------------------------------------------------------------
-        immunity_dist_type = DistributionFunction::NOT_INITIALIZED ;
-        immunity_dist1 = 0.0 ;
-        immunity_dist2 = 0.0 ;
-        risk_dist_type = DistributionFunction::NOT_INITIALIZED ;
-        risk_dist1 = 0.0 ;
-        risk_dist2 = 0.0 ;
-
-        if (demographics_other)
+        if (enable_demographics_immunity_dist)
         {
             // set heterogeneous immunity
-            LOG_DEBUG( "Parsing ImmunityDistribution\n" );
-            immunity_dist_type = DistributionFunction::Enum(demographics["IndividualAttributes"]["ImmunityDistributionFlag"].AsInt());
-            immunity_dist1     =                      float(demographics["IndividualAttributes"]["ImmunityDistribution1"   ].AsDouble());
-            immunity_dist2     =                      float(demographics["IndividualAttributes"]["ImmunityDistribution2"   ].AsDouble());
+            LOG_DEBUG("Parsing SusceptibilityDistribution\n");
 
+            if (SusceptibilityConfig::susceptibility_initialization_distribution_type == DistributionType::DISTRIBUTION_SIMPLE)
+            {
+                susceptibility_dist_type = DistributionFunction::Enum(demographics["IndividualAttributes"]["SusceptibilityDistributionFlag"].AsInt());
+
+                // Only allowing FIXED(0), UNIFORM(1), and BIMODAL(6)
+                if(susceptibility_dist_type == 0)
+                {
+                    susceptibility_dist1 = float(demographics["IndividualAttributes"]["SusceptibilityDistribution1"].AsDouble());
+                }
+                else if(susceptibility_dist_type == 1)
+                {
+                    susceptibility_dist1 = float(demographics["IndividualAttributes"]["SusceptibilityDistribution1"].AsDouble());
+                    susceptibility_dist2 = float(demographics["IndividualAttributes"]["SusceptibilityDistribution2"].AsDouble());
+                }
+                else if(susceptibility_dist_type == 6)
+                {
+                    susceptibility_dist1 = float(demographics["IndividualAttributes"]["SusceptibilityDistribution1"].AsDouble());
+                    susceptibility_dist2 = float(demographics["IndividualAttributes"]["SusceptibilityDistribution2"].AsDouble());
+                }
+                else
+                {
+                    throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "SusceptibilityDistributionFlag must be set to 0, 1, or 6.");
+                }
+
+            }
+
+            if (SusceptibilityConfig::susceptibility_initialization_distribution_type == DistributionType::DISTRIBUTION_COMPLEX)
+            {
+                LoadImmunityDemographicsDistribution();
+            }
+        }
+
+        if (enable_demographics_risk)
+        {
             // set heterogeneous risk
             LOG_DEBUG( "Parsing RiskDistribution\n" );
+
             risk_dist_type = DistributionFunction::Enum(demographics["IndividualAttributes"]["RiskDistributionFlag"].AsInt());
             risk_dist1     =                      float(demographics["IndividualAttributes"]["RiskDistribution1"   ].AsDouble());
             risk_dist2     =                      float(demographics["IndividualAttributes"]["RiskDistribution2"   ].AsDouble());
@@ -1442,7 +1629,7 @@ namespace Kernel
     // This function adds newborns to the node according to behavior determined by the settings of various flags:
     // (1) ind_sampling_type: TRACK_ALL, FIXED_SAMPLING, ADAPTED_SAMPLING_BY_POPULATION_SIZE, ADAPTED_SAMPLING_BY_AGE_GROUP, ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE
     // (2) demographics_birth
-    // (3) maternal_transmission
+    // (3) enable_maternal_infection_transmission
     // (4) vital_birth_dependence: FIXED_BIRTH_RATE, POPULATION_DEP_RATE, DEMOGRAPHIC_DEP_RATE. (INDIVIDUAL_PREGNANCIES handled in PopulateNewIndividualFromPregnancy)
     void Node::populateNewIndividualsByBirth(int count_new_individuals)
     {
@@ -1450,11 +1637,17 @@ namespace Kernel
         double temp_prevalence    = 0;
         int    temp_infections    = 0;
         double female_ratio       = 0.5;   // TODO: it would be useful to add the possibility to read this from demographics (e.g. in India where there is a significant gender imbalance at birth)
+        float  temp_sampling_rate = 1.0f;  // default sampling rate
 
-        float  temp_sampling_rate = (ind_sampling_type == IndSamplingType::TRACK_ALL) ? 1.0F : float(Ind_Sample_Rate); // default sampling rate from config if we're doing sampling at all.  modified in case of adapted sampling.
+        // Base sampling rate is only modified for FIXED_SAMPLING or ADAPTED_SAMPLING_BY_IMMUNE_STATE
+        if(ind_sampling_type == IndSamplingType::FIXED_SAMPLING ||
+           ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_IMMUNE_STATE)
+        {
+            temp_sampling_rate = base_sample_rate;
+        }
 
         // Determine the prevalence from which maternal transmission events will be calculated, depending on birth model
-        if (maternal_transmission) 
+        if (enable_maternal_infection_transmission) 
         {
             switch (vital_birth_dependence) 
             {
@@ -1465,75 +1658,99 @@ namespace Kernel
                 temp_prevalence = getPrevalenceInPossibleMothers(); break;
 
             case VitalBirthDependence::INDIVIDUAL_PREGNANCIES: break;
-            case VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE: break;
             case VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR: break;
             default: break;
             }
         }
 
         // For births, the adapted sampling by age uses the 'sample_rate_birth' parameter
-        if (ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_AGE_GROUP || ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE)
+        if (ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_AGE_GROUP || 
+            ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE)
+        {
             temp_sampling_rate *= sample_rate_birth;
+        }
 
         // Modify sampling rate according to population size if so specified
-        if (ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_POPULATION_SIZE || ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE)
-            if (statPop > max_sampling_cell_pop) { temp_sampling_rate *= max_sampling_cell_pop / statPop; }
+        if (ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_POPULATION_SIZE || 
+            ind_sampling_type == IndSamplingType::ADAPTED_SAMPLING_BY_AGE_GROUP_AND_POP_SIZE)
+        {
+            if (statPop > max_sampling_cell_pop)
+            {
+                temp_sampling_rate *= max_sampling_cell_pop / statPop;
+            }
+        }
 
-        if (temp_sampling_rate > 1) 
+        // Now correct sampling rate, in case it is over 100 percent
+        if (temp_sampling_rate > 1.0f) 
         { 
-            LOG_WARN("temp_sampling_rate was greater than 1?!  Are you sure sample_rate_birth, ind_sampling_rate, etc. were specified correctly?\n");
-            temp_sampling_rate = 1; 
+            LOG_WARN("Total sampling rate > 1.0; value reset to 1.0\n");
+            temp_sampling_rate = 1.0f; 
         }
 
         // Loop through potential new births 
         for (int i = 1; i <= count_new_individuals; i++)
         {
             // Condition for rejecting potential individuals based on sampling rate in case we're using sampling
-            if ( ind_sampling_type != IndSamplingType::TRACK_ALL && randgen->e() >= temp_sampling_rate ) continue;
+            if ( ind_sampling_type != IndSamplingType::TRACK_ALL && randgen->e() >= temp_sampling_rate )
+            {
+                LOG_VALID( "Not creating individual\n" );
+                continue;
+            }
 
             // Configure and/or add new individual (EAW: there doesn't appear to be any significant difference between the two cases below)
             IIndividualHuman* child = nullptr;
             if (demographics_birth)
             {
-                child = configureAndAddNewIndividual(1.0F / temp_sampling_rate, 0, float(temp_prevalence) * prob_maternal_transmission, float(female_ratio)); // N.B. temp_prevalence=0 without maternal_transmission flag
+                child = configureAndAddNewIndividual(1.0F / temp_sampling_rate, 0, float(temp_prevalence) * prob_maternal_infection_transmission, float(female_ratio)); // N.B. temp_prevalence=0 without enable_maternal_infection_transmission flag
             }
             else
             {
-                if (maternal_transmission && randgen->e() < temp_prevalence * prob_maternal_transmission)
+                if (enable_maternal_infection_transmission && (randgen->e() < temp_prevalence * prob_maternal_infection_transmission))
                 { 
                     temp_infections = 1;
                 }
 
-                float poverty = (randgen->e() < Above_Poverty) ? 1.0f : 0.0f;
+                //randgen->e() < Above_Poverty) ? 1.0f : 0.0f;
+                // DELETE!!! CALL TO RANDOM GENERATOR!!! THOMAS
+                randgen->e();
                 int gender = randgen->i(Gender::COUNT);
                 child = addNewIndividual(1.0F / temp_sampling_rate, 0.0F, gender,
-                    temp_infections, 1.0F, 1.0F, 1.0F, poverty);
+                    temp_infections, 1.0F, 1.0F, 1.0F);
             }
 
-            child->setupMaternalAntibodies(nullptr, this);
+            if( child != nullptr ) // valid in pymod
+            {
+                child->setupMaternalAntibodies(nullptr, this);
+            }
             Births += 1.0f / temp_sampling_rate;
         }
     }
 
     // Populate with an Individual as an argument
     // This individual is the mother, and will give birth to a child under vital_birth_dependence==INDIVIDUAL_PREGNANCIES
-    void Node::populateNewIndividualFromPregnancy(IIndividualHuman* mother)
+    // This function should only get called frmy PyMod
+    void Node::populateNewIndividualFromMotherId( unsigned int mother_id )
     {
-        //  holds parameters for new birth
-        int child_infections = 0;
-        float child_age      = 0;
-        int child_gender     = Gender::MALE;
-        float mc_weight      = float(mother->GetMonteCarloWeight()); // same sampling weight as mother
-        float child_poverty  = float(mother->GetAbovePoverty()); //same poverty as mother //note, child's financial level independent of mother, may be important for diseases with a social network structure
-        float female_ratio   = 0.5;
-
-
-
-        if (randgen->e() < female_ratio) { child_gender = Gender::FEMALE; }
-
-        if (maternal_transmission)
+        IIndividualHuman* mother = nullptr;
+        for( auto pIndividual : individualHumans )
         {
-            if (mother->IsInfected())
+            if( pIndividual->GetSuid().data == mother_id )
+            {
+                mother = pIndividual;
+                break;
+            }
+        }
+
+        populateNewIndividualFromMotherPointer(  mother );
+    }
+
+    void Node::populateNewIndividualFromMotherPointer( IIndividualHuman* mother )
+    {
+        float mcw      = mother->GetMonteCarloWeight(); // same sampling weight as mother
+        int child_infections = 0;
+        if ( enable_maternal_infection_transmission )
+        {
+            if ( mother->IsInfected() )
             {
                 auto actual_prob_maternal_transmission = mother->getProbMaternalTransmission();
                 if (randgen->e() < actual_prob_maternal_transmission)
@@ -1544,15 +1761,46 @@ namespace Kernel
             }
         }
 
-        IIndividualHuman *child = addNewIndividual(mc_weight, child_age, child_gender, child_infections, 1.0, 1.0, 1.0, child_poverty);
+        // This ridiculous seeming roundabout is for pymod. Need to probably avoid doing this in regular case.
+        auto child_id = populateNewIndividualFromMotherParams( mcw, child_infections );
+        IIndividualHuman* child = nullptr;
+        // This is overhead that looks nasty to accomodate pymod refactor. This 'loop' should hit its 
+        // target immediately by doing reverse loop.
+        for( auto r_it = individualHumans.rbegin(); r_it != individualHumans.rend(); ++r_it )
+        {
+            if( (*r_it)->GetSuid().data == child_id )
+            {
+                child = (*r_it);
+                break;
+            }
+        }
+
         auto context = dynamic_cast<IIndividualHumanContext*>(mother);
         child->setupMaternalAntibodies(context, this);
-        Births += mc_weight;//  Born with age=0 and no infections and added to sim with same sampling weight as mother
+    }
+
+    unsigned int Node::populateNewIndividualFromMotherParams( float mcw, unsigned int child_infections )
+    {
+        //  holds parameters for new birth
+        float child_age      = 0;
+        int child_gender     = Gender::MALE;
+        float female_ratio   = 0.5; 
+
+        if (randgen->e() < female_ratio) { child_gender = Gender::FEMALE; }
+
+        IIndividualHuman *child = addNewIndividual(mcw, child_age, child_gender, child_infections, 1.0, 1.0, 1.0);
+        Births += mcw;//  Born with age=0 and no infections and added to sim with same sampling weight as mother
+        unsigned int new_child_suid = 0;
+        if( child != nullptr )
+        {
+            new_child_suid = child->GetSuid().data;
+        }
+        return new_child_suid;
     }
 
     ProbabilityNumber Node::GetProbMaternalTransmission() const
     {
-        return prob_maternal_transmission;
+        return prob_maternal_infection_transmission;
     }
 
     float Node::getPrevalenceInPossibleMothers()
@@ -1576,19 +1824,18 @@ namespace Kernel
 
     void Node::conditionallyInitializePregnancy(IIndividualHuman* individual)
     {
+        if( individual == nullptr )
+        {
+            // yes this is actually valid under certain scenarios.
+            return;
+        }
+
         float duration;
         float temp_birthrate = birthrate;
 
         if (individual->IsPossibleMother()) // woman of child-bearing age?
         {
-            if(vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE) 
-            { 
-                // "FertilityDistribution" is added to map in Node::SetParameters if 'vital_birth_dependence' flag is set to INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE
-
-                temp_birthrate = FertilityDistribution->DrawResultValue((GetUrban()?1.0:0.0), individual->GetAge());
-                LOG_DEBUG_F("%d-year-old possible mother has annual fertility rate = %f\n", int(individual->GetAge()/DAYSPERYEAR), temp_birthrate * DAYSPERYEAR);
-            }
-            else if(vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR) 
+            if(vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR) 
             { 
                 // "FertilityDistribution" is added to map in Node::SetParameters if 'vital_birth_dependence' flag is set to INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR
 
@@ -1605,43 +1852,46 @@ namespace Kernel
         }
     }
 
-    IIndividualHuman* Node::createHuman(suids::suid id, float monte_carlo_weight, float initial_age, int gender, float isabovepoverty)
+    IIndividualHuman* Node::createHuman(suids::suid id, float monte_carlo_weight, float initial_age, int gender)
     {
-        return IndividualHuman::CreateHuman(this, id, monte_carlo_weight, initial_age, gender, isabovepoverty);
+        return IndividualHuman::CreateHuman(this, id, monte_carlo_weight, initial_age, gender);
     }
 
-    float Node::drawInitialImmunity(float ind_init_age)
+    float Node::drawInitialSusceptibility(float ind_init_age)
     {
-        float temp_immunity = 1.0;
+        float temp_susceptibility = 1.0;
 
-        switch( params()->immunity_initialization_distribution_type ) 
+        switch( SusceptibilityConfig::susceptibility_initialization_distribution_type )
         {
         case DistributionType::DISTRIBUTION_COMPLEX:
             {
-            // Read from "ImmunityDistribution" that would have been added to map in Node::LoadImmunityDemographicsDistribution
+            // Previous implementation was a linear interpolation in age providing fractional susceptibility to all agents.
+            // Current implementation is an age-dependent probability of being totally susceptible, no agents start with fractional values
+            // Revision suggested as appropriate for GENERIC sims by Philip on 28Jan2018.
             float randdraw = randgen->e();
-            temp_immunity = ImmunityDistribution->DrawFromDistribution(randdraw, ind_init_age);
-            LOG_DEBUG_F( "creating individual with age = %f and immunity = %f, with randdraw = %f\n",  ind_init_age, temp_immunity, randdraw);
+            temp_susceptibility = (randdraw > SusceptibilityDistribution->DrawFromDistribution(ind_init_age)) ? 0.0f : 1.0;
+            LOG_VALID_F( "creating individual with age = %f and susceptibility = %f, with randdraw = %f\n",  ind_init_age, temp_susceptibility, randdraw);
             }
             break;
 
         case DistributionType::DISTRIBUTION_SIMPLE:
-            temp_immunity = float(Probability::getInstance()->fromDistribution(immunity_dist_type, immunity_dist1, immunity_dist2, 0.0, 1.0));
+            temp_susceptibility = float(Probability::getInstance()->fromDistribution(susceptibility_dist_type, susceptibility_dist1, susceptibility_dist2, 0.0, 1.0));
+            LOG_VALID_F( "creating individual with age = %f and susceptibility = %f\n",  ind_init_age, temp_susceptibility);
             break;
 
         case DistributionType::DISTRIBUTION_OFF:
-            // For backward compatibility and avoiding surprises if Enable_Demographics_Other=1 but ImmunityDistribution1=0 (ERAD-2747)
-            temp_immunity = 1.0;
+            temp_susceptibility = 1.0;
+            LOG_VALID_F( "creating individual with age = %f and susceptibility = %f\n",  ind_init_age, temp_susceptibility);
             break;
 
         default:
             if( !JsonConfigurable::_dryrun )
             {
-                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "immunity_initialization_distribution_type", params()->immunity_initialization_distribution_type, DistributionType::pairs::lookup_key( params()->immunity_initialization_distribution_type ) );
+                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "susceptibility_initialization_distribution_type", SusceptibilityConfig::susceptibility_initialization_distribution_type, DistributionType::pairs::lookup_key( SusceptibilityConfig::susceptibility_initialization_distribution_type ) );
             }
         }
 
-        return temp_immunity;
+        return temp_susceptibility;
     }
 
     IIndividualHuman* Node::configureAndAddNewIndividual(float ind_MCweight, float ind_init_age, float comm_init_prev, float comm_female_ratio)
@@ -1649,8 +1899,7 @@ namespace Kernel
         //  Holds draws from demographic distribution
         int   temp_infs      = 0;
         int   temp_gender    = Gender::MALE;
-        float temp_poverty   = 0;
-        float temp_immunity  = 1.0;
+        float temp_susceptibility  = 1.0;
         float temp_risk      = 1.0;
         float temp_migration = 1.0;
 
@@ -1666,11 +1915,27 @@ namespace Kernel
             temp_infs = 1;
         }
 
-        if (demographics_other)
+        if (enable_demographics_immunity_dist == true )
         {
             // set initial immunity (or heterogeneous innate immunity in derived malaria code)
-            temp_immunity = drawInitialImmunity(ind_init_age);
+            temp_susceptibility = drawInitialSusceptibility(ind_init_age);
 
+            // Range checking here because this function doesn't get overridden in 
+            // disease-specific builds (unlike drawInitialSusceptibility)
+            if(temp_susceptibility > 1.0)
+            {
+                LOG_WARN_F("Initial susceptibility to infection of %5.3f > 1.0; reset to 1.0\n", temp_susceptibility);
+                temp_susceptibility = 1.0;
+            }
+            else if (temp_susceptibility < 0.0)
+            {
+                LOG_WARN_F("Initial susceptibility to infection of %5.3f < 0.0; reset to 0.0\n", temp_susceptibility);
+                temp_susceptibility = 0.0;
+            }
+        }
+
+        if (enable_demographics_risk)
+        {
             // set heterogeneous risk
             temp_risk = float(Probability::getInstance()->fromDistribution(risk_dist_type, risk_dist1, risk_dist2, 0.0, 1.0));
         }
@@ -1681,17 +1946,14 @@ namespace Kernel
             temp_migration = float(Probability::getInstance()->fromDistribution(migration_dist_type, migration_dist1, migration_dist2, 0.0, 1.0));
         }
 
-        // Finally, add the individual
-        if (randgen->e() < Above_Poverty)
-        { 
-            temp_poverty = 1.0; 
-        }
 
-        IIndividualHuman* tempind = addNewIndividual(ind_MCweight, ind_init_age, temp_gender, temp_infs, temp_immunity, temp_risk, temp_migration, temp_poverty);
+        //DELETE!!! CALL TO RANDOM GENERATOR!!! THOMAS
+        randgen->e();
+
+        IIndividualHuman* tempind = addNewIndividual(ind_MCweight, ind_init_age, temp_gender, temp_infs, temp_susceptibility, temp_risk, temp_migration);
 
         // Now if tracking individual pregnancies, need to see if this new Individual is pregnant to begin the simulation
         if ( vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES ||
-             vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE ||
              vital_birth_dependence == VitalBirthDependence::INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR )
         { 
             conditionallyInitializePregnancy(tempind);
@@ -1701,15 +1963,15 @@ namespace Kernel
     }
 
     IIndividualHuman* Node::addNewIndividual(float mc_weight, float initial_age, 
-        int gender, int initial_infections, float immunity_parameter, float risk_parameter, 
-        float migration_heterogeneity, float poverty_parameter)
+        int gender, int initial_infections, float susceptibility_parameter, float risk_parameter, 
+        float migration_heterogeneity)
     {
 
         // new creation process
-        IIndividualHuman* new_individual = createHuman(parent->GetNextIndividualHumanSuid(), mc_weight, initial_age, gender, poverty_parameter); // initial_infections isn't needed here if SetInitialInfections function is used
+        IIndividualHuman* new_individual = createHuman(parent->GetNextIndividualHumanSuid(), mc_weight, initial_age, gender); // initial_infections isn't needed here if SetInitialInfections function is used
 
         // EAW: is there a reason that the contents of the two functions below aren't absorbed into CreateHuman?  this whole process seems very convoluted.
-        new_individual->SetParameters( this, 1.0, immunity_parameter, risk_parameter, migration_heterogeneity);// default values being used except for total number of communities
+        new_individual->SetParameters( this, 1.0, susceptibility_parameter, risk_parameter, migration_heterogeneity);// default values being used except for total number of communities
         new_individual->SetInitialInfections(initial_infections);
         new_individual->UpdateGroupMembership();
         new_individual->UpdateGroupPopulation(1.0f);
@@ -1734,7 +1996,7 @@ namespace Kernel
     IIndividualHuman* Node::addNewIndividualFromSerialization()
     {
         LOG_DEBUG_F( "1. %s\n", __FUNCTION__ );
-        IIndividualHuman* new_individual = createHuman( suids::nil_suid(), 0, 0, 0, 0);
+        IIndividualHuman* new_individual = createHuman( suids::nil_suid(), 0, 0, 0);
         new_individual->SetParameters( this, 1.0, 0, 0, 0);// default values being used except for total number of communities
 
 #if 0
@@ -1794,13 +2056,9 @@ namespace Kernel
         return age;
     }
 
-    Fraction
-    Node::adjustSamplingRateByAge(
-        Fraction sampling_rate,
-        double age
-    )
-    const
+    Fraction Node::adjustSamplingRateByAge(Fraction sampling_rate, double age) const
     {
+        Fraction tmp = sampling_rate;
         if (age < (18 * IDEALDAYSPERMONTH)) { sampling_rate *= sample_rate_0_18mo; }
         else if (age <  (5 * DAYSPERYEAR))  { sampling_rate *= sample_rate_18mo_4yr; }
         else if (age < (10 * DAYSPERYEAR))  { sampling_rate *= sample_rate_5_9; }
@@ -1809,40 +2067,35 @@ namespace Kernel
         else { sampling_rate *= sample_rate_20_plus; }
 
         // Now correct sampling rate, in case it is over 100 percent
-        if (sampling_rate > 1) 
+        if (sampling_rate > 1.0f) 
         { 
-            LOG_WARN("Sampling_rate was greater than 1?!  Are you sure Ind_Sample_Rate and age-dependent rates were specified correctly?\n");
-            sampling_rate = 1; 
+            LOG_WARN("Total sampling rate > 1.0; value reset to 1.0\n");
+            sampling_rate = 1.0f; 
         }
 
+        LOG_DEBUG_F( "%s: sampling_rate in = %f, age_in_years = %d, sampling_rate out = %f\n", __FUNCTION__, (float) tmp, (int) age/DAYSPERYEAR, (float) sampling_rate );
         return sampling_rate;
     }
-    
-    Fraction
-    Node::adjustSamplingRateByImmuneState(
-        Fraction sampling_rate,
-        bool is_immune
-    )
-    const
+
+    Fraction Node::adjustSamplingRateByImmuneState(Fraction sampling_rate, bool is_immune) const
     {
         Fraction tmp = sampling_rate;
         if (is_immune)
         {
-            sampling_rate *= sample_rate_immune;
+            sampling_rate *= rel_sample_rate_immune;
         }
-        //else { sampling_rate *= 1; }
 
         // Now correct sampling rate, in case it is over 100 percent
-        if (sampling_rate > 1) 
+        if (sampling_rate > 1.0f) 
         { 
-            LOG_WARN("Sampling_rate was greater than 1?!  Are you sure Ind_Sample_Rate and age-dependent rates were specified correctly?\n");
-            sampling_rate = 1; 
+            LOG_WARN("Total sampling rate > 1.0; value reset to 1.0\n");
+            sampling_rate = 1.0f; 
         }
 
-        LOG_DEBUG_F( "%s: sampling_rate in = %f, is_immune = %d, sampling_route out = %f\n", __FUNCTION__, (float) tmp, is_immune, (float) sampling_rate );
+        LOG_DEBUG_F( "%s: sampling_rate in = %f, is_immune = %d, sampling_rate out = %f\n", __FUNCTION__, (float) tmp, (int) is_immune, (float) sampling_rate );
         return sampling_rate;
     }
-    
+
     //------------------------------------------------------------------
     //   Individual migration methods
     //------------------------------------------------------------------
@@ -2256,9 +2509,6 @@ namespace Kernel
     long int
     Node::GetPossibleMothers() const { return Possible_Mothers ; }
 
-    bool 
-    Node::GetUrban()           const { return urban; }
-
     float
     Node::GetMeanAgeInfection()      const { return mean_age_infection; }
 
@@ -2281,6 +2531,47 @@ namespace Kernel
         std::transform(transmissionRoute.begin(), transmissionRoute.end(), transmissionRoute.begin(), ::tolower);
         bool isValid = ((transmissionRoute == "contact") || (transmissionRoute == "environmental"));
         return isValid;
+    }
+
+    int Node::calcGap()
+    {
+        int gap = 1;
+        if( IndividualHumanConfig::enable_skipping )
+        {
+            release_assert( maxInfectionProb.size()>0 );
+            float maxProb = GetMaxInfectionProb( TransmissionRoute::TRANSMISSIONROUTE_CONTACT );
+            if (maxProb>=1.0)
+            {
+                gap=1;
+            }
+            else if (maxProb>0.0)
+            {
+                gap=int(ceil(log(1.0-randgen->e())/log(1.0-maxProb))); //geometric based on fMaxInfectionProb
+            }
+        }
+        return gap;
+    }
+
+    void Node::computeMaxInfectionProb( float dt )
+    {
+        float maxProbRet = 0.0f;
+        auto contagionByRouteMap = GetContagionByRoute();
+        release_assert( contagionByRouteMap.size() > 0 );
+        for( auto map_iter: contagionByRouteMap  )
+        {
+            auto route = map_iter.first;
+            auto contagion = map_iter.second;
+            auto contact_contagion = contagion;
+            ProbabilityNumber prob = EXPCDF(-contact_contagion * dt);
+            if( prob > maxProbRet )
+            {
+                maxProbRet = prob;
+            }
+            maxInfectionProb[ TransmissionRoute::TRANSMISSIONROUTE_CONTACT ] = maxProbRet;
+            LOG_INFO_F( "The max probability of infection over the contact route (w/o immunity or interventions) for this node is: %f.\n", maxProbRet );
+        } 
+        gap = 1;
+        bSkipping = false; // changes from individual to individual. Initialize to false
     }
 
     void Node::ValidateIntranodeTransmissionConfiguration()
@@ -2322,8 +2613,8 @@ namespace Kernel
         Node& node = *obj;
         ar.labelElement("serializationMask") & (uint32_t&)node.serializationMask;
 
-            ar.labelElement("suid") & node.suid;
-            ar.labelElement("externalId") & node.externalId;
+        ar.labelElement("suid") & node.suid;
+        ar.labelElement("externalId") & node.externalId;
 
         if ((node.serializationMask & SerializationFlags::Population) != 0) {
             ar.labelElement("individualHumans"   ) & node.individualHumans;
@@ -2331,79 +2622,94 @@ namespace Kernel
         }
 
         if ((node.serializationMask & SerializationFlags::Parameters) != 0) {
-            ar.labelElement("ind_sampling_type") & (uint32_t&)node.ind_sampling_type;
-            ar.labelElement("age_initialization_distribution_type") & (uint32_t&)node.age_initialization_distribution_type;
-            ar.labelElement("population_density_infectivity_correction") & (uint32_t&)node.population_density_infectivity_correction;
+            ar.labelElement("ind_sampling_type")                            & (uint32_t&)node.ind_sampling_type;
+            ar.labelElement("population_density_infectivity_correction")    & (uint32_t&)node.population_density_infectivity_correction;
+            ar.labelElement("age_initialization_distribution_type")         & (uint32_t&)node.age_initialization_distribution_type;
 
-            ar.labelElement("demographics_birth") & node.demographics_birth;
-            ar.labelElement("demographics_gender") & node.demographics_gender;
-            ar.labelElement("demographics_other") & node.demographics_other;
-            ar.labelElement("max_sampling_cell_pop") & node.max_sampling_cell_pop;
-            ar.labelElement("sample_rate_birth") & node.sample_rate_birth;
-            ar.labelElement("sample_rate_0_18mo") & node.sample_rate_0_18mo;
-            ar.labelElement("sample_rate_18mo_4yr") & node.sample_rate_18mo_4yr;
-            ar.labelElement("sample_rate_5_9") & node.sample_rate_5_9;
-            ar.labelElement("sample_rate_10_14") & node.sample_rate_10_14;
-            ar.labelElement("sample_rate_15_19") & node.sample_rate_15_19;
-            ar.labelElement("sample_rate_20_plus") & node.sample_rate_20_plus;
-            ar.labelElement("sample_rate_immune") & node.sample_rate_immune;
-            ar.labelElement("immune_threshold_for_downsampling") & node.immune_threshold_for_downsampling;
+            ar.labelElement("susceptibility_scaling_type")  & (uint32_t&)node.susceptibility_scaling_type;
+            ar.labelElement("susceptibility_scaling")       & node.susceptibility_scaling;
+            ar.labelElement("susceptibility_scaling_rate")  & node.susceptibility_scaling_rate;
 
-            ar.labelElement("population_density_c50") & node.population_density_c50;
-            ar.labelElement("population_scaling") & (uint32_t&)node.population_scaling;
-            ar.labelElement("population_scaling_factor") & node.population_scaling_factor;
-            ar.labelElement("maternal_transmission") & node.maternal_transmission;
-            ar.labelElement("vital_birth") & node.vital_birth;
-            ar.labelElement("vital_birth_dependence") & (uint32_t&)node.vital_birth_dependence;
-            ar.labelElement("vital_birth_time_dependence") & (uint32_t&)node.vital_birth_time_dependence;
-            ar.labelElement("x_birth") & node.x_birth;
+            ar.labelElement("base_sample_rate") & node.base_sample_rate;
 
-            ar.labelElement("animal_reservoir_type") & (uint32_t&)node.animal_reservoir_type;
-            ar.labelElement("infectivity_scaling") & (uint32_t&)node.infectivity_scaling;
-            ar.labelElement("zoonosis_rate") & node.zoonosis_rate;
+            ar.labelElement("demographics_birth")                   & node.demographics_birth;
+            ar.labelElement("demographics_gender")                  & node.demographics_gender;
+            ar.labelElement("enable_demographics_immunity_dist")    & node.enable_demographics_immunity_dist;
+            ar.labelElement("enable_demographics_risk")             & node.enable_demographics_risk;
+            ar.labelElement("max_sampling_cell_pop")                & node.max_sampling_cell_pop;
+            ar.labelElement("sample_rate_birth")                    & node.sample_rate_birth;
+            ar.labelElement("sample_rate_0_18mo")                   & node.sample_rate_0_18mo;
+            ar.labelElement("sample_rate_18mo_4yr")                 & node.sample_rate_18mo_4yr;
+            ar.labelElement("sample_rate_5_9")                      & node.sample_rate_5_9;
+            ar.labelElement("sample_rate_10_14")                    & node.sample_rate_10_14;
+            ar.labelElement("sample_rate_15_19")                    & node.sample_rate_15_19;
+            ar.labelElement("sample_rate_20_plus")                  & node.sample_rate_20_plus;
+            ar.labelElement("rel_sample_rate_immune")               & node.rel_sample_rate_immune;
+            ar.labelElement("immune_threshold_for_downsampling")    & node.immune_threshold_for_downsampling;
+
+            ar.labelElement("population_density_c50")                   & node.population_density_c50;
+            ar.labelElement("population_scaling")                       & (uint32_t&)node.population_scaling;
+            ar.labelElement("population_scaling_factor")                & node.population_scaling_factor;
+            ar.labelElement("enable_maternal_infection_transmission")   & node.enable_maternal_infection_transmission;
+            ar.labelElement("prob_maternal_infection_transmission")     & node.prob_maternal_infection_transmission;
+
+            ar.labelElement("vital_dynamics")               & node.vital_dynamics;
+            ar.labelElement("enable_initial_prevalence")    & node.enable_initial_prevalence;
+            ar.labelElement("vital_birth")                  & node.vital_birth;
+            ar.labelElement("vital_birth_dependence")       & (uint32_t&)node.vital_birth_dependence;
+            ar.labelElement("vital_birth_time_dependence")  & (uint32_t&)node.vital_birth_time_dependence;
+            ar.labelElement("x_birth")                      & node.x_birth;
+            ar.labelElement("enable_natural_mortality")     & node.enable_natural_mortality;
+            ar.labelElement("x_othermortality")             & node.x_othermortality;
+            ar.labelElement("vital_death_dependence")       & (uint32_t&)node.vital_death_dependence;
+
+            ar.labelElement("animal_reservoir_type")    & (uint32_t&)node.animal_reservoir_type;
+            ar.labelElement("infectivity_scaling")      & (uint32_t&)node.infectivity_scaling;
+            ar.labelElement("zoonosis_rate")            & node.zoonosis_rate;
 
             ar.labelElement("infectivity_sinusoidal_forcing_amplitude") & node.infectivity_sinusoidal_forcing_amplitude;
-            ar.labelElement("infectivity_sinusoidal_forcing_phase") & node.infectivity_sinusoidal_forcing_phase;
-            ar.labelElement("infectivity_boxcar_forcing_amplitude") & node.infectivity_boxcar_forcing_amplitude;
-            ar.labelElement("infectivity_boxcar_start_time") & node.infectivity_boxcar_start_time;
-            ar.labelElement("infectivity_boxcar_end_time") & node.infectivity_boxcar_end_time;
-            ar.labelElement("birth_rate_sinusoidal_forcing_amplitude") & node.birth_rate_sinusoidal_forcing_amplitude;
-            ar.labelElement("birth_rate_sinusoidal_forcing_phase") & node.birth_rate_sinusoidal_forcing_phase;
-            ar.labelElement("birth_rate_boxcar_forcing_amplitude") & node.birth_rate_boxcar_forcing_amplitude;
-            ar.labelElement("birth_rate_boxcar_start_time") & node.birth_rate_boxcar_start_time;
-            ar.labelElement("birth_rate_boxcar_end_time") & node.birth_rate_boxcar_end_time;
+            ar.labelElement("infectivity_sinusoidal_forcing_phase")     & node.infectivity_sinusoidal_forcing_phase;
+            ar.labelElement("infectivity_boxcar_forcing_amplitude")     & node.infectivity_boxcar_forcing_amplitude;
+            ar.labelElement("infectivity_boxcar_start_time")            & node.infectivity_boxcar_start_time;
+            ar.labelElement("infectivity_boxcar_end_time")              & node.infectivity_boxcar_end_time;
+            ar.labelElement("infectivity_exponential_baseline")         & node.infectivity_exponential_baseline;
+            ar.labelElement("infectivity_exponential_rate")             & node.infectivity_exponential_rate;
+            ar.labelElement("infectivity_exponential_delay")            & node.infectivity_exponential_delay;
+            ar.labelElement("birth_rate_sinusoidal_forcing_amplitude")  & node.birth_rate_sinusoidal_forcing_amplitude;
+            ar.labelElement("birth_rate_sinusoidal_forcing_phase")      & node.birth_rate_sinusoidal_forcing_phase;
+            ar.labelElement("birth_rate_boxcar_forcing_amplitude")      & node.birth_rate_boxcar_forcing_amplitude;
+            ar.labelElement("birth_rate_boxcar_start_time")             & node.birth_rate_boxcar_start_time;
+            ar.labelElement("birth_rate_boxcar_end_time")               & node.birth_rate_boxcar_end_time;
         }
 
         if ((node.serializationMask & SerializationFlags::Properties) != 0) {
-            //ar.labelElement( "ImmunityDistribution"                        ) & node.ImmunityDistribution;
-            //ar.labelElement( "FertilityDistribution"                       ) & node.FertilityDistribution;
-            //ar.labelElement( "MortalityDistribution"                       ) & node.MortalityDistribution;
-            //ar.labelElement( "MortalityDistributionMale"                   ) & node.MortalityDistributionMale;
-            //ar.labelElement( "MortalityDistributionFemale"                 ) & node.MortalityDistributionFemale;
-            //ar.labelElement( "AgeDistribution"                             ) & node.AgeDistribution;
+//          ar.labelElement( "SusceptibilityDistribution"                  ) & node.SusceptibilityDistribution;
+//          ar.labelElement( "FertilityDistribution"                       ) & node.FertilityDistribution;
+//          ar.labelElement( "MortalityDistribution"                       ) & node.MortalityDistribution;
+//          ar.labelElement( "MortalityDistributionMale"                   ) & node.MortalityDistributionMale;
+//          ar.labelElement( "MortalityDistributionFemale"                 ) & node.MortalityDistributionFemale;
+//          ar.labelElement( "AgeDistribution"                             ) & node.AgeDistribution;
 
             ar.labelElement("_latitude") & node._latitude;
             ar.labelElement("_longitude") & node._longitude;
-// clorton          ar.labelElement("distribs") & node.distribs;
-            ar.labelElement("urban") & node.urban;
+//          ar.labelElement("distribs") & node.distribs;
             ar.labelElement("birthrate") & node.birthrate;
-            ar.labelElement("Above_Poverty") & node.Above_Poverty;
             ar.labelElement("family_waiting_to_migrate") & node.family_waiting_to_migrate;
             ar.labelElement("family_migration_destination") & node.family_migration_destination;
             ar.labelElement("family_migration_type") & (uint32_t&)node.family_migration_type;
             ar.labelElement("family_time_until_trip") & node.family_time_until_trip;
             ar.labelElement("family_time_at_destination") & node.family_time_at_destination;
             ar.labelElement("family_is_destination_new_home") & node.family_is_destination_new_home;
-            ar.labelElement("Ind_Sample_Rate") & node.Ind_Sample_Rate;
-// clorton          ar.labelElement("transmissionGroups") & node.transmissionGroups;
+            ar.labelElement("base_sample_rate") & node.base_sample_rate;
+//          ar.labelElement("transmissionGroups") & node.transmissionGroups;
             ar.labelElement("susceptibility_dynamic_scaling") & node.susceptibility_dynamic_scaling;
-// clorton          ar.labelElement("localWeather") & node.localWeather;
-// clorton          ar.labelElement("migration_info") & node.migration_info;
-// clorton          ar.labelElement("demographics") & node.demographics;
-// clorton          ar.labelElement("demographic_distributions") & node.demographic_distributions;
-//            ar.labelElement("externalId") & node.externalId;
+//          ar.labelElement("localWeather") & node.localWeather;
+//          ar.labelElement("migration_info") & node.migration_info;
+//          ar.labelElement("demographics") & node.demographics;
+//          ar.labelElement("demographic_distributions") & node.demographic_distributions;
             ar.labelElement("node_properties") & node.node_properties;
-// clorton          ar.labelElement("event_context_host") & node.event_context_host;
+//          ar.labelElement("event_context_host") & node.event_context_host;
+//          ar.labelElement("events_from_other_nodes") & node.events_from_other_nodes;
             ar.labelElement("statPop") & node.statPop;
             ar.labelElement("Infected") & node.Infected;
             ar.labelElement("Births") & node.Births;
@@ -2413,17 +2719,17 @@ namespace Kernel
             ar.labelElement("Cumulative_Infections") & node.Cumulative_Infections;
             ar.labelElement("Cumulative_Reported_Infections") & node.Cumulative_Reported_Infections;
             ar.labelElement("Campaign_Cost") & node.Campaign_Cost;
-// clorton          ar.labelElement("Possible_Mothers") & node.Possible_Mothers;
+//          ar.labelElement("Possible_Mothers") & node.Possible_Mothers;
             ar.labelElement("mean_age_infection") & node.mean_age_infection;
             ar.labelElement("newInfectedPeopleAgeProduct") & node.newInfectedPeopleAgeProduct;
-// clorton          ar.labelElement("infected_people_prior") & node.infected_people_prior;
-// clorton          ar.labelElement("infected_age_people_prior") & node.infected_age_people_prior;
+//          ar.labelElement("infected_people_prior") & node.infected_people_prior;
+//          ar.labelElement("infected_age_people_prior") & node.infected_age_people_prior;
             ar.labelElement("infectionrate") & node.infectionrate;
             ar.labelElement("mInfectivity") & node.mInfectivity;
-            ar.labelElement("prob_maternal_transmission") & node.prob_maternal_transmission;
-            ar.labelElement("immunity_dist_type") & (uint32_t&)node.immunity_dist_type;
-            ar.labelElement("immunity_dist1") & node.immunity_dist1;
-            ar.labelElement("immunity_dist2") & node.immunity_dist2;
+            ar.labelElement("prob_maternal_transmission") & node.prob_maternal_infection_transmission;
+            ar.labelElement("susceptibility_dist_type") & (uint32_t&)node.susceptibility_dist_type;
+            ar.labelElement("susceptibility_dist1") & node.susceptibility_dist1;
+            ar.labelElement("susceptibility_dist2") & node.susceptibility_dist2;
             ar.labelElement("risk_dist_type") & (uint32_t&)node.risk_dist_type;
             ar.labelElement("risk_dist1") & node.risk_dist1;
             ar.labelElement("risk_dist2") & node.risk_dist2;
@@ -2431,6 +2737,10 @@ namespace Kernel
             ar.labelElement("migration_dist1") & node.migration_dist1;
             ar.labelElement("migration_dist2") & node.migration_dist2;
             ar.labelElement("routes") & node.routes;
+//          ar.labelElement("parent") & node.parent;
+            ar.labelElement("bSkipping") & node.bSkipping;
+//          ar.labelElement("maxInfectionProb") & node.maxInfectionProb;
+//          ar.labelElement("gap") & node.gap;
         }
     }
 }

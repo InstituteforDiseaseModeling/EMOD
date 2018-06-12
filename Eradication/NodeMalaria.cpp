@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,7 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "NodeMalaria.h"
 #include "IndividualMalaria.h"
-
+#include "Susceptibility.h" // for SusceptibilityConfig::immunity_initalization...
 #include "Common.h"
 #include "Malaria.h"
 #include "NodeMalariaEventContext.h"
@@ -99,19 +99,25 @@ namespace Kernel
         //delete PfEMP1_variance_antibody_distribution;
     }
 
-    IIndividualHuman* NodeMalaria::createHuman( suids::suid suid, float monte_carlo_weight, float initial_age, int gender, float poverty_level)
+    IIndividualHuman* NodeMalaria::createHuman( suids::suid suid, float monte_carlo_weight, float initial_age, int gender)
     {
-        return IndividualHumanMalaria::CreateHuman(getContextPointer(), suid, monte_carlo_weight, initial_age, gender,  poverty_level);
+        return IndividualHumanMalaria::CreateHuman(getContextPointer(), suid, monte_carlo_weight, initial_age, gender);
     }
 
-    IIndividualHuman* NodeMalaria::addNewIndividual( float monte_carlo_weight, float initial_age, int gender, int initial_infection_count, float immparam, float riskparam, float mighet, float init_poverty)
+    IIndividualHuman* NodeMalaria::addNewIndividual( float monte_carlo_weight, float initial_age, int gender, int initial_infection_count, float immparam, float riskparam, float mighet)
     {
         // just the base class for now
-        return NodeVector::addNewIndividual(monte_carlo_weight, initial_age, gender, initial_infection_count, immparam, riskparam, mighet, init_poverty);
+        return NodeVector::addNewIndividual(monte_carlo_weight, initial_age, gender, initial_infection_count, immparam, riskparam, mighet);
     }
 
     void NodeMalaria::LoadImmunityDemographicsDistribution()
     {
+        // For MALARIA sims, SusceptibilityDistributionFlag, SusceptibilityDistribution1, SusceptibilityDistribution2
+        // map to Innate_Immune_Variation (e.g. variable pyrogenic threshold, cytokine killing)
+        susceptibility_dist_type = DistributionFunction::Enum(demographics["IndividualAttributes"]["SusceptibilityDistributionFlag"].AsInt());
+        susceptibility_dist1 = float(demographics["IndividualAttributes"]["SusceptibilityDistribution1"].AsDouble());
+        susceptibility_dist2 = float(demographics["IndividualAttributes"]["SusceptibilityDistribution2"].AsDouble());
+
         MSP_mean_antibody_distribution         = NodeDemographicsDistribution::CreateDistribution(demographics["MSP_mean_antibody_distribution"],         "age");
         nonspec_mean_antibody_distribution     = NodeDemographicsDistribution::CreateDistribution(demographics["nonspec_mean_antibody_distribution"],     "age");
         PfEMP1_mean_antibody_distribution      = NodeDemographicsDistribution::CreateDistribution(demographics["PfEMP1_mean_antibody_distribution"],      "age");
@@ -120,26 +126,31 @@ namespace Kernel
         PfEMP1_variance_antibody_distribution  = NodeDemographicsDistribution::CreateDistribution(demographics["PfEMP1_variance_antibody_distribution"],  "age");
     }
 
-    float NodeMalaria::drawInitialImmunity(float ind_init_age)
+    float NodeMalaria::drawInitialSusceptibility(float ind_init_age)
     {
-        switch( params()->immunity_initialization_distribution_type ) 
+        float temp_susceptibility = 1.0;
+
+        switch( SusceptibilityConfig::susceptibility_initialization_distribution_type )
         {
         case DistributionType::DISTRIBUTION_COMPLEX:
-        case DistributionType::DISTRIBUTION_OFF:
-            // For MALARIA_SIM, ImmunityDistributionFlag, ImmunityDistribution1, ImmunityDistribution2 map to Innate_Immune_Variation (e.g. variable pyrogenic threshold, cytokine killing)
-            return float(Probability::getInstance()->fromDistribution(immunity_dist_type, immunity_dist1, immunity_dist2, 0.0, 1.0));
-
+            temp_susceptibility = float(Probability::getInstance()->fromDistribution(susceptibility_dist_type, susceptibility_dist1, susceptibility_dist2, 0.0, 1.0));
+            LOG_VALID_F( "creating individual with age = %f and susceptibility = %f\n",  ind_init_age, temp_susceptibility);
+            break;
+            
         case DistributionType::DISTRIBUTION_SIMPLE:
             throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Immunity_Initialization_Distribution_Type", "DISTRIBUTION_SIMPLE", "Simulation_Type", "MALARIA_SIM");
+
+        case DistributionType::DISTRIBUTION_OFF:
+            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Immunity_Initialization_Distribution_Type", "DISTRIBUTION_OFF", "Simulation_Type", "MALARIA_SIM");
 
         default:
             if( !JsonConfigurable::_dryrun )
             {
-                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "Immunity_Initialization_Distribution_Type", params()->immunity_initialization_distribution_type, DistributionType::pairs::lookup_key( params()->immunity_initialization_distribution_type ) );
+                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "Immunity_Initialization_Distribution_Type", SusceptibilityConfig::susceptibility_initialization_distribution_type, DistributionType::pairs::lookup_key( SusceptibilityConfig::susceptibility_initialization_distribution_type ) );
             }
         }
 
-        return 1.0f;
+        return temp_susceptibility;
     }
 
     void NodeMalaria::accumulateIndividualPopulationStatistics( float dt, IIndividualHuman* basic_individual)

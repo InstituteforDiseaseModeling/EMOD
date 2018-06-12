@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -119,7 +119,7 @@ namespace Kernel
     {
         if( m_pIP == nullptr )
         {
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pIP" );
+            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pIP", "BaseProperty" );
         }
         return m_pIP->GetKeyAsString();
     }
@@ -200,7 +200,7 @@ namespace Kernel
     {
         if( m_pInternal == nullptr )
         {
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal" );
+            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal", "KeyValueInternal" );
         }
         return m_pInternal->GetKeyValueString();
     }
@@ -239,7 +239,7 @@ namespace Kernel
     {
         if( m_pInternal == nullptr )
         {
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal" );
+            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal", "KeyValueInternal" );
         }
         return m_pInternal->GetProperty()->GetKeyAsString();
     }
@@ -248,7 +248,7 @@ namespace Kernel
     {
         if( m_pInternal == nullptr )
         {
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal" );
+            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal", "KeyValueInternal" );
         }
         return m_pInternal->GetValueAsString();
     }
@@ -257,7 +257,7 @@ namespace Kernel
     {
         if( m_pInternal == nullptr )
         {
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal" );
+            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal", "KeyValueInternal" );
         }
         m_pInternal->SetInitialDistribution( externalNodeId, value );
     }

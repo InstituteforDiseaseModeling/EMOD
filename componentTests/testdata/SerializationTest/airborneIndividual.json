@@ -18,6 +18,7 @@
         "acqdecayoffset":0,
         "trandecayoffset":0,
         "mortdecayoffset":0,
+        "immune_failage" : 0,
         "demographic_risk":1
       },
       "infections":[

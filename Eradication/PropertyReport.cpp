@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -35,12 +35,19 @@ const char * PropertyReport::_disease_deaths_label = "Disease Deaths:";
 IReport*
 PropertyReport::CreateReport()
 {
-    return new PropertyReport();
+    return new PropertyReport( _report_name );
 }
 
-PropertyReport::PropertyReport()
+PropertyReport::PropertyReport( const std::string& rReportName )
+: Report( rReportName )
+, permutationsSet()
+, permutationsList()
+, new_infections()
+, new_reported_infections()
+, disease_deaths()
+, infected()
+, statPop()
 {
-    report_name = _report_name;
 }
 
 // OK, so here's what we've got to do. Node has an unknown collection of key-value pairs.

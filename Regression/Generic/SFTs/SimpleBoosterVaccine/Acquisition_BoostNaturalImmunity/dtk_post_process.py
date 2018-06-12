@@ -6,7 +6,7 @@ import dtk_sft as sft
 import math
 
 KEY_TOTAL_TIMESTEPS = "Simulation_Duration"
-KEY_IMMUNITY_ACQUISITION_FACTOR = "Immunity_Acquisition_Factor"
+KEY_IMMUNITY_ACQUISITION_FACTOR = "Post_Infection_Acquisition_Multiplier"
 KEY_NEW_INFECTIONS_GROUP = [ "New Infections:QualityOfCare:1_Control",
                              "New Infections:QualityOfCare:2_Test"]
 KEY_STATISTICAL_POPULATION_GROUP = [ "Statistical Population:QualityOfCare:1_Control",
@@ -83,7 +83,7 @@ def calc_expected_new_infection_portion(param_obj, debug = False):
     new_infection_portions.append(1.0 - natural_immunuty)                       # 1_Control
     new_infection_portions.append((1.0 - natural_immunuty)* (1.0 - boost))       # 2_Test
     if debug:
-        print new_infection_portions
+        print( new_infection_portions )
     return new_infection_portions
 
 def create_report_file(param_obj, report_data_obj, report_name, debug):
@@ -106,13 +106,13 @@ def create_report_file(param_obj, report_data_obj, report_name, debug):
             new_infections.append(new_infection)
             expected_new_infections.append(expected_new_infection)
         outfile.write(sft.format_success_msg(success))
-    sft.plot_data_unsorted(new_infections,expected_new_infections,
+    sft.plot_data(new_infections,expected_new_infections,
                            label1= "Actual", label2 = "Expected",
                            xlabel= "0: Control group, 1: Test group",ylabel="new infection",
                            title = "Actual new infection vs. expected new infection",
                            category = 'New_infections',show = True )
     if debug:
-        print "SUMMARY: Success={0}\n".format(success)
+        print( "SUMMARY: Success={0}\n".format(success) )
     return success
 
 def application( output_folder="output", stdout_filename="test.txt",
@@ -122,14 +122,14 @@ def application( output_folder="output", stdout_filename="test.txt",
                  report_name=sft.sft_output_filename,
                  debug=False):
     if debug:
-        print "output_folder: " + output_folder
-        print "stdout_filename: " + stdout_filename+ "\n"
-        print "config_filename: " + config_filename + "\n"
-        print "campaign_filename: " + campaign_filename + "\n"
-        print "demographics_filename: " + demographics_filename + "\n"
-        print "propertyreport_name: " + propertyreport_name + "\n"
-        print "report_name: " + report_name + "\n"
-        print "debug: " + str(debug) + "\n"
+        print( "output_folder: " + output_folder )
+        print( "stdout_filename: " + stdout_filename+ "\n" )
+        print( "config_filename: " + config_filename + "\n" )
+        print( "campaign_filename: " + campaign_filename + "\n" )
+        print( "demographics_filename: " + demographics_filename + "\n" )
+        print( "propertyreport_name: " + propertyreport_name + "\n" )
+        print( "report_name: " + report_name + "\n" )
+        print( "debug: " + str(debug) + "\n" )
 
     sft.wait_for_done()
     param_obj = load_emod_parameters(config_filename)

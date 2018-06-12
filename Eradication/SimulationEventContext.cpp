@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -95,7 +95,7 @@ namespace Kernel
 
         if (visited_nodes == 0 )
         {
-            LOG_WARN("No nodes were visited.  No nodes were added to the event coordinator.  Maybe a NodeSetPolygon was specified incorrectly?\n");
+            LOG_WARN("No nodes were visited.  No nodes were added to the event coordinator.\n");
         }
         else
         {

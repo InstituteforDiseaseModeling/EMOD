@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,9 +13,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "IndividualEventContext.h"
 #include "MalariaDrugTypeParameters.h"
-#include "MalariaInterventionsContainer.h"  // for IMalariaDrugEffectsApply methods
 #include "SimulationConfig.h"               // for global-context access to PKPDmodel (!)
 #include "MalariaParameters.h"
+#include "MalariaContexts.h"
 
 SETUP_LOGGING( "AntimalarialDrug" )
 
@@ -25,46 +25,63 @@ namespace Kernel
     const bodyweight_map_t AntimalarialDrug::bodyweight_map_ = create_bodyweight_map();
 
     BEGIN_QUERY_INTERFACE_DERIVED(AntimalarialDrug, GenericDrug)
-        //HANDLE_INTERFACE(IMalariaDrugEffects)
+        HANDLE_INTERFACE(IMalariaDrugEffects)
     END_QUERY_INTERFACE_DERIVED(AntimalarialDrug, GenericDrug)
     IMPLEMENT_FACTORY_REGISTERED(AntimalarialDrug)
 
     AntimalarialDrug::~AntimalarialDrug()
-    { }
-
-    float
-    AntimalarialDrug::get_drug_IRBC_killrate()
     {
-        return current_efficacy * drug_IRBC_killrate;
     }
 
-    float AntimalarialDrug::get_drug_hepatocyte()
+    float AntimalarialDrug::CalculateModifiedEfficacy( const IStrainIdentity& rStrain )
     {
+        float modifier = 1.0;
+        if( durability_time_profile == PKPDModel::CONCENTRATION_VERSUS_TIME )
+        {
+            modifier = pDrugResistantModifiers->GetC50( rStrain );
+        }
+        return GenericDrug::CalculateEfficacy( modifier * this->drug_c50, start_concentration, end_concentration );
+    }
+
+    float
+    AntimalarialDrug::get_drug_IRBC_killrate( const IStrainIdentity& rStrain )
+    {
+        float modifier = pDrugResistantModifiers->GetMaxKilling( rStrain );
+        float efficacy = CalculateModifiedEfficacy( rStrain );
+        return modifier * efficacy * drug_IRBC_killrate;
+    }
+
+    float AntimalarialDrug::get_drug_hepatocyte( const IStrainIdentity& rStrain )
+    {
+        float efficacy = CalculateModifiedEfficacy( rStrain );
         return current_efficacy * drug_hepatocyte;
     }
 
     float
-    AntimalarialDrug::get_drug_gametocyte02()
+    AntimalarialDrug::get_drug_gametocyte02( const IStrainIdentity& rStrain )
     {
-        return current_efficacy * drug_gametocyte02;
+        float efficacy = CalculateModifiedEfficacy( rStrain );
+        return efficacy * drug_gametocyte02;
     }
 
     float
-    AntimalarialDrug::get_drug_gametocyte34()
+    AntimalarialDrug::get_drug_gametocyte34( const IStrainIdentity& rStrain )
     {
-        return current_efficacy * drug_gametocyte34;
+        float efficacy = CalculateModifiedEfficacy( rStrain );
+        return efficacy * drug_gametocyte34;
     }
 
     float
-    AntimalarialDrug::get_drug_gametocyteM()
+    AntimalarialDrug::get_drug_gametocyteM( const IStrainIdentity& rStrain )
     {
-        return current_efficacy * drug_gametocyteM;
+        float efficacy = CalculateModifiedEfficacy( rStrain );
+        return efficacy * drug_gametocyteM;
     }
 
-    std::string
-    AntimalarialDrug::GetDrugName() const
+    DrugUsageType::Enum
+    AntimalarialDrug::GetDrugUsageType()
     {
-        return drug_name;
+        return dosing_type;
     }
 
     bool
@@ -72,23 +89,54 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
+        jsonConfigurable::tFixedStringSet drug_name_set;
+        if( !JsonConfigurable::_dryrun )
+        {
+            auto mdtMap = GET_CONFIGURABLE( SimulationConfig )->malaria_params->MalariaDrugMap;
+            for( auto& rNameDrugPair : mdtMap )
+            {
+                drug_name_set.insert( rNameDrugPair.first );
+            }
+        }
+
+        jsonConfigurable::ConstrainedString tmp_drug_name;
+        tmp_drug_name.constraints = "<configuration>:Malaria_Drug_Params.*";
+        tmp_drug_name.constraint_param = &drug_name_set;
+
         initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, AMDRUG_Cost_To_Consumer_DESC_TEXT, 0, 999999, 10);
-        drug_name.constraints = "<configuration>:Malaria_Drug_Params.*";
-        // would be nice to be able to set constraint_params so that this ConstrainedString could
-        // validate itself, but not there yet.
-        initConfigTypeMap( "Drug_Type", &drug_name, AMDRUG_Drug_Type_DESC_TEXT);
+        initConfigTypeMap( "Drug_Type", &tmp_drug_name, AMDRUG_Drug_Type_DESC_TEXT);
         initConfig( "Dosing_Type", dosing_type, inputJson, MetadataDescriptor::Enum("Dosing_Type", AMDRUG_Dosing_Type_DESC_TEXT, MDD_ENUM_ARGS(DrugUsageType)) );
-        return BaseIntervention::Configure( inputJson );
+
+        bool ret = BaseIntervention::Configure( inputJson );
+        if( ret && !JsonConfigurable::_dryrun )
+        {
+            if( tmp_drug_name.empty() || !inputJson->Exist( "Drug_Type" ) )
+            {
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "'Drug_Type' was not defined and it is a required parameter.");
+            }
+            drug_name = tmp_drug_name;
+
+            auto mdtMap = GET_CONFIGURABLE( SimulationConfig )->malaria_params->MalariaDrugMap;
+            if( mdtMap.find( drug_name ) == mdtMap.end() )
+            {
+                throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, "mdtMap", drug_name.c_str() );
+            }
+            pMalariaDrugTypeParameters = mdtMap.at( drug_name );
+        }
+        return ret;
     }
 
     AntimalarialDrug::AntimalarialDrug()
-        : GenericDrug(),
-        drug_IRBC_killrate(0),
-        drug_hepatocyte(0),
-        drug_gametocyte02(0),
-        drug_gametocyte34(0),
-        drug_gametocyteM(0),
-        imda(nullptr)
+        : GenericDrug()
+        , dosing_type( DrugUsageType::SingleDose )
+        , drug_IRBC_killrate(0)
+        , drug_hepatocyte(0)
+        , drug_gametocyte02(0)
+        , drug_gametocyte34(0)
+        , drug_gametocyteM(0)
+        , pMalariaDrugTypeParameters(nullptr)
+        , pDrugResistantModifiers(nullptr)
+        , imda(nullptr)
     {
         initSimTypes( 1, "MALARIA_SIM" );
     }
@@ -99,13 +147,57 @@ namespace Kernel
         ICampaignCostObserver * pCCO
     )
     {
-        if (s_OK != context->QueryInterface(GET_IID(IMalariaDrugEffectsApply), (void**)&imda) )
+        bool keep = false;
+
+        IMalariaHumanContext* p_mhc = nullptr;
+        if( context->GetParent()->QueryInterface( GET_IID( IMalariaHumanContext ), (void**)&p_mhc ) != s_OK )
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IMalariaDrugEffectsApply", "IIndividualHumanInterventionsContext" );
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context->GetParent()", "IMalariaHumanContext", "IIndividualHumanContext" );
         }
 
-        // just add in another Drug to list, can later check the person's records and apply accordingly (TODO)
-        return GenericDrug::Distribute( context, pCCO );
+        if( (GetDrugUsageType() == DrugUsageType::FullTreatmentParasiteDetect) ||
+            (GetDrugUsageType() == DrugUsageType::SingleDoseParasiteDetect   ) )
+        {
+            if( p_mhc->CheckForParasitesWithTest( 1 ) )
+            {
+                keep = true;
+            }
+        }
+        else if( (GetDrugUsageType() == DrugUsageType::FullTreatmentNewDetectionTech) ||
+                 (GetDrugUsageType() == DrugUsageType::SingleDoseNewDetectionTech   ) )
+        {
+            if( p_mhc->CheckForParasitesWithTest( 2 ) )
+            {
+                keep = true;
+            }
+        }
+        else if( (GetDrugUsageType() == DrugUsageType::FullTreatmentWhenSymptom) ||
+                 (GetDrugUsageType() == DrugUsageType::SingleDoseWhenSymptom   ) )
+        {
+            if( p_mhc->HasFever() )
+            {
+                keep = true;
+            }
+        }
+        else // not conditional, so just distribute the drug
+        {
+            keep = true;
+        }
+
+        if( keep )
+        {
+            if (s_OK != context->QueryInterface(GET_IID(IMalariaDrugEffectsApply), (void**)&imda) )
+            {
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IMalariaDrugEffectsApply", "IIndividualHumanInterventionsContext" );
+            }
+
+            // just add in another Drug to list, can later check the person's records and apply accordingly (TODO)
+            return GenericDrug::Distribute( context, pCCO );
+        }
+        else
+        {
+            return false;
+        }
     }
 
     void
@@ -123,41 +215,44 @@ namespace Kernel
         return GenericDrug::SetContextTo( context );
     }
 
+    int AntimalarialDrug::GetNumDoses() const
+    {
+        int num_doses = 0;
+        if( (dosing_type == DrugUsageType::FullTreatmentCourse          ) ||
+            (dosing_type == DrugUsageType::FullTreatmentNewDetectionTech) ||
+            (dosing_type == DrugUsageType::FullTreatmentParasiteDetect  ) ||
+            (dosing_type == DrugUsageType::FullTreatmentWhenSymptom     ) )
+        {
+            num_doses = pMalariaDrugTypeParameters->GetFullTreatmentDoses();
+        }
+        else if( (dosing_type == DrugUsageType::SingleDose                ) ||
+                 (dosing_type == DrugUsageType::SingleDoseNewDetectionTech) ||
+                 (dosing_type == DrugUsageType::SingleDoseParasiteDetect  ) ||
+                 (dosing_type == DrugUsageType::SingleDoseWhenSymptom     ) )
+        {
+            num_doses = 1;
+        }
+        else if( dosing_type == (DrugUsageType::Prophylaxis) )
+        {
+            // hack for prophylaxis--person keeps taking 1000 doses, 
+            // because this lasts for several years.  This will be 
+            // replaced with a different usage pattern when we 
+            // reintroduce compliance
+            num_doses = 1000;
+        }
+
+        return num_doses;
+    }
+
     void AntimalarialDrug::ConfigureDrugTreatment( IIndividualHumanInterventionsContext * ivc )
     {
-        auto mdtMap = GET_CONFIGURABLE(SimulationConfig)->malaria_params->MalariaDrugMap;
-        if( mdtMap.find( drug_name ) == mdtMap.end() )
-        {
-            throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, "mdtMap", drug_name.c_str() );
-        }
-
-        auto drug_params = mdtMap.at( drug_name );
-
-        if(dosing_type == (DrugUsageType::FullTreatmentCourse) ||
-           dosing_type == (DrugUsageType::FullTreatmentNewDetectionTech) ||
-           dosing_type == (DrugUsageType::FullTreatmentParasiteDetect) ||
-           dosing_type == (DrugUsageType::FullTreatmentWhenSymptom))
-        {
-            remaining_doses = drug_params->drug_fulltreatment_doses;
-        }
-        else if(dosing_type == (DrugUsageType::SingleDose) ||
-                dosing_type == (DrugUsageType::SingleDoseNewDetectionTech) ||
-                dosing_type == (DrugUsageType::SingleDoseParasiteDetect) ||
-                dosing_type == (DrugUsageType::SingleDoseWhenSymptom))
-        {
-            remaining_doses = 1;
-        }
-        else if (dosing_type == (DrugUsageType::Prophylaxis))
-        {
-            remaining_doses = 1000; //hack for prophylaxis--person keeps taking 1000 doses, because this lasts for several years.  This will be replaced with a different usage pattern when we reintroduce compliance
-        }
-
-        time_between_doses = drug_params->drug_dose_interval;
-        Cmax = drug_params->drug_Cmax;
+        remaining_doses = GetNumDoses();
+        time_between_doses = pMalariaDrugTypeParameters->GetDoseInterval();
+        Cmax = pMalariaDrugTypeParameters->GetCMax();
 
         // Optional age-dependent dosing
-        float bodyweight_exponent = drug_params->bodyweight_exponent;
-        DoseMap::dose_map_t fractional_dose_by_upper_age = drug_params->dose_map.fractional_dose_by_upper_age;
+        float bodyweight_exponent = pMalariaDrugTypeParameters->GetBodyWeightExponent();
+        DoseMap::dose_map_t fractional_dose_by_upper_age = pMalariaDrugTypeParameters->GetDoseMap().fractional_dose_by_upper_age;
         if ( bodyweight_exponent > 0 || !fractional_dose_by_upper_age.empty() )
         {
             float age_in_days = ivc->GetParent()->GetEventContext()->GetAge();
@@ -175,17 +270,18 @@ namespace Kernel
             Cmax *= Cmax_multiplier;
         }
 
-        Vd = drug_params->drug_Vd;
-        drug_c50 = drug_params->drug_pkpd_c50;
-        drug_IRBC_killrate = drug_params->max_drug_IRBC_kill;
-        drug_gametocyte02  = drug_params->drug_gametocyte02_killrate;
-        drug_gametocyte34  = drug_params->drug_gametocyte34_killrate;
-        drug_gametocyteM   = drug_params->drug_gametocyteM_killrate;
-        drug_hepatocyte    = drug_params->drug_hepatocyte_killrate;
+        Vd                      = pMalariaDrugTypeParameters->GetVd();
+        drug_c50                = pMalariaDrugTypeParameters->GetPkpdC50();
+        drug_IRBC_killrate      = pMalariaDrugTypeParameters->GetMaxDrugIRBCKill();
+        drug_gametocyte02       = pMalariaDrugTypeParameters->GetKillRateGametocyte02();
+        drug_gametocyte34       = pMalariaDrugTypeParameters->GetKillRateGametocyte34();
+        drug_gametocyteM        = pMalariaDrugTypeParameters->GetKillRateGametocyteM();
+        drug_hepatocyte         = pMalariaDrugTypeParameters->GetKillRateHepatocyte();
+        pDrugResistantModifiers = &(pMalariaDrugTypeParameters->GetResistantModifiers());
 
         durability_time_profile = GET_CONFIGURABLE(SimulationConfig)->malaria_params->PKPD_model;
-        fast_decay_time_constant = drug_params->drug_decay_T1;
-        slow_decay_time_constant = drug_params->drug_decay_T2;
+        fast_decay_time_constant = pMalariaDrugTypeParameters->GetDecayT1();
+        slow_decay_time_constant = pMalariaDrugTypeParameters->GetDecayT2();
 
         PkPdParameterValidation();
     }
@@ -210,13 +306,14 @@ namespace Kernel
     void AntimalarialDrug::ApplyEffects()
     {
         assert(imda);
-        imda->ApplyDrugVaccineReducedAcquireEffect( GetDrugReducedAcquire() );
-        imda->ApplyDrugVaccineReducedTransmitEffect( GetDrugReducedTransmit() );
-        imda->ApplyDrugIRBCKillRateEffect( get_drug_IRBC_killrate() );
-        imda->ApplyDrugHepatocyteEffect( get_drug_hepatocyte() );
-        imda->ApplyDrugGametocyte02Effect( get_drug_gametocyte02() );
-        imda->ApplyDrugGametocyte34Effect( get_drug_gametocyte34() );
-        imda->ApplyDrugGametocyteMEffect( get_drug_gametocyteM() );
+
+        imda->AddDrugEffects( this );
+    }
+
+    void AntimalarialDrug::Expire()
+    {
+        imda->RemoveDrugEffects( this );
+        GenericDrug::Expire();
     }
 
     bodyweight_map_t AntimalarialDrug::create_bodyweight_map()
@@ -273,11 +370,16 @@ namespace Kernel
     {
         GenericDrug::serialize(ar, obj);
         AntimalarialDrug& drug = *obj;
+        ar.labelElement("dosing_type"       ) & (uint32_t&)drug.dosing_type;
         ar.labelElement("drug_IRBC_killrate") & drug.drug_IRBC_killrate;
-        ar.labelElement("drug_hepatocyte") & drug.drug_hepatocyte;
-        ar.labelElement("drug_gametocyte02") & drug.drug_gametocyte02;
-        ar.labelElement("drug_gametocyte34") & drug.drug_gametocyte34;
-        ar.labelElement("drug_gametocyteM") & drug.drug_gametocyteM;
-        ar.labelElement("drug_name") & (std::string&)drug.drug_name;
+        ar.labelElement("drug_hepatocyte"   ) & drug.drug_hepatocyte;
+        ar.labelElement("drug_gametocyte02" ) & drug.drug_gametocyte02;
+        ar.labelElement("drug_gametocyte34" ) & drug.drug_gametocyte34;
+        ar.labelElement("drug_gametocyteM"  ) & drug.drug_gametocyteM;
+
+        if( ar.IsReader() )
+        {
+            drug.pDrugResistantModifiers = &(GET_CONFIGURABLE( SimulationConfig )->malaria_params->MalariaDrugMap[ drug.drug_name ]->GetResistantModifiers());
+        }
     }
 }

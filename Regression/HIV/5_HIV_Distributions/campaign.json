@@ -42,9 +42,9 @@
 
             "Event_Coordinator_Config": 
             {
-                "class": "SimpleInterventionDistributionEventCoordinator",
-                "Coverage": 0.5,
-
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 0.5,
                 "Intervention_Config":
                 {
                     "class": "MaleCircumcision",

@@ -17,7 +17,6 @@
 		{ "path" : "Generic/SFTs/InfectivityScalingBoxcar/StartLessThanEnd_Random" },
 		{ "path" : "Generic/SFTs/InfectivityScalingBoxcar/TimeStep_.5_days_Random" },
 		{ "path" : "Generic/SFTs/InfectivityScalingBoxcar/TimeStep_3_days_Random" },
-		{ "path" : "Generic/SFTs/SimpleVaccine_Acquisition_Additive" },
 		{ "path" : "Generic/SFTs/SimpleBoosterVaccine/Acquisition" },
 		{ "path" : "Generic/SFTs/SimpleBoosterVaccine/Acquisition_BoostNaturalImmunity" },
 		{ "path" : "Generic/SFTs/SimpleBoosterVaccine/Transmission" },
@@ -25,6 +24,30 @@
 		{ "path" : "Generic/SFTs/SimpleBoosterVaccine/Mortality" },
 		{ "path" : "Generic/SFTs/SimpleBoosterVaccine/Generic" },
 		{ "path" : "Generic/SFTs/MultiEffectBoosterVaccine" },
-		{ "path" : "Generic/SFTs/ImmunityRespectingOutbreakIndividual" }
+		{ "path" : "Generic/SFTs/ImmunityRespectingOutbreakIndividual" },
+		{ "path" : "Generic/SFTs/Immunity_Initialization/Simple_Uniform" },
+		{ "path" : "Generic/SFTs/Immunity_Initialization/Distribution_Complex" },
+		{ "path" : "Generic/SFTs/Immunity_Initialization/Distribution_Off" },
+		{ "path" : "Generic/SFTs/MaternalProtection/Linear_Binary" },
+		{ "path" : "Generic/SFTs/MaternalProtection/Linear_Fractional" },
+		{ "path" : "Generic/SFTs/MaternalProtection/Sigmoid_Binary" },
+		{ "path" : "Generic/SFTs/MaternalProtection/Sigmoid_Fractional" },
+		{ "path" : "Generic/SFTs/MaternalProtection/None_Binary" },
+		{ "path" : "Generic/SFTs/MaternalProtection/None_Fractional" },
+		{ "path" : "Generic/SFTs/MigrationModel/3Nodes_stationary_dist_10000_0_0_LocalMigration" },
+		{ "path" : "Generic/SFTs/MigrationModel/3Nodes_stationary_dist_10000_0_0_RegionalMigration" },
+		{ "path" : "Generic/SFTs/MigrationModel/3Nodes_stationary_dist_10000_0_0_SeaMigration" },
+		{ "path" : "Generic/SFTs/MigrationModel/3Nodes_stationary_dist_10000_0_0_AirMigration" },
+		{ "path" : "Generic/SFTs/MigrationModel/3Nodes_stationary_dist_10000_0_0_AllMigration" },
+		{ "path" : "Generic/SFTs/MigrationModel/3Nodes_stationary_dist_0_10000_0_LocalMigration" },
+		{ "path" : "Generic/SFTs/MigrationModel/3Nodes_stationary_dist_0_0_10000_LocalMigration" },
+		{ "path" : "Generic/SFTs/MigrationModel/Local_Migration_2Node_SINGLE_ROUND_TRIPS" },
+		{ "path" : "Generic/SFTs/MigrationModel/Local_Migration_2Node_WAYPOINTS_HOME" },
+		{ "path" : "Generic/SFTs/MigrationModel/Local_Migration_3Node_RANDOM_WALK_DIFFUSION" },
+		{ "path" : "Generic/SFTs/MigrationModel/Local_Migration_2Node_RANDOM_WALK_DIFFUSION_asymmetric_nodes" },
+		{ "path" : "Generic/SFTs/MigrationModel/Local_Migration_2Node_RANDOM_WALK_DIFFUSION" }
+    ],
+     "skipped": [
+		{ "path" : "Generic/SFTs/SimpleVaccine_Acquisition_Additive" }
     ]
 }

@@ -11,7 +11,10 @@
             "Relative_Humidity_Filename": "Namawala_single_node_relative_humidity_daily.bin"
         },
         "DEMOGRAPHICS": {
-            "Demographics_Filenames": ["Namawala_single_node_demographics.json"]
+            "Demographics_Filenames": [
+                "Namawala_single_node_demographics.json"
+            ],
+            "Enable_Initial_Prevalence": 1
         },
         "PRIMARY": {
             "Config_Name": "VectorAndMalaria_6_Namawala_Vector_ITNsPEV",

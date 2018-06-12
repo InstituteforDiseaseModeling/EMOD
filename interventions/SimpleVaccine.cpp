@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,10 +14,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Contexts.h"                // for IIndividualHumanContext, IIndividualHumanInterventionsContext
 #include "InterventionsContainer.h"  // for IVaccineConsumer methods
 #include "RANDOM.h"                  // for ApplyVaccineTake random draw
-
-// TBD: currently included for JDeserialize only. Once we figure out how to wrap the deserialize
-// into rapidjsonimpl class, then this is not needed
-#include "RapidJsonImpl.h"
 
 SETUP_LOGGING( "SimpleVaccine" )
 
@@ -200,6 +196,17 @@ namespace Kernel
         }
         LOG_DEBUG_F( "Vaccine configured with type %d and take %f for individual %d\n", vaccine_type, vaccine_take, parent->GetSuid().data );
     } // needed for VaccineTake
+
+    bool SimpleVaccine::NeedsInfectiousLoopUpdate() const
+    {
+        // ------------------------------------------------------------------------
+        // --- Only mortality blocking impacts the infection directly so only
+        // --- then does the intervention need to be in the infectious update loop.
+        // ------------------------------------------------------------------------
+        return (vaccine_type == SimpleVaccineType::MortalityBlocking) ||
+               (vaccine_type == SimpleVaccineType::Generic          );
+    }
+
 
     REGISTER_SERIALIZABLE(SimpleVaccine);
 

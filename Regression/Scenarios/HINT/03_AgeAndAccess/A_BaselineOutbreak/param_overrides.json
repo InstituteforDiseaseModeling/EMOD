@@ -3,19 +3,22 @@
     "parameters": {
         "DEMOGRAPHICS": {
             "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
-            "Demographics_Filenames": [ "hint_ageandaccess_demographics.json", "hint_ageandaccess_overlay.json" ],
+            "Demographics_Filenames": [
+                "hint_ageandaccess_demographics.json",
+                "hint_ageandaccess_overlay.json"
+            ],
             "Enable_Vital_Dynamics": 0,
             "IMMUNITY": {
                 "Acquisition_Blocking_Immunity_Decay_Rate": 0.01,
                 "Acquisition_Blocking_Immunity_Duration_Before_Decay": 90,
                 "Enable_Immune_Decay": 0,
-                "Immunity_Transmission_Factor": 1,
+                "Post_Infection_Transmission_Multiplier": 1,
                 "Transmission_Blocking_Immunity_Decay_Rate": 0.01,
                 "Transmission_Blocking_Immunity_Duration_Before_Decay": 90
             },
             "MORTALITY": {
-                "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF", 
-                "Immunity_Mortality_Factor": 1,
+                        "Enable_Natural_Mortality": 0,
+                "Post_Infection_Mortality_Multiplier": 1,
                 "Mortality_Blocking_Immunity_Duration_Before_Decay": 90
             },
             "SAMPLING": {
@@ -36,14 +39,14 @@
             "Enable_Heterogeneous_Intranode_Transmission": 1
         },
         "OUTPUT": {
-            "Enable_Property_Output": 1,
-            "Enable_Demographics_Reporting": 0
+            "Enable_Demographics_Reporting": 0,
+            "Enable_Property_Output": 1
         },
         "PRIMARY": {
-            "logLevel_JsonConfigurable" : "WARNING",
             "Config_Name": "HINT_AgeAndAccess_BaselineOutbreak",
             "Geography": "SamplesInput",
-            "Run_Number": 2
+            "Run_Number": 2,
+            "logLevel_JsonConfigurable": "WARNING"
         },
         "Rainfall_In_mm_To_Fill_Swamp": 1000.0,
         "Semipermanent_Habitat_Decay_Rate": 0.01,

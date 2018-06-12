@@ -1,0 +1,27 @@
+{
+    "class" : "WaningEffectCombo",
+    "Add_Effects" : 0,
+    "Expires_When_All_Expire" : 1,
+    "Effect_List" : [
+        {
+            "class": "WaningEffectMapLinear",
+            "Initial_Effect" : 1.0,
+            "Expire_At_Durability_Map_End" : 1,
+            "Durability_Map" :
+            {
+                "Times"  : [ 0.0, 1.0, 2.0 ],
+                "Values" : [ 0.2, 0.4, 0.6 ]
+            }
+        },
+        {
+            "class": "WaningEffectMapPiecewise",
+            "Initial_Effect" : 1.0,
+            "Expire_At_Durability_Map_End" : 1,
+            "Durability_Map" :
+            {
+                "Times"  : [ 0.0, 4.0, 5.0 ],
+                "Values" : [ 0.5, 0.5, 0.0 ]
+            }
+        }
+    ]
+}

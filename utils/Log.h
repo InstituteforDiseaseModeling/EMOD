@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -38,7 +38,7 @@ static bool* _log_level_enabled_array = nullptr;
 
 
 #define LOG_LVL(lvl, x)          do { if( SimpleLogger::IsLoggingEnabled( Logger::lvl, _module, _log_level_enabled_array ) )  EnvPtr->Log->Log( Logger::lvl, _module, x); } while(0)
-#define LOG_LVL_F(lvl, x, ...)   do { if( SimpleLogger::IsLoggingEnabled( Logger::lvl, _module, _log_level_enabled_array ) )  EnvPtr->Log->LogF(Logger::lvl, _module, x, ##__VA_ARGS__); } while(0)
+#define LOG_LVL_F(lvl, x, ...)   do { if( SimpleLogger::IsLoggingEnabled( Logger::lvl, _module, _log_level_enabled_array ) )  EnvPtr->Log->Log(Logger::lvl, _module, x, ##__VA_ARGS__); } while(0)
 
 #define LOG_LEVEL(lvl)          ((EnvPtr != nullptr) ? EnvPtr->Log->CheckLogLevel(Logger::lvl, _module) : false)
 
@@ -107,8 +107,7 @@ public:
     SimpleLogger( Logger::tLevel syslevel );
     void Init( const json::QuickInterpreter * configJson );
     bool CheckLogLevel( Logger::tLevel log_level, const char* module );
-    void Log(Logger::tLevel log_level, const char* module, const char* msg);
-    void LogF( Logger::tLevel log_level, const char* module, const char* msg, ...);
+    void Log( Logger::tLevel log_level, const char* module, const char* msg, ...);
     void Flush();
 
     void GetLogInfo(LogTimeInfo &tInfo );

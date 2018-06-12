@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -64,6 +64,7 @@ namespace Kernel
 
 
         // INodeContext
+        virtual void PreUpdate();
         virtual void Update(float dt) override;
         virtual ISimulationContext* GetParent() override;
         virtual suids::suid   GetSuid() const override;
@@ -87,7 +88,6 @@ namespace Kernel
 
         // Initialization
         virtual void SetContextTo(ISimulationContext* context) override;
-        virtual void SetMonteCarloParameters(float indsamplerate =.05, int nummininf = 0) override;
         virtual void SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory, bool white_list_enabled ) override;
         virtual void PopulateFromDemographics() override;
         virtual void InitializeTransmissionGroupPopulations() override;
@@ -96,7 +96,6 @@ namespace Kernel
         bool IsInPolygon(float* vertex_coords, int numcoords); // might want to create a real polygon object at some point
         bool IsInPolygon( const json::Array &poly );
         bool IsInExternalIdSet( const tNodeIdList& nodelist );
-        bool GetUrban() const;
 
         // Reporting to higher levels (intermediate form)
         // Possible TODO: refactor into common interfaces if there is demand
@@ -113,6 +112,7 @@ namespace Kernel
 
         virtual float GetMeanAgeInfection()      const override;
         virtual float GetBasePopulationScaleFactor() const override;
+        virtual float GetNonDiseaseMortalityRateByAgeAndSex( float age, Gender::Enum sex ) const override;
 
         // This method will ONLY be used for spatial reporting by input node ID, don't use it elsewhere!
         virtual ExternalNodeId_t GetExternalID() const;
@@ -134,7 +134,7 @@ namespace Kernel
         virtual void ValidateIntranodeTransmissionConfiguration();
 
         virtual float GetTotalContagion(const TransmissionGroupMembership_t* membership) override;
-        virtual std::map< std::string, float > GetTotalContagion() const;
+        virtual std::map< std::string, float > GetContagionByRoute() const;
         virtual const RouteList_t& GetTransmissionRoutes() const override;
         //Methods for implementing time dependence in various quantities; infectivity, birth rate, migration rate
         virtual float getSinusoidalCorrection(float sinusoidal_amplitude, float sinusoidal_phase) const override;
@@ -155,7 +155,7 @@ namespace Kernel
 
         virtual ProbabilityNumber GetProbMaternalTransmission() const override;
 
-        virtual const NodeDemographicsDistribution* GetImmunityDistribution()        const override { return ImmunityDistribution; }
+        virtual const NodeDemographicsDistribution* GetImmunityDistribution()        const override { return SusceptibilityDistribution; }
         virtual const NodeDemographicsDistribution* GetFertilityDistribution()       const override { return FertilityDistribution; }
         virtual const NodeDemographicsDistribution* GetMortalityDistribution()       const override { return MortalityDistribution; }
         virtual const NodeDemographicsDistribution* GetMortalityDistributionMale()   const override { return MortalityDistributionMale; }
@@ -163,11 +163,6 @@ namespace Kernel
         virtual const NodeDemographicsDistribution* GetAgeDistribution()             const override { return AgeDistribution; }
 
         virtual void ManageFamilyTrip( float currentTime, float dt );
-
-        /*virtual float GetMaxInfectionProb( TransmissionRoute::Enum route ) const
-        {
-            return maxInfectionProb[ route ];
-        }*/
 
     private:
 
@@ -179,7 +174,7 @@ namespace Kernel
         
         SerializationFlags serializationMask;
 
-        NodeDemographicsDistribution* ImmunityDistribution;
+        NodeDemographicsDistribution* SusceptibilityDistribution;
         NodeDemographicsDistribution* FertilityDistribution;
         NodeDemographicsDistribution* MortalityDistribution;
         NodeDemographicsDistribution* MortalityDistributionMale;
@@ -193,17 +188,21 @@ namespace Kernel
         float _longitude;
 
     protected:
-        // moved from SimulationConfig
+        // Enum type name                            Enum variable name                         Name in config.json
         IndSamplingType::Enum                        ind_sampling_type;                         // Individual_Sampling_Type
         PopulationDensityInfectivityCorrection::Enum population_density_infectivity_correction; // Population_Density_Infectivity_Correction
         DistributionType::Enum                       age_initialization_distribution_type;      // Age_Initialization_Distribution_Type
         PopulationScaling::Enum                      population_scaling;                        // POPULATION_SCALING
+        SusceptibilityScalingType::Enum              susceptibility_scaling_type;               // Susceptibility_Scaling_Type
+
+        // Susceptibility modifiers
+        bool  susceptibility_scaling;
+        float susceptibility_scaling_rate;
+        float susceptibility_dynamic_scaling;
 
         // Node properties
         suids::suid suid;
-        bool  urban;
         float birthrate;
-        float Above_Poverty; // fraction of the population above poverty
 
         // ----------------------------------------------------------------------------------------
         // --- DMB 9-16-2014 Through comparison, it was determined that using a vector (and moving
@@ -222,12 +221,8 @@ namespace Kernel
         float               family_time_at_destination;
         bool                family_is_destination_new_home;
 
-        float Ind_Sample_Rate;   // adapted sampling parameter
-
         // Heterogeneous intra-node transmission
         ITransmissionGroups *transmissionGroups;
-
-        float susceptibility_dynamic_scaling;
         
         // Climate and demographics
         Climate *localWeather;
@@ -267,8 +262,9 @@ namespace Kernel
 
         bool demographics_birth;
         bool demographics_gender;
-        bool demographics_other;
+        bool enable_demographics_risk;
 
+        float base_sample_rate;        // Fraction of individuals in each node to sample;
         float max_sampling_cell_pop;
         float sample_rate_birth;
         float sample_rate_0_18mo;
@@ -277,21 +273,26 @@ namespace Kernel
         float sample_rate_10_14;
         float sample_rate_15_19;
         float sample_rate_20_plus;
-        float sample_rate_immune;
+        float rel_sample_rate_immune;
         float immune_threshold_for_downsampling;
-        float prob_maternal_transmission;
+        float prob_maternal_infection_transmission;
         float population_density_c50;
         float population_scaling_factor;
-        bool maternal_transmission;
+        bool vital_dynamics;
+        bool enable_natural_mortality;
+        bool enable_maternal_infection_transmission;
+        bool enable_initial_prevalence;
         bool vital_birth;
         VitalBirthDependence::Enum                           vital_birth_dependence;                           // Vital_Birth_Dependence
         VitalBirthTimeDependence::Enum                       vital_birth_time_dependence;                      //Time dependence in Birth Rate
         float x_birth;
+        float x_othermortality;
+        bool enable_demographics_immunity_dist;
 
         // Cached values to be used when initializing new individuals
-        DistributionFunction::Enum immunity_dist_type ;
-        float immunity_dist1 ;
-        float immunity_dist2 ;
+        DistributionFunction::Enum susceptibility_dist_type ;
+        float susceptibility_dist1 ;
+        float susceptibility_dist2 ;
         DistributionFunction::Enum risk_dist_type ;
         float risk_dist1 ;
         float risk_dist2 ;
@@ -319,28 +320,35 @@ namespace Kernel
         virtual float getDensityContactScaling(); // calculate correction to infectivity due to lower population density
         virtual float getClimateInfectivityCorrection()  const;
         virtual float getSeasonalInfectivityCorrection();
- 
+    public: 
         void  updateVitalDynamics(float dt = 1.0f);             // handles births and non-disease mortality
+        virtual void considerPregnancyForIndividual( bool bPossibleMother, bool bIsPregnant, float age, int individual_id, float dt, IIndividualHuman* pIndividual = nullptr ); 
+        virtual float initiatePregnancyForIndividual( int individual_id, float dt ) override;
+        virtual bool updatePregnancyForIndividual( int individual_id, float duration ) override;
+        virtual void accumulateIndividualPopStatsByValue( float mcw, float infectiousness, bool poss_mom, bool is_infected );
+        virtual void resetNodeStateCounters(void);
+    protected:
 
         // Population Initialization
         virtual void populateNewIndividualsFromDemographics(int count_new_individuals = 100);
-        virtual void populateNewIndividualsByBirth(int count_new_individuals = 100);
-        virtual void populateNewIndividualFromPregnancy(IIndividualHuman* temp_mother);
-        void  conditionallyInitializePregnancy(IIndividualHuman*);
+        virtual void populateNewIndividualsByBirth(int count_new_individuals = 100) override;
+        virtual void populateNewIndividualFromMotherId( unsigned int temp_mother_id );
+        virtual void populateNewIndividualFromMotherPointer( IIndividualHuman* mother );
+        virtual unsigned int populateNewIndividualFromMotherParams( float mcw, unsigned int child_infections );
+        void  conditionallyInitializePregnancy( IIndividualHuman* temp_mother );
         float getPrevalenceInPossibleMothers();
-        virtual float drawInitialImmunity(float ind_init_age);
+        virtual float drawInitialSusceptibility(float ind_init_age);
 
-        virtual IIndividualHuman *createHuman( suids::suid id, float MCweight, float init_age, int gender, float init_poverty);
+        virtual IIndividualHuman *createHuman( suids::suid id, float MCweight, float init_age, int gender);
         IIndividualHuman* configureAndAddNewIndividual(float=1.0, float=(20*DAYSPERYEAR), float= 0, float = 0.5);
         virtual IIndividualHuman* addNewIndividual(
             float monte_carlo_weight = 1.0,
             float initial_age = 0,
             int gender = 0,
             int initial_infections = 0,
-            float immunity_parameter = 1.0,
+            float susceptibility_parameter = 1.0,
             float risk_parameter = 1.0,
-            float migration_heterogeneity = 1.0,
-            float poverty_parameter = 0);
+            float migration_heterogeneity = 1.0);
 
         virtual void RemoveHuman( int index );
 
@@ -351,7 +359,6 @@ namespace Kernel
         Fraction adjustSamplingRateByAge( Fraction sampling_rate, double age ) const;
 
         // Reporting
-        virtual void resetNodeStateCounters(void);
         virtual void updateNodeStateCounters(IIndividualHuman *ih);
         virtual void finalizeNodeStateCounters(void);
         virtual void reportNewInfection(IIndividualHuman *ih);
@@ -383,11 +390,19 @@ namespace Kernel
         float birth_rate_boxcar_start_time;             // Only for Birth_Rate_Time_Dependence = ANNUAL_BOXCAR_FUNCTION
         float birth_rate_boxcar_end_time;               // Only for Birth_Rate_Time_Dependence = ANNUAL_BOXCAR_FUNCTION
 
-        /*int calcGap( float maxInfectionProb );
+        // Skipping functions & variables
+        virtual int calcGap();
         bool bSkipping; // for skip exposure
-        int gap;
         std::map< TransmissionRoute::Enum, float > maxInfectionProb; // set to 1.0 if not defined
-        float computeMaxInfectionProb( float dt ) const;*/
+        int gap;
+        virtual void computeMaxInfectionProb( float dt );
+        // TBD: Put below in cpp
+        virtual float GetMaxInfectionProb( TransmissionRoute::Enum route ) const
+        {
+            // Note that in GENERIC there's on ly one route. Can get tricky b/w CONTACT and ALL.
+            return maxInfectionProb.at( route );
+        }
+        VitalDeathDependence::Enum                           vital_death_dependence;                           // Vital_Death_Dependence
 
         DECLARE_SERIALIZABLE(Node);
 

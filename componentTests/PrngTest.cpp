@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,12 +9,36 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 #include "UnitTest++.h"
+#include "common.h"
 #include "RANDOM.h"
 #include <iostream>
 #include <iomanip>
+#include <math.h>
 
 SUITE(PrngTest)
 {
+    TEST( Test_eGauss )
+    {
+        RANDOMBASE* prng = new PSEUDO_DES( 42 );
+
+        float sum = 0.0;
+        float sum2 = 0.0;
+        int num = 100000;
+        for( int i = 0; i < num; ++i )
+        {
+            float val = float( prng->eGauss() );
+            sum += val;
+            sum2 += val*val;
+            //std::stringstream ss;
+            //ss << val << "\n";
+            //PrintDebug( ss.str() );
+        }
+        float avg = sum / float( num );
+        float stddev = sqrt( sum2 / float( num ) - (avg*avg) );
+        CHECK_CLOSE( 0.0f, avg, 0.01f );
+        CHECK_CLOSE( 1.0f, stddev, 0.01f );
+    }
+
     TEST(TestPseudoDes)
     {
         static uint32_t baseline[20] = {
@@ -71,5 +95,81 @@ SUITE(PrngTest)
             }
         }
         std::cout << std::endl;
+    }
+
+    TEST( TestRandomRound )
+    {
+        RANDOMBASE* prng = new PSEUDO_DES( 42 );
+
+        for( float inc=0.0; inc < 1.0 ; inc += 0.1f )
+        {
+            float val = 5.0f + inc;
+
+            uint32_t total_count = 1000000;
+            uint32_t count_5 = 0;
+            uint32_t count_6 = 0;
+            for( uint32_t i = 0; i < total_count; ++i )
+            {
+                uint32_t i_val = prng->randomRound( val );
+
+                if( i_val == 5 )
+                {
+                    ++count_5;
+                }
+                else if( i_val == 6 )
+                {
+                    ++count_6;
+                }
+                else
+                {
+                    CHECK( false );
+                }
+            }
+            float percent_5 = float( count_5 ) / float( total_count );
+            float percent_6 = float( count_6 ) / float( total_count );
+
+            CHECK_CLOSE( inc, percent_6, 0.001 );
+            CHECK_CLOSE( 1.0, percent_5 + percent_6, 0.001 );
+        }
+    }
+
+    TEST( TestMultinomialApprox )
+    {
+        RANDOMBASE* prng = new PSEUDO_DES( 42 );
+
+        uint64_t N = 100000;
+        uint64_t num_samples = 10000;
+
+        for( float total_fraction = 0.9f ; total_fraction >= 0.1f ; total_fraction -= 0.1f )
+        {
+            // assuming total of fractions = 1 before multiplying times total_fraction
+            std::vector<float> fractions;
+            fractions.push_back( 0.1f * total_fraction );
+            fractions.push_back( 0.2f * total_fraction );
+            fractions.push_back( 0.3f * total_fraction );
+            fractions.push_back( 0.4f * total_fraction );
+
+            std::vector<uint64_t> totals( fractions.size(), 0 );
+            for( uint32_t i = 0; i < num_samples; ++i )
+            {
+                std::vector<uint64_t> subsets = prng->multinomial_approx( N, fractions );
+
+                uint64_t total_of_subsets = 0;
+                for( int j = 0; j < subsets.size(); ++j )
+                {
+                    totals[ j ] += subsets[ j ];
+                    total_of_subsets += subsets[ j ];
+                }
+                float percent_N = float( total_of_subsets ) / float( N );
+                //printf("total_fraction=%f  N=%lld  total_of_subsets=%lld  percent_N=%f\n",total_fraction,N,total_of_subsets, percent_N);
+                CHECK_CLOSE( total_fraction, percent_N, 0.01 );
+            }
+            for( int i = 0; i < totals.size(); ++i )
+            {
+                double percent = double( totals[ i ] ) / double( num_samples*N );
+                //printf("totals[%d]=%lld percent=%f fractions[%d]=%f\n",i,totals[i],percent,i,fractions[i]);
+                CHECK_CLOSE( fractions[ i ], percent, 0.0001 );
+            }
+        }
     }
 }

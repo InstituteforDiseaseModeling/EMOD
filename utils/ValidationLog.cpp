@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,6 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <string.h>
 #include "ValidationLog.h"
 #include "Environment.h"
+#include "FileSystem.h"
 #include "Log.h"
 
 SETUP_LOGGING( "ValidationLog" )
@@ -78,23 +79,20 @@ ValidationLog* ValidationLog::Open( std::string filename, bool is_validating )
 {
     ValidationLog* newlog = (ValidationLog*)0;
 
-    if (is_validating)
+    if( is_validating )
     {
-        std::ifstream *ifs = _new_ std::ifstream();
-        ifs->open(filename.c_str());
-        if (ifs->is_open())
+        if( FileSystem::FileExists( filename ) )
         {
+            std::ifstream *ifs = _new_ std::ifstream();
+            FileSystem::OpenFileForReading( *ifs, filename.c_str() );
             newlog = _new_ ValidationLog(ifs);
         }
     }
     else 
     {
         std::ofstream *ofs = _new_ std::ofstream();
-        ofs->open(filename.c_str());
-        if (ofs->is_open())
-        {
-            newlog = _new_ ValidationLog(ofs);
-        }
+        FileSystem::OpenFileForWriting( *ofs, filename.c_str() );
+        newlog = _new_ ValidationLog(ofs);
     }
 
     CurrentLog = newlog;

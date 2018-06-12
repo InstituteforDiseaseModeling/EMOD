@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -30,9 +30,10 @@ namespace Kernel
         virtual void CheckStartDay( float campaignStartDay ) const override;
 
     protected:
-        virtual bool TargetedIndividualIsCovered(IIndividualHumanEventContext *ihec);
+        virtual void InitializeRepetitions( const Configuration* inputJson ) override;
+        virtual bool TargetedIndividualIsCovered(IIndividualHumanEventContext *ihec) override;
+
         InterpolatedValueMap year2ValueMap;
-        Fraction target_coverage;
         float end_year;
         std::vector< suids::suid_data_t > haves;
     };

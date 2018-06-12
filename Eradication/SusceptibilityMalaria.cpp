@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -39,6 +39,7 @@ SETUP_LOGGING( "SusceptibilityMalaria" )
 namespace Kernel
 {
     bool   SusceptibilityMalariaConfig::sexual_combination                = false;
+    bool   SusceptibilityMalariaConfig::enable_maternal_antibodies_transmission  = false;
     InnateImmuneVariationType::Enum SusceptibilityMalariaConfig::innate_immune_variation_type = InnateImmuneVariationType::NONE;
     float  SusceptibilityMalariaConfig::base_gametocyte_mosquito_survival = 1.0f;
     float  SusceptibilityMalariaConfig::cytokine_gametocyte_inactivation  = 1.0f;
@@ -50,10 +51,10 @@ namespace Kernel
     float  SusceptibilityMalariaConfig::feverSevereInvWidth               = 0.0f;
     float  SusceptibilityMalariaConfig::anemiaMortalityInvWidth           = 0.0f;
     float  SusceptibilityMalariaConfig::parasiteMortalityInvWidth         = 0.0f;
-    double SusceptibilityMalariaConfig::anemiaMortalityLevel              = 0.0f;
-    double SusceptibilityMalariaConfig::parasiteMortalityLevel            = 0.0f;
+    float  SusceptibilityMalariaConfig::anemiaMortalityLevel              = 0.0f;
+    float  SusceptibilityMalariaConfig::parasiteMortalityLevel            = 0.0f;
     float  SusceptibilityMalariaConfig::feverMortalityInvWidth            = 0.0f;
-    double SusceptibilityMalariaConfig::feverMortalityLevel               = 0.0f;
+    float  SusceptibilityMalariaConfig::feverMortalityLevel               = 0.0f;
     float  SusceptibilityMalariaConfig::clinicalFeverThreshold_high       = 0.0f;
     float  SusceptibilityMalariaConfig::minDaysBetweenClinicalIncidents   = 0.0f;
     float  SusceptibilityMalariaConfig::clinicalFeverThreshold_low        = 0.0f;
@@ -131,7 +132,7 @@ namespace Kernel
     )
     {
         initConfigTypeMap( "Anemia_Mortality_Threshold",              &anemiaMortalityLevel,              Anemia_Mortality_Threshold_DESC_TEXT,              0.0, 100.0f,      DEFAULT_ANEMIA_MORTALITY_LEVEL );
-        initConfigTypeMap( "Parasite_Mortality_Threshold",            &parasiteMortalityLevel,            Parasite_Mortality_Threshold_DESC_TEXT,            0.0, DBL_MAX,     DEFAULT_PARASITE_MORTALITY_LEVEL );
+        initConfigTypeMap( "Parasite_Mortality_Threshold",            &parasiteMortalityLevel,            Parasite_Mortality_Threshold_DESC_TEXT,            0.0, FLT_MAX,     DEFAULT_PARASITE_MORTALITY_LEVEL );
         initConfigTypeMap( "Fever_Mortality_Threshold",               &feverMortalityLevel,               Fever_Mortality_Threshold_DESC_TEXT,               0.0, 1000.0,      DEFAULT_FEVER_MORTALITY_LEVEL );
         initConfigTypeMap( "Enable_Sexual_Combination",               &sexual_combination,                Enable_Sexual_Combination_DESC_TEXT,                                 false );
         initConfigTypeMap( "Base_Gametocyte_Mosquito_Survival_Rate",  &base_gametocyte_mosquito_survival, Base_Gametocyte_Mosquito_Survival_Rate_DESC_TEXT,  0.0f, 1.0f,       DEFAULT_BASE_GAMETOCYTE_MOSQUITO_SURVIVAL );
@@ -157,7 +158,8 @@ namespace Kernel
         initConfigTypeMap( "Antibody_CSP_Decay_Days",                 &antibody_csp_decay_days,           Antibody_CSP_Decay_Days_DESC_TEXT,                 1.0f, FLT_MAX,    DEFAULT_ANTIBODY_CSP_DECAY_DAYS );
         initConfigTypeMap( "Erythropoiesis_Anemia_Effect",            &erythropoiesis_anemia_effect,      Erythropoiesis_Anemia_Effect_DESC_TEXT,            0.0f, 1000.0f,    3.5f );
 
-        initConfig( "Maternal_Antibodies_Type", maternal_antibodies_type, config, MetadataDescriptor::Enum("maternal_antibodies_type", Maternal_Antibodies_Type_DESC_TEXT, MDD_ENUM_ARGS(MaternalAntibodiesType)) );
+        initConfigTypeMap("Enable_Maternal_Antibodies_Transmission", &enable_maternal_antibodies_transmission, Enable_Maternal_Antibodies_Transmission_DESC_TEXT, false, "Simulation_Type","MALARIA_SIM");
+        initConfig( "Maternal_Antibodies_Type", maternal_antibodies_type, config, MetadataDescriptor::Enum("maternal_antibodies_type", Maternal_Antibodies_Type_DESC_TEXT, MDD_ENUM_ARGS(MaternalAntibodiesType)), "Enable_Maternal_Antibodies_Transmission" );
         initConfigTypeMap( "Maternal_Antibody_Protection",        &maternal_antibody_protection,      Maternal_Antibody_Protection_DESC_TEXT,            0.0f, 1.0f,       0.1f, "Maternal_Antibodies_Type", "SIMPLE_WANING,CONSTANT_INITIAL_IMMUNITY" );
         initConfigTypeMap( "Maternal_Antibody_Decay_Rate",        &maternal_antibody_decay_rate,      Maternal_Antibody_Decay_Rate_DESC_TEXT,            0.0f, FLT_MAX,    0.01f, "Maternal_Antibodies_Type", "SIMPLE_WANING,CONSTANT_INITIAL_IMMUNITY" );
 
@@ -251,7 +253,7 @@ namespace Kernel
         // New births during the simulation can stop here.
         if (_age == 0) return;
 
-        if( params()->immunity_initialization_distribution_type == DistributionType::DISTRIBUTION_COMPLEX )
+        if(SusceptibilityConfig::susceptibility_initialization_distribution_type == DistributionType::DISTRIBUTION_COMPLEX )
         {
             INodeMalaria* p_node_malaria = nullptr;
             if (parent->GetEventContext()->GetNodeEventContext()->GetNodeContext()->QueryInterface( GET_IID( INodeMalaria ), (void**)&p_node_malaria ) != s_OK)
@@ -648,7 +650,7 @@ namespace Kernel
             }
             if ( rand < prob_fatal * idvie->GetInterventionReducedMortality() )
             {
-                if ( InfectionConfig::vital_disease_mortality )
+                if ( InfectionConfig::enable_disease_mortality )
                 { 
                     parent->GetEventContext()->Die( HumanStateChange::KilledByInfection ); // set the individual's HumanStateChange to KilledByInfection
 
@@ -979,26 +981,32 @@ namespace Kernel
 
     void SusceptibilityMalaria::init_maternal_antibodies(float mother_factor)
     {
-        switch(SusceptibilityMalariaConfig::maternal_antibodies_type)
+        if (SusceptibilityMalariaConfig::enable_maternal_antibodies_transmission)
         {
-        case MaternalAntibodiesType::OFF:
-            m_maternal_antibody_strength = 0.0f;
-            break;
+            switch (SusceptibilityMalariaConfig::maternal_antibodies_type)
+            {
+            case MaternalAntibodiesType::OFF:
+                m_maternal_antibody_strength = 0.0f;
+                break;
 
-        case MaternalAntibodiesType::CONSTANT_INITIAL_IMMUNITY:
-            m_maternal_antibody_strength = SusceptibilityMalariaConfig::maternal_antibody_protection;
-            break;
+            case MaternalAntibodiesType::CONSTANT_INITIAL_IMMUNITY:
+                m_maternal_antibody_strength = SusceptibilityMalariaConfig::maternal_antibody_protection;
+                break;
 
-        case MaternalAntibodiesType::SIMPLE_WANING:
-            // Initialize newborn antibody protection proportional to 
-            // possible mother's antibody history and configurable protection factor
-            m_maternal_antibody_strength = SusceptibilityMalariaConfig::maternal_antibody_protection * mother_factor;
-            break;
+            case MaternalAntibodiesType::SIMPLE_WANING:
+                // Initialize newborn antibody protection proportional to 
+                // possible mother's antibody history and configurable protection factor
+                m_maternal_antibody_strength = SusceptibilityMalariaConfig::maternal_antibody_protection * mother_factor;
+                break;
 
-        default:
-            throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "maternal_antibodies_type", SusceptibilityMalariaConfig::maternal_antibodies_type, MaternalAntibodiesType::pairs::lookup_key(SusceptibilityMalariaConfig::maternal_antibodies_type) );
+            default:
+                throw BadEnumInSwitchStatementException(__FILE__, __LINE__, __FUNCTION__, "maternal_antibodies_type", SusceptibilityMalariaConfig::maternal_antibodies_type, MaternalAntibodiesType::pairs::lookup_key(SusceptibilityMalariaConfig::maternal_antibodies_type));
+            }
         }
-
+        else
+        {
+            m_maternal_antibody_strength = 0.0f;
+        }
         LOG_DEBUG_F("Initialized individual with m_maternal_antibody_strength = %f based on mother factor of %f\n", m_maternal_antibody_strength, mother_factor);
     }
 

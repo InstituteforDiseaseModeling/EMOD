@@ -20,7 +20,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesOnly", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Nodeset_Config": {
                 "class": "NodeSetAll"

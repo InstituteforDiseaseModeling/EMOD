@@ -1,6 +1,7 @@
+
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -267,11 +268,7 @@ namespace Kernel
         // ------------------------------------
         LOG_INFO_F( "Writing file: %s\n", output_file_name.c_str() );
         ofstream ofs;
-        ofs.open( output_file_name.c_str() );
-        if (!ofs.is_open())
-        {
-            throw FileIOException( __FILE__, __LINE__, __FUNCTION__, output_file_name.c_str() );
-        }
+        FileSystem::OpenFileForWriting( ofs, output_file_name.c_str() );
 
         ofs << output_text << endl;
         if( m_PrettyFormat )

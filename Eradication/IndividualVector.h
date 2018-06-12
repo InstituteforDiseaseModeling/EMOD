@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorContexts.h"
 #include "Individual.h"
 
-#include "VectorInterventionsContainer.h"
 #include "IInfection.h"
 #include "IContagionPopulation.h"
 #include "StrainIdentity.h"
@@ -24,6 +23,8 @@ namespace Kernel
     // To store randomly selected strains and their weights from various pools an individual is exposed to
     typedef std::pair<StrainIdentity, float> strain_exposure_t;
 
+    class VectorInterventionsContainer;
+
     class IndividualHumanVector : public IndividualHuman, public IIndividualHumanVectorContext
     {
         friend class SimulationVector;
@@ -32,13 +33,13 @@ namespace Kernel
 
     public:
         // TODO change double to float
-        static IndividualHumanVector *CreateHuman(INodeContext *context, suids::suid _suid, double monte_carlo_weight = 1.0, double initial_age = 0.0, int gender = 0, double initial_poverty = 0.5);
+        static IndividualHumanVector *CreateHuman(INodeContext *context, suids::suid _suid, double monte_carlo_weight = 1.0, double initial_age = 0.0, int gender = 0);
         virtual ~IndividualHumanVector();
 
         virtual void CreateSusceptibility(float immunity_modifier = 1.0, float risk_modifier = 1.0) override;
         virtual void ExposeToInfectivity(float dt = 1.0, const TransmissionGroupMembership_t* transmissionGroupMembership = nullptr) override;
         virtual void UpdateInfectiousness(float dt) override;
-        virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum tranmsission_route = TransmissionRoute::TRANSMISSIONROUTE_ALL ) override;
+        virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum tranmsission_route = TransmissionRoute::TRANSMISSIONROUTE_CONTACT ) override;
 
         virtual void UpdateGroupPopulation(float size_changes) override;
 
@@ -53,7 +54,7 @@ namespace Kernel
         VectorInterventionsContainer * vector_interventions; // cache this so we don't have to QI for it all the time. It won't change over time, but careful with malaria sims
 
         // TODO change double to float
-        IndividualHumanVector(suids::suid id = suids::nil_suid(), double monte_carlo_weight = 1.0, double initial_age = 0.0, int gender = 0, double initial_poverty = 0.5);
+        IndividualHumanVector(suids::suid id = suids::nil_suid(), double monte_carlo_weight = 1.0, double initial_age = 0.0, int gender = 0);
         IndividualHumanVector(INodeContext *context);
 
         virtual IInfection *createInfection(suids::suid _suid) override;

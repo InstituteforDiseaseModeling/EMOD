@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -39,7 +39,7 @@ namespace Kernel
     IMPL_QUERY_INTERFACE2(StandardInterventionDistributionEventCoordinator, IEventCoordinator, IConfigurable)
 
     // ctor
-    StandardInterventionDistributionEventCoordinator::StandardInterventionDistributionEventCoordinator() 
+    StandardInterventionDistributionEventCoordinator::StandardInterventionDistributionEventCoordinator( bool useDemographicCoverage ) 
     : parent(nullptr)
     , distribution_complete(false)
     , num_repetitions(1)
@@ -52,7 +52,7 @@ namespace Kernel
     , cached_nodes()
     , node_suids()
     , _di( nullptr ) 
-    , demographic_restrictions()
+    , demographic_restrictions( true, TargetDemographicType::Everyone, useDemographicCoverage )
     , has_node_level_intervention(false)
     , demographic_coverage(1.0)
     , node_property_restrictions()
@@ -66,15 +66,10 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        initializeInterventionConfig( inputJson );
+        initConfigComplexType( "Intervention_Config", &intervention_config, Intervention_Config_DESC_TEXT );
 
-        //initConfigTypeMap("Number_Distributions", &num_distributions, Number_Distributions_DESC_TEXT, -1, 1e6, -1 ); // by convention, -1 means no limit
+        InitializeRepetitions( inputJson );
 
-        initConfigTypeMap("Number_Repetitions", &num_repetitions, Number_Repetitions_DESC_TEXT, -1, 1000, 1 );
-        //if( num_repetitions > 1 ) // -1 = repeat without end, 0 is meaningless. want to think this one through more
-        {
-            initConfigTypeMap("Timesteps_Between_Repetitions", &tsteps_between_reps, Timesteps_Between_Repetitions_DESC_TEXT, -1, 10000 /*undefined*/, -1 /*off*/ ); // , "Number_Repetitions", "<>0" );
-        }
         //initConfigTypeMap("Include_Departures", &include_emigrants, Include_Departures_DESC_TEXT, false );
         //initConfigTypeMap("Include_Arrivals", &include_immigrants, Include_Arrivals_DESC_TEXT, false );
 
@@ -87,9 +82,15 @@ namespace Kernel
         {
             demographic_restrictions.CheckConfiguration();
 
-            validateInterventionConfig( intervention_config._json, inputJson->GetDataLocation() );
+            CheckRepetitionConfiguration();
 
-            has_node_level_intervention = HasNodeLevelIntervention();
+            InterventionTypeValidation::Enum found_type = InterventionValidator::ValidateIntervention( 
+                                                              GetTypeName(),
+                                                              InterventionTypeValidation::EITHER,
+                                                              intervention_config._json,
+                                                              inputJson->GetDataLocation() );
+
+            has_node_level_intervention = (found_type == InterventionTypeValidation::NODE);
             if( has_node_level_intervention )
             {
                 // ---------------------------------------------------------------------------
@@ -112,31 +113,21 @@ namespace Kernel
         return retValue;
     }
 
-    bool StandardInterventionDistributionEventCoordinator::HasNodeLevelIntervention() const
+    void StandardInterventionDistributionEventCoordinator::InitializeRepetitions( const Configuration* inputJson )
     {
-        bool has_node_level_intervention = false;
-        auto config = Configuration::CopyFromElement( (intervention_config._json), "campaign" );
-        INodeDistributableIntervention *ndi = InterventionFactory::getInstance()->CreateNDIIntervention( config );
-        if( ndi != nullptr )
+        initConfigTypeMap( "Number_Repetitions", &num_repetitions, Number_Repetitions_DESC_TEXT, -1, 1000, 1 );
+        //if( num_repetitions > 1 ) // -1 = repeat without end, 0 is meaningless. want to think this one through more
         {
-            has_node_level_intervention = true;
-            ndi->Release();
+            initConfigTypeMap( "Timesteps_Between_Repetitions", &tsteps_between_reps, Timesteps_Between_Repetitions_DESC_TEXT, -1, 10000 /*undefined*/, -1 /*off*/ ); // , "Number_Repetitions", "<>0" );
         }
-        delete config;
-        config = nullptr;
-        return has_node_level_intervention;
     }
 
-    void StandardInterventionDistributionEventCoordinator::initializeInterventionConfig(
-        const Configuration* inputJson
-    )
+    void StandardInterventionDistributionEventCoordinator::CheckRepetitionConfiguration()
     {
-        initConfigComplexType("Intervention_Config", &intervention_config, Intervention_Config_DESC_TEXT );
-    }
-
-    void StandardInterventionDistributionEventCoordinator::validateInterventionConfig( const json::Element& rElement, const std::string& rDataLocation )
-    {
-        InterventionValidator::ValidateIntervention( rElement, rDataLocation );
+        if( num_repetitions == 0 )
+        {
+            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "'Number_Repetitions' cannot equal zero.");
+        }
     }
 
     void
@@ -194,10 +185,16 @@ namespace Kernel
         return;
     }
 
-    void StandardInterventionDistributionEventCoordinator::UpdateNodes( float dt )
+    bool StandardInterventionDistributionEventCoordinator::IsTimeToUpdate( float dt )
     {
         // Only call VisitNodes on first call and if countdown == 0
-        if( (tsteps_since_last != tsteps_between_reps) || distribution_complete )
+        bool is_time_to_update = !((tsteps_since_last != tsteps_between_reps) || distribution_complete );
+        return is_time_to_update;
+    }
+
+    void StandardInterventionDistributionEventCoordinator::UpdateNodes( float dt )
+    {
+        if( !IsTimeToUpdate( dt ) )
         {
             return;
         }
@@ -226,6 +223,12 @@ namespace Kernel
                 DistributeInterventionsToIndividuals( event_context );
             }
         }
+
+        UpdateRepetitions();
+    }
+
+    void StandardInterventionDistributionEventCoordinator::UpdateRepetitions()
+    {
         tsteps_since_last = 0;
         num_repetitions--;
         if( num_repetitions == 0 )
@@ -414,7 +417,7 @@ namespace Kernel
     void StandardInterventionDistributionEventCoordinator::ExtractInterventionNameForLogging()
     {
         // intervention class names for informative logging
-        if( LOG_LEVEL( INFO ) )
+        if( LOG_LEVEL( INFO ) && (log_intervention_name.str().size() == 0) )
         {
             log_intervention_name.str("");
             log_intervention_name << std::string( json::QuickInterpreter( intervention_config._json )[ "class" ].As<json::String>() );
@@ -444,7 +447,7 @@ namespace Kernel
         INodeDistributableIntervention *ndi = InterventionFactory::getInstance()->CreateNDIIntervention( config );
         if( ndi == nullptr )
         {
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "Should have constructed a node-level intervention." );
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Should have constructed a node-level intervention." );
         }
         if( ndi->Distribute( event_context, this ) )
         {

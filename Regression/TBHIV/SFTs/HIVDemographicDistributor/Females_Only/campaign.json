@@ -1,0 +1,27 @@
+{
+    "Campaign_Name": "HIV Incidence From Demographics, Give HIV to Males on Day 1",
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "Infection_Type": "HIV",
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "class": "OutbreakIndividualTBorHIV"
+                },
+                "Number_Repetitions": 3,
+                "Timesteps_Between_Repetitions": 365,
+                "class": "GroupInterventionDistributionEventCoordinatorHIV"
+            },
+            "Event_Name": "HIV prevalence 1.0 in females at time 366-ish",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 2,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

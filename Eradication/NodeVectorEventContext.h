@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -46,7 +46,7 @@ namespace Kernel
     class IMosquitoReleaseConsumer : public ISupports
     {
     public:
-        virtual void ReleaseMosquitoes( NonNegativeFloat cost, const std::string& species, const VectorMatingStructure& genetics, NaturalNumber number ) = 0;
+        virtual void ReleaseMosquitoes( NonNegativeFloat cost, const std::string& species, const VectorMatingStructure& genetics, uint32_t number ) = 0;
     };
 
     class NodeVectorEventContextHost :
@@ -101,7 +101,7 @@ namespace Kernel
         LarvalHabitatMultiplier larval_reduction;
 
         // IMosquitoReleaseConsumer
-        virtual void ReleaseMosquitoes( NonNegativeFloat cost, const std::string& species, const VectorMatingStructure& genetics, NaturalNumber number ) override;
+        virtual void ReleaseMosquitoes( NonNegativeFloat cost, const std::string& species, const VectorMatingStructure& genetics, uint32_t number ) override;
 
     protected: 
         float pLarvalKilling;

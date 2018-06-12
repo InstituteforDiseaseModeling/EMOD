@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,12 +9,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 
-#ifdef ENABLE_TB
+#ifdef ENABLE_TBHIV
 
 #include "NodeTB.h"
 #include "TransmissionGroupsFactory.h" //for SetupIntranodeTransmission
 #include "NodeEventContextHost.h" //for node level trigger
-#include "IndividualTB.h"
+#include "IndividualCoInfection.h"
 #include "SimulationConfig.h"
 #include "EventTrigger.h"
 
@@ -32,11 +32,6 @@ namespace Kernel
     NodeTB::NodeTB() : NodeAirborne() { }
 
     NodeTB::NodeTB(ISimulationContext *_parent_sim, suids::suid node_suid) : NodeAirborne(_parent_sim, node_suid) { }
-
-    const SimulationConfig* NodeTB::params()
-    {
-        return GET_CONFIGURABLE(SimulationConfig);
-    }
 
     NodeTB *NodeTB::CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid)
     {
@@ -56,9 +51,9 @@ namespace Kernel
         NodeAirborne::Initialize();
     }
 
-    IIndividualHuman* NodeTB::createHuman( suids::suid suid, float monte_carlo_weight, float initial_age, int gender, float above_poverty)
+    IIndividualHuman* NodeTB::createHuman( suids::suid suid, float monte_carlo_weight, float initial_age, int gender)
     {
-        return IndividualHumanTB::CreateHuman(this, suid, monte_carlo_weight, initial_age, gender, above_poverty);
+        return IndividualHumanCoInfection::CreateHuman(this, suid, monte_carlo_weight, initial_age, gender);
     }
 
     void NodeTB::OnNewInfectionState(InfectionStateChange::_enum inf_state_change, IndividualHuman *ih)
@@ -129,47 +124,11 @@ namespace Kernel
         MDR_fast_incident_counter = 0.0f;
     }
 
-    void NodeTB::notifyOnInfectionIncidence(
-        IndividualHumanTB * pIncident 
-        )
+    IIndividualHuman* NodeTB::addNewIndividual( float monte_carlo_weight, float initial_age, int gender, int initial_infection_count, float immparam, float riskparam, float mighet)
     {
-        incident_counter += pIncident->GetMonteCarloWeight();
-    }
-
-    void NodeTB::notifyOnInfectionMDRIncidence(
-        IndividualHumanTB * pIncident 
-        )
-    {
-        MDR_incident_counter += pIncident->GetMonteCarloWeight();
-
-        if ( pIncident->IsEvolvedMDR() ) 
-        {
-            MDR_evolved_incident_counter += pIncident->GetMonteCarloWeight();
-        }
-        if ( pIncident->IsFastProgressor() && !pIncident->IsEvolvedMDR() ) 
-        {
-            MDR_fast_incident_counter += pIncident->GetMonteCarloWeight(); //fast and transmitted
-        }
-    }
-
-    IIndividualHuman* NodeTB::addNewIndividual( float monte_carlo_weight, float initial_age, int gender, int initial_infection_count, float immparam, float riskparam, float mighet, float init_poverty)
-    {
-        auto tempind = NodeAirborne::addNewIndividual(monte_carlo_weight, initial_age, gender, initial_infection_count, immparam, riskparam, mighet, init_poverty);
-        dynamic_cast<IndividualHumanTB*>(tempind)->RegisterInfectionIncidenceObserver( this );
+        auto tempind = NodeAirborne::addNewIndividual(monte_carlo_weight, initial_age, gender, initial_infection_count, immparam, riskparam, mighet);
+        //dynamic_cast<IndividualHumanCoInfection*>(tempind)->RegisterInfectionIncidenceObserver( this );
         return tempind;
-    }
-
-    void NodeTB::processEmigratingIndividual( IIndividualHuman* individual )
-    {
-        dynamic_cast<IndividualHumanTB*>(individual)->UnRegisterAllObservers( this );
-        NodeAirborne::processEmigratingIndividual( individual );
-    }
-
-    IIndividualHuman* NodeTB::processImmigratingIndividual( IIndividualHuman* individual )
-    {
-        individual = NodeAirborne::processImmigratingIndividual( individual );
-        static_cast<IndividualHumanTB*>(individual)->RegisterInfectionIncidenceObserver( this );
-        return individual;
     }
 
     float NodeTB::GetIncidentCounter() const 
@@ -205,4 +164,4 @@ namespace Kernel
     }
 }
 
-#endif // ENABLE_TB
+#endif // ENABLE_TBHIV

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -8,7 +8,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 ***************************************************************************************************/
 
 #pragma once
-#if defined(ENABLE_TB) || defined(ENABLE_TBHIV)
+#if defined(ENABLE_TBHIV)
 #include "InfectionAirborne.h"
 
 #include "TBInterventionsContainer.h"
@@ -28,10 +28,7 @@ namespace Kernel
     public:
         virtual bool IsSmearPositive() const = 0;
         virtual bool IsMDR() const = 0 ; 
-        virtual void SetIncubationTimer(float) = 0;
         virtual float GetLatentCureRate() const = 0;
-        virtual void ResetRecoverFraction(float) = 0;
-        virtual void ResetDuration() = 0;
         virtual bool IsSymptomatic() const = 0;
         virtual bool IsActive() const = 0;
         virtual bool IsExtrapulmonary() const = 0; 
@@ -40,6 +37,7 @@ namespace Kernel
         virtual bool EvolvedResistance() const = 0;
         virtual bool IsPendingRelapse() const = 0;
         virtual void ExogenousLatentSlowToFast() = 0;
+        virtual void LifeCourseLatencyTimerUpdate() = 0;
     };
 
     class InfectionTBConfig : public InfectionAirborneConfig
@@ -108,11 +106,9 @@ namespace Kernel
         virtual bool EvolvedResistance() const override;
         virtual bool IsPendingRelapse() const override;
         virtual bool IsSymptomatic() const override;
-        virtual void SetIncubationTimer (float new_timer) override;
         virtual float GetLatentCureRate() const override;
-        virtual void ResetRecoverFraction(float new_fraction) override;
-        virtual void ResetDuration() override;
         virtual float GetDurationSinceInitialInfection() const override; 
+        virtual void LifeCourseLatencyTimerUpdate() override;
 
         // Exogenous re-infection
         virtual void ModifyInfectionStrain(IStrainIdentity * exog_strain_id); 
@@ -128,7 +124,6 @@ namespace Kernel
         void  InitializeActivePresymptomaticInfection(ISusceptibilityContext* immunity);
         void  InitializeActiveInfection(ISusceptibilityContext* immunity);
         void  InitializePendingRelapse(ISusceptibilityContext* immunity);
-        //const SimulationConfig* params();
         bool  ApplyDrugEffects(float dt, ISusceptibilityContext* immunity = nullptr);
         virtual void EvolveStrain(ISusceptibilityContext* _immunity, float dt) override;
         TBDrugEffects_t GetTotalDrugEffectsForThisInfection();

@@ -12,13 +12,13 @@ Import('env')
 
 def InstallEmodules(src, dst):
     
-    print "\nInstalling from " + src + " to " + dst + "..."
+    print( "\nInstalling from " + src + " to " + dst + "..." )
     if os.path.isfile(dst):
-        print "Warning: " + dst + " is a file\n";
+        print( "Warning: " + dst + " is a file\n" )
         return;
 
     if os.path.exists(dst) != True:
-        print "Creating " + dst + " in " + os.getcwd();
+        print( "Creating " + dst + " in " + os.getcwd() )
         os.mkdir(dst)
 
     srcfiles = os.path.join(src,'*.dll')
@@ -26,7 +26,7 @@ def InstallEmodules(src, dst):
         for file in files:
             if file.endswith('.dll') or file.endswith('.exe'):
                 full_fn = os.path.join(root,file);
-                print "copying: " + full_fn;
+                print( "copying: " + full_fn )
                 shutil.copy2(full_fn, dst);
     
 # if --install is on, just copy the dlls (assumed there already) and finish
@@ -60,12 +60,12 @@ SConscript( [ 'baseReportLib/SConscript',
 # not sure yet exactly right set of conditions for this
 #if env['AllDlls'] or ( 'AllInterventions' in env and env['AllInterventions'] ) or ( 'DiseaseDll' in env and env[ 'DiseaseDll' ] != "" ) or ( 'Report' in env and env[ 'Report' ] != "" ) or ( 'Campaign' in env and env[ 'Campaign' ] != "" ):
 if env['AllDlls'] or ( 'DiseaseDll' in env and env[ 'DiseaseDll' ] != "" ) or ( 'Report' in env and env[ 'Report' ] != "" ):
-    print "Build libgeneric_static.lib for dll...."
+    print( "Build libgeneric_static.lib for dll...." )
     SConscript( 'libgeneric_static/SConscript' )
 
 # Then build dlls
 if env['AllDlls']:
-    print "Build all dlls..."
+    print( "Build all dlls..." )
     SConscript( 'libgeneric/VectorSConscriptStatic' )
     SConscript( 'libgeneric/MalariaSConscriptStatic' )
     SConscript( 'libgeneric/EnvironmentalSConscriptStatic' )
@@ -110,7 +110,7 @@ elif env[ 'DiseaseDll' ] != "":
     elif dtype == 'PY':
         SConscript( 'libgeneric/PySConscript', variant_dir="Py/disease_plugins" )
     else:
-        print "Unspecified or unknown disease type: " + dtype
+        print( "Unspecified or unknown disease type: " + dtype )
 
 # intervention dlls
 if env['AllDlls'] or env[ 'DiseaseDll' ] != "":
@@ -141,7 +141,7 @@ if env['AllDlls'] or env[ 'DiseaseDll' ] != "":
         SConscript( 'libgeneric/RTSSVaccineSConscript', variant_dir=dll_op_path )
 
     # TB
-    if env['DiseaseDll'] == "TB":
+    if env['DiseaseDll'] == "TBHIV":
         SConscript( 'libgeneric/ActivediagnosticsSConscript', variant_dir=dll_op_path )
         SConscript( 'libgeneric/AntitbdrugSConscript', variant_dir=dll_op_path )
         SConscript( 'libgeneric/AntitbpropdepdrugSConscript', variant_dir=dll_op_path )
@@ -225,19 +225,22 @@ if os.sys.platform == 'win32':
 
     if( (disease == "ALL") or (disease == "Malaria") ):
         OptionalScript('reporters/SConscript_Malaria_Filtered')
+        OptionalScript('reporters/SConscript_Malaria_Filtered_Spatial')
         OptionalScript('reporters/SConscript_Malaria_Immunity')
         OptionalScript('reporters/SConscript_Malaria_Patient')
         OptionalScript('reporters/SConscript_Malaria_Summary')
         OptionalScript('reporters/SConscript_Malaria_Survey')
+        OptionalScript('reporters/SConscript_Malaria_Transmission')
+        OptionalScript('reporters/SConscript_Malaria_NodeDemographicsMalaria')
+        OptionalScript('reporters/SConscript_Malaria_VectorStatsMalaria')
 
     if( (disease == "ALL") or (disease == "Polio") ):
         OptionalScript('reporters/SConscript_Polio_IndividualInfections')
         OptionalScript('reporters/SConscript_Polio_Survey')
         OptionalScript('reporters/SConscript_Polio_VirusPopulation')
 
-    if( (disease == "ALL") or (disease == "TB") ):
-        OptionalScript('reporters/SConscript_TB_Patient')
-        OptionalScript('reporters/SConscript_TB_ReportScenarios')
+    if( (disease == "ALL") or (disease == "TBHIV") ):
+        OptionalScript('reporters/SConscript_TBHIV_ByAge')
 
     if( (disease == "ALL") or (disease == "STI") or (disease == "HIV") ):
         OptionalScript('reporters/SConscript_STI_RelationshipMigrationTracking')

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -40,6 +40,13 @@ namespace Kernel
 
     DurationDistribution::~DurationDistribution()
     {
+    }
+
+    void DurationDistribution::SetParameters(DistributionFunction::Enum distributionFunction, float param1, float param2)
+    {
+        m_Type = distributionFunction;
+        m_Param1 = param1;
+        m_Param2 = param2;
     }
 
     bool DurationDistribution::IncludeParameters( DistributionFunction::Enum typeToInclude )
@@ -100,14 +107,14 @@ namespace Kernel
         if( IncludeParameters( DistributionFunction::FIXED_DURATION ) )
         {
             ParameterInfo& info = m_SupportedParameterInfoMap[ DistributionFunction::FIXED_DURATION ];
-            pParent->initConfigTypeMap( info.m_ParamName_1.c_str(), &m_Param1, info.m_ParamDesc_1.c_str(), 0.0f, FLT_MAX, 6.0f );
+            pParent->initConfigTypeMap( info.m_ParamName_1.c_str(), &m_Param1, info.m_ParamDesc_1.c_str(), 0.0f, FLT_MAX, 6.0f, m_TypeName.c_str(), "FIXED_DURATION" );
         }
 
         if( IncludeParameters( DistributionFunction::UNIFORM_DURATION ) )
         {
             ParameterInfo& info = m_SupportedParameterInfoMap[ DistributionFunction::UNIFORM_DURATION ];
             pParent->initConfigTypeMap( info.m_ParamName_1.c_str(), &m_Param1, info.m_ParamDesc_1.c_str(), 0.0f, FLT_MAX, 0.0f, m_TypeName.c_str(), "UNIFORM_DURATION" ); // min
-            pParent->initConfigTypeMap( info.m_ParamName_2.c_str(), &m_Param2, info.m_ParamDesc_2.c_str(), 0.6f, FLT_MAX, 0.0f, m_TypeName.c_str(), "UNIFORM_DURATION" ); // max
+            pParent->initConfigTypeMap( info.m_ParamName_2.c_str(), &m_Param2, info.m_ParamDesc_2.c_str(), 0.0f, FLT_MAX, 1.0f, m_TypeName.c_str(), "UNIFORM_DURATION" ); // max
         }
 
         if( IncludeParameters( DistributionFunction::EXPONENTIAL_DURATION ) )
@@ -119,14 +126,14 @@ namespace Kernel
         if( IncludeParameters( DistributionFunction::GAUSSIAN_DURATION ) )
         {
             ParameterInfo& info = m_SupportedParameterInfoMap[ DistributionFunction::GAUSSIAN_DURATION ];
-            pParent->initConfigTypeMap( info.m_ParamName_1.c_str(), &m_Param1, info.m_ParamDesc_1.c_str(), 0.0f, FLT_MAX, 6.0f ); // mean
-            pParent->initConfigTypeMap( info.m_ParamName_2.c_str(), &m_Param2, info.m_ParamDesc_2.c_str(), 0.0f, FLT_MAX, 1.0f ); // std_dev
+            pParent->initConfigTypeMap( info.m_ParamName_1.c_str(), &m_Param1, info.m_ParamDesc_1.c_str(), 0.0f, FLT_MAX, 6.0f, m_TypeName.c_str(), "GAUSSIAN_DURATION" ); // mean
+            pParent->initConfigTypeMap( info.m_ParamName_2.c_str(), &m_Param2, info.m_ParamDesc_2.c_str(), 0.0f, FLT_MAX, 1.0f, m_TypeName.c_str(), "GAUSSIAN_DURATION" ); // std_dev
         }
 
         if( IncludeParameters( DistributionFunction::POISSON_DURATION ) )
         {
             ParameterInfo& info = m_SupportedParameterInfoMap[ DistributionFunction::POISSON_DURATION ];
-            pParent->initConfigTypeMap( info.m_ParamName_1.c_str(), &m_Param1, info.m_ParamDesc_1.c_str(), 0.0f, FLT_MAX, 6.0f ); // mean
+            pParent->initConfigTypeMap( info.m_ParamName_1.c_str(), &m_Param1, info.m_ParamDesc_1.c_str(), 0.0f, FLT_MAX, 6.0f, m_TypeName.c_str(), "POISSON_DURATION" ); // mean
         }
 
         if( IncludeParameters( DistributionFunction::LOG_NORMAL_DURATION ) )

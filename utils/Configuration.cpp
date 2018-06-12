@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,6 +16,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "CajunIncludes.h"
 #include "Exceptions.h"
 #include "Configure.h"
+#include "FileSystem.h"
 #ifdef EMBEDDED_PYTHON_DEMO
 #include "Python.h"
 #endif
@@ -64,12 +65,33 @@ Configuration::Configuration( json::Element* element, const std::string& rDataLo
     : QuickInterpreter( *element )
     , pElement( element )
     , data_location( rDataLocation )
+    , extendedConfig{}
 {
+}
+
+void Configuration::Add(const std::string& elementName, int value)
+{
+    json::Number number(value);
+    extendedConfig.insert(std::pair<std::string, json::Number>(elementName, number));
+}
+
+bool Configuration::Exist(const std::string& name) const{
+    if (extendedConfig.count(name))
+        return true;
+    return QuickInterpreter::Exist(name);
+}
+
+QuickInterpreter Configuration::operator[] (const std::string& key) const {
+    if (extendedConfig.count(key))
+    {
+        return extendedConfig.at(key);
+    }
+    return QuickInterpreter::operator[](key);
 }
 
 bool Configuration::CheckElementByName(const std::string& elementName) const
 {
-    return Exist(elementName);
+    return QuickInterpreter::Exist(elementName);
 }
 
 Configuration* Configuration::LoadFromPython(
@@ -131,11 +153,7 @@ Configuration* Configuration::Load( string configFileName )
         //using namespace std;
         // open config file more gingerly for debugging on temperamental network file systems
         std::ifstream ifs_configfile;
-        ifs_configfile.open(configFileName.c_str());
-        if (ifs_configfile.fail())
-        {
-            throw Kernel::FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, configFileName.c_str() );
-        }
+        FileSystem::OpenFileForReading( ifs_configfile, configFileName.c_str() );
 
         Configuration* p_config = Load( ifs_configfile, configFileName );
         ifs_configfile.close();

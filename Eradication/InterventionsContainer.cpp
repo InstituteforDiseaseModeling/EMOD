@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -172,9 +172,9 @@ namespace Kernel
 
     bool InterventionsContainer::ContainsExistingByName( const std::string& name )
     {
-        for (auto intervention : interventions)
+        for( auto intervention : interventions )
         {
-            if (intervention->GetName() == name)
+            if( intervention->GetName() == name )
             {
                 return true;
             }
@@ -182,23 +182,55 @@ namespace Kernel
         return false;
     }
 
-    void InterventionsContainer::Update(float dt)
+    void InterventionsContainer::InfectiousLoopUpdate( float dt )
     {
+        // --- ------------------------------------------------------------------------------------
+        // --- The purpose of this method is to update the interventions that need to be updated
+        // --- in the infectious update loop.  These interventions can be updated multiple times
+        // --- per time step and affect the person's infections.  Drugs are typically interventions
+        // --- that need to be in this loop.
+        // --- ------------------------------------------------------------------------------------
         drugVaccineReducedAcquire   = 1.0;
         drugVaccineReducedTransmit  = 1.0;
         drugVaccineReducedMortality = 1.0;
 
-        if ( !interventions.empty() )
+        for( auto intervention : interventions )
         {
-            for (auto intervention : interventions)
+            if( intervention->NeedsInfectiousLoopUpdate() )
             {
-                intervention->Update(dt);
+                intervention->Update( dt );
+            }
+        }
+    }
+
+    void InterventionsContainer::Update( float dt )
+    {
+        if( !interventions.empty() )
+        {
+            // -----------------------------------------------------------------------
+            // --- The "orig_num" check below is done below so that we update
+            // --- interventions that were distributed by the existing interventions.
+            // --- We need to update both types of new interventions.
+            // -----------------------------------------------------------------------
+            int orig_num = interventions.size();
+            int i = 0;
+            for( auto intervention : interventions )
+            {
+                if( !intervention->NeedsInfectiousLoopUpdate() || (i >= orig_num) )
+                {
+                    intervention->Update( dt );
+                }
+                ++i;
             }
 
             // TODO: appears that it might be more efficient to remove on the fly
-            std::list<IDistributableIntervention*> dead_ivs;
-            for (auto intervention : interventions)
+            std::vector<IDistributableIntervention*> dead_ivs;
+            for( auto intervention : interventions )
             {
+                // ------------------------------------------------------------------------------
+                // --- BEWARE: Some interventions distribute other interventions or fire events
+                // --- (which can cause interventions to be added) during the call to Expired().
+                // ------------------------------------------------------------------------------
                 if( intervention->Expired() )
                 {
                     LOG_DEBUG("Found an expired intervention\n");
@@ -221,6 +253,7 @@ namespace Kernel
         : drugVaccineReducedAcquire(1.0f)
         , drugVaccineReducedTransmit(1.0f)
         , drugVaccineReducedMortality(1.0f)
+        , interventions()
         , parent(nullptr)
     {
     }
@@ -383,10 +416,8 @@ namespace Kernel
         return parent;
     }
 
-    float InterventionsContainer::GetInterventionReducedAcquire()   const { return drugVaccineReducedAcquire; }
-    float InterventionsContainer::GetInterventionReducedTransmit()  const {
-        return drugVaccineReducedTransmit;
-    }
+    float InterventionsContainer::GetInterventionReducedAcquire()   const { return drugVaccineReducedAcquire;   }
+    float InterventionsContainer::GetInterventionReducedTransmit()  const { return drugVaccineReducedTransmit;  }
     float InterventionsContainer::GetInterventionReducedMortality() const { return drugVaccineReducedMortality; }
 
     REGISTER_SERIALIZABLE(InterventionsContainer);

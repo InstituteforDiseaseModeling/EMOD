@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -107,7 +107,7 @@ SUITE(JsonObjectDemogTest)
         CHECK_EQUAL( uint64_t(18446744073709551615), json.GetUint64( "Uint64"         ) );
         CHECK_EQUAL( float(1.17549435e-038),         json.GetFloat(  "FloatMin"       ) );
         CHECK_EQUAL( float(3.40282347e+038),         json.GetFloat(  "FloatMax"       ) );
-        CHECK_EQUAL( float(0.00001),                json.GetFloat(  "FloatEpsilon1"  ) );
+        CHECK_EQUAL( float( 0.00001),                json.GetFloat(  "FloatEpsilon1"  ) );
         CHECK_EQUAL( float(-0.00001),                json.GetFloat(  "FloatEpsilon2"  ) );
         CHECK_EQUAL( double(2.225073858507e-308),    json.GetDouble( "DoubleMin"      ) );
         CHECK_EQUAL( double(1.797693134862e+308),    json.GetDouble( "DoubleMax"      ) );

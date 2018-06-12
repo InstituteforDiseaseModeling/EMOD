@@ -7,16 +7,19 @@
             "Enable_Rainfall_Stochasticity": 0
         },
         "DEMOGRAPHICS": {
-            "Enable_Vital_Dynamics": 0, 
-            "Population_Scale_Type": "FIXED_SCALING", 
-            "Demographics_Filenames": ["Namawala_single_node_demographics.json"]
+            "Demographics_Filenames": [
+                "Namawala_single_node_demographics.json"
+            ],
+            "Enable_Initial_Prevalence": 1,
+            "Enable_Vital_Dynamics": 0,
+            "Population_Scale_Type": "FIXED_SCALING"
         },
         "PRIMARY": {
             "Config_Name": "46_Vector_SimpleBednetWithDecay",
+            "Enable_Demographics_Reporting": 0,
             "Geography": "Namawala",
-            "Run_Number": 27, 
+            "Run_Number": 27,
             "Simulation_Duration": 1095,
-            "Enable_Demographics_Reporting": 0, 
             "x_Temporary_Larval_Habitat": 0.1
         },
         "Vector_Species_Names": [

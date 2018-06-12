@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,7 +18,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IndividualEventContext.h"
 #include "NodeEventContext.h"
 #include "SimulationConfig.h"
-#include "Drugs.h"
 #include "EventTrigger.h"
 
 // In this solution, the HIVInterventionsContainer, which owns all ART-specific business knowledge,
@@ -63,13 +62,11 @@ namespace Kernel
         , campaign_semaphores()
 
         // medical chart - DJK shouldn't this live at the HIVindividual or "healthcare system" level?
-        , on_PreART(false)
         , ever_tested_HIV_positive(false)
         , ever_tested(false)
         , ever_received_CD4(false)
         , ever_staged_for_ART(false)
         , ever_staged(false)
-        , ever_been_on_PreART(false)
         , ever_been_on_ART(false)
         , time_of_most_recent_test(-1)
         , time_of_most_recent_CD4(-1)
@@ -101,7 +98,7 @@ namespace Kernel
         }
     }
 
-    void HIVInterventionsContainer::Update(float dt)
+    void HIVInterventionsContainer::InfectiousLoopUpdate(float dt)
     {
         // Delayed viral suppression on ART
         if( ART_status == ARTStatus::ON_ART_BUT_NOT_VL_SUPPRESSED )
@@ -146,7 +143,7 @@ namespace Kernel
         HIV_drug_inactivation_rate = 0.0;
         HIV_drug_clearance_rate = 0.0;
 
-        STIInterventionsContainer::Update(dt);
+        STIInterventionsContainer::InfectiousLoopUpdate(dt);
     }
 
     // campaign semaphore interface (IIndividualHumanHIV)
@@ -223,13 +220,6 @@ namespace Kernel
         HIV_drug_clearance_rate    += rate;
     }
 
-    bool
-    HIVInterventionsContainer::OnPreART()
-    const
-    {
-        return on_PreART;
-    }
-
     void HIVInterventionsContainer::OnTestForHIV(bool test_result)
     {
 
@@ -299,17 +289,6 @@ namespace Kernel
         time_of_most_recent_CD4 = t ;
     }
 
-    void HIVInterventionsContainer::OnBeginPreART()
-    {
-        on_PreART = true;
-        ever_been_on_PreART = true;
-    }
-
-    void HIVInterventionsContainer::OnEndPreART()
-    {
-        on_PreART = false;
-    }
-
     void HIVInterventionsContainer::OnBeginART()
     {
         float t = parent->GetEventContext()->GetNodeEventContext()->GetTime().time;
@@ -363,12 +342,6 @@ namespace Kernel
     const
     {
         return ever_received_CD4;
-    }
-
-    bool HIVInterventionsContainer::EverBeenOnPreART()
-    const
-    {
-        return ever_been_on_PreART;
     }
 
     bool HIVInterventionsContainer::EverBeenOnART()
@@ -543,18 +516,6 @@ namespace Kernel
                                            "INodeEventContext" );
         }
 
-        // NOTE: Should determine where GoOnART was called from by listening to other broadcast messages
-        if( OnPreART() )
-        {
-            // broadcast HIVPreARTToART
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::HIVPreARTToART );
-        }
-        else
-        {
-            // broadcast HIVPreARTToART
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::HIVNonPreARTToART );
-        }
-
         release_assert( hiv_parent );
         release_assert( hiv_parent->GetHIVSusceptibility() );
         if( hiv_parent->GetHIVInfection() == nullptr )
@@ -569,12 +530,6 @@ namespace Kernel
             // Don't got on ART if already on ART!
             LOG_DEBUG_F( "Individual %d is already on ART.\n", parent->GetSuid().data );
             return;
-        }
-
-        if( OnPreART() ) 
-        {
-            OnEndPreART();
-            LOG_DEBUG_F( "Individual %d appears to be in pre-ART while starting ART, changing preART status indicator to false.\n", parent->GetSuid().data );
         }
 
         OnBeginART();
@@ -675,29 +630,6 @@ namespace Kernel
         return days_since_most_recent_ART_start;
     }
 
-    void HIVInterventionsContainer::GiveDrug(IDrug* drug)
-    {
-        drug->ConfigureDrugTreatment(this);
-    }
-
-    // For now, before refactoring Drugs to work in new way, just check if the intervention is a
-    // Drug, and if so, add to drugs list. In future, there will be no drugs list, just interventions.
-    bool HIVInterventionsContainer::GiveIntervention(
-        IDistributableIntervention * pIV
-    )
-    {
-        // NOTE: Calling this AFTER the QI/GiveDrug crashes!!! Both win and linux. Says SetContextTo suddenly became a pure virtual.
-        pIV->SetContextTo( parent );
-        IDrug * pDrug = nullptr;
-        if( s_OK == pIV->QueryInterface(GET_IID(IDrug), (void**) &pDrug) )
-        {
-            LOG_DEBUG("Getting a HIV drug\n");
-            GiveDrug( pDrug );
-        }
-
-        return STIInterventionsContainer::GiveIntervention( pIV );
-    }
-
     float HIVInterventionsContainer::GetDrugInactivationRate() { return HIV_drug_inactivation_rate; }
     float HIVInterventionsContainer::GetDrugClearanceRate()    { return HIV_drug_clearance_rate; }
 
@@ -748,13 +680,11 @@ namespace Kernel
         ar.labelElement("m_suppression_failure_timer"      ) & container.m_suppression_failure_timer;
         ar.labelElement("maternal_transmission_suppression") & container.maternal_transmission_suppression;
         ar.labelElement("campaign_semaphores"              ) & container.campaign_semaphores;
-        ar.labelElement("on_PreART"                        ) & container.on_PreART;
         ar.labelElement("ever_tested_HIV_positive"         ) & container.ever_tested_HIV_positive;
         ar.labelElement("ever_tested"                      ) & container.ever_tested;
         ar.labelElement("ever_received_CD4"                ) & container.ever_received_CD4;
         ar.labelElement("ever_staged_for_ART"              ) & container.ever_staged_for_ART;
         ar.labelElement("ever_staged"                      ) & container.ever_staged;
-        ar.labelElement("ever_been_on_PreART"              ) & container.ever_been_on_PreART;
         ar.labelElement("ever_been_on_ART"                 ) & container.ever_been_on_ART;
         ar.labelElement("time_of_most_recent_test"         ) & container.time_of_most_recent_test;
         ar.labelElement("time_of_most_recent_CD4"          ) & container.time_of_most_recent_CD4;

@@ -1,0 +1,37 @@
+{
+    "class" : "WaningEffectCombo",
+    "Add_Effects" : 0,
+    "Expires_When_All_Expire" : 0,
+    "Effect_List" : [
+        {
+            "class": "WaningEffectMapCount",
+            "Initial_Effect" : 1.0,
+            "Expire_At_Durability_Map_End" : 1,
+            "Durability_Map" :
+            {
+                "Times"  : [ 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0 ],
+                "Values" : [ 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 ]
+            }
+        },
+        {
+            "class": "WaningEffectMapCount",
+            "Initial_Effect" : 1.0,
+            "Expire_At_Durability_Map_End" : 1,
+            "Durability_Map" :
+            {
+                "Times"  : [ 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0 ],
+                "Values" : [ 1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1 ]
+            }
+        },
+        {
+            "class": "WaningEffectMapLinear",
+            "Initial_Effect" : 1.0,
+            "Expire_At_Durability_Map_End" : 1,
+            "Durability_Map" :
+            {
+                "Times"  : [ 0.0, 1.0, 2.0, 3.0, 4.0 ],
+                "Values" : [ 0.2, 0.2, 0.2, 0.4, 0.4 ]
+            }
+        }
+    ]
+}

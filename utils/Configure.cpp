@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -66,7 +66,9 @@ namespace Kernel
                     LOG_DEBUG_F( "Found %d values in comma-separated list.\n", c_values.size() );
                     bool bFound = false;
                     for( std::string valid_condition_value : c_values )
-                    {
+                    {   
+                        //remove spaces from valid conditions
+                        valid_condition_value.erase(remove_if(valid_condition_value.begin(), valid_condition_value.end(), ::isspace), valid_condition_value.end());
                         LOG_DEBUG_F( "Comparing %s and %s.\n", valid_condition_value.c_str(), c_value_from_config.c_str() );
                         if( valid_condition_value == c_value_from_config )
                         // (enum) Condition for using this param is false, so returning.
@@ -435,6 +437,24 @@ namespace Kernel
         m_pData = nullptr;
     }
 
+    std::string JsonConfigurable::GetTypeName() const
+    {
+        std::string variable_type = typeid(*this).name();
+#ifndef WIN32
+        variable_type = abi::__cxa_demangle( variable_type.c_str(), 0, 0, nullptr );
+        variable_type = variable_type.substr( 8 ); // remove "Kernel::"
+#endif
+        if( variable_type.find( "class Kernel::" ) == 0 )
+        {
+            variable_type = variable_type.substr( 14 );
+        }
+        else if( variable_type.find( "struct Kernel::" ) == 0 )
+        {
+            variable_type = variable_type.substr( 15 );
+        }
+        return variable_type;
+    }
+
     JsonConfigurable::ConfigData* JsonConfigurable::GetConfigData()
     {
         // ---------------------------------------------------------------------------------------
@@ -507,6 +527,31 @@ namespace Kernel
             
         updateSchemaWithCondition( newIntSchema, condition_key, condition_value );
         jsonSchemaBase[paramName] = newIntSchema;
+    }
+
+    void
+        JsonConfigurable::initConfigTypeMap(
+            const char* paramName,
+            uint32_t * pVariable,
+            const char * description,
+            uint32_t min, uint32_t max, uint32_t defaultvalue,
+            const char* condition_key, const char* condition_value
+        )
+    {
+        LOG_DEBUG_F( "initConfigTypeMap<int>: %s\n", paramName );
+        GetConfigData()->uint32ConfigTypeMap[ paramName ] = pVariable;
+        json::Object newUint32Schema;
+        newUint32Schema[ "min" ] = json::Number( min );
+        newUint32Schema[ "max" ] = json::Number( max );
+        newUint32Schema[ "default" ] = json::Number( defaultvalue );
+        if( _dryrun )
+        {
+            newUint32Schema[ "description" ] = json::String( description );
+            newUint32Schema[ "type" ] = json::String( "integer" );
+        }
+
+        updateSchemaWithCondition( newUint32Schema, condition_key, condition_value );
+        jsonSchemaBase[ paramName ] = newUint32Schema;
     }
 
     void
@@ -929,19 +974,7 @@ namespace Kernel
         // --------------------------------------------------------
         // --- Get the type of variable and declare it an "idmType"
         // --------------------------------------------------------
-        std::string variable_type = typeid(*pVariable).name() ;
-#ifndef WIN32
-        variable_type = abi::__cxa_demangle( variable_type.c_str(), 0, 0, nullptr );
-        variable_type = variable_type.substr( 8 ); // remove "Kernel::"
-#endif
-        if( variable_type.find( "class Kernel::" ) == 0 )
-        {
-            variable_type = variable_type.substr( 14 );
-        }
-        else if( variable_type.find( "struct Kernel::" ) == 0 )
-        {
-            variable_type = variable_type.substr( 15 );
-        }
+        std::string variable_type = pVariable->GetTypeName();
         variable_type = std::string("idmType:") + variable_type ;
 
         // ------------------------------------------------------
@@ -1005,22 +1038,15 @@ namespace Kernel
     void
     JsonConfigurable::handleMissingParam( const std::string& key, const std::string& rDataLocation )
     {
+        LOG_DEBUG_F( "%s: key = %s, _track_missing = %d.\n", __FUNCTION__, key.c_str(), _track_missing );
         if( _track_missing )
         {
             missing_parameters_set.insert(key);
         }
         else
         {
-            std::string class_name = typeid(*this).name();
-#ifdef WIN32
-            class_name = class_name.substr( 14 ); // remove "class Kernel::"
-#else
-            class_name = abi::__cxa_demangle( class_name.c_str(), 0, 0, nullptr );
-            class_name = class_name.substr( 8 ); // remove "Kernel::"
-#endif
-
             std::stringstream ss;
-            ss << key << " of " << class_name;
+            ss << key << " of " << GetTypeName();
             throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, rDataLocation.c_str(), ss.str().c_str() );
         }
     }
@@ -1257,17 +1283,17 @@ namespace Kernel
             // check if parameter was specified in input json (TODO: improve performance by getting the iterator here with Find() and reusing instead of GET_CONFIG_INTEGER below)
             if( inputJson->Exist(key) )
             {
+                // get specified configuration parameter
                 double jsonValueAsDouble = GET_CONFIG_DOUBLE( inputJson, key.c_str() );
                 if( jsonValueAsDouble != (int) jsonValueAsDouble )
                 {
                     std::ostringstream errMsg; // using a non-parameterized exception.
-                    errMsg << "Value from json appears to be decimal ("
+                    errMsg << "The value for parameter '"<< key << "' appears to be a decimal ("
                            << jsonValueAsDouble
-                           << ") but needs to be integer." << std::endl;
+                           << ") but needs to be an integer." << std::endl;
                     throw Kernel::GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, errMsg.str().c_str() );
                 }
-                // get specified configuration parameter
-                val = (int)GET_CONFIG_INTEGER(inputJson,key.c_str());
+                val = int(jsonValueAsDouble);
                 // throw exception if value is outside of range
                 EnforceParameterRange<int>( key, val, schema );
                 *(entry.second) = val;
@@ -1288,6 +1314,54 @@ namespace Kernel
             }
 
             LOG_DEBUG_F("the key %s = int %d\n", key.c_str(), *(entry.second));
+        }
+
+        // ---------------------------------- Uint32_t -------------------------------------
+        for( auto& entry : GetConfigData()->uint32ConfigTypeMap )
+        {
+            const std::string& key = entry.first;
+            json::QuickInterpreter schema = jsonSchemaBase[ key ];
+            uint32_t val = 0;
+
+            if( check_condition( schema, inputJson ) )
+            {
+                continue; // param is missing and that's ok." << std::endl;
+            }
+
+            // check if parameter was specified in input json (TODO: improve performance by getting the iterator here with Find() and reusing instead of GET_CONFIG_INTEGER below)
+            if( inputJson->Exist( key ) )
+            {
+                // get specified configuration parameter
+                double jsonValueAsDouble = GET_CONFIG_DOUBLE( inputJson, key.c_str() );
+                if( jsonValueAsDouble != (uint32_t)jsonValueAsDouble )
+                {
+                    std::ostringstream errMsg; // using a non-parameterized exception.
+                    errMsg << "The value for parameter '"<< key << "' appears to be a decimal ("
+                           << jsonValueAsDouble
+                           << ") but needs to be an integer." << std::endl;
+                    throw Kernel::GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, errMsg.str().c_str() );
+                }
+                val = uint32_t( jsonValueAsDouble );
+                // throw exception if value is outside of range
+                EnforceParameterRange<uint32_t>( key, val, schema );
+                *(entry.second) = val;
+            }
+            else
+            {
+                if( _useDefaults )
+                {
+                    // using the default value
+                    val = (uint32_t)schema[ "default" ].As<json::Number>();
+                    LOG_INFO_F( "Using the default value ( \"%s\" : %d ) for unspecified parameter.\n", key.c_str(), val );
+                    *(entry.second) = val;
+                }
+                else // not in config, not using defaults, no depends-on, just plain missing
+                {
+                    handleMissingParam( key, inputJson->GetDataLocation() );
+                }
+            }
+
+            LOG_DEBUG_F( "the key %s = uint32_t %u\n", key.c_str(), *(entry.second) );
         }
 
         // ---------------------------------- FLOAT ------------------------------------

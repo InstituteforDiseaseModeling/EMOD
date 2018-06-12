@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -72,17 +72,37 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        target_property_key.constraints = IPKey::GetConstrainedStringConstraintKey();
+        target_property_key.constraints   = IPKey::GetConstrainedStringConstraintKey();
         target_property_value.constraints = IPKey::GetConstrainedStringConstraintValue();
+
         initConfigTypeMap("Target_Property_Key", &target_property_key, PC_Target_Property_Key_DESC_TEXT );
         initConfigTypeMap("Target_Property_Value", &target_property_value, PC_Target_Property_Value_DESC_TEXT );
         initConfigTypeMap("Daily_Probability", &probability, PC_Daily_Probability_DESC_TEXT, 0.0f, 1.0f );
         initConfigTypeMap("Maximum_Duration", &max_duration, PC_Maximum_Duration_DESC_TEXT, -1.0f, FLT_MAX, FLT_MAX);
-        initConfigTypeMap("Revert", &revert, PC_Revert_DESC_TEXT, 0.0f, 10000.0f, 0.0f );
+        initConfigTypeMap("Revert", &revert, PC_Revert_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
         bool ret = BaseIntervention::Configure( inputJson );
-        if( ret )
+        if( ret && !JsonConfigurable::_dryrun )
         {
             SetActionTimer( this );
+
+            std::set<std::string> key_set = IPFactory::GetInstance()->GetKeysAsStringSet();
+            if( key_set.find( target_property_key ) == key_set.end() )
+            {
+                std::stringstream ss;
+                ss << "'Target_Property_Key' has an invalid value.  It must be one of the Individual Property keys/names." << std::endl;
+                ss << "Possible values are: " << IPFactory::GetInstance()->GetKeysAsString();
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            }
+
+            std::set<std::string> value_set = IPFactory::GetInstance()->GetIP( target_property_key )->GetValues<IPKeyValueContainer>().GetValuesToStringSet();
+            if( value_set.find( target_property_value ) == value_set.end() )
+            {
+                std::stringstream ss;
+                ss << "'Target_Property_Value'(='" << target_property_value << "') has an invalid value for 'Target_Property_Key'='" << target_property_key << "'." << std::endl;
+                ss << "The Individual Property '" << target_property_key << "' has the following values: " << std::endl;
+                ss << IPFactory::GetInstance()->GetIP( target_property_key )->GetValues<IPKeyValueContainer>().GetValuesToString();
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            }
         }
         return ret;
     }

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -52,11 +52,15 @@ Report::CreateReport()
 }
 
 Report::Report()
-: last_time(0)
+: Report( _report_name )
 {
-    report_name = _report_name;
+}
 
-    disease_deaths = 0.0f;
+Report::Report( const std::string& rReportName )
+: BaseChannelReport( rReportName )
+, last_time( 0 )
+, disease_deaths(0.0f)
+{
 }
 
 

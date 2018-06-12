@@ -49,7 +49,7 @@ else:
     erad_env = env.Clone()
     if os.sys.platform == 'win32':
         erad_env.Append( LINKFLAGS=[ "/STACK:\"100000000,100000000\"" ] )
-        erad_env.Append( LINKFLAGS=[ "/DELAYLOAD:\"python27.dll\""] )
+        erad_env.Append( LINKFLAGS=[ "/DELAYLOAD:\"python36.dll\""] )
         erad_env.Append( LIBS=["delayimp.lib"] )
         erad_env.Append(LIBPATH = ["$BUILD_DIR/Eradication"])
         erad_env.Append(LIBS=["/WHOLEARCHIVE:coreLib"])
@@ -71,7 +71,7 @@ msvc = GetOption( "MSVC" )
 if msvc is not None and msvc != False and msvc != "":
 
     bvar = env['BUILD_VARIANT'] + '|x64'
-    print "Eradication: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar
+    print( "Eradication: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar )
     
     env.MSVSProject(target = 'EradicationScons' + env['MSVSPROJECTSUFFIX'],
                     srcs = eradicationSrcFiles,
@@ -83,5 +83,5 @@ if msvc is not None and msvc != False and msvc != "":
                     variant = bvar)
 
 else:
-    print "CC is:", env['CC']
-    print "CXX is:", env['CXX']
+    print( "CC is:", env['CC'] )
+    print( "CXX is:", env['CXX'] )

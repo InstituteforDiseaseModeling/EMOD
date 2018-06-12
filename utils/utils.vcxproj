@@ -231,6 +231,7 @@
     <ClInclude Include="InterpolatedValueMap.h" />
     <ClInclude Include="ISerializable.h" />
     <ClInclude Include="ISupports.h" />
+    <ClInclude Include="JsonConfigurableCollection.h" />
     <ClInclude Include="JsonFullReader.h" />
     <ClInclude Include="JsonFullWriter.h" />
     <ClInclude Include="JsonObject.h" />

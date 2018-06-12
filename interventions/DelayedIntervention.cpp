@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,6 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IndividualEventContext.h"
 #include "NodeEventContext.h"
 #include "RANDOM.h"
+
 
 SETUP_LOGGING( "DelayedIntervention" )
 
@@ -44,7 +45,10 @@ namespace Kernel
 
     void DelayedIntervention::InterventionValidate( const std::string& rDataLocation )
     {
-        InterventionValidator::ValidateInterventionArray( actual_intervention_config._json, rDataLocation );
+        InterventionValidator::ValidateInterventionArray( GetTypeName(),
+                                                          InterventionTypeValidation::INDIVIDUAL,
+                                                          actual_intervention_config._json,
+                                                          rDataLocation );
     }
 
     void DelayedIntervention::DelayValidate()

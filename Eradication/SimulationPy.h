@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -31,8 +31,8 @@ namespace Kernel
     protected:
         static bool ValidateConfiguration(const ::Configuration *config);
 
-        void Initialize();
-        void Initialize(const ::Configuration *config);
+        virtual void Initialize() override;
+        virtual void Initialize(const ::Configuration *config) override;
 
         // Allows correct type of community to be added by derived class Simulations
         virtual void addNewNodeFromDemographics( suids::suid node_suid,

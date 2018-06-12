@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -40,6 +40,8 @@ namespace Kernel
 
     protected:
         friend class SusceptibilityHIV;
+        friend class IndividualHumanCoInfection;
+        friend class InfectionTB;
 
         static float post_infection_CD4_lambda;
         static float post_infection_CD4_inverse_kappa;
@@ -50,13 +52,15 @@ namespace Kernel
         static float days_between_symptomatic_and_death_lambda;
         static float days_between_symptomatic_and_death_inv_kappa;
 
+        static int num_cd4_time_steps;
+        static float cd4_time_step;
     };
 
     //---------------------------- SusceptibilityHIV ----------------------------------------
     class SusceptibilityHIV : public SusceptibilitySTI, virtual public ISusceptibilityHIV
     {
     public:
-        friend class IndividualHumanCoinfection;
+        friend class IndividualHumanCoInfection;
          friend class IndividualHumanHIV;
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
         DECLARE_QUERY_INTERFACE()

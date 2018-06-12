@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,33 +15,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Vector.h"
 #include "VectorMatingStructure.h"
 #include "ISerializable.h"
+#include "IVectorCohort.h"
 
 namespace Kernel
 {
-    struct IStrainIdentity;
-    
-    struct IVectorCohort : ISerializable
-    {
-        /* Only for type-ID right now */
-        virtual int32_t GetPopulation() const = 0;
-        virtual void SetPopulation( int32_t new_pop ) = 0;
-        virtual float GetProgress() const = 0;
-        virtual void ClearProgress() = 0;
-        virtual void IncreaseProgress( float delta ) = 0;
-        virtual VectorMatingStructure& GetVectorGenetics() = 0;
-        virtual void SetVectorGenetics( const VectorMatingStructure& new_value ) = 0;
-        virtual float GetMortality( uint32_t addition ) const = 0;
-        virtual const IStrainIdentity& GetStrainIdentity() const = 0;
-        virtual IMigrate* GetIMigrate() = 0;
-    };
-
+    struct IStrainIdentity;    
     struct INodeContext;
 
-    struct VectorCohort;
-    typedef std::list<IVectorCohort *> VectorCohortList_t;
-    typedef std::vector<IVectorCohort*> VectorCohortVector_t;
-
-    struct VectorCohort : IVectorCohort, IMigrate
+    class VectorCohortAbstract : public IVectorCohort, public IMigrate
     {
     public:
         virtual int32_t AddRef() override { return 1; }
@@ -49,8 +30,9 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
 
     public:
-        static VectorCohort *CreateCohort( float progress, uint32_t population, const VectorMatingStructure& vms );
-        virtual ~VectorCohort();
+        static std::string _gambiae;
+
+        virtual ~VectorCohortAbstract();
 
         virtual const IStrainIdentity& GetStrainIdentity() const override;
 
@@ -64,24 +46,75 @@ namespace Kernel
         virtual const suids::suid & GetMigrationDestination() override;
         virtual MigrationType::Enum GetMigrationType() const  override;
 
-        virtual int32_t GetPopulation() const override; // used by VPI
-        virtual void SetPopulation( int32_t new_pop ) override; // used by VPI (1x besides ClearPop)
+        virtual VectorStateEnum::Enum GetState() const override;
+        virtual void SetState( VectorStateEnum::Enum _state ) override;
+        virtual const std::string &GetSpecies() override;
+        virtual uint32_t GetPopulation() const override; // used by VPI
+        virtual void SetPopulation( uint32_t new_pop ) override; // used by VPI (1x besides ClearPop)
         virtual float GetProgress() const override; // NOT used by VPI
         virtual void ClearProgress() override; // NOT used by VPI, implicit
         virtual void IncreaseProgress( float delta ) override; // used by VPI (2x)
         virtual VectorMatingStructure& GetVectorGenetics() override; // used by VPI
         virtual void SetVectorGenetics( const VectorMatingStructure& new_value ) override;
-        virtual float GetMortality( uint32_t addition ) const override;
         virtual IMigrate* GetIMigrate() override;
+        virtual float GetAge() const override;
+        virtual void SetAge( float ageDays ) override;
+        virtual void IncreaseAge( float dt ) override;
 
     protected:
-        VectorCohort();
-        VectorCohort(float progress, uint32_t population, const VectorMatingStructure& _vector_genetics);
+        VectorCohortAbstract();
+        VectorCohortAbstract( const VectorCohortAbstract& rThat );
+        VectorCohortAbstract( VectorStateEnum::Enum state,
+                      float age,
+                      float progress,
+                      uint32_t population, 
+                      const VectorMatingStructure& _vector_genetics,
+                      const std::string* vector_species_name );
         virtual void Initialize();
 
         VectorMatingStructure vector_genetics;
+        VectorStateEnum::Enum state;
         float progress;
-        int32_t population;
+        uint32_t population;
+        float age;
+        MigrationType::Enum migration_type;
+        suids::suid migration_destination;
+        const std::string* pSpecies;
+
+        static void serialize( IArchive& ar, VectorCohortAbstract* obj );
+    };
+
+    class VectorCohort : public VectorCohortAbstract
+    {
+    public:
+        DECLARE_QUERY_INTERFACE()
+
+        static VectorCohort *CreateCohort( VectorStateEnum::Enum state,
+                                           float age,
+                                           float progress,
+                                           uint32_t population,
+                                           const VectorMatingStructure& vms,
+                                           const std::string* vector_species_name );
+        virtual ~VectorCohort();
+
+        virtual void Merge( IVectorCohort* pCohortToAdd ) override;
+        virtual IVectorCohort* Split( uint32_t numLeaving ) override;
+        virtual void AddNewEggs( uint32_t daysToGestate, uint32_t new_eggs ) override;
+        virtual uint32_t GetGestatedEggs() override;
+        virtual void AdjustEggsForDeath( uint32_t numDied ) override;
+        virtual const std::vector<uint32_t>& GetNewEggs() const override;
+
+    protected:
+        VectorCohort();
+        VectorCohort( const VectorCohort& rThat );
+        VectorCohort( VectorStateEnum::Enum state,
+                      float age,
+                      float progress,
+                      uint32_t population,
+                      const VectorMatingStructure& _vector_genetics,
+                      const std::string* vector_species_name );
+
+        std::vector<uint32_t> neweggs;
 
         DECLARE_SERIALIZABLE(VectorCohort);
     };

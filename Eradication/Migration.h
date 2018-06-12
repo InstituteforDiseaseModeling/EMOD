@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -90,6 +90,8 @@ namespace Kernel
                                         MigrationType::Enum &migration_type,
                                         float &time ) override;
         virtual void SetContextTo(INodeContext* _parent) override;
+        virtual float GetTotalRate() const override;
+        virtual const std::vector<float>& GetCumulativeDistributionFunction() const override;
         virtual const std::vector<suids::suid>& GetReachableNodes() const override;
         virtual const std::vector<MigrationType::Enum>& GetMigrationTypes() const override;
         virtual bool IsHeterogeneityEnabled() const override;
@@ -102,7 +104,8 @@ namespace Kernel
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
         // We need these member variables so that GetReachableNodes() and GetMigrationTypes()
-        // can retrun references to objects that exist.
+        // can return references to objects that exist.
+        std::vector<float>               m_EmptyListCDF;
         std::vector<suids::suid>         m_EmptyListNodes;
         std::vector<MigrationType::Enum> m_EmptyListTypes;
 #pragma warning( pop )
@@ -127,6 +130,8 @@ namespace Kernel
                                         MigrationType::Enum &migration_type,
                                         float &time ) override;
         virtual void SetContextTo(INodeContext* _parent) override;
+        virtual float GetTotalRate() const override;
+        virtual const std::vector<float>& GetCumulativeDistributionFunction() const override;
         virtual const std::vector<suids::suid>& GetReachableNodes() const override;
         virtual const std::vector<MigrationType::Enum>& GetMigrationTypes() const override;
         virtual bool IsHeterogeneityEnabled() const override;
@@ -140,8 +145,6 @@ namespace Kernel
 
         virtual void Initialize( const std::vector<std::vector<MigrationRateData>>& rRateData );
         virtual void CalculateRates( Gender::Enum gender, float ageYears );
-        virtual const std::vector<float>& GetRates() const;
-        virtual float GetTotalRate() const;
         virtual void NormalizeRates( std::vector<float>& r_rate_cdf, float& r_total_rate );
         virtual void SaveRawRates( std::vector<float>& r_rate_cdf ) {}
 

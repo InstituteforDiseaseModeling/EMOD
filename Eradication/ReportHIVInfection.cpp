@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -24,8 +24,6 @@ SETUP_LOGGING( "ReportHIVInfection" )
 namespace Kernel 
 {
     GET_SCHEMA_STATIC_WRAPPER_IMPL(ReportHIVInfection,ReportHIVInfection)
-
-    static const string _report_name = "ReportHIVInfection.csv";
 
     ReportHIVInfection::ReportHIVInfection( const ISimulation * parent )
         : BaseTextReport( "ReportHIVInfection.csv" )

@@ -5,7 +5,10 @@ import collections
 import os
 import tempfile
 import string
+import sys
 from hashlib import md5
+from io import open
+import argparse
 
 # below is list of 'global' variables that are shared across >1 modules in the regression suite of code. 
 # probably all of them could ultimately be made at least a static member of MyRegressionRunner or Monitor.
@@ -46,15 +49,14 @@ def recursive_json_overrider( ref_json, flat_input_json ):
                 flat_input_json[val] = ref_json[val]
 
 
-def flattenConfig( configjson_path ):
+def flattenConfig( configjson_path, new_config_name="config" ):
     if os.path.exists( configjson_path ) == False:
         print( "Path " + configjson_path + " supposedly doesn't exist!!!" )
         return None
 
     configjson_flat = {}
     #print( "configjson_path = " + configjson_path )
-    with open( configjson_path) as handle:
-        configjson = json.load( handle )
+    configjson = load_json(configjson_path)
 
     recursive_json_overrider( configjson, configjson_flat )
 
@@ -63,8 +65,7 @@ def flattenConfig( configjson_path ):
         default_config_path = configjson_flat["Default_Config_Path"]
 
         try:
-            with open( os.path.join( ".", default_config_path ) ) as handle:
-                default_config_json = json.load( handle ) 
+            default_config_json = load_json(os.path.join(".", default_config_path))
         except Exception as ex:
             print( "Exception opening default config: " + str( ex ) )
             raise ex
@@ -85,8 +86,9 @@ def flattenConfig( configjson_path ):
 
     # let's write out a flat version in case someone wants
     # to use regression examples as configs for debug mode
-    with open( configjson_path.replace( "param_overrides", "config" ), 'w' ) as handle:
-        json.dump(configjson, handle, sort_keys=True, indent=4)
+    with open( configjson_path.replace( "param_overrides", new_config_name ), 'w', newline='\r\n') as handle:
+        # this is really funky and awkward but is here to maintain python 2/3 compatability
+        handle.write( bytearray(json.dumps(configjson, sort_keys=True, indent=4), 'utf-8').decode('utf-8') )
     
     return configjson
 
@@ -117,14 +119,13 @@ def areTheseJsonFilesTheSame( file1, file2, key = None ):
     #print( "Comparing " + file1 + " and " + file2 )
     
     def get_json_data( filename, key ):
-        with open( filename ) as handle:
-            json_data = json.load( handle )
-            if key is not None:
-                #print( json_data.keys() )
-                if key not in json_data.keys():
-                    print( "ERROR: Requested key \"" + key + "\" not in json data. Found: " + str( json_data.keys() ) )
-                    return None
-                json_data = json_data[key]
+        json_data = load_json(filename)
+        if key is not None:
+            #print( json_data.keys() )
+            if key not in json_data.keys():
+                print( "ERROR: Requested key \"" + key + "\" not in json data. Found: " + str( json_data.keys() ) )
+                return None
+            json_data = json_data[key]
                 
         return json_data
         
@@ -164,14 +165,14 @@ def make_event_map(json_in):
     for event in json_in["Events"]:
         try:
             event_map[event['Event_Name']] = (hash( json.dumps(event, sort_keys=True) ), event)
-        except KeyError, e:
-            print event
+        except KeyError as e:
+            print( event )
             raise Exception( 'The event printed above is missing the required %s key' % str(e) )
     return event_map
 
 def strToEventList( str_in ):
-    events_idx = string.find(str_in, 'Events')  # -1 is not found
-    start_idx = string.find(str_in, '[', events_idx)  # -1 is not found
+    events_idx = str_in.find( 'Events')  # -1 is not found
+    start_idx = str_in.find( '[', events_idx)  # -1 is not found
 
     psn = start_idx+1
     square_count = 1
@@ -206,17 +207,19 @@ def flattenCampaign(override_fn, verbose):
         #print( "Path \'" + override_fn + "\' supposedly doesn't exist!!! Looking relative to " + os.getcwd() )
         return None
 
-    override_str = open( override_fn ).read()
+    with open(override_fn, "r", encoding="utf-8") as override_fn_file:
+        override_str = override_fn_file.read()
     override_json = json.loads( override_str )
     override_event_map = make_event_map(override_json)
     override_event_str_list = strToEventList( override_str )
 
     try:
         base_fn = override_json["Default_Campaign_Path"]
-    except KeyError, e:
+    except KeyError as e:
         raise Exception( 'The override campaign file %s is missing a required key: %s' % (sys.argv[1], str(e)) )
 
-    base_str = open( base_fn ).read()
+    with open(base_fn, "r", encoding="utf-8") as base_fn_file:
+        base_str = base_fn_file.read()
     base_json = json.loads( base_str )
     base_event_map = make_event_map(base_json)
     base_event_str_list = strToEventList( base_str )
@@ -227,16 +230,16 @@ def flattenCampaign(override_fn, verbose):
         if key == "Events":
             # Skip events
             if verbose:
-                print "Skipping key: %s" % key
+                print( "Skipping key: %s" % key )
             continue
         elif key in override_json:
             if verbose:
-                print "Key from override: %s" % key
+                print( "Key from override: %s" % key )
             # Use modified value, if any
             merged_json[key] = override_json[key]
         else:
             if verbose:
-                print "Key from base: %s" % key
+                print( "Key from base: %s" % key )
             # Use base
             merged_json[key] = value
 
@@ -256,7 +259,7 @@ def flattenCampaign(override_fn, verbose):
 
         if event_name not in base_event_map:
             if verbose:
-                print "USE OVERLAY (EXCLUSIVE): %s" % event_name
+                print( "USE OVERLAY (EXCLUSIVE): %s" % event_name )
             merged_events_str += "        %s,\n"%override_event_str
 
 
@@ -268,12 +271,12 @@ def flattenCampaign(override_fn, verbose):
 
         if event_name in override_event_map:
             if verbose :
-                print "USE OVERLAY: %s" % event_name
+                print( "USE OVERLAY: %s" % event_name )
             override_event_str = override_event_name_to_string_map[event_name]
             merged_events_str += "        %s,\n"%override_event_str
         else:
             if verbose :
-                print "USE BASE: %s" % event_name
+                print( "USE BASE: %s" % event_name )
             merged_events_str += "        %s,\n"%base_event_str
 
     merged_events_str = merged_events_str[:-2]  # Chop final ",\n"
@@ -293,8 +296,49 @@ def flattenCampaign(override_fn, verbose):
     saveto_fn = override_fn.replace( "campaign_overrides", "campaign" )
     with open( saveto_fn, 'w' ) as handle:
         if verbose:
-            print "Writing flattened campaign to %s" % saveto_fn
+            print( "Writing flattened campaign to %s" % saveto_fn )
         handle.write( merged_str )
 
 
     return json.loads(merged_str)
+
+
+def load_json(filepath, post_process=None, ignore_notfound=True):
+    """Load json from a file, with optional post processing of contents prior to parsing"""
+    if os.path.exists(filepath):
+        try:
+            with open(filepath, 'r', encoding='utf-8') as json_file:
+                if post_process:
+                    return json.loads(post_process(json_file.read()))
+                else:
+                    return json.loads(json_file.read())
+        except ValueError:
+            print("JSON decode error from file {} ".format(filepath))
+            raise
+        except IOError:
+            print("Error accessing json file {} ".format(filepath))
+            raise
+    else:
+        if not ignore_notfound:
+            # should this raise an error?
+            print("JSON file not found: {}".format(filepath))
+    return None
+
+
+def touch_file(filename):
+    """Update a file's last modification date by opening/closing it"""
+    with open(filename, "a"):
+        os.utime(filename, None)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(help='Action to take', dest='action')
+    flatten_parser = subparsers.add_parser('flatten-config', help="Flatten param_overrides with a config file to DTK expected config format")
+    flatten_parser.add_argument('path', help="Path to the param_overrides.json file")
+    args = parser.parse_args()
+
+    if args.action == "flatten-config":
+        flattenConfig(args.path, "config_flattened")
+    else:
+        raise Exception("Invalid utility selected")
+

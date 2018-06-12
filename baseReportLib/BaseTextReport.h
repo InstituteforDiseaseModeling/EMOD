@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -50,11 +50,15 @@ namespace Kernel
         // Return the handle to the stringstream that is collecting the data.
         std::stringstream& GetOutputStream() { return output_stream; }
 
+        void SetReportName(const std::string& new_name);
+        void AddHeaderLine(bool add_endl);
+
         void GetDataFromOtherCores();
         void WriteData( const std::string& rStringData );
 
         // make protected so derived classes can set in Configure()
         bool write_every_time_step ;
+        bool write_header_newline;
 
     private:
         std::string report_name;

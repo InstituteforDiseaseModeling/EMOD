@@ -5,7 +5,7 @@
             "Event_Coordinator_Config":{
                 "Demographic_Coverage": 1.0,            
                 "Intervention_Config":{  
-                    "Actual_IndividualIntervention_Config":{
+                    "Actual_NodeIntervention_Config":{
                         "Antigen":0,
                         "Genome":0,
                         "class":"Outbreak"

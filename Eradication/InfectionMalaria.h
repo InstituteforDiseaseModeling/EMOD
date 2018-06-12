@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -38,16 +38,16 @@ namespace Kernel
         static ParasiteSwitchType::Enum parasite_switch_type;
         static MalariaStrains::Enum     malaria_strains;
 
-        static double antibody_IRBC_killrate;
-        static double MSP1_merozoite_kill;
-        static double gametocyte_stage_survival;
-        static double base_gametocyte_sexratio;
-        static double base_gametocyte_production;
-        static double antigen_switch_rate;
-        static double merozoites_per_hepatocyte;
-        static double merozoites_per_schizont;
-        static double non_specific_antigenicity;
-        static double RBC_destruction_multiplier;
+        static float antibody_IRBC_killrate;
+        static float MSP1_merozoite_kill;
+        static float gametocyte_stage_survival;
+        static float base_gametocyte_sexratio;
+        static float base_gametocyte_production;
+        static float antigen_switch_rate;
+        static float merozoites_per_hepatocyte;
+        static float merozoites_per_schizont;
+        static float non_specific_antigenicity;
+        static float RBC_destruction_multiplier;
         static int    n_asexual_cycles_wo_gametocytes;
     };
 

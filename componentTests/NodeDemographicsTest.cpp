@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -59,7 +59,7 @@ SUITE(NodeDemographicsTest)
             string outputPath("testdata/NodeDemographicsTest/output");
             string statePath("testdata/NodeDemographicsTest");
             string dllPath("testdata/NodeDemographicsTest");
-            Environment::Initialize( m_pMpi, nullptr, configFilename, inputPath, outputPath, /*statePath, */dllPath, false);
+            Environment::Initialize( m_pMpi, configFilename, inputPath, outputPath, /*statePath, */dllPath, false);
 
             pSimConfig = SimulationConfigFactory::CreateInstance(Environment::getInstance()->Config);
             if (pSimConfig)
@@ -187,7 +187,10 @@ SUITE(NodeDemographicsTest)
                 bool passed = msg.find( rExpMsg ) != string::npos ;
                 if( !passed )
                 {
-                    PrintDebug( msg );
+                    std::string exp_msg = std::string( "Expected: " ) + rExpMsg + std::string("\n");
+                    std::string act_msg = std::string( "Actual..: " ) + re.GetMsg();
+                    PrintDebug( exp_msg );
+                    PrintDebug( act_msg );
                 }
                 CHECK_LN( passed, lineNumber );
             }
@@ -205,7 +208,7 @@ SUITE(NodeDemographicsTest)
         Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
         string configFilename("testdata/NodeDemographicsTest/config_legacy.json");
         string p("testdata/NodeDemographicsTest");
-        Environment::Initialize(pMpi,nullptr,configFilename, p, p, /*p, */p, false);
+        Environment::Initialize(pMpi,configFilename, p, p, /*p, */p, false);
         SimulationConfig* pSimConfig = SimulationConfigFactory::CreateInstance(Environment::getInstance()->Config);
         CHECK(pSimConfig);
         Environment::setSimulationConfig(pSimConfig);
@@ -343,7 +346,7 @@ SUITE(NodeDemographicsTest)
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestStringTableBadFormat)
     {
         TestHelper_FormatException( __LINE__, "demographics_TestStringTableBadFormat.json", 
-                                              "Failed to parse incoming text. Expect a value here. at character=973 / line number=0" );
+                                              "Failed to parse incoming text. Expect a value here. at character=991 / line number=0" );
     }
     
 #ifdef USE_NODEOFFSET
@@ -587,6 +590,7 @@ SUITE(NodeDemographicsTest)
         unique_ptr<NodeDemographics> p_node_demo( factory->CreateNodeDemographics(&ncf) );
 
         unique_ptr<NodeDemographicsDistribution> p_ndd_age    ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["AgeDistribution"                       ] ) );
+        unique_ptr<NodeDemographicsDistribution> p_ndd_suscep ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["SusceptibilityDistribution"            ] ) );
         unique_ptr<NodeDemographicsDistribution> p_ndd_fert   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["FertilityDistribution"                 ], "urban",  "age") );
         unique_ptr<NodeDemographicsDistribution> p_ndd_mort   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["MortalityDistribution"                 ], "gender", "age") );
         unique_ptr<NodeDemographicsDistribution> p_ndd_antm_m ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["MSP_mean_antibody_distribution"        ], "age") );
@@ -608,6 +612,13 @@ SUITE(NodeDemographicsTest)
         unique_ptr<NodeDemographicsDistribution> p_ndd_hivc   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["HIVCoinfectionDistribution"            ], "gender", "time", "age") );
         unique_ptr<NodeDemographicsDistribution> p_ndd_hivm   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["HIVMortalityDistribution"              ], "gender", "time", "age") );
 
+    }
+
+    TEST_FIXTURE( NodeDemographicsFactoryFixture, TestDistSuscepMissingDistValues )
+    {
+        std::vector<std::string> axis_names;
+        TestHelper_DistributionFormatException( __LINE__, "demographics_TestDistSuscepMissingDistValues.json", "SusceptibilityDistribution", axis_names,
+                                                "SusceptibilityDistribution for NodeID=1 is missing a 'DistributionValues' element." );
     }
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestDistAgeDistNumResultValuesNotMatchDistValuesA)
@@ -785,7 +796,6 @@ SUITE(NodeDemographicsTest)
                                                            "Failed to interpret value on the demographics attribute [ 'HIVCoinfectionDistribution' ][ 'ResultValues' ] for nodeID=1.  The attribute is supposed to be a 'array' but is a 'String'." );
 
     }
-
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestDistHivCoinDistNotDouble)
     {

@@ -6,11 +6,11 @@
             "MORTALITY": {
                 "Base_Mortality": 0.5, 
                 "Enable_Disease_Mortality": 1, 
-                "Immunity_Mortality_Factor": 0.7
+                "Post_Infection_Mortality_Multiplier": 0.7
             }, 
             "IMMUNITY": {
-                "Immunity_Transmission_Factor": 0.8, 
-                "Immunity_Acquisition_Factor": 0.9
+                "Post_Infection_Transmission_Multiplier": 0.8, 
+                "Post_Infection_Acquisition_Multiplier": 0.9
             }, 
             "Demographics_Filenames": ["../00_Generic_Default/demographics.json"]
         }, 

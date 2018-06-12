@@ -5,6 +5,7 @@ Support for three formats of serialized population files:
 1. "Original version": single payload chunk with simulation and all nodes, uncompressed or snappy or LZ4
 2. "First chunked version": multiple payload chunks, one for simulation and one each for nodes
 3. "Second chunked version": multiple payload chunks, simulation and node objects are "root" objects in each chunk
+4. "Metadata update": compressed: true|false + engine: NONE|LZ4|SNAPPY replaced with compression: NONE|LZ4|SNAPPY
 """
 
 from __future__ import print_function
@@ -19,6 +20,7 @@ IDTK = 'IDTK'
 NONE = 'NONE'
 LZ4 = 'LZ4'
 SNAPPY = 'SNAPPY'
+MAX_VERSION = 4
 
 
 __engines__ = {LZ4: support.EllZeeFour, SNAPPY: snappy, NONE: support.Uncompressed}
@@ -381,7 +383,7 @@ def read(filename):
 
 
 def __check_magic_number__(handle):
-    magic = handle.read(4)
+    magic = handle.read(4).decode()
     if magic != IDTK:
         raise UserWarning("File has incorrect magic 'number': '{0}'".format(magic))
     return
@@ -430,7 +432,7 @@ def __try_parse_header_text__(header_text):
 
 
 def __check_version__(version):
-    if version <= 0 or version > 4:
+    if version <= 0 or version > MAX_VERSION:
         raise UserWarning("Unknown version: {0}".format(version))
     return
 
@@ -462,18 +464,18 @@ def write(dtk_file, filename):
 
 
 def __write_magic_number__(handle):
-    handle.write('IDTK')
+    handle.write('IDTK'.encode())
     return
 
 
 def __write_header_size__(size, handle):
     size_string = '{:>12}'.format(size)     # decimal value right aligned in 12 character space
-    handle.write(size_string)
+    handle.write(size_string.encode())
     return
 
 
 def __write_header__(string, handle):
-    handle.write(string)
+    handle.write(string.encode())
     return
 
 

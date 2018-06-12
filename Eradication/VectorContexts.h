@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,7 +15,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    struct VectorCohort;
     struct IVectorCohort;
     class  VectorHabitat;
     class  VectorMatingStructure;
@@ -44,8 +43,8 @@ namespace Kernel
     {
     public:
         virtual const VectorPopulationReportingList_t& GetVectorPopulationReporting() const = 0;
-        virtual void AddVectors( const std::string& releasedSpecies, const VectorMatingStructure& _vector_genetics, uint64_t releasedNumber ) = 0;
-        virtual void processImmigratingVector( VectorCohort* immigrant ) = 0;
+        virtual void AddVectors( const std::string& releasedSpecies, const VectorMatingStructure& _vector_genetics, uint32_t releasedNumber ) = 0;
+        virtual void processImmigratingVector( IVectorCohort* immigrant ) = 0;
     };
 
     struct IIndividualHumanVectorContext : public ISupports
@@ -55,6 +54,7 @@ namespace Kernel
 
     struct IVectorSusceptibilityContext : public ISupports
     {
+        virtual void  SetRelativeBitingRate( float rate ) = 0;
         virtual float GetRelativeBitingRate(void) const = 0;
     };
 
@@ -97,18 +97,21 @@ namespace Kernel
 
     struct IVectorPopulationReporting : ISupports
     {
-        virtual float GetEIRByPool(VectorPoolIdEnum::Enum pool_id) const = 0;
-        virtual float GetHBRByPool(VectorPoolIdEnum::Enum pool_id) const = 0;
-        virtual int32_t getAdultCount()                            const = 0;
-        virtual int32_t getInfectedCount()                         const = 0;
-        virtual int32_t getInfectiousCount()                       const = 0;
-        virtual int32_t getMaleCount()                             const = 0;
-        virtual int32_t getNewEggsCount()                          const = 0;
-        virtual double  getInfectivity()                           const = 0;
-        virtual const std::string& get_SpeciesID()                 const = 0;
-        virtual const VectorHabitatList_t& GetHabitats()           const = 0;
-
-        virtual std::vector<int> GetNewlyInfectedSuids() const = 0;
-        virtual std::vector<int> GetInfectiousSuids() const = 0;
+        virtual float GetEIRByPool(VectorPoolIdEnum::Enum pool_id)      const = 0;
+        virtual float GetHBRByPool(VectorPoolIdEnum::Enum pool_id)      const = 0;
+        virtual uint32_t getAdultCount()                                const = 0;
+        virtual uint32_t getInfectedCount(   IStrainIdentity* pStrain ) const = 0;
+        virtual uint32_t getInfectiousCount( IStrainIdentity* pStrain ) const = 0;
+        virtual uint32_t getMaleCount()                                 const = 0;
+        virtual uint32_t getNewEggsCount()                              const = 0;
+        virtual uint32_t getNewAdults()                                 const = 0;
+        virtual uint32_t getNumDiedBeforeFeeding()                      const = 0;
+        virtual uint32_t getNumDiedDuringFeedingIndoor()                const = 0;
+        virtual uint32_t getNumDiedDuringFeedingOutdoor()               const = 0;
+        virtual double  getInfectivity()                                const = 0;
+        virtual const std::string& get_SpeciesID()                      const = 0;
+        virtual const VectorHabitatList_t& GetHabitats()                const = 0;
+        virtual std::vector<uint64_t> GetNewlyInfectedVectorIds()       const = 0;
+        virtual std::vector<uint64_t> GetInfectiousVectorIds()          const = 0;
     };
 }

@@ -3,14 +3,16 @@
     "parameters": {
         "DEMOGRAPHICS": {
             "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
-            "Demographics_Filenames": ["Madagascar_Nosibe_2.5arcmin_demographics.json"],
-            "Enable_Vital_Dynamics": 0, 
+            "Demographics_Filenames": [
+                "Madagascar_Nosibe_2.5arcmin_demographics.json"
+            ],
+            "Enable_Initial_Prevalence": 1,
+            "Enable_Vital_Dynamics": 0,
             "IMMUNITY": {
                 "Enable_Immune_Decay": 0
             },
             "MORTALITY": {
-                "Base_Mortality": 0,
-                "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF"
+                "Base_Mortality": 0
             },
             "SAMPLING": {
                 "Sample_Rate_Birth": 1
@@ -32,33 +34,32 @@
                 "Load_Balance_Filename": "Madagascar_Nosibe_2.5arcmin_load_balancing_8procs.bin",
                 "Num_Cores": 8
             }
-        },         
+        },
         "MIGRATION": {
-            "Migration_Model": "FIXED_RATE_MIGRATION", 
-            "Migration_Pattern": "WAYPOINTS_HOME", 
-            "Enable_Migration_Heterogeneity" : 0,
-            "Enable_Family_Migration": 0, 
-            "Family_Migration_Filename": "", 
-            "x_Family_Migration": 1,
+            "AIR": {
+                "Air_Migration_Filename": "",
+                "Enable_Air_Migration": 0
+            },
+            "Enable_Family_Migration": 0,
+            "Enable_Migration_Heterogeneity": 0,
+            "Family_Migration_Filename": "",
+            "LOCAL": {
+                "Enable_Local_Migration": 1,
+                "Local_Migration_Filename": "Madagascar_Nosibe_2.5arcmin_local_migration.bin"
+            },
+            "Migration_Model": "FIXED_RATE_MIGRATION",
+            "Migration_Pattern": "WAYPOINTS_HOME",
+            "REGIONAL": {
+                "Enable_Regional_Migration": 0,
+                "Regional_Migration_Filename": ""
+            },
             "Roundtrip_Waypoints": 5,
-                "AIR" : {
-                    "Enable_Air_Migration" : 0,
-                    "Air_Migration_Filename" :""
-                },
-                "LOCAL": {
-                    "Enable_Local_Migration": 1, 
-                    "Local_Migration_Filename": "Madagascar_Nosibe_2.5arcmin_local_migration.bin"
-                }, 
-                "REGIONAL": {
-                    "Enable_Regional_Migration": 0, 
-                    "Regional_Migration_Filename": ""
-               }, 
-               "SEA": {
-                    "Enable_Sea_Migration": 0, 
-                    "Sea_Migration_Filename": ""
-               }
-        },         
-        
+            "SEA": {
+                "Enable_Sea_Migration": 0,
+                "Sea_Migration_Filename": ""
+            },
+            "x_Family_Migration": 1
+        },
         "PRIMARY": {
             "Config_Name": "01_SIR -- multicore -- Madagascar_Nosibe",
             "Geography": "Madagascar_Nosibe",

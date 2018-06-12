@@ -24,17 +24,17 @@ def set_random_campaign_file(campaign_filename="campaign.json", campaign_templat
         json.dump(campaign_json, outfile, indent = 4, sort_keys = True)
 
     if debug:
-        print "vaccine initial effect is : {}.\n".format(initial_effect)
-        print "vaccine demographics coverage is  : {0}.\n".format(demographic_coverage_v)
-        print "outbreak demographics coverage is  : {0}.\n".format(demographic_coverage_o)
+        print( "vaccine initial effect is : {}.\n".format(initial_effect) )
+        print( "vaccine demographics coverage is  : {0}.\n".format(demographic_coverage_v) )
+        print( "outbreak demographics coverage is  : {0}.\n".format(demographic_coverage_o) )
 
     return
 
 def application(config_filename="config.json", campaign_filename = "campaign.json", campaign_template_filename = "campaign_template.json",debug = False):
     if debug:
-        print "campaign_filename: " + campaign_filename + "\n"
-        print "campaign_template_filename: " + campaign_template_filename + "\n"
-        print "debug: " + str(debug) + "\n"
+        print( "campaign_filename: " + campaign_filename + "\n" )
+        print( "campaign_template_filename: " + campaign_template_filename + "\n" )
+        print( "debug: " + str(debug) + "\n" )
 
     set_random_campaign_file(campaign_filename, campaign_template_filename, debug)
     return config_filename

@@ -1,0 +1,44 @@
+{
+    "Default_Config_Path": "defaults/vector_default_config.json",
+    "parameters": {
+        "CLIMATE": {
+            "AIR": {
+                "Air_Temperature_Filename": "Garki_30arcsec_air_temperature_daily.bin"
+            },
+            "HUMIDITY": {
+                "Relative_Humidity_Filename": "Garki_30arcsec_relative_humidity_daily.bin"
+            },
+            "LAND_TEMP": {
+                "Land_Temperature_Filename": "Garki_30arcsec_land_temperature_daily.bin"
+            },
+            "RAINFALL": {
+                "Rainfall_Filename": "Garki_30arcsec_rainfall_daily.bin"
+            }
+        },
+        "DEMOGRAPHICS": {
+            "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE",
+            "Demographics_Filenames": [
+                "demographics_with_properties.json"
+            ],
+            "Enable_Initial_Prevalence": 1
+        },
+        "PRIMARY": {
+            "Config_Name": "53_Vector_MultiNodeInterventionDistributor",
+            "Custom_Reports_Filename": "custom_reports.json",
+            "Enable_Demographics_Reporting": 0,
+            "Enable_Property_Output": 1,
+            "Geography": "Garki",
+            "Listed_Events": [
+                "PVC_Distributed"
+            ],
+            "Report_Event_Recorder": 1,
+            "Report_Event_Recorder_Events": [
+                "PropertyChange",
+                "PVC_Distributed"
+            ],
+            "Report_Event_Recorder_Ignore_Events_In_List": 0,
+            "Run_Number": 1,
+            "Simulation_Duration": 400
+        }
+    }
+}

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -48,7 +48,7 @@ namespace Kernel
     public:
         static ISimulationConfigFactory * getInstance();
 
-        static SimulationConfig* CreateInstance(const Configuration * config);
+        static SimulationConfig* CreateInstance(Configuration * config);
         void Register(string classname, instantiator_function_t _if);
 
     protected:
@@ -89,16 +89,9 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
 
         // Enum type name                                    Enum variable name                                name in config.json
-        //
-        DistributionType::Enum                               immunity_initialization_distribution_type;        // Immunity_Initialization_Distribution_Type
-
         MigrationStructure::Enum                             migration_structure;                              // MIGRATION_STRUCTURE
-        SusceptibilityScaling::Enum                          susceptibility_scaling;                           // Susceptibility_Scale_Type
         SimType::Enum                                        sim_type;                                         // Sim_Type
-        VitalDeathDependence::Enum                           vital_death_dependence;                           // Vital_Death_Dependence
 
-        float susceptibility_scaling_rate;     // Susceptibility_Scaling_Rate, only for Susceptibility_Scale_Type = *_FUNCTION_OF_TIME
-        float susceptibility_scaling_intercept;
 
         bool demographics_initial;
         int default_torus_size;
@@ -107,8 +100,6 @@ namespace Kernel
         float lloffset; // half the size of a grid edge in degrees, set by SetFlags()
 
         // parameters for individual
-        bool vital_dynamics;
-
         int infection_updates_per_tstep;
         bool interventions;
 
@@ -169,6 +160,8 @@ namespace Kernel
 
         const Configuration* GetJsonConfigObj() const { return m_jsonConfig; }
 
+        void SetFixedParameters(Configuration * inputJson);
+
     protected:
 
     private: // for serialization to work
@@ -183,9 +176,6 @@ namespace Kernel
         void MalariaCheckConfig( const Configuration* inputJson );
         void MalariaAddSchema( json::QuickBuilder& retJson );
 
-        void TBInitConfig( const Configuration* inputJson );
-        void TBCheckConfig( const Configuration* inputJson );
-        void TBAddSchema( json::QuickBuilder& retJson );
         jsonConfigurable::tDynamicStringSet tb_drug_names_for_this_sim;
 
         void PolioInitConfig( const Configuration* inputJson );

@@ -15,7 +15,7 @@
             },
             "SAMPLING": {
                 "Individual_Sampling_Type": "ADAPTED_SAMPLING_BY_POPULATION_SIZE",
-                "Max_Node_Population_Samples": 1000,
+                "Max_Node_Population_Samples": 500,
                 "Sample_Rate_Birth": 1
             }
         },
@@ -80,6 +80,7 @@
             "Geography": "SamplesInput",
             "Node_Grid_Size": 0.009,
             "Run_Number": 999,
+            "Simulation_Timestep": 4, 
             "Simulation_Duration": 4745
         }
     }

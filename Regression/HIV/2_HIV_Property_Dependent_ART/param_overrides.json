@@ -1,29 +1,21 @@
 {
-    "Default_Config_Path": "defaults/hiv_default_config.json", 
+    "Default_Config_Path": "defaults/hiv_default_config.json",
     "parameters": {
-
-        "____________SIMULATION___________": "",
-            "Simulation_Duration": 365,
-            "Disable_IP_Whitelist": 1,
-            "logLevel_AntiHIVPropertyDependentDrug": "DEBUG",
-        
-        "____________INTRAHOST___________": "",
-
-        "____________NETWORK___________": "",
-        
-        "____________TRANSMISSION___________": "",
-
+        "Base_Population_Scale_Factor": 0.001,
+        "Config_Name": "2_HIV_Property_Dependent_ART",
+        "Demographics_Filenames": [
+            "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed_with_Adherence.json",
+            "../input/PFA_overlay.json"
+        ],
+        "Disable_IP_Whitelist": 1,
+        "Simulation_Duration": 365,
         "____________DEMOGRAPHICS___________": "",
-            "Demographics_Filenames": [
-                "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed_with_Adherence.json",
-                 "../input/PFA_overlay.json"
-             ],
-            "Base_Population_Scale_Factor": 0.001,
-
-        "____________REPORTING___________": "",
-        
+        "____________INTRAHOST___________": "",
+        "____________NETWORK___________": "",
         "____________RARELY_CHANGED___________": "",
-            "Config_Name": "2_HIV_Property_Dependent_ART"
-
+        "____________REPORTING___________": "",
+        "____________SIMULATION___________": "",
+        "____________TRANSMISSION___________": "",
+        "logLevel_AntiHIVPropertyDependentDrug": "DEBUG"
     }
 }

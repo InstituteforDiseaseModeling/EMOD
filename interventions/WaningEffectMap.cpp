@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -34,6 +34,18 @@ namespace Kernel
     {
     }
 
+    WaningEffectMapAbstract::WaningEffectMapAbstract( float minTime, float maxTime, float minValue, float maxValue )
+    : WaningEffectConstant()
+    , m_Expired( false )
+    , m_EffectOriginal( 0.0 )
+    , m_ExpireAtDurationMapEnd( false )
+    , m_TimeSinceStart( 0.0 )
+    , m_DurationMap( minTime, maxTime, minValue, maxValue )
+    , m_RefTime( 0 )
+    {
+    }
+
+
     WaningEffectMapAbstract::WaningEffectMapAbstract( const WaningEffectMapAbstract& rOrig )
     : WaningEffectConstant( rOrig )
     , m_Expired( rOrig.m_Expired )
@@ -52,6 +64,11 @@ namespace Kernel
     bool WaningEffectMapAbstract::Configure( const Configuration * pInputJson )
     {
         bool configured = ConfigureExpiration( pInputJson );
+
+        if( configured || JsonConfigurable::_dryrun )
+        {
+            configured = ConfigureReferenceTimer( pInputJson );
+        }
 
         if( configured || JsonConfigurable::_dryrun )
         {
@@ -74,8 +91,12 @@ namespace Kernel
     bool WaningEffectMapAbstract::ConfigureExpiration( const Configuration * pInputJson )
     {
         initConfigTypeMap( "Expire_At_Durability_Map_End", &m_ExpireAtDurationMapEnd, WEM_Expire_At_Durability_Map_End_DESC_TEXT, false );
-        initConfigTypeMap( "Reference_Timer",              &m_RefTime,                WEM_Reference_Time_DESC_TEXT, 0 );
+        return true;
+    }
 
+    bool WaningEffectMapAbstract::ConfigureReferenceTimer( const Configuration * pInputJson )
+    {
+        initConfigTypeMap( "Reference_Timer", &m_RefTime, WEM_Reference_Time_DESC_TEXT, 0 );
         return true;
     }
 
@@ -92,7 +113,7 @@ namespace Kernel
         }
     }
 
-    void  WaningEffectMapAbstract::Update(float dt)
+    void WaningEffectMapAbstract::UpdateEffect()
     {
         float multiplier = GetMultiplier( m_TimeSinceStart );
 
@@ -103,6 +124,11 @@ namespace Kernel
         {
             m_Expired = m_DurationMap.isAtEnd( m_TimeSinceStart );
         }
+    }
+
+    void  WaningEffectMapAbstract::Update(float dt)
+    {
+        UpdateEffect();
         m_TimeSinceStart += dt;
     }
 
@@ -180,6 +206,11 @@ namespace Kernel
 
     WaningEffectMapPiecewise::WaningEffectMapPiecewise()
     : WaningEffectMapAbstract()
+    {
+    }
+
+    WaningEffectMapPiecewise::WaningEffectMapPiecewise( float minTime, float maxTime, float minValue, float maxValue )
+        : WaningEffectMapAbstract( minTime, maxTime, minValue, maxValue )
     {
     }
 

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -32,89 +32,84 @@ namespace Kernel
         virtual ~HIVInterventionsContainer();
 
         // ISupports
-        virtual QueryResult QueryInterface(iid_t iid, void** pinstance);
-        virtual bool GiveIntervention( IDistributableIntervention * pIV );
+        virtual QueryResult QueryInterface(iid_t iid, void** pinstance) override;
 
         // IIndividualHumanInterventionsContext
-        virtual void SetContextTo(IIndividualHumanContext* context);
+        virtual void SetContextTo(IIndividualHumanContext* context) override;
 
         // IHIVDrugEffectsApply
-        virtual void ApplyDrugConcentrationAction( std::string , float current_concentration );
+        virtual void ApplyDrugConcentrationAction( std::string , float current_concentration ) override;
 
-        virtual void ApplyDrugVaccineReducedAcquireEffect( float rate );
-        virtual void ApplyDrugVaccineReducedTransmitEffect( float rate );
-        virtual void ApplyDrugInactivationRateEffect( float rate );
-        virtual void ApplyDrugClearanceRateEffect( float rate );
+        virtual void ApplyDrugVaccineReducedAcquireEffect( float rate ) override;
+        virtual void ApplyDrugVaccineReducedTransmitEffect( float rate ) override;
+        virtual void ApplyDrugInactivationRateEffect( float rate ) override;
+        virtual void ApplyDrugClearanceRateEffect( float rate ) override;
 
-        virtual void ApplyProbMaternalTransmissionModifier( const ProbabilityNumber &probReduction );
+        virtual void ApplyProbMaternalTransmissionModifier( const ProbabilityNumber &probReduction ) override;
 
-        virtual void GoOnART( bool viralSupression, float daysToAchieveSuppression );
-        virtual void GoOffART();
-        virtual bool OnPreART() const;
+        virtual void GoOnART( bool viralSupression, float daysToAchieveSuppression ) override;
+        virtual void GoOffART() override;
 
         // IHIVMedicalHistory
         // updates medical chart
-        virtual void OnTestForHIV(bool test_result);
-        virtual void OnReceivedTestResultForHIV(bool test_result);
-        virtual void OnStageForART(bool stagedForART);
-        virtual void OnAssessWHOStage(float WHOStage);
-        virtual void OnTestCD4(float CD4count);
-        virtual void OnBeginART();
-        virtual void OnBeginPreART();
-        virtual void OnEndPreART();
+        virtual void OnTestForHIV(bool test_result) override;
+        virtual void OnReceivedTestResultForHIV(bool test_result) override;
+        virtual void OnStageForART(bool stagedForART) override;
+        virtual void OnAssessWHOStage(float WHOStage) override;
+        virtual void OnTestCD4(float CD4count) override;
+        virtual void OnBeginART() override;
         //
         // queries medical chart
-        virtual bool EverTested() const;
-        virtual bool EverTestedPastYear() const;
-        virtual bool EverTestedHIVPositive() const;
-        virtual bool EverStaged() const;
-        virtual bool EverStagedForART() const;
-        virtual bool EverReceivedCD4() const;
-        virtual bool EverBeenOnPreART() const;
-        virtual bool EverBeenOnART() const;
-        virtual float TimeOfMostRecentTest() const;
-        virtual float TimeOfMostRecentCD4() const;
-        virtual float TimeLastSeenByHealthcare() const;
-        virtual float TimeFirstStartedART() const ;
-        virtual float TimeLastStartedART() const ;
-        virtual float TotalTimeOnART() const ;
-        virtual unsigned int NumTimesStartedART() const ;
-        virtual float LowestRecordedCD4() const;
-        virtual float FirstRecordedCD4() const;
-        virtual float LastRecordedCD4() const;
-        virtual float LastRecordedWHOStage() const;
-        virtual ReceivedTestResultsType::Enum ReceivedTestResultForHIV() const;
+        virtual bool EverTested() const override;
+        virtual bool EverTestedPastYear() const override;
+        virtual bool EverTestedHIVPositive() const override;
+        virtual bool EverStaged() const override;
+        virtual bool EverStagedForART() const override;
+        virtual bool EverReceivedCD4() const override;
+        virtual bool EverBeenOnART() const override;
+        virtual float TimeOfMostRecentTest() const override;
+        virtual float TimeOfMostRecentCD4() const override;
+        virtual float TimeLastSeenByHealthcare() const override;
+        virtual float TimeFirstStartedART() const override;
+        virtual float TimeLastStartedART() const override;
+        virtual float TotalTimeOnART() const override;
+        virtual unsigned int NumTimesStartedART() const override;
+        virtual float LowestRecordedCD4() const override;
+        virtual float FirstRecordedCD4() const override;
+        virtual float LastRecordedCD4() const override;
+        virtual float LastRecordedWHOStage() const override;
+        virtual ReceivedTestResultsType::Enum ReceivedTestResultForHIV() const override;
 
         // IHIVCampaignSemaphores
-        virtual bool SemaphoreExists( const std::string& counter ) const;
-        virtual void SemaphoreInit( const std::string& counter, int value );
-        virtual int SemaphoreIncrement( const std::string& counter );
-        virtual bool SemaphoreDecrement( const std::string& counter );
+        virtual bool SemaphoreExists( const std::string& counter ) const override;
+        virtual void SemaphoreInit( const std::string& counter, int value ) override;
+        virtual int SemaphoreIncrement( const std::string& counter ) override;
+        virtual bool SemaphoreDecrement( const std::string& counter ) override;
 
-        virtual NaturalNumber GetTotalARTInitiations() const;
-        virtual NonNegativeFloat GetTotalYearsOnART() const;
-        virtual NonNegativeFloat GetYearsSinceFirstARTInit() const;
-        virtual NonNegativeFloat GetYearsSinceLatestARTInit() const;
+        virtual NaturalNumber GetTotalARTInitiations() const override;
+        virtual NonNegativeFloat GetTotalYearsOnART() const override;
+        virtual NonNegativeFloat GetYearsSinceFirstARTInit() const override;
+        virtual NonNegativeFloat GetYearsSinceLatestARTInit() const override;
 
         // IHIVInterventionsContainer
-        virtual bool OnArtQuery() const;
-        virtual const ARTStatus::Enum& GetArtStatus() const;
-        virtual bool ShouldReconstituteCD4() const;
-        virtual const ProbabilityNumber GetInfectivitySuppression() const;
-        virtual float GetDurationSinceLastStartingART() const;
-        virtual const ProbabilityNumber& GetProbMaternalTransmissionModifier() const;
-        virtual void BroadcastNewHIVInfection();
+        virtual bool OnArtQuery() const override;
+        virtual const ARTStatus::Enum& GetArtStatus() const override;
+        virtual bool ShouldReconstituteCD4() const override;
+        virtual const ProbabilityNumber GetInfectivitySuppression() const override;
+        virtual float GetDurationSinceLastStartingART() const override;
+        virtual const ProbabilityNumber& GetProbMaternalTransmissionModifier() const override;
+        virtual void BroadcastNewHIVInfection() override;
 
-        virtual void Update(float dt); // hook to update interventions if they need it
+        // Update parameters in this container before the infections are updated
+        virtual void InfectiousLoopUpdate( float dt ) override;
 
         // IHIVDrugEffects
-        virtual float GetDrugInactivationRate();
-        virtual float GetDrugClearanceRate();
+        virtual float GetDrugInactivationRate() override;
+        virtual float GetDrugClearanceRate() override;
 
     protected:
 
         //virtual void PropagateContextToDependents(); // pass context to interventions if they need it
-        void GiveDrug(IDrug* drug);
 
         float HIV_drug_inactivation_rate;
         float HIV_drug_clearance_rate;
@@ -132,13 +127,11 @@ namespace Kernel
         std::map<std::string, int> campaign_semaphores;
 
         // medical chart
-        bool on_PreART;
         bool ever_tested_HIV_positive;
         bool ever_tested;
         bool ever_received_CD4;
         bool ever_staged_for_ART;
         bool ever_staged;
-        bool ever_been_on_PreART;
         bool ever_been_on_ART;
         float time_of_most_recent_test;
         float time_of_most_recent_CD4;

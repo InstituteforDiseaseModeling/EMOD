@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -220,9 +220,9 @@ namespace SerializedState {
 
         if (!opened)
         {
-            ostringstream msg;
-            msg << "Could not open '" << filename.c_str() << "' for writing (" << errno << ")." << std::endl;
-            throw Kernel::SerializationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            std::stringstream ss;
+            ss << "Received error '" << FileSystem::GetSystemErrorMessage() << "' while opening file for writing.";
+            throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, filename.c_str(), ss.str().c_str() );
         }
 
         return f;
@@ -475,7 +475,9 @@ namespace SerializedState {
 
         if (!opened)
         {
-            throw Kernel::FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, filename );
+            std::stringstream ss;
+            ss << "Received error '" << FileSystem::GetSystemErrorMessage() << "' while opening file for reading.";
+            throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, filename, ss.str().c_str() );
         }
 
         return f;
@@ -490,8 +492,8 @@ namespace SerializedState {
         if (bytes_read != (count * size))
         {
             ostringstream msg;
-            msg << filename << " (read " << bytes_read << " of " << (count * size) << " bytes for magic number)";
-            throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            msg << " read " << bytes_read << " of " << (count * size) << " bytes for magic number";
+            throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, filename, msg.str().c_str() );
         }
 
         return magic;
@@ -518,8 +520,8 @@ namespace SerializedState {
         if (bytes_read != byte_count)
         {
             ostringstream msg;
-            msg << filename << " (read " << bytes_read << " of " << byte_count << " bytes for header)";
-            throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            msg << " read " << bytes_read << " of " << byte_count << " bytes for header";
+            throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, filename, msg.str().c_str() );
         }
         size_string[byte_count] = '\0';
         errno = 0;
@@ -589,8 +591,8 @@ namespace SerializedState {
         if (bytes_read != count)
         {
             ostringstream msg;
-            msg << filename << " (read " << bytes_read << " of " << count << " bytes for header)";
-            throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            msg << "read " << bytes_read << " of " << count << " bytes for header";
+            throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, filename, msg.str().c_str() );
         }
 
         Kernel::IJsonObjectAdapter* adapter = Kernel::CreateJsonObjAdapter();
@@ -647,8 +649,8 @@ namespace SerializedState {
         if (bytes_read != byte_count)
         {
             ostringstream msg;
-            msg << filename << " (read " << bytes_read << " of " << byte_count << " bytes for chunk)";
-            throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            msg << "read " << bytes_read << " of " << byte_count << " bytes for chunk";
+            throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, filename, msg.str().c_str() );
         }
     }
 

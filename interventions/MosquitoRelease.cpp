@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -175,7 +175,7 @@ namespace Kernel
         }
 
         bool wasDistributed = false;
-        if(releasedNumber > 0)
+        if( getNumber() > 0)
         {
             imrc->ReleaseMosquitoes( cost_per_unit, getSpecies(), getVectorGenetics(), getNumber() );
             wasDistributed = true;
@@ -200,7 +200,7 @@ namespace Kernel
         return vector_genetics;
     }
 
-    int MosquitoRelease::getNumber() const
+    uint32_t MosquitoRelease::getNumber() const
     {
         return releasedNumber;
     }

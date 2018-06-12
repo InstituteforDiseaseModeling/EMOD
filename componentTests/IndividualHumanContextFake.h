@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,13 +11,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Contexts.h"
 #include "IIndividualHumanHIV.h"
-#include "RANDOM.h"
+#include "RandomFake.h"
 #include "IHIVInterventionsContainer.h"
 #include "InfectionHIV.h"
 #include "IIndividualHumanSTI.h"
 #include "IIndividualHuman.h"
 #include "IndividualEventContext.h"
 #include "Interventions.h"
+#include "MalariaContexts.h"
 
 using namespace Kernel;
 
@@ -27,7 +28,8 @@ class IndividualHumanContextFake : public IIndividualHumanContext,
                                    public IIndividualHumanEventContext,
                                    public IInfectionHIV,
                                    public IIndividualHumanSTI,
-                                   public IIndividualHuman
+                                   public IIndividualHuman,
+                                   public IMalariaHumanContext
 {
 public:
     IndividualHumanContextFake( IIndividualHumanInterventionsContext* pIHIC,
@@ -41,7 +43,7 @@ public:
         , m_pNodeContext(pNC)
         , m_pNodeEventContext(pNEC)
         , m_pISusceptibilityHIV( pISusceptibilityHIV )
-        , m_Rand(0, 8)
+        , m_Rand()
         , m_IntendsToBreastfeed(false)
         , m_IsPregnant(false)
         , m_Age(0.0)
@@ -78,6 +80,8 @@ public:
             *ppvObject = static_cast<IIndividualHumanSTI*>(this);
         else if ( iid == GET_IID(IIndividualHuman)) 
             *ppvObject = static_cast<IIndividualHuman*>(this);
+        else if( iid == GET_IID( IMalariaHumanContext ) )
+            *ppvObject = static_cast<IMalariaHumanContext*>(this);
 
         if( *ppvObject != nullptr )
         {
@@ -164,6 +168,7 @@ public:
     virtual void SetParameters(Kernel::INodeContext *,float,float,float,float)                     override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual void InitializeHuman(void)                                                             override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual void UpdateInfectiousness(float)                                                       override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual float GetImmuneFailage(void) const                                                     override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual float GetAcquisitionImmunity(void) const                                               override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual void UpdateMCSamplingRate(float)                                                       override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual bool UpdatePregnancy(float)                                                            override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
@@ -264,7 +269,6 @@ public:
         return m_Gender ;
     }
 
-    virtual int              GetAbovePoverty()     const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual double           GetMonteCarloWeight() const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual bool             IsPossibleMother()    const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual float            GetInfectiousness()   const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
@@ -389,6 +393,33 @@ public:
         return 0;
     }
 
+    // ---------------------------------
+    // --- IMalariaHumanContext Methods 
+    // ---------------------------------
+
+    virtual const SimulationConfig *params() const    { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual void  PerformMalariaTest( int test_type ) { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual void  CountPositiveSlideFields( RANDOMBASE * rng,
+                                            int nfields,
+                                            float uL_per_field,
+                                            int& positive_asexual_fields,
+                                            int& positive_gametocyte_fields ) const
+    {
+        throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." );
+    }
+    virtual bool  CheckForParasitesWithTest(    int test_type )            const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual float CheckParasiteCountWithTest(   int test_type )            const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual float CheckGametocyteCountWithTest( int test_type )            const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual float GetGametocyteDensity()                                   const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual bool  HasFever()                                               const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual void  AddClinicalSymptom( ClinicalSymptomsEnum::Enum symptom )       { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual bool  HasClinicalSymptom( ClinicalSymptomsEnum::Enum symptom ) const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual IMalariaSusceptibility* GetMalariaSusceptibilityContext()      const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual std::vector< std::pair<int, int> > GetInfectingStrainIds()     const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+
+
+
+
     // ------------------
     // --- Other Methods 
     // ------------------
@@ -439,6 +470,16 @@ public:
         m_IsCircumcised = isCircumcised;
     }
 
+    void SetRandUL( uint32_t ul )
+    {
+        m_Rand.SetUL( ul );
+    }
+
+    void SetRandUL( const std::vector<uint32_t>& rUlVector )
+    {
+        m_Rand.SetUL( rUlVector );
+    }
+
 private:
     int m_RefCount ;
     suids::suid m_Id ;
@@ -446,7 +487,7 @@ private:
     INodeContext* m_pNodeContext ;
     INodeEventContext* m_pNodeEventContext ;
     ISusceptibilityHIV* m_pISusceptibilityHIV ;
-    PSEUDO_DES m_Rand ;
+    RandomFake m_Rand ;
     bool m_IntendsToBreastfeed ;
     bool m_IsPregnant ;
     int m_Gender ;

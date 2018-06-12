@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -38,7 +38,7 @@ namespace Kernel
             throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
         }
 
-        initConfigTypeMap( "NodeID_To_Migrate_To", &destination_external_node_id,NodeID_To_Migrate_To_DESC_TEXT, 0, INT_MAX, 0 );
+        initConfigTypeMap( "NodeID_To_Migrate_To", &destination_external_node_id,NodeID_To_Migrate_To_DESC_TEXT, 0, UINT_MAX, 0 );
         initConfigTypeMap( "Is_Moving", &is_moving, Is_Moving_DESC_TEXT, false );
 
         duration_before_leaving.Configure( this, inputJson );
@@ -109,12 +109,16 @@ namespace Kernel
             // expire the intervention
             SetExpired( true );
 
-            suids::suid destination_id = p_node_context->GetParent()->GetNodeSuid( destination_external_node_id );
+            // Don't have the family migrate to the node they are in.
+            if( p_node_context->GetExternalID() != destination_external_node_id )
+            {
+                suids::suid destination_id = p_node_context->GetParent()->GetNodeSuid( destination_external_node_id );
 
-            float duration_before = duration_before_leaving.CalculateDuration();
-            float duration_at     = duration_at_node.CalculateDuration();
+                float duration_before = duration_before_leaving.CalculateDuration();
+                float duration_at     = duration_at_node.CalculateDuration();
 
-            p_node_context->SetWaitingForFamilyTrip( destination_id, MigrationType::INTERVENTION_MIGRATION, duration_before, duration_at, is_moving );
+                p_node_context->SetWaitingForFamilyTrip( destination_id, MigrationType::INTERVENTION_MIGRATION, duration_before, duration_at, is_moving );
+            }
         }
     }
 

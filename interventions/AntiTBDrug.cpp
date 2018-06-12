@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,7 +9,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 
-#ifdef ENABLE_TB
+#ifdef ENABLE_TBHIV
 
 #include "AntiTBDrug.h"
 
@@ -30,15 +30,16 @@ namespace Kernel
 
     AntiTBDrug::AntiTBDrug()
     : GenericDrug()
+    , drug_type( TBDrugType::DOTS )
     , TB_drug_inactivation_rate(0)
-    , TB_drug_clearance_rate(0)
+    , TB_drug_cure_rate(0)
     , TB_drug_resistance_rate(0)
     , TB_drug_relapse_rate(0)
     , TB_drug_mortality_rate(0)
     , itbda(nullptr)
     , m_pCCO(nullptr)
     {
-        initSimTypes( 2, "TB_SIM", "TBHIV_SIM" );
+        initSimTypes( 1, "TBHIV_SIM" );
     }
 
 
@@ -49,8 +50,8 @@ namespace Kernel
 
     float AntiTBDrug::GetDrugClearanceRate() const
     {
-        LOG_DEBUG_F( "TB_drug_clearance_rate = %f \n", current_efficacy * TB_drug_clearance_rate );
-        return current_efficacy * TB_drug_clearance_rate;
+        LOG_DEBUG_F( "TB_drug_cure_rate = %f \n", current_efficacy * TB_drug_cure_rate );
+        return current_efficacy * TB_drug_cure_rate;
     }
 
     float AntiTBDrug::GetDrugResistanceRate() const
@@ -71,18 +72,6 @@ namespace Kernel
         return current_efficacy * TB_drug_mortality_rate;
     }
 
-    int
-    AntiTBDrug::GetDrugType() const
-    {
-        return drug_type;
-    }
-
-    std::string
-    AntiTBDrug::GetDrugName() const
-    {
-        return TBDrugType::pairs::lookup_key(drug_type);
-    }
-
     bool
     AntiTBDrug::Configure(
         const Configuration * inputJson
@@ -90,14 +79,19 @@ namespace Kernel
     {
         initConfig( "Drug_Type", drug_type, inputJson, MetadataDescriptor::Enum("Drug_Type", TB_Drug_Type_DESC_TEXT, MDD_ENUM_ARGS(TBDrugType)));
         initConfigTypeMap("TB_Drug_Inactivation_Rate", &TB_drug_inactivation_rate, TB_Drug_Inactivation_Rate_DESC_TEXT, 0.0, 1.0, 0.0);
-        initConfigTypeMap("TB_Drug_Clearance_Rate", &TB_drug_clearance_rate, TB_Drug_Clearance_Rate_DESC_TEXT, 0.0, 1.0, 0.0);
+        initConfigTypeMap("TB_Drug_Cure_Rate", &TB_drug_cure_rate, TB_Drug_Cure_Rate_DESC_TEXT, 0.0, 1.0, 0.0);
         initConfigTypeMap("TB_Drug_Resistance_Rate", &TB_drug_resistance_rate, TB_Drug_Resistance_Rate_DESC_TEXT, 0.0, 1.0, 0.0); // 0.0 means no resistance
         initConfigTypeMap("TB_Drug_Relapse_Rate", &TB_drug_relapse_rate, TB_Drug_Relapse_Rate_DESC_TEXT, 0.0, 1.0, 0.0); // 0.0 means no relapse
         initConfigTypeMap("TB_Drug_Mortality_Rate", &TB_drug_mortality_rate, TB_Drug_Mortality_Rate_DESC_TEXT, 0.0, 1.0, 0.0); // 0.0 means no death
 
         initConfigTypeMap("Reduced_Transmit", &current_reducedtransmit, TB_Drug_Reduced_Transmit_DESC_TEXT, 0.0, 1.0, 1.0 ); //1.0 means it is 100% reduced
 
-        return GenericDrug::Configure( inputJson );
+        bool ret = GenericDrug::Configure( inputJson );
+        if( ret )
+        {
+            drug_name = TBDrugType::pairs::lookup_key( drug_type );
+        }
+        return ret;
     }
 
     bool
@@ -179,12 +173,13 @@ namespace Kernel
     {
         GenericDrug::serialize(ar, obj);
         AntiTBDrug& drug = *obj;
+        ar.labelElement("drug_type") & (uint32_t&)drug.drug_type;
         ar.labelElement("TB_drug_inactivation_rate") & drug.TB_drug_inactivation_rate;
-        ar.labelElement("TB_drug_clearance_rate") & drug.TB_drug_clearance_rate;
+        ar.labelElement("TB_drug_cure_rate") & drug.TB_drug_cure_rate;
         ar.labelElement("TB_drug_resistance_rate") & drug.TB_drug_resistance_rate;
         ar.labelElement("TB_drug_relapse_rate") & drug.TB_drug_relapse_rate;
         ar.labelElement("TB_drug_mortality_rate") & drug.TB_drug_mortality_rate;
     }
 }
 
-#endif // ENABLE_TB
+#endif // ENABLE_TBHIV

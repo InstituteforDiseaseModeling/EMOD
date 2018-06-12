@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,12 +12,15 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Contexts.h"
 #include "Interventions.h"
 #include "IHIVInterventionsContainer.h"
+#include "MalariaInterventionsContainerContexts.h"
 
 using namespace Kernel;
 
 class IndividualHumanInterventionsContextFake : public IIndividualHumanInterventionsContext,
                                                 public IInterventionConsumer,
-                                                public IHIVMedicalHistory
+                                                public IHIVMedicalHistory,
+                                                public IMalariaDrugEffectsApply,
+                                                public IMalariaDrugEffects
 {
 public:
     IndividualHumanInterventionsContextFake()
@@ -32,6 +35,7 @@ public:
         , m_HasTestedHIVPositive(false)
         , m_ReceivedTestResultForHIV(ReceivedTestResultsType::UNKNOWN)
         , m_WhoStage(0.0)
+        , m_MalariaDrugEffects()
     {
     }
     virtual ~IndividualHumanInterventionsContextFake() {}
@@ -100,6 +104,10 @@ public:
             *ppvObject = static_cast<IInterventionConsumer*>(this);
         else if ( iid == GET_IID(IHIVMedicalHistory)) 
             *ppvObject = static_cast<IHIVMedicalHistory*>(this);
+        else if( iid == GET_IID( IMalariaDrugEffectsApply ) )
+            *ppvObject = static_cast<IMalariaDrugEffectsApply*>(this);
+        else if( iid == GET_IID( IMalariaDrugEffects ) )
+            *ppvObject = static_cast<IMalariaDrugEffects*>(this);
 
         if( *ppvObject != nullptr )
         {
@@ -221,10 +229,6 @@ public:
     }
 
     virtual void OnBeginART()                     { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-    virtual void OnBeginPreART()                  { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-    virtual void OnEndPreART()                    { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-
-    virtual bool EverBeenOnPreART()      const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual bool EverBeenOnART()         const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
     virtual float TimeOfMostRecentTest()      const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
@@ -240,6 +244,37 @@ public:
     virtual NonNegativeFloat GetYearsSinceFirstARTInit()  const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual NonNegativeFloat GetYearsSinceLatestARTInit() const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
+    // IMalariaDrugEffects
+    virtual float get_drug_IRBC_killrate( const IStrainIdentity& rStrain ) { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual float get_drug_hepatocyte(    const IStrainIdentity& rStrain ) { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual float get_drug_gametocyte02(  const IStrainIdentity& rStrain ) { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual float get_drug_gametocyte34(  const IStrainIdentity& rStrain ) { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual float get_drug_gametocyteM(   const IStrainIdentity& rStrain ) { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+
+    //IMalariaDrugEffectsApply
+    virtual void AddDrugEffects(    IMalariaDrugEffects* pDrugEffects )
+    {
+        m_MalariaDrugEffects.push_back( pDrugEffects );
+    }
+
+    virtual void RemoveDrugEffects( IMalariaDrugEffects* pDrugEffects )
+    {
+        auto it = std::find( m_MalariaDrugEffects.begin(), m_MalariaDrugEffects.end(), pDrugEffects );
+        if( it == m_MalariaDrugEffects.end() )
+        {
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Did not find Malaria Drug Effect" );
+        }
+        m_MalariaDrugEffects.erase( it );
+    }
+
+    // --------------------
+    // --- Other Methods
+    // --------------------
+    bool HasDrugEffects() const
+    {
+        return (m_MalariaDrugEffects.size() > 0);
+    }
+
 private:
     IIndividualHumanContext* m_Parent ;
     float m_CD4Count ;
@@ -251,4 +286,5 @@ private:
     bool m_HasTestedHIVPositive ;
     ReceivedTestResultsType::Enum m_ReceivedTestResultForHIV ;
     float m_WhoStage ;
+    std::vector<IMalariaDrugEffects*> m_MalariaDrugEffects;
 };

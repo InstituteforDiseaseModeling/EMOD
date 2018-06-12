@@ -1,0 +1,65 @@
+{
+   "Campaign_Name": "TBHIV Campaign",
+   "Events": [
+      {
+         "Event_Coordinator_Config": {
+            "Demographic_Coverage": 1.0,
+            "Intervention_Config": {
+               "Antigen": 0,
+               "Genome": 1,
+               "Infection_Type": "TB",
+               "Outbreak_Source": "PrevalenceIncrease",
+               "class": "OutbreakIndividualTBorHIV"
+            },
+            "Number_Distributions": -1,
+            "Number_Repetitions": 1,
+            "Target_Demographic": "Everyone",
+            "class": "StandardInterventionDistributionEventCoordinator"
+         },
+         "Event_Name": "OutbreakIndividualTBorHIV",
+         "Nodeset_Config": {
+            "class": "NodeSetAll"
+         },
+         "Start_Day": 0,
+         "class": "CampaignEvent"
+      },
+      {
+         "Event_Coordinator_Config": {
+            "Intervention_Config": {
+               "Actual_IndividualIntervention_Config": {
+                  "Base_Sensitivity": 0.7,
+                  "Base_Specificity": 1.0,
+                  "Days_To_Diagnosis": 0,
+                  "Defaulters_Event": "TBMDRTestDefault",
+                  "Event_Or_Config": "Event",
+                  "Negative_Diagnosis_Event": "TBMDRTestNegative",
+                  "Positive_Diagnosis_Event": "TBMDRTestPositive",
+                  "Treatment_Fraction": 0.6,
+                  "Treatment_Fraction_Negative_Diagnosis": 0.9,
+                  "class": "MDRDiagnostic"
+               },
+               "Blackout_Event_Trigger": "Blackout",
+               "Blackout_On_First_Occurrence": 0,
+               "Blackout_Period": 0,
+               "Distribute_On_Return_Home": 0,
+               "Duration": -1,
+               "Property_Restrictions": [],
+               "Trigger_Condition_List": [
+                  "TBActivation"
+               ],
+               "class": "NodeLevelHealthTriggeredIV"
+            },
+            "Number_Distributions": -1,
+            "Number_Repetitions": 1,
+            "class": "StandardInterventionDistributionEventCoordinator"
+         },
+         "Event_Name": "TB Diagnosis MDR",
+         "Nodeset_Config": {
+            "class": "NodeSetAll"
+         },
+         "Start_Day": 0,
+         "class": "CampaignEvent"
+      }
+   ],
+   "Use_Defaults": 1
+}

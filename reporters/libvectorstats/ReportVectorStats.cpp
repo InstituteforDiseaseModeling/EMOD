@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,12 +17,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Individual.h"
 #include "VectorContexts.h"
 #include "VectorPopulation.h"
-#include "VectorCohortIndividual.h"
-
-//#define EVERY_VECTOR
-#ifdef EVERY_VECTOR
-#include "VectorPopulationIndividual.h"
-#endif
+#include "ReportUtilities.h"
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!! CREATING NEW REPORTS
@@ -34,63 +29,17 @@ SETUP_LOGGING( "ReportVectorStats" ) // <<< Name of this file
 
 namespace Kernel
 {
-// You can put 0 or more valid Sim types into _sim_types but has to end with nullptr.
-// "*" can be used if it applies to all simulation types.
-static const char * _sim_types[] = { "VECTOR_SIM", "MALARIA_SIM", nullptr };// <<< Types of simulation the report is to be used with
-
-report_instantiator_function_t rif = []()
-{
-    return (Kernel::IReport*)(new ReportVectorStats()); // <<< Report to create
-};
-
-DllInterfaceHelper DLL_HELPER( _module, _sim_types, rif );
-
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-// ------------------------------
-// --- DLL Interface Methods
-// ---
-// --- The DTK will use these methods to establish communication with the DLL.
-// ------------------------------
-
-#ifdef __cplusplus    // If used by C++ code, 
-extern "C" {          // we need to export the C interface
-#endif
-
-DTK_DLLEXPORT char* __cdecl
-GetEModuleVersion(char* sVer, const Environment * pEnv)
-{
-    return DLL_HELPER.GetEModuleVersion( sVer, pEnv );
-}
-
-DTK_DLLEXPORT void __cdecl
-GetSupportedSimTypes(char* simTypes[])
-{
-    DLL_HELPER.GetSupportedSimTypes( simTypes );
-}
-
-DTK_DLLEXPORT const char * __cdecl
-GetType()
-{
-    return DLL_HELPER.GetType();
-}
-
-DTK_DLLEXPORT void __cdecl
-GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
-{
-    DLL_HELPER.GetReportInstantiator( pif );
-}
-
-#ifdef __cplusplus
-}
-#endif
-
 // ----------------------------------------
 // --- ReportVectorStats Methods
 // ----------------------------------------
 
     ReportVectorStats::ReportVectorStats()
-        : BaseTextReportEvents( "ReportVectorStats.csv" )
+        : ReportVectorStats( "ReportVectorStats.csv" )
+    {
+    }
+
+    ReportVectorStats::ReportVectorStats( const std::string& rReportName )
+        : BaseTextReportEvents( rReportName )
         , migration_count_local()
         , migration_count_regional()
         , species_list()
@@ -128,6 +77,9 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         // Manually push required events into the eventTriggerList
         //eventTriggerList.push_back( EventTrigger::HIVNewlyDiagnosed );
         
+        if( ret )
+        {
+        }
         return ret;
     }
 
@@ -137,7 +89,6 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
     {
         BaseTextReportEvents::UpdateEventRegistration( currentTime, dt, rNodeEventContextList );
     }
-
 
     std::string ReportVectorStats::GetHeader() const
     {
@@ -160,9 +111,13 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
                << "NewEggsCount"        << ", "
                << "IndoorBitesCount"    << ", "
                << "OutdoorBitesCount"   << ", "
-               << "MigrationFromCountLocal" << ", "
+               << "NewAdults"           << ", "
+               << "DiedBeforeFeeding"          << ", "
+               << "DiedDuringFeedingIndoor"    << ", "
+               << "DiedDuringFeedingOutdoor"   << ", "
+               << "MigrationFromCountLocal"    << ", "
                << "MigrationFromCountRegional"
-               ;
+        ;
 
         if( stratify_by_species )
         {
@@ -180,6 +135,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
                 header << ", " << sp << "_EggCrowdingCorrection";
             }
         }
+
         return header.str();
     }
 
@@ -196,15 +152,19 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
             throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "pNC", "INodeVector", "INodeContext");
         }
 
-        int adult_count = 0 ;
-        int infected_count = 0 ;
-        int infectious_count = 0 ;
-        int male_count = 0 ;
-        int new_eggs_count = 0 ;
-        int indoor_bites_count = 0 ;
-        int outdoor_bites_count = 0 ;
-        int total_migration_count_local = 0;
-        int total_migration_count_regional = 0;
+        uint32_t adult_count = 0 ;
+        uint32_t infected_count = 0 ;
+        uint32_t infectious_count = 0 ;
+        uint32_t male_count = 0 ;
+        uint32_t new_eggs_count = 0 ;
+        uint32_t indoor_bites_count = 0 ;
+        uint32_t outdoor_bites_count = 0 ;
+        uint32_t new_adults = 0;
+        uint32_t dead_before = 0;
+        uint32_t dead_indoor = 0;
+        uint32_t dead_outdoor = 0;
+        uint32_t total_migration_count_local = 0;
+        uint32_t total_migration_count_regional = 0;
         std::map<std::string,float> available_habitat_per_species ;
         std::map<std::string,float> egg_crowding_correction_per_species ;
 
@@ -213,6 +173,8 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
             available_habitat_per_species.insert( std::make_pair( sp, 0.0f ) );
             egg_crowding_correction_per_species.insert( std::make_pair( sp, 0.0f ) );
         }
+
+        ResetOtherCounters();
 
         const VectorPopulationReportingList_t& vector_pop_list = pNodeVector->GetVectorPopulationReporting();
         for( auto vp : vector_pop_list )
@@ -228,14 +190,24 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
                 new_eggs_count = 0;
                 indoor_bites_count = 0;
                 outdoor_bites_count = 0;
+                new_adults = 0;
+                dead_before = 0;
+                dead_indoor = 0;
+                dead_outdoor = 0;
+
+                ResetOtherCounters();
             }
             adult_count         += vp->getAdultCount();
-            infected_count      += vp->getInfectedCount();
-            infectious_count    += vp->getInfectiousCount();
+            infected_count      += vp->getInfectedCount(nullptr);
+            infectious_count    += vp->getInfectiousCount(nullptr);
             male_count          += vp->getMaleCount();
             new_eggs_count      += vp->getNewEggsCount();
             indoor_bites_count  += vp->GetHBRByPool( VectorPoolIdEnum::INDOOR_VECTOR_POOL );
             outdoor_bites_count += vp->GetHBRByPool( VectorPoolIdEnum::OUTDOOR_VECTOR_POOL );
+            new_adults          += vp->getNewAdults();
+            dead_before         += vp->getNumDiedBeforeFeeding();
+            dead_indoor         += vp->getNumDiedDuringFeedingIndoor();
+            dead_outdoor        += vp->getNumDiedDuringFeedingOutdoor();
 
             total_migration_count_local    += migration_count_local[ node_suid.data ][ species ];
             total_migration_count_regional += migration_count_regional[ node_suid.data ][ species ];
@@ -245,6 +217,9 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
                 available_habitat_per_species[ species ] += habitat->GetCurrentLarvalCapacity() - habitat->GetTotalLarvaCount( CURRENT_TIME_STEP );
                 egg_crowding_correction_per_species[ species ] += habitat->GetEggCrowdingCorrection();
             }
+
+            CollectOtherData( vp );
+
             if( stratify_by_species )
             {
                 int total_count = adult_count + infected_count + infectious_count;
@@ -261,11 +236,17 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
                     << "," << new_eggs_count
                     << "," << indoor_bites_count
                     << "," << outdoor_bites_count
+                    << "," << new_adults
+                    << "," << dead_before
+                    << "," << dead_indoor
+                    << "," << dead_outdoor
                     << "," << migration_count_local[ node_suid.data ][ species ]
                     << "," << migration_count_regional[ node_suid.data ][ species ]
                     ;
                 GetOutputStream() << "," << available_habitat_per_species[ species ] ;
                 GetOutputStream() << "," << egg_crowding_correction_per_species[ species ] ;
+
+                WriteOtherData();
 
                 GetOutputStream() << endl;
 
@@ -289,6 +270,10 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
                 << "," << new_eggs_count
                 << "," << indoor_bites_count
                 << "," << outdoor_bites_count
+                << "," << new_adults
+                << "," << dead_before
+                << "," << dead_indoor
+                << "," << dead_outdoor
                 << "," << total_migration_count_local
                 << "," << total_migration_count_regional
                 ;
@@ -300,6 +285,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
             {
                 GetOutputStream() << "," << egg_crowding_correction_per_species[ sp ] ;
             }
+            WriteOtherData();
             GetOutputStream() << endl;
         }
         migration_count_local[ node_suid.data ].clear();
@@ -328,31 +314,18 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
                                                 const suids::suid& nodeSuid, 
                                                 IVectorCohort* pvc )
     {
-        IVectorCohortIndividual * pivci = NULL;
-        if (s_OK != pvc->QueryInterface(GET_IID(IVectorCohortIndividual), (void**)&pivci) )
-        {
-            throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "pvc", "IVectorCohortIndividual", "IVectorCohort");
-        }
-
         IMigrate * pim = NULL;
         if (s_OK != pvc->QueryInterface(GET_IID(IMigrate), (void**)&pim) )
         {
             throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "pvc", "IMigrate", "IVectorCohort");
         }
 
-        //long vci_id = pivci->GetID();
-        //int to_node_id = pim->GetMigrationDestination().data ;
-        int mig_type = pim->GetMigrationType() ;
-        //VectorStateEnum::Enum state = pivci->GetState();
-        const std::string& species = pivci->GetSpecies();
-        //float age = pivci->GetAge();
+        int mig_type = pim->GetMigrationType();
+        const std::string& species = pvc->GetSpecies();
 
         if( mig_type == MigrationType::LOCAL_MIGRATION )
             migration_count_local[ nodeSuid.data ][species]++ ;
         else if( mig_type == MigrationType::REGIONAL_MIGRATION )
             migration_count_regional[ nodeSuid.data ][species]++ ;
-
     }
-
-
 }

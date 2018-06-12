@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -144,11 +144,21 @@ public:
         }
     }
 
-    virtual int VisitIndividuals(IVisitIndividual* pIndividualVisitImpl, int limit = -1) { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual int VisitIndividuals(IVisitIndividual* pIndividualVisitImpl, int limit = -1)
+    { 
+        float cost = 0.0;
+        int count = 0;
+        for( auto p_human : m_HumanList )
+        {
+            if( pIndividualVisitImpl->visitIndividualCallback( p_human->GetEventContext(), cost, nullptr ) )
+            {
+                ++count;
+            }
+        }
+        return count;
+    }
 
     virtual const NodeDemographics& GetDemographics() { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-
-    virtual bool GetUrban() const       { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     //virtual float GetYear() const = 0;
 
     // to update any node-owned interventions

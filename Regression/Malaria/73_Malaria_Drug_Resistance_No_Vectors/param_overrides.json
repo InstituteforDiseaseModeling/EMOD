@@ -1,0 +1,57 @@
+{
+    "Default_Config_Path": "defaults/malaria_default_config.json",
+    "CLIMATE": {
+        "Climate_Model": "CLIMATE_CONSTANT"
+    },
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "demographics.json"
+        ]
+    },
+    "PRIMARY": {
+        "Config_Name": "73_Malaria_Drug_Resistance_No_Vectors",
+        "Custom_Reports_Filename" : "custom_reports.json",
+        "Enable_Demographics_Reporting": 0,
+        "Geography": "SamplesInput",
+        "Run_Number": 1,
+        "Simulation_Duration": 100
+    },
+    "DRUGS" : {
+        "Malaria_Drug_Params": {
+            "Chloroquine": {
+                ".Resistance" : {
+                    "A" : {
+                        "PKPD_C50_Modifier" : 8.0,
+                        "Max_IRBC_Kill_Modifier" : 1.0
+                    },
+                    "B" : {
+                        "PKPD_C50_Modifier" : 16.0,
+                        "Max_IRBC_Kill_Modifier" : 1.0
+                    }
+                },
+                "Resistance" : {
+                    "A" : {
+                        "PKPD_C50_Modifier" : 1.0,
+                        "Max_IRBC_Kill_Modifier" : 0.5
+                    },
+                    "B" : {
+                        "PKPD_C50_Modifier" : 1.0,
+                        "Max_IRBC_Kill_Modifier" : 0.25
+                    }
+                }
+            }
+        }
+    },
+    "VECTOR": {
+        "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
+        "x_Temporary_Larval_Habitat": 0.0
+    },
+    "STRAIN_TRACKING": {
+        "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
+        "Number_Basestrains": 1,
+        "Genome_Markers" : [
+            "A",
+            "B"
+        ]
+    }
+}

@@ -12,7 +12,7 @@
                     }, 
                     "class": "AnimalFeedKill"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Nodeset_Config": {
                 "class": "NodeSetAll"

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -123,12 +123,18 @@ namespace Kernel
             demographic_restrictions.CheckConfiguration();
             if( inputJson->Exist( "Actual_IndividualIntervention_Config" ) )
             {
-                InterventionValidator::ValidateIntervention( actual_individual_intervention_config._json, inputJson->GetDataLocation() );
+                InterventionValidator::ValidateIntervention( GetTypeName(),
+                                                             InterventionTypeValidation::INDIVIDUAL,
+                                                             actual_individual_intervention_config._json,
+                                                             inputJson->GetDataLocation() );
                 using_individual_config = true;
             }
             else if( inputJson->Exist( "Actual_NodeIntervention_Config" ) )
             {
-                InterventionValidator::ValidateIntervention( actual_node_intervention_config._json, inputJson->GetDataLocation() );
+                InterventionValidator::ValidateIntervention( GetTypeName(),
+                                                             InterventionTypeValidation::NODE,
+                                                             actual_node_intervention_config._json, 
+                                                             inputJson->GetDataLocation() );
                 using_individual_config = false;
             }
 

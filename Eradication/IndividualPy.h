@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -29,7 +29,7 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE();
 
     public:
-        static IndividualHumanPy *CreateHuman(INodeContext *context, suids::suid id, float monte_carlo_weight = 1.0f, float initial_age = 0.0f, int gender = 0, float initial_poverty = 0.5f);
+        static IndividualHumanPy *CreateHuman(INodeContext *context, suids::suid id, float monte_carlo_weight = 1.0f, float initial_age = 0.0f, int gender = 0);
         virtual ~IndividualHumanPy(void);
 
         virtual void CreateSusceptibility(float imm_mod = 1.0, float risk_mod = 1.0);
@@ -40,7 +40,7 @@ namespace Kernel
         // New Exposure Pattern
         virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route );
 
-        IndividualHumanPy(suids::suid id = suids::nil_suid(), float monte_carlo_weight = 1.0f, float initial_age = 0.0f, int gender = 0, float initial_poverty = 0.5f);
+        IndividualHumanPy(suids::suid id = suids::nil_suid(), float monte_carlo_weight = 1.0f, float initial_age = 0.0f, int gender = 0);
         virtual void setupInterventionsContainer();
         virtual void PropagateContextToDependents();
 

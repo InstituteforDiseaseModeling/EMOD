@@ -1,0 +1,194 @@
+{
+    "Metadata": {
+        "Author": "jsteinkraus",
+        "DateCreated": "Sun Sep 25 23:19:55 2011",
+        "IdReference": "Gridded world grump2.5arcmin",
+        "NodeCount": 1,
+        "Resolution": 150,
+        "Tool": "convertdemog.py"
+    },
+    "Nodes": [
+        {
+            "IndividualAttributes": {
+                "AgeDistribution1": 7300,
+                "AgeDistribution2": 7300,
+                "AgeDistributionFlag": 1,
+                "FertilityDistribution": {
+                    "AxisNames": [
+                        "age",
+                        "year"
+                    ],
+                    "AxisScaleFactors": [
+                        365,
+                        1
+                    ],
+                    "AxisUnits": [
+                        "years",
+                        "years"
+                    ],
+                    "NumDistributionAxes": 2,
+                    "NumPopulationGroups": [
+                        2,
+                        1
+                    ],
+                    "PopulationGroups": [
+                        [
+                            0,
+                            15
+                        ],
+                        [
+                            0
+                        ]
+                    ],
+                    "ResultScaleFactor": 2.739726027397e-06,
+                    "ResultUnits": "annual births per 1000 individuals",
+                    "ResultValues": [
+                        [
+                            14
+                        ],
+                        [
+                            14
+                        ]
+                    ]
+                },
+                "HIVTBCoinfMortalityDistribution": {
+                    "AxisNames": [
+                        "age",
+                        "year"
+                    ],
+                    "AxisScaleFactors": [
+                        365,
+                        1
+                    ],
+                    "AxisUnits": [
+                        "years",
+                        "years"
+                    ],
+                    "NumDistributionAxes": 2,
+                    "NumPopulationGroups": [
+                        2,
+                        1
+                    ],
+                    "PopulationGroups": [
+                        [
+                            0,
+                            15
+                        ],
+                        [
+                            0
+                        ]
+                    ],
+                    "ResultScaleFactor": 2.739726027397e-06,
+                    "ResultUnits": "annual deaths per 1000 individuals",
+                    "ResultValues": [
+                        [
+                            14
+                        ],
+                        [
+                            14
+                        ]
+                    ]
+                },
+                "SusceptibilityDistribution1": 0,
+                "SusceptibilityDistribution2": 0,
+                "SusceptibilityDistributionFlag": 0,
+                "MigrationHeterogeneityDistribution1": 1,
+                "MigrationHeterogeneityDistribution2": 0,
+                "MigrationHeterogeneityDistributionFlag": 0,
+                "MortalityDistributionFemale": {
+                    "AxisNames": [
+                        "age",
+                        "year"
+                    ],
+                    "AxisScaleFactors": [
+                        365,
+                        1
+                    ],
+                    "AxisUnits": [
+                        "years",
+                        "years"
+                    ],
+                    "NumDistributionAxes": 2,
+                    "NumPopulationGroups": [
+                        2,
+                        1
+                    ],
+                    "PopulationGroups": [
+                        [
+                            0,
+                            15
+                        ],
+                        [
+                            0
+                        ]
+                    ],
+                    "ResultScaleFactor": 2.739726027397e-06,
+                    "ResultUnits": "annual deaths per 1000 individuals",
+                    "ResultValues": [
+                        [
+                            14
+                        ],
+                        [
+                            14
+                        ]
+                    ]
+                },
+                "MortalityDistributionMale": {
+                    "AxisNames": [
+                        "age",
+                        "year"
+                    ],
+                    "AxisScaleFactors": [
+                        365,
+                        1
+                    ],
+                    "AxisUnits": [
+                        "years",
+                        "years"
+                    ],
+                    "NumDistributionAxes": 2,
+                    "NumPopulationGroups": [
+                        2,
+                        1
+                    ],
+                    "PopulationGroups": [
+                        [
+                            0,
+                            15
+                        ],
+                        [
+                            0
+                        ]
+                    ],
+                    "ResultScaleFactor": 2.739726027397e-06,
+                    "ResultUnits": "annual deaths per 1000 individuals",
+                    "ResultValues": [
+                        [
+                            14
+                        ],
+                        [
+                            14
+                        ]
+                    ]
+                },
+                "PrevalenceDistribution1": 0,
+                "PrevalenceDistribution2": 0,
+                "PrevalenceDistributionFlag": 1,
+                "RiskDistribution1": 1,
+                "RiskDistribution2": 0,
+                "RiskDistributionFlag": 0
+            },
+            "NodeAttributes": {
+                "Airport": 0,
+                "Altitude": 0,
+                "BirthRate": 0.0001,
+                "InitialPopulation": 1000,
+                "Latitude": -8.5,
+                "Longitude": 36.5,
+                "Region": 1,
+                "Seaport": 0
+            },
+            "NodeID": 1
+        }
+    ]
+}

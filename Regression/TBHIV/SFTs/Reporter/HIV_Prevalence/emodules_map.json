@@ -1,0 +1,7 @@
+{	
+   "disease_plugins": [],	
+   "interventions": [],	
+   "reporter_plugins": [	
+      "C:\\GitHub\\TBHIV\\DtkTrunk\\reporters\\x64\\Release\\reporter_plugins\\libcustomreport_TBHIV_ByAge.dll"	
+   ]	
+}

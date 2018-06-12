@@ -13,7 +13,7 @@
                     "class":"NodeLevelHealthTriggeredIV",
                     "Demographic_Coverage":1.0,
                     "Trigger_Condition_List": [ "Acorn" ],
-                    "Actual_IndividualIntervention_Config":{  
+                    "Actual_NodeIntervention_Config":{  
                         "class":"AnimalFeedKill",
                         "Intervention_Name":"AnimalFeedKill",
                         "Cost_To_Consumer":1.0,

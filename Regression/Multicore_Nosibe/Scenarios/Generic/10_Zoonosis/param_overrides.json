@@ -2,13 +2,22 @@
     "Default_Config_Path": "defaults/generic_scenario_default_config.json",
     "parameters": {
         "DEMOGRAPHICS": {
-            "Base_Mortality": 0.01, 
+            "Base_Mortality": 0.01,
             "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
-            "Demographics_Filenames": [ "Seattle_30arcsec_demographics.json", "Seattle_30arcsec_demographics_zoonosis.json" ],
-            "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF", 
+            "Demographics_Filenames": [
+                "Seattle_30arcsec_demographics.json",
+                "Seattle_30arcsec_demographics_zoonosis.json"
+            ],
+            "Enable_Initial_Prevalence": 1,
+            "Enable_Natural_Mortality": 0,
             "SAMPLING": {
                 "Base_Individual_Sample_Rate": 0.05,
                 "Individual_Sampling_Type": "FIXED_SAMPLING"
+            }
+        },
+        "EXECUTION": {
+            "CLUSTER": {
+                "Num_Cores": 8
             }
         },
         "GENERAL_DISEASE": {
@@ -16,7 +25,7 @@
             "IMMUNITY": {
                 "Acquisition_Blocking_Immunity_Decay_Rate": 0.03,
                 "Acquisition_Blocking_Immunity_Duration_Before_Decay": 400,
-                "Mortality_Blocking_Immunity_Duration_Before_Decay": 1000, 
+                "Mortality_Blocking_Immunity_Duration_Before_Decay": 1000,
                 "Transmission_Blocking_Immunity_Decay_Rate": 0.03,
                 "Transmission_Blocking_Immunity_Duration_Before_Decay": 400
             },
@@ -25,20 +34,14 @@
             },
             "Zoonosis_Rate": 0.005
         },
-        "EXECUTION": {
-            "CLUSTER": {
-                "Num_Cores": 8
-            }
-         },   
-         "MIGRATION": {
+        "MIGRATION": {
             "AIR": {
                 "Air_Migration_Filename": "",
                 "Enable_Air_Migration": 0
             },
+            "Enable_Family_Migration": 0,
             "Enable_Migration_Heterogeneity": 1,
-            "Enable_Family_Migration": 0, 
-            "Family_Migration_Filename": "", 
-            "x_Family_Migration": 1,
+            "Family_Migration_Filename": "",
             "LOCAL": {
                 "Enable_Local_Migration": 1,
                 "Local_Migration_Filename": "Seattle_30arcsec_local_migration.bin"
@@ -53,7 +56,8 @@
             "SEA": {
                 "Enable_Sea_Migration": 0,
                 "Sea_Migration_Filename": ""
-            }
+            },
+            "x_Family_Migration": 1
         },
         "PRIMARY": {
             "Config_Name": "10_Zoonosis -- multicore",

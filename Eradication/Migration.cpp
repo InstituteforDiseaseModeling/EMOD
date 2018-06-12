@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -107,7 +107,8 @@ namespace Kernel
     END_QUERY_INTERFACE_BODY(MigrationInfoNull)
 
     MigrationInfoNull::MigrationInfoNull()
-    : m_EmptyListNodes()
+    : m_EmptyListCDF()
+    , m_EmptyListNodes()
     , m_EmptyListTypes()
     {
     }
@@ -129,6 +130,16 @@ namespace Kernel
 
     void MigrationInfoNull::SetContextTo(INodeContext* _parent)
     {
+    }
+
+    float MigrationInfoNull::GetTotalRate() const
+    {
+        return 0.0;
+    }
+
+    const std::vector<float>& MigrationInfoNull::GetCumulativeDistributionFunction() const
+    {
+        return m_EmptyListCDF;
     }
 
     const std::vector<suids::suid>& MigrationInfoNull::GetReachableNodes() const
@@ -224,11 +235,11 @@ namespace Kernel
         CalculateRates( gender, age_years );
 
         float total_rate = GetTotalRate();
-        const std::vector<float              >& r_rate_cdf        = GetRates();
+        const std::vector<float              >& r_cdf             = GetCumulativeDistributionFunction();
         const std::vector<suids::suid        >& r_reachable_nodes = GetReachableNodes( gender );
         const std::vector<MigrationType::Enum>& r_migration_types = GetMigrationTypes( gender );
 
-        if( (r_rate_cdf.size() == 0) || (total_rate == 0.0) )
+        if( (r_cdf.size() == 0) || (total_rate == 0.0) )
         {
             destination = suids::nil_suid();
             migration_type = MigrationType::NO_MIGRATION;
@@ -241,7 +252,7 @@ namespace Kernel
         time = float(randgen->expdist( migration_rate_modifier * total_rate ));
 
         float desttemp = randgen->e();
-        while( desttemp > r_rate_cdf[index] )
+        while( desttemp > r_cdf[index] )
         {
             index++;
         }
@@ -281,7 +292,7 @@ namespace Kernel
         // rates are fixed so do nothing
     }
 
-    const std::vector<float>& MigrationInfoFixedRate::GetRates() const
+    const std::vector<float>& MigrationInfoFixedRate::GetCumulativeDistributionFunction() const
     {
         return m_RateCDF;
     }
@@ -489,6 +500,14 @@ namespace Kernel
 
                     m_FileStream.read( reinterpret_cast<char*>(array_id), m_DestinationsPerNode * sizeof(uint32_t) );
                     m_FileStream.read( reinterpret_cast<char*>(array_rt), m_DestinationsPerNode * sizeof(double)   );
+
+                    if( m_FileStream.fail() )
+                    {
+                        // This should really just be a safety net
+                        std::stringstream ss;
+                        ss << "Error reading migration data for node " << fromNodeID;
+                        throw FileIOException( __FILE__, __LINE__, __FUNCTION__, m_Filename.c_str(), ss.str().c_str() );
+                    }
 
                     // ---------------------------------------------------------------------------------
                     // --- array_id and array_rt are contiguous.  That is, the values we want to
@@ -746,6 +765,26 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
         m_GenderDataSize                = num_age_data_chunks * m_AgeDataSize;
         uint32_t exp_binary_file_size   = num_gender_data_chunks * m_GenderDataSize;
 
+        // ------------------------------------------------------
+        // --- Check Offset values to ensure that they are valid
+        // ------------------------------------------------------
+        for( auto entry : m_Offsets )
+        {
+            if( entry.second >= exp_binary_file_size )
+            {
+                char offset_buff[20];
+                sprintf_s( offset_buff, 19, "0x%x", entry.second);
+                char filesize_buff[ 20 ];
+                sprintf_s( filesize_buff, 19, "0x%x", exp_binary_file_size );
+                std::stringstream ss;
+                ss << std::endl;
+                ss << "Invalid '" << NODE_OFFSETS << "' in " << metadata_filepath << "." << std::endl;
+                ss << "Node ID=" << entry.first << " has an offset of " << offset_buff;
+                ss << " but the '.bin' file size is expected to be " << exp_binary_file_size << "(" << filesize_buff << ")." << std::endl;
+                throw FileIOException( __FILE__, __LINE__, __FUNCTION__, m_Filename.c_str(), ss.str().c_str() );
+            }
+        }
+
         return exp_binary_file_size;
     }
 
@@ -756,12 +795,7 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
             throw FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, filepath.c_str() );
         }
 
-        m_FileStream.open( filepath, std::ios::binary );
-
-        if( m_FileStream.fail() )
-        {
-            throw FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, filepath.c_str() );
-        }
+        FileSystem::OpenFileForReading( m_FileStream, filepath.c_str(), true );
 
         m_FileStream.seekg(0, ios::end);
         int filelen = m_FileStream.tellg();
@@ -769,8 +803,8 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
         if( filelen != expected_binary_file_size )
         {
             std::stringstream ss;
-            ss << "Detected wrong size for migration data file: " << filepath;
-            throw FileIOException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            ss << "Detected wrong size for migration data file.  Expected " << expected_binary_file_size << " bytes, read " << filelen << " bytes";
+            throw FileIOException( __FILE__, __LINE__, __FUNCTION__, filepath.c_str(), ss.str().c_str() );
         }
 
         m_FileStream.seekg( 0, ios::beg );
@@ -826,13 +860,13 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
     {
         CreateInfoFileList();
 
-        initConfigTypeMap( "Enable_Migration_Heterogeneity",  &m_IsHeterogeneityEnabled, Enable_Migration_Heterogeneity_DESC_TEXT, true, "Migration_Model", "FIXED_RATE_MIGRATION,VARIABLE_RATE_MIGRATION,LEVY_FLIGHTS" );
+        initConfigTypeMap( "Enable_Migration_Heterogeneity",  &m_IsHeterogeneityEnabled, Enable_Migration_Heterogeneity_DESC_TEXT, true, "Migration_Model", "FIXED_RATE_MIGRATION" );
 
-        initConfigTypeMap( "Enable_Local_Migration",      &(m_InfoFileList[0]->m_IsEnabled), Enable_Local_Migration_DESC_TEXT,    false, "Migration_Model", "FIXED_RATE_MIGRATION,VARIABLE_RATE_MIGRATION,LEVY_FLIGHTS" );
-        initConfigTypeMap( "Enable_Air_Migration",        &(m_InfoFileList[1]->m_IsEnabled), Enable_Air_Migration_DESC_TEXT,      false, "Migration_Model", "FIXED_RATE_MIGRATION,VARIABLE_RATE_MIGRATION,LEVY_FLIGHTS" );
-        initConfigTypeMap( "Enable_Regional_Migration",   &(m_InfoFileList[2]->m_IsEnabled), Enable_Regional_Migration_DESC_TEXT, false, "Migration_Model", "FIXED_RATE_MIGRATION,VARIABLE_RATE_MIGRATION,LEVY_FLIGHTS" );
-        initConfigTypeMap( "Enable_Sea_Migration",        &(m_InfoFileList[3]->m_IsEnabled), Enable_Sea_Migration_DESC_TEXT,      false, "Migration_Model", "FIXED_RATE_MIGRATION,VARIABLE_RATE_MIGRATION,LEVY_FLIGHTS" );
-        initConfigTypeMap( "Enable_Family_Migration",     &(m_InfoFileList[4]->m_IsEnabled), Enable_Family_Migration_DESC_TEXT,   false, "Migration_Model", "FIXED_RATE_MIGRATION,VARIABLE_RATE_MIGRATION,LEVY_FLIGHTS" );
+        initConfigTypeMap( "Enable_Local_Migration",      &(m_InfoFileList[0]->m_IsEnabled), Enable_Local_Migration_DESC_TEXT,    false, "Migration_Model", "FIXED_RATE_MIGRATION" );
+        initConfigTypeMap( "Enable_Air_Migration",        &(m_InfoFileList[1]->m_IsEnabled), Enable_Air_Migration_DESC_TEXT,      false, "Migration_Model", "FIXED_RATE_MIGRATION" );
+        initConfigTypeMap( "Enable_Regional_Migration",   &(m_InfoFileList[2]->m_IsEnabled), Enable_Regional_Migration_DESC_TEXT, false, "Migration_Model", "FIXED_RATE_MIGRATION" );
+        initConfigTypeMap( "Enable_Sea_Migration",        &(m_InfoFileList[3]->m_IsEnabled), Enable_Sea_Migration_DESC_TEXT,      false, "Migration_Model", "FIXED_RATE_MIGRATION" );
+        initConfigTypeMap( "Enable_Family_Migration",     &(m_InfoFileList[4]->m_IsEnabled), Enable_Family_Migration_DESC_TEXT,   false, "Migration_Model", "FIXED_RATE_MIGRATION" );
 
         initConfigTypeMap( "Local_Migration_Filename",    &(m_InfoFileList[0]->m_Filename),  Local_Migration_Filename_DESC_TEXT,    "", "Enable_Local_Migration" );
         initConfigTypeMap( "Air_Migration_Filename",      &(m_InfoFileList[1]->m_Filename),  Air_Migration_Filename_DESC_TEXT,      "", "Enable_Air_Migration" );

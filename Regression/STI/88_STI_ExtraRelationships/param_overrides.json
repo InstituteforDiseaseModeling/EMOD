@@ -1,46 +1,43 @@
 {
-    "Default_Config_Path": "defaults/sti_default_config.json", 
+    "Default_Config_Path": "defaults/sti_default_config.json",
     "parameters": {
-        "Config_Name": "88_STI_ExtraRelationships", 
-        "Run_Number": 9, 
-        
-        "Base_Year": 1900, 
-        "Simulation_Duration": 43106.0, 
-        "Simulation_Timestep": 30.416666666666668, 
-        
+        "Age_Initialization_Distribution_Type": "DISTRIBUTION_COMPLEX",
+        "Base_Population_Scale_Factor": 0.001,
+        "Base_Year": 1900,
+        "Config_Name": "88_STI_ExtraRelationships",
+        "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER",
         "Demographics_Filenames": [
-           "Demographics.json", 
-           "Accessibility_and_Risk3_IP_Overlay.json", 
-           "PFA_Overlay.json", 
-           "Risk_Assortivity_Overlay.json"
+            "Demographics.json",
+            "Accessibility_and_Risk3_IP_Overlay.json",
+            "PFA_Overlay.json",
+            "Risk_Assortivity_Overlay.json"
         ],
-        "Min_Days_Between_Adding_Relationships": 0, 
-        "PFA_Burnin_Duration_In_Days": 27375.0, 
-        
-        "Report_Relationship_End": 1, 
-        "Report_Relationship_Start": 1, 
-      
         "Disable_IP_Whitelist": 1,
-        "Age_Initialization_Distribution_Type": "DISTRIBUTION_COMPLEX",         
-        "Base_Population_Scale_Factor": 0.001,         
-        "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER", 
-        "Enable_Maternal_Transmission": 1, 
+        "Enable_Maternal_Infection_Transmission": 1,
+        "Enable_Natural_Mortality": 1,
         "Male_To_Female_Relative_Infectivity_Ages": [
-           0, 
-           15, 
-           25
-        ], 
+            0,
+            15,
+            25
+        ],
         "Male_To_Female_Relative_Infectivity_Multipliers": [
-           3.1928245367000003, 
-           3.1928245367000003, 
-           2.58187363854
-        ], 
-        "Sexual_Debut_Age_Female_Weibull_Heterogeneity": 0.05, 
-        "Sexual_Debut_Age_Female_Weibull_Scale": 15.919654846191, 
-        "Sexual_Debut_Age_Male_Weibull_Heterogeneity": 0.05, 
-        "Sexual_Debut_Age_Male_Weibull_Scale": 16.946729660034, 
+            3.1928245367000003,
+            3.1928245367000003,
+            2.58187363854
+        ],
+        "Min_Days_Between_Adding_Relationships": 0,
+        "PFA_Burnin_Duration_In_Days": 27375.0,
+        "Report_Relationship_End": 1,
+        "Report_Relationship_Start": 1,
+        "Run_Number": 9,
+        "Sexual_Debut_Age_Female_Weibull_Heterogeneity": 0.05,
+        "Sexual_Debut_Age_Female_Weibull_Scale": 15.919654846191,
+        "Sexual_Debut_Age_Male_Weibull_Heterogeneity": 0.05,
+        "Sexual_Debut_Age_Male_Weibull_Scale": 16.946729660034,
         "Sexual_Debut_Age_Min": 13,
-        "x_Birth": 1, 
-        "x_Other_Mortality": 1        
+        "Simulation_Duration": 43106.0,
+        "Simulation_Timestep": 30.416666666666668,
+        "x_Birth": 1,
+        "x_Other_Mortality": 1
     }
 }

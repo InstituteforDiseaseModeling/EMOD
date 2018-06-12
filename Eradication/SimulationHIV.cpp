@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -82,20 +82,10 @@ namespace Kernel
         return SimulationSTI::Initialize();
     }
 
-    void
-    SimulationHIV::Initialize(
-        const ::Configuration *config
-    )
+    void SimulationHIV::Initialize(const ::Configuration *config)
     {
-        SimulationSTI::Initialize(config);
-
-        release_assert( GET_CONFIGURABLE(SimulationConfig) );
-        if( GET_CONFIGURABLE(SimulationConfig)->vital_dynamics == 0 )
-        {
-            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Enable_Vital_Dynamics", "0", "Simulation_Type", "HIV_SIM", "Mortality must be on for HIV." );
-        }
-
-        IndividualHumanHIV::InitializeStaticsHIV( config );
+        SimulationSTI::Initialize(config); 
+        IndividualHumanHIV::InitializeStaticsHIV(config);
     }
 
     bool
@@ -181,6 +171,6 @@ namespace Kernel
 
     void SimulationHIV::AddDataToHeader( IJsonObjectAdapter* pIJsonObj )
     {
-        pIJsonObj->Insert("Base_Year", Simulation::base_year);
+        pIJsonObj->Insert("Base_Year", SimulationSTI::base_year);
     }
 }

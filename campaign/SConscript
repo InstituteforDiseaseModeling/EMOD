@@ -29,7 +29,7 @@ msvc = GetOption( "MSVC" )
 if msvc is not None and msvc != False and msvc != "":
 
     bvar = env['BUILD_VARIANT'] + '|x64'
-    print "Campaign: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar
+    print( "Campaign: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar )
 
     env.MSVSProject(target = 'CampaignScons' + env['MSVSPROJECTSUFFIX'],
 		srcs = campaignSrcFiles,

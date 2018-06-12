@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -73,16 +73,16 @@ DllLoader::ReadEmodulesJson(
     std::list< std::wstring > &dll_dirs
 )
 {
-    std::ifstream emodules_json_raw;
-
-    LOG_DEBUG("open emodules_map.json\n");
-    emodules_json_raw.open( "emodules_map.json" );
-    if (emodules_json_raw.fail())
+    if( !FileSystem::FileExists( "emodules_map.json" ) )
     {
         // actually, might be ok if just using --dll_dir, not settled yet
         LOG_INFO( "ReadEmodulesJson: no file, returning.\n" );
         return;
     }
+
+    LOG_DEBUG( "open emodules_map.json\n" );
+    std::ifstream emodules_json_raw;
+    FileSystem::OpenFileForReading( emodules_json_raw, "emodules_map.json" );
 
     try
     {

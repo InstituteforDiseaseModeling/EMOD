@@ -17255,7 +17255,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -17361,7 +17361,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -17897,7 +17897,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -18389,7 +18389,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -18451,7 +18451,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -18488,7 +18488,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -18535,7 +18535,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -18565,7 +18565,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -18614,7 +18614,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -18684,7 +18684,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -18716,7 +18716,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -18796,7 +18796,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -18886,7 +18886,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -18916,7 +18916,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -18950,7 +18950,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -18992,7 +18992,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -19022,7 +19022,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -19052,7 +19052,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -19084,7 +19084,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -19116,7 +19116,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -19146,7 +19146,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -19182,7 +19182,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -19225,7 +19225,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -19290,7 +19290,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -19349,7 +19349,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -19465,7 +19465,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -19498,7 +19498,7 @@
                     "Spray_Kill_Target": "SpaceSpray_FemalesAndMales", 
                     "class": "SpaceSpraying"
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "Node Level IRS", 
             "Nodeset_Config": {
@@ -45746,7 +45746,7 @@
                         "TEMPORARY_RAINFALL" : 0.04
                     }
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Nodeset_Config": {
                 "Node_List": [
@@ -45981,7 +45981,7 @@
                         "TEMPORARY_RAINFALL" : 0.03
                     }
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Nodeset_Config": {
                 "Node_List": [
@@ -47297,7 +47297,7 @@
                         "TEMPORARY_RAINFALL" : 0.04
                     }
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Nodeset_Config": {
                 "Node_List": [
@@ -47532,7 +47532,7 @@
                         "TEMPORARY_RAINFALL" : 0.03
                     }
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Nodeset_Config": {
                 "Node_List": [

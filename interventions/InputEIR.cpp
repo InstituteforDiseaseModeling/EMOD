@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -100,7 +100,7 @@ namespace Kernel
     bool InputEIR::Configure( const Configuration * inputJson )
     {
         initConfig( "Age_Dependence", age_dependence, inputJson, MetadataDescriptor::Enum("Age_Dependence", IE_Age_Dependence_DESC_TEXT, MDD_ENUM_ARGS(AgeDependentBitingRisk)) );
-        initConfigComplexType( "Monthly_EIR", &monthly_EIR, IE_Config_Type_DESC_TEXT);
+        initConfigComplexType( "Monthly_EIR", &monthly_EIR, IE_Monthly_EIR_DESC_TEXT);
 
         switch(age_dependence)
         {

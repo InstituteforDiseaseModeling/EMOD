@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -53,6 +53,9 @@ namespace Kernel
         float new_smear_positive_infections;
         float new_active_fast_TB_infections;
         float new_active_slow_TB_infections;
+        float new_mdr_active_infection;
+        float mdr_evolved_incident_counter;
+        float new_mdr_fast_active_infection_counter;
 
         float disease_deaths_MDR;
 

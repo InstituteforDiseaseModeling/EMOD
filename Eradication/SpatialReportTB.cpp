@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,7 +9,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 
-#ifdef ENABLE_TB
+#ifdef ENABLE_TBHIV
 
 #include <functional>
 #include <map>
@@ -17,7 +17,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "INodeContext.h"
 #include "SpatialReportTB.h"
-#include "IndividualTB.h"
+#include "IndividualCoInfection.h"
 #include "Sugar.h"
 #include "Environment.h"
 #include "Exceptions.h"
@@ -81,7 +81,7 @@ SpatialReportTB::LogIndividualData(
     LOG_DEBUG( "LogIndividualData in SpatialReportTB\n" );
 
     float monte_carlo_weight = (float)individual->GetMonteCarloWeight();
-    const Kernel::IndividualHumanTB* individual_tb = static_cast<const Kernel::IndividualHumanTB*>(individual);
+    const Kernel::IndividualHumanCoInfection* individual_tb = static_cast<const Kernel::IndividualHumanCoInfection*>(individual);
 
     //Immunity
     if (individual_tb->IsImmune() && !individual->IsInfected())
@@ -213,4 +213,4 @@ void serialize(Archive &ar, SpatialReportTB& report, const unsigned int v)
 
 }
 
-#endif // ENABLE_TB
+#endif // ENABLE_TBHIV

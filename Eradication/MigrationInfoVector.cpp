@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -22,6 +22,23 @@ namespace Kernel
     // --- MigrationInfoVector
     // ------------------------------------------------------------------------
 
+    BEGIN_QUERY_INTERFACE_DERIVED( MigrationInfoNullVector, MigrationInfoNull )
+    END_QUERY_INTERFACE_DERIVED( MigrationInfoNullVector, MigrationInfoNull )
+
+    MigrationInfoNullVector::MigrationInfoNullVector()
+    : MigrationInfoNull()
+    {
+    }
+
+    MigrationInfoNullVector::~MigrationInfoNullVector()
+    {
+    }
+
+
+    // ------------------------------------------------------------------------
+    // --- MigrationInfoVector
+    // ------------------------------------------------------------------------
+
     BEGIN_QUERY_INTERFACE_DERIVED(MigrationInfoVector, MigrationInfoFixedRate)
     END_QUERY_INTERFACE_DERIVED(MigrationInfoVector, MigrationInfoFixedRate)
 
@@ -29,9 +46,7 @@ namespace Kernel
                                               ModiferEquationType::Enum equation,
                                               float habitatModifier,
                                               float foodModifier,
-                                              float stayPutModifier,
-                                              bool enableLocalVectorMigration,
-                                              bool isFileBased ) 
+                                              float stayPutModifier ) 
     : MigrationInfoFixedRate( _parent, false ) 
     , m_RawMigrationRate()
     , m_ThisNodeId(suids::nil_suid())
@@ -39,8 +54,6 @@ namespace Kernel
     , m_ModifierHabitat(habitatModifier)
     , m_ModifierFood(foodModifier)
     , m_ModifierStayPut(stayPutModifier)
-    , m_LocalVectorMigrationEnabled( enableLocalVectorMigration )
-    , m_IsFileBased( isFileBased )
     {
     }
 
@@ -236,20 +249,10 @@ namespace Kernel
                 }
                 break;
             default:
-                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, MODIFIER_EQUATION_NAME, m_ModifierEquation );
+                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, MODIFIER_EQUATION_NAME, m_ModifierEquation, ModiferEquationType::pairs::lookup_key( m_ModifierEquation ) );
         }
 
         return rate ;
-    }
-
-    bool MigrationInfoVector::IsLocalVectorMigrationEnabled() const
-    {
-        return m_LocalVectorMigrationEnabled ;
-    }
-
-    bool MigrationInfoVector::IsVectorMigrationFileBased() const
-    {
-        return m_IsFileBased;
     }
 
     // ------------------------------------------------------------------------
@@ -263,7 +266,6 @@ namespace Kernel
     : MigrationInfoFactoryFile()
     , m_InfoFileListVector()
     , m_IsVectorMigrationEnabled( false )
-    , m_IsFileBased( false )
     , m_ModifierEquation( ModiferEquationType::EXPONENTIAL )
     , m_ModifierHabitat(0.0)
     , m_ModifierFood(0.0)
@@ -337,21 +339,12 @@ namespace Kernel
     {
         MigrationInfoFactoryFile::Initialize( config, idreference );
 
-        m_IsFileBased = false;
         for( int i = 0 ; i < m_InfoFileListVector.size() ; i++ )
         {
             if( m_InfoFileListVector[i] != nullptr )
             {
-                if( (i == 0) && m_InfoFileListVector[0]->m_IsEnabled &&
-                    (m_InfoFileListVector[0]->m_Filename.empty() || (m_InfoFileListVector[0]->m_Filename == "UNINITIALIZED STRING")) )
+                if( m_InfoFileListVector[i]->m_IsEnabled )
                 {
-                    // allow support for old non-file-based migration.
-                    // (This is to avoid the check that the flag is enabled and the filename empty.)
-                    m_IsFileBased = false;
-                }
-                else if( m_InfoFileListVector[i]->m_IsEnabled )
-                {
-                    m_IsFileBased = true;
                     m_InfoFileListVector[i]->Initialize( idreference );
                 }
             }
@@ -369,9 +362,7 @@ namespace Kernel
                                                                              m_ModifierEquation,
                                                                              m_ModifierHabitat,
                                                                              m_ModifierFood,
-                                                                             m_ModifierStayPut,
-                                                                             m_InfoFileListVector[0]->m_IsEnabled,
-                                                                             m_IsFileBased );
+                                                                             m_ModifierStayPut );
         new_migration_info->Initialize( rate_data );
 
         return new_migration_info ;
@@ -424,18 +415,24 @@ namespace Kernel
     IMigrationInfoVector* MigrationInfoFactoryVectorDefault::CreateMigrationInfoVector( INodeContext *pParentNode, 
                                                                                         const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap )
     {
-        std::vector<std::vector<MigrationRateData>> rate_data = GetRateData( pParentNode, rNodeIdSuidMap, m_xLocalModifierVector );
+        if( IsVectorMigrationEnabled() )
+        {
+            std::vector<std::vector<MigrationRateData>> rate_data = GetRateData( pParentNode, rNodeIdSuidMap, m_xLocalModifierVector );
 
-        MigrationInfoVector* new_migration_info = _new_ MigrationInfoVector( pParentNode, 
-                                                                             ModiferEquationType::LINEAR,
-                                                                             1.0,
-                                                                             1.0,
-                                                                             1.0,
-                                                                             m_IsVectorMigrationEnabled,
-                                                                             m_IsVectorMigrationEnabled );
-        new_migration_info->Initialize( rate_data );
+            MigrationInfoVector* new_migration_info = _new_ MigrationInfoVector( pParentNode, 
+                                                                                 ModiferEquationType::LINEAR,
+                                                                                 1.0,
+                                                                                 1.0,
+                                                                                 1.0 );
+            new_migration_info->Initialize( rate_data );
 
-        return new_migration_info;
+            return new_migration_info;
+        }
+        else
+        {
+            MigrationInfoNullVector* null_info = new MigrationInfoNullVector();
+            return null_info;
+        }
     }
 
     bool MigrationInfoFactoryVectorDefault::IsVectorMigrationEnabled() const

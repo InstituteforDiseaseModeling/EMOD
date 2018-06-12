@@ -7,7 +7,7 @@
             "Enable_Vital_Dynamics": 0,
             "MORTALITY": {
                 "Base_Mortality": 0.01, 
-                "Immunity_Mortality_Factor": 0.5
+                "Post_Infection_Mortality_Multiplier": 0.5
             }
         }, 
         "DISEASE": {

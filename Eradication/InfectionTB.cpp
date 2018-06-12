@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,7 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include <math.h>
 #include "MathFunctions.h"
-#ifdef ENABLE_TB
+#ifdef ENABLE_TBHIV
 
 //for age dependent reactivation disease as non-homogeneous Poisson process ONLY (Latent-slow to active presymptomatic)
 #define AGE_DEP_REACTIVATION_ALPHA (2.4e-7) //(15.4e-7)
@@ -26,16 +26,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "RANDOM.h"
 #include "Exceptions.h"
 #include "config_params.rc"
-#ifdef ENABLE_TBHIV
 #include "IndividualCoInfection.h"
 #include "TBHIVParameters.h"
-#else
-#include "TBContexts.h"
-#include "Individual.h"
-#endif
 #include "StrainIdentity.h"
 
 SETUP_LOGGING( "InfectionTB" )
+
 
 namespace Kernel
 {
@@ -114,8 +110,8 @@ namespace Kernel
         }
 
 #ifdef ENABLE_TBHIV
-        initConfigTypeMap("TB_CD4_Activation_Vector", &TB_cd4_activation_vec, TB_cd4_activation_vec_DESC_TEXT, 0.0f, FLT_MAX, 1.0f, 0, "Simulation_Type", "TBHIV_SIM");
-        initConfigTypeMap("CD4_Strata_Activation", &CD4_strata_act_vec, CD4_Strata_Activation_DESC_TEXT, -1.0f, 2000.0f, 1.0f, 0, "Simulation_Type", "TBHIV_SIM");
+        initConfigTypeMap( "TB_CD4_Activation_Vector", &TB_cd4_activation_vec, TB_CD4_Activation_Vector_DESC_TEXT, 0.0f, FLT_MAX, 1.0f, 0, "Enable_Coinfection" );
+        initConfigTypeMap( "CD4_Strata_Activation", &CD4_strata_act_vec, CD4_Strata_Activation_DESC_TEXT, -1.0f, 2000.0f, 1.0f, 0, "Enable_Coinfection" );
 #endif
 
         bool cRet = JsonConfigurable::Configure(config);
@@ -212,7 +208,8 @@ namespace Kernel
                 // Latent-to-Cured
                 float rand = randgen->e();
                 if (rand < m_recover_fraction)
-                {
+                {   
+                    LOG_VALID_F("Individual %lu moved from Latent to Cleared . \n", parent->GetSuid().data);
                     StateChange = InfectionStateChange::Cleared; 
                     // immune loss counter is handled later in the same timestep, i.e. susc->Update(1) in Individual::Update
                 }
@@ -222,6 +219,7 @@ namespace Kernel
                 else
                 {
                     LOG_DEBUG("Progress from Latent to Active Presymptomatic \n");
+                    LOG_VALID_F("Individual %lu moved from Latent to Active Presymptomatic with with timer %f . \n", parent->GetSuid().data, incubation_timer);
                     InitializeActivePresymptomaticInfection(immunity);
                     StateChange = InfectionStateChange::TBActivationPresymptomatic;
                 }
@@ -234,13 +232,15 @@ namespace Kernel
                 //Active presymptomatic-to-Cured
                 if (rand < m_recover_fraction)
                 {
+                    LOG_VALID_F("Individual %lu moved from Active Presymptomatic to Cleared with timer %f . \n", parent->GetSuid().data, infectious_timer);
                     StateChange = InfectionStateChange::Cleared; 
                 }
 
                 //Active presymptomatic-to-Death not simulated
                 //Active presymptomatic-to Active with Symptoms
                 else
-                {
+                {   
+                    LOG_VALID_F("Individual %lu moved from Active Presymptomatic to Active Symptomatic with timer %f . \n", parent->GetSuid().data, infectious_timer);
                     InitializeActiveInfection(immunity);
 
                     //log state change for Active patients
@@ -267,18 +267,21 @@ namespace Kernel
                 float rand = randgen->e();
                 if (rand < m_recover_fraction)
                 {
+                    LOG_VALID_F("Individual %lu moved from Active Symptomatic to Cleared with timer %f . \n", parent->GetSuid().data, infectious_timer);
                     StateChange = InfectionStateChange::Cleared;
                 }
 
                 // Active-to-Death
                 else if (rand > 1-m_death_fraction) //!!!NOTE TB_Active_Mortality_Rate OVERRIDES the Enable_Disease_mortality
                 {
+                    LOG_VALID_F("Individual %lu moved from Active Symptomatic to Death . \n", parent->GetSuid().data);
                     StateChange = InfectionStateChange::Fatal; 
                 }
 
                 // Active-to-Latent (without intervention)
                 else
                 {
+                    LOG_VALID_F("Individual %lu moved from Active Symptomatic to Latent with timer %f . \n", parent->GetSuid().data, infectious_timer);
                     StateChange = InfectionStateChange::TBInactivation;
                     InitializeLatentInfection(immunity);
                 }
@@ -338,7 +341,7 @@ namespace Kernel
             msg << ",new_inf_state=10"; //10 is TBlatent
             msg << ",inf_id=-1";;
             msg << ",inf_mdr=" << IsMDR();
-            Environment::getInstance()->Log->LogF(Logger::DEBUG, "EEL", "%s\n", msg.str().c_str()  );
+            Environment::getInstance()->Log->Log(Logger::DEBUG, "EEL", "%s\n", msg.str().c_str()  );
         }
         ISusceptibilityTB* immunityTB = nullptr;
         if( immunity->QueryInterface( GET_IID( ISusceptibilityTB ), (void**)&immunityTB ) != s_OK )
@@ -373,7 +376,7 @@ namespace Kernel
 #ifdef ENABLE_TBHIV 
             if (human_coinf != nullptr && human_coinf->HasHIV())
             {
-                incubation_timer = randgen->time_varying_rate_dist(human_coinf->GetTBActivationVector(), GET_CONFIGURABLE(SimulationConfig)->tbhiv_params->cd4_time_step , InfectionTBConfig::TB_latent_cure_rate);
+                incubation_timer = randgen->time_varying_rate_dist(human_coinf->GetTBActivationVector(), SusceptibilityHIVConfig::cd4_time_step , InfectionTBConfig::TB_latent_cure_rate);
                 IndividualHumanCoInfection* out1 = dynamic_cast <IndividualHumanCoInfection*> (human_coinf);
                 bool flag_reconst = out1->GetHIVInterventionsContainer()->ShouldReconstituteCD4();
                 // Leave trailing space before period for SFT get_val function. For now.
@@ -401,6 +404,8 @@ namespace Kernel
             }
         }
 
+        // Round up so we never get a 0 latent period. This fixes #2336.
+        incubation_timer = std::ceil(incubation_timer);
 
         // And the fractional allocation to each state
         //set flags for all latent disease
@@ -415,7 +420,6 @@ namespace Kernel
 
         // Reset infectiousness
         infectiousness = 0;
-
     }
 
     void InfectionTB::InitializePendingRelapse(ISusceptibilityContext* immunity)
@@ -511,17 +515,25 @@ namespace Kernel
             throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "immunity", "ISusceptibilityTB", "Susceptibility");
         }
 
-        IIndividualHumanTB2* tb2  = nullptr;
-        if (parent->QueryInterface(GET_IID(IIndividualHumanTB2), (void**)&tb2)  == s_OK)
-        {
-             
-            tb2->onInfectionIncidence();
-            if (infection_strain->GetGeneticID() == TBInfectionDrugResistance::FirstLineResistant)
+        if (infection_strain->GetGeneticID() == TBInfectionDrugResistance::FirstLineResistant)
+        {            
+            //onInfectionMDRIncidence
+            IndividualHumanCoInfection* indiv_coInf = dynamic_cast<IndividualHumanCoInfection*>( parent );
+            if( indiv_coInf == nullptr )
             {
-                tb2->onInfectionMDRIncidence();
-            } 
-        }
-
+                throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "indiv_coInf",  "IndividualHumanCoInfection");
+            }
+            indiv_coInf->infectionMDRIncidenceCounter = indiv_coInf->GetMonteCarloWeight();
+            if( indiv_coInf->IsEvolvedMDR() )
+            {
+                indiv_coInf->mdr_evolved_incident_counter = indiv_coInf->GetMonteCarloWeight();
+            }
+            if( indiv_coInf->IsFastProgressor() && !indiv_coInf->IsEvolvedMDR() )
+            {
+                indiv_coInf->new_mdr_fast_active_infection_counter = indiv_coInf->GetMonteCarloWeight();
+            }
+        } 
+        
         // Figure out individual dependence of active disease presentation
         float smear_positive_fraction = immunityTB->GetSmearPositiveFraction();
         float extrapulmonary_fraction = immunityTB->GetExtraPulmonaryFraction();
@@ -614,7 +626,7 @@ namespace Kernel
         //Gets total drug effects and modulates by infection strain and infection history
 
         float TB_drug_inactivation_rate = 0;
-        float TB_drug_clearance_rate = 0;
+        float TB_drug_cure_rate = 0;
         float TB_drug_resistance_rate = 0;
         float TB_drug_relapse_rate = 0;
         float TB_drug_mortality_rate = 0;
@@ -644,7 +656,7 @@ namespace Kernel
                 
                 //add to total drug clearance/inactivation rate here
                 TB_drug_inactivation_rate += (drug_effect.second.inactivation_rate * drug_strain_multiplier);
-                TB_drug_clearance_rate += (drug_effect.second.clearance_rate * drug_strain_multiplier);
+                TB_drug_cure_rate += (drug_effect.second.clearance_rate * drug_strain_multiplier);
 
                 //TODO: consider if it is correct to add the resistance rates
                 TB_drug_resistance_rate += (drug_effect.second.resistance_rate );
@@ -660,8 +672,8 @@ namespace Kernel
             if (tb_ind->HasFailedTreatment())
             {
                 TB_drug_inactivation_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Failed;
-                TB_drug_clearance_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Failed;
-                LOG_DEBUG_F("Adjusting drug clearance rate because I have failed before, new rate is %f \n", TB_drug_clearance_rate);
+                TB_drug_cure_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Failed;
+                LOG_DEBUG_F("Adjusting drug clearance rate because I have failed before, new rate is %f \n", TB_drug_cure_rate);
 
                 //TODO: Could also modulate the resistance, relapse and mortality rate if infection has ever failed (also should be specific for drug type in future)
             }
@@ -670,8 +682,8 @@ namespace Kernel
             if (tb_ind->HasEverRelapsedAfterTreatment())
             {
                 TB_drug_inactivation_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Relapsed;
-                TB_drug_clearance_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Relapsed;
-                LOG_DEBUG_F("Adjusting drug clearance rate because I have relapsed before, new rate is %f \n", TB_drug_clearance_rate);
+                TB_drug_cure_rate *= InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Relapsed;
+                LOG_DEBUG_F("Adjusting drug clearance rate because I have relapsed before, new rate is %f \n", TB_drug_cure_rate);
 
                 //TODO: Could also modulate the resistance, relapse and mortality rate if infection has ever failed (also should be specific for drug type in future)
             }
@@ -679,7 +691,7 @@ namespace Kernel
         }
       
         TBDrugEffects_t total_drug_effect_on_infection;
-        total_drug_effect_on_infection.clearance_rate = TB_drug_clearance_rate;
+        total_drug_effect_on_infection.clearance_rate = TB_drug_cure_rate;
         total_drug_effect_on_infection.inactivation_rate = TB_drug_inactivation_rate;
         total_drug_effect_on_infection.resistance_rate = TB_drug_resistance_rate;
         total_drug_effect_on_infection.relapse_rate = TB_drug_relapse_rate;
@@ -702,16 +714,27 @@ namespace Kernel
             //If active and on drugs with non-zero resistance rate, fixed higher probability of evolving resistance from drug pressure
             if (total_drug_effects.resistance_rate != 0  && IsActive() == true) 
             {
-                if (randgen->e() < total_drug_effects.resistance_rate * dt)
+                if (randgen->e() < NTimeStepProbability(total_drug_effects.resistance_rate, dt) )
                 {
                     infection_strain->SetGeneticID(TBInfectionDrugResistance::FirstLineResistant);
                     m_evolved_resistance = true;
 
-                    IIndividualHumanTB2 * tb2ptr = nullptr;  //check below since this observer not used for TBHIV
-                    if (parent->GetEventContext()->QueryInterface(GET_IID(IIndividualHumanTB2), (void**)&tb2ptr) == s_OK)
+                    IndividualHumanCoInfection* indiv_coInf = dynamic_cast<IndividualHumanCoInfection*>( parent );
+                    if( indiv_coInf == nullptr )
                     {
-                        dynamic_cast<IIndividualHumanTB2*>(parent)->onInfectionMDRIncidence(); //alert observer to new MDR incident case (evolved)
+                        throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "indiv_coInf", "IndividualHumanCoInfection" );
                     }
+
+                    indiv_coInf->infectionMDRIncidenceCounter = indiv_coInf->GetMonteCarloWeight();
+                    if( indiv_coInf->IsEvolvedMDR())
+                    {
+                        indiv_coInf->mdr_evolved_incident_counter = indiv_coInf->GetMonteCarloWeight();
+                    }
+                    if( indiv_coInf->IsFastProgressor() && !indiv_coInf->IsEvolvedMDR() )
+                    {
+                        indiv_coInf->new_mdr_fast_active_infection_counter = indiv_coInf->GetMonteCarloWeight();
+                    }                    
+
                     LOG_DEBUG("Evolved drug resistance strain while having active disease and on drugs \n");
 
                     infectiousness *= InfectionTBConfig::TB_MDR_Fitness_Multiplier;     //fitness penalty for MDR
@@ -723,7 +746,7 @@ namespace Kernel
                         msg << ",hum_id=" << parent->GetSuid().data;
                         msg << ",inf_id=-1";
                         msg << ",ev=MDR";
-                        Environment::getInstance()->Log->LogF(Logger::DEBUG, "EEL", "%s\n", msg.str().c_str()  );
+                        Environment::getInstance()->Log->Log(Logger::DEBUG, "EEL", "%s\n", msg.str().c_str()  );
                     }
                 }
             }
@@ -756,7 +779,7 @@ namespace Kernel
         if (m_is_active == true ) 
         {
             //draw to see if the event occurs now
-            if (randgen->e() < (dt * total_event_rate))
+            if (randgen->e() < NTimeStepProbability(total_event_rate, dt) )
             {
                 ProbabilityNumber rand2 = randgen->e();
 
@@ -764,6 +787,7 @@ namespace Kernel
                 if ( rand2 < (total_drug_effects.clearance_rate / total_event_rate) )
                 {
                     LOG_DEBUG_F( "TB drug truly cleared my (%d) infection from active state.\n", parent->GetSuid().data );
+                    LOG_VALID_F("Individual %lu on TB drug moved from Active to Cleared. \n", parent->GetSuid().data);
                     StateChange = InfectionStateChange::Cleared;
                     ret = true;
                 }
@@ -772,6 +796,7 @@ namespace Kernel
                 else if ( rand2 < ( (total_drug_effects.clearance_rate + total_drug_effects.relapse_rate) / total_event_rate) )
                 {
                     LOG_DEBUG_F( "TB drug cleared my infection, but %d will relapse in the future.\n", parent->GetSuid().data );
+                    LOG_VALID_F("Individual %lu on TB drug moved from Active to Latent. Will relapse. \n", parent->GetSuid().data);
                     StateChange = InfectionStateChange::ClearedPendingRelapse;
                     InitializePendingRelapse( immunity );
                     ret = true;
@@ -782,6 +807,7 @@ namespace Kernel
                 {
                     LOG_DEBUG_F( "TB drug deactivated my (%d) infection (from active state to latent).\n", parent->GetSuid().data );
                     StateChange = InfectionStateChange::TBInactivation;
+                    LOG_VALID_F("Individual %lu on TB drug moved from Active to Latent. \n", parent->GetSuid().data);
                     InitializeLatentInfection( immunity );
                     ret = true;
                 }
@@ -790,6 +816,7 @@ namespace Kernel
                 else if (m_shows_symptoms) 
                 {
                     LOG_DEBUG_F( "Died from active disease on drugs, death_rate is %f, rand2 is %f \n", total_drug_effects.mortality_rate, float(rand2) );
+                    LOG_VALID_F("Individual %lu on TB drug moved from Active Symptomatic to Death. \n", parent->GetSuid().data);
                     StateChange = InfectionStateChange::Fatal; 
                     ret = true;
                 }
@@ -805,13 +832,14 @@ namespace Kernel
             }
             else
             { 
-                duration += (1.0 - total_drug_effects.inactivation_rate) * dt; //dilate time
+                duration += (1.0 - NTimeStepProbability(total_drug_effects.inactivation_rate, dt))* dt; //dilate time
                 ProbabilityNumber rand = randgen->e();
                 
                 // Latent -to- cleared
                 if (rand < (dt * total_drug_effects.clearance_rate))
                 {
                     LOG_DEBUG_F( "TB drug truly cleared my (%d) infection from latent state.\n", parent->GetSuid().data );
+                    LOG_VALID_F("Individual %lu on TB drug moved from Latent to Cleared. \n", parent->GetSuid().data);
                     StateChange = InfectionStateChange::Cleared;
                     ret = true;
                 }
@@ -822,10 +850,12 @@ namespace Kernel
                     if (rand1 < m_recover_fraction)
                     {
                         StateChange = InfectionStateChange::Cleared;
+                        LOG_VALID_F("Individual %lu on TB drug moved from Latent to Cleared. \n", parent->GetSuid().data);
                     }
                     else
                     {
                         LOG_DEBUG_F( "Individual %d progressing from Latent to Active Presymptomatic while on TB Drugs.\n", parent->GetSuid().data );
+                        LOG_VALID_F("Individual %lu on TB drug moved from Latent to Active Symptomatic . \n", parent->GetSuid().data);
                         InitializeActivePresymptomaticInfection(immunity);
                         StateChange = InfectionStateChange::TBActivationPresymptomatic;
                     }
@@ -839,6 +869,7 @@ namespace Kernel
 
     void InfectionTB::ExogenousLatentSlowToFast()
     {
+        LOG_VALID_F("EXOGENOUS infected Individual %d.\n", GetSuid().data);
         // Reset timer
         duration = 0.0f;
         //set to fast
@@ -940,26 +971,39 @@ namespace Kernel
         return m_shows_symptoms; 
     }    
 
-    void InfectionTB::SetIncubationTimer (float new_timer) 
-    {
-        incubation_timer = new_timer; 
-    }
-    
     float InfectionTB::GetLatentCureRate() const
     {
         return InfectionTBConfig::TB_latent_cure_rate;
     }
     
-    void InfectionTB::ResetRecoverFraction(float new_fraction)
+    void InfectionTB::LifeCourseLatencyTimerUpdate()
     {
-        m_recover_fraction = new_fraction;
-    }
-    
-    void InfectionTB::ResetDuration()
-    {
+        float temp_latent_cure_rate = GetLatentCureRate();
+
+        // Is there alternative to casting?
+        incubation_timer = std::ceil(randgen->time_varying_rate_dist( human_coinf->GetTBActivationVector(), SusceptibilityHIVConfig::cd4_time_step, temp_latent_cure_rate ));
+        LOG_VALID_F( "%s: Individual %lu has incubation timer %f and CD4 count %f.\n", __FUNCTION__, parent->GetSuid().data, incubation_timer, human_coinf->GetCD4() );
+
+#ifdef TEST_RNG
+
+        ofstream ofile;
+        FileSystem::OpenFileForWriting( ofile, "test.txt" );
+
+        for(int ii = 1; ii< 1000; ii++)
+        {
+            float incubation_timer = randgen->time_varying_rate_dist( GetTBActivationVector(), GetCD4TimeStep(), 0.0f);
+            ofile << incubation_timer;
+            ofile << "\n";
+        }  
+        ofile.close();
+
+#endif 
+        float total_rate = human_coinf->GetNextLatentActivation(incubation_timer) + temp_latent_cure_rate;
+        float temp_recover_fraction = (total_rate > 0 ?  temp_latent_cure_rate/total_rate : 0);
+        m_recover_fraction = temp_recover_fraction;
         duration = 0;
     }
-    
+
     InfectionTB::InfectionTB()
     {
         human_coinf = nullptr;
@@ -994,4 +1038,4 @@ namespace Kernel
     }
 }
 
-#endif // ENABLE_TB
+#endif // ENABLE_TBHIV

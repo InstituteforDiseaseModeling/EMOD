@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -25,7 +25,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "FileSystem.h"
 #include "Exceptions.h"
 #include "IIndividualHuman.h"
-#include "SimulationConfig.h"
 #include "ProgVersion.h"
 #include "IdmMpi.h"
 
@@ -51,7 +50,8 @@ SpatialReport::CreateReport()
 }
 
 SpatialReport::SpatialReport()
-: air_temperature_info(             "Air_Temperature",                  "degrees C")
+: BaseChannelReport( _report_name )
+, air_temperature_info(             "Air_Temperature",                  "degrees C")
 , births_info(                      "Births",                           "")
 , campaign_cost_info(               "Campaign_Cost",                    "US dollars")
 , disease_deaths_info(              "Disease_Deaths",                   "")
@@ -64,12 +64,15 @@ SpatialReport::SpatialReport()
 , prevalence_info(                  "Prevalence",                       "infected fraction")
 , rainfall_info(                    "Rainfall",                         "mm")
 , relative_humidity_info(           "Relative_Humidity",                "fraction")
+, new_infections(0.0f)
+, new_reported_infections(0.0f)
+, disease_deaths(0.0f)
+, nodeid_index_map()
+, has_shuffled_nodes(false)
+, total_timesteps(0)
+, channel_file_map()
+, spatial_output_channels()
 {
-    disease_deaths = 0.0f;
-    new_infections = 0.0f;
-    new_reported_infections = 0.0f;
-
-    report_name = _report_name;
 }
 
 void SpatialReport::populateChannelInfos(tChanInfoMap &channel_infos)
@@ -92,7 +95,6 @@ void SpatialReport::populateChannelInfos(tChanInfoMap &channel_infos)
 void
 SpatialReport::Initialize( unsigned int nrmSize )
 {
-    Configure( EnvPtr->Config );
     _nrmSize = nrmSize;
     release_assert( _nrmSize );
 
@@ -122,7 +124,6 @@ SpatialReport::Initialize( unsigned int nrmSize )
         channelDataMap.IncreaseChannelLength( "Population", _nrmSize );
     }
 
-    timesteps_to_store_in_memory = 1; // TODO: could read this from a config value instead...
     total_timesteps = 0;
 }
 
@@ -143,7 +144,8 @@ bool SpatialReport::Configure(
 /////////////////////////
 void SpatialReport::BeginTimestep()
 {
-    if(total_timesteps != 0)
+    // we increase the length in Initialize() so we don't want to do it on the first time through
+    if( has_shuffled_nodes )
     {
         channelDataMap.IncreaseChannelLength( _nrmSize );
     }
@@ -237,65 +239,93 @@ void SpatialReport::EndTimestep( float currentTime, float dt )
 {
     // TODO: need to take care of end of simulation if you're not writing every timestep...
 
-    if(total_timesteps == 0)
-        shuffleNodeData();
-
-    total_timesteps++;
-
-    // check if it's time to reduce/write
-    if(total_timesteps % timesteps_to_store_in_memory == 0)
+    if( !has_shuffled_nodes )
     {
-        Reduce();
+        has_shuffled_nodes = true;
+        shuffleNodeData();
+    }
 
-        // if rank 0, write out the files
-        if(EnvPtr->MPI.Rank == 0)
+    Reduce();
+
+    // if rank 0, write out the files
+    if(EnvPtr->MPI.Rank == 0)
+    {
+        postProcessAccumulatedData();
+
+        InitializeFiles();
+
+        // -------------------------------------------------------
+        // --- Passing a member variable to the function so that 
+        // --- subclasses can pass 'custom' maps if they want to.
+        // -------------------------------------------------------
+        WriteData( channelDataMap );
+    }
+    ClearData();
+}
+
+void SpatialReport::InitializeFiles()
+{
+    std::vector<std::string> channel_names = channelDataMap.GetChannelNames();
+
+    if( channel_file_map.size() == 0 )
+    {
+        for( auto name : channel_names )
         {
-            postProcessAccumulatedData();
+            // TODO: should be checking if there's a ChannelInfo enabled instead...?
+            if( spatial_output_channels.count( name ) <= 0 )
+                continue;
 
-            std::vector<std::string> channel_names = channelDataMap.GetChannelNames();
+            string filepath = FileSystem::Concat( EnvPtr->OutputPath, (report_name + "_" + name + ".bin") );
+            ofstream* file = new ofstream();
+            FileSystem::OpenFileForWriting( *file, filepath.c_str(), true );
 
-            if(channel_file_map.size() == 0)
-            {
-                for( auto name : channel_names )
-                {
-                    // TODO: should be checking if there's a ChannelInfo enabled instead...?
-                    if(spatial_output_channels.count( name ) <= 0)
-                        continue;
+            channel_file_map[ name ] = file;
 
-                    string filepath = FileSystem::Concat( EnvPtr->OutputPath, ("SpatialReport_" + name + ".bin") );
-                    ofstream* file = new ofstream(filepath,  ios_base::out | ios_base::trunc | ios_base::binary);
-                    if (!file->is_open())
-                        throw Kernel::FileIOException(__FILE__, __LINE__, __FUNCTION__, filepath.c_str());
-
-                    channel_file_map[ name ] = file;
-
-                    int neg_one = -1;
-                    file->write((char*)&_nrmSize, sizeof(int));
-                    file->write((char*)&neg_one, sizeof(int)); // placeholder for # of timesteps later when we know how many there are
-
-                    const ChannelDataMap::channel_data_t& r_channel_data = channelDataMap.GetChannel( "NodeID" );
-                    file->write((char*)&r_channel_data[0], _nrmSize * sizeof(int));
-                    //file->write((char*)&channelDataMap["NodeID"][0], _nrmSize * sizeof(int));
-                }
-            }
-
-            for( auto name : channel_names )
-            {
-                // TODO: should we be checking if there's a ChannelInfo enabled instead...?
-                if(spatial_output_channels.count( name ) <= 0)
-                    continue;
-
-                LOG_DEBUG_F("Writing out spatial output for channel %s\n", name.c_str());
-                const ChannelDataMap::channel_data_t& r_channel_data = channelDataMap.GetChannel( name );
-                channel_file_map[ name ]->write((char*)(&r_channel_data[0]), r_channel_data.size() * sizeof(ChannelDataMap::channel_data_element_t));
-            }
+            WriteHeader( file );
         }
-
-        // clear already written data
-        channelDataMap.ClearData();
     }
 }
 
+void SpatialReport::WriteData( ChannelDataMap& rChannelDataMap )
+{
+    total_timesteps++;
+
+    std::vector<std::string> channel_names = rChannelDataMap.GetChannelNames();
+
+    for( auto name : channel_names )
+    {
+        // TODO: should we be checking if there's a ChannelInfo enabled instead...?
+        if( spatial_output_channels.count( name ) <= 0 )
+            continue;
+
+        LOG_DEBUG_F( "Writing out spatial output for channel %s\n", name.c_str() );
+        const ChannelDataMap::channel_data_t& r_channel_data = rChannelDataMap.GetChannel( name );
+        channel_file_map[ name ]->write( (char*)(&r_channel_data[ 0 ]), r_channel_data.size() * sizeof( ChannelDataMap::channel_data_element_t ) );
+    }
+}
+
+void SpatialReport::ClearData()
+{
+    // clear already written data
+    channelDataMap.ClearData();
+}
+
+void SpatialReport::WriteHeader( std::ofstream* file )
+{
+    WriteHeaderParameters( file );
+
+    const ChannelDataMap::channel_data_t& r_channel_data = channelDataMap.GetChannel( "NodeID" );
+
+    file->write( (char*)&r_channel_data[ 0 ], _nrmSize * sizeof( int ) );
+    //file->write((char*)&channelDataMap["NodeID"][0], _nrmSize * sizeof(int));
+}
+
+void SpatialReport::WriteHeaderParameters( std::ofstream* file )
+{
+    int neg_one = -1;
+    file->write( (char*)&_nrmSize, sizeof( int ) );
+    file->write( (char*)&neg_one, sizeof( int ) ); // placeholder for # of timesteps later when we know how many there are
+}
 
 /////////////////////////
 // Finalization methods
@@ -440,15 +470,5 @@ void SpatialReport::shuffleNodeData()
 
     nodeid_index_map = new_nodeid_index_map;
 }
-
-#if 0
-template<class Archive>
-void serialize(Archive &ar, SpatialReport& report, const unsigned int v)
-{
-    ar & report.timesteps_reduced;
-    ar & report.channelDataMap;
-    ar & report._nrmSize;
-}
-#endif
 
 }

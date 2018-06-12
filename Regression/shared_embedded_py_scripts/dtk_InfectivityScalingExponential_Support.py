@@ -139,7 +139,7 @@ def calculate_infectiousness(new_infections, index, simulation_timestep, total_t
         else:
             infectiousness_ind[x] = base_infectivity * (1.0 - ((1.0 - baseline)* math.exp((delay -i)/rate)))
     if index == 1 or timestep == 1:
-        dtk_sft.plot_data_unsorted(infectiousness_ind,
+        dtk_sft.plot_data(infectiousness_ind,
                                    title="infectiousness for new infections at time step {0}".format(timestep),
                                    xlabel="time step / simulation_timestep{0}".format(simulation_timestep),
                                    ylabel="Exponential_Delay: {0} days, Exponential_Rate: {1} ".format(delay, rate),
@@ -162,7 +162,7 @@ def create_report_file(param_obj, output_df, report_df, report_name, debug):
     statpop = output_df[KEY_STAT_POP]
     new_infections = report_df[KEY_NEW_INFECTIONS]
     cumulative_infections = report_df[KEY_CUMULATIVE_INFECTIONS]
-    dtk_sft.plot_data_unsorted(new_infections, cumulative_infections,
+    dtk_sft.plot_data(new_infections, cumulative_infections,
                                label1="new infections", label2="cumulative infections",
                                title="Exponential_Delay: {0} days, Exponential_Rate: {1} ".format(delay, rate),
                                xlabel="time step / simulation_timestep{0}".format(simulation_timestep), ylabel=None,
@@ -180,7 +180,7 @@ def create_report_file(param_obj, output_df, report_df, report_name, debug):
                                                                        simulation_timestep, total_timesteps,
                                                                        base_infectivity, baseline,
                                                                        delay, rate, debug)
-                expected_infectiousness = map(sum, zip(expected_infectiousness, new_expected_infectiousness))
+                expected_infectiousness = list(map(sum, zip(expected_infectiousness, new_expected_infectiousness)))
 
         success = True
         actual_infectiousness_all = []
@@ -200,7 +200,7 @@ def create_report_file(param_obj, output_df, report_df, report_name, debug):
                 for i in range(len(actual_infectiousness_all)):
                     file.write("Time Step: {0}, actual infectiousnes: {1},"
                                " expected_infectiousness: {2}.\n".format(i*simulation_timestep, actual_infectiousness_all[i], calc_infectiousness_all[i]))
-        dtk_sft.plot_data_unsorted(actual_infectiousness_all, calc_infectiousness_all,
+        dtk_sft.plot_data(actual_infectiousness_all, calc_infectiousness_all,
                                    label1="actual infectiousness", label2="calc infectiousness",
                                    title="Exponential_Delay: {0} days, Exponential_Rate: {1} ".format(delay, rate),
                                    xlabel="time step / simulation_timestep{0}".format(simulation_timestep), ylabel="Infectiousness",

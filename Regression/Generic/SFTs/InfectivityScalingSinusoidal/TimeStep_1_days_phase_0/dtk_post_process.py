@@ -11,17 +11,17 @@ def application( output_folder="output", stdout_filename="test.txt",
                  report_name=dtk_sft.sft_output_filename,
                  debug=False):
     if debug:
-        print "output_folder: " + output_folder
-        print "stdout_filename: " + stdout_filename+ "\n"
-        print "config_filename: " + config_filename + "\n"
-        print "insetchart_name: " + insetchart_name + "\n"
-        print "report_name: " + report_name + "\n"
-        print "debug: " + str(debug) + "\n"
+        print( "output_folder: " + output_folder )
+        print( "stdout_filename: " + stdout_filename+ "\n" )
+        print( "config_filename: " + config_filename + "\n" )
+        print( "insetchart_name: " + insetchart_name + "\n" )
+        print( "report_name: " + report_name + "\n" )
+        print( "debug: " + str(debug) + "\n" )
     dtk_sft.wait_for_done()
     param_obj = ISS_Support.load_emod_parameters(config_filename)
     simulation_timestep = param_obj[KEY_SIMULATION_TIMESTEP]
     if debug:
-        print "simulation time step is : {0} days".format(simulation_timestep)
+        print( "simulation time step is : {0} days".format(simulation_timestep) )
     output_df = ISS_Support.parse_output_file(stdout_filename, simulation_timestep, debug)
     report_df = ISS_Support.parse_json_report(output_folder, insetchart_name, debug)
     ISS_Support.create_report_file(param_obj, output_df, report_df, report_name, debug)

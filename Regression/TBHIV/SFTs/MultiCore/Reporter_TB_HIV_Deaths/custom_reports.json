@@ -1,0 +1,21 @@
+{	
+   "Custom_Reports": {	
+      "Report_TBHIV_ByAge": {	
+         "Enabled": 1,	
+         "Reports": [	
+            {	
+               "Max_Age_Yrs": 200,	
+               "Min_Age_Yrs": 0,	
+               "Start_Year": 0,	
+               "Stop_Year": 200	
+            }	
+         ]	
+      },
+		"ReportHumanMigrationTracking": {
+			"Enabled": 1,
+			"Reports": [{}
+			]
+		},	  
+      "Use_Explicit_Dlls": 1	
+   }	
+}

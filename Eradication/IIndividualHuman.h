@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -41,6 +41,7 @@ namespace Kernel
         // Inspection
         virtual suids::suid GetSuid() const = 0;
         virtual double GetAge() const = 0;
+        virtual float GetImmuneFailage() const = 0;
         virtual bool IsAdult() const = 0;
         virtual int GetGender() const = 0;
         virtual double GetMonteCarloWeight() const = 0;
@@ -76,7 +77,6 @@ namespace Kernel
         virtual bool IsMigrating() = 0;
         virtual void ClearNewInfectionState() = 0;
         virtual const infection_list_t& GetInfections() const = 0;
-        virtual int GetAbovePoverty() const = 0;    // financially secure = 1, less financially secure = 0
         virtual float GetImmunityReducedAcquire() const = 0;
         virtual float GetInterventionReducedAcquire() const = 0;
         virtual const suids::suid& GetMigrationDestination() = 0;

@@ -5,11 +5,11 @@
             "Population_Scale_Type": "FIXED_SCALING", 
             "MORTALITY": {
                 "Enable_Disease_Mortality": 1, 
-                "Immunity_Mortality_Factor": 1
+                "Post_Infection_Mortality_Multiplier": 1
             }, 
             "IMMUNITY": {
-                "Immunity_Transmission_Factor": 1, 
-                "Immunity_Acquisition_Factor": 1, 
+                "Post_Infection_Transmission_Multiplier": 1, 
+                "Post_Infection_Acquisition_Multiplier": 1, 
                 "Enable_Immune_Decay": 0
             }, 
             "Demographics_Filenames": [

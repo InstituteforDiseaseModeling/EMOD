@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,16 +9,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 
-#ifdef ENABLE_TB
+#ifdef ENABLE_TBHIV
 
 #include "SusceptibilityTB.h"
 #include "Common.h"
 #include "RANDOM.h"
-#ifdef ENABLE_TBHIV
 #include "IndividualCoInfection.h"
-#else
 #include "Individual.h"
-#endif
 
 
 #define CHILD_AGE_YEARS (15.0f)
@@ -35,12 +32,6 @@ namespace Kernel
     float SusceptibilityTBConfig::TB_extrapulmonary_fraction_adult = 0.0f;
 
     TBFastProgressorType::Enum SusceptibilityTBConfig::TB_fast_progressor_fraction_type = TBFastProgressorType::AGE;
-    float SusceptibilityTBConfig::TB_fast_progressor_fraction_above_poverty = 1.0;
-    float SusceptibilityTBConfig::TB_fast_progressor_fraction_below_poverty = 1.0;
-    
-    float SusceptibilityTBConfig::TB_fast_progressor_fraction = 1.0;
-    float SusceptibilityTBConfig::TB_susceptibility_multiplier_below_poverty = 1.0;
-
 
     GET_SCHEMA_STATIC_WRAPPER_IMPL(SusceptibilityTBConfig,SusceptibilityTBConfig)
     BEGIN_QUERY_INTERFACE_BODY(SusceptibilityTBConfig)
@@ -62,15 +53,7 @@ namespace Kernel
         //note for both exponential and gaussian duration, the mean is defined by the total_rate of active_cure_rate and active_mortality_rate, corrected for smear status
         initConfigTypeMap( "TB_Fast_Progressor_Fraction_Child", &TB_fast_progressor_fraction_child, TB_Fast_Progressor_Fraction_Child_DESC_TEXT, 0.0f, 1.0f, 1.0f, "TB_Fast_Progressor_Fraction_Type", "AGE" );
         initConfigTypeMap( "TB_Fast_Progressor_Fraction_Adult", &TB_fast_progressor_fraction_adult, TB_Fast_Progressor_Fraction_Adult_DESC_TEXT, 0.0f, 1.0f, 1.0f, "TB_Fast_Progressor_Fraction_Type", "AGE" );
-        initConfigTypeMap( "TB_Fast_Progressor_Fraction_Above_Poverty", &TB_fast_progressor_fraction_above_poverty, TB_Fast_Pro_Below_Pov_DESC_TEXT, 0.0f, 1.0f, 1.0f, "TB_Fast_Progressor_Fraction_Type", "POVERTY" );
-        initConfigTypeMap( "TB_Fast_Progressor_Fraction_Below_Poverty", &TB_fast_progressor_fraction_below_poverty, TB_Fast_Pro_Below_Pov_DESC_TEXT, 0.0f, 1.0f, 1.0f , "TB_Fast_Progressor_Fraction_Type", "POVERTY");
-        initConfigTypeMap( "TB_Fast_Progressor_Fraction", &TB_fast_progressor_fraction, "TB fast progressor fraction", 0.0f, 1.0f, 1.0f, "TB_Fast_Progressor_Fraction_Type", "POVERTY_SUSCEPTIBILITY_TO_INFECTION");
-        initConfigTypeMap( "TB_Susceptibility_Multiplier_Below_Poverty", &TB_susceptibility_multiplier_below_poverty, TB_Sus_Poverty_DESC_TEST, 0.0f, FLT_MAX, 1.0f, "TB_Fast_Progressor_Fraction_Type", "POVERTY_SUSCEPTIBILITY_TO_INFECTION");
-        
-        initConfigTypeMap( "TB_Fast_Progressor_Fraction_Above_Poverty", &TB_fast_progressor_fraction_above_poverty, Fast_Pro_Pov_DESC_TEXT, 0.0f, 1.0f, 1.0f, "TB_Fast_Progressor_Fraction_Type", "POVERTY_AND_SUSCEPTIBILITY" );
-        initConfigTypeMap( "TB_Fast_Progressor_Fraction_Below_Poverty", &TB_fast_progressor_fraction_below_poverty, TB_Fast_Pro_Below_Pov_DESC_TEXT, 0.0f, 1.0f, 1.0f, "TB_Fast_Progressor_Fraction_Type", "POVERTY_AND_SUSCEPTIBILITY" );
-        initConfigTypeMap( "TB_Fast_Progressor_Fraction", &TB_fast_progressor_fraction, Fast_Pro_Type_DESC_TEXT, 0.0f, 1.0f, 1.0f, "TB_Fast_Progressor_Fraction_Type", "POVERTY_AND_SUSCEPTIBILITY" );
-        initConfigTypeMap( "TB_Susceptibility_Multiplier_Below_Poverty", &TB_susceptibility_multiplier_below_poverty, TB_Sus_Poverty_DESC_TEST, 0.0f, FLT_MAX, 1.0f, "TB_Fast_Progressor_Fraction_Type", "POVERTY_AND_SUSCEPTIBILITY" );
+   
         auto ret = JsonConfigurable::Configure( config );
 
         if (TB_extrapulmonary_fraction_adult + TB_smear_positive_fraction_adult > 1.0f)
@@ -114,7 +97,7 @@ namespace Kernel
         {
             LOG_DEBUG_F("Acqdecayoffset = %f \n", acqdecayoffset);
             if (mod_acquire < 1) { acqdecayoffset -= dt; }
-            if (SusceptibilityConfig::immune_decay && acqdecayoffset < 0 && randgen->e() < SusceptibilityConfig::acqdecayrate * dt)
+            if (SusceptibilityConfig::enable_immune_decay && acqdecayoffset < 0 && randgen->e() < SusceptibilityConfig::acqdecayrate * dt)
             {
                 m_is_immune = false; // the TB immune flag (used for reporting only) represents acquisition immunity since this is basically what BCG gives you
                 mod_acquire = 1.0;            
@@ -161,32 +144,6 @@ namespace Kernel
             }
         }
 
-        if (SusceptibilityTBConfig::TB_fast_progressor_fraction_type == TBFastProgressorType::POVERTY || SusceptibilityTBConfig::TB_fast_progressor_fraction_type == TBFastProgressorType::POVERTY_AND_SUSCEPTIBILITY )
-        {
-            LOG_DEBUG("TB_fast_progressor_fraction_type is poverty \n");
-            IIndividualHumanEventContext * ihec = nullptr;
-            if(parent->QueryInterface( GET_IID( IIndividualHumanEventContext ), (void**)&ihec ) != s_OK)
-            { 
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pIndividual", "IIndividualHumanEventContext", "parent" );
-            }
-            release_assert(ihec);
-
-            if ( ihec->GetAbovePoverty() )
-            {
-                LOG_DEBUG("I'm above poverty \n");
-                fast_fraction = SusceptibilityTBConfig::TB_fast_progressor_fraction_above_poverty;
-            }
-            else
-            {
-                LOG_DEBUG("I'm below poverty  \n");
-                fast_fraction = SusceptibilityTBConfig::TB_fast_progressor_fraction_below_poverty;
-            }
-        }
-        
-        if (SusceptibilityTBConfig::TB_fast_progressor_fraction_type == TBFastProgressorType::POVERTY_SUSCEPTIBILITY_TO_INFECTION || SusceptibilityTBConfig::TB_fast_progressor_fraction_type == TBFastProgressorType::POVERTY_AND_SUSCEPTIBILITY)
-        {
-            fast_fraction = SusceptibilityTBConfig::TB_fast_progressor_fraction;
-        }
         LOG_DEBUG_F("Fast fraction is %f \n", fast_fraction);
         return fast_fraction;
     }
@@ -226,37 +183,26 @@ namespace Kernel
       return m_cough_infectiousness;
     }
 
-    float SusceptibilityTB::getModTransmit() const
+    float SusceptibilityTB::getModTransmit(IndividualHumanCoInfection* phc) const
     {
         float local_modifier = 1.0;
-#ifdef ENABLE_TBHIV
-        IIndividualHumanCoInfection* pInCo = nullptr;
-        if (s_OK == parent->QueryInterface(GET_IID(IIndividualHumanCoInfection), (void **)& pInCo))
+        if (phc->HasHIV())
         {
-            if (pInCo->HasHIV())
-            {
-                local_modifier =  pInCo->GetTBCD4InfectiousnessMap(pInCo->GetCD4());
-            }
+            local_modifier = phc->GetTBCD4InfectiousnessMap(phc->GetCD4());
         }
-#endif
         return mod_transmit * local_modifier;
     }
 
-    float SusceptibilityTB::GetModAcquire() const
-    {
-        float ret = mod_acquire;
-#ifdef ENABLE_TBHIV
-        IIndividualHumanCoInfection* pInCo = nullptr;
 
-        if (s_OK == parent->QueryInterface(GET_IID(IIndividualHumanCoInfection), (void **)&pInCo))
-        {
-            if (pInCo->HasHIV())
+    float SusceptibilityTB::GetModAcquire(IndividualHumanCoInfection* phc) const
+    {
+        float local_modifier = 1.0;
+        if (phc->HasHIV())
             {
-                return (ret * (pInCo->GetCD4SusceptibilityMap(pInCo->GetCD4())));
+                local_modifier = phc->GetCD4SusceptibilityMap(phc->GetCD4());
             }
-        }
-#endif
-        return ret;     
+    
+        return local_modifier * mod_acquire;
     }
 
     float SusceptibilityTB::GetProgressionRiskModulator() const
@@ -306,11 +252,6 @@ namespace Kernel
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pIndividual", "IIndividualHumanEventContext", "parent" );
             }
             release_assert(ihec);
-
-            if ( ! ihec->GetAbovePoverty() )
-            {
-                SetModAcquire( SusceptibilityTBConfig::TB_susceptibility_multiplier_below_poverty );
-            }
         }
     }
 
@@ -353,4 +294,4 @@ namespace Kernel
     }
 }
 
-#endif // ENABLE_TB
+#endif // ENABLE_TBHIV

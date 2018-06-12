@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -29,16 +29,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IWaningEffect.h"
 #include "PythonSupport.h"
 #include "Memory.h"
-//#include "Environment.h"
-//#include "FileSystem.h"
-//#include "Debug.h"
-//#include "StatusReporter.h"
-//#include "Exceptions.h"
-//#include "StandardEventCoordinator.h"
-//#include "IdmMpi.h"
-//#include "IdmString.h"
+#include "FileSystem.h"
+#include "iv_params.rc"
 
 SETUP_LOGGING( "Schema" )
+
+#define CAMP_Use_Defaults_DESC_TEXT "Set to true (1) if you don't want to have to specify all params for event coordinators and interventions. Use at own risk." 
 
 const std::vector<std::string> getSimTypeList()
 {
@@ -54,9 +50,6 @@ const std::vector<std::string> getSimTypeList()
 #endif
 #ifdef ENABLE_POLIO
         , "POLIO_SIM"
-#endif
-#ifdef ENABLE_TB
-        , "TB_SIM"
 #endif
 #ifdef ENABLE_TBHIV
         , "TBHIV_SIM"
@@ -75,6 +68,9 @@ const std::vector<std::string> getSimTypeList()
 #endif
 #ifdef ENABLE_TYPHOID
         , "TYPHOID_SIM"
+#endif
+#ifdef ENABLE_ENVIRONMENTAL
+        , "ENVIRONMENTAL_SIM"
 #endif
     };
 
@@ -110,12 +106,7 @@ void IDMAPI writeInputSchemas(
     if( szOutputPath != "stdout" )
     {
         // Attempt to open output path
-        schema_ostream_file.open( output_path, std::ios::out );
-        if( schema_ostream_file.fail() )
-        {
-            LOG_ERR_F( "Failed to open: %s\n", output_path );
-            return;
-        }
+        FileSystem::OpenFileForWriting( schema_ostream_file, output_path );
     }
     std::ostream &schema_ostream = ( ( szOutputPath == "stdout" ) ? std::cout : schema_ostream_file );
 
@@ -141,24 +132,6 @@ void IDMAPI writeInputSchemas(
 
     
     json::Object configSchemaAll;
-
-    json::Object fakeConfigJson;
-    Configuration * fakeConfigValid = Configuration::CopyFromElement( fakeConfigJson );
-
-    Kernel::EventTriggerFactory::GetInstance()->Configure( fakeConfigValid );
-    json::QuickBuilder etf_schema = Kernel::EventTriggerFactory::GetInstance()->GetSchema();
-    for( auto it = etf_schema.As<json::Object>().Begin(); it != etf_schema.As<json::Object>().End(); ++it )
-    {
-        configSchemaAll.Insert( *it );
-    }
-
-    Kernel::MemoryGauge mg;
-    mg.Configure( fakeConfigValid );
-    json::QuickBuilder mg_schema = mg.GetSchema();
-    for( auto it = mg_schema.As<json::Object>().Begin(); it != mg_schema.As<json::Object>().End(); ++it )
-    {
-        configSchemaAll.Insert( *it );
-    }
 
     for (auto& sim_type : getSimTypeList())
     {
@@ -218,9 +191,10 @@ void IDMAPI writeInputSchemas(
     schema_ostream_file.close();
 
     // PythonSupportPtr can be null during componentTests
-    if( (szOutputPath != "stdout") && (PythonSupportPtr != nullptr) )
+    if( szOutputPath != "stdout" )
     {
-        PythonSupportPtr->RunPostProcessSchemaScript( output_path );
+        std::cout << "Successfully created schema in file " << output_path << ". Attempting to post-process." << std::endl;
+        Kernel::PythonSupport::RunPyFunction( output_path, Kernel::PythonSupport::SCRIPT_POST_PROCESS_SCHEMA );
     }
 }
 

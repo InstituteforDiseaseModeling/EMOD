@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -161,8 +161,43 @@ namespace Kernel
         }
     }
 
+	// Primarily this function returns contagion for the group passed, but can pass nullptr to get total contagion across
+    // all groups -- used for exposure skipping and originally implemented by getting contagion for antigen=0, route=0, group=0.
+    // Skipping can't be used with HINT (so group==1). Shouldn't be used with multistrain either. This seems like it isn't correct
+    // for typhoid (multiroute).
     float StrainAwareTransmissionGroups::GetTotalContagion(const TransmissionGroupMembership_t* transmissionGroupMembership)
     {
+        if( transmissionGroupMembership == nullptr )
+        {
+#if 1 
+            float groupInfectionRate = forceOfInfectionByAntigenRouteGroup[0][0][0]; // TBD: 0s not going to work in all cases!
+            ContagionPopulationImpl contagionPopulation(groupInfectionRate);
+            return ((IContagionPopulation*)&contagionPopulation)->GetTotalContagion();
+#endif
+            /* Below is proposed implementation from @clorton */
+#if 0
+			float total = 0.0f;
+			// Iterate over antigens
+			for (RouteGroupSubstrainMap_t& infectivityForAntigen : sumInfectivityByAntigenRouteGroup)
+			{
+				// For this antigen, iterate over routes
+				for (vector<SubstrainMap_t>& infectivityForRoute : infectivityForAntigen)
+				{
+					// For this antigen and route, iterate over groups
+					for (SubstrainMap_t& substrainsForGroup : infectivityForRoute)
+					{
+						// For this antigen, route, and group, iterate over substrains
+						for (float entry : substrainsForGroup) // TBD: this is still a pair
+						{
+							total += entry;
+						}
+					}
+				}
+			}
+			return total;
+#endif
+        }
+
         float totalInfectivity = 0;
         for (int iAntigen = 0; iAntigen < antigenCount; iAntigen++)
         {
@@ -377,7 +412,7 @@ namespace Kernel
     AntigenId StrainAwareTransmissionGroups::SubstrainPopulationImpl::GetGeneticID( void ) const
     {
         // Never valid code path, have to implement this method due to interface.
-        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__ );
+        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Not valid for SubstrainPopulationImpl" );
     }
 
     float StrainAwareTransmissionGroups::SubstrainPopulationImpl::GetTotalContagion( void ) const

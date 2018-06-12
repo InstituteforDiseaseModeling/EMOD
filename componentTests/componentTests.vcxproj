@@ -54,8 +54,8 @@
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;ENABLE_PYTHON;ENABLE_PYTHON_FEVER;ENABLE_TB;WIN32;_DEBUG;_CONSOLE;_SCL_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions);_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\UnitTest++\src;..\Dependencies\ComputeClusterPack\Include;$(IDM_BOOST_PATH);%(AdditionalIncludeDirectories);..\cajun\include;..\baseReportLib;..\utils\;..\campaign\;..\Eradication\;..\interventions\;..\rapidjson\include;..\rapidjson\modp;..\snappy;$(IDM_PYTHON_PATH)\include;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;ENABLE_PYTHON;ENABLE_PYTHON_FEVER;ENABLE_TBHIV;WIN32;_DEBUG;_CONSOLE;_SCL_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions);_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\UnitTest++\src;..\Dependencies\ComputeClusterPack\Include;$(IDM_BOOST_PATH);%(AdditionalIncludeDirectories);..\cajun\include;..\baseReportLib;..\utils\;..\campaign\;..\Eradication\;..\interventions\;..\rapidjson\include;..\rapidjson\modp;..\snappy;$(IDM_PYTHON3_PATH)\include;</AdditionalIncludeDirectories>
       <FloatingPointModel>Precise</FloatingPointModel>
       <MinimalRebuild>false</MinimalRebuild>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -67,14 +67,14 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>coreLib.lib;baseReportLib.lib;campaign.lib;utils.lib;cajun.lib;snappy.lib;lz4.lib;unittestlib.lib;python27.lib;Dbghelp.lib;ws2_32.lib;msmpi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Dependencies\ComputeClusterPack\Lib\amd64;..\x64\Debug\;$(IDM_PYTHON_PATH)\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>coreLib.lib;baseReportLib.lib;campaign.lib;utils.lib;cajun.lib;snappy.lib;lz4.lib;unittestlib.lib;python36.lib;Dbghelp.lib;ws2_32.lib;msmpi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Dependencies\ComputeClusterPack\Lib\amd64;..\x64\Debug\;$(IDM_PYTHON3_PATH)\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <TargetMachine>MachineX64</TargetMachine>
       <AdditionalOptions>UnitTestLib.lib /WHOLEARCHIVE:coreLib.lib  /WHOLEARCHIVE:baseReportLib.lib campaign.lib cajun.lib utils.lib %(AdditionalOptions)</AdditionalOptions>
-      <IgnoreSpecificDefaultLibraries>python27_d.lib</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>python27.dll</DelayLoadDLLs>
+      <IgnoreSpecificDefaultLibraries>python36_d.lib</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>python36.dll</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -87,8 +87,8 @@
       <MinimalRebuild>false</MinimalRebuild>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;ENABLE_PYTHON;ENABLE_PYTHON_FEVER;ENABLE_TB;WIN32;IDM_EXPORT;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\UnitTest++\src;..\Dependencies\ComputeClusterPack\Include;$(IDM_BOOST_PATH);%(AdditionalIncludeDirectories);..\cajun\include;..\baseReportLib;..\campaign\;..\utils\;..\Eradication\;..\interventions\;..\rapidjson\include;..\rapidjson\modp;..\snappy;$(IDM_PYTHON_PATH)\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;ENABLE_PYTHON;ENABLE_PYTHON_FEVER;ENABLE_TBHIV;WIN32;IDM_EXPORT;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\UnitTest++\src;..\Dependencies\ComputeClusterPack\Include;$(IDM_BOOST_PATH);%(AdditionalIncludeDirectories);..\cajun\include;..\baseReportLib;..\campaign\;..\utils\;..\Eradication\;..\interventions\;..\rapidjson\include;..\rapidjson\modp;..\snappy;$(IDM_PYTHON3_PATH)\include</AdditionalIncludeDirectories>
       <FloatingPointModel>Precise</FloatingPointModel>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -106,10 +106,10 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <TargetMachine>MachineX64</TargetMachine>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
-      <AdditionalDependencies>Dbghelp.lib;python27.lib;msmpi.lib;psapi.lib;ws2_32.lib;snappy.lib;lz4.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Dependencies\ComputeClusterPack\Lib\amd64;..\x64\Release\;$(IDM_PYTHON_PATH)\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Dbghelp.lib;python36.lib;msmpi.lib;psapi.lib;ws2_32.lib;snappy.lib;lz4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Dependencies\ComputeClusterPack\Lib\amd64;..\x64\Release\;$(IDM_PYTHON3_PATH)\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>UnitTestLib.lib /WHOLEARCHIVE:coreLib.lib  /WHOLEARCHIVE:baseReportLib.lib campaign.lib cajun.lib utils.lib %(AdditionalOptions)</AdditionalOptions>
-      <DelayLoadDLLs>python27.dll</DelayLoadDLLs>
+      <DelayLoadDLLs>python36.dll</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
       <Command>copy /y $(SolutionDir)Eradication\$(Platform)\$(Configuration)\Eradication.exe  $(SolutionDir)$(Platform)\$(Configuration)</Command>
@@ -132,20 +132,26 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AdherentDrugTest.cpp" />
     <ClCompile Include="AssortivityTest.cpp" />
     <ClCompile Include="BaseEventReportTest.cpp" />
     <ClCompile Include="BehaviorPfaTest.cpp" />
     <ClCompile Include="CommunityHealthWorkerEventCoordinatorTest.cpp" />
     <ClCompile Include="componentTests.cpp" />
     <ClCompile Include="ConcurrencyParametersTest.cpp" />
+    <ClCompile Include="ConfigureTest.cpp" />
+    <ClCompile Include="DelayedInterventionTest.cpp" />
     <ClCompile Include="FileSystemTest.cpp" />
     <ClCompile Include="FlowControllerImplTest.cpp" />
+    <ClCompile Include="GenomeMarkersTest.cpp" />
     <ClCompile Include="HIVARTStagingByCD4DiagnosticTest.cpp" />
     <ClCompile Include="HIVARTStagingCD4AgnosticDiagnosticTest.cpp" />
     <ClCompile Include="HIVDrawBloodTest.cpp" />
+    <ClCompile Include="IncidenceEventCoordinatorTest.cpp" />
     <ClCompile Include="InterpolatedValueMapTest.cpp" />
     <ClCompile Include="LarvalHabitatMultiplierTest.cpp" />
     <ClCompile Include="LoadBalanceSchemeTest.cpp" />
+    <ClCompile Include="MalariaDrugTypeParametersTest.cpp" />
     <ClCompile Include="MigrateIndividualsTest.cpp" />
     <ClCompile Include="MigrationTest.cpp" />
     <ClCompile Include="NodePropertiesTest.cpp" />
@@ -153,6 +159,8 @@
     <ClCompile Include="NChooserEventCoordinatorTest.cpp" />
     <ClCompile Include="PropertiesTest.cpp" />
     <ClCompile Include="RelationshipParametersTest.cpp" />
+    <ClCompile Include="ReportUtilitiesMalariaTest.cpp" />
+    <ClCompile Include="ReportUtilitiesTest.cpp" />
     <ClCompile Include="SerializationTest.cpp" />
     <ClCompile Include="STIIsPostDebutTest.cpp" />
     <ClCompile Include="HIVSimpleDiagnosticTest.cpp" />
@@ -163,12 +171,12 @@
     <ClCompile Include="PairFormationStatsImplTest.cpp" />
     <ClCompile Include="ProgramOptionsTest.cpp" />
     <ClCompile Include="RateTableImplTest.cpp" />
-    <ClCompile Include="SchemaTest.cpp" />
     <ClCompile Include="SigmoidTest.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="WaningEffectComboTest.cpp" />
     <ClCompile Include="WaningEffectMapTest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

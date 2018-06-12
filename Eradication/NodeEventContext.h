@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -66,7 +66,6 @@ namespace Kernel
         virtual int VisitIndividuals(IVisitIndividual* pIndividualVisitImpl, int limit = -1) = 0;
 
         virtual const NodeDemographics& GetDemographics() = 0;
-        virtual bool GetUrban() const = 0;
         virtual IdmDateTime GetTime() const = 0;
         //virtual float GetYear() const = 0;
 

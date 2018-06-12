@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -32,13 +32,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #endif
 
 #ifndef DISABLE_MALARIA
+#include "GenomeMarkers.h"
 #include "MalariaParameters.h"
 #include "MalariaDrugTypeParameters.h"
-#endif
-
-#ifdef ENABLE_TB
-#include "TBDrugTypeParameters.h" //for TBDrugTypes
-#include "TBParameters.h"
 #endif
 
 #ifdef ENABLE_POLIO
@@ -46,8 +42,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #endif
 
 #ifdef ENABLE_TBHIV
-#include "TBHIVParameters.h"
 #include "TBHIVDrugTypeParameters.h"
+#include "TBHIVParameters.h"
 #endif
 
 SETUP_LOGGING( "SimulationConfig" )
@@ -68,12 +64,13 @@ ISimulationConfigFactory * SimulationConfigFactory::getInstance()
     return _instance;
 }
 
-SimulationConfig* SimulationConfigFactory::CreateInstance(const Configuration * config)
+SimulationConfig* SimulationConfigFactory::CreateInstance(Configuration * config)
 {
     SimulationConfig *SimConfig =  _new_ SimulationConfig();
     release_assert(SimConfig);
     if (SimConfig)
     {           
+        SimConfig->SetFixedParameters(config);
         if (SimConfig->Configure(config))
         {
             SimConfig->AddRef();
@@ -108,6 +105,45 @@ SimulationConfig::~SimulationConfig()
 {
 }
 
+void SimulationConfig::SetFixedParameters(Configuration * inputJson)
+{
+    SimType::Enum sim_type;
+    initConfig("Simulation_Type", sim_type, inputJson, MetadataDescriptor::Enum(Simulation_Type_DESC_TEXT, Simulation_Type_DESC_TEXT, MDD_ENUM_ARGS(SimType))); // simulation only (???move)
+
+    switch (sim_type)
+    {
+    case SimType::MALARIA_SIM:
+        inputJson->Add("Enable_Immunity", 1);
+        inputJson->Add("Enable_Immune_Decay", 1);
+        inputJson->Add("Enable_Maternal_Protection", 0 );
+        break;
+    case SimType::HIV_SIM:
+        inputJson->Add("Enable_Disease_Mortality", 1);
+        inputJson->Add("Enable_Immunity", 1);   //There is no HIV immunity. Switch is used to enable ART.
+        inputJson->Add("Enable_Immune_Decay", 0);   //must exist because Enable_Immunity: 1
+        inputJson->Add("Enable_Immunity_Distribution", 0); //must exist because Enable_Immunity: 1
+        inputJson->Add("Enable_Maternal_Infection_Transmission", 1);
+        inputJson->Add("Enable_Vital_Dynamics", 1);
+        break;
+    case SimType::TYPHOID_SIM:
+        inputJson->Add("Enable_Maternal_Infection_Transmission", 0);  //must exist because fixed-off and depends on Enable_Birth
+        break;
+    case SimType::DENGUE_SIM:
+        inputJson->Add("Enable_Immunity", 1);
+        inputJson->Add("Enable_Immune_Decay", 1);
+        inputJson->Add("Enable_Maternal_Infection_Transmission", 1);
+        break;
+    case SimType::POLIO_SIM:
+        inputJson->Add("Enable_Immunity", 1);
+        inputJson->Add("Enable_Immune_Decay", 1);
+        inputJson->Add("Enable_Immunity_Distribution", 1);
+        inputJson->Add("Enable_Superinfection", 1);
+        inputJson->Add("Enable_Disease_Mortality", 1);
+        inputJson->Add("Enable_Maternal_Infection_Transmission", 0); //must exist because fixed-off and depends on Enable_Birth
+        break;
+    }
+}
+
 bool SimulationConfig::Configure(const Configuration * inputJson)
 {
     LOG_DEBUG( "Configure\n" );
@@ -131,16 +167,10 @@ bool SimulationConfig::Configure(const Configuration * inputJson)
     initConfigTypeMap( "Config_Name",         &ConfigName,   Config_Name_DESC_TEXT );
 
     bool demographics_builtin = false;
-    initConfigTypeMap( "Enable_Demographics_Builtin",               &demographics_builtin,    Enable_Demographics_Initial_DESC_TEXT, false ); // 'global' (3 files)
+    initConfigTypeMap( "Enable_Demographics_Builtin",               &demographics_builtin,    Enable_Demographics_Builtin_DESC_TEXT, false ); // 'global' (3 files)
     initConfigTypeMap( "Default_Geography_Initial_Node_Population", &default_node_population, Default_Geography_Initial_Node_Population_DESC_TEXT, 0, 1e6, 1000, "Enable_Demographics_Builtin");
     initConfigTypeMap( "Default_Geography_Torus_Size",              &default_torus_size,      Default_Geography_Torus_Size_DESC_TEXT,              3, 100,   10, "Enable_Demographics_Builtin");
     initConfigTypeMap( "Node_Grid_Size", &node_grid_size, Node_Grid_Size_DESC_TEXT, 0.004167f, 90.0f, 0.004167f );
-
-    initConfigTypeMap( "Enable_Vital_Dynamics", &vital_dynamics, Enable_Vital_Dynamics_DESC_TEXT, true );
-
-    initConfig( "Death_Rate_Dependence", vital_death_dependence, inputJson, MetadataDescriptor::Enum(Death_Rate_Dependence_DESC_TEXT, Death_Rate_Dependence_DESC_TEXT, MDD_ENUM_ARGS(VitalDeathDependence)), "Enable_Vital_Dynamics" ); // node only (move)
-
-    LOG_DEBUG_F( "Death_Rate_Dependence configured as %s\n", VitalDeathDependence::pairs::lookup_key( vital_death_dependence ) );
 
     initConfig( "Migration_Model",       migration_structure,    inputJson, MetadataDescriptor::Enum(Migration_Model_DESC_TEXT,       Migration_Model_DESC_TEXT,       MDD_ENUM_ARGS(MigrationStructure)) ); // 'global'
 
@@ -149,64 +179,30 @@ bool SimulationConfig::Configure(const Configuration * inputJson)
     initConfigTypeMap( "Enable_Heterogeneous_Intranode_Transmission", &heterogeneous_intranode_transmission_enabled, Enable_Heterogeneous_Intranode_Transmission_DESC_TEXT, false ); // generic
 
     initConfigTypeMap( "Number_Basestrains", &number_basestrains, Number_Basestrains_DESC_TEXT, 1,       10,   1 );
-    initConfigTypeMap( "Number_Substrains",  &number_substrains,  Number_Substrains_DESC_TEXT,  1, 16777216, 256 );
 
-    initConfig( "Immunity_Initialization_Distribution_Type", immunity_initialization_distribution_type, inputJson, MetadataDescriptor::Enum("immunity_initialization_distribution_type", Immunity_Initialization_Distribution_Type_DESC_TEXT, MDD_ENUM_ARGS(DistributionType)), "Enable_Immunity" ); // polio and malaria
-
-    initConfig( "Susceptibility_Scale_Type", susceptibility_scaling, inputJson, MetadataDescriptor::Enum("susceptibility_scaling", Susceptibility_Scale_Type_DESC_TEXT, MDD_ENUM_ARGS(SusceptibilityScaling)) ); // Can be node-level or individual susceptibility-level
-    if( ( susceptibility_scaling == SusceptibilityScaling::LOG_LINEAR_FUNCTION_OF_TIME ) || ( susceptibility_scaling == SusceptibilityScaling::LINEAR_FUNCTION_OF_AGE) )
+    if( this->sim_type != SimType::MALARIA_SIM )
     {
-        initConfigTypeMap( "Susceptibility_Scaling_Rate", &susceptibility_scaling_rate, Susceptibility_Scaling_Rate_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
-    }
-    if( susceptibility_scaling == SusceptibilityScaling::LINEAR_FUNCTION_OF_AGE )
-    {
-        initConfigTypeMap( "Susceptibility_Scaling_Age0_Intercept", &susceptibility_scaling_intercept, Susceptibility_Scaling_Intercept_DESC_TEXT, 0.0f, 1.0f, 0.0f ); 
+        initConfigTypeMap( "Number_Substrains", &number_substrains, Number_Substrains_DESC_TEXT, 1, 16777216, 256 );
     }
 
     //vector enums
-#ifndef DISABLE_VECTOR
-    if (sim_type == SimType::VECTOR_SIM
-#ifndef DISABLE_MALARIA
-        || sim_type == SimType::MALARIA_SIM
-#endif
-#ifdef ENABLE_DENGUE
-        || sim_type == SimType::DENGUE_SIM
-#endif
-        )
+    if (sim_type == SimType::VECTOR_SIM || sim_type == SimType::MALARIA_SIM || sim_type == SimType::DENGUE_SIM )
     {
         VectorInitConfig( inputJson );
 
-#ifndef DISABLE_MALARIA
         if (sim_type == SimType::MALARIA_SIM)
         {
             MalariaInitConfig( inputJson );
         }
-#endif // !DISABLE_MALARIA
     }
-    else
-#endif // !DISABLE_VECTOR
-#ifdef ENABLE_TB
-        if( sim_type == SimType::TB_SIM )
-    {
-        TBInitConfig( inputJson );
-    }
-    else
-#endif
-#ifdef ENABLE_POLIO
-        if (sim_type == SimType::POLIO_SIM)
+    else if (sim_type == SimType::POLIO_SIM)
     {
         PolioInitConfig( inputJson );
     }
-    else
-#endif
-#ifdef ENABLE_TBHIV
-        if( sim_type == SimType::TBHIV_SIM)
+    else if( sim_type == SimType::TBHIV_SIM)
     {
         TBHIVInitConfig( inputJson );
     }
-#else
-    {}
-#endif
 
     // --------------------------------------
     // --- Read the parameters from the JSON
@@ -237,48 +233,22 @@ bool SimulationConfig::Configure(const Configuration * inputJson)
     // ------------------------------------------------------------------
     lloffset = 0.5f * node_grid_size;
 
-#ifndef DISABLE_VECTOR
-    if (sim_type == SimType::VECTOR_SIM
-#ifndef DISABLE_MALARIA
-        || sim_type == SimType::MALARIA_SIM
-#endif
-#ifdef ENABLE_DENGUE
-        || sim_type == SimType::DENGUE_SIM
-#endif
-        )
+    if (sim_type == SimType::VECTOR_SIM || sim_type == SimType::MALARIA_SIM || sim_type == SimType::DENGUE_SIM )
     {
         VectorCheckConfig( inputJson );
-#ifndef DISABLE_MALARIA
         if ( sim_type == SimType::MALARIA_SIM )
         {
             MalariaCheckConfig( inputJson );
         }
-#endif // !DISABLE_MALARIA
     }
-    else
-#endif // !DISABLE_VECTOR
-#ifdef ENABLE_TB
-        if( sim_type == SimType::TB_SIM )
-    {
-        TBCheckConfig( inputJson );
-    }
-    else
-#endif
-#ifdef ENABLE_POLIO
-        if( sim_type == SimType::POLIO_SIM )
+    else if( sim_type == SimType::POLIO_SIM )
     {
         PolioCheckConfig( inputJson );
     }
-    else
-#endif
-#ifdef ENABLE_TBHIV
-        if( sim_type == SimType::TBHIV_SIM )
+    else if( sim_type == SimType::TBHIV_SIM )
     {
         TBHIVCheckConfig( inputJson );
     }
-#else
-    {}
-#endif
 
     return ret;
 }
@@ -292,7 +262,6 @@ QuickBuilder SimulationConfig::GetSchema()
 #if !defined(_DLLS_)
     VectorAddSchema( retJson );
     MalariaAddSchema( retJson );
-    TBAddSchema( retJson );
     PolioAddSchema( retJson );
     TBHIVAddSchema( retJson );
 #endif
@@ -301,18 +270,12 @@ QuickBuilder SimulationConfig::GetSchema()
 }
 
 SimulationConfig::SimulationConfig()
-    : immunity_initialization_distribution_type( DistributionType::DISTRIBUTION_OFF )
-    , migration_structure(MigrationStructure::NO_MIGRATION)
-    , susceptibility_scaling(SusceptibilityScaling::CONSTANT_SUSCEPTIBILITY)
-    , sim_type(SimType::GENERIC_SIM)
-    , vital_death_dependence(VitalDeathDependence::NONDISEASE_MORTALITY_OFF)
-    , susceptibility_scaling_rate(-42.0f)
-    , susceptibility_scaling_intercept(-42.0f)
+    : migration_structure(MigrationStructure::NO_MIGRATION) 
+    , sim_type(SimType::GENERIC_SIM) 
     , demographics_initial(false)
     , default_torus_size( 10 )
     , default_node_population( 1000 )
-    , lloffset(0)
-    , vital_dynamics(false)
+    , lloffset(0) 
     , interventions(false)
     , airtemperature(-42.0f)
     , landtemperature(-42.0f)
@@ -346,12 +309,12 @@ SimulationConfig::SimulationConfig()
     , localmig_filename("UNSPECIFIED")
     , regionmig_filename("UNSPECIFIED")
     , seamig_filename("UNSPECIFIED")
+    , m_jsonConfig(nullptr)
     , vector_params(nullptr)
     , malaria_params(nullptr)
     , tb_params(nullptr)
     , polio_params(nullptr)
     , tbhiv_params(nullptr)
-    , m_jsonConfig( nullptr )
     , tb_drug_names_for_this_sim()
 {
 #ifndef DISABLE_VECTOR
@@ -359,9 +322,7 @@ SimulationConfig::SimulationConfig()
 #endif
 #ifndef DISABLE_MALARIA
     malaria_params = new MalariaParameters();
-#endif
-#ifdef ENABLE_TB
-    tb_params = new TBParameters();
+    malaria_params->pGenomeMarkers = new GenomeMarkers();
 #endif
 #ifdef ENABLE_POLIO
     polio_params = new PolioParameters();
@@ -394,7 +355,7 @@ void SimulationConfig::VectorInitConfig( const Configuration* inputJson )
     initConfigTypeMap( "Egg_Arrhenius1", &(vector_params->eggarrhenius1), Egg_Arrhenius1_DESC_TEXT, 0.0f, 10000000000.0f, 61599956.864f, "Enable_Temperature_Dependent_Egg_Hatching" );
     initConfigTypeMap( "Egg_Arrhenius2", &(vector_params->eggarrhenius2), Egg_Arrhenius2_DESC_TEXT, 0.0f, 10000000000.0f, 5754.033f, "Enable_Temperature_Dependent_Egg_Hatching" );
     initConfigTypeMap( "Enable_Egg_Mortality", &(vector_params->egg_mortality), Enable_Egg_Mortality_DESC_TEXT, false ); // not hooked up yet
-    initConfigTypeMap( "Enable_Drought_Egg_Hatch_Delay", &(vector_params->delayed_hatching_when_habitat_dries_up), Enable_Delayed_Hatching_When_Habitat_Dries_Up_DESC_TEXT, false );
+    initConfigTypeMap( "Enable_Drought_Egg_Hatch_Delay", &(vector_params->delayed_hatching_when_habitat_dries_up), Enable_Drought_Egg_Hatch_Delay_DESC_TEXT, false );
     initConfigTypeMap( "Drought_Egg_Hatch_Delay", &(vector_params->droughtEggHatchDelay), Drought_Egg_Hatch_Delay_DESC_TEXT, 0.0f, 1.0f, 0.33f, "Enable_Drought_Egg_Hatch_Delay" );
 
     // get the larval density dependence parameters 
@@ -408,7 +369,7 @@ void SimulationConfig::VectorInitConfig( const Configuration* inputJson )
 
     //initConfigTypeMap( "Enable_Vector_Species_Habitat_Competition", &enable_vector_species_habitat_competition, VECTOR_Enable_Vector_Species_Habitat_Competition, false );
 
-    initConfigTypeMap( "Enable_Vector_Aging",                 &(vector_params->vector_aging),                        VECTOR_Enable_Aging_DESC_TEXT, false );
+    initConfigTypeMap( "Enable_Vector_Aging",                 &(vector_params->vector_aging),                        Enable_Vector_Aging_DESC_TEXT, false );
     initConfig( "Temperature_Dependent_Feeding_Cycle", vector_params->temperature_dependent_feeding_cycle, inputJson, MetadataDescriptor::Enum(Temperature_Dependent_Feeding_Cycle_DESC_TEXT, Temperature_Dependent_Feeding_Cycle_DESC_TEXT, MDD_ENUM_ARGS(TemperatureDependentFeedingCycle)) ); // vector pop only
 
     initConfigTypeMap( "Mean_Egg_Hatch_Delay",                       &(vector_params->meanEggHatchDelay),                   Mean_Egg_Hatch_Delay_DESC_TEXT, 0, 120, 0 );
@@ -422,7 +383,7 @@ void SimulationConfig::VectorInitConfig( const Configuration* inputJson )
     initConfigTypeMap( "Rainfall_In_mm_To_Fill_Swamp",     &(vector_params->mmRainfallToFillSwamp),         Rainfall_In_mm_To_Fill_Swamp_DESC_TEXT,        1.0f, 10000.0f, 1000.0f );
 
     // This is a key parameter for the mosquito ecology and can vary quite a lot
-    initConfigTypeMap( "x_Temporary_Larval_Habitat", &(vector_params->x_templarvalhabitat), x_Temporary_Larval_Habitat_DESC_TEXT, 0.0f, 10000.0f, 1.0f ); // should this be renamed vector_weight?
+    initConfigTypeMap( "x_Temporary_Larval_Habitat", &(vector_params->x_tempLarvalHabitat), x_Temporary_Larval_Habitat_DESC_TEXT, 0.0f, 10000.0f, 1.0f ); // should this be renamed vector_weight?
 
     vector_params->vector_species_names.value_source = "Vector_Species_Params.*";
     initConfigTypeMap( "Vector_Species_Names", &(vector_params->vector_species_names), Vector_Species_Names_DESC_TEXT );
@@ -444,6 +405,12 @@ void SimulationConfig::VectorInitConfig( const Configuration* inputJson )
 void SimulationConfig::VectorCheckConfig( const Configuration* inputJson )
 {
 #ifndef DISABLE_VECTOR
+    if( Sim_Tstep != 1.0f )
+    {
+        // There has not been sufficient testing for vector related simulations when dt != 1.
+        throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "Vector-based simulations assume that the Simulation_Timestep = 1" );
+    }
+
     if( vector_params->vector_species_names.empty() )
     {
         LOG_WARN("The simulation is being run without any mosquitoes!  Unless this was intentional, please specify the name of one or more vector species in the 'Vector_Species_Names' array and their associated vector species parameters.\n\n                     ,-.\n         `._        /  |        ,\n            `--._  ,   '    _,-'\n     _       __  `.|  / ,--'\n      `-._,-'  `-. \\ : /\n           ,--.-.-`'.'.-.,_-\n         _ `--'-'-;.'.'-'`--\n     _,-' `-.__,-' / : \\\n                _,'|  \\ `--._\n           _,--'   '   .     `-.\n         ,'         \\  |        `\n                     `-'\n\n");
@@ -486,11 +453,13 @@ void SimulationConfig::MalariaInitConfig( const Configuration* inputJson )
     initConfigTypeMap( "Parasite_Smear_Sensitivity", &(malaria_params->parasiteSmearSensitivity), Parasite_Smear_Sensitivity_DESC_TEXT, 0.0001f, 100.0f, 0.1f ); // malaria
     initConfigTypeMap( "New_Diagnostic_Sensitivity", &(malaria_params->newDiagnosticSensitivity), New_Diagnostic_Sensitivity_DESC_TEXT, 0.0001f, 100000.0f, 0.01f ); // malaria
 
+    initConfigTypeMap( "Genome_Markers", &(malaria_params->genome_marker_names), Genome_Markers_DESC_TEXT );
+
     // for schema?
     if( JsonConfigurable::_dryrun )
     {
         std::string drug_name( malaria_drug_placeholder_string );
-        MalariaDrugTypeParameters * mdtp = MalariaDrugTypeParameters::CreateMalariaDrugTypeParameters( inputJson, drug_name );
+        MalariaDrugTypeParameters * mdtp = MalariaDrugTypeParameters::CreateMalariaDrugTypeParameters( inputJson, drug_name, *(malaria_params->pGenomeMarkers) );
         mdtp->Configure( inputJson );
         malaria_params->MalariaDrugMap[ drug_name ] = mdtp;
     }
@@ -503,12 +472,25 @@ void SimulationConfig::MalariaCheckConfig( const Configuration* inputJson )
     // for each key in Malaria_Drug_Params, create/configure MalariaDrugTypeParameters object and add to static map
     try
     {
+        if( (malaria_params->genome_marker_names.size() > 0) &&
+            ((vector_params->vector_sampling_type == VectorSamplingType::VECTOR_COMPARTMENTS_NUMBER) ||
+             (vector_params->vector_sampling_type == VectorSamplingType::VECTOR_COMPARTMENTS_PERCENT)) )
+        {
+            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                                                    "Vector_Sampling_Type", VectorSamplingType::pairs::lookup_key( vector_params->vector_sampling_type ),
+                                                    "Genome_Markers", "<not empty>",
+                                                    "Genome_Markers can only be used with individual vectors (i.e. TRACK_ALL_VECTORS or SAMPLE_IND_VECTORS)." );
+        }
+
+        // number_substrains is not configured from the JSON like the other diseases
+        number_substrains = malaria_params->pGenomeMarkers->Initialize( malaria_params->genome_marker_names );
+
         json::Object mdp = (*EnvPtr->Config)["Malaria_Drug_Params"].As<Object>();
         json::Object::const_iterator itMdp;
         for (itMdp = mdp.Begin(); itMdp != mdp.End(); ++itMdp)
         {
             std::string drug_name( itMdp->name );
-            auto * mdtp = MalariaDrugTypeParameters::CreateMalariaDrugTypeParameters( inputJson, drug_name );
+            auto * mdtp = MalariaDrugTypeParameters::CreateMalariaDrugTypeParameters( inputJson, drug_name, *(malaria_params->pGenomeMarkers) );
             release_assert( mdtp );
             malaria_params->MalariaDrugMap[ drug_name ] = mdtp;
         }
@@ -531,57 +513,6 @@ void SimulationConfig::MalariaAddSchema( json::QuickBuilder& retJson )
 #endif // DISABLE_MALARIA
 }
 
-// ----------------------------------------------------------------------------
-// --- TBParameters
-// ----------------------------------------------------------------------------
-
-void SimulationConfig::TBInitConfig( const Configuration* inputJson )
-{
-#ifdef ENABLE_TB
-
-    tb_drug_names_for_this_sim.value_source = "TB_Drug_Params.*";
-    initConfigTypeMap( "TB_Drug_Types_For_This_Sim", &tb_drug_names_for_this_sim, TB_Drug_Types_For_This_Sim_DESC_TEXT );
-    if( JsonConfigurable::_dryrun )
-    {
-#if !defined(_DLLS_)
-        // for the schema
-        std::string tb_drug_names_array_str( tb_drug_placeholder_string );
-        TBDrugTypeParameters * tbdtp = TBDrugTypeParameters::CreateTBDrugTypeParameters( inputJson, tb_drug_names_array_str );
-        tbdtp->Configure( inputJson );
-        tb_params->TBDrugMap[ tb_drug_names_array_str ] = tbdtp;
-#endif
-    }
-#endif // ENABLE_TB
-}
-
-void SimulationConfig::TBCheckConfig( const Configuration* inputJson )
-{
-#ifdef ENABLE_TB
-    if( tb_drug_names_for_this_sim.empty() )
-    {
-        LOG_INFO("No custom drugs in config file!\n");
-    }
-
-    LOG_DEBUG_F("Reading in drugs \n");
-    for (const auto& tb_drug_name : tb_drug_names_for_this_sim)
-    {
-        LOG_DEBUG_F("Reading in drug %s \n", tb_drug_name.c_str());
-        auto * tbdtp = TBDrugTypeParameters::CreateTBDrugTypeParameters( inputJson, tb_drug_name);
-        release_assert( tbdtp  );
-        tb_params->TBDrugMap[ tb_drug_name ] = tbdtp;
-    }
-#endif // ENABLE_TB
-}
-
-void SimulationConfig::TBAddSchema( json::QuickBuilder& retJson )
-{
-#ifdef ENABLE_TB
-    if( tb_params->TBDrugMap.count( tb_drug_placeholder_string ) > 0 )
-    {
-        retJson["TB_Drug_Params"][ tb_drug_placeholder_string ] = tb_params->TBDrugMap[ tb_drug_placeholder_string ]->GetSchema().As<Object>();
-    }
-#endif // ENABLE_TB
-}
 
 // ----------------------------------------------------------------------------
 // --- PolioParameters
@@ -593,10 +524,6 @@ void SimulationConfig::PolioInitConfig( const Configuration* inputJson )
 
     initConfig( "Evolution_Polio_Clock_Type", polio_params->evolution_polio_clock_type, inputJson, MetadataDescriptor::Enum(Evolution_Polio_Clock_Type_DESC_TEXT, Evolution_Polio_Clock_Type_DESC_TEXT, MDD_ENUM_ARGS(EvolutionPolioClockType)) ); // infection (polio) only
     initConfig( "VDPV_Virulence_Model_Type",  polio_params->VDPV_virulence_model_type,  inputJson, MetadataDescriptor::Enum(VDPV_Virulence_Model_Type_DESC_TEXT,  VDPV_Virulence_Model_Type_DESC_TEXT,  MDD_ENUM_ARGS(VDPVVirulenceModelType))  ); // susceptibility polio only
-    if ((susceptibility_scaling == SusceptibilityScaling::LOG_LINEAR_FUNCTION_OF_TIME) || JsonConfigurable::_dryrun)
-    {
-        initConfigTypeMap( "Susceptibility_Scaling_Rate", &susceptibility_scaling_rate, Susceptibility_Scaling_Rate_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
-    }
     initConfigTypeMap( "Max_Rand_Standard_Deviations", &(polio_params->MaxRandStdDev), Max_Rand_Standard_Deviations_DESC_TEXT, 0.0f, 10.0f, 2.0f);
 
     initConfigTypeMap( "Specific_Infectivity_WPV1",   &(polio_params->PVinf0[0]), Specific_Infectivity_WPV1_DESC_TEXT,   0.0f, 1.0e+3f, 0.004f );
@@ -817,11 +744,10 @@ void SimulationConfig::TBHIVInitConfig( const Configuration* inputJson )
 {
 #ifdef ENABLE_TBHIV
     //TBHIV
-    initConfigTypeMap("CD4_Time_Step", &(tbhiv_params->cd4_time_step), CD4_TimeStep_DESC_TEXT, 1.0, FLT_MAX, 365.0);
-    initConfigTypeMap("Num_CD4_Time_Steps", &(tbhiv_params->num_cd4_time_steps), CD4_Num_Steps_DESC_TEXT, 1, INT_MAX, 10);
-
+    initConfigTypeMap( "TBHIV_Drug_Types", &tb_drug_names_for_this_sim, TB_Drug_Types_For_This_Sim_DESC_TEXT );   
+    
     tb_drug_names_for_this_sim.value_source = "TBHIV_Drug_Params.*";
-    initConfigTypeMap("TBHIV_Drug_Types", &tb_drug_names_for_this_sim, TB_Drug_Types_For_This_Sim_DESC_TEXT);
+
     if (JsonConfigurable::_dryrun)
     {
 #if !defined(_DLLS_)
@@ -832,7 +758,6 @@ void SimulationConfig::TBHIVInitConfig( const Configuration* inputJson )
         tbhiv_params->TBHIVDrugMap[tb_drug_names_array_str] = tbdtp;
 #endif
     }
-
 #endif // ENABLE_TBHIV
 }
 
@@ -863,7 +788,6 @@ void SimulationConfig::TBHIVAddSchema( json::QuickBuilder& retJson )
     {
         retJson["TBHIV_Drug_Params"][tb_drug_placeholder_string] = tbhiv_params->TBHIVDrugMap[tb_drug_placeholder_string]->GetSchema().As<Object>();
     }
-#endif // ENABLE_TBHIV
+#endif // ENABLE_TBHIV 
 }
 }
-

@@ -72,9 +72,9 @@
                     [ 1950, 1954.999, 1955, 1959.999, 1960, 1964.999, 1965, 1969.999, 1970, 1974.999, 1975, 1979.999, 1980, 1984.999, 1985, 1989.999, 1990, 1994.999 ]
                 ]
             }, 
-            "ImmunityDistribution1": 1, 
-            "ImmunityDistribution2": 0,
-            "ImmunityDistributionFlag": 0, 
+            "SusceptibilityDistribution1": 1, 
+            "SusceptibilityDistribution2": 0,
+            "SusceptibilityDistributionFlag": 0, 
             "MigrationHeterogeneityDistribution1": 1, 
             "MigrationHeterogeneityDistribution2": 0,
             "MigrationHeterogeneityDistributionFlag": 0, 

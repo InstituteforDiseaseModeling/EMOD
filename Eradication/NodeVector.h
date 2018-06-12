@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,8 +13,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Node.h"
 #include "VectorHabitat.h"
-#include "VectorPopulation.h"
+#include "IVectorPopulation.h"
 #include "LarvalHabitatMultiplier.h"
+#include "VectorContexts.h"
 
 class ReportVector;
 class VectorSpeciesReport;
@@ -23,6 +24,7 @@ namespace Kernel
 {
     struct IMigrationInfoVector;
     class SpatialReportVector;
+
     class NodeVector : public Node, public IVectorNodeContext, public INodeVector
     {
         GET_SCHEMA_STATIC_WRAPPER(NodeVector)
@@ -46,7 +48,7 @@ namespace Kernel
         virtual float                GetLarvalHabitatMultiplier(VectorHabitatType::Enum type, const std::string& species ) const override;
 
         virtual IIndividualHuman* processImmigratingIndividual(IIndividualHuman*) override;
-        virtual IIndividualHuman* addNewIndividual(float = 1.0f, float = 0.0f, int = 0, int = 0, float = 1.0f, float = 1.0f, float = 1.0f, float = 0.0f) override;
+        virtual IIndividualHuman* addNewIndividual(float = 1.0f, float = 0.0f, int = 0, int = 0, float = 1.0f, float = 1.0f, float = 1.0f) override;
 
         virtual void PopulateFromDemographics() override;
         virtual void SetupIntranodeTransmission() override;
@@ -56,13 +58,13 @@ namespace Kernel
         void         updateVectorLifecycleProbabilities(float dt);
 
         void SetVectorPopulations(void);    //default--1 population as before
-        virtual void AddVectors( const std::string& releasedSpecies, const VectorMatingStructure& _vector_genetics, uint64_t releasedNumber) override;
+        virtual void AddVectors( const std::string& releasedSpecies, const VectorMatingStructure& _vector_genetics, uint32_t releasedNumber) override;
 
         virtual void SetupMigration( IMigrationInfoFactory * migration_factory, 
                                      MigrationStructure::Enum ms,
                                      const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) override;
-        virtual void processImmigratingVector( VectorCohort* immigrant ) override;
-        void processEmigratingVectors();
+        virtual void processImmigratingVector( IVectorCohort* immigrant ) override;
+        void processEmigratingVectors( float dt );
 
         virtual const VectorPopulationReportingList_t& GetVectorPopulationReporting() const override;
 
@@ -81,7 +83,7 @@ namespace Kernel
     protected:
 
         std::map<std::string, VectorHabitatList_t> m_larval_habitats;
-        std::list<VectorPopulation*>  m_vectorpopulations;
+        std::list<IVectorPopulation*>  m_vectorpopulations;
         VectorPopulationReportingList_t m_VectorPopulationReportingList;
 
         VectorProbabilities* m_vector_lifecycle_probabilities;
@@ -95,14 +97,13 @@ namespace Kernel
 
         NodeVector();
         NodeVector(ISimulationContext *context, suids::suid node_suid);
-        virtual void Initialize() override ;
+        virtual void Initialize() override;
 
         virtual void setupEventContextHost() override;
-        virtual void InitializeVectorPopulation(VectorPopulation* vp);
-        void VectorMigrationBasedOnFiles();
-        void VectorMigrationToAdjacentNodes();
+        virtual void InitializeVectorPopulation( IVectorPopulation* vp );
+        void VectorMigrationBasedOnFiles( float dt );
             
-        virtual IIndividualHuman *createHuman( suids::suid id, float MCweight, float init_age, int gender, float init_poverty) override;
+        virtual IIndividualHuman *createHuman( suids::suid id, float MCweight, float init_age, int gender) override;
 
         /* clorton virtual */ const SimulationConfig *params() /* clorton override */;
         IVectorSimulationContext *context() const; // N.B. this is returning a non-const context because of the PostMigratingVector function

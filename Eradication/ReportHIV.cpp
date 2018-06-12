@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -222,7 +222,10 @@ namespace Kernel {
                 break;
 
                 default:
-                    throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "hiv_individual->GetHIVInfection()->GetStage()", hiv_individual->GetHIVInfection()->GetStage() );
+                    throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__,
+                                                             "hiv_individual->GetHIVInfection()->GetStage()",
+                                                             hiv_individual->GetHIVInfection()->GetStage(),
+                                                             HIVInfectionStage::pairs::lookup_key( hiv_individual->GetHIVInfection()->GetStage() ) );
             }
 
             if( hiv_individual->GetHIVInterventionsContainer()->GetArtStatus() == ARTStatus::OFF_BY_DROPOUT )

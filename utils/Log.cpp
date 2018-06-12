@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -199,50 +199,9 @@ SimpleLogger::CheckLogLevel( Logger::tLevel log_level, const char* module )
 
 // Either we have a log_level for this module in the map (intialized at init time), or we use the system log level.
 // Either way, if the requested level is >= the setting (in terms of criticality), log it.
+
 void
 SimpleLogger::Log(
-    Logger::tLevel log_level,
-    const char* module,
-    const char* msg
-)
-{
-    if(_throttle)
-    {
-        if(_logShortHistory.find( module ) != _logShortHistory.end() && _logShortHistory[ module ] == msg ) // FIX THIS
-        {
-            // Throttling because we just saw this message for this module && throttling is on.
-            return;
-        }
-        _logShortHistory[ module ] = msg;
-    }
-
-    if(_initialized)
-    {
-        LogTimeInfo tInfo;
-        GetLogInfo(tInfo);
-
-        fprintf( stdout, "%02d:%02d:%02d [%d] [%s] [%s] %s",  static_cast<int>(tInfo.hours),  static_cast<int>(tInfo.mins),  static_cast<int>(tInfo.secs), _rank, logLevelStrMap[log_level].c_str(), module, msg );
-        if( log_level == Logger::_ERROR || log_level == Logger::WARNING )
-        {
-            // Yes, this line is mostly copy-pasted from above. Yes, I'm comfortable with that. :)
-            fprintf( stderr, "%02d:%02d:%02d [%d] [%s] [%s] %s",  static_cast<int>(tInfo.hours),  static_cast<int>(tInfo.mins),  static_cast<int>(tInfo.secs), _rank, logLevelStrMap[log_level].c_str(), module, msg );
-        }
-    }
-    else
-        fprintf( stdout, "%s", msg );
-
-    if(_flush_all)
-        Flush();
-
-    if( log_level == Logger::WARNING && _warnings_are_fatal )
-    {
-        throw Kernel::WarningException( __FILE__, __LINE__, __FUNCTION__ );
-    }
-}
-
-
-void
-SimpleLogger::LogF(
     Logger::tLevel log_level,
     const char* module,
     const char* msg, ...)
@@ -263,6 +222,15 @@ SimpleLogger::LogF(
         GetLogInfo(tInfo);
 
         fprintf(stdout, "%02d:%02d:%02d [%d] [%s] [%s] ", static_cast<int>(tInfo.hours), static_cast<int>(tInfo.mins), static_cast<int>(tInfo.secs), _rank, logLevelStrMap[log_level].c_str(), module);
+        if (log_level == Logger::_ERROR || log_level == Logger::WARNING)
+        {
+            // Yes, this line is mostly copy-pasted from above. Yes, I'm comfortable with that. :)
+            fprintf(stderr, "%02d:%02d:%02d [%d] [%s] [%s] ", static_cast<int>(tInfo.hours), static_cast<int>(tInfo.mins), static_cast<int>(tInfo.secs), _rank, logLevelStrMap[log_level].c_str(), module);
+            va_list args;
+            va_start(args, msg);
+            vfprintf(stderr, msg, args);
+            va_end(args);
+        }
     }
 
     va_list args;
@@ -297,3 +265,4 @@ SimpleLogger::GetLogInfo( LogTimeInfo &tInfo )
     tInfo.mins = (sim_time - (tInfo.hours*3600))/60;
     tInfo.secs = (sim_time - (tInfo.hours*3600)) - tInfo.mins*60;
 }
+

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,17 +17,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #define ONE_POINT_TWO             (1.2)
 #define MM_PER_METER              (1000.0)
 
-#define DEFAULT_LLIN_COST           (7.56f) // avg price for LLITN is $6.05 plus 25% tax and shipping
-#define DEFAULT_ITN_COST            (3.75f) // avg price for ITN is $3.00 plus 25% tax and shipping
-#define DEFAULT_RETREATMENT_COST    (0.63f) // avg price for retreatment is $0.50 plus 25% tax and shipping
-#define DEFAULT_BARRIER_COST        (3.13f) // avg price of barrier net is ~$2.50 plus tax and shipping to country add another 25%
-#define DEFAULT_IRS_COST            (8)
-#define DEFAULT_SCREENING_COST      (20)
-#define DEFAULT_REPELLENT_COST      (2)
-#define DEFAULT_DRUG_COST           (1)
-#define DEFAULT_AWARENESS_COST      (1)
-
-#define CELSIUS_TO_KELVIN   (273.15) // 273.15f?
+#define CELSIUS_TO_KELVIN   (273.15)
 
 // these parameters govern the evaporation of water based on local humidity and temperature
 // details and equations in vector model manuscript

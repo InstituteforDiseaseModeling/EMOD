@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,26 +21,23 @@ SETUP_LOGGING( "ARTDropout" )
 
 namespace Kernel
 {
-    BEGIN_QUERY_INTERFACE_DERIVED(ARTDropout, GenericDrug)
-    END_QUERY_INTERFACE_DERIVED(ARTDropout, GenericDrug)
+    BEGIN_QUERY_INTERFACE_BODY( ARTDropout )
+        HANDLE_INTERFACE( IConfigurable )
+        HANDLE_INTERFACE( IDistributableIntervention )
+        HANDLE_INTERFACE( IBaseIntervention )
+        HANDLE_ISUPPORTS_VIA( IDistributableIntervention )
+    END_QUERY_INTERFACE_BODY( ARTDropout )
 
     IMPLEMENT_FACTORY_REGISTERED(ARTDropout)
 
     ARTDropout::ARTDropout()
-    : GenericDrug()
-    , itbda(nullptr)
+    : BaseIntervention()
     {
         initSimTypes( 2, "HIV_SIM", "TBHIV_SIM" );
     }
 
     ARTDropout::~ARTDropout()
     {
-    }
-
-    std::string
-    ARTDropout::GetDrugName() const
-    {
-        return std::string("ART");
     }
 
     bool
@@ -59,46 +56,31 @@ namespace Kernel
         ICampaignCostObserver * pCCO
     )
     {
-        LOG_DEBUG_F( "ARTDropout distributed to individual %d.\n", context->GetParent()->GetSuid().data );
-        if (s_OK != context->QueryInterface(GET_IID(IHIVDrugEffectsApply), (void**)&itbda) )
+        bool distributed = BaseIntervention::Distribute( context, pCCO );
+        if( distributed )
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHIVDrugEffectsApply", "IIndividualHumanInterventionsContext" );
-        } 
-        itbda->GoOffART();
-
-        return GenericDrug::Distribute( context, pCCO );
+            LOG_DEBUG_F( "ARTDropout distributed to individual %d.\n", context->GetParent()->GetSuid().data );
+            IHIVDrugEffectsApply* itbda = nullptr;
+            if (s_OK != context->QueryInterface(GET_IID(IHIVDrugEffectsApply), (void**)&itbda) )
+            {
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHIVDrugEffectsApply", "IIndividualHumanInterventionsContext" );
+            } 
+            itbda->GoOffART();
+        }
+        return distributed;
     }
 
-    void
-    ARTDropout::SetContextTo(
-        IIndividualHumanContext *context
-    )
+    void ARTDropout::Update( float dt )
     {
-        if (s_OK != context->GetInterventionsContext()->QueryInterface(GET_IID(IHIVDrugEffectsApply), (void**)&itbda) )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHIVDrugEffectsApply", "IIndividualHumanContext" );
-        } 
-
-        return GenericDrug::SetContextTo( context );
-    }
-
-    void ARTDropout::ApplyEffects()
-    {
-        assert(itbda);
-        //itbda->ApplyDrugVaccineReducedAcquireEffect(GetDrugReducedAcquire());
-        //itbda->ApplyDrugVaccineReducedTransmitEffect(GetDrugReducedTransmit());
-        //itbda->ApplyDrugInactivationRateEffect( GetDrugInactivationRate() );
-        //itbda->ApplyDrugClearanceRateEffect( GetDrugClearanceRate() );
+        Expired();
     }
 
     REGISTER_SERIALIZABLE(ARTDropout);
 
     void ARTDropout::serialize(IArchive& ar, ARTDropout* obj)
     {
-        GenericDrug::serialize( ar, obj );
+        BaseIntervention::serialize( ar, obj );
         ARTDropout& art = *obj;
-
-        // itbda set in SetContextTo
     }
 }
 

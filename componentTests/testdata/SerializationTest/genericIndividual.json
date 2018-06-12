@@ -17,7 +17,8 @@
       "mod_mortality":1,
       "acqdecayoffset":0,
       "trandecayoffset":0,
-      "mortdecayoffset":0
+      "mortdecayoffset":0,
+      "immune_failage":0
     },
     "infections":[],
     "interventions":{

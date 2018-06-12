@@ -1,0 +1,17 @@
+{
+	"Custom_Reports" : {
+		"ReportHumanMigrationTracking" : {
+			"Enabled" : 1,
+			"Reports" : [{}
+			]
+		},
+		"Use_Explicit_Dlls" : 1,
+		"ReportNodeDemographics" : {
+			"Enabled" : 1,
+			"Reports" : [{
+					"Age_Bins" : [40.0, 80.0, 125.0]
+				}
+			]
+		}
+	}
+}

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,6 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <string>
 #include <set>
 #include <vector>
+#include <map>
 
 #include "BoostLibWrapper.h"
 #include "ISupports.h"
@@ -34,6 +35,10 @@ public:
     static Configuration* LoadFromPython(const std::string &configFileName);
     virtual ~Configuration() { delete pElement; }
 
+    void Add(const std::string& elementName, int value);
+    bool Exist(const std::string& name) const override;
+    QuickInterpreter operator[] (const std::string& key) const override;
+
 private:
     // Don't let users create an empty one.
     Configuration( json::Element* element, const std::string& rDataLocation );
@@ -44,6 +49,7 @@ private:
     std::string data_location;
 
     Configuration(); // this ctor only for serialization, the base class will be initialized to an invalid state which deserialization must repair
+    std::map<std::string, json::Number> extendedConfig;
 };
 
 class JsonUtility

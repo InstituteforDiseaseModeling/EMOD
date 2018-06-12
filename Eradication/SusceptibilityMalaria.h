@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -39,6 +39,7 @@ namespace Kernel
         static float antibody_csp_decay_days;
 
     protected:
+        static bool enable_maternal_antibodies_transmission;
         static MaternalAntibodiesType::Enum maternal_antibodies_type;
         static float maternal_antibody_protection;
         static float maternal_antibody_decay_rate;
@@ -46,9 +47,9 @@ namespace Kernel
         static InnateImmuneVariationType::Enum innate_immune_variation_type;
         static float base_gametocyte_mosquito_survival;
         static float cytokine_gametocyte_inactivation;
-        static double anemiaMortalityLevel;
-        static double parasiteMortalityLevel;
-        static double feverMortalityLevel;
+        static float anemiaMortalityLevel;
+        static float parasiteMortalityLevel;
+        static float feverMortalityLevel;
         static float anemiaMortalityInvWidth;
         static float parasiteMortalityInvWidth;
         static float feverMortalityInvWidth;

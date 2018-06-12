@@ -1,0 +1,103 @@
+{
+    "Default_Config_Path":"defaults/tb_default_config.json",
+    "parameters":{
+        "DEMOGRAPHICS":{
+            "Birth_Rate_Dependence":"FIXED_BIRTH_RATE",
+            "Demographics_Filenames": [ "Madagascar_Nosibe_2.5arcmin_demographics.json", "Madagascar_Nosibe_2.5arcmin_demographics_overlay.json" ],
+            "IMMUNITY":{
+                "Acquisition_Blocking_Immunity_Decay_Rate":0,
+                "Acquisition_Blocking_Immunity_Duration_Before_Decay":0,
+                "Post_Infection_Transmission_Multiplier":1,
+                "Transmission_Blocking_Immunity_Decay_Rate":0,
+                "Transmission_Blocking_Immunity_Duration_Before_Decay":0
+            },
+            "MORTALITY":{
+                "Base_Mortality":0.0009589,
+                "Enable_Disease_Mortality":1,
+                "Post_Infection_Mortality_Multiplier":1,
+                "Mortality_Blocking_Immunity_Decay_Rate":0,
+                "Mortality_Blocking_Immunity_Duration_Before_Decay":0
+            },
+            "SAMPLING":{
+                "Individual_Sampling_Type":"FIXED_SAMPLING",
+                "Max_Node_Population_Samples":100,
+                "Sample_Rate_Birth":1
+            }
+        },
+        "DISEASE":{
+            "INCUBATION":{
+                "Base_Incubation_Period":24333.33,
+                "Incubation_Period_Distribution":"EXPONENTIAL_DURATION",
+                "TB_Presymptomatic_Rate":1,
+                "TB_Relapsed_to_Active_Rate":1e-07
+            },
+            "INFECTIOUSNESS":{
+                "Base_Infectious_Period":2433.33,
+                "Base_Infectivity":0,
+                "TB_Active_Presymptomatic_Infectivity_Multiplier":0.0
+            },
+            "Max_Individual_Infections":3,
+            "TRANSMISSION":{
+                "TB_MDR_Fitness_Multiplier":0.65
+            }
+        },
+        "EXECUTION": {
+            "CLUSTER": {
+                "Load_Balance_Filename": "Madagascar_Nosibe_2.5arcmin_load_balancing_8procs.bin",
+                "Num_Cores": 8
+            }
+        }, 
+        "MIGRATION": {
+            "Migration_Model": "FIXED_RATE_MIGRATION", 
+            "Migration_Pattern": "WAYPOINTS_HOME", 
+            "Enable_Migration_Heterogeneity" : 0,
+            "Enable_Family_Migration": 0, 
+            "Family_Migration_Filename": "", 
+            "x_Family_Migration": 1,
+            "Roundtrip_Waypoints": 5,
+                "AIR" : {
+                    "Enable_Air_Migration" : 0,
+                    "Air_Migration_Filename" :""
+                },
+                "LOCAL": {
+                    "Enable_Local_Migration": 1, 
+                    "Local_Migration_Filename": "Madagascar_Nosibe_2.5arcmin_local_migration.bin"
+                }, 
+                "REGIONAL": {
+                    "Enable_Regional_Migration": 0, 
+                    "Regional_Migration_Filename": ""
+               }, 
+               "SEA": {
+                    "Enable_Sea_Migration": 0, 
+                    "Sea_Migration_Filename": ""
+               }
+        },     
+        "OUTPUT":{
+            "Enable_Property_Output": 0
+        },
+        "PRIMARY":{
+            "Config_Name":"35_TBHIV_GroupCoordinator -- multicore -- Madagascar_Nosibe",
+            "ENUMS":{
+                "Simulation_Type":"TBHIV_SIM"
+            },
+            "Geography":"Test",
+            "Node_Grid_Size":0.009,
+            "Run_Number":10400,
+            "Simulation_Duration":400
+        },
+        "STRAIN_TRACKING":{
+            "Number_Substrains":2
+        },
+        "TB":{
+            "TB_Active_Cure_Rate":1e-09,
+            "TB_Active_Mortality_Rate":5e-08,
+            "TB_Fast_Progressor_Rate":1,
+            "TB_Immune_Loss_Fraction":0,
+            "TB_Inactivation_Rate":0,
+            "TB_Latent_Cure_Rate":0,
+            "TB_Smear_Negative_Mortality_Multiplier":0.01,
+            "TB_Smear_Positive_Fraction_Adult":0.5,
+            "TB_Smear_Positive_Fraction_Child":0.5
+        }
+    }
+}

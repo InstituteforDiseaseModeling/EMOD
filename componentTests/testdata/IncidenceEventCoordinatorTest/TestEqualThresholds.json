@@ -1,0 +1,52 @@
+{
+    "class": "IncidenceEventCoordinator",
+    "Number_Repetitions" : 3,
+    "Timesteps_Between_Repetitions" : 6,
+    "Incidence_Counter" :
+    {
+        "Count_Events_For_Num_Timesteps" : 3,
+        "Trigger_Condition_List" :
+        [
+            "NewClinicalCase",
+            "NewSevereCase"
+        ],
+        "Node_Property_Restrictions" :
+        [
+            { "Risk": "HIGH" }
+        ],
+        "Target_Demographic" : "ExplicitAgeRangesAndGender",
+        "Target_Age_Max" : 30,
+        "Target_Age_Min" : 20,
+        "Target_Gender" : "Male",
+        "Demographic_Coverage" : 1,
+        "Property_Restrictions_Within_Node" :
+        [
+            { "Location": "URBAN" }
+        ]
+    },
+    "Responder" :
+    {
+        "Threshold_Type" : "COUNT",
+        "Action_List" :
+        [
+            {
+                "COMMENT" : "!!!!! Two thresholds should be the same !!!!!!",
+                "Threshold" : 20,
+                "Event_To_Broadcast" : "Action_Event_1"
+            },
+            {
+                "Threshold" : 30,
+                "Event_To_Broadcast" : "Action_Event_2"
+            },
+            {
+                "Threshold" : 10,
+                "Event_To_Broadcast" : "Action_Event_2"
+            },
+            {
+                "COMMENT" : "!!!!! Two thresholds should be the same !!!!!!",
+                "Threshold" : 20,
+                "Event_To_Broadcast" : "Action_Event_2"
+            }
+        ]
+    }
+}

@@ -53,6 +53,8 @@ def recurser( in_json ):
                     in_json[a] = "idmAbstractType:Intervention"
                 if in_json[a] == "idmType:IndividualIntervention":
                     in_json[a] = "idmAbstractType:IndividualIntervention"
+                if in_json[a] == "idmType:NodeIntervention":
+                    in_json[a] = "idmAbstractType:NodeIntervention"
                 if in_json[a] == "idmType:EventCoordinator":
                     in_json[a] = "idmAbstractType:EventCoordinator"
                 if in_json[a] == "idmType:CampaignEvent":
@@ -74,7 +76,7 @@ def application( schema_file ):
     with open( schema_file ) as f:
         schema = json.loads( f.read() )
     #print( str(schema) )
-    for a, v in schema.iteritems():
+    for a, v in schema.items():
         print( str(a) )
         if json.dumps( schema[a] ).startswith( "{" ):
             print( "is Object" )
@@ -83,7 +85,7 @@ def application( schema_file ):
         elif json.dumps( schema[a] ).startswith( "[" ):
             print( "is (top level) Array" )
             schema[ str(a) + ".Metadata"] = "IsArray=true"
-            for a,v in v.iteritems():
+            for a,v in v.items():
                 v = recurser( v )
         else:
             print( "Leaf" )

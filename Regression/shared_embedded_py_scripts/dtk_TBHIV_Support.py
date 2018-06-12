@@ -23,7 +23,7 @@ class ConfigKeys:
     KEY_SimulationDuration = "Simulation_Duration"
     KEY_StartTime = "Start_Time"
     class DrugParams:
-        KEY_HivClearanceRate = "TB_Drug_Clearance_Rate_HIV"
+        KEY_HivCureRate = "TB_Drug_Cure_Rate_HIV"
         KEY_TbDrugMortalityRateHIV = "TB_Drug_Mortality_Rate_HIV"
         KEY_PrimaryDecayConstant = "TB_Drug_Primary_Decay_Time_Constant"
         KEY_TbDrugInactivationRateHIV = "TB_Drug_Inactivation_Rate_HIV"

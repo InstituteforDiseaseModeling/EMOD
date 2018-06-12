@@ -6,7 +6,7 @@
             "Demographics_Filenames": [ "../../HIV/input/SA_UN_demographics.json", "../../HIV/input/PFA_overlay.json", "PFA_overlay_Assort_Props.json" ], 
             "MORTALITY": {
                 "Base_Mortality": 0.01, 
-                "Immunity_Mortality_Factor": 0.5
+                "Post_Infection_Mortality_Multiplier": 0.5
             }
         }, 
         "DISEASE": {

@@ -1051,9 +1051,9 @@
                ]
             ]
          }, 
-         "ImmunityDistribution1": 1, 
-         "ImmunityDistribution2": 0, 
-         "ImmunityDistributionFlag": 0, 
+         "SusceptibilityDistribution1": 1, 
+         "SusceptibilityDistribution2": 0, 
+         "SusceptibilityDistributionFlag": 0, 
          "MortalityDistributionFemale": {
             "AxisNames": [
                "age", 

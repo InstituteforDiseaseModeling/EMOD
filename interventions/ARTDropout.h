@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,13 +9,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #pragma once
 
-#include "Drugs.h"
+#include "Interventions.h"
+#include "InterventionFactory.h"    // macros that 'auto'-register classes
 
 namespace Kernel
 {
     struct IHIVDrugEffectsApply;
 
-    class ARTDropout : public GenericDrug
+    class ARTDropout : public BaseIntervention
     {
         DECLARE_FACTORY_REGISTERED(InterventionFactory, ARTDropout, IDistributableIntervention);
 
@@ -27,19 +28,12 @@ namespace Kernel
 
         // ISupports
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
-        virtual void SetContextTo(IIndividualHumanContext *context) override;
 
         // IDistributableIntervention
         virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pCCO ) override;
-
-        virtual std::string GetDrugName() const override;
+        virtual void Update( float dt ) override;
 
     protected:
-        // These have same names as analogous methods on container but are internal for the drug itself.
-
-        virtual void ApplyEffects() override;
-
-        IHIVDrugEffectsApply * itbda;
 
         DECLARE_SERIALIZABLE(ARTDropout);
     };

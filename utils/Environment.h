@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -46,7 +46,6 @@ public:
     SimpleLogger *Log;
     Configuration *Config;
     void* SimConfig;
-    void* pPythonSupport;
     void* pIPFactory;
     void* pNPFactory;
     void* pEventTriggerFactory;
@@ -69,7 +68,6 @@ public:
     // Sets up the environment for this process. Returns false if something went wrong
     static bool Initialize(
         IdmMpi::MessageInterface* pMpi,
-        void* p_python_support,
         std::string configFileName,
         std::string inputPath,
         std::string outputPath,

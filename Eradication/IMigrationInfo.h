@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -39,6 +39,8 @@ namespace Kernel
         // needed for serialization
         virtual void SetContextTo(INodeContext* parent) = 0;
 
+        virtual float GetTotalRate() const = 0;
+        virtual const std::vector<float>& GetCumulativeDistributionFunction() const = 0;
         virtual const std::vector<suids::suid>& GetReachableNodes() const = 0;
         virtual const std::vector<MigrationType::Enum>& GetMigrationTypes() const = 0;
 

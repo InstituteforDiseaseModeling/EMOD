@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -28,6 +28,9 @@ namespace FileSystem
     // an existing directory, the method would return false.
     bool IDMAPI FileExists( const std::string& rFilename );
 
+    // Return true if the given filename exists in the given path.
+    bool IDMAPI FileExistsInPath( const std::string& rPath, const std::string& rFilename );
+
     // Return true if the given directory name exists and is for a directory.  If the
     // name exists and is for a file, the method will return false.
     bool IDMAPI DirectoryExists( const std::string& rDir );
@@ -51,4 +54,13 @@ namespace FileSystem
 
     // Read the given file and return its contents in a string
     std::string IDMAPI *ReadFile( const char* pFilename );
+
+    // Returns a string with the error message related to the system "errno"
+    std::string GetSystemErrorMessage();
+
+    // open the file with the given name and return an input file stream
+    void OpenFileForReading( std::ifstream& rInputStream, const char* pFilename, bool isBinary = false );
+
+    // open the file with the given name and return an output file stream
+    void OpenFileForWriting( std::ofstream& rOutputStream, const char* pFilename, bool isBinary = false, bool isAppend = false );
 };

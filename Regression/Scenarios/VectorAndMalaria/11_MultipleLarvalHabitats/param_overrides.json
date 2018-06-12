@@ -11,7 +11,10 @@
             "Relative_Humidity_Filename": "Namawala_single_node_relative_humidity_daily.bin"
         },
         "DEMOGRAPHICS": {
-            "Demographics_Filenames": ["Namawala_single_node_demographics.json"]
+            "Demographics_Filenames": [
+                "Namawala_single_node_demographics.json"
+            ],
+            "Enable_Initial_Prevalence": 1
         },
         "PRIMARY": {
             "Config_Name": "VectorAndMalaria_11_MultipleLarvalHabitats",
@@ -29,7 +32,7 @@
                 "Vector_Species_Params": {
                     "arabiensis": {
                         "Larval_Habitat_Types": {
-                            "TEMPORARY_RAINFALL": 11250000000, 
+                            "TEMPORARY_RAINFALL": 11250000000,
                             "WATER_VEGETATION": 6000000000
                         }
                     }

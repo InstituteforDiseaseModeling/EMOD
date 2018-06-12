@@ -87,9 +87,10 @@ class HpcMonitor(regression_local_monitor.Monitor):
         jobsubmit_options['/workdir:'] = sim_dir
         jobsubmit_options['/scheduler:'] = self.params.hpc_head_node
         jobsubmit_options['/nodegroup:'] = self.params.hpc_node_group
-        jobsubmit_options['/user:'] = self.params.hpc_user
+        if self.params.hpc_user != '':
+            jobsubmit_options['/user:'] = self.params.hpc_user
         #if self.params.hpc_password != '':
-            #jobsubmit_options['/password:'] = self.params.hpc_password
+        #    jobsubmit_options['/password:'] = self.params.hpc_password
         jobsubmit_options['/jobname:'] = job_name
         jobsubmit_options[hpc_resource_option] = hpc_resource_count
         if self.params.measure_perf:
@@ -104,9 +105,9 @@ class HpcMonitor(regression_local_monitor.Monitor):
         jobsubmit_params = [mpi_command.Commandline]
         jobsubmit_command = clg.CommandlineGenerator(jobsubmit_bin, jobsubmit_options, jobsubmit_params)
 
-        #print 'simulation command line:', eradication_command.Commandline
-        #print 'mpiexec command line:   ', mpi_command.Commandline
-        #print 'job submit command line:', jobsubmit_command.Commandline
+        #print( 'simulation command line:', eradication_command.Commandline )
+        #print( 'mpiexec command line:   ', mpi_command.Commandline )
+        #print( 'job submit command line:', jobsubmit_command.Commandline )
 
         hpc_command_line = jobsubmit_command.Commandline
         if self.scenario_type != 'tests':
@@ -117,7 +118,7 @@ class HpcMonitor(regression_local_monitor.Monitor):
 
         while job_id == -1:
             num_retries += 1
-            #print "executing hpc_command_line: " + hpc_command_line + "\n"
+            #print( "executing hpc_command_line: " + hpc_command_line + "\n")
 
             #p = subprocess.Popen( hpc_command_line.split(), shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
             #p = subprocess.Popen( hpc_command_line.split(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
@@ -128,8 +129,8 @@ class HpcMonitor(regression_local_monitor.Monitor):
             line = hpc_pipe_stdout
 
             if p.returncode == 0:
-                job_id = line.split( ' ' )[-1].strip().rstrip('.')
-                if str.isdigit(job_id) and job_id > 0:
+                job_id = int(line.decode().split( ' ' )[-1].strip().rstrip('.'))
+                if job_id > 0:
                     print( self.scenario_path + " submitted (as job_id " + str(job_id) + ")\n" )
                 else:
                     print( "ERROR: What happened here?  Please send this to Jeff:\n" )
@@ -158,7 +159,7 @@ class HpcMonitor(regression_local_monitor.Monitor):
             lines = hpc_pipe_stdout
             #for line in hpc_pipe.readlines():
             #print lines
-            for line in lines.split('\n'):
+            for line in lines.decode().split('\n'):
                 res = line.split( ':' )
                 #print "DEBUG: " + str(res[0])
                 if res[0].strip() == "State":
@@ -179,12 +180,12 @@ class HpcMonitor(regression_local_monitor.Monitor):
                         print( str(self.__class__.completed) + " out of " + str(len(ru.reg_threads)) + " completed." )
                         check_status = False
 
-                        status_file = open(os.path.join(sim_dir, "status.txt"))
-                        for status_line in status_file.readlines():
-                            if status_line.startswith("Done"):
-                                time_split = status_line.split('-')[1].strip().split(':')
-                                self.duration = datetime.timedelta(hours=int(time_split[0]), minutes=int(time_split[1]), seconds=int(time_split[2]))
-                                break
+                        with open( os.path.join(sim_dir, "status.txt"), "r" ) as status_file:
+                            for status_line in status_file.readlines():
+                                if status_line.startswith("Done"):
+                                    time_split = status_line.split('-')[1].strip().split(':')
+                                    self.duration = datetime.timedelta(hours=int(time_split[0]), minutes=int(time_split[1]), seconds=int(time_split[2]))
+                                    break
 
                         if self.scenario_type == 'tests':
                             if self.params.all_outputs == False:

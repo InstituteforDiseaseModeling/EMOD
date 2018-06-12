@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -54,7 +54,7 @@ SUITE(MigrationTest)
             string statePath("testdata/MigrationTest");
             string dllPath("testdata/MigrationTest");
 
-            Environment::Initialize( m_pMpi, nullptr, configFilename, inputPath, outputPath, dllPath, false );
+            Environment::Initialize( m_pMpi, configFilename, inputPath, outputPath, dllPath, false );
 
             const_cast<Environment*>(Environment::getInstance())->RNG = &m_RandomFake;
             m_pSimulationConfig->sim_type = SimType::VECTOR_SIM ;
@@ -1300,7 +1300,7 @@ SUITE(MigrationTest)
             "Household-Scenario-Small", 
             26,
             1,
-            "I/O error while reading/writing file. Hint: Detected wrong size for migration data file: testdata/MigrationTest/TestWrongSize.bin" );
+            "I/O error while reading/writing. File name =  testdata/MigrationTest/TestWrongSize.bin.  Detected wrong size for migration data file.  Expected 2400 bytes, read 2496 bytes" );
     }
 
     TEST_FIXTURE(MigrationFixture, TestNodeNotFound)
@@ -1334,5 +1334,16 @@ SUITE(MigrationTest)
             4,
             2,
             "In file 'TestInvalidAgeDataSection.bin', the 'To' Node IDs are not the same for the Age Data sections for fromNodeId = 2" );
+    }
+
+    TEST_FIXTURE( MigrationFixture, TestInvalidOffsetValues )
+    {
+        TestHelper_FactoryConfigureException(
+            __LINE__,
+            "testdata/MigrationTest/TestInvalidOffsetValues_config.json",
+            "Household-Scenario-Small",
+            26,
+            26,
+            "I/O error while reading/writing. File name =  TestInvalidOffsetValues.bin.  \nInvalid 'NodeOffsets' in testdata/MigrationTest/TestInvalidOffsetValues.bin.json.\nNode ID=26 has an offset of 0xbadbeef but the '.bin' file size is expected to be 2496(0x9c0)." );
     }
 }

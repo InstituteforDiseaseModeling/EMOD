@@ -1,0 +1,220 @@
+
+{ 
+    "Metadata": 
+    { 
+        "DateCreated": "Sun Sep 25 23:19:55 2011",
+        "Tool": "convertdemog.py",
+        "Author": "jsteinkraus",
+        "IdReference": "Gridded world grump2.5arcmin",
+        "NodeCount": 4
+    },
+    "Defaults": 
+    { 
+        "NodeAttributes": 
+        { 
+            "Airport": 0,
+            "Region": 0,
+            "Seaport": 0,
+            "BirthRate": 6.0000000000000002e-05,
+            "Urban": 0,
+            "AbovePoverty": 0.5
+        },
+        
+        
+            "IndividualProperties": [ 
+           ],
+            
+            
+        "IndividualAttributes": 
+        { 
+            "AgeDistributionFlag": 3,
+            "AgeDistribution1": 9.8907988093599502e-05,
+            "AgeDistribution2": 0,
+            "PrevalenceDistributionFlag": 0,
+            "PrevalenceDistribution1": 0,
+            "PrevalenceDistribution2": 0,
+            "ImmunityDistributionFlag": 0,
+            "ImmunityDistribution1": 1,
+            "ImmunityDistribution2": 0,
+            "RiskDistributionFlag": 0,
+            "RiskDistribution1": 1,
+            "RiskDistribution2": 0,
+            "MigrationHeterogeneityDistributionFlag": 0,
+            "MigrationHeterogeneityDistribution1": 1,
+            "MigrationHeterogeneityDistribution2": 0,
+              "HIVTBCoinfMortalityDistribution": 
+            { 
+                "NumDistributionAxes": 2,
+                "AxisNames": [ "age", "year" ],
+                "AxisUnits": [ "years", "years" ],
+                "AxisScaleFactors": [ 365, 1 ],
+                "NumPopulationGroups": [ 2, 1 ],
+                "PopulationGroups": 
+                [
+                    [ 0, 15 ], 
+                    [ 0 ]
+                ],
+                "ResultUnits": "annual deaths per 1000 individuals",
+                "ResultScaleFactor": 2.739726027397e-06,
+                "ResultValues": 
+                [
+                    [ 14 ], 
+                    [ 14 ]
+                ]
+            },
+            "MortalityDistributionMale": 
+            { 
+                "NumDistributionAxes": 2,
+                "AxisNames": [ "age", "year" ],
+                "AxisUnits": [ "years", "years" ],
+                "AxisScaleFactors": [ 365, 1 ],
+                "NumPopulationGroups": [ 2, 1 ],
+                "PopulationGroups": 
+                [
+                    [ 0, 15 ], 
+                    [ 0 ]
+                ],
+                "ResultUnits": "annual deaths per 1000 individuals",
+                "ResultScaleFactor": 2.739726027397e-06,
+                "ResultValues": 
+                [
+                    [ 14 ], 
+                    [ 14 ]
+                ]
+            },
+             "MortalityDistributionFemale": 
+            { 
+                "NumDistributionAxes": 2,
+                "AxisNames": [ "age", "year" ],
+                "AxisUnits": [ "years", "years" ],
+                "AxisScaleFactors": [ 365, 1 ],
+                "NumPopulationGroups": [ 2, 1 ],
+                "PopulationGroups": 
+                [
+                    [ 0, 15 ], 
+                    [ 0 ]
+                ],
+                "ResultUnits": "annual deaths per 1000 individuals",
+                "ResultScaleFactor": 2.739726027397e-06,
+                "ResultValues": 
+                [
+                    [ 14 ], 
+                    [ 14 ]
+                ]
+            },
+              "FertilityDistribution": 
+            { 
+                "NumDistributionAxes": 2,
+                "AxisNames": [ "age", "year" ],
+                "AxisUnits": [ "years", "years" ],
+                "AxisScaleFactors": [ 365, 1 ],
+                "NumPopulationGroups": [ 2, 1 ],
+                "PopulationGroups": 
+                [
+                    [ 0, 15 ], 
+                    [ 0 ]
+                ],
+                "ResultUnits": "annual births per 1000 individuals",
+                "ResultScaleFactor": 2.739726027397e-06,
+                "ResultValues": 
+                [
+                    [ 14 ], 
+                    [ 14 ]
+                ]
+            },
+            "AgeDistribution": 
+            { 
+                "NumDistributionAxes": 0,
+                "ResultUnits": "years",
+                "ResultScaleFactor": 365,
+                "AxisScaleFactors": 1,
+                "ResultValues": [ 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105 ],
+                "DistributionValues": [ 0, 0.12628108381668385, 0.24245431233900344, 0.3533023698148885, 0.45875849962428278, 0.55738409997867899, 0.64813707143436694, 0.73063900950492378, 0.80406517097106167, 0.86706524705439836, 0.91816322809194439, 0.95601194177663629, 0.98048479533914457, 0.99342612236193306, 0.99847471587500491, 0.99978659273619874, 0.99998469116257593, 0.99999954444987083, 0.99999999668863804, 0.99999999999679268, 0.99999999999999956, 0.99999999999999978 ]
+            },
+			"HIVCoinfectionDistribution": 
+					{ 
+						"NumDistributionAxes": 3,
+						"AxisNames": [ "gender", "time", "age" ],
+						"AxisUnits": [ "male =0, female=1", "years", "years" ],
+						"AxisScaleFactors": [ 1, 365, 365 ],
+						"NumPopulationGroups": [ 2, 3, 4 ],
+						"PopulationGroups": 
+						[
+							[ 0, 1 ], 
+							[ 0, 50, 100],
+							[ 0, 15, 35, 50]
+						],
+						"ResultUnits": "Probability of HIV infection per repetition of HIV Outbreak",
+						"ResultScaleFactor": 0.0,
+						"ResultValues": 
+						[
+							
+							[
+								[1, 1, 1, 1],
+								[1, 1, 1, 1],
+								[1, 1, 1, 1]
+								
+							], 
+							
+							 [
+								[1, 1, 1, 1],
+								[1, 1, 1, 1],
+								[1, 1, 1, 1]
+								
+							]
+	
+						]
+					}
+        }
+    },
+    "Nodes": [ 
+        { 
+            "NodeID": 1,
+           "NodeAttributes": { 
+                  "Latitude": -13.3125,
+                  "Longitude": 48.1875,
+                  "Altitude": 34,
+                  "Area": 25,
+                  "InitialPopulation": 1,
+                  "BirthRate": 0.000113117808219178,
+                  "AbovePoverty": 0,
+                  "Urban": 0
+               }
+     },
+         { "NodeID": 2,
+           "NodeAttributes": { 
+                  "Latitude": -13.2708330154419,
+                  "Longitude": 48.1875,
+                  "Altitude": 19,
+                  "Area": 25,
+                  "InitialPopulation": 1,
+                  "BirthRate": 0.000113117808219178,
+                  "AbovePoverty": 0,
+                  "Urban": 0
+               }
+     },
+         { "NodeID": 3,
+           "NodeAttributes": { 
+                  "Latitude": -13.3541669845581,
+                  "Longitude": 48.2291679382324,
+                  "Altitude": 127,
+                  "Area": 25,
+                  "InitialPopulation": 1,
+                  "BirthRate": 0.000113117808219178,
+                  "AbovePoverty": 0,
+                  "Urban": 0
+               }
+     },
+         { "NodeID": 4,
+           "NodeAttributes": { 
+                  "Latitude": -13.3125,
+                  "Longitude": 48.2291679382324,
+                  "Altitude": 128,
+                  "Area": 25,
+                  "InitialPopulation": 1,
+                  "BirthRate": 0.000113117808219178,
+                  "AbovePoverty": 0,
+                  "Urban": 0
+               }
+        } ]
+}

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -57,13 +57,13 @@ namespace Kernel
     protected:
         virtual const std::string& getSpecies() const;
         virtual const VectorMatingStructure& getVectorGenetics() const;
-        virtual int getNumber() const;
+        virtual uint32_t getNumber() const;
 
     protected:
         jsonConfigurable::ConstrainedString releasedSpecies;
         VectorMatingStructure vector_genetics;
         ResistanceHegGenetics self;
         ResistanceHegGenetics mate;
-        int releasedNumber;
+        uint32_t releasedNumber;
     };
 }

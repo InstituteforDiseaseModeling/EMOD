@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -107,6 +107,15 @@ namespace Kernel
         acquire_effect->SetContextTo( context );
         transmit_effect->SetContextTo( context );
         mortality_effect->SetContextTo( context );
+    }
+
+    bool MultiEffectVaccine::NeedsInfectiousLoopUpdate() const
+    {
+        // ------------------------------------------------------------------------
+        // --- Only mortality blocking impacts the infection directly so only
+        // --- then does the intervention need to be in the infectious update loop.
+        // ------------------------------------------------------------------------
+        return (mortality_effect != nullptr);
     }
 
     REGISTER_SERIALIZABLE(MultiEffectVaccine);

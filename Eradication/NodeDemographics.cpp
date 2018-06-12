@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -47,9 +47,7 @@ const std::string NodeDemographicsFactory::default_node_demographics_str = strin
         \"Airport\": 0, \n\
         \"Region\": 0, \n\
         \"Seaport\": 0, \n\
-        \"BirthRate\": 0.00008715, \n\
-        \"Urban\": 0, \n\
-        \"AbovePoverty\": 0.5 \n\
+        \"BirthRate\": 0.00008715 \n\
     }, \n\
     \"IndividualAttributes\": { \n\
         \"AgeDistributionFlag\": 3, \n\
@@ -58,9 +56,9 @@ const std::string NodeDemographicsFactory::default_node_demographics_str = strin
         \"PrevalenceDistributionFlag\": 0, \n\
         \"PrevalenceDistribution1\": 0.0, \n\
         \"PrevalenceDistribution2\": 0, \n\
-        \"ImmunityDistributionFlag\": 0, \n\
-        \"ImmunityDistribution1\": 0, \n\
-        \"ImmunityDistribution2\": 0, \n\
+        \"SusceptibilityDistributionFlag\": 0, \n\
+        \"SusceptibilityDistribution1\": 0, \n\
+        \"SusceptibilityDistribution2\": 0, \n\
         \"RiskDistributionFlag\": 0, \n\
         \"RiskDistribution1\": 0, \n\
         \"RiskDistribution2\": 0, \n\
@@ -301,7 +299,7 @@ std::string NodeDemographics::getMissingParamHelperMessage(const std::string &mi
     ss << "Was ";
 
     if(missing_param == "AgeDistribution")               ss << "EnableAgeInitializationDistribution set to 1";
-    else if(missing_param == "FertilityDistribution")    ss << "Birth_Rate_Dependence set to INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE or INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR";
+    else if(missing_param == "FertilityDistribution")    ss << "Birth_Rate_Dependence set to INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR";
     else if(missing_param == "MortalityDistribution")    ss << "Death_Rate_Dependence set to NONDISEASE_MORTALITY_BY_AGE_AND_GENDER";
     else if(missing_param == "MortalityDistributionMale")    ss << "Death_Rate_Dependence set to NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER";
     else if(missing_param == "MortalityDistributionFemale")    ss << "Death_Rate_Dependence set to NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER";
@@ -379,9 +377,7 @@ std::vector<std::string> NodeDemographicsFactory::ConvertLegacyStringToSet(const
 
 bool NodeDemographicsFactory::Configure(const Configuration* config)
 {
-    std::string legacy_filename;
     default_node_population = 1000;
-    initConfigTypeMap( "Demographics_Filename", &legacy_filename, Demographics_Filename_DESC_TEXT );
     initConfigTypeMap( "Demographics_Filenames", &demographics_filenames_list, Demographics_Filenames_DESC_TEXT );
 
     bool resetDefaults = JsonConfigurable::_useDefaults;
@@ -389,31 +385,17 @@ bool NodeDemographicsFactory::Configure(const Configuration* config)
     JsonConfigurable::_useDefaults=true;
     JsonConfigurable::_track_missing=false;
     bool configured = JsonConfigurable::Configure( config );
-    if( !JsonConfigurable::_dryrun && 
-        (legacy_filename != JsonConfigurable::default_string) && 
-        (demographics_filenames_list.size() > 0) )
-    {
-        throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Demographics_Filename", legacy_filename.c_str(), "Demographics_Filenames", "<not empty>", "Must specify one or the other but not both." );
-    }
     JsonConfigurable::_useDefaults = resetDefaults;
     JsonConfigurable::_track_missing = resetTrackMissing;
 
     if (demographics_filenames_list.empty() && !JsonConfigurable::_dryrun)
     {
-        if (legacy_filename.compare("UNINITIALIZED")!=0)
-        {
-            LOG_WARN("DeprecationWarning: Specification of multiple files with \"Demographics_Filename\" parameter as semicolon-delimited string will soon be deprecated. Use the \"Demographics_Filenames\" parameter (note plural) and specify its value as a JSON array, e.g. \"Demographics_Filenames\" : [\"filename1\",\"filename2\"]\n");
-            demographics_filenames_list = ConvertLegacyStringToSet(legacy_filename);
-        }
-        else
-        {
-            throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, config->GetDataLocation().c_str(), "Demographics_Filenames" );
-        }
+        throw MissingParameterFromConfigurationException( __FILE__, __LINE__, __FUNCTION__, config->GetDataLocation().c_str(), "Demographics_Filenames" );
     }
 
     // -------------------------------------------------------------------------------------
     // --- Allow_NodeID_Zero is an undocumented control that allows users to have
-    // --- demographics files with nodeID = 0.  This was created for backward compatability.
+    // --- demographics files with nodeID = 0.  This was created for backward compatibility.
     // -------------------------------------------------------------------------------------
     allow_nodeid_zero = false;
     if( !JsonConfigurable::_dryrun && (config != nullptr) )
@@ -879,7 +861,7 @@ string NodeDemographicsFactory::GetNextStringValue(string last_value, set<string
             last_value += 'a';
     }
     
-    throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__ );
+    throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Shouldn't get here." );
 }
 
 void NodeDemographicsFactory::WriteDefaultDemographicsFile( const std::string& rFilename )
@@ -918,11 +900,7 @@ void NodeDemographicsFactory::WriteDefaultDemographicsFile( const std::string& r
     std::string text = writer.PrettyText();
 
     std::ofstream json_file;
-    json_file.open( rFilename );
-    if( json_file.fail() )
-    {
-        throw FileIOException( __FILE__, __LINE__, __FUNCTION__, rFilename.c_str() );
-    }
+    FileSystem::OpenFileForWriting( json_file, rFilename.c_str() );
     json_file << text ;
     json_file.close();
 }
@@ -1321,7 +1299,7 @@ NodeDemographicsDistribution* NodeDemographicsDistribution::CreateDistribution( 
         double result_scale_factor = demographics["ResultScaleFactor"].AsDouble();
 
         std::vector< std::vector<double> > dist_values;
-        if( demographics.string_table->count("DistributionValues") != 0  &&  demographics.Contains("DistributionValues") )
+        if( (demographics.string_table->count("DistributionValues") != 0)  &&  demographics.Contains("DistributionValues") )
         {
             // -------------------------------------------------------------------------------------------
             // --- Create the vector indicating how many elements should be expected in the distribution
@@ -1343,12 +1321,19 @@ NodeDemographicsDistribution* NodeDemographicsDistribution::CreateDistribution( 
             result_values.resize(dist_values[0].size());
             applyResultScaleFactor(result_values_orig, result_values, result_scale_factor, 1, 0);
         }
-        else
+        else if( num_pop_groups.size() > 0 )
         {
             CheckArraySize( false, demographics.GetJsonKey(), demographics.GetNodeID(),  "ResultValues", num_pop_groups, 0, -1, -1, result_values_orig );
 
             result_values.resize(total_pop_groups);
             applyResultScaleFactor(result_values_orig, result_values, result_scale_factor, 1, 0);
+        }
+        else
+        {
+            std::stringstream ss;
+            ss << demographics.GetJsonKey() << " for NodeID=" << demographics.GetNodeID();
+            ss << " is missing a 'DistributionValues' element. ";
+            throw NodeDemographicsFormatErrorException( __FILE__, __LINE__, __FUNCTION__, "UNKNOWN", ss.str().c_str() );
         }
 
         // create the NodeDemographicsDistribution pointer to return

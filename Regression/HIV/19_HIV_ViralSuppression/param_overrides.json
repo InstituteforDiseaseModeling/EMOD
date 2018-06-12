@@ -1,26 +1,19 @@
 {
-    "Default_Config_Path": "defaults/hiv_default_config.json", 
-    "Listed_Events": [ "OnART1" ],
+    "Default_Config_Path": "defaults/hiv_default_config.json",
+    "Listed_Events": [
+        "OnART1"
+    ],
     "parameters": {
-
-        "____________SIMULATION___________": "",
-            "Simulation_Duration": 2000, 
-
-        "____________INTRAHOST___________": "",
-
-        "____________NETWORK___________": "",
-
-        "____________TRANSMISSION___________": "",
-
-        "ART_Viral_Suppression_Multiplier": 0.3, 
-
+        "ART_Viral_Suppression_Multiplier": 0.3,
+        "Base_Population_Scale_Factor": 0.0001,
+        "Config_Name": "19_HIV_ViralSuppression",
+        "Simulation_Duration": 2000,
         "____________DEMOGRAPHICS___________": "",
-            "Base_Population_Scale_Factor": 0.0001,
-
-        "____________REPORTING___________": "",
-
+        "____________INTRAHOST___________": "",
+        "____________NETWORK___________": "",
         "____________RARELY_CHANGED___________": "",
-            "Config_Name": "19_HIV_ViralSuppression"
-
+        "____________REPORTING___________": "",
+        "____________SIMULATION___________": "",
+        "____________TRANSMISSION___________": ""
     }
 }

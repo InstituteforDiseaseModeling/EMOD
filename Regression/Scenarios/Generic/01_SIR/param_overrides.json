@@ -10,8 +10,7 @@
                 "Enable_Immune_Decay": 0
             },
             "MORTALITY": {
-                "Base_Mortality": 0,
-                "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF"
+                "Base_Mortality": 0
             },
             "SAMPLING": {
                 "Sample_Rate_Birth": 1

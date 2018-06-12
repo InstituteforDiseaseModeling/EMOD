@@ -1,36 +1,31 @@
 {
     "CLIMATE": {
-        "Climate_Model": "CLIMATE_CONSTANT", 
+        "Climate_Model": "CLIMATE_CONSTANT",
         "FILENAMES": {
-            "Rainfall_Filename": "",
             "Air_Temperature_Filename": "",
-            "Relative_Humidity_Filename": "",
-            "Land_Temperature_Filename": ""
+            "Land_Temperature_Filename": "",
+            "Rainfall_Filename": "",
+            "Relative_Humidity_Filename": ""
         }
-    }, 
+    },
     "DEMOGRAPHICS": {
-        "Demographics_Filenames": ["Namawala_multi_node_demographics.json"],
+        "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER",
+        "Demographics_Filenames": [
+            "Namawala_multi_node_demographics.json"
+        ],
         "Enable_Birth": 1,
-        "Enable_Nondisease_Mortality": 1,
-        "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER"
+        "Enable_Initial_Prevalence": 1,
+        "Enable_Natural_Mortality": 1,
+        "Enable_Nondisease_Mortality": 1
     },
     "Default_Config_Path": "defaults/malaria_default_config.json",
-    "PRIMARY": {
-        "Config_Name": "24_Malaria_SurveyrReport_Multicore",
-        "Custom_Reports_Filename" : "custom_reports.json",
-        "Geography": "Namawala",
-        "Run_Number": 68,
-        "Num_Cores" : 8,
-        "Simulation_Duration": 85,
-        "Enable_Interventions": 1
-    },
     "GENERAL_DISEASE": {
         "Infection_Updates_Per_Timestep": 8,
         "PKPD_Model": "CONCENTRATION_VERSUS_TIME"
     },
     "MALARIA": {
         "Antibody_Memory_Level": 0.3,
-        "Antigen_Switch_Rate": 5e-9,
+        "Antigen_Switch_Rate": 5e-09,
         "Base_Gametocyte_Production_Rate": 0.1,
         "Falciparum_MSP_Variants": 100,
         "Falciparum_Nonspecific_Types": 20,
@@ -38,70 +33,115 @@
     },
     "Malaria_Drug_Params": {
         "DHA": {
+            "Bodyweight_Exponent": 1,
             "Drug_Cmax": 200,
             "Drug_Decay_T1": 0.12,
             "Drug_Decay_T2": 0.12,
-            "Drug_Vd": 1,
-            "Drug_PKPD_C50": 6,
-            "Drug_Fulltreatment_Doses": 3,
             "Drug_Dose_Interval": 1,
+            "Drug_Fulltreatment_Doses": 3,
             "Drug_Gametocyte02_Killrate": 2.3,
             "Drug_Gametocyte34_Killrate": 0,
             "Drug_GametocyteM_Killrate": 0,
             "Drug_Hepatocyte_Killrate": 0,
-            "Max_Drug_IRBC_Kill": 9.2,
-            "Bodyweight_Exponent": 1,
+            "Drug_PKPD_C50": 6,
+            "Drug_Vd": 1,
             "Fractional_Dose_By_Upper_Age": [
                 {
-                    "Upper_Age_In_Years": 2,
-                    "Fraction_Of_Adult_Dose": 0.17
+                    "Fraction_Of_Adult_Dose": 0.17,
+                    "Upper_Age_In_Years": 2
                 },
                 {
-                    "Upper_Age_In_Years": 6,
-                    "Fraction_Of_Adult_Dose": 0.33
+                    "Fraction_Of_Adult_Dose": 0.33,
+                    "Upper_Age_In_Years": 6
                 },
                 {
-                    "Upper_Age_In_Years": 11,
-                    "Fraction_Of_Adult_Dose": 0.67
+                    "Fraction_Of_Adult_Dose": 0.67,
+                    "Upper_Age_In_Years": 11
                 }
-            ]
+            ],
+            "Max_Drug_IRBC_Kill": 9.2
         },
         "Piperaquine": {
+            "Bodyweight_Exponent": 0,
             "Drug_Cmax": 30,
             "Drug_Decay_T1": 0.17,
             "Drug_Decay_T2": 41,
-            "Drug_Vd": 49,
-            "Drug_PKPD_C50": 5,
-            "Drug_Fulltreatment_Doses": 3,
             "Drug_Dose_Interval": 1,
+            "Drug_Fulltreatment_Doses": 3,
             "Drug_Gametocyte02_Killrate": 0,
             "Drug_Gametocyte34_Killrate": 0,
             "Drug_GametocyteM_Killrate": 0,
             "Drug_Hepatocyte_Killrate": 0,
-            "Max_Drug_IRBC_Kill": 4.6,
-            "Bodyweight_Exponent": 0,
+            "Drug_PKPD_C50": 5,
+            "Drug_Vd": 49,
             "Fractional_Dose_By_Upper_Age": [
                 {
-                    "Upper_Age_In_Years": 2,
-                    "Fraction_Of_Adult_Dose": 0.17
+                    "Fraction_Of_Adult_Dose": 0.17,
+                    "Upper_Age_In_Years": 2
                 },
                 {
-                    "Upper_Age_In_Years": 6,
-                    "Fraction_Of_Adult_Dose": 0.33
+                    "Fraction_Of_Adult_Dose": 0.33,
+                    "Upper_Age_In_Years": 6
                 },
                 {
-                    "Upper_Age_In_Years": 11,
-                    "Fraction_Of_Adult_Dose": 0.67
+                    "Fraction_Of_Adult_Dose": 0.67,
+                    "Upper_Age_In_Years": 11
                 }
-            ]
+            ],
+            "Max_Drug_IRBC_Kill": 4.6
         }
+    },
+    "OUTPUT": {
+        "Enable_Spatial_Output": 1,
+        "Spatial_Output_Channels": [
+            "Population",
+            "New_Infections",
+            "Prevalence",
+            "Adult_Vectors",
+            "New_Diagnostic_Prevalence", 
+            "New_Clinical_Cases"
+        ]
+    },
+    "PRIMARY": {
+        "Config_Name": "24_Malaria_SurveyrReport_Multicore",
+        "Custom_Reports_Filename": "custom_reports.json",
+        "Enable_Interventions": 1,
+        "Geography": "Namawala",
+        "Num_Cores": 8,
+        "Run_Number": 68,
+        "Simulation_Duration": 85
+    },
+    "STRAIN_TRACKING": {
+        "Number_Basestrains": 2,
+        "Genome_Markers" : [
+            "gm01",
+            "gm02",
+            "gm03",
+            "gm04",
+            "gm05",
+            "gm06",
+            "gm07",
+            "gm08",
+            "gm09",
+            "gm10",
+            "gm11",
+            "gm12",
+            "gm13",
+            "gm14",
+            "gm15",
+            "gm16",
+            "gm17",
+            "gm18",
+            "gm19",
+            "gm20",
+            "gm21",
+            "gm22",
+            "gm23",
+            "gm24"
+        ]
     },
     "VECTOR": {
         "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
         "x_Temporary_Larval_Habitat": 0.02
-    },
-    "STRAIN_TRACKING": {
-        "Number_Basestrains": 2,
-        "Number_Substrains": 16777216
     }
 }

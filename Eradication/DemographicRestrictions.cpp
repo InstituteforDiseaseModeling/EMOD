@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -20,24 +20,11 @@ SETUP_LOGGING( "DemographicRestrictions" )
 
 namespace Kernel
 {
-    DemographicRestrictions::DemographicRestrictions()
-    : allow_age_restrictions(true)
-    , demographic_coverage(DEFAULT_DEMOGRAPHIC_COVERAGE)
-    , default_target_demographic(TargetDemographicType::Everyone)
-    , target_demographic(default_target_demographic)
-    , target_age_min_years(0)
-    , target_age_max_years(FLT_MAX)
-    , target_age_min_days(0)
-    , target_age_max_days(FLT_MAX)
-    , target_gender(TargetGender::All)
-    , property_restrictions_set()
-    , property_restrictions()
-    , target_residents_only( false )
-    {
-    }
-
-    DemographicRestrictions::DemographicRestrictions( bool age_restrictions, TargetDemographicType::Enum defaultTargetDemographic )
+    DemographicRestrictions::DemographicRestrictions( bool age_restrictions,
+                                                      TargetDemographicType::Enum defaultTargetDemographic,
+                                                      bool use_coverage )
     : allow_age_restrictions(age_restrictions)
+    , use_demographic_coverage( use_coverage )
     , demographic_coverage(DEFAULT_DEMOGRAPHIC_COVERAGE)
     , default_target_demographic(defaultTargetDemographic)
     , target_demographic(default_target_demographic)
@@ -54,14 +41,17 @@ namespace Kernel
 
     void DemographicRestrictions::ConfigureRestrictions( JsonConfigurable* pParent, const Configuration * inputJson )
     {
-        pParent->initConfigTypeMap( "Demographic_Coverage", 
-                                    &demographic_coverage,
-                                    Demographic_Coverage_DESC_TEXT,
-                                    0.0, 
-                                    1.0, 
-                                    DEFAULT_DEMOGRAPHIC_COVERAGE/*, 
-                                    "Intervention_Config.*.iv_type", 
-                                    "IndividualTargeted"*/ );
+        if( use_demographic_coverage )
+        {
+            pParent->initConfigTypeMap( "Demographic_Coverage", 
+                                        &demographic_coverage,
+                                        Demographic_Coverage_DESC_TEXT,
+                                        0.0, 
+                                        1.0, 
+                                        DEFAULT_DEMOGRAPHIC_COVERAGE/*, 
+                                        "Intervention_Config.*.iv_type", 
+                                        "IndividualTargeted"*/ );
+        }
 
         release_assert( default_target_demographic == TargetDemographicType::Everyone );
         if( JsonConfigurable::_dryrun ||

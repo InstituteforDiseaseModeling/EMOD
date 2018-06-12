@@ -31,7 +31,7 @@
             [
                 {
                     "Pretty_Format" : 1,
-                    "Age_Bins" : [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 1000 ],
+                    "Age_Bins" : [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125 ],
                     "Parasitemia_Bins" : [ -1, 50, 500, 5000, 50000, 3.402823466385e+38 ],
                     "Start_Day": 0,
                     "Duration_Days" : 10000,
@@ -56,7 +56,7 @@
             [
                 {
                     "Pretty_Format" : 1,
-                    "Age_Bins" : [20, 40, 60, 80, 100, 1000 ],
+                    "Age_Bins" : [20, 40, 60, 80, 100, 125 ],
                     "Start_Day": 0,
                     "Duration_Days" : 10000,
                     "Nodeset_Config": {
@@ -70,6 +70,136 @@
                     "COMMENT" : "Simulation_Duration is 85.  I want the situation where the report has data but it didnt write it during EndTimestep.",
                     "Max_Number_Reports": 4,
                     "Reporting_Interval": 25
+                }
+            ]
+        },
+        "SpatialReportMalariaFiltered" :
+        {
+            "Enabled" : 1,
+            "Reports" :
+            [
+                {
+                    "Report_File_Name" : "SpatialReportMalariaFiltered_dt85_time00to34_nodes1234",
+                    "Start_Day" : 0,
+                    "End_Day" : 34,
+                    "Reporting_Interval" : 8.5,
+                    "Spatial_Output_Channels" : [
+                        "Population",
+                        "New_Infections",
+                        "Prevalence",
+                        "Adult_Vectors",
+                        "New_Diagnostic_Prevalence", 
+                        "New_Clinical_Cases"
+                    ],
+                    "Node_IDs_Of_Interest" : [ 1, 2, 3, 4 ]
+                },
+                {
+                    "Report_File_Name" : "SpatialReportMalariaFiltered_dt85_time34to85_nodes1234",
+                    "Start_Day" : 34,
+                    "End_Day" : 85,
+                    "Reporting_Interval" : 8.5,
+                    ".Spatial_Output_Channels" : [
+                        "Adult_Vectors"
+                    ],
+                    "Spatial_Output_Channels" : [
+                        "Population",
+                        "New_Infections",
+                        "Prevalence",
+                        "Adult_Vectors",
+                        "New_Diagnostic_Prevalence", 
+                        "New_Clinical_Cases"
+                    ],
+                    "Node_IDs_Of_Interest" : [ 1, 2, 3, 4 ]
+                },
+                {
+                    "Report_File_Name" : "SpatialReportMalariaFiltered_dt85_time00to85_nodes1234",
+                    "Start_Day" : 0,
+                    "End_Day" : 85,
+                    "Reporting_Interval" : 8.5,
+                    "Spatial_Output_Channels" : [
+                        "Population",
+                        "New_Infections",
+                        "Prevalence",
+                        "Adult_Vectors",
+                        "New_Diagnostic_Prevalence", 
+                        "New_Clinical_Cases"
+                    ],
+                    "Node_IDs_Of_Interest" : [ 1, 2, 3, 4 ]
+                },
+                {
+                    "Report_File_Name" : "SpatialReportMalariaFiltered_dt85_time00to34_nodes5678",
+                    "Start_Day" : 0,
+                    "End_Day" : 34,
+                    "Reporting_Interval" : 8.5,
+                    "Spatial_Output_Channels" : [
+                        "Population",
+                        "New_Infections",
+                        "Prevalence",
+                        "Adult_Vectors",
+                        "New_Diagnostic_Prevalence", 
+                        "New_Clinical_Cases"
+                    ],
+                    "Node_IDs_Of_Interest" : [ 5, 6, 7, 8 ]
+                },
+                {
+                    "Report_File_Name" : "SpatialReportMalariaFiltered_dt85_time34to85_nodes5678",
+                    "Start_Day" : 34,
+                    "End_Day" : 85,
+                    "Reporting_Interval" : 8.5,
+                    "Spatial_Output_Channels" : [
+                        "Population",
+                        "New_Infections",
+                        "Prevalence",
+                        "Adult_Vectors",
+                        "New_Diagnostic_Prevalence", 
+                        "New_Clinical_Cases"
+                    ],
+                    "Node_IDs_Of_Interest" : [ 5, 6, 7, 8 ]
+                },
+                {
+                    "Report_File_Name" : "SpatialReportMalariaFiltered_dt85_time00to85_nodes5678",
+                    "Start_Day" : 0,
+                    "End_Day" : 85,
+                    "Reporting_Interval" : 8.5,
+                    "Spatial_Output_Channels" : [
+                        "Population",
+                        "New_Infections",
+                        "Prevalence",
+                        "Adult_Vectors",
+                        "New_Diagnostic_Prevalence", 
+                        "New_Clinical_Cases"
+                    ],
+                    "Node_IDs_Of_Interest" : [ 5, 6, 7, 8 ]
+                },
+                {
+                    "Report_File_Name" : "SpatialReportMalariaFiltered_dt85_time00to85_nodesAll",
+                    "Start_Day" : 0,
+                    "End_Day" : 85,
+                    "Reporting_Interval" : 8.5,
+                    "Spatial_Output_Channels" : [
+                        "Population",
+                        "New_Infections",
+                        "Prevalence",
+                        "Adult_Vectors",
+                        "New_Diagnostic_Prevalence", 
+                        "New_Clinical_Cases"
+                    ],
+                    "Node_IDs_Of_Interest" : [ 1, 2, 3, 4, 5, 6, 7, 8 ]
+                },
+                {
+                    "Report_File_Name" : "SpatialReportMalariaFiltered_dt1_time00to85_nodesAll",
+                    "Start_Day" : 0,
+                    "End_Day" : 85,
+                    "Reporting_Interval" : 1,
+                    "Spatial_Output_Channels" : [
+                        "Population",
+                        "New_Infections",
+                        "Prevalence",
+                        "Adult_Vectors",
+                        "New_Diagnostic_Prevalence", 
+                        "New_Clinical_Cases"
+                    ],
+                    "Node_IDs_Of_Interest" : [ 1, 2, 3, 4, 5, 6, 7, 8 ]
                 }
             ]
         }

@@ -81,7 +81,7 @@ def calc_immunity(debug = False):
     immunity.append([prime + (1.0 - prime) * initial, prime + (1.0 - prime) * initial])   # 4_BoosterPlusVaccine
     immunity.append([prime + (1.0 - prime) * boost, prime + (1.0 - prime) * prime])       # 5_TwoBoosters
     if debug:
-        print immunity
+        print( immunity )
     return immunity
 
 def create_report_file(report_data_obj, report_name, debug):
@@ -109,13 +109,13 @@ def create_report_file(report_data_obj, report_name, debug):
                     expected_new_infections.append(expected_new_infection)
                 timestep += Timesteps_Between_Repetitions
         outfile.write(sft.format_success_msg(success))
-    sft.plot_data_unsorted(new_infections,expected_new_infections,
+    sft.plot_data(new_infections,expected_new_infections,
                            label1= "Actual", label2 = "Expected",
                            xlabel= "group: 0-4 outbreak 1, 5-9 outbreak 2",ylabel="new infection",
                            title = "Actual new infection vs. expected new infection",
                            category = 'New_infections',show = True )
     if debug:
-        print "SUMMARY: Success={0}\n".format(success)
+        print( "SUMMARY: Success={0}\n".format(success) )
     return success
 
 def application( output_folder="output", stdout_filename="test.txt",
@@ -125,14 +125,14 @@ def application( output_folder="output", stdout_filename="test.txt",
                  report_name=sft.sft_output_filename,
                  debug=False):
     if debug:
-        print "output_folder: " + output_folder
-        print "stdout_filename: " + stdout_filename+ "\n"
-        print "config_filename: " + config_filename + "\n"
-        print "campaign_filename: " + campaign_filename + "\n"
-        print "demographics_filename: " + demographics_filename + "\n"
-        print "propertyreport_name: " + propertyreport_name + "\n"
-        print "report_name: " + report_name + "\n"
-        print "debug: " + str(debug) + "\n"
+        print( "output_folder: " + output_folder )
+        print( "stdout_filename: " + stdout_filename+ "\n" )
+        print( "config_filename: " + config_filename + "\n" )
+        print( "campaign_filename: " + campaign_filename + "\n" )
+        print( "demographics_filename: " + demographics_filename + "\n" )
+        print( "propertyreport_name: " + propertyreport_name + "\n" )
+        print( "report_name: " + report_name + "\n" )
+        print( "debug: " + str(debug) + "\n" )
 
     sft.wait_for_done()
 

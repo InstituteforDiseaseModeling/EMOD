@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -117,6 +117,12 @@ namespace Kernel
 
     SimulationPy *SimulationPy::CreateSimulation()
     {
+        // Fail fast if Python isn't initialized
+        if ( !PythonSupport::IsPythonInitialized() )
+        {
+            throw InitializationException(__FILE__, __LINE__, __FUNCTION__, "Failed to create Python simulation: Python not initialized. Make sure to provide a Python script path command line argument.\n");
+        }
+
         SimulationPy *newsimulation = _new_ SimulationPy();
         newsimulation->Initialize();
 
@@ -125,6 +131,12 @@ namespace Kernel
 
     SimulationPy *SimulationPy::CreateSimulation(const ::Configuration *config)
     {
+        // Fail fast if Python isn't initialized
+        if ( !PythonSupport::IsPythonInitialized() )
+        {
+            throw InitializationException(__FILE__, __LINE__, __FUNCTION__, "Failed to create Python simulation: Python not initialized. Make sure to provide a Python script path command line argument.\n");
+        }
+
        SimulationPy *newsimulation = NULL;
        
        newsimulation = _new_ SimulationPy();

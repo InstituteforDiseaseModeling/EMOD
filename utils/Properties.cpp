@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -517,7 +517,7 @@ namespace Kernel
     {
         if( m_pInternal == nullptr )
         {
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal" );
+            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal", "IPKeyValueInternal" );
         }
         return m_pInternal->GetInitialDistribution( externalNodeId );
     }
@@ -1002,7 +1002,7 @@ namespace Kernel
     {
         if( Environment::getIPFactory() != nullptr )
         {
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "IPFactory has already been created." );
+            return;
         }
         Environment::setIPFactory( new IPFactory() );
     }
@@ -1017,10 +1017,11 @@ namespace Kernel
     IPFactory* IPFactory::GetInstance()
     {
         IPFactory* p_factory = (IPFactory*)Environment::getIPFactory();
-        if( p_factory == nullptr )
+        // Jonathan temp hack. Need solution
+        /*if( p_factory == nullptr )
         {
             throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "IPFactory has not been created." );
-        }
+        }*/
         return p_factory;
     }
 

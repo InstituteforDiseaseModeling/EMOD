@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,17 +15,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "common.h"
 #include "MigrateIndividuals.h"
-//#include "IndividualHumanContextFake.h"
-//#include "IndividualHumanInterventionsContextFake.h"
-//#include "ICampaignCostObserverFake.h"
-//#include "INodeContextFake.h"
-//#include "INodeEventContextFake.h"
-//#include "ISusceptibilityHIVFake.h"
 
 #include "FileSystem.h"
 #include "Configuration.h"
-//#include "Simulation.h"
-//#include "Node.h"
 #include "SimulationConfig.h"
 
 using namespace Kernel;

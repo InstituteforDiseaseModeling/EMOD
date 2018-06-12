@@ -24,6 +24,207 @@
         {
             "Test" :
             {
+                "__class__" : "AdherentDrug",
+                "name"                      : "AdherentDrug",
+                "cost_per_unit"             : 1,
+                "expired"                   : false,
+                "dont_allow_duplicates"     : false,
+                "first_time"                : false,
+                "disqualifying_properties"  : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"           : "InterventionStatus:non_abort_state",
+                "drug_name"                 : "TestDrug",
+                "durability_time_profile"   : 1,
+                "fast_decay_time_constant"  : 0.1,
+                "slow_decay_time_constant"  : 0.2,
+                "dosing_timer"              : 0.3,
+                "remaining_doses"           : 4,
+                "time_between_doses"        : 5.5,
+                "fast_component"            : 6.6,
+                "slow_component"            : 7.7,
+                "start_concentration"       : 9.91,
+                "end_concentration"         : 9.92,
+                "current_concentration"     : 9.93,
+                "current_efficacy"          : 8.8,
+                "current_reducedacquire"    : 1.1,
+                "current_reducedtransmit"   : 2.2,
+                "pk_rate_mod"               : 3.3,
+                "Cmax"                      : 4.4,
+                "Vd"                        : 1.23,
+                "drug_c50"                  : 2.34,
+                "fraction_defaulters"       : 3.45,
+                "dosing_type"               : 3,
+                "drug_IRBC_killrate"        : 0.1,
+                "drug_hepatocyte"           : 0.2,
+                "drug_gametocyte02"         : 0.3,
+                "drug_gametocyte34"         : 0.4,
+                "drug_gametocyteM"          : 0.5,
+                "m_pAdherenceEffect" : 
+                {
+                    "__class__":"WaningEffectCombo",
+                    "m_IsAdditive" : false,
+                    "m_IsExpiringWhenAllExpire" : true,
+                    "m_EffectCollection" : 
+                    [
+                        {
+                            "__class__":"WaningEffectMapLinear",
+                            "currentEffect"            : 0.5,
+                            "m_Expired"                : false,
+                            "m_EffectOriginal"         : 1.0,
+                            "m_ExpireAtDurationMapEnd" : true,
+                            "m_TimeSinceStart"         :
+                            {
+                                "_value"     : 123,
+                                "_min_value" : 0,
+                                "_max_value" : 3.4e+038
+                            },
+                            "m_DurationMap"            :
+                            [
+                                { "key": 1990, "value" : 0.1 },
+                                { "key": 1995, "value" : 0.2 },
+                                { "key": 2000, "value" : 0.3 }
+                            ]
+                        },
+                        {
+                            "__class__":"WaningEffectMapCount",
+                            "currentEffect"            : 0.4,
+                            "m_Expired"                : false,
+                            "m_EffectOriginal"         : 0.5,
+                            "m_ExpireAtDurationMapEnd" : false,
+                            "m_TimeSinceStart"         :
+                            {
+                                "_value"     : 1,
+                                "_min_value" : 0,
+                                "_max_value" : 3.4e+038
+                            },
+                            "m_DurationMap"            :
+                            [
+                                { "key": 1991, "value" : 0.31 },
+                                { "key": 1992, "value" : 0.22 },
+                                { "key": 1993, "value" : 0.13 }
+                            ]
+                        }
+                    ]
+                },
+                "m_NonAdherenceOptions" : [   1,   2,   3,   4 ],
+                "m_NonAdherenceCdf"     : [ 0.4, 0.7, 0.9, 1.0 ],
+                "m_MaxDuration"         : 25,
+                "m_CurrentDuration"     : 14,
+                "m_TotalDoses"          : 5
+            }
+        },
+        {
+            "Test" :
+            {
+                "__class__" : "AntimalarialDrug",
+                "name"                      : "AntimalarialDrug",
+                "cost_per_unit"             : 1,
+                "expired"                   : false,
+                "dont_allow_duplicates"     : false,
+                "first_time"                : false,
+                "disqualifying_properties"  : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
+                "status_property"           : "InterventionStatus:non_abort_state",
+                "drug_name"                 : "TestDrug",
+                "durability_time_profile"   : 1,
+                "fast_decay_time_constant"  : 0.1,
+                "slow_decay_time_constant"  : 0.2,
+                "dosing_timer"              : 0.3,
+                "remaining_doses"           : 4,
+                "time_between_doses"        : 5.5,
+                "fast_component"            : 6.6,
+                "slow_component"            : 7.7,
+                "start_concentration"       : 9.91,
+                "end_concentration"         : 9.92,
+                "current_concentration"     : 9.93,
+                "current_efficacy"          : 8.8,
+                "current_reducedacquire"    : 1.1,
+                "current_reducedtransmit"   : 2.2,
+                "pk_rate_mod"               : 3.3,
+                "Cmax"                      : 4.4,
+                "Vd"                        : 1.23,
+                "drug_c50"                  : 2.34,
+                "fraction_defaulters"       : 3.45,
+                "dosing_type"               : 3,
+                "drug_IRBC_killrate"        : 0.1,
+                "drug_hepatocyte"           : 0.2,
+                "drug_gametocyte02"         : 0.3,
+                "drug_gametocyte34"         : 0.4,
+                "drug_gametocyteM"          : 0.5
+            }
+        },
+        {
+            "Test" :
+            {
+                "__class__":"WaningEffectCombo",
+                "m_IsAdditive" : false,
+                "m_IsExpiringWhenAllExpire" : true,
+                "m_EffectCollection" : 
+                [
+                    {
+                        "__class__":"WaningEffectMapLinear",
+                        "currentEffect"            : 0.5,
+                        "m_Expired"                : false,
+                        "m_EffectOriginal"         : 1.0,
+                        "m_ExpireAtDurationMapEnd" : true,
+                        "m_TimeSinceStart"         :
+                        {
+                            "_value"     : 123,
+                            "_min_value" : 0,
+                            "_max_value" : 3.4e+038
+                        },
+                        "m_DurationMap"            :
+                        [
+                            { "key": 1990, "value" : 0.1 },
+                            { "key": 1995, "value" : 0.2 },
+                            { "key": 2000, "value" : 0.3 }
+                        ]
+                    },
+                    {
+                        "__class__":"WaningEffectMapCount",
+                        "currentEffect"            : 0.4,
+                        "m_Expired"                : false,
+                        "m_EffectOriginal"         : 0.5,
+                        "m_ExpireAtDurationMapEnd" : false,
+                        "m_TimeSinceStart"         :
+                        {
+                            "_value"     : 1,
+                            "_min_value" : 0,
+                            "_max_value" : 3.4e+038
+                        },
+                        "m_DurationMap"            :
+                        [
+                            { "key": 1991, "value" : 0.31 },
+                            { "key": 1992, "value" : 0.22 },
+                            { "key": 1993, "value" : 0.13 }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "Test" :
+            {
+                "__class__":"WaningEffectMapCount",
+                "currentEffect"            : 0.4,
+                "m_Expired"                : false,
+                "m_EffectOriginal"         : 0.5,
+                "m_ExpireAtDurationMapEnd" : false,
+                "m_TimeSinceStart"         :
+                {
+                    "_value"     : 1,
+                    "_min_value" : 0,
+                    "_max_value" : 3.4e+038
+                },
+                "m_DurationMap"            :
+                [
+                    { "key": 1991, "value" : 0.31 },
+                    { "key": 1992, "value" : 0.22 },
+                    { "key": 1993, "value" : 0.13 }
+                ]
+            }
+        },
+        {
+            "Test" :
+            {
                 "__class__":"ControlledVaccine",
                 "name"                          : "class Kernel::ControlledVaccine",
                 "cost_per_unit"                 : 1,
@@ -147,7 +348,6 @@
                 "m_gender"                  : 1,
                 "m_mc_weight"               : 1.0,
                 "m_daily_mortality_rate"    : 0.1,
-                "above_poverty"             : 1,
                 "is_pregnant"               : false,
                 "pregnancy_timer"           : 100.0,
                 "susceptibility" : 
@@ -160,6 +360,7 @@
                     "acqdecayoffset"   : 0.4,
                     "trandecayoffset"  : 0.5,
                     "mortdecayoffset"  : 0.6,
+                    "immune_failage"   : 0,
                     "demographic_risk" : 0.7,
                     "days_between_symptomatic_and_death" : 9.9,
                     "sqrtCD4_Current"                    : 8.8,
@@ -268,17 +469,6 @@
                             "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
                             "status_property"          : "InterventionStatus:non_abort_state",
                             "set_flag_to"   : true
-                        },
-                        {
-                            "__class__":"HIVPreARTNotification",
-                            "name"         : "class Kernel::HIVPreARTNotification",
-                            "cost_per_unit":3,
-                            "expired":false,
-                            "dont_allow_duplicates" : true,
-                            "first_time"            : false,
-                            "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
-                            "status_property"          : "InterventionStatus:non_abort_state",
-                            "startingPreART" : true
                         }
                     ],
                     "is_circumcised" : true,
@@ -334,13 +524,11 @@
                         { "key" : "muxer_1", "value" : 1 },
                         { "key" : "muxer_2", "value" : 2 }
                     ],
-                    "on_PreART"                         : true,
                     "ever_tested_HIV_positive"          : true,
                     "ever_tested"                       : true,
                     "ever_received_CD4"                 : true,
                     "ever_staged_for_ART"               : false,
                     "ever_staged"                       : false,
-                    "ever_been_on_PreART"               : true,
                     "ever_been_on_ART"                  : false,
                     "time_of_most_recent_test"          : 1,
                     "time_of_most_recent_CD4"           : 2,
@@ -720,13 +908,11 @@
                     { "key" : "muxer_1", "value" : 1 },
                     { "key" : "muxer_2", "value" : 2 }
                 ],
-                "on_PreART"                         : true,
                 "ever_tested_HIV_positive"          : true,
                 "ever_tested"                       : true,
                 "ever_received_CD4"                 : true,
                 "ever_staged_for_ART"               : false,
                 "ever_staged"                       : false,
-                "ever_been_on_PreART"               : true,
                 "ever_been_on_ART"                  : false,
                 "time_of_most_recent_test"          : 1,
                 "time_of_most_recent_CD4"           : 2,
@@ -789,6 +975,7 @@
                 "acqdecayoffset"   : 0.24,
                 "trandecayoffset"  : 0.25,
                 "mortdecayoffset"  : 0.26,
+                "immune_failage"   : 0,
                 "demographic_risk" : 0.27,
                 "days_between_symptomatic_and_death" : 9.9,
                 "sqrtCD4_Current"                    : 8.8,
@@ -1053,20 +1240,6 @@
                     { "key" : "Event_2", "value" : 29 },
                     { "key" : "Event_3", "value" : 39 }
                 ]
-            }
-        },
-        {
-            "Test" :
-            {
-                "__class__":"HIVPreARTNotification",
-                "name"          : "class Kernel::HIVPreARTNotification",
-                "cost_per_unit":3,
-                "expired":false,
-                "dont_allow_duplicates" : true,
-                "first_time"            : false,
-                "disqualifying_properties" : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
-                "status_property"          : "InterventionStatus:non_abort_state",
-                "startingPreART"        : true
             }
         },
         {
@@ -1538,26 +1711,7 @@
                 "dont_allow_duplicates"     : true,
                 "first_time"                : false,
                 "disqualifying_properties"  : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
-                "status_property"           : "InterventionStatus:non_abort_state",
-                "drug_type"                 : 2,
-                "dosing_type"               : 1,
-                "durability_time_profile"   : 9,
-                "fast_decay_time_constant"  : 0.3,
-                "slow_decay_time_constant"  : 0.2,
-                "dosing_timer"              : 0.1,
-                "remaining_doses"           : 5,
-                "time_between_doses"        : 1.5,
-                "fast_component"            : 2.6,
-                "slow_component"            : 3.7,
-                "current_efficacy"          : 4.8,
-                "current_concentration"     : 5.9,
-                "current_reducedacquire"    : 9.1,
-                "current_reducedtransmit"   : 8.2,
-                "pk_rate_mod"               : 7.3,
-                "Cmax"                      : 6.4,
-                "Vd"                        : 5.23,
-                "drug_c50"                  : 4.34,
-                "fraction_defaulters"       : 1.45
+                "status_property"           : "InterventionStatus:non_abort_state"
             }
         },
         {
@@ -1571,25 +1725,6 @@
                 "first_time"                : false,
                 "disqualifying_properties"  : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
                 "status_property"           : "InterventionStatus:non_abort_state",
-                "drug_type"                 : 1,
-                "dosing_type"               : 2,
-                "durability_time_profile"   : 1,
-                "fast_decay_time_constant"  : 0.1,
-                "slow_decay_time_constant"  : 0.2,
-                "dosing_timer"              : 0.3,
-                "remaining_doses"           : 4,
-                "time_between_doses"        : 5.5,
-                "fast_component"            : 6.6,
-                "slow_component"            : 7.7,
-                "current_efficacy"          : 8.8,
-                "current_concentration"     : 9.9,
-                "current_reducedacquire"    : 1.1,
-                "current_reducedtransmit"   : 2.2,
-                "pk_rate_mod"               : 3.3,
-                "Cmax"                      : 4.4,
-                "Vd"                        : 1.23,
-                "drug_c50"                  : 2.34,
-                "fraction_defaulters"       : 3.45,
                 "viral_suppression"           : true,
                 "days_to_achieve_suppression" : 77
             }
@@ -1648,38 +1783,6 @@
                         "Event_3"
                     ]
                 }
-            }
-        },
-        {
-            "Test" :
-            {
-                "__class__":"GenericDrug",
-                "name"          : "class Kernel::GenericDrug",
-                "cost_per_unit"             : 1,
-                "expired"                   : false,
-                "dont_allow_duplicates"     : false,
-                "first_time"                : false,
-                "disqualifying_properties"  : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
-                "status_property"           : "InterventionStatus:non_abort_state",
-                "drug_type"                 : 1,
-                "dosing_type"               : 2,
-                "durability_time_profile"   : 1,
-                "fast_decay_time_constant"  : 0.1,
-                "slow_decay_time_constant"  : 0.2,
-                "dosing_timer"              : 0.3,
-                "remaining_doses"           : 4,
-                "time_between_doses"        : 5.5,
-                "fast_component"            : 6.6,
-                "slow_component"            : 7.7,
-                "current_efficacy"          : 8.8,
-                "current_concentration"     : 9.9,
-                "current_reducedacquire"    : 1.1,
-                "current_reducedtransmit"   : 2.2,
-                "pk_rate_mod"               : 3.3,
-                "Cmax"                      : 4.4,
-                "Vd"                        : 1.23,
-                "drug_c50"                  : 2.34,
-                "fraction_defaulters"       : 3.45
             }
         },
         {
@@ -1948,7 +2051,6 @@
                 "m_gender"                  : 1,
                 "m_mc_weight"               : 1.0,
                 "m_daily_mortality_rate"    : 0.1,
-                "above_poverty"             : 1,
                 "is_pregnant"               : false,
                 "pregnancy_timer"           : 100.0,
                 "susceptibility" : 
@@ -1961,6 +2063,7 @@
                     "acqdecayoffset"   : 0.4,
                     "trandecayoffset"  : 0.5,
                     "mortdecayoffset"  : 0.6,
+                    "immune_failage"   : 0,
                     "demographic_risk" : 0.7
                 },
                 "infections" :
@@ -2329,6 +2432,7 @@
                 "acqdecayoffset"   : 0.4,
                 "trandecayoffset"  : 0.5,
                 "mortdecayoffset"  : 0.6,
+                "immune_failage"   : 0,
                 "demographic_risk" : 0.7
             }
         },
@@ -2646,8 +2750,7 @@
                         "first_time"                : false,
                         "disqualifying_properties"  : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
                         "status_property"           : "InterventionStatus:non_abort_state",
-                        "drug_type"                 : 1,
-                        "dosing_type"               : 2,
+                        "drug_name"                 : "DOTS",
                         "durability_time_profile"   : 1,
                         "fast_decay_time_constant"  : 0.1,
                         "slow_decay_time_constant"  : 0.2,
@@ -2656,8 +2759,10 @@
                         "time_between_doses"        : 5.5,
                         "fast_component"            : 6.6,
                         "slow_component"            : 7.7,
+                        "start_concentration"       : 9.91,
+                        "end_concentration"         : 9.92,
+                        "current_concentration"     : 9.93,
                         "current_efficacy"          : 8.8,
-                        "current_concentration"     : 9.9,
                         "current_reducedacquire"    : 1.1,
                         "current_reducedtransmit"   : 2.2,
                         "pk_rate_mod"               : 3.3,
@@ -2665,53 +2770,13 @@
                         "Vd"                        : 1.23,
                         "drug_c50"                  : 2.34,
                         "fraction_defaulters"       : 3.45,
+                        "drug_type"                 : 3,
                         "TB_drug_inactivation_rate" : 0.1,
-                        "TB_drug_clearance_rate"    : 0.2,
+                        "TB_drug_cure_rate"         : 0.2,
                         "TB_drug_resistance_rate"   : 0.3,
                         "TB_drug_relapse_rate"      : 0.4,
                         "TB_drug_mortality_rate"    : 0.5
-                    },
-                    {
-                        "__class__" : "AntiTBPropDepDrug",
-                        "name"                      : "class Kernel::AntiTBPropDepDrug",
-                        "cost_per_unit"             : 2,
-                        "expired"                   : false,
-                        "dont_allow_duplicates"     : false,
-                        "first_time"                : false,
-                        "disqualifying_properties"  : ["InterventionStatus:abort_state_1", "InterventionStatus:abort_state_2", "InterventionStatus:abort_state_3" ],
-                        "status_property"           : "InterventionStatus:non_abort_state",
-                        "drug_type"                 : 2,
-                        "dosing_type"               : 1,
-                        "durability_time_profile"   : 2,
-                        "fast_decay_time_constant"  : 0.9,
-                        "slow_decay_time_constant"  : 0.8,
-                        "dosing_timer"              : 0.7,
-                        "remaining_doses"           : 6,
-                        "time_between_doses"        : 5.5,
-                        "fast_component"            : 4.4,
-                        "slow_component"            : 3.3,
-                        "current_efficacy"          : 2.2,
-                        "current_concentration"     : 1.1,
-                        "current_reducedacquire"    : 9.9,
-                        "current_reducedtransmit"   : 8.8,
-                        "pk_rate_mod"               : 7.7,
-                        "Cmax"                      : 6.6,
-                        "Vd"                        : 9.87,
-                        "drug_c50"                  : 8.76,
-                        "fraction_defaulters"       : 7.65,
-                        "TB_drug_inactivation_rate" : 0.5,
-                        "TB_drug_clearance_rate"    : 0.4,
-                        "TB_drug_resistance_rate"   : 0.3,
-                        "TB_drug_relapse_rate"      : 0.2,
-                        "TB_drug_mortality_rate"    : 0.1,
-                        "drug_type_by_property"     :
-                        [
-                            { "key" : "abc", "value" : "123" },
-                            { "key" : "def", "value" : "456" },
-                            { "key" : "ghi", "value" : "789" }
-                        ],
-                        "enable_state_specific_tx"  : true
-                    },
+                    }, 
                     {
                         "__class__" : "BCGVaccine",
                         "name"                          : "class Kernel::BCGVaccine",

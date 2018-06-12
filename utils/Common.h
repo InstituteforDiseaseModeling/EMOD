@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,7 +17,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #define MIN_YEAR            (1900)
 #define MAX_YEAR            (2200)
 
-
+// Array of cumulative days for each month; assumes DAYSPERYEAR = 365
+const int cumMoDay[MONTHSPERYEAR] = { 31,  59,  90, 120, 151, 181,
+                                     212, 243, 273, 304, 334, 365};
 
 #define ARCMINUTES_PER_DEGREE   (60)
 #define KM_PER_ARCMINUTE        (1.86)

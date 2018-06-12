@@ -16,7 +16,7 @@
                     "class": "NodeLevelHealthTriggeredIV",
                     "Trigger_Condition_List": [ "Immigrating" ],
                     "Demographic_Coverage": 1.0,
-                    "Actual_NodeIntervention_Config":
+                    "Actual_IndividualIntervention_Config":
                     {
                         "class": "SimpleVaccine",
                         "Cost_To_Consumer": 10,

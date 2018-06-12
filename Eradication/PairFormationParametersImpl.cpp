@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -136,7 +136,7 @@ namespace Kernel
                 formation_rate = formation_rate_value_map.getValueLinearInterpolation( rCurrentTime.Year(), 0.0f );
                 break;
             default:
-                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "Formation_Rate_Type", formation_rate_type );
+                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "Formation_Rate_Type", formation_rate_type, FormationRateType::pairs::lookup_key( formation_rate_type ) );
         }
         return formation_rate;
     }
@@ -225,11 +225,11 @@ namespace Kernel
         }
         else
         {
-            throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "Formation_Rate_Type", formation_rate_type );
+            throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "Formation_Rate_Type", formation_rate_type, FormationRateType::pairs::lookup_key( formation_rate_type ) );
         }
 
-        initConfigTypeMap( "Extra_Relational_Rate_Ratio_Male",   &rate_ratio[Gender::MALE  ], PFA_Extra_Relational_Rate_Ratio_Male_DESC_TEXT,   1.0, FLT_MAX, 1.0f );
-        initConfigTypeMap( "Extra_Relational_Rate_Ratio_Female", &rate_ratio[Gender::FEMALE], PFA_Extra_Relational_Rate_Ratio_Female_DESC_TEXT, 1.0, FLT_MAX, 1.0f );
+        initConfigTypeMap( "Extra_Relational_Rate_Ratio_Male",   &rate_ratio[Gender::MALE  ], Extra_Relational_Rate_Ratio_Male_DESC_TEXT,   1.0, FLT_MAX, 1.0f );
+        initConfigTypeMap( "Extra_Relational_Rate_Ratio_Female", &rate_ratio[Gender::FEMALE], Extra_Relational_Rate_Ratio_Female_DESC_TEXT, 1.0, FLT_MAX, 1.0f );
 
         initConfigTypeMap( "Update_Period",                  &update_period,            "TBD"/*Update_Period_DESC_TEXT*/,         0,    FLT_MAX,    0      );
         initConfigTypeMap( "Number_Age_Bins_Male",           &male_age_bin_count,       Number_Age_Bins_Male_DESC_TEXT,           1,       1000,    1      );

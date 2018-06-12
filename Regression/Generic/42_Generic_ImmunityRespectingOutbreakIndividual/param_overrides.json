@@ -6,10 +6,9 @@
             "Birth_Rate_Dependence": "POPULATION_DEP_RATE", 
             "Enable_Demographics_Reporting": 1, 
             "MORTALITY": {
-                "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF"
             }, 
             "IMMUNITY": {
-                "Immunity_Acquisition_Factor": 1.0, 
+                "Post_Infection_Acquisition_Multiplier": 1.0, 
                 "Enable_Immune_Decay": 0
             }, 
             "Demographics_Filenames": ["../00_Generic_Default/demographics.json"],

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,24 +10,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #pragma once
 
 #include <map>
-
 #include "BoostLibWrapper.h"
-
 #include "Simulation.h"
 #include "VectorContexts.h"
-#include "VectorCohort.h"
+#include "IVectorCohort.h"
 
-#ifndef BEDNET_ARRAY_LENGTH
-#define BEDNET_ARRAY_LENGTH 768
-#endif
-
-#ifndef HOUSINGMOD_ARRAY_LENGTH
-#define HOUSINGMOD_ARRAY_LENGTH 12
-#endif
-
-#ifndef AWARENESS_ARRAY_LENGTH
-#define AWARENESS_ARRAY_LENGTH 16
-#endif
 
 namespace Kernel
 {
@@ -68,12 +55,6 @@ namespace Kernel
         vector<vector<IVectorCohort*>> migratingVectorQueues;
         vector< IVectorMigrationReporting* > vector_migration_reports ;
         std::map<suids::suid,float> node_populations_map ;
-
-        float drugdefaultcost;
-        float vaccinedefaultcost;
-        float housingmoddefaultcost[HOUSINGMOD_ARRAY_LENGTH];
-        float awarenessdefaultcost[AWARENESS_ARRAY_LENGTH];
-        float netdefaultcost[BEDNET_ARRAY_LENGTH];
 
         virtual void Initialize(const ::Configuration *config) override;
 

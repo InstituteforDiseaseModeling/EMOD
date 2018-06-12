@@ -3,8 +3,8 @@ import dtk_InfectivityScalingBoxcar_Support as isb_support
 
 def application(config_filename="config.json", debug = True):
     if debug:
-        print "config filename: " + config_filename + "\n"
-        print "debug: " + str(debug) + "\n"
+        print( "config filename: " + config_filename + "\n" )
+        print( "debug: " + str(debug) + "\n" )
     mode = isb_support.Modes.LESS
     isb_support.set_random_config_file(config_filename, mode, debug)
     return config_filename

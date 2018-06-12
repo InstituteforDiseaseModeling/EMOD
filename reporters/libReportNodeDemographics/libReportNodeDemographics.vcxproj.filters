@@ -28,5 +28,8 @@
     <ClCompile Include="ReportNodeDemographics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ReportNodeDemographicsEModule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

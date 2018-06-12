@@ -1,0 +1,30 @@
+{
+    "Metadata": {
+        "DateCreated": "Thu Dec 3 07:00:00 2015", 
+        "Tool": "notepad", 
+        "Author": "cwiswell", 
+        "IdReference": "0", 
+        "NodeCount": 3,
+        "Resolution": 150
+    }, 
+    "Defaults": {
+        "NodeAttributes": {
+            "Seaport": 1
+        }
+    },
+    "Nodes": [
+        {
+            "NodeID": 1, 
+            "NodeAttributes":
+            {
+                "InitialPopulation": 10000
+            }
+        },
+        {
+            "NodeID": 2
+        },
+        {
+            "NodeID": 3
+        }
+    ]
+}

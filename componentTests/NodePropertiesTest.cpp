@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,6 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "UnitTest++.h"
 #include "INodeContextFake.h"
 #include "RandomFake.h"
+#include "common.h"
 
 #include "NodeProperties.h"
 #include "Environment.h"
@@ -53,7 +54,7 @@ SUITE(NodePropertiesTest)
 
             m_pMpi = IdmMpi::MessageInterface::CreateNull();
 
-            Environment::Initialize( m_pMpi, nullptr, configFilename, inputPath, outputPath, /*statePath, */dllPath, false);
+            Environment::Initialize( m_pMpi, configFilename, inputPath, outputPath, /*statePath, */dllPath, false);
 
             const_cast<Environment*>(Environment::getInstance())->RNG = new PSEUDO_DES(0);
 

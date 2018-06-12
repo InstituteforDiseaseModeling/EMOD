@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -51,12 +51,16 @@ namespace Kernel
         virtual int GetAntigen() const  { return antigen; }
         virtual int GetGenome() const  { return genome; }
 
+        // other methods
+        virtual void ConfigureAntigen( const Configuration * inputJson );
+        virtual void ConfigureGenome( const Configuration * inputJson );
+
     protected:
+        virtual const StrainIdentity* GetNewStrainIdentity( INodeEventContext *context );
+
         int antigen;
         int genome;
         bool ignoreImmunity;
         int incubation_period_override;
-
-        const StrainIdentity* GetNewStrainIdentity(INodeEventContext *context);
     };
 }

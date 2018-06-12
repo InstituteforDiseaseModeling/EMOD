@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <list>
 #include <vector>
 
-#include "Drugs.h"
 #include "Interventions.h"
 #include "InterventionsContainer.h"
 //#include "SimpleTypemapRegistration.h"
@@ -41,21 +40,13 @@ namespace Kernel
         PyInterventionsContainer();
         virtual ~PyInterventionsContainer();
 
-        virtual QueryResult QueryInterface(iid_t iid, void** pinstance);
-
-        // IVaccineConsumer: not any more!
-        virtual bool GiveIntervention( IDistributableIntervention * pIV );
+        virtual QueryResult QueryInterface(iid_t iid, void** pinstance) override;
 
         // IPyDrugEffectsApply
-        virtual void ApplyDrugVaccineReducedAcquireEffect( float rate ); // not used for anything
-        virtual void ApplyDrugVaccineReducedTransmitEffect( float rate ); // not used for anything
+        virtual void ApplyDrugVaccineReducedAcquireEffect( float rate ) override; // not used for anything
+        virtual void ApplyDrugVaccineReducedTransmitEffect( float rate ) override; // not used for anything
 
         //IPyDrugEffects(Get)
-
-        virtual void Update(float dt); // example of intervention timestep update
-
-    protected:
-        void GiveDrug(IDrug* drug);
 
     private:
     };

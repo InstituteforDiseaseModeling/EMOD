@@ -1,3 +1,28 @@
 {
-    "Default_Config_Path": "HIV/50_HIV_GH611/default_config.json"
+    "Default_Config_Path": "defaults/hiv_default_config.json", 
+    "parameters": {
+        "Report_Relationship_Start": 1, 
+        "Simulation_Duration": 365, 
+        "Base_Infectivity": 1, 
+        "Report_Transmission": 1, 
+        "Demographics_Filenames": [
+            "../../HIV/input/SA_UN_demographics_extrapolated_WithProperties_Smoothed_4_Nodes.json", 
+            "PFA_overlay_local.json"
+        ], 
+        "Migration_Model": "FIXED_RATE_MIGRATION", 
+        "Migration_Pattern": "RANDOM_WALK_DIFFUSION",
+        "Enable_Air_Migration": 0,
+        "Enable_Family_Migration": 0,
+        "Enable_Local_Migration": 1,
+        "Enable_Migration_Heterogeneity": 0,
+        "Enable_Regional_Migration": 0,
+        "Enable_Sea_Migration": 0,
+        "Local_Migration_Filename": "LocalMigration_4_Nodes.bin",
+        "x_Local_Migration": 1,
+        "Report_Coital_Acts": 1, 
+        "Config_Name": "50_HIV_GH611", 
+        "Num_Cores": 4, 
+        "Report_Relationship_End": 1, 
+        "Geography": "MigrationTest"
+    }
 }

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,6 +17,18 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorSpeciesParameters.h"
 
 SETUP_LOGGING( "LarvalHabitatMultiplier" )
+
+// Because this guy seems to be configured fundamentally differently from how we 
+// normally configure input parameters, I'm putting these right here instead of in the RC files. 
+// These will not be retrieved from the DB because these aren't the descriptions of named parameters
+// that will be seen as keys. There is still very much an open question about whether the design 
+// of this should be revisited.
+#define LHM_Single_Value_DESC_TEXT "TBD-A single value can be specified so that it is applied to ALL_HABITATS."
+#define LHM_Habitat_Type_To_Value_Name_DESC_TEXT "TBD-The habitat type/name for a specific multiplier - the 'key' of the key:value pair."
+#define LHM_Habitat_Type_To_Value_Value_DESC_TEXT "TBD-A specific multiplier for the given habitat - the 'value' of the key:value pair."
+#define LHM_Habitat_Type_To_Species_To_Value_Habitat_Type_DESC_TEXT "TBD - The habitat type/name for the specified species."
+#define LHM_Habitat_Type_To_Species_To_Value_Species_Name_DESC_TEXT "TBD - The name of the species from Vector_Species_Names to have specific multipliers for this habitat type."
+#define LHM_Habitat_Type_To_Species_To_Value_Value_DESC_TEXT "TBD - The multiplier for this specific habitat of this species." 
 
 namespace Kernel
 {
@@ -120,7 +132,7 @@ namespace Kernel
                                 CheckIfConfigured( habitat, species_name );
                             }
                             species_entry.second = multiplier;
-                            LOG_INFO_F("Node ID=%d with LarvalHabitatMultiplier(%s)(%s)=%0.2f\n", externalNodeId, habitat_name.c_str(), species_name.c_str(), multiplier);
+                            LOG_INFO_F("Node ID=%u with LarvalHabitatMultiplier(%s)(%s)=%0.2f\n", externalNodeId, habitat_name.c_str(), species_name.c_str(), multiplier);
                         }
                     }
                     else
@@ -130,14 +142,14 @@ namespace Kernel
                         for( auto& species_entry : species_map )
                         {
                             species_entry.second = multiplier;
-                            LOG_INFO_F("Node ID=%d with LarvalHabitatMultiplier(%s)(%s)=%0.2f\n", externalNodeId, habitat_name.c_str(), species_entry.first.c_str(), multiplier);
+                            LOG_INFO_F("Node ID=%u with LarvalHabitatMultiplier(%s)(%s)=%0.2f\n", externalNodeId, habitat_name.c_str(), species_entry.first.c_str(), multiplier);
                         }
                         CheckIfConfigured( habitat );
                     }
                 }
                 else
                 {
-                    LOG_DEBUG_F("No LarvalHabitatMultiplier specified for %s habitat at Node ID=%d\n",habitat_name.c_str(),externalNodeId);
+                    LOG_DEBUG_F("No LarvalHabitatMultiplier specified for %s habitat at Node ID=%u\n",habitat_name.c_str(),externalNodeId);
                 }
             }
         }

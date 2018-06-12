@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -47,7 +47,7 @@ namespace Kernel
             release_assert( numTasks > 0 );
 
             std::vector< std::vector<int> > matrix ;
-            initConfigTypeMap( "Load_Balance_Scheme_Nodes_On_Core_Matrix", &matrix, Load_Balance_Scheme_Nodes_On_Core_Matrix_DESC_TEXT, 0, INT_MAX, 0 );
+            initConfigTypeMap( "Load_Balance_Scheme_Nodes_On_Core_Matrix", &matrix, "N/A", 0, INT_MAX, 0 );
 
             Configuration* p_config = Configuration::Load( rFilename );
             release_assert( p_config );
@@ -115,12 +115,7 @@ namespace Kernel
             release_assert( numTasks > 0 );
 
             std::ifstream loadbalancefile;
-            loadbalancefile.open(rFilename, std::ios::binary);
-
-            if( !loadbalancefile.is_open() ) 
-            {
-                throw FileIOException( __FILE__, __LINE__, __FUNCTION__, rFilename.c_str() );
-            }
+            FileSystem::OpenFileForReading( loadbalancefile, rFilename.c_str(), true );
 
             loadbalancefile.seekg(0, std::ios::end);
             int filelen = (int)loadbalancefile.tellg();

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -22,7 +22,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Environment.h"
 #include "Exceptions.h"
 #include "IIndividualHuman.h"
-#include "SimulationConfig.h"
 #include "ProgVersion.h"
 
 using namespace std;
@@ -97,8 +96,8 @@ SpatialReportVector::LogNodeData(
     // TBD
     for (const auto vectorpopulation : vectorPopulations)
     {
-        adult_vectors      += (float)( vectorpopulation->getAdultCount() + vectorpopulation->getInfectedCount() + vectorpopulation->getInfectiousCount() );
-        infectious_vectors += (float)( vectorpopulation->getInfectiousCount() );
+        adult_vectors      += (float)( vectorpopulation->getAdultCount() + vectorpopulation->getInfectedCount( nullptr ) + vectorpopulation->getInfectiousCount( nullptr ) );
+        infectious_vectors += (float)( vectorpopulation->getInfectiousCount( nullptr ) );
 
         daily_eir          += vectorpopulation->GetEIRByPool(Kernel::VectorPoolIdEnum::BOTH_VECTOR_POOLS);
         daily_hbr          += vectorpopulation->GetHBRByPool(Kernel::VectorPoolIdEnum::BOTH_VECTOR_POOLS);

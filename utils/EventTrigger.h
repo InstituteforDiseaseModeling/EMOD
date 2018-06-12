@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -67,8 +67,6 @@ namespace Kernel
         static const EventTrigger& HIVTestedNegative;
         static const EventTrigger& HIVTestedPositive;
         static const EventTrigger& HIVSymptomatic;
-        static const EventTrigger& HIVPreARTToART;
-        static const EventTrigger& HIVNonPreARTToART;
         static const EventTrigger& TwelveWeeksPregnant;
         static const EventTrigger& FourteenWeeksPregnant;
         static const EventTrigger& SixWeeksOld;
@@ -120,6 +118,7 @@ namespace Kernel
     class IDMAPI EventTriggerFactory : public JsonConfigurable
     {
     public:
+        GET_SCHEMA_STATIC_WRAPPER( EventTriggerFactory )
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
 

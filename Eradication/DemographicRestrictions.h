@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -25,8 +25,9 @@ namespace Kernel
     class DemographicRestrictions
     {
     public:
-        DemographicRestrictions();
-        DemographicRestrictions( bool age_restrictions, TargetDemographicType::Enum defaultTargetDemographic );
+        DemographicRestrictions( bool age_restrictions = true,
+                                 TargetDemographicType::Enum defaultTargetDemographic = TargetDemographicType::Everyone,
+                                 bool use_coverage = true );
         virtual ~DemographicRestrictions() { } 
 
         void ConfigureRestrictions( JsonConfigurable* pParent, const Configuration * inputJson );
@@ -45,6 +46,7 @@ namespace Kernel
 
     protected:
         bool allow_age_restrictions;
+        bool use_demographic_coverage;
         float demographic_coverage;
         TargetDemographicType::Enum default_target_demographic;
         TargetDemographicType::Enum target_demographic;

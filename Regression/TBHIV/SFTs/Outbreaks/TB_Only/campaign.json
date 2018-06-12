@@ -1,0 +1,23 @@
+{
+    "Campaign_Name": "Outbreak",
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.2,
+                "Intervention_Config": {
+                    "Infection_Type": "TB",
+                    "class": "OutbreakIndividualTBorHIV"
+                },
+                "Target_Group": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Seeding the TB epidemic at time 2",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 2,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

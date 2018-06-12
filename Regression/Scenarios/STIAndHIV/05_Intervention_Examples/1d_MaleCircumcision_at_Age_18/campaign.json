@@ -1,6 +1,6 @@
 {
-    "Campaign_Name": "1d_MaleCircumcision_at_Age_18", 
-    "Default_Campaign_Path": "defaults/hiv_default_campaign.json", 
+    "Campaign_Name": "1d_MaleCircumcision_at_Age_18",
+    "Default_Campaign_Path": "defaults/hiv_default_campaign.json",
     "Use_Defaults": 1,
     "Events":
     [
@@ -43,164 +43,164 @@
             "END": "MALE CIRCUMCISION FOR 10% OF UNINFECTED ON THEIR 18TH BIRTHDAY, STARTING JAN 1, 2020"
         },
         {
-            "class": "CampaignEventByYear",
-            "Event_Name": "Epidemic seeding for 15-24 Males",
-            "Start_Year": 1981,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "ExplicitAgeRangesAndGender",
-                "Target_Age_Min": 15,
-                "Target_Age_Max": 24,
-                "Target_Gender": "Male",
                 "Demographic_Coverage": 0.03,
-                "Travel_Linked": 0,
                 "Intervention_Config": {
-                    "class": "OutbreakIndividual",
-                    "Event_Name": "Outbreak (not used)",
-                    "Outbreak_Source": "PrevalenceIncrease",
-                    "Incubation_Period_Override": 1,
                     "Antigen": 0,
-                    "Genome": 0
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "Epidemic seeding for 15-24 Females",
-            "Start_Year": 1985,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "ExplicitAgeRangesAndGender",
-                "Target_Age_Min": 15,
+                    "Event_Name": "Outbreak (not used)",
+                    "Genome": 0,
+                    "Incubation_Period_Override": 1,
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "class": "OutbreakIndividual"
+                },
                 "Target_Age_Max": 24,
-                "Target_Gender": "Female",
+                "Target_Age_Min": 15,
+                "Target_Demographic": "ExplicitAgeRangesAndGender",
+                "Target_Gender": "Male",
+                "Travel_Linked": 0,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Epidemic seeding for 15-24 Males",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1981,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "Event_Coordinator_Config": {
                 "Demographic_Coverage": 0.01,
-                "Travel_Linked": 0,
                 "Intervention_Config": {
-                    "class": "OutbreakIndividual",
-                    "Event_Name": "Outbreak (not used)",
-                    "Outbreak_Source": "PrevalenceIncrease",
-                    "Incubation_Period_Override": 1,
                     "Antigen": 0,
-                    "Genome": 0
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "Epidemic seeding for 25-49",
-            "Start_Year": 1985,
+                    "Event_Name": "Outbreak (not used)",
+                    "Genome": 0,
+                    "Incubation_Period_Override": 1,
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "class": "OutbreakIndividual"
+                },
+                "Target_Age_Max": 24,
+                "Target_Age_Min": 15,
+                "Target_Demographic": "ExplicitAgeRangesAndGender",
+                "Target_Gender": "Female",
+                "Travel_Linked": 0,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Epidemic seeding for 15-24 Females",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1985,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "ExplicitAgeRanges",
-                "Target_Age_Min": 25,
-                "Target_Age_Max": 49,
                 "Demographic_Coverage": 0.02,
-                "Travel_Linked": 0,
                 "Intervention_Config": {
-                    "class": "OutbreakIndividual",
-                    "Event_Name": "Outbreak (not used)",
-                    "Outbreak_Source": "PrevalenceIncrease",
-                    "Incubation_Period_Override": 1,
                     "Antigen": 0,
-                    "Genome": 0
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "Epidemic seeding for 50-65",
-            "Start_Year": 1985,
+                    "Event_Name": "Outbreak (not used)",
+                    "Genome": 0,
+                    "Incubation_Period_Override": 1,
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "class": "OutbreakIndividual"
+                },
+                "Target_Age_Max": 49,
+                "Target_Age_Min": 25,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "Travel_Linked": 0,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Epidemic seeding for 25-49",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1985,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "ExplicitAgeRanges",
-                "Target_Age_Min": 50,
-                "Target_Age_Max": 65,
                 "Demographic_Coverage": 0.015,
-                "Travel_Linked": 0,
                 "Intervention_Config": {
-                    "class": "OutbreakIndividual",
-                    "Event_Name": "Outbreak (not used)",
-                    "Outbreak_Source": "PrevalenceIncrease",
-                    "Incubation_Period_Override": 1,
                     "Antigen": 0,
-                    "Genome": 0
-                }
-            }
+                    "Event_Name": "Outbreak (not used)",
+                    "Genome": 0,
+                    "Incubation_Period_Override": 1,
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "class": "OutbreakIndividual"
+                },
+                "Target_Age_Max": 65,
+                "Target_Age_Min": 50,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "Travel_Linked": 0,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Epidemic seeding for 50-65",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1985,
+            "class": "CampaignEventByYear"
         },
         {
             "BEGIN": "STI CO-INFECTION",
-            "class": "CampaignEvent",
-            "Event_Name": "STI co-infection for initial post-debut population",
-            "Start_Day": 1,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Demographic_Coverage": 0.05,
                 "Intervention_Config": {
-                    "class": "STIIsPostDebut",
                     "Event_Or_Config": "Config",
                     "Positive_Diagnosis_Config": {
-                        "class": "ModifyStiCoInfectionStatus",
-                        "New_STI_CoInfection_Status": 1
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEvent",
-            "Event_Name": "STI co-infection at debut",
-            "Start_Day": 1,
+                        "New_STI_CoInfection_Status": 1,
+                        "class": "ModifyStiCoInfectionStatus"
+                    },
+                    "class": "STIIsPostDebut"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "STI co-infection for initial post-debut population",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "New_STI_CoInfection_Status": 1,
+                        "class": "ModifyStiCoInfectionStatus"
+                    },
+                    "Demographic_Coverage": 0.05,
                     "Trigger_Condition_List": [
                         "STIDebut"
                     ],
-                    "Demographic_Coverage": 0.05,
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "ModifyStiCoInfectionStatus",
-                        "New_STI_CoInfection_Status": 1
-                    }
-                }
-            }
-        },
-        {
-            "BEGIN": "MALE CIRCUMCISION",
-            "class": "CampaignEventByYear",
-            "Event_Name": "Male circumcision for initial population",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "STI co-infection at debut",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
+        },
+        {
+            "BEGIN": "MALE CIRCUMCISION",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "ExplicitGender",
-                "Target_Gender": "Male",
                 "Demographic_Coverage": 0.05,
                 "Intervention_Config": {
-                    "class": "MaleCircumcision",
-                    "Circumcision_Reduced_Acquire": 0.6
-                }
-            }
+                    "Circumcision_Reduced_Acquire": 0.6,
+                    "class": "MaleCircumcision"
+                },
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Male",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Male circumcision for initial population",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
         },
         {
             "class": "CampaignEventByYear", 
@@ -233,51 +233,36 @@
             }
         },
         {
-            "class": "CampaignEventByYear",
-            "Event_Name": "HIVNeedsMaleCircumcision: Hand out MaleCircumcision",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
+            "END": "MALE CIRCUMCISION",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Circumcision_Reduced_Acquire": 0.6,
+                        "class": "MaleCircumcision"
+                    },
                     "Target_Demographic": "ExplicitGender",
                     "Target_Gender": "Male",
                     "Trigger_Condition_List": [
                         "HIVNeedsMaleCircumcision"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "MaleCircumcision",
-                        "Circumcision_Reduced_Acquire": 0.6
-                    }
-                }
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "MALE CIRCUMCISION"
-        },
-        {
-            "BEGIN": "HCT UPTAKE AT DEBUT",
-            "class": "CampaignEventByYear",
-            "Event_Name": "HCTUptakeAtDebut: state 0 (decision, sigmoid by year and sex)",
-            "Start_Year": 1990,
+            "Event_Name": "HIVNeedsMaleCircumcision: Hand out MaleCircumcision",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "BEGIN": "HCT UPTAKE AT DEBUT",
+            "END": "HCT UPTAKE AT DEBUT",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "STIDebut"
-                    ],
-                    "Property_Restrictions_Within_Node": [
-                        {
-                            "Accessibility": "Yes"
-                        }
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVSigmoidByYearAndSexDiagnostic",
+                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -286,38 +271,44 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
+                        "Event_Or_Config": "Event",
+                        "Female_Multiplier": 1.0,
+                        "Negative_Diagnosis_Event": "HCTUptakePostDebut1",
                         "New_Property_Value": "InterventionStatus:HCTUptakeAtDebut",
-                        "Days_To_Diagnosis": 0,
-                        "Ramp_Min": -0.0052,
+                        "Positive_Diagnosis_Event": "HCTTestingLoop0",
                         "Ramp_Max": 0.05,
                         "Ramp_MidYear": 2005,
+                        "Ramp_Min": -0.0052,
                         "Ramp_Rate": 1,
-                        "Female_Multiplier": 1.0,
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "HCTTestingLoop0",
-                        "Negative_Diagnosis_Event": "HCTUptakePostDebut1"
-                    }
-                }
+                        "class": "HIVSigmoidByYearAndSexDiagnostic"
+                    },
+                    "Property_Restrictions_Within_Node": [
+                        {
+                            "Accessibility": "Yes"
+                        }
+                    ],
+                    "Trigger_Condition_List": [
+                        "STIDebut"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "HCT UPTAKE AT DEBUT"
-        },
-        {
-            "BEGIN": "HCT UPTAKE AFTER DEBUT",
-            "class": "CampaignEventByYear",
-            "Event_Name": "HCTUptakePostDebut: HCT Uptake Initialization",
-            "Start_Year": 1990,
+            "Event_Name": "HCTUptakeAtDebut: state 0 (decision, sigmoid by year and sex)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "BEGIN": "HCT UPTAKE AFTER DEBUT",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Demographic_Coverage": 1,
-                "Travel_Linked": 0,
                 "Intervention_Config": {
-                    "class": "MultiInterventionDistributor",
                     "Intervention_List": [
                         {
-                            "class": "PropertyValueChanger",
+                            "Daily_Probability": 1.0,
                             "Disqualifying_Properties": [
                                 "InterventionStatus:LostForever",
                                 "InterventionStatus:OnART",
@@ -326,66 +317,98 @@
                                 "InterventionStatus:LinkingToPreART",
                                 "InterventionStatus:ARTStaging"
                             ],
+                            "Maximum_Duration": 0,
                             "New_Property_Value": "InterventionStatus:None",
+                            "Revert": 0,
                             "Target_Property_Key": "InterventionStatus",
                             "Target_Property_Value": "None",
-                            "Daily_Probability": 1.0,
-                            "Maximum_Duration": 0,
-                            "Revert": 0
+                            "class": "PropertyValueChanger"
                         },
                         {
-                            "class": "BroadcastEvent",
-                            "Broadcast_Event": "HCTUptakePostDebut0"
+                            "Broadcast_Event": "HCTUptakePostDebut0",
+                            "class": "BroadcastEvent"
                         }
-                    ]
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "HCTUptakePostDebut: state 0 (Post-Debut?)",
-            "Start_Year": 1990,
+                    ],
+                    "class": "MultiInterventionDistributor"
+                },
+                "Travel_Linked": 0,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "HCTUptakePostDebut: HCT Uptake Initialization",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Event_Or_Config": "Event",
+                        "Positive_Diagnosis_Event": "HCTUptakePostDebut1",
+                        "class": "STIIsPostDebut"
+                    },
                     "Trigger_Condition_List": [
                         "HCTUptakePostDebut0"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "STIIsPostDebut",
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "HCTUptakePostDebut1"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "HCTUptakePostDebut1: state 1 (1-year delay, reachable)",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "HCTUptakePostDebut: state 0 (Post-Debut?)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Broadcast_Event": "HCTUptakePostDebut2",
+                        "Delay_Distribution": "EXPONENTIAL_DURATION",
+                        "Delay_Period": 365,
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART",
+                            "InterventionStatus:ARTStaging",
+                            "InterventionStatus:HCTTestingLoop"
+                        ],
+                        "Max_Entries": 1,
+                        "Muxer_Name": "HCTUptakePostDebut",
+                        "New_Property_Value": "InterventionStatus:HCTUptakePostDebut",
+                        "class": "HIVMuxer"
+                    },
+                    "Property_Restrictions_Within_Node": [
+                        {
+                            "Accessibility": "Yes"
+                        }
+                    ],
                     "Trigger_Condition_List": [
                         "HCTUptakePostDebut1"
                     ],
-                    "Property_Restrictions_Within_Node": [
-                        {
-                            "Accessibility": "Yes"
-                        }
-                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "HCTUptakePostDebut1: state 1 (1-year delay, reachable)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVMuxer",
-                        "Muxer_Name": "HCTUptakePostDebut",
-                        "Max_Entries": 1,
+                        "Days_To_Diagnosis": 0,
+                        "Default_Value": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -395,106 +418,104 @@
                             "InterventionStatus:ARTStaging",
                             "InterventionStatus:HCTTestingLoop"
                         ],
+                        "Event_Or_Config": "Event",
+                        "Female_Multiplier": 1,
+                        "Negative_Diagnosis_Event": "HCTUptakePostDebut1",
                         "New_Property_Value": "InterventionStatus:HCTUptakePostDebut",
-                        "Delay_Distribution": "EXPONENTIAL_DURATION",
-                        "Delay_Period": 365,
-                        "Broadcast_Event": "HCTUptakePostDebut2"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "HCTUptakePostDebut: state 2 (Decision to uptake HCT)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                        "Positive_Diagnosis_Event": "HCTTestingLoop0",
+                        "Ramp_Max": 0.6,
+                        "Ramp_MidYear": 2007,
+                        "Ramp_Min": -0.01,
+                        "Ramp_Rate": 1,
+                        "class": "HIVSigmoidByYearAndSexDiagnostic"
+                    },
+                    "Property_Restrictions_Within_Node": [
+                        {
+                            "Accessibility": "Yes"
+                        }
+                    ],
                     "Trigger_Condition_List": [
                         "HCTUptakePostDebut2"
                     ],
-                    "Property_Restrictions_Within_Node": [
-                        {
-                            "Accessibility": "Yes"
-                        }
-                    ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "HIVSigmoidByYearAndSexDiagnostic",
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever",
-                            "InterventionStatus:OnART",
-                            "InterventionStatus:LinkingToART",
-                            "InterventionStatus:OnPreART",
-                            "InterventionStatus:LinkingToPreART",
-                            "InterventionStatus:ARTStaging",
-                            "InterventionStatus:HCTTestingLoop"
-                        ],
-                        "New_Property_Value": "InterventionStatus:HCTUptakePostDebut",
-                        "Days_To_Diagnosis": 0,
-                        "Default_Value": 0,
-                        "Ramp_Min": -0.01,
-                        "Ramp_Max": 0.6,
-                        "Ramp_MidYear": 2007,
-                        "Ramp_Rate": 1,
-                        "Female_Multiplier": 1,
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "HCTTestingLoop0",
-                        "Negative_Diagnosis_Event": "HCTUptakePostDebut1"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "HCTUptakePostDebut: state 3 (From LTFU or ART dropout back into HCT uptake loop)",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "HCTUptakePostDebut: state 2 (Decision to uptake HCT)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "END": "HCT UPTAKE AFTER DEBUT",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Choices": {
+                            "HCTUptakePostDebut0": 1
+                        },
+                        "Disqualifying_Properties": [],
+                        "NOTE": "No Invalid_Intervention_States so we can churn from deep in the cascade",
+                        "New_Property_Value": "InterventionStatus:HCTUptakePostDebut",
+                        "class": "HIVRandomChoice"
+                    },
                     "Trigger_Condition_List": [
                         "HCTUptakePostDebut3",
                         "HCTUptakePostDebut9"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "HIVRandomChoice",
-                        "NOTE": "No Invalid_Intervention_States so we can churn from deep in the cascade",
-                        "Disqualifying_Properties": [],
-                        "New_Property_Value": "InterventionStatus:HCTUptakePostDebut",
-                        "Choices": {
-                            "HCTUptakePostDebut0": 1
-                        }
-                    }
-                }
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "HCT UPTAKE AFTER DEBUT"
+            "Event_Name": "HCTUptakePostDebut: state 3 (From LTFU or ART dropout back into HCT uptake loop)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
         },
         {
             "BEGIN": "HCT TESTING LOOP",
-            "class": "CampaignEventByYear",
-            "Event_Name": "HCTTestingLoop: state 0 (delay to next HCT)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Broadcast_Event": "HCTTestingLoop1",
+                        "Delay_Distribution": "EXPONENTIAL_DURATION",
+                        "Delay_Period": 365,
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART",
+                            "InterventionStatus:ARTStaging"
+                        ],
+                        "Max_Entries": 1,
+                        "Muxer_Name": "HCTTestingLoop",
+                        "New_Property_Value": "InterventionStatus:HCTTestingLoop",
+                        "class": "HIVMuxer"
+                    },
                     "Trigger_Condition_List": [
                         "HCTTestingLoop0"
                     ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "HCTTestingLoop: state 0 (delay to next HCT)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "END": "HCT TESTING LOOP",
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVMuxer",
-                        "Muxer_Name": "HCTTestingLoop",
-                        "Max_Entries": 1,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -503,64 +524,33 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
+                        "Event_Or_Config": "Event",
+                        "Negative_Diagnosis_Event": "HCTTestingLoop0",
                         "New_Property_Value": "InterventionStatus:HCTTestingLoop",
-                        "Delay_Distribution": "EXPONENTIAL_DURATION",
-                        "Delay_Period": 365,
-                        "Broadcast_Event": "HCTTestingLoop1"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "HCTTestingLoop: state 1 (HIV rapid diagnostic)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                        "Positive_Diagnosis_Event": "ARTStaging1",
+                        "class": "HIVRapidHIVDiagnostic"
+                    },
                     "Trigger_Condition_List": [
                         "HCTTestingLoop1"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "HIVRapidHIVDiagnostic",
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever",
-                            "InterventionStatus:OnART",
-                            "InterventionStatus:LinkingToART",
-                            "InterventionStatus:OnPreART",
-                            "InterventionStatus:LinkingToPreART",
-                            "InterventionStatus:ARTStaging"
-                        ],
-                        "New_Property_Value": "InterventionStatus:HCTTestingLoop",
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "ARTStaging1",
-                        "Negative_Diagnosis_Event": "HCTTestingLoop0"
-                    }
-                }
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "HCT TESTING LOOP"
+            "Event_Name": "HCTTestingLoop: state 1 (HIV rapid diagnostic)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
         },
         {
             "BEGIN": "SYMPTOMATIC TESTING",
-            "class": "CampaignEventByYear",
-            "Event_Name": "TestingOnSymptomatic: state 0 (Presentation probability)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
+            "END": "SYMPTOMATIC TESTING",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "HIVSymptomatic"
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVSigmoidByYearAndSexDiagnostic",
+                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -569,42 +559,76 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
+                        "Event_Or_Config": "Event",
+                        "Female_Multiplier": 1,
                         "New_Property_Value": "InterventionStatus:TestingOnSymptomatic",
-                        "Days_To_Diagnosis": 0,
-                        "Ramp_Min": 0,
+                        "Positive_Diagnosis_Event": "ARTStaging0",
                         "Ramp_Max": 0.55,
                         "Ramp_MidYear": 2000,
+                        "Ramp_Min": 0,
                         "Ramp_Rate": 0.5,
-                        "Female_Multiplier": 1,
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "ARTStaging0"
-                    }
-                }
+                        "class": "HIVSigmoidByYearAndSexDiagnostic"
+                    },
+                    "Trigger_Condition_List": [
+                        "HIVSymptomatic"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "SYMPTOMATIC TESTING"
-        },
-        {
-            "BEGIN": "ANC and PMTCT",
-            "class": "CampaignEventByYear",
-            "Event_Name": "ANC/PMTCT: Uptake of Diagnostic Testing at ANC",
-            "Start_Year": 1990,
+            "Event_Name": "TestingOnSymptomatic: state 0 (Presentation probability)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "BEGIN": "ANC and PMTCT",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "TwelveWeeksPregnant"
-                    ],
+                    "Actual_IndividualIntervention_Config": {
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART",
+                            "InterventionStatus:ARTStaging",
+                            "InterventionStatus:TestingOnSymptomatic"
+                        ],
+                        "Event_Or_Config": "Event",
+                        "New_Property_Value": "InterventionStatus:TestingOnANC",
+                        "Positive_Diagnosis_Event": "Needs_PMTCT_Diagnostic_Test",
+                        "Ramp_Max": 0.915,
+                        "Ramp_MidYear": 2005.87,
+                        "Ramp_Min": 0,
+                        "Ramp_Rate": 0.7136,
+                        "class": "HIVSigmoidByYearAndSexDiagnostic"
+                    },
                     "Property_Restrictions_Within_Node": [
                         {
                             "Accessibility": "Yes"
                         }
                     ],
+                    "Trigger_Condition_List": [
+                        "TwelveWeeksPregnant"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ANC/PMTCT: Uptake of Diagnostic Testing at ANC",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVSigmoidByYearAndSexDiagnostic",
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -614,99 +638,63 @@
                             "InterventionStatus:ARTStaging",
                             "InterventionStatus:TestingOnSymptomatic"
                         ],
-                        "New_Property_Value": "InterventionStatus:TestingOnANC",
-                        "Ramp_Min": 0,
-                        "Ramp_Max": 0.915,
-                        "Ramp_MidYear": 2005.87,
-                        "Ramp_Rate": 0.7136,
                         "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "Needs_PMTCT_Diagnostic_Test"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ANC/PMTCT: Diagnostic Test (HIV rapid diagnostic)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                        "New_Property_Value": "InterventionStatus:TestingOnANC",
+                        "Positive_Diagnosis_Event": "HIV_Positive_at_ANC",
+                        "class": "HIVRapidHIVDiagnostic"
+                    },
                     "Trigger_Condition_List": [
                         "Needs_PMTCT_Diagnostic_Test"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "HIVRapidHIVDiagnostic",
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever",
-                            "InterventionStatus:OnART",
-                            "InterventionStatus:LinkingToART",
-                            "InterventionStatus:OnPreART",
-                            "InterventionStatus:LinkingToPreART",
-                            "InterventionStatus:ARTStaging",
-                            "InterventionStatus:TestingOnSymptomatic"
-                        ],
-                        "New_Property_Value": "InterventionStatus:TestingOnANC",
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "HIV_Positive_at_ANC"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ANC/PMTCT: Enter ART staging from PMTCT?",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ANC/PMTCT: Diagnostic Test (HIV rapid diagnostic)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "HIV_Positive_at_ANC"
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVRandomChoice",
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever",
-                            "InterventionStatus:OnART",
-                            "InterventionStatus:LinkingToART",
-                            "InterventionStatus:OnPreART",
-                            "InterventionStatus:LinkingToPreART",
-                            "InterventionStatus:ARTStaging",
-                            "InterventionStatus:TestingOnSymptomatic"
-                        ],
-                        "New_Property_Value": "InterventionStatus:TestingOnANC",
                         "Choices": {
                             "ARTStaging1": 0.67,
                             "NoTrigger": 0.33
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ANC/PMTCT: Choose Single-Dose Nevirapine (sdNVP) or Combination (Option A/B)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                        },
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART",
+                            "InterventionStatus:ARTStaging",
+                            "InterventionStatus:TestingOnSymptomatic"
+                        ],
+                        "New_Property_Value": "InterventionStatus:TestingOnANC",
+                        "class": "HIVRandomChoice"
+                    },
                     "Trigger_Condition_List": [
                         "HIV_Positive_at_ANC"
                     ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ANC/PMTCT: Enter ART staging from PMTCT?",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVSigmoidByYearAndSexDiagnostic",
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -716,55 +704,55 @@
                             "InterventionStatus:ARTStaging",
                             "InterventionStatus:TestingOnSymptomatic"
                         ],
+                        "Event_Or_Config": "Event",
+                        "Negative_Diagnosis_Event": "Needs_Combination_PMTCT",
                         "New_Property_Value": "InterventionStatus:TestingOnANC",
-                        "Ramp_Min": 0,
+                        "Positive_Diagnosis_Event": "Needs_sdNVP_PMTCT",
                         "Ramp_Max": 1,
                         "Ramp_MidYear": 2008.4,
+                        "Ramp_Min": 0,
                         "Ramp_Rate": -1,
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "Needs_sdNVP_PMTCT",
-                        "Negative_Diagnosis_Event": "Needs_Combination_PMTCT"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ANC/PMTCT: Less Effective PMTCT (sdNVP)",
-            "Start_Year": 1990,
+                        "class": "HIVSigmoidByYearAndSexDiagnostic"
+                    },
+                    "Trigger_Condition_List": [
+                        "HIV_Positive_at_ANC"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ANC/PMTCT: Choose Single-Dose Nevirapine (sdNVP) or Combination (Option A/B)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Efficacy": 0.66,
+                        "class": "PMTCT"
+                    },
                     "Trigger_Condition_List": [
                         "Needs_sdNVP_PMTCT"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "PMTCT",
-                        "Efficacy": 0.66
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ANC/PMTCT: Combination Option A or B?",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ANC/PMTCT: Less Effective PMTCT (sdNVP)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "Needs_Combination_PMTCT"
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVPiecewiseByYearAndSexDiagnostic",
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -774,7 +762,11 @@
                             "InterventionStatus:ARTStaging",
                             "InterventionStatus:TestingOnSymptomatic"
                         ],
+                        "Event_Or_Config": "Event",
+                        "Interpolation_Order": 0,
+                        "Negative_Diagnosis_Event": "Needs_Option_A",
                         "New_Property_Value": "InterventionStatus:TestingOnANC",
+                        "Positive_Diagnosis_Event": "Needs_Option_B",
                         "Time_Value_Map": {
                             "Times": [
                                 2013.249
@@ -783,79 +775,72 @@
                                 1
                             ]
                         },
-                        "Interpolation_Order": 0,
-                        "Event_Or_Config": "Event",
-                        "Negative_Diagnosis_Event": "Needs_Option_A",
-                        "Positive_Diagnosis_Event": "Needs_Option_B"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ANC/PMTCT (Option A)",
-            "Start_Year": 1990,
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic"
+                    },
+                    "Trigger_Condition_List": [
+                        "Needs_Combination_PMTCT"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ANC/PMTCT: Combination Option A or B?",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Efficacy": 0.9,
+                        "class": "PMTCT"
+                    },
                     "Trigger_Condition_List": [
                         "Needs_Option_A"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "PMTCT",
-                        "Efficacy": 0.9
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "PMTCT (Option B)",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ANC/PMTCT (Option A)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "END": "ANC and PMTCT",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Efficacy": 0.96667,
+                        "class": "PMTCT"
+                    },
                     "Trigger_Condition_List": [
                         "Needs_Option_B"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "PMTCT",
-                        "Efficacy": 0.96667
-                    }
-                }
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "ANC and PMTCT"
-        },
-        {
-            "BEGIN": "CHILD 6W TESTING",
-            "class": "CampaignEventByYear",
-            "Event_Name": "TestingOnChild6w: state 0 (Presentation probability)",
-            "Start_Year": 2004,
+            "Event_Name": "PMTCT (Option B)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "BEGIN": "CHILD 6W TESTING",
+            "END": "CHILD 6W TESTING",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "SixWeeksOld"
-                    ],
-                    "Property_Restrictions_Within_Node": [
-                        {
-                            "Accessibility": "Yes"
-                        }
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVPiecewiseByYearAndSexDiagnostic",
+                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -865,8 +850,11 @@
                             "InterventionStatus:ARTStaging",
                             "InterventionStatus:TestingOnSymptomatic"
                         ],
+                        "Event_Or_Config": "Event",
+                        "Female_Multiplier": 1,
+                        "Interpolation_Order": 1,
                         "New_Property_Value": "InterventionStatus:TestingOnChild6w",
-                        "Days_To_Diagnosis": 0,
+                        "Positive_Diagnosis_Event": "ARTStaging0",
                         "Time_Value_Map": {
                             "Times": [
                                 2004,
@@ -883,32 +871,66 @@
                                 0.3365
                             ]
                         },
-                        "Interpolation_Order": 1,
-                        "Female_Multiplier": 1,
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "ARTStaging0"
-                    }
-                }
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic"
+                    },
+                    "Property_Restrictions_Within_Node": [
+                        {
+                            "Accessibility": "Yes"
+                        }
+                    ],
+                    "Trigger_Condition_List": [
+                        "SixWeeksOld"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "CHILD 6W TESTING"
+            "Event_Name": "TestingOnChild6w: state 0 (Presentation probability)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 2004,
+            "class": "CampaignEventByYear"
         },
         {
             "BEGIN": "ART STAGING",
-            "class": "CampaignEventByYear",
-            "Event_Name": "ART Staging: state 0 (HIV rapid diagnostic)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART"
+                        ],
+                        "Event_Or_Config": "Event",
+                        "New_Property_Value": "InterventionStatus:ARTStagingDiagnosticTest",
+                        "Positive_Diagnosis_Event": "ARTStaging1",
+                        "class": "HIVRapidHIVDiagnostic"
+                    },
                     "Trigger_Condition_List": [
                         "ARTStaging0"
                     ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ART Staging: state 0 (HIV rapid diagnostic)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVRapidHIVDiagnostic",
+                        "Choices": {
+                            "ARTStaging2": 0.85,
+                            "HCTUptakePostDebut3": 0.15
+                        },
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -916,29 +938,30 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
-                        "New_Property_Value": "InterventionStatus:ARTStagingDiagnosticTest",
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "ARTStaging1"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ARTStaging: state 1 (random choice: linking from positive diagnostic test)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
+                        "class": "HIVRandomChoice"
+                    },
                     "Trigger_Condition_List": [
                         "ARTStaging1"
                     ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ARTStaging: state 1 (random choice: linking from positive diagnostic test)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVRandomChoice",
+                        "Broadcast_Event": "ARTStaging3",
+                        "Delay_Distribution": "FIXED_DURATION",
+                        "Delay_Period": 1,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -946,33 +969,29 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
+                        "Max_Entries": 1,
+                        "Muxer_Name": "ARTStaging",
                         "New_Property_Value": "InterventionStatus:ARTStaging",
-                        "Choices": {
-                            "HCTUptakePostDebut3": 0.15,
-                            "ARTStaging2": 0.85
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ARTStaging: state 2 (Muxer to make sure only one entry per DT)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                        "class": "HIVMuxer"
+                    },
                     "Trigger_Condition_List": [
                         "ARTStaging2"
                     ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ARTStaging: state 2 (Muxer to make sure only one entry per DT)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVMuxer",
-                        "Muxer_Name": "ARTStaging",
-                        "Max_Entries": 1,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -980,78 +999,35 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
+                        "Event_Or_Config": "Event",
                         "New_Property_Value": "InterventionStatus:ARTStaging",
-                        "Delay_Distribution": "FIXED_DURATION",
-                        "Delay_Period": 1,
-                        "Broadcast_Event": "ARTStaging3"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ARTStaging: state 3 (draw blood)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                        "Positive_Diagnosis_Event": "ARTStaging4",
+                        "class": "HIVDrawBlood"
+                    },
                     "Trigger_Condition_List": [
                         "ARTStaging3"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "HIVDrawBlood",
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever",
-                            "InterventionStatus:OnART",
-                            "InterventionStatus:LinkingToART",
-                            "InterventionStatus:OnPreART",
-                            "InterventionStatus:LinkingToPreART"
-                        ],
-                        "New_Property_Value": "InterventionStatus:ARTStaging",
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "ARTStaging4"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ARTStaging: state 4 (check eligibility for ART, CD4 agnostic)",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ARTStaging: state 3 (draw blood)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "ARTStaging4"
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVARTStagingCD4AgnosticDiagnostic",
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever",
-                            "InterventionStatus:OnART",
-                            "InterventionStatus:LinkingToART",
-                            "InterventionStatus:OnPreART",
-                            "InterventionStatus:LinkingToPreART"
-                        ],
-                        "New_Property_Value": "InterventionStatus:ARTStaging",
-                        "NOTE1": "Threshold for adult vs child guidelines",
-                        "Adult_Treatment_Age": 5,
-                        "Adult_By_WHO_Stage": {
+                        "Adult_By_Pregnant": {
                             "Times": [
-                                2004,
-                                2011.8
+                                2013.2
                             ],
                             "Values": [
-                                4,
-                                3
+                                1
                             ]
                         },
                         "Adult_By_TB": {
@@ -1062,22 +1038,23 @@
                                 1
                             ]
                         },
-                        "Adult_By_Pregnant": {
+                        "Adult_By_WHO_Stage": {
                             "Times": [
-                                2013.2
+                                2004,
+                                2011.8
                             ],
                             "Values": [
-                                1
+                                4,
+                                3
                             ]
                         },
-                        "Child_Treat_Under_Age_In_Years_Threshold": {
+                        "Adult_Treatment_Age": 5,
+                        "Child_By_TB": {
                             "Times": [
-                                2010.34,
-                                2013.2
+                                2004
                             ],
                             "Values": [
-                                1,
-                                5
+                                0
                             ]
                         },
                         "Child_By_WHO_Stage": {
@@ -1090,69 +1067,81 @@
                                 2
                             ]
                         },
-                        "Child_By_TB": {
+                        "Child_Treat_Under_Age_In_Years_Threshold": {
                             "Times": [
-                                2004
+                                2010.34,
+                                2013.2
                             ],
                             "Values": [
-                                0
+                                1,
+                                5
                             ]
                         },
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART"
+                        ],
                         "Event_Or_Config": "Event",
+                        "NOTE1": "Threshold for adult vs child guidelines",
+                        "Negative_Diagnosis_Event": "ARTStaging5",
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
                         "Positive_Diagnosis_Event": "LinkingToART0",
-                        "Negative_Diagnosis_Event": "ARTStaging5"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ARTStaging: state 5 (random choice: Return for CD4 or LTFU)",
-            "Start_Year": 1990,
+                        "class": "HIVARTStagingCD4AgnosticDiagnostic"
+                    },
+                    "Trigger_Condition_List": [
+                        "ARTStaging4"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ARTStaging: state 4 (check eligibility for ART, CD4 agnostic)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Choices": {
+                            "ARTStaging6": 0.85,
+                            "HCTUptakePostDebut9": 0.15
+                        },
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART"
+                        ],
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
+                        "class": "HIVRandomChoice"
+                    },
                     "Trigger_Condition_List": [
                         "ARTStaging5"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "HIVRandomChoice",
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever",
-                            "InterventionStatus:OnART",
-                            "InterventionStatus:LinkingToART",
-                            "InterventionStatus:OnPreART",
-                            "InterventionStatus:LinkingToPreART"
-                        ],
-                        "New_Property_Value": "InterventionStatus:ARTStaging",
-                        "Choices": {
-                            "HCTUptakePostDebut9": 0.15,
-                            "ARTStaging6": 0.85
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ARTStaging: state 6 (check eligibility for ART by CD4)",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ARTStaging: state 5 (random choice: Return for CD4 or LTFU)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "END": "ART STAGING",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "ARTStaging6"
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVARTStagingByCD4Diagnostic",
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -1160,19 +1149,7 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
-                        "New_Property_Value": "InterventionStatus:ARTStaging",
-                        "Threshold": {
-                            "Times": [
-                                2004,
-                                2011.8,
-                                2015
-                            ],
-                            "Values": [
-                                200,
-                                350,
-                                500
-                            ]
-                        },
+                        "Event_Or_Config": "Event",
                         "If_Active_TB": {
                             "Times": [
                                 2010.34
@@ -1191,146 +1168,147 @@
                                 1000
                             ]
                         },
-                        "Event_Or_Config": "Event",
+                        "Negative_Diagnosis_Event": "LinkingToPreART0",
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
                         "Positive_Diagnosis_Event": "LinkingToART0",
-                        "Negative_Diagnosis_Event": "LinkingToPreART0"
-                    }
-                }
+                        "Threshold": {
+                            "Times": [
+                                2004,
+                                2011.8,
+                                2015
+                            ],
+                            "Values": [
+                                200,
+                                350,
+                                500
+                            ]
+                        },
+                        "class": "HIVARTStagingByCD4Diagnostic"
+                    },
+                    "Trigger_Condition_List": [
+                        "ARTStaging6"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "ART STAGING"
-        },
-        {
-            "BEGIN": "PRE-ART LINKING",
-            "class": "CampaignEventByYear",
-            "Event_Name": "LinkingToPreART: state 0 (Linking probability)",
-            "Start_Year": 1990,
+            "Event_Name": "ARTStaging: state 6 (check eligibility for ART by CD4)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "BEGIN": "PRE-ART LINKING",
+            "END": "PRE-ART LINKING",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "LinkingToPreART0"
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVSigmoidByYearAndSexDiagnostic",
+                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART",
                             "InterventionStatus:OnPreART"
                         ],
+                        "Event_Or_Config": "Event",
+                        "Female_Multiplier": 1,
+                        "Negative_Diagnosis_Event": "HCTUptakePostDebut9",
                         "New_Property_Value": "InterventionStatus:LinkingToPreART",
-                        "Days_To_Diagnosis": 0,
-                        "Ramp_Min": 0.46,
+                        "Positive_Diagnosis_Event": "OnPreART0",
                         "Ramp_Max": 0.7,
                         "Ramp_MidYear": 2002,
+                        "Ramp_Min": 0.46,
                         "Ramp_Rate": 1,
-                        "Female_Multiplier": 1,
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "OnPreART0",
-                        "Negative_Diagnosis_Event": "HCTUptakePostDebut9"
-                    }
-                }
+                        "class": "HIVSigmoidByYearAndSexDiagnostic"
+                    },
+                    "Trigger_Condition_List": [
+                        "LinkingToPreART0"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "PRE-ART LINKING"
+            "Event_Name": "LinkingToPreART: state 0 (Linking probability)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
         },
         {
             "BEGIN": "PRE-ART",
-            "class": "CampaignEventByYear",
-            "Event_Name": "OnPreART: state 0 (muxer, 182-day delay)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Broadcast_Event": "OnPreART1",
+                        "Delay_Distribution": "FIXED_DURATION",
+                        "Delay_Period": 182,
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART"
+                        ],
+                        "Max_Entries": 1,
+                        "Muxer_Name": "PreART",
+                        "New_Property_Value": "InterventionStatus:OnPreART",
+                        "class": "HIVMuxer"
+                    },
                     "Trigger_Condition_List": [
                         "OnPreART0"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "HIVMuxer",
-                        "Muxer_Name": "PreART",
-                        "Max_Entries": 1,
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever",
-                            "InterventionStatus:OnART",
-                            "InterventionStatus:LinkingToART"
-                        ],
-                        "New_Property_Value": "InterventionStatus:OnPreART",
-                        "Delay_Distribution": "FIXED_DURATION",
-                        "Delay_Period": 182,
-                        "Broadcast_Event": "OnPreART1"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "OnPreART: state 1 (random choice: pre-ART or LTFU)",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "OnPreART: state 0 (muxer, 182-day delay)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "OnPreART1"
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVRandomChoice",
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever",
-                            "InterventionStatus:OnART",
-                            "InterventionStatus:LinkingToART"
-                        ],
-                        "New_Property_Value": "InterventionStatus:OnPreART",
                         "Choices": {
                             "HCTUptakePostDebut9": 0.25,
                             "OnPreART2": 0.75
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "OnPreART: state 2 (check eligibility for ART, CD4 agnostic)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "OnPreART2"
-                    ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "HIVARTStagingCD4AgnosticDiagnostic",
+                        },
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART"
                         ],
                         "New_Property_Value": "InterventionStatus:OnPreART",
-                        "NOTE1": "Threshold for adult vs child guidelines",
-                        "Adult_Treatment_Age": 5,
-                        "Adult_By_WHO_Stage": {
+                        "class": "HIVRandomChoice"
+                    },
+                    "Trigger_Condition_List": [
+                        "OnPreART1"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "OnPreART: state 1 (random choice: pre-ART or LTFU)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "Adult_By_Pregnant": {
                             "Times": [
-                                2004,
-                                2011.8
+                                2013.2
                             ],
                             "Values": [
-                                4,
-                                3
+                                1
                             ]
                         },
                         "Adult_By_TB": {
@@ -1341,22 +1319,23 @@
                                 1
                             ]
                         },
-                        "Adult_By_Pregnant": {
+                        "Adult_By_WHO_Stage": {
                             "Times": [
-                                2013.2
+                                2004,
+                                2011.8
                             ],
                             "Values": [
-                                1
+                                4,
+                                3
                             ]
                         },
-                        "Child_Treat_Under_Age_In_Years_Threshold": {
+                        "Adult_Treatment_Age": 5,
+                        "Child_By_TB": {
                             "Times": [
-                                2010.34,
-                                2013.2
+                                2004
                             ],
                             "Values": [
-                                1,
-                                5
+                                0
                             ]
                         },
                         "Child_By_WHO_Stage": {
@@ -1369,83 +1348,81 @@
                                 2
                             ]
                         },
-                        "Child_By_TB": {
+                        "Child_Treat_Under_Age_In_Years_Threshold": {
                             "Times": [
-                                2004
+                                2010.34,
+                                2013.2
                             ],
                             "Values": [
-                                0
+                                1,
+                                5
                             ]
                         },
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART"
+                        ],
                         "Event_Or_Config": "Event",
+                        "NOTE1": "Threshold for adult vs child guidelines",
+                        "Negative_Diagnosis_Event": "OnPreART3",
+                        "New_Property_Value": "InterventionStatus:OnPreART",
                         "Positive_Diagnosis_Event": "OnART0",
-                        "Negative_Diagnosis_Event": "OnPreART3"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "OnPreART: state 3 (draw blood)",
-            "Start_Year": 1990,
+                        "class": "HIVARTStagingCD4AgnosticDiagnostic"
+                    },
+                    "Trigger_Condition_List": [
+                        "OnPreART2"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "OnPreART: state 2 (check eligibility for ART, CD4 agnostic)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART"
+                        ],
+                        "Event_Or_Config": "Event",
+                        "New_Property_Value": "InterventionStatus:OnPreART",
+                        "Positive_Diagnosis_Event": "OnPreART4",
+                        "class": "HIVDrawBlood"
+                    },
                     "Trigger_Condition_List": [
                         "OnPreART3"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "HIVDrawBlood",
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever",
-                            "InterventionStatus:OnART",
-                            "InterventionStatus:LinkingToART"
-                        ],
-                        "New_Property_Value": "InterventionStatus:OnPreART",
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "OnPreART4"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "OnPreART: state 4 (check eligibility for ART by CD4)",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "OnPreART: state 3 (draw blood)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "END": "PRE-ART",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "OnPreART4"
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVARTStagingByCD4Diagnostic",
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART"
                         ],
-                        "New_Property_Value": "InterventionStatus:OnPreART",
-                        "Threshold": {
-                            "Times": [
-                                2004,
-                                2011.8,
-                                2015
-                            ],
-                            "Values": [
-                                200,
-                                350,
-                                500
-                            ]
-                        },
+                        "Event_Or_Config": "Event",
                         "If_Active_TB": {
                             "Times": [
                                 2010.34
@@ -1464,216 +1441,239 @@
                                 1000
                             ]
                         },
-                        "Event_Or_Config": "Event",
+                        "Negative_Diagnosis_Event": "OnPreART0",
+                        "New_Property_Value": "InterventionStatus:OnPreART",
                         "Positive_Diagnosis_Event": "OnART0",
-                        "Negative_Diagnosis_Event": "OnPreART0"
-                    }
-                }
+                        "Threshold": {
+                            "Times": [
+                                2004,
+                                2011.8,
+                                2015
+                            ],
+                            "Values": [
+                                200,
+                                350,
+                                500
+                            ]
+                        },
+                        "class": "HIVARTStagingByCD4Diagnostic"
+                    },
+                    "Trigger_Condition_List": [
+                        "OnPreART4"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "PRE-ART"
-        },
-        {
-            "BEGIN": "ART LINKING",
-            "class": "CampaignEventByYear",
-            "Event_Name": "LinkingToART: state 0 (Linking probability)",
-            "Start_Year": 1990,
+            "Event_Name": "OnPreART: state 4 (check eligibility for ART by CD4)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "BEGIN": "ART LINKING",
+            "END": "ART LINKING",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "LinkingToART0"
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVSigmoidByYearAndSexDiagnostic",
+                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART"
                         ],
+                        "Event_Or_Config": "Event",
+                        "Female_Multiplier": 1,
+                        "Negative_Diagnosis_Event": "HCTUptakePostDebut3",
                         "New_Property_Value": "InterventionStatus:LinkingToART",
-                        "Days_To_Diagnosis": 0,
-                        "Ramp_Min": 0,
+                        "Positive_Diagnosis_Event": "OnART0",
                         "Ramp_Max": 0.9,
                         "Ramp_MidYear": 2005,
+                        "Ramp_Min": 0,
                         "Ramp_Rate": 1,
-                        "Female_Multiplier": 1,
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "OnART0",
-                        "Negative_Diagnosis_Event": "HCTUptakePostDebut3"
-                    }
-                }
+                        "class": "HIVSigmoidByYearAndSexDiagnostic"
+                    },
+                    "Trigger_Condition_List": [
+                        "LinkingToART0"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "ART LINKING"
+            "Event_Name": "LinkingToART: state 0 (Linking probability)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
         },
         {
             "BEGIN": "ART",
-            "class": "CampaignEventByYear",
-            "Event_Name": "OnART: state 0 (muxer and delay)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Broadcast_Event": "OnART1",
+                        "Delay_Distribution": "UNIFORM_DURATION",
+                        "Delay_Period_Max": 120,
+                        "Delay_Period_Min": 1,
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever"
+                        ],
+                        "Max_Entries": 1,
+                        "Muxer_Name": "OnART",
+                        "New_Property_Value": "InterventionStatus:OnART",
+                        "class": "HIVMuxer"
+                    },
                     "Trigger_Condition_List": [
                         "OnART0"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "HIVMuxer",
-                        "Muxer_Name": "OnART",
-                        "Max_Entries": 1,
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever"
-                        ],
-                        "New_Property_Value": "InterventionStatus:OnART",
-                        "Delay_Distribution": "UNIFORM_DURATION",
-                        "Delay_Period_Min": 1,
-                        "Delay_Period_Max": 120,
-                        "Broadcast_Event": "OnART1"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "OnART: state 1 (run ARTBasic)",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "OnART: state 0 (muxer and delay)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "OnART1"
-                    ],
                     "Actual_IndividualIntervention_Config": {
                         "class": "ARTBasic"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "OnART: state 2 (delay to dropout)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    },
                     "Trigger_Condition_List": [
                         "OnART1"
                     ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "OnART: state 1 (run ARTBasic)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVMuxer",
-                        "Muxer_Name": "ARTDropoutDelay",
-                        "Max_Entries": 1,
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever"
-                        ],
-                        "New_Property_Value": "InterventionStatus:OnART",
+                        "Broadcast_Event": "OnART3",
                         "Delay_Distribution": "EXPONENTIAL_DURATION",
                         "Delay_Period": 7300,
-                        "Broadcast_Event": "OnART3"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "OnART: state 3 (run ARTDropout)",
-            "Start_Year": 1990,
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever"
+                        ],
+                        "Max_Entries": 1,
+                        "Muxer_Name": "ARTDropoutDelay",
+                        "New_Property_Value": "InterventionStatus:OnART",
+                        "class": "HIVMuxer"
+                    },
+                    "Trigger_Condition_List": [
+                        "OnART1"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "OnART: state 2 (delay to dropout)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "OnART3"
-                    ],
                     "Actual_IndividualIntervention_Config": {
                         "class": "ARTDropout"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "OnART: state 4 (Willing to re-enroll in ART?)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    },
                     "Trigger_Condition_List": [
                         "OnART3"
                     ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "OnART: state 3 (run ARTDropout)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "END": "ART",
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVRandomChoice",
+                        "Choices": {
+                            "HCTUptakePostDebut3": 0.75,
+                            "LostForever0": 0.25
+                        },
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever"
                         ],
                         "New_Property_Value": "InterventionStatus:OnART",
-                        "Choices": {
-                            "LostForever0": 0.25,
-                            "HCTUptakePostDebut3": 0.75
-                        }
-                    }
-                }
+                        "class": "HIVRandomChoice"
+                    },
+                    "Trigger_Condition_List": [
+                        "OnART3"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "ART"
+            "Event_Name": "OnART: state 4 (Willing to re-enroll in ART?)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
         },
         {
             "BEGIN": "LOST FOREVER",
-            "class": "CampaignEventByYear",
-            "Event_Name": "LostForever: state 0",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
+            "END": "LOST FOREVER",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Intervention_List": [
+                            {
+                                "Daily_Probability": 1.0,
+                                "Disqualifying_Properties": [],
+                                "Maximum_Duration": 0,
+                                "New_Property_Value": "InterventionStatus:LostForever",
+                                "Revert": 0,
+                                "Target_Property_Key": "InterventionStatus",
+                                "Target_Property_Value": "LostForever",
+                                "class": "PropertyValueChanger"
+                            },
+                            {
+                                "Broadcast_Event": "LTFU0",
+                                "class": "BroadcastEvent"
+                            }
+                        ],
+                        "class": "MultiInterventionDistributor"
+                    },
                     "Trigger_Condition_List": [
                         "LostForever0"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "MultiInterventionDistributor",
-                        "Intervention_List": [
-                            {
-                                "class": "PropertyValueChanger",
-                                "Disqualifying_Properties": [],
-                                "New_Property_Value": "InterventionStatus:LostForever",
-                                "Target_Property_Key": "InterventionStatus",
-                                "Target_Property_Value": "LostForever",
-                                "Daily_Probability": 1.0,
-                                "Maximum_Duration": 0,
-                                "Revert": 0
-                            },
-                            {
-                                "class": "BroadcastEvent",
-                                "Broadcast_Event": "LTFU0"
-                            }
-                        ]
-                    }
-                }
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "LOST FOREVER"
+            "Event_Name": "LostForever: state 0",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
         }
     ]
 }

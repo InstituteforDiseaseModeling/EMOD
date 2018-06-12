@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -22,9 +22,9 @@ namespace Kernel
     IMPL_QUERY_INTERFACE2(ReferenceTrackingEventCoordinator, IEventCoordinator, IConfigurable)
 
     ReferenceTrackingEventCoordinator::ReferenceTrackingEventCoordinator()
-    : year2ValueMap()
-    , target_coverage( 0.0 ) // no great reason for this value
-    , end_year(0.0)
+        : StandardInterventionDistributionEventCoordinator( false )//false=don't use standard demographic coverage
+        , year2ValueMap()
+        , end_year(0.0)
     {
     }
 
@@ -78,6 +78,11 @@ namespace Kernel
             LOG_WARN_F( "Campaign starts on year %f (day=%f). A ReferenceTrackingEventCoordinator has a Time_Value_Map that starts on year %f.\n",
                         campaign_start_year, campaignStartDay, year2ValueMap.begin()->first );
         }
+    }
+
+    void ReferenceTrackingEventCoordinator::InitializeRepetitions( const Configuration* inputJson )
+    {
+        // don't include repetition parameters since they are managed internally by this class
     }
 
     // Obviously don't need this if it's not doing anything useful.
@@ -137,7 +142,7 @@ namespace Kernel
             NonNegativeFloat totalWithoutIntervention = totalQualifyingPop - totalWithIntervention;
             float default_value = 0.0f;
             float year = parent->GetSimulationTime().Year();
-            target_coverage  = year2ValueMap.getValueLinearInterpolation(year, default_value);
+            float target_coverage  = year2ValueMap.getValueLinearInterpolation(year, default_value);
 
             float totalToIntervene = ( target_coverage * totalQualifyingPop ) - totalWithIntervention;
             NO_LESS_THAN( totalToIntervene, 0 );

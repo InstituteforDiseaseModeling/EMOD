@@ -1,19 +1,19 @@
 {
-    "Default_Config_Path": "defaults/hiv_default_config.json", 
+    "Default_Config_Path": "defaults/hiv_default_config.json",
     "parameters": {
-        "Config_Name": "46_HIV_ProportionalAdjustmentEventCoordinator_HIVNegative", 
-        "Simulation_Duration": 3650, 
-        "Run_Number": 3,
-        "Base_Year": 1960, 
-        "Base_Population_Scale_Factor": 0.0005, 
+        "Base_Population_Scale_Factor": 0.0005,
+        "Base_Year": 1960,
+        "Config_Name": "46_HIV_ProportionalAdjustmentEventCoordinator_HIVNegative",
         "Listed_Events": [
-            "VMMC_1", 
-            "VMMC_2" 
-        ],
-        "Report_Event_Recorder_Ignore_Events_In_List": 0, 
-        "Report_HIV_Event_Channels_List": [
-            "VMMC_1", 
+            "VMMC_1",
             "VMMC_2"
-        ]
+        ],
+        "Report_Event_Recorder_Ignore_Events_In_List": 0,
+        "Report_HIV_Event_Channels_List": [
+            "VMMC_1",
+            "VMMC_2"
+        ],
+        "Run_Number": 3,
+        "Simulation_Duration": 3650
     }
 }

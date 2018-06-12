@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -65,9 +65,7 @@ namespace Kernel
     // ENUM defs for MIGRATION_STRUCTURE
     ENUM_DEFINE(MigrationStructure, 
         ENUM_VALUE_SPEC(NO_MIGRATION                                        , 0)
-        ENUM_VALUE_SPEC(FIXED_RATE_MIGRATION                                , 1)
-        ENUM_VALUE_SPEC(VARIABLE_RATE_MIGRATION                             , 2)
-        ENUM_VALUE_SPEC(LEVY_FLIGHTS                                        , 3))
+        ENUM_VALUE_SPEC(FIXED_RATE_MIGRATION                                , 1))
 
     ENUM_DEFINE(MigrationType,
         ENUM_VALUE_SPEC(NO_MIGRATION                                        , 0)
@@ -79,7 +77,7 @@ namespace Kernel
         ENUM_VALUE_SPEC(INTERVENTION_MIGRATION                              , 6))
 
     // ENUM defs for MORTALITY_TIME_COURSE
-    ENUM_DEFINE(MortalityTimeCourse, 
+    ENUM_DEFINE(MortalityTimeCourse,
         ENUM_VALUE_SPEC(DAILY_MORTALITY                                     , 0)
         ENUM_VALUE_SPEC(MORTALITY_AFTER_INFECTIOUS                          , 1))
 
@@ -113,26 +111,36 @@ namespace Kernel
         ENUM_VALUE_SPEC(ANNUAL_BOXCAR_FUNCTION                              , 4)
         ENUM_VALUE_SPEC(EXPONENTIAL_FUNCTION_OF_TIME                        , 5))
 
-    ENUM_DEFINE(SusceptibilityScaling,
+     // ENUM defs for Susceptibility_Scaling_Type (Susceptibility variation with simulation time)
+    ENUM_DEFINE(SusceptibilityScalingType,
         ENUM_VALUE_SPEC(CONSTANT_SUSCEPTIBILITY                             , 0)
-        ENUM_VALUE_SPEC(LOG_LINEAR_FUNCTION_OF_TIME                         , 1)
-        ENUM_VALUE_SPEC(LINEAR_FUNCTION_OF_AGE                              , 2))
+        ENUM_VALUE_SPEC(LOG_LINEAR_FUNCTION_OF_TIME                         , 1))
+
+     // ENUM defs for Maternal_Protection_Type (Susceptibility variation with agent age)
+     ENUM_DEFINE(MaternalProtectionType,
+        ENUM_VALUE_SPEC(NONE                                                , 0)
+        ENUM_VALUE_SPEC(LINEAR                                              , 1)
+        ENUM_VALUE_SPEC(SIGMOID                                             , 2))
+
+     // ENUM defs for Susceptibility_Type
+     ENUM_DEFINE(SusceptibilityType,
+        ENUM_VALUE_SPEC(FRACTIONAL                                          , 0)
+        ENUM_VALUE_SPEC(BINARY                                              , 1))
 
     // ENUM defs for Sim_Type
     ENUM_DEFINE(SimType, 
         ENUM_VALUE_SPEC(GENERIC_SIM                                         , 0)
         ENUM_VALUE_SPEC(VECTOR_SIM                                          , 1)
         ENUM_VALUE_SPEC(MALARIA_SIM                                         , 2)
-//        ENUM_VALUE_SPEC(ENVIRONMENTAL_SIM                                   , 3)
-//        ENUM_VALUE_SPEC(POLIO_SIM                                           , 4)
-        ENUM_VALUE_SPEC(AIRBORNE_SIM                                        , 5)
-        ENUM_VALUE_SPEC(TB_SIM                                              , 6)
-//        ENUM_VALUE_SPEC(TBHIV_SIM                                           , 7)
-        ENUM_VALUE_SPEC(STI_SIM                                             , 8)
-        ENUM_VALUE_SPEC(HIV_SIM                                             , 9)
-        ENUM_VALUE_SPEC(PY_SIM                                              , 10))
-//        ENUM_VALUE_SPEC(TYPHOID_SIM                                         , 11)
-//        ENUM_VALUE_SPEC(DENGUE_SIM                                          , 12))
+        ENUM_VALUE_SPEC(ENVIRONMENTAL_SIM                                   , 3)
+        ENUM_VALUE_SPEC(POLIO_SIM                                           , 4)
+        ENUM_VALUE_SPEC(AIRBORNE_SIM                                        , 5) 
+        ENUM_VALUE_SPEC(TBHIV_SIM                                           , 6)
+        ENUM_VALUE_SPEC(STI_SIM                                             , 7)
+        ENUM_VALUE_SPEC(HIV_SIM                                             , 8)
+        ENUM_VALUE_SPEC(PY_SIM                                              , 9) 
+        ENUM_VALUE_SPEC(TYPHOID_SIM                                         , 10)
+        ENUM_VALUE_SPEC(DENGUE_SIM                                          , 11))
 
     // ENUM defs for VITAL_BIRTH_DEPENDENCE
     ENUM_DEFINE(VitalBirthDependence, 
@@ -140,8 +148,7 @@ namespace Kernel
         ENUM_VALUE_SPEC(POPULATION_DEP_RATE                                 , 1)
         ENUM_VALUE_SPEC(DEMOGRAPHIC_DEP_RATE                                , 2)
         ENUM_VALUE_SPEC(INDIVIDUAL_PREGNANCIES                              , 3)
-        ENUM_VALUE_SPEC(INDIVIDUAL_PREGNANCIES_BY_URBAN_AND_AGE             , 4) 
-        ENUM_VALUE_SPEC(INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR              , 5))
+        ENUM_VALUE_SPEC(INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR              , 4))
 
     ENUM_DEFINE(VitalBirthTimeDependence,
         ENUM_VALUE_SPEC(NONE                                                , 0)
@@ -150,9 +157,9 @@ namespace Kernel
 
     // ENUM defs for VITAL_DEATH_DEPENDENCE
     ENUM_DEFINE(VitalDeathDependence,                                               // TODO: FIXED_DEATH_RATE (Makeham), Gompertz–Makeham, Lifetable, Heligman-Pollard, Siler (5-Component Competing Hazard), 
-        ENUM_VALUE_SPEC(NONDISEASE_MORTALITY_OFF                            , 0)
-        ENUM_VALUE_SPEC(NONDISEASE_MORTALITY_BY_AGE_AND_GENDER              , 1)
-        ENUM_VALUE_SPEC(NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER, 2))
+        ENUM_VALUE_SPEC(NOT_INITIALIZED                                     , -1)
+        ENUM_VALUE_SPEC(NONDISEASE_MORTALITY_BY_AGE_AND_GENDER              , 0)
+        ENUM_VALUE_SPEC(NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER, 1))
 
     ENUM_DEFINE(PolioSerotypes,
         ENUM_VALUE_SPEC(PV1                                                 , 0)

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Contexts.h"                      // for IIndividualHumanContext, IIndividualHumanInterventionsContext
 #include "InterventionEnums.h"
 #include "InterventionFactory.h"
-#include "VectorInterventionsContainer.h"  // for IVectorInterventionEffectsSetter methods
+#include "VectorInterventionsContainerContexts.h"  // for IVectorInterventionEffectsSetter methods
 
 SETUP_LOGGING( "HumanHostSeekingTrap" )
 

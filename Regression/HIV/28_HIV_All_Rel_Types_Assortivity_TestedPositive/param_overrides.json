@@ -1,5 +1,5 @@
 {
-    "Default_Config_Path": "defaults/hiv_default_config.json", 
+    "Default_Config_Path": "defaults/hiv_default_config.json",
     "parameters": {
         "DEMOGRAPHICS": {
             "Demographics_Filenames": [
@@ -7,20 +7,20 @@
                 "../input/PFA_overlay.json",
                 "PFA_overlay_Assort_TP.json"
             ]
-        }, 
-        "PRIMARY": {
-            "Run_Number": 1, 
-            "Config_Name": "28_HIV_All_Rel_Types_Assortivity_TestedPositive",
-            "Simulation_Duration": 3000
-        }, 
+        },
         "Listed_Events": [
             "HIVDiagnosedEligibleForART",
             "HIVPositiveHIVTest",
             "HCTTestingLoop2",
             "HCTTestingLoop3"
         ],
+        "PRIMARY": {
+            "Config_Name": "28_HIV_All_Rel_Types_Assortivity_TestedPositive",
+            "Run_Number": 1,
+            "Simulation_Duration": 3000
+        },
         "STI": {
-            "Report_Relationship_Start" : 1
+            "Report_Relationship_Start": 1
         }
     }
 }

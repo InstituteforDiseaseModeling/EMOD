@@ -17,42 +17,50 @@ else:
     print( env["Disease"] )
 
     testsSrcFiles = [
+        "AdherentDrugTest.cpp",
         "AssortivityTest.cpp",
         "BaseEventReportTest.cpp",
         "BehaviorPfaTest.cpp",
+        "CommunityHealthWorkerEventCoordinatorTest.cpp",
         "componentTests.cpp",
         "ConcurrencyParametersTest.cpp",
         "FileSystemTest.cpp",
         "FlowControllerImplTest.cpp",
+        "GenomeMarkersTest.cpp",
         "HIVARTStagingByCD4DiagnosticTest.cpp",
         "HIVARTStagingCD4AgnosticDiagnosticTest.cpp",
         "HIVDrawBloodTest.cpp",
         "HIVSimpleDiagnosticTest.cpp",
+        "IncidenceEventCoordinatorTest.cpp",
         "InterpolatedValueMapTest.cpp",
         "JsonObjectDemogTest.cpp",
         "LarvalHabitatMultiplierTest.cpp",
         "LoadBalanceSchemeTest.cpp",
+        "MalariaDrugTypeParametersTest.cpp",
         "MathFunctionsTest.cpp",
         "MigrateIndividualsTest.cpp",
         "MigrationTest.cpp",
         "NChooserEventCoordinatorTest.cpp",
         "NodeDemographicsTest.cpp",
+        "NodePropertiesTest.cpp",
         "PairFormationParametersImplTest.cpp",
         "PairFormationStatsImplTest.cpp",
+        "PrngTest.cpp",
         "ProgramOptionsTest.cpp",
         "PropertiesTest.cpp",
         "RateTableImplTest.cpp",
         "RelationshipParametersTest.cpp",
+        "ReportUtilitiesMalariaTest.cpp",
+        "ReportUtilitiesTest.cpp",
         "SigmoidTest.cpp",
         "STIIsPostDebutTest.cpp",
-        "WaningEffectMapTest.cpp",
+        "WaningEffectComboTest.cpp",
+        "WaningEffectMapTest.cpp"
     ]
 
     #DMB 3/16/2017 - Serialization is only supported on windows at this time.
-    #DMB 3/18/2017 - Temporarily giving up trying to get SchemaTest passing under Linux
     if os.sys.platform == 'win32':
         testsSrcFiles.append("SerializationTest.cpp")
-        testsSrcFiles.append("SchemaTest.cpp")
 
     testsIncFiles = [
         'common.h',
@@ -77,7 +85,7 @@ else:
 
     if os.sys.platform == 'win32':
         erad_env.Append( LINKFLAGS=[ "/STACK:\"100000000,100000000\"" ] )
-        erad_env.Append( LINKFLAGS=[ "/DELAYLOAD:\"python27.dll\""] )
+        erad_env.Append( LINKFLAGS=[ "/DELAYLOAD:\"python36.dll\""] )
         erad_env.Append( LIBS=["delayimp.lib"] )
         erad_env.Append(LIBPATH = ["$BUILD_DIR/Eradication"])
         erad_env.Append(LIBS=["/WHOLEARCHIVE:coreLib"])
@@ -100,7 +108,7 @@ msvc = GetOption( "MSVC" )
 if msvc is not None and msvc != False and msvc != "":
 
     bvar = env['BUILD_VARIANT'] + '|x64'
-    print "componentTests: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar
+    print( "componentTests: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar )
     
     env.MSVSProject(target = 'componentTestsScons' + env['MSVSPROJECTSUFFIX'],
                     srcs = testsSrcFiles,
@@ -112,5 +120,5 @@ if msvc is not None and msvc != False and msvc != "":
                     variant = bvar)
 
 else:
-    print "CC is:", env['CC']
-    print "CXX is:", env['CXX']
+    print( "CC is:", env['CC'] )
+    print( "CXX is:", env['CXX'] )

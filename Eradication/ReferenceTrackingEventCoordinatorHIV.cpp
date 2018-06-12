@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -76,7 +76,7 @@ namespace Kernel
                     qualifies = !p_med_history->EverTested() || !p_med_history->EverTestedHIVPositive();
                     break;
                 default:
-                    throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "target_disease_state", target_disease_state );
+                    throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "target_disease_state", target_disease_state, TargetDiseaseStateType::pairs::lookup_key( target_disease_state ) );
             }
         }
         return qualifies;

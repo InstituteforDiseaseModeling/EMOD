@@ -9,6 +9,7 @@ import json
 import tempfile
 from hashlib import md5
 import pdb
+import io
 
 import regression_utils as ru
 
@@ -75,10 +76,9 @@ class Monitor(threading.Thread):
         self.__class__.sems.release()
 
     def get_json_data_hash( self, data ):
-        #json_data = collections.OrderedDict([])
-        #json_data["Data"] = data
         with tempfile.TemporaryFile() as handle:
-            json.dump( data, handle )
+            json_data = json.dumps( obj=data ).encode('utf-8')
+            handle.write( json_data )
             hash = ru.md5_hash( handle )
         return hash
 
@@ -86,13 +86,15 @@ class Monitor(threading.Thread):
         fail_validation = False
         failure_txt = ""
 
+
         try:
-            json.loads( open( os.path.join( ru.cache_cwd, ref_path ) ).read() )
-        except Exception as ex:
-            print( "Exception {0} loading json file: {1}.".format( ex, ( os.path.join( ru.cache_cwd, ref_path ) ) ) )
+            ru.load_json( os.path.join(ru.cache_cwd, ref_path) )
+        except Exception:
+            print("Exception {0} {1} loading json file: {2}.".format(sys.exc_info()[0], sys.exc_info()[1], (os.path.join(ru.cache_cwd, ref_path))))
             return
 
-        ref_json = json.loads( open( os.path.join( ru.cache_cwd, ref_path ) ).read() )
+        ref_json = ru.load_json( os.path.join( sim_dir, ref_path ) )
+
         if "Channels" not in ref_json.keys():
             ref_md5  = ru.md5_hash_of_file( ref_path )
             test_md5 = ru.md5_hash_of_file( test_path )
@@ -102,7 +104,7 @@ class Monitor(threading.Thread):
                 print( self.scenario_path + " completed but did not match reference! (" + str(self.duration) + ") - " + report_name )
                 return True, "Non-Channel JSON failed MD5."
         else:
-            test_json = json.loads( open( os.path.join( sim_dir, test_path ) ).read() )
+            test_json = ru.load_json( os.path.join( sim_dir, test_path ) )
 
             if "Channels" not in test_json.keys():
                 return True, "Reference has Channel data and Test file does not."
@@ -181,23 +183,20 @@ class Monitor(threading.Thread):
             err_msg = "Reference output {0} has {1} lines but test output {2} has {3} lines".format( ref_path, ref_length, test_path, test_length )
 
         else:
-            ref_file = open( ref_path )
-            test_file = open( test_path )
-            line_num = 0
-            for ref_line in ref_file:
-                line_num = line_num + 1
-                test_line = test_file.readline()
-                if ref_line != test_line:
-                    ref_line_tokens = ref_line.split(',')
-                    test_line_tokens = test_line.split(',')
-                    for col_idx in range( len( ref_line_tokens) ):
-                        if ref_line_tokens[col_idx] != test_line_tokens[col_idx]:
-                            break
-                    err_msg = "First mismatch at line {0} of {1} column {2}: reference line...\n{3}vs test line...\n{4}{5} vs {6}".format( line_num, ref_path, col_idx, ref_line, test_line, ref_line_tokens[col_idx], test_line_tokens[col_idx] ) 
-                    fail_validation = True
-                    ref_file.close()
-                    test_file.close()
-                    break
+            with open(ref_path, "r") as ref_file, open(test_path, "r") as test_file:
+                line_num = 0
+                for ref_line in ref_file:
+                    line_num = line_num + 1
+                    test_line = test_file.readline()
+                    if ref_line != test_line:
+                        ref_line_tokens = ref_line.split(',')
+                        test_line_tokens = test_line.split(',')
+                        for col_idx in range( len( ref_line_tokens) ):
+                            if ref_line_tokens[col_idx] != test_line_tokens[col_idx]:
+                                break
+                        err_msg = "First mismatch at line {0} of {1} column {2}: reference line...\n{3}vs test line...\n{4}{5} vs {6}".format( line_num, ref_path, col_idx, ref_line, test_line, ref_line_tokens[col_idx], test_line_tokens[col_idx] )
+                        fail_validation = True
+                        break
 
         print( err_msg )
         failure_txt = err_msg
@@ -338,12 +337,11 @@ class Monitor(threading.Thread):
             
             if ru.version_string is not None:
                 try:
-                    timefile = open( os.path.join( self.scenario_path, "time.txt" ), 'a' )
-                    timefile.write(ru.version_string + '\t' + str(self.duration) + '\n')
-                    timefile.close()
-                except Exception as e:
+                    with open( os.path.join( self.scenario_path, "time.txt" ), 'a' ) as timefile:
+                        timefile.write(ru.version_string + '\t' + str(self.duration) + '\n')
+                except Exception:
                     print("Problem writing time.txt file (repeat of error Jonathan was seeing on linux?)\n")
-                    print(str(e))
+                    print("{} - {}".format(sys.exc_info()[0], sys.exc_info()[1]))
 
     def science_verify( self, sim_dir ):
         #print( "Scientific Feature Testing: check scientific_feature_report.txt" )

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -34,7 +34,7 @@ namespace Kernel
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
 
-        StandardInterventionDistributionEventCoordinator();
+        StandardInterventionDistributionEventCoordinator( bool useDemographicCoverage = true );
         virtual ~StandardInterventionDistributionEventCoordinator() { }
 
         // IEventCoordinator
@@ -63,9 +63,12 @@ namespace Kernel
     protected:
         virtual float getDemographicCoverageForIndividual( const IIndividualHumanEventContext *pInd ) const;
         virtual void preDistribute(); 
-        virtual bool HasNodeLevelIntervention() const;
         virtual void ExtractInterventionNameForLogging();
         virtual void InitializeInterventions();
+        virtual void InitializeRepetitions( const Configuration* inputJson );
+        virtual void CheckRepetitionConfiguration();
+        virtual void UpdateRepetitions();
+        virtual bool IsTimeToUpdate( float dt );
         virtual void DistributeInterventionsToNodes( INodeEventContext* event_context );
         virtual void DistributeInterventionsToIndividuals( INodeEventContext* event_context );
         virtual bool DistributeInterventionsToIndividual( IIndividualHumanEventContext *ihec,
@@ -93,8 +96,6 @@ namespace Kernel
         // helpers
         void regenerateCachedNodeContextPointers();
         void formatInterventionClassNames( std::ostringstream&, json::QuickInterpreter*);
-        virtual void initializeInterventionConfig( const Configuration * inputJson );
-        virtual void validateInterventionConfig( const json::Element& rElement, const std::string& rDataLocation );
         virtual bool TargetedIndividualIsCovered(IIndividualHumanEventContext *ihec);
         bool avoid_duplicates;
         bool has_node_level_intervention;

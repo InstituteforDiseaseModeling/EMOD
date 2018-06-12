@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -44,11 +44,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #ifndef DISABLE_AIRBORNE
 #include "SimulationAirborne.h"
 #endif
-
-#ifdef ENABLE_TB
-#include "SimulationTB.h"
-#endif
-
 #ifdef ENABLE_TBHIV
 #include "SimulationTBHIV.h"
 #endif
@@ -144,14 +139,10 @@ namespace Kernel
             else if (sSimType == "AIRBORNE_SIM")
                 sim_type = SimType::AIRBORNE_SIM;
 #endif
-#ifdef ENABLE_TB
-            else if (sSimType == "TB_SIM")
-                sim_type = SimType::TB_SIM;
 #ifdef ENABLE_TBHIV
             else if (sSimType == "TBHIV_SIM")
                 sim_type = SimType::TBHIV_SIM;
 #endif // TBHIV
-#endif // TB
 #ifndef DISABLE_STI
             else if (sSimType == "STI_SIM")
                 sim_type = SimType::STI_SIM;
@@ -228,20 +219,17 @@ namespace Kernel
 
 #ifndef DISABLE_AIRBORNE
                 case SimType::AIRBORNE_SIM:
+                    throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "AIRBORNE_SIM currently disabled. Consider using GENERIC_SIM or TBHIV_SIM." );
                     newsim = SimulationAirborne::CreateSimulation(EnvPtr->Config);
                 break;
 #endif
 
-#ifdef ENABLE_TB
-                case SimType::TB_SIM:
-                    newsim = SimulationTB::CreateSimulation(EnvPtr->Config);
-                break;
 #ifdef ENABLE_TBHIV
                 case SimType::TBHIV_SIM:
                     newsim = SimulationTBHIV::CreateSimulation(EnvPtr->Config);
                 break;
 #endif // TBHIV
-#endif // TB
+
 #ifndef DISABLE_STI
                 case SimType::STI_SIM:
                     newsim = SimulationSTI::CreateSimulation(EnvPtr->Config);

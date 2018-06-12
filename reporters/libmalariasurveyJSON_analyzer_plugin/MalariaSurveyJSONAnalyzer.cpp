@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -22,6 +22,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "DllDefs.h"
 #include "ProgVersion.h"
 #include "ReportUtilities.h"
+#include "ReportUtilitiesMalaria.h"
+
+#include "math.h"
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!! CREATING NEW REPORTS
@@ -124,15 +127,22 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         root.EndArray();
 
         LOG_DEBUG("Inserting array variables\n");
-        ReportUtilities::SerializeVector( root, helper, "true_asexual_parasites", true_asexual_density     );
-        ReportUtilities::SerializeVector( root, helper, "true_gametocytes",       true_gametocyte_density  );
-        ReportUtilities::SerializeVector( root, helper, "asexual_parasites",      asexual_parasite_density );
-        ReportUtilities::SerializeVector( root, helper, "gametocytes",            gametocyte_density       );
-        ReportUtilities::SerializeVector( root, helper, "infectiousness",         infectiousness           );
-        ReportUtilities::SerializeVector( root, helper, "pos_asexual_fields",     pos_asexual_fields       );
-        ReportUtilities::SerializeVector( root, helper, "pos_gametocyte_fields",  pos_gametocyte_fields    );
-        ReportUtilities::SerializeVector( root, helper, "temps",                  fever                    );
-        ReportUtilities::SerializeVector( root, helper, "rdt",                    rdt                      );
+        ReportUtilities::SerializeVector( root, helper, "ip_data",                        ip_data                          );
+        ReportUtilities::SerializeVector( root, helper, "true_asexual_parasites",         true_asexual_density             );
+        ReportUtilities::SerializeVector( root, helper, "true_gametocytes",               true_gametocyte_density          );
+        ReportUtilities::SerializeVector( root, helper, "smeared_true_asexual_parasites", smeared_true_asexual_density     );
+        ReportUtilities::SerializeVector( root, helper, "smeared_true_gametocytes",       smeared_true_gametocyte_density  );
+        ReportUtilities::SerializeVector( root, helper, "asexual_parasites",              asexual_parasite_density         );
+        ReportUtilities::SerializeVector( root, helper, "gametocytes",                    gametocyte_density               );
+        ReportUtilities::SerializeVector( root, helper, "smeared_asexual_parasites",      smeared_asexual_parasite_density );
+        ReportUtilities::SerializeVector( root, helper, "smeared_gametocytes",            smeared_gametocyte_density       );
+        ReportUtilities::SerializeVector( root, helper, "infectiousness",                 infectiousness                   );
+        ReportUtilities::SerializeVector( root, helper, "infectiousness_smeared",         infectiousness_smeared           );
+        ReportUtilities::SerializeVector( root, helper, "infectiousness_age_scaled",      infectiousness_age_scaled        );
+        ReportUtilities::SerializeVector( root, helper, "pos_asexual_fields",             pos_asexual_fields               );
+        ReportUtilities::SerializeVector( root, helper, "pos_gametocyte_fields",          pos_gametocyte_fields            );
+        ReportUtilities::SerializeVector( root, helper, "temps",                          fever                            );
+        ReportUtilities::SerializeVector( root, helper, "rdt",                            rdt                              );
 
         root.EndObject();
     }
@@ -161,15 +171,22 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
 
         strain_ids = DeserializeStrainIds( root );
 
-        ReportUtilities::DeserializeVector( root, false, "true_asexual_parasites" , true_asexual_density     );
-        ReportUtilities::DeserializeVector( root, false, "true_gametocytes"       , true_gametocyte_density  );
-        ReportUtilities::DeserializeVector( root, false, "asexual_parasites"      , asexual_parasite_density );
-        ReportUtilities::DeserializeVector( root, false, "gametocytes"            , gametocyte_density       );
-        ReportUtilities::DeserializeVector( root, false, "infectiousness"         , infectiousness           );
-        ReportUtilities::DeserializeVector( root, false, "pos_asexual_fields"     , pos_asexual_fields       );
-        ReportUtilities::DeserializeVector( root, false, "pos_gametocyte_fields"  , pos_gametocyte_fields    );
-        ReportUtilities::DeserializeVector( root, false, "temps"                  , fever                    );
-        ReportUtilities::DeserializeVector( root, false, "rdt"                    , rdt                      );
+        ReportUtilities::DeserializeVector( root, false, "ip_data",                        ip_data                          );
+        ReportUtilities::DeserializeVector( root, false, "true_asexual_parasites",         true_asexual_density             );
+        ReportUtilities::DeserializeVector( root, false, "true_gametocytes",               true_gametocyte_density          );
+        ReportUtilities::DeserializeVector( root, false, "smeared_true_asexual_parasites", smeared_true_asexual_density     );
+        ReportUtilities::DeserializeVector( root, false, "smeared_true_gametocytes",       smeared_true_gametocyte_density  );
+        ReportUtilities::DeserializeVector( root, false, "asexual_parasites",              asexual_parasite_density         );
+        ReportUtilities::DeserializeVector( root, false, "gametocytes",                    gametocyte_density               );
+        ReportUtilities::DeserializeVector( root, false, "smeared_asexual_parasites",      smeared_asexual_parasite_density );
+        ReportUtilities::DeserializeVector( root, false, "smeared_gametocytes",            smeared_gametocyte_density       );
+        ReportUtilities::DeserializeVector( root, false, "infectiousness",                 infectiousness                   );
+        ReportUtilities::DeserializeVector( root, false, "infectiousness_smeared",         infectiousness_smeared           );
+        ReportUtilities::DeserializeVector( root, false, "infectiousness_age_scaled",      infectiousness_age_scaled        );
+        ReportUtilities::DeserializeVector( root, false, "pos_asexual_fields",             pos_asexual_fields               );
+        ReportUtilities::DeserializeVector( root, false, "pos_gametocyte_fields",          pos_gametocyte_fields            );
+        ReportUtilities::DeserializeVector( root, false, "temps",                          fever                            );
+        ReportUtilities::DeserializeVector( root, false, "rdt",                            rdt                              );
     }
 
 // ----------------------------------------
@@ -225,15 +242,22 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
             existing_patient->local_birthday = new_patient->local_birthday;
             existing_patient->strain_ids     = new_patient->strain_ids;
 
-            UpdateVector( existing_patient->true_asexual_density     , new_patient->true_asexual_density     );
-            UpdateVector( existing_patient->true_gametocyte_density  , new_patient->true_gametocyte_density  );
-            UpdateVector( existing_patient->asexual_parasite_density , new_patient->asexual_parasite_density );
-            UpdateVector( existing_patient->gametocyte_density       , new_patient->gametocyte_density       );
-            UpdateVector( existing_patient->infectiousness           , new_patient->infectiousness           );
-            UpdateVector( existing_patient->pos_asexual_fields       , new_patient->pos_asexual_fields       );
-            UpdateVector( existing_patient->pos_gametocyte_fields    , new_patient->pos_gametocyte_fields    );
-            UpdateVector( existing_patient->fever                    , new_patient->fever                    );
-            UpdateVector( existing_patient->rdt                      , new_patient->rdt                      );
+            UpdateVector( existing_patient->ip_data,                          new_patient->ip_data                          );
+            UpdateVector( existing_patient->true_asexual_density,             new_patient->true_asexual_density             );
+            UpdateVector( existing_patient->true_gametocyte_density,          new_patient->true_gametocyte_density          );
+            UpdateVector( existing_patient->smeared_true_asexual_density,     new_patient->smeared_true_asexual_density     );
+            UpdateVector( existing_patient->smeared_true_gametocyte_density,  new_patient->smeared_true_gametocyte_density  );
+            UpdateVector( existing_patient->asexual_parasite_density ,        new_patient->asexual_parasite_density         );
+            UpdateVector( existing_patient->gametocyte_density,               new_patient->gametocyte_density               );
+            UpdateVector( existing_patient->smeared_asexual_parasite_density, new_patient->smeared_asexual_parasite_density );
+            UpdateVector( existing_patient->smeared_gametocyte_density,       new_patient->smeared_gametocyte_density       );
+            UpdateVector( existing_patient->infectiousness,                   new_patient->infectiousness                   );
+            UpdateVector( existing_patient->infectiousness_smeared,           new_patient->infectiousness_smeared           );
+            UpdateVector( existing_patient->infectiousness_age_scaled,        new_patient->infectiousness_age_scaled        );
+            UpdateVector( existing_patient->pos_asexual_fields,               new_patient->pos_asexual_fields               );
+            UpdateVector( existing_patient->pos_gametocyte_fields,            new_patient->pos_gametocyte_fields            );
+            UpdateVector( existing_patient->fever,                            new_patient->fever                            );
+            UpdateVector( existing_patient->rdt,                              new_patient->rdt                              );
         }
     }
 
@@ -284,8 +308,11 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
 // --- MalariaSurveyJSONAnalyzer Methods
 // ----------------------------------------
 
-    MalariaSurveyJSONAnalyzer::MalariaSurveyJSONAnalyzer() 
+#define Survey_IP_Key_To_Collect_DESC_TEXT "Name of the Individual Property Key whose value to collect.  Empty string means collect values for all IPs."
+
+    MalariaSurveyJSONAnalyzer::MalariaSurveyJSONAnalyzer()
         : BaseEventReportIntervalOutput( _module, true, new MalariaPatientMap(), new MalariaPatientMap() ) // true => one file per report
+        , m_IPKeyToCollect()
         , m_pPatientMap(nullptr)
     {
     }
@@ -296,13 +323,26 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
 
     bool MalariaSurveyJSONAnalyzer::Configure( const Configuration* inputJson )
     {
-        bool configured = BaseEventReportIntervalOutput::Configure( inputJson );
+        initConfigTypeMap( "IP_Key_To_Collect", &m_IPKeyToCollect, Survey_IP_Key_To_Collect_DESC_TEXT, "" );
 
+        bool configured = BaseEventReportIntervalOutput::Configure( inputJson );
         if( configured )
         {
             m_pPatientMap = static_cast<MalariaPatientMap*>(m_pIntervalData);
         }
         return configured;
+    }
+
+    void MalariaSurveyJSONAnalyzer::Initialize( unsigned int nrmSize )
+    {
+        if( !m_IPKeyToCollect.empty() )
+        {
+            // If user provides a key, ensure it is valid.
+            IPKey key( m_IPKeyToCollect );
+            release_assert( key.IsValid() ); // an exception should be thrown in the line above
+        }
+
+        BaseEventReportIntervalOutput::Initialize( nrmSize );
     }
 
     bool MalariaSurveyJSONAnalyzer::notifyOnEvent( IIndividualHumanEventContext *context, const EventTrigger& trigger )
@@ -325,6 +365,18 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         double mc_weight = context->GetMonteCarloWeight();
         double age       = context->GetAge();
 
+
+        std::string ip_info;
+        IPKeyValueContainer* p_props = iindividual->GetEventContext()->GetProperties();
+        if( m_IPKeyToCollect.empty() )
+        {
+            ip_info = p_props->ToString();
+        }
+        else
+        {
+            ip_info = p_props->Get( IPKey( m_IPKeyToCollect ) ).ToString();
+        }
+
         // get malaria contexts
         IMalariaHumanContext * individual_malaria = NULL;
         if (s_OK != context->QueryInterface(GET_IID(IMalariaHumanContext), (void**)&individual_malaria) )
@@ -346,17 +398,29 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
             patient->node_id = node_context->GetExternalId();
         }
 
+        patient->ip_data.push_back( ip_info );
+
         // Push back today's disease variables
         float max_fever = susceptibility_malaria->GetMaxFever();
         patient->fever.push_back( max_fever > 0 ? max_fever + 37.0f : -1.0f );
+
         // GetInfectiousness is an inline function of IndividualHuman (not belonging to any queriable interface presently)
-        patient->infectiousness.push_back( static_cast<IndividualHuman*>(context)->GetInfectiousness() );
+        float infectiousness = static_cast<IndividualHuman*>(context)->GetInfectiousness();
+        float infectiousness_smeared = ReportUtilitiesMalaria::BinomialInfectiousness( DLL_HELPER.GetRandomNumberGenerator(), infectiousness );
+        float infectiousness_age_scaled = infectiousness * SusceptibilityVector::SurfaceAreaBitingFunction( age );
+        patient->infectiousness.push_back( infectiousness );
+        patient->infectiousness_smeared.push_back( infectiousness_smeared );
+        patient->infectiousness_age_scaled.push_back( infectiousness_age_scaled );
 
         // True values in model
         patient->true_asexual_density.push_back( susceptibility_malaria->get_parasite_density() );
         patient->true_gametocyte_density.push_back( individual_malaria->GetGametocyteDensity() );
 
-        // Values incorporating variability and sensitivity of blood tes
+        // Smeared true values in model
+        patient->smeared_true_asexual_density.push_back( ReportUtilitiesMalaria::NASBADensityWithUncertainty( DLL_HELPER.GetRandomNumberGenerator(), susceptibility_malaria->get_parasite_density()));
+        patient->smeared_true_gametocyte_density.push_back( ReportUtilitiesMalaria::NASBADensityWithUncertainty( DLL_HELPER.GetRandomNumberGenerator(), individual_malaria->GetGametocyteDensity()));
+
+        // Values incorporating variability and sensitivity of blood test
         patient->asexual_parasite_density.push_back( individual_malaria->CheckParasiteCountWithTest( MALARIA_TEST_BLOOD_SMEAR ) );
         patient->gametocyte_density.push_back( individual_malaria->CheckGametocyteCountWithTest( MALARIA_TEST_BLOOD_SMEAR ) );
         patient->rdt.push_back( individual_malaria->CheckParasiteCountWithTest( MALARIA_TEST_NEW_DIAGNOSTIC ) );
@@ -368,6 +432,10 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         patient->pos_asexual_fields.push_back( (float)positive_asexual_fields );
         patient->pos_gametocyte_fields.push_back( (float)positive_gametocyte_fields );
         LOG_DEBUG_F("(a,g) = (%d,%d)\n", (int)positive_asexual_fields, (int)positive_gametocyte_fields);
+
+        // Values incorporating variability and sensitivity of blood test with uncertainty
+        patient->smeared_asexual_parasite_density.push_back(ReportUtilitiesMalaria::FieldsOfViewToDensity((float)positive_asexual_fields));
+        patient->smeared_gametocyte_density.push_back(ReportUtilitiesMalaria::FieldsOfViewToDensity((float)positive_gametocyte_fields));
 
         return true;
     }

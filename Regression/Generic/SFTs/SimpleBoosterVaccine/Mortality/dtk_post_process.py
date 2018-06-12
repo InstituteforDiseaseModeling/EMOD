@@ -98,7 +98,7 @@ def calc_effect(debug = False):
     effects.append(sbvs.apply_vaccines([sbvs.Vaccine.BOOSTER_HIGH, sbvs.Vaccine.BOOSTER_HIGH, sbvs.Vaccine.BOOSTER_LOW]))
 
     if debug:
-        print effects
+        print( effects )
     return effects
 
 def create_report_file(report_data_obj, report_name, debug):
@@ -131,12 +131,12 @@ def create_report_file(report_data_obj, report_name, debug):
             new_infections.append(new_infection)
             timestep += Timesteps_Between_Repetitions
             pre_disease_death = disease_death
-        sft.plot_data_unsorted(new_disease_deaths,expected_new_disease_deaths,
+        sft.plot_data(new_disease_deaths,expected_new_disease_deaths,
                                label1= "Actual", label2 = "Expected",
                                xlabel= "outbreak",ylabel="disease death",
                                title = "Actual disease death vs. expected disease death",
                                category = 'Disease_death',show = True )
-        sft.plot_data_unsorted(new_disease_deaths,new_infections,
+        sft.plot_data(new_disease_deaths,new_infections,
                                label1= "death", label2 = "infection",
                                xlabel= "outbreak",ylabel="population",
                                title = "Actual disease death vs. new infections",
@@ -151,7 +151,7 @@ def create_report_file(report_data_obj, report_name, debug):
 
         outfile.write(sft.format_success_msg(success))
         if debug:
-            print "SUMMARY: Success={0}\n".format(success)
+            print( "SUMMARY: Success={0}\n".format(success) )
         return success
 
 def application( output_folder="output", stdout_filename="test.txt",
@@ -161,14 +161,14 @@ def application( output_folder="output", stdout_filename="test.txt",
                  report_name=sft.sft_output_filename,
                  debug=False):
     if debug:
-        print "output_folder: " + output_folder
-        print "stdout_filename: " + stdout_filename+ "\n"
-        print "config_filename: " + config_filename + "\n"
-        print "campaign_filename: " + campaign_filename + "\n"
-        print "demographics_filename: " + demographics_filename + "\n"
-        print "propertyreport_name: " + propertyreport_name + "\n"
-        print "report_name: " + report_name + "\n"
-        print "debug: " + str(debug) + "\n"
+        print( "output_folder: " + output_folder )
+        print( "stdout_filename: " + stdout_filename+ "\n" )
+        print( "config_filename: " + config_filename + "\n" )
+        print( "campaign_filename: " + campaign_filename + "\n" )
+        print( "demographics_filename: " + demographics_filename + "\n" )
+        print( "propertyreport_name: " + propertyreport_name + "\n" )
+        print( "report_name: " + report_name + "\n" )
+        print( "debug: " + str(debug) + "\n" )
 
     sft.wait_for_done()
 
