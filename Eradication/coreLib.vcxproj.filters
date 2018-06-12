@@ -228,10 +228,16 @@
     <ClInclude Include="SusceptibilityAirborne.h">
       <Filter>Source Files\Airborne</Filter>
     </ClInclude>
+    <ClInclude Include="IndividualTB.h">
+      <Filter>Source Files\Airborne\TB</Filter>
+    </ClInclude>
     <ClInclude Include="InfectionTB.h">
       <Filter>Source Files\Airborne\TB</Filter>
     </ClInclude>
     <ClInclude Include="NodeTB.h">
+      <Filter>Source Files\Airborne\TB</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationTB.h">
       <Filter>Source Files\Airborne\TB</Filter>
     </ClInclude>
     <ClInclude Include="SusceptibilityTB.h">
@@ -1226,10 +1232,16 @@
     <ClCompile Include="SusceptibilityAirborne.cpp">
       <Filter>Source Files\Airborne</Filter>
     </ClCompile>
+    <ClCompile Include="IndividualTB.cpp">
+      <Filter>Source Files\Airborne\TB</Filter>
+    </ClCompile>
     <ClCompile Include="InfectionTB.cpp">
       <Filter>Source Files\Airborne\TB</Filter>
     </ClCompile>
     <ClCompile Include="NodeTB.cpp">
+      <Filter>Source Files\Airborne\TB</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulationTB.cpp">
       <Filter>Source Files\Airborne\TB</Filter>
     </ClCompile>
     <ClCompile Include="SusceptibilityTB.cpp">
