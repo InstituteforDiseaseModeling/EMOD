@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -42,7 +42,6 @@ namespace Kernel
         virtual void VisitIndividuals(individual_visit_function_t func) override;
         virtual int VisitIndividuals(IVisitIndividual*, int limit = -1 ) override;
         virtual const NodeDemographics& GetDemographics() override;
-        virtual bool GetUrban() const override;
         virtual IdmDateTime GetTime() const override;
         virtual bool IsInPolygon(float* vertex_coords, int numcoords) override; // might want to create a real polygon object at some point
         virtual bool IsInPolygon( const json::Array &poly ) override;

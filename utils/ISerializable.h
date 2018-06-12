@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -23,8 +23,8 @@ namespace Kernel {
 
     struct IDMAPI ISerializable : ISupports
     {
-        virtual const char* GetClassName() { throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__ ); }
-        virtual void Recycle() { throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__ ); }
+        virtual const char* GetClassName() { throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "subclass needs to implement" ); }
+        virtual void Recycle() { throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "subclass needs to implement" ); }
         virtual ~ISerializable() {}
 
         static void serialize(IArchive&, ISerializable*&);

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,7 +9,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 
-#ifdef ENABLE_TB
+#ifdef ENABLE_TBHIV
 
 #include "BCGVaccine.h"
 
@@ -21,8 +21,6 @@ SETUP_LOGGING( "BCGVaccine" )
 
 namespace Kernel
 {
-
-#ifdef ENABLE_TB
     IMPLEMENT_FACTORY_REGISTERED(BCGVaccine)
     bool
     BCGVaccine::Configure(
@@ -38,7 +36,7 @@ namespace Kernel
     : SimpleVaccine()
     , vaccine_take_age_decay_rate(0)
     {
-        initSimTypes( 2, "TB_SIM", "TBHIV_SIM" );
+        initSimTypes( 1, "TBHIV_SIM" );
         initConfigTypeMap("Vaccine_Take_Age_Decay_Rate", &vaccine_take_age_decay_rate, BCG_Vaccine_Take_Age_Decay_Rate_DESC_TEXT );
     }
 
@@ -70,7 +68,6 @@ namespace Kernel
         BCGVaccine& vaccine = *obj;
         ar.labelElement("vaccine_take_age_decay_rate") & vaccine.vaccine_take_age_decay_rate;
     }
-#endif
 }
 
-#endif // ENABLE_TB
+#endif // ENABLE_TBHIV

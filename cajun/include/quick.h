@@ -48,7 +48,7 @@ public:
    QuickInterpreter(const Element& element) :
       m_Element(element) {}
 
-   QuickInterpreter operator[] (const std::string& key) const {
+   virtual QuickInterpreter operator[] (const std::string& key) const {
       const Object& obj = As<Object>();
       return obj[key];
    }
@@ -58,7 +58,7 @@ public:
       return array[index];
    }
 
-   bool Exist(const std::string& name) const {
+   virtual bool Exist(const std::string& name) const {
        const Object& obj = As<Object>();
        return obj.Exist(name);
    }

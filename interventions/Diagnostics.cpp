@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -73,7 +73,10 @@ namespace Kernel
         {
             if( use_event_or_config == EventOrConfig::Config || JsonConfigurable::_dryrun )
             {
-                InterventionValidator::ValidateIntervention( positive_diagnosis_config._json, inputJson->GetDataLocation() );
+                InterventionValidator::ValidateIntervention( GetTypeName(),
+                                                             InterventionTypeValidation::INDIVIDUAL,
+                                                             positive_diagnosis_config._json,
+                                                             inputJson->GetDataLocation() );
             }
 
             CheckPostiveEventConfig();
@@ -267,7 +270,7 @@ namespace Kernel
             }
             if (!ifobj)
             {
-                throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "parent->GetInterventionFactoryObj()" );
+                throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "parent->GetInterventionFactoryObj()", "IInterventionFactory" );
             }
 
             // Distribute the test-positive intervention

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,11 +21,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SusceptibilityMalaria.h"
 #include "NodeEventContext.h"
 #include "ReportUtilities.h"
+#include "ReportUtilitiesMalaria.h"
 #include "Serializer.h"
 
 #include "DllInterfaceHelper.h"
 #include "DllDefs.h"
 #include "ProgVersion.h"
+
+#include "math.h"
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!! CREATING NEW REPORTS
@@ -112,6 +115,15 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
     , sum_severe_cases_by_fever_by_agebin()
     , sum_binned_PfPR_by_agebin()
     , sum_binned_PfgamPR_by_agebin()
+    , sum_binned_PfPR_by_agebin_smeared()
+    , sum_binned_PfgamPR_by_agebin_smeared()
+    , sum_binned_PfPR_by_agebin_true_smeared()
+    , sum_binned_PfgamPR_by_agebin_true_smeared()
+    , sum_binned_infection_by_pfprbin_and_agebin()
+    , sum_binned_infection_by_pfprbin_and_agebin_age_scaled()
+    , sum_binned_infection_by_pfprbin_and_agebin_smeared()
+    , sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam()
+    , sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam_age_scaled()
     , sum_no_infected_days(0.0)
     , sum_days_under_1pct_infected(0.0)
     {
@@ -121,7 +133,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
     {
     }
 
-    void ReportIntervalData::SetVectorSize( int age_size, int PfPR_size )
+    void ReportIntervalData::SetVectorSize( int age_size, int PfPR_size, int Infectiousness_size )
     {
         sum_population_by_agebin.resize(                age_size, 0 );
         sum_log_parasite_density_by_agebin.resize(      age_size, 0 );
@@ -141,6 +153,24 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         {
             sum_binned_PfPR_by_agebin.push_back(    agebinned_t(age_size) );
             sum_binned_PfgamPR_by_agebin.push_back( agebinned_t(age_size) );
+            sum_binned_PfPR_by_agebin_smeared.push_back(agebinned_t(age_size));
+            sum_binned_PfgamPR_by_agebin_smeared.push_back(agebinned_t(age_size));
+            sum_binned_PfPR_by_agebin_true_smeared.push_back(agebinned_t(age_size));
+            sum_binned_PfgamPR_by_agebin_true_smeared.push_back(agebinned_t(age_size));
+        }
+
+        for (int k = 0; k < Infectiousness_size; ++k)
+        {
+            PfPRbinned_t tmp;
+            for (int j = 0; j < PfPR_size; ++j)
+            {
+                tmp.push_back(agebinned_t(age_size));
+            }
+            sum_binned_infection_by_pfprbin_and_agebin.push_back(tmp);
+            sum_binned_infection_by_pfprbin_and_agebin_age_scaled.push_back(tmp);
+            sum_binned_infection_by_pfprbin_and_agebin_smeared.push_back(tmp);
+            sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam.push_back(tmp);
+            sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam_age_scaled.push_back(tmp);
         }
     }
 
@@ -168,6 +198,18 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         {
             std::fill( sum_binned_PfPR_by_agebin.at(j).begin(),    sum_binned_PfPR_by_agebin.at(j).end(),    0 );
             std::fill( sum_binned_PfgamPR_by_agebin.at(j).begin(), sum_binned_PfgamPR_by_agebin.at(j).end(), 0 );
+            std::fill(sum_binned_PfPR_by_agebin_smeared.at(j).begin(), sum_binned_PfPR_by_agebin_smeared.at(j).end(), 0);
+            std::fill(sum_binned_PfgamPR_by_agebin_smeared.at(j).begin(), sum_binned_PfgamPR_by_agebin_smeared.at(j).end(), 0);
+            std::fill(sum_binned_PfPR_by_agebin_true_smeared.at(j).begin(), sum_binned_PfPR_by_agebin_true_smeared.at(j).end(), 0);
+            std::fill(sum_binned_PfgamPR_by_agebin_true_smeared.at(j).begin(), sum_binned_PfgamPR_by_agebin_true_smeared.at(j).end(), 0);
+            for (int k = 0; k < sum_binned_infection_by_pfprbin_and_agebin.size(); k++)
+            {
+                std::fill(sum_binned_infection_by_pfprbin_and_agebin.at(k).at(j).begin(), sum_binned_infection_by_pfprbin_and_agebin.at(k).at(j).end(), 0);
+                std::fill(sum_binned_infection_by_pfprbin_and_agebin_age_scaled.at(k).at(j).begin(), sum_binned_infection_by_pfprbin_and_agebin_age_scaled.at(k).at(j).end(), 0);
+                std::fill(sum_binned_infection_by_pfprbin_and_agebin_smeared.at(k).at(j).begin(), sum_binned_infection_by_pfprbin_and_agebin_smeared.at(k).at(j).end(), 0);
+                std::fill(sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam.at(k).at(j).begin(), sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam.at(k).at(j).end(), 0);
+                std::fill(sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam_age_scaled.at(k).at(j).begin(), sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam_age_scaled.at(k).at(j).end(), 0);
+            }
         }
         // N.B. don't reset running count of no-infection streak here
         // sum_no_infected_days reset if GetInfected() > 0 in Update()
@@ -198,17 +240,18 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         ReportUtilities::AddVector( this->sum_severe_cases_by_parasites_by_agebin, rOther.sum_severe_cases_by_parasites_by_agebin );
         ReportUtilities::AddVector( this->sum_severe_cases_by_fever_by_agebin    , rOther.sum_severe_cases_by_fever_by_agebin     );
 
-        release_assert( this->sum_binned_PfPR_by_agebin.size() == rOther.sum_binned_PfPR_by_agebin.size() );
-        for( int j = 0 ; j < this->sum_binned_PfPR_by_agebin.size() ; ++j )
-        {
-            ReportUtilities::AddVector( this->sum_binned_PfPR_by_agebin[j], rOther.sum_binned_PfPR_by_agebin.at(j) );
-        }
+        ReportUtilities::AddVector( this->sum_binned_PfPR_by_agebin,                 rOther.sum_binned_PfPR_by_agebin                 );
+        ReportUtilities::AddVector( this->sum_binned_PfgamPR_by_agebin,              rOther.sum_binned_PfgamPR_by_agebin              );
+        ReportUtilities::AddVector( this->sum_binned_PfPR_by_agebin_smeared,         rOther.sum_binned_PfPR_by_agebin_smeared         );
+        ReportUtilities::AddVector( this->sum_binned_PfgamPR_by_agebin_smeared,      rOther.sum_binned_PfgamPR_by_agebin_smeared      );
+        ReportUtilities::AddVector( this->sum_binned_PfPR_by_agebin_true_smeared,    rOther.sum_binned_PfPR_by_agebin_true_smeared    );
+        ReportUtilities::AddVector( this->sum_binned_PfgamPR_by_agebin_true_smeared, rOther.sum_binned_PfgamPR_by_agebin_true_smeared );
 
-        release_assert( this->sum_binned_PfgamPR_by_agebin.size() == rOther.sum_binned_PfgamPR_by_agebin.size() );
-        for( int j = 0 ; j < this->sum_binned_PfgamPR_by_agebin.size() ; ++j )
-        {
-            ReportUtilities::AddVector( this->sum_binned_PfgamPR_by_agebin[j], rOther.sum_binned_PfgamPR_by_agebin.at(j) );
-        }
+        ReportUtilities::AddVector( this->sum_binned_infection_by_pfprbin_and_agebin,                                rOther.sum_binned_infection_by_pfprbin_and_agebin                                );
+        ReportUtilities::AddVector( this->sum_binned_infection_by_pfprbin_and_agebin_age_scaled,                     rOther.sum_binned_infection_by_pfprbin_and_agebin_age_scaled                     );
+        ReportUtilities::AddVector( this->sum_binned_infection_by_pfprbin_and_agebin_smeared,                        rOther.sum_binned_infection_by_pfprbin_and_agebin_smeared                        );
+        ReportUtilities::AddVector( this->sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam,            rOther.sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam            );
+        ReportUtilities::AddVector( this->sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam_age_scaled, rOther.sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam_age_scaled );
     }
 
     void ReportIntervalData::Serialize( IJsonObjectAdapter& root, JSerializer& js )
@@ -233,25 +276,18 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         ReportUtilities::SerializeVector( root, js, "severe_cases_by_parasites", sum_severe_cases_by_parasites_by_agebin );
         ReportUtilities::SerializeVector( root, js, "severe_cases_by_fever"    , sum_severe_cases_by_fever_by_agebin     );
 
-        root.Insert( "binned_PfPR" );
-        root.BeginObject();
-        for( int j = 0 ; j < this->sum_binned_PfPR_by_agebin.size() ; ++j )
-        {
-            std::stringstream ss;
-            ss << "j=" << j;
-            ReportUtilities::SerializeVector( root, js, ss.str().c_str(), sum_binned_PfPR_by_agebin.at(j) );
-        }
-        root.EndObject();
+        ReportUtilities::SerializeVector( root, js, "binned_PfPR",                 sum_binned_PfPR_by_agebin                 );
+        ReportUtilities::SerializeVector( root, js, "binned_PfgamPR",              sum_binned_PfgamPR_by_agebin              );
+        ReportUtilities::SerializeVector( root, js, "binned_PfPR_smeared",         sum_binned_PfPR_by_agebin_smeared         );
+        ReportUtilities::SerializeVector( root, js, "binned_PfgamPR_smeared",      sum_binned_PfgamPR_by_agebin_smeared      );
+        ReportUtilities::SerializeVector( root, js, "binned_PfPR_true_smeared",    sum_binned_PfPR_by_agebin_true_smeared    );
+        ReportUtilities::SerializeVector( root, js, "binned_PfgamPR_true_smeared", sum_binned_PfgamPR_by_agebin_true_smeared );
 
-        root.Insert( "binned_PfgamPR" );
-        root.BeginObject();
-        for( int j = 0 ; j < this->sum_binned_PfgamPR_by_agebin.size() ; ++j )
-        {
-            std::stringstream ss;
-            ss << "j=" << j;
-            ReportUtilities::SerializeVector( root, js, ss.str().c_str(), sum_binned_PfgamPR_by_agebin.at(j) );
-        }
-        root.EndObject();
+        ReportUtilities::SerializeVector( root, js, "binned_Infectiousness",                                sum_binned_infection_by_pfprbin_and_agebin                                );
+        ReportUtilities::SerializeVector( root, js, "binned_Infectiousness_age_scaled",                     sum_binned_infection_by_pfprbin_and_agebin_age_scaled                     );
+        ReportUtilities::SerializeVector( root, js, "binned_Infectiousness_smeared",                        sum_binned_infection_by_pfprbin_and_agebin_smeared                        );
+        ReportUtilities::SerializeVector( root, js, "binned_Infectiousness_smeared_inf_and_gam",            sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam            );
+        ReportUtilities::SerializeVector( root, js, "binned_Infectiousness_smeared_inf_and_gam_age_scaled", sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam_age_scaled );
     }
 
     void ReportIntervalData::Deserialize( IJsonObjectAdapter& root )
@@ -276,25 +312,18 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         ReportUtilities::DeserializeVector( root, true, "severe_cases_by_parasites", sum_severe_cases_by_parasites_by_agebin );
         ReportUtilities::DeserializeVector( root, true, "severe_cases_by_fever"    , sum_severe_cases_by_fever_by_agebin     );
 
-        IJsonObjectAdapter* p_obj1 = root.GetJsonObject( "binned_PfPR" );
-        for( int j = 0 ; j < sum_binned_PfPR_by_agebin.size() ; ++j )
-        {
-            std::stringstream ss;
-            ss << "j=" << j;
-            ReportUtilities::DeserializeVector( *p_obj1, true, ss.str().c_str(), sum_binned_PfPR_by_agebin[j] );
-        }
-        delete p_obj1;
-        p_obj1 = nullptr;
+        ReportUtilities::DeserializeVector( root, true, "binned_PfPR",                 sum_binned_PfPR_by_agebin                 );
+        ReportUtilities::DeserializeVector( root, true, "binned_PfgamPR",              sum_binned_PfgamPR_by_agebin              );
+        ReportUtilities::DeserializeVector( root, true, "binned_PfPR_smeared",         sum_binned_PfPR_by_agebin_smeared         );
+        ReportUtilities::DeserializeVector( root, true, "binned_PfgamPR_smeared",      sum_binned_PfgamPR_by_agebin_smeared      );
+        ReportUtilities::DeserializeVector( root, true, "binned_PfPR_true_smeared",    sum_binned_PfPR_by_agebin_true_smeared    );
+        ReportUtilities::DeserializeVector( root, true, "binned_PfgamPR_true_smeared", sum_binned_PfgamPR_by_agebin_true_smeared );
 
-        IJsonObjectAdapter* p_obj2 = root.GetJsonObject( "binned_PfgamPR" );
-        for( int j = 0 ; j < sum_binned_PfgamPR_by_agebin.size() ; ++j )
-        {
-            std::stringstream ss;
-            ss << "j=" << j;
-            ReportUtilities::DeserializeVector( *p_obj2, true, ss.str().c_str(), sum_binned_PfgamPR_by_agebin[j] );
-        }
-        delete p_obj2;
-        p_obj2 = nullptr;
+        ReportUtilities::DeserializeVector( root, true, "binned_Infectiousness",                                sum_binned_infection_by_pfprbin_and_agebin                                );
+        ReportUtilities::DeserializeVector( root, true, "binned_Infectiousness_age_scaled",                     sum_binned_infection_by_pfprbin_and_agebin_age_scaled                     );
+        ReportUtilities::DeserializeVector( root, true, "binned_Infectiousness_smeared",                        sum_binned_infection_by_pfprbin_and_agebin_smeared                        );
+        ReportUtilities::DeserializeVector( root, true, "binned_Infectiousness_smeared_inf_and_gam",            sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam            );
+        ReportUtilities::DeserializeVector( root, true, "binned_Infectiousness_smeared_inf_and_gam_age_scaled", sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam_age_scaled );
     }
 
 
@@ -314,6 +343,15 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         , mean_log_parasite_density_by_agebin()
         , binned_PfPRs_by_agebin()
         , binned_PfgamPRs_by_agebin()
+        , binned_PfPRs_by_agebin_smeared()
+        , binned_PfgamPRs_by_agebin_smeared()
+        , binned_PfPRs_by_agebin_true_smeared()
+        , binned_PfgamPRs_by_agebin_true_smeared()
+        , binned_Infectiousness()
+        , binned_Infectiousness_age_scaled()
+        , binned_Infectiousness_smeared()
+        , binned_Infectiousness_smeared_inf_and_gam()
+        , binned_Infectiousness_smeared_inf_and_gam_age_scaled()
         , RDT_PfPRs_by_agebin()
         , annual_clinical_incidences_by_agebin()
         , annual_severe_incidences_by_agebin()
@@ -333,7 +371,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
     {
         if( inputJson->Exist("Age_Bins") )
         {
-            initConfigTypeMap("Age_Bins", &ages, "Age Bins (in years) to aggregate within and report", 0, FLT_MAX, 0, true );
+            initConfigTypeMap("Age_Bins", &ages, "Age Bins (in years) to aggregate within and report", 0, MAX_HUMAN_AGE, 0, true );
         }
         else
         {
@@ -368,6 +406,24 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
             PfPRbins.push_back(  FLT_MAX );
         }
 
+        if (inputJson->Exist("Infectiousness_Bins"))
+        {
+            initConfigTypeMap("Infectiousness_Bins", &Infectionbins, "Infectiousness Bins to aggregate within and report");
+        }
+        else
+        {
+            // -------------------------------------------------------------
+            // --- Values <= 0 in first bin indicate that uninfected people
+            // --- be added to this bin.
+            // -------------------------------------------------------------
+            //PfPRbins.push_back(    -1.0f );
+            Infectionbins.push_back(20.0f);
+            Infectionbins.push_back(40.0f);
+            Infectionbins.push_back(60.0f);
+            Infectionbins.push_back(80.0f);
+            Infectionbins.push_back(100.0f);
+        }
+
         bool configured = BaseEventReportIntervalOutput::Configure( inputJson );
 
         if( configured )
@@ -378,9 +434,9 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
                 msg << "The value (" <<  PfPRbins[1] << ") in Parasitemia_Bins at index 1 is invalid. Value must be greater or equal 0.";
                 throw InvalidInputDataException(__FILE__, __LINE__, __FUNCTION__, inputJson->GetDataLocation(),msg.str().c_str());
             }
-         
-            static_cast<ReportIntervalData*>(m_pIntervalData         )->SetVectorSize( ages.size(), PfPRbins.size() );
-            static_cast<ReportIntervalData*>(m_pMulticoreDataExchange)->SetVectorSize( ages.size(), PfPRbins.size() );
+            static_cast<ReportIntervalData*>(m_pIntervalData         )->SetVectorSize( ages.size(), PfPRbins.size(), Infectionbins.size() );
+            static_cast<ReportIntervalData*>(m_pMulticoreDataExchange)->SetVectorSize( ages.size(), PfPRbins.size(), Infectionbins.size() );
+            
             m_pReportData = static_cast<ReportIntervalData*>(m_pIntervalData);
         }
  
@@ -491,11 +547,11 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
                 }
             }
 
-            int PfPRbin = GetPfPRBin(susceptibility_malaria->get_parasite_density());
+            int PfPRbin = ReportUtilities::GetBinIndex( susceptibility_malaria->get_parasite_density(), PfPRbins );
             m_pReportData->sum_binned_PfPR_by_agebin.at(PfPRbin).at(agebin) += mc_weight;
 
             float gametocyte_count = individual_malaria->GetGametocyteDensity();
-            int PfgamPRbin = GetPfPRBin(gametocyte_count);
+            int PfgamPRbin = ReportUtilities::GetBinIndex( gametocyte_count, PfPRbins );
             m_pReportData->sum_binned_PfgamPR_by_agebin.at(PfgamPRbin).at(agebin) += mc_weight;
 
             gametocyte_count = individual_malaria->CheckGametocyteCountWithTest(MALARIA_TEST_BLOOD_SMEAR);
@@ -504,7 +560,67 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
                 m_pReportData->sum_gametocyte_positive_by_agebin.at(agebin) += mc_weight;
             }
 
-            
+
+            // Log-normal smearing from True density
+            float true_asexual_density = susceptibility_malaria->get_parasite_density();
+            float true_asexual_density_smeared = ReportUtilitiesMalaria::NASBADensityWithUncertainty( DLL_HELPER.GetRandomNumberGenerator(), true_asexual_density );
+            int PfPRbin_true_smeared = ReportUtilities::GetBinIndex( true_asexual_density_smeared, PfPRbins );
+            m_pReportData->sum_binned_PfPR_by_agebin_true_smeared.at(PfPRbin_true_smeared).at(agebin) += mc_weight;
+
+            float true_gametocyte_density = individual_malaria->GetGametocyteDensity();
+            float true_gametocyte_density_smeared = ReportUtilitiesMalaria::NASBADensityWithUncertainty( DLL_HELPER.GetRandomNumberGenerator(), true_gametocyte_density );
+            int PfgamPRbin_true_smeared = ReportUtilities::GetBinIndex( true_gametocyte_density_smeared, PfPRbins );
+            m_pReportData->sum_binned_PfgamPR_by_agebin_true_smeared.at(PfgamPRbin_true_smeared).at(agebin) += mc_weight;
+
+
+            // Smearing from fields of view
+            int positive_asexual_fields = 0;
+            int positive_gametocyte_fields = 0;
+            individual_malaria->CountPositiveSlideFields(DLL_HELPER.GetRandomNumberGenerator(), 200, (float)(1.0 / 400.0), positive_asexual_fields, positive_gametocyte_fields);
+            float uL_per_field = float(0.5) / float(200.0);
+
+            float PfPR_smeared = 0.0;
+            if (positive_asexual_fields != 200)
+            {
+                PfPR_smeared = -(1.0 / uL_per_field) * log(1 - positive_asexual_fields / 200.0);
+            }
+            else
+            {
+                PfPR_smeared = FLT_MAX;
+            }
+            int PfPRbin_smeared = ReportUtilities::GetBinIndex( PfPR_smeared, PfPRbins );
+            m_pReportData->sum_binned_PfPR_by_agebin_smeared.at(PfPRbin_smeared).at(agebin) += mc_weight;
+
+            float PfgamPR_smeared = 0.0;
+            if (positive_gametocyte_fields != 200)
+            {
+                PfgamPR_smeared = -(1.0 / uL_per_field) * log(1 - positive_gametocyte_fields / 200.0);
+            }
+            else
+            {
+                PfgamPR_smeared = FLT_MAX;                
+            }
+            int PfgamPRbin_smeared = ReportUtilities::GetBinIndex( PfgamPR_smeared, PfPRbins );
+            m_pReportData->sum_binned_PfgamPR_by_agebin_smeared.at(PfgamPRbin_smeared).at(agebin) += mc_weight;
+
+
+            float infectiousness = static_cast<IndividualHuman*>(context)->GetInfectiousness();
+            int Infectionbin = ReportUtilities::GetBinIndex( infectiousness * 100.0, Infectionbins );
+            float infectiousness_smeared = ReportUtilitiesMalaria::BinomialInfectiousness(DLL_HELPER.GetRandomNumberGenerator(), infectiousness);
+            int Infectionbin_smeared = ReportUtilities::GetBinIndex( infectiousness_smeared * 100.0, Infectionbins );
+
+            //Age scaled
+            float infectiousness_age_scaled = infectiousness*SusceptibilityVector::SurfaceAreaBitingFunction( age );
+            int Infectionbin_age_scaled = ReportUtilities::GetBinIndex( infectiousness_age_scaled * 100.0, Infectionbins );
+            float infectiousness_age_scaled_smeared = ReportUtilitiesMalaria::BinomialInfectiousness(DLL_HELPER.GetRandomNumberGenerator(), infectiousness_age_scaled);
+            int Infectionbin_age_scaled_smeared = ReportUtilities::GetBinIndex( infectiousness_age_scaled_smeared * 100.0, Infectionbins );
+
+            m_pReportData->sum_binned_infection_by_pfprbin_and_agebin.at(Infectionbin).at(PfgamPRbin).at(agebin) += mc_weight;
+            m_pReportData->sum_binned_infection_by_pfprbin_and_agebin_age_scaled.at(Infectionbin_age_scaled).at(PfgamPRbin).at(agebin) += mc_weight;
+            m_pReportData->sum_binned_infection_by_pfprbin_and_agebin_smeared.at(Infectionbin).at(PfgamPRbin_true_smeared).at(agebin) += mc_weight;
+            m_pReportData->sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam.at(Infectionbin_smeared).at(PfgamPRbin_true_smeared).at(agebin) += mc_weight;
+            m_pReportData->sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam_age_scaled.at(Infectionbin_age_scaled_smeared).at(PfgamPRbin_true_smeared).at(agebin) += mc_weight;
+
             float hemoglobin = susceptibility_malaria->GetHemoglobin();
             if ( hemoglobin < 5 )  { m_pReportData->sum_severe_anemia_by_agebin.at(agebin)   += mc_weight; }
             if ( hemoglobin < 8 )  { m_pReportData->sum_moderate_anemia_by_agebin.at(agebin) += mc_weight; }
@@ -537,6 +653,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
                     break;
                 }
             }
+            
         } //end if infected
         else if( PfPRbins[0] <= 0.0f )
         {
@@ -548,22 +665,13 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
             // ----------------------------------------------------------------------------------------------
             m_pReportData->sum_binned_PfPR_by_agebin.at( 0 ).at( agebin ) += mc_weight;
             m_pReportData->sum_binned_PfgamPR_by_agebin.at( 0 ).at( agebin ) += mc_weight;
+            m_pReportData->sum_binned_PfPR_by_agebin_smeared.at(0).at(agebin) += mc_weight;
+            m_pReportData->sum_binned_PfgamPR_by_agebin_smeared.at(0).at(agebin) += mc_weight;
+            m_pReportData->sum_binned_PfPR_by_agebin_true_smeared.at(0).at(agebin) += mc_weight;
+            m_pReportData->sum_binned_PfgamPR_by_agebin_true_smeared.at(0).at(agebin) += mc_weight;
         }
 
         return true;
-    }
-
-    int MalariaSummaryReport::GetPfPRBin(float parasite_count)
-    {
-        vector<float>::const_iterator it;
-        it = std::lower_bound(PfPRbins.begin(), PfPRbins.end(), parasite_count);
-        int PfPRbin_idx = it - PfPRbins.begin();
-        if( PfPRbin_idx >= PfPRbins.size() )
-        {
-            LOG_WARN_F( "Invalid PfPRbin_idx=%d  parasite_count=%f  Num bins=%d.  Make last bin value larger.  Putting in last bin.\n", PfPRbin_idx, parasite_count, PfPRbins.size() );
-            PfPRbin_idx = PfPRbins.size() - 1;
-        }
-        return PfPRbin_idx;
     }
 
     void MalariaSummaryReport::AccumulateOutput()
@@ -595,10 +703,38 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         agebinned_t annual_mild_anemia;
         PfPRbinned_t pfprs_binned;
         PfPRbinned_t pfgamprs_binned;
+        PfPRbinned_t pfprs_binned_smeared;
+        PfPRbinned_t pfgamprs_binned_smeared;
+        PfPRbinned_t pfprs_binned_true_smeared;
+        PfPRbinned_t pfgamprs_binned_true_smeared;
+        Infectionbinned_t infection_binned;
+        Infectionbinned_t infection_binned_age_scaled;
+        Infectionbinned_t infection_binned_smeared;
+        Infectionbinned_t infection_binned_smeared_inf_and_gam;
+        Infectionbinned_t infection_binned_smeared_inf_and_gam_age_scaled;
+
         for (int j = 0; j<PfPRbins.size(); j++)
         {
             pfprs_binned.push_back(agebinned_t(ages.size()));
             pfgamprs_binned.push_back(agebinned_t(ages.size()));
+            pfprs_binned_smeared.push_back(agebinned_t(ages.size()));
+            pfgamprs_binned_smeared.push_back(agebinned_t(ages.size()));
+            pfprs_binned_true_smeared.push_back(agebinned_t(ages.size()));
+            pfgamprs_binned_true_smeared.push_back(agebinned_t(ages.size()));
+        }
+
+        for (int k = 0; k < Infectionbins.size(); ++k)
+        {
+            PfPRbinned_t tmp;
+            for (int j = 0; j < PfPRbins.size(); ++j)
+            {
+                tmp.push_back(agebinned_t(ages.size()));
+            }
+            infection_binned.push_back(tmp);
+            infection_binned_age_scaled.push_back(tmp);
+            infection_binned_smeared.push_back(tmp);
+            infection_binned_smeared_inf_and_gam.push_back(tmp);
+            infection_binned_smeared_inf_and_gam_age_scaled.push_back(tmp);
         }
 
         for(int i = 0; i<ages.size(); i++)
@@ -635,6 +771,18 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
                 {
                     pfprs_binned.at(j).at(i)    = m_pReportData->sum_binned_PfPR_by_agebin.at(j).at(i)    / sum_pop_by_agebin;
                     pfgamprs_binned.at(j).at(i) = m_pReportData->sum_binned_PfgamPR_by_agebin.at(j).at(i) / sum_pop_by_agebin;
+                    pfprs_binned_smeared.at(j).at(i) = m_pReportData->sum_binned_PfPR_by_agebin_smeared.at(j).at(i) / sum_pop_by_agebin;
+                    pfgamprs_binned_smeared.at(j).at(i) = m_pReportData->sum_binned_PfgamPR_by_agebin_smeared.at(j).at(i) / sum_pop_by_agebin;
+                    pfprs_binned_true_smeared.at(j).at(i) = m_pReportData->sum_binned_PfPR_by_agebin_true_smeared.at(j).at(i) / sum_pop_by_agebin;
+                    pfgamprs_binned_true_smeared.at(j).at(i) = m_pReportData->sum_binned_PfgamPR_by_agebin_true_smeared.at(j).at(i) / sum_pop_by_agebin;
+                    for (int k = 0; k < Infectionbins.size(); k++)
+                    {
+                        infection_binned.at(k).at(j).at(i) = m_pReportData->sum_binned_infection_by_pfprbin_and_agebin.at(k).at(j).at(i) / sum_pop_by_agebin;
+                        infection_binned_age_scaled.at(k).at(j).at(i) = m_pReportData->sum_binned_infection_by_pfprbin_and_agebin_age_scaled.at(k).at(j).at(i) / sum_pop_by_agebin;
+                        infection_binned_smeared.at(k).at(j).at(i) = m_pReportData->sum_binned_infection_by_pfprbin_and_agebin_smeared.at(k).at(j).at(i) / sum_pop_by_agebin;
+                        infection_binned_smeared_inf_and_gam.at(k).at(j).at(i) = m_pReportData->sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam.at(k).at(j).at(i) / sum_pop_by_agebin;
+                        infection_binned_smeared_inf_and_gam_age_scaled.at(k).at(j).at(i) = m_pReportData->sum_binned_infection_by_pfprbin_and_agebin_smeared_inf_and_gam_age_scaled.at(k).at(j).at(i) / sum_pop_by_agebin;
+                    }
                 }
             }
             else 
@@ -672,6 +820,15 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
 
         binned_PfPRs_by_agebin.push_back(    pfprs_binned    );
         binned_PfgamPRs_by_agebin.push_back( pfgamprs_binned );
+        binned_PfPRs_by_agebin_smeared.push_back(pfprs_binned_smeared);
+        binned_PfgamPRs_by_agebin_smeared.push_back(pfgamprs_binned_smeared);
+        binned_PfPRs_by_agebin_true_smeared.push_back(pfprs_binned_true_smeared);
+        binned_PfgamPRs_by_agebin_true_smeared.push_back(pfgamprs_binned_true_smeared);
+        binned_Infectiousness.push_back(infection_binned);
+        binned_Infectiousness_age_scaled.push_back(infection_binned_age_scaled);
+        binned_Infectiousness_smeared.push_back(infection_binned_smeared);
+        binned_Infectiousness_smeared_inf_and_gam.push_back(infection_binned_smeared_inf_and_gam);
+        binned_Infectiousness_smeared_inf_and_gam_age_scaled.push_back(infection_binned_smeared_inf_and_gam_age_scaled);
 
         duration_no_infection_streak.push_back( m_pReportData->sum_no_infected_days );
         fraction_under_1pct_infected.push_back( m_pReportData->sum_days_under_1pct_infected / m_reporting_interval );
@@ -686,6 +843,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         ReportUtilities::SerializeVector( output, js, "Age Bins"           , ages     );
         ReportUtilities::SerializeVector( output, js, "Parasitemia Bins"   , PfPRbins );
         ReportUtilities::SerializeVector( output, js, "Gametocytemia Bins" , PfPRbins ); // not sure why same data
+        ReportUtilities::SerializeVector(output, js, "Infectiousness Bins", Infectionbins);
         output.EndObject();
 
         output.Insert( "DataByTime" );
@@ -699,25 +857,38 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
 
         output.Insert( "DataByTimeAndAgeBins" );
         output.BeginObject();
-        ReportUtilities::SerializeVector2D( output, js, "PfPR by Age Bin"                                 , PfPRs_by_agebin                                 );
-        ReportUtilities::SerializeVector2D( output, js, "Pf Gametocyte Prevalence by Age Bin"             , PfgamPRs_by_agebin                              );
-        ReportUtilities::SerializeVector2D( output, js, "Mean Log Parasite Density"                       , mean_log_parasite_density_by_agebin             );
-        ReportUtilities::SerializeVector2D( output, js, "RDT PfPR by Age Bin"                             , RDT_PfPRs_by_agebin                             );
-        ReportUtilities::SerializeVector2D( output, js, "Annual Clinical Incidence by Age Bin"            , annual_clinical_incidences_by_agebin            );
-        ReportUtilities::SerializeVector2D( output, js, "Annual Severe Incidence by Age Bin"              , annual_severe_incidences_by_agebin              );
-        ReportUtilities::SerializeVector2D( output, js, "Average Population by Age Bin"                   , average_population_by_agebin                    );
-        ReportUtilities::SerializeVector2D( output, js, "Annual Severe Incidence by Anemia by Age Bin"    , annual_severe_incidences_by_anemia_by_agebin    );
-        ReportUtilities::SerializeVector2D( output, js, "Annual Severe Incidence by Parasites by Age Bin" , annual_severe_incidences_by_parasites_by_agebin );
-        ReportUtilities::SerializeVector2D( output, js, "Annual Severe Incidence by Fever by Age Bin"     , annual_severe_incidences_by_fever_by_agebin     );
-        ReportUtilities::SerializeVector2D( output, js, "Annual Severe Anemia"                            , annual_severe_anemia_by_agebin                  );
-        ReportUtilities::SerializeVector2D( output, js, "Annual Moderate Anemia"                          , annual_moderate_anemia_by_agebin                );
-        ReportUtilities::SerializeVector2D( output, js, "Annual Mild Anemia"                              , annual_mild_anemia_by_agebin                    );
+        ReportUtilities::SerializeVector( output, js, "PfPR by Age Bin"                                 , PfPRs_by_agebin                                 );
+        ReportUtilities::SerializeVector( output, js, "Pf Gametocyte Prevalence by Age Bin"             , PfgamPRs_by_agebin                              );
+        ReportUtilities::SerializeVector( output, js, "Mean Log Parasite Density"                       , mean_log_parasite_density_by_agebin             );
+        ReportUtilities::SerializeVector( output, js, "RDT PfPR by Age Bin"                             , RDT_PfPRs_by_agebin                             );
+        ReportUtilities::SerializeVector( output, js, "Annual Clinical Incidence by Age Bin"            , annual_clinical_incidences_by_agebin            );
+        ReportUtilities::SerializeVector( output, js, "Annual Severe Incidence by Age Bin"              , annual_severe_incidences_by_agebin              );
+        ReportUtilities::SerializeVector( output, js, "Average Population by Age Bin"                   , average_population_by_agebin                    );
+        ReportUtilities::SerializeVector( output, js, "Annual Severe Incidence by Anemia by Age Bin"    , annual_severe_incidences_by_anemia_by_agebin    );
+        ReportUtilities::SerializeVector( output, js, "Annual Severe Incidence by Parasites by Age Bin" , annual_severe_incidences_by_parasites_by_agebin );
+        ReportUtilities::SerializeVector( output, js, "Annual Severe Incidence by Fever by Age Bin"     , annual_severe_incidences_by_fever_by_agebin     );
+        ReportUtilities::SerializeVector( output, js, "Annual Severe Anemia"                            , annual_severe_anemia_by_agebin                  );
+        ReportUtilities::SerializeVector( output, js, "Annual Moderate Anemia"                          , annual_moderate_anemia_by_agebin                );
+        ReportUtilities::SerializeVector( output, js, "Annual Mild Anemia"                              , annual_mild_anemia_by_agebin                    );
         output.EndObject();
 
         output.Insert( "DataByTimeAndPfPRBinsAndAgeBins" );
         output.BeginObject();
-        ReportUtilities::SerializeVector3D( output, js, "PfPR by Parasitemia and Age Bin"   , binned_PfPRs_by_agebin    );
-        ReportUtilities::SerializeVector3D( output, js, "PfPR by Gametocytemia and Age Bin" , binned_PfgamPRs_by_agebin );
+        ReportUtilities::SerializeVector( output, js, "PfPR by Parasitemia and Age Bin"   ,             binned_PfPRs_by_agebin                 );
+        ReportUtilities::SerializeVector( output, js, "PfPR by Gametocytemia and Age Bin" ,             binned_PfgamPRs_by_agebin              );
+        ReportUtilities::SerializeVector( output, js, "Smeared PfPR by Parasitemia and Age Bin",        binned_PfPRs_by_agebin_smeared         );
+        ReportUtilities::SerializeVector( output, js, "Smeared PfPR by Gametocytemia and Age Bin",      binned_PfgamPRs_by_agebin_smeared      );
+        ReportUtilities::SerializeVector( output, js, "Smeared True PfPR by Parasitemia and Age Bin",   binned_PfPRs_by_agebin_true_smeared    );
+        ReportUtilities::SerializeVector( output, js, "Smeared True PfPR by Gametocytemia and Age Bin", binned_PfgamPRs_by_agebin_true_smeared );
+        output.EndObject();
+
+        output.Insert("DataByTimeAndInfectiousnessBinsAndPfPRBinsAndAgeBins");
+        output.BeginObject();
+        ReportUtilities::SerializeVector(output, js, "Infectiousness by Gametocytemia and Age Bin",                            binned_Infectiousness                                );
+        ReportUtilities::SerializeVector(output, js, "Age scaled Infectiousness by Gametocytemia and Age Bin",                 binned_Infectiousness_age_scaled                     );
+        ReportUtilities::SerializeVector(output, js, "Infectiousness by smeared Gametocytemia and Age Bin",                    binned_Infectiousness_smeared                        );
+        ReportUtilities::SerializeVector(output, js, "Smeared Infectiousness by smeared Gametocytemia and Age Bin",            binned_Infectiousness_smeared_inf_and_gam            );
+        ReportUtilities::SerializeVector(output, js, "Age scaled Smeared Infectiousness by smeared Gametocytemia and Age Bin", binned_Infectiousness_smeared_inf_and_gam_age_scaled );
         output.EndObject();
     }
 }

@@ -703,31 +703,6 @@
             "END": "PRE-ART LINKING"
         }, 
         { 
-            "BEGIN": "PRE-ARTa",
-            "class": "CampaignEvent",
-            "Event_Name": "OnPreART: state 0a (notify)",
-            "Start_Day": 0,
-            "Nodeset_Config": 
-            { 
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config": 
-            { 
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Demographic_Coverage": 1,
-                "Intervention_Config": 
-                { 
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [ "OnPreART0" ],
-                    "Actual_IndividualIntervention_Config": 
-                    { 
-                        "class": "HIVPreARTNotification",
-                        "Starting_PreART": 1
-                    }
-                }
-            }
-        }, 
-        { 
             "BEGIN": "PRE-ARTb",
             "class": "CampaignEvent",
             "Event_Name": "OnPreART: state 0b (muxer, 180-day delay)",
@@ -920,56 +895,6 @@
                 }
             },
             "END": "PRE-ARTa"
-        }, 
-        { 
-            "class": "CampaignEvent",
-            "Event_Name": "OnPreART: (notify-done1)",
-            "Start_Day": 0,
-            "Nodeset_Config": 
-            { 
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config": 
-            { 
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Demographic_Coverage": 1,
-                "Intervention_Config": 
-                { 
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [ "OnART0" ],
-                    "Actual_IndividualIntervention_Config": 
-                    { 
-                        "class": "HIVPreARTNotification",
-                        "Starting_PreART": 0
-                    }
-                }
-            },
-            "END": "PRE-ARTb"
-        }, 
-        { 
-            "class": "CampaignEvent",
-            "Event_Name": "OnPreART: (notify-done2)",
-            "Start_Day": 0,
-            "Nodeset_Config": 
-            { 
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config": 
-            { 
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Demographic_Coverage": 1,
-                "Intervention_Config": 
-                { 
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [ "LTFU4" ],
-                    "Actual_IndividualIntervention_Config": 
-                    { 
-                        "class": "HIVPreARTNotification",
-                        "Starting_PreART": 0
-                    }
-                }
-            },
-            "END": "PRE-ARTc"
         }, 
         { 
             "BEGIN": "ART LINKING",

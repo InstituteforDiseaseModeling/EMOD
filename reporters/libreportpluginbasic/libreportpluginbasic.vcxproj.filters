@@ -23,9 +23,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="..\..\utils\config_params.rc" />
-    <ResourceCompile Include="..\..\utils\iv_params.rc" />
-    <ResourceCompile Include="..\..\utils\polio_params.rc" />
-  </ItemGroup>
 </Project>

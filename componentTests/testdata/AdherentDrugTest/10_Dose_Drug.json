@@ -1,0 +1,21 @@
+{
+    "Simulation_Timestep" : 1,
+    "Infection_Updates_Per_Timestep" : 8,
+    "Malaria_Drug_Params": {
+       "10_Dose_Drug": {
+            "Drug_Cmax": 1000, 
+            "Drug_Decay_T1": 1, 
+            "Drug_Decay_T2": 4, 
+            "Drug_Dose_Interval": 3, 
+            "Drug_Fulltreatment_Doses": 10, 
+            "Drug_Gametocyte02_Killrate": 0.1, 
+            "Drug_Gametocyte34_Killrate": 0.2, 
+            "Drug_GametocyteM_Killrate" : 0.3, 
+            "Drug_Hepatocyte_Killrate"  : 0.4, 
+            "Drug_PKPD_C50": 100, 
+            "Drug_Vd": 3, 
+            "Max_Drug_IRBC_Kill": 3.45,
+            "Bodyweight_Exponent": 0
+       }
+    }
+}

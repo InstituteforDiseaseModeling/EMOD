@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -32,10 +32,10 @@ namespace Kernel
     class InfectionConfig : public JsonConfigurable
     {
     public:
-        InfectionConfig();
+        InfectionConfig() {};
         virtual bool Configure( const Configuration* config ) override;
 
-        static bool vital_disease_mortality;
+        static bool enable_disease_mortality;
 
     protected:
         friend class Infection;

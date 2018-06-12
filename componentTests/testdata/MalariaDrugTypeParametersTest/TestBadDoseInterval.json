@@ -1,0 +1,40 @@
+{
+    "Infection_Updates_Per_Timestep" : 1,
+    "Simulation_Timestep" : 8,
+    "Malaria_Drug_Params" : {
+        "Chloroquine": {
+            "Bodyweight_Exponent": 1, 
+            "Drug_Cmax": 2, 
+            "Drug_Decay_T1": 3, 
+            "Drug_Decay_T2": 4, 
+            "Drug_Dose_Interval": 5, 
+            "Drug_Fulltreatment_Doses": 6, 
+            "Drug_Gametocyte02_Killrate": 7, 
+            "Drug_Gametocyte34_Killrate": 8, 
+            "Drug_GametocyteM_Killrate": 9, 
+            "Drug_Hepatocyte_Killrate": 10, 
+            "Drug_PKPD_C50": 11, 
+            "Drug_Vd": 12, 
+            "Max_Drug_IRBC_Kill": 13,
+            "Fractional_Dose_By_Upper_Age": [
+                { "Upper_Age_In_Years": 14, "Fraction_Of_Adult_Dose": 0.9 },
+                { "Upper_Age_In_Years": 15, "Fraction_Of_Adult_Dose": 0.8 },
+                { "Upper_Age_In_Years": 16, "Fraction_Of_Adult_Dose": 0.7 }
+            ],
+            "Resistance" : {
+                "Pfcrt" : {
+                    "PKPD_C50_Modifier" : 0.1,
+                    "Max_IRBC_Kill_Modifier" : 0.2
+                },
+                "Pfdhps" : {
+                    "PKPD_C50_Modifier" : 0.3,
+                    "Max_IRBC_Kill_Modifier" : 0.4
+                },
+                "Kelch13" : {
+                    "PKPD_C50_Modifier" : 0.5,
+                    "Max_IRBC_Kill_Modifier" : 0.6
+                }
+            }
+        }
+    }
+}

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -316,7 +316,7 @@ namespace Kernel {
                     {
                         //LOG_DEBUG_F( "Exposing (STI) individual to PROBABILITY set from depositor %d.\n", infectors.at( poolIndex ) );
                         DiscreteContagionPopulation contagionPopulation( act_prob_vec, infectors.at( poolIndex ) );
-                        candidate->Expose( &contagionPopulation, deltaTee, TransmissionRoute::TRANSMISSIONROUTE_ALL);
+                        candidate->Expose( &contagionPopulation, deltaTee );
                     }
                 }
             }
@@ -352,7 +352,7 @@ namespace Kernel {
         {
             std::ostringstream msg;
             msg << "Failed to get relationship pointer for pool index " << poolIndex << std::endl;
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
         }
 
         //release_assert(pRel);

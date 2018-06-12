@@ -127,8 +127,8 @@ def set_random_config_file(config_filename="config.json", mode = Modes.LESS, deb
         json.dump(config_json, outfile, indent = 4, sort_keys = True)
 
     if debug:
-        print "start time and end time are {0} and {1}.\n".format(start_time, end_time)
-        print "base infectivity and amplitude are {0} and {1}.\n".format(base_infectivity, amplitude)
+        print( "start time and end time are {0} and {1}.\n".format(start_time, end_time) )
+        print( "base infectivity and amplitude are {0} and {1}.\n".format(base_infectivity, amplitude) )
     return
 # endregion
 
@@ -255,7 +255,7 @@ def create_report_file(param_obj, output_df, report_df, report_name, debug):
     statpop = output_df[KEY_STAT_POP]
     new_infections = report_df[KEY_NEW_INFECTIONS]
     if debug:
-        dtk_sft.plot_data_unsorted(new_infections, label1="new infections", label2="NA",
+        dtk_sft.plot_data(new_infections, label1="new infections", label2="NA",
                                    title="Start_time: {0} day, End_time: {1} day".format(start_time, end_time),
                                    xlabel="Time_Step_{0}_Days".format(simulation_timestep), ylabel=None,
                                    category='New_infections',
@@ -281,7 +281,7 @@ def create_report_file(param_obj, output_df, report_df, report_name, debug):
                 success = False
                 outfile.write("BAD: actual infectiousness at time step {0} is {1}, expected {2}.\n".format(timestep, actual_infectiousness, calc_infectiousness))
         outfile.write(dtk_sft.format_success_msg(success))
-    dtk_sft.plot_data_unsorted(actual_infectiousness_all, calc_infectiousness_all,
+    dtk_sft.plot_data(actual_infectiousness_all, calc_infectiousness_all,
                                label1="actual infectiousness", label2="calc infectiousness",
                                title="Start_time: {0} day, End_time: {1} day".format(start_time, end_time),
                                xlabel="Time_Step_{0}_Days".format(simulation_timestep), ylabel="Infectiousness",

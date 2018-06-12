@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -129,11 +129,7 @@ namespace Kernel {
         std::string text = writer.PrettyText();
 
         std::ofstream json_file;
-        json_file.open( filename );
-        if( json_file.fail() )
-        {
-            throw FileIOException( __FILE__, __LINE__, __FUNCTION__, filename );
-        }
+        FileSystem::OpenFileForWriting( json_file, filename );
         json_file << text ;
         json_file.close();
     }
@@ -158,7 +154,7 @@ namespace Kernel {
         if (!success)
         {
             std::ofstream json_file;
-            json_file.open("invalid.json");
+            FileSystem::OpenFileForWriting( json_file, "invalid.json" );
             json_file << jsBuffer;
             json_file.close();
 

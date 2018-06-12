@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -29,8 +29,6 @@ namespace Kernel
             ar.labelElement("successfulfeed_AD") & probabilities->successfulfeed_AD;
             ar.labelElement("indoorattempttohumanfeed") & probabilities->indoorattempttohumanfeed;
             ar.labelElement("outdoorattempttohumanfeed") & probabilities->outdoorattempttohumanfeed;
-
-            ar.labelElement("ADbiocontrol_additional_mortality") & probabilities->ADbiocontrol_additional_mortality;
 
             ar.labelElement("outdoor_returningmortality") & probabilities->outdoor_returningmortality;
 
@@ -71,7 +69,6 @@ namespace Kernel
         successfulfeed_AD(0.0f),
         indoorattempttohumanfeed(0.0f),
         outdoorattempttohumanfeed(0.0f),
-        ADbiocontrol_additional_mortality(0.0f),
         outdoor_returningmortality(0.0f),
         indoor_diebeforefeeding(0.0f),
         indoor_hostnotavailable(0.0f),
@@ -196,8 +193,6 @@ namespace Kernel
         sugarTrapKilling   = invie->GetSugarFeedKilling();
         kill_livestockfeed = invie->GetAnimalFeedKilling();
         outdoorRestKilling = invie->GetOutdoorRestKilling();
-
-        ADbiocontrol_additional_mortality = 0.0f; // AD biocontrol not implemented (this would be for non-immediate mortality, i.e. an increased mortality over the days following exposure) 
     }
 
     void VectorProbabilities::FinalizeTransitionProbabilites(float anthropophily, float indoor_feeding)

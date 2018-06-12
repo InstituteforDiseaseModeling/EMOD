@@ -1,11 +1,14 @@
-import sys
-import os
+import argparse
 import glob
 import math
+import os
 import re
+import sys
+
 
 class ArgumentError(Exception):
     pass
+
 
 def GlobFiles(fileSpecs):
     '''Expand (potentially) wildcarded file specification into filelist'''
@@ -18,11 +21,13 @@ def GlobFiles(fileSpecs):
 
     return fileList
 
+
 def ReadTextFile(filename):
     with open(filename, 'r') as handle:
         text = handle.read()
     
     return text
+
 
 def ReadNLines(filename, n):
     ''' Read first n lines of a text file '''
@@ -32,6 +37,7 @@ def ReadNLines(filename, n):
             fileText += handle.readline()
 
     return fileText
+
 
 def ProcessFiles(fileList, templateText):
 
@@ -47,23 +53,24 @@ def ProcessFiles(fileList, templateText):
             if fileText.find(templateText) < 0:
                 troubleFiles.append(filename)
         else:
-            print >> sys.stderr, 'Skipping:', filename, '(found in skip path/files list).'
+            print('Skipping: {0} (found in skip path/files list).'.format(filename), file=sys.stderr)
 
     return troubleFiles
+
 
 def ReportTroubleFiles(troubleFiles):
     fileCount = len(troubleFiles)
     if fileCount > 0:
-        print 'The following', fileCount, 'files have problems (missing or not matching the given text):'
-        print
+        print('The following {0} files have problems (missing or not matching the given text):'.format(fileCount))
         index = 1
         countWidth = int(math.ceil(math.log10(fileCount)))
-        formatString = '%0' + str(countWidth) + 'd: '
+        formatString = '{{0:{0}}} {{1}}'.format(countWidth)
         for filename in troubleFiles:
-            print formatString % index, filename
+            print(formatString.format(index, filename))
             index += 1
     else:
-        print 'No problem files found.'
+        print('No problem files found.')
+
 
 def main(templateFile, testPatterns):
     
@@ -71,6 +78,7 @@ def main(templateFile, testPatterns):
     templateText = ReadTextFile(templateFile)
     troubleFiles = ProcessFiles(fileList, templateText)
     ReportTroubleFiles(troubleFiles)
+
     
 def ValidateArguments(args):
     argc = len(args)
@@ -84,9 +92,15 @@ def ValidateArguments(args):
     
     return templateFile, testPatterns
 
+
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('template')
+    parser.add_argument('patterns', nargs='+')
+    args = parser.parse_args()
     try:
-        templateFile, testPatterns = ValidateArguments(sys.argv)
-        main(templateFile, testPatterns)
+        # templateFile, testPatterns = ValidateArguments(sys.argv)
+        # main(templateFile, testPatterns)
+        main(args.template, args.patterns)
     except ArgumentError as e:
-        print e
+        print(e)

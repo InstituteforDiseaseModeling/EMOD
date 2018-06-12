@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -119,12 +119,6 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
             return;
         }
 
-        IVectorCohortIndividual * pivci = NULL;
-        if (s_OK != pvc->QueryInterface(GET_IID(IVectorCohortIndividual), (void**)&pivci) )
-        {
-            throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "pvc", "IVectorCohortIndividual", "IVectorCohort");
-        }
-
         IMigrate * pim = NULL;
         if (s_OK != pvc->QueryInterface(GET_IID(IMigrate), (void**)&pim) )
         {
@@ -136,9 +130,9 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         int from_node_id = pSim->GetNodeExternalID( nodeSuid ) ;
         int to_node_id = pSim->GetNodeExternalID( pim->GetMigrationDestination() ) ;
         int mig_type = pim->GetMigrationType() ;
-        VectorStateEnum::Enum state = pivci->GetState();
-        std::string species = pivci->GetSpecies();
-        float age = pivci->GetAge();
+        VectorStateEnum::Enum state = pvc->GetState();
+        std::string species = pvc->GetSpecies();
+        float age = pvc->GetAge();
 
         std::string mig_type_str = "" ;
         if( mig_type == MigrationType::LOCAL_MIGRATION )

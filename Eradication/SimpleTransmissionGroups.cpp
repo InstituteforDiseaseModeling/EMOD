@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -106,11 +106,11 @@ namespace Kernel
     {
         (*membershipOut)[0] = GroupIndex(0); // map route 0 to index 0
         std::ostringstream* msg = nullptr;
-        if (LOG_LEVEL(DEBUG)) 
+        /*if (LOG_LEVEL(DEBUG)) 
         {
             msg = new std::ostringstream();
             *msg << "(fn=GetGroupMembershipForProperties) ";
-        }
+        }*/
 
         for (const auto& entry : (*properties))
         {
@@ -128,19 +128,19 @@ namespace Kernel
                     throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, (std::string("propertyValueToIndexMap[")+propertyName+"]").c_str(), propertyValue.c_str() );
                 }
             }
-            if (LOG_LEVEL(DEBUG))
+            /*if (LOG_LEVEL(DEBUG))
             {
                 release_assert( msg ); // ensure someone doesn't change logic above so this is not allocated.
                 *msg << propertyName << "=" << propertyValue << ", ";
-            }
+            }*/
         }
-        if (LOG_LEVEL(DEBUG))
+        /*if (LOG_LEVEL(DEBUG))
         {
             release_assert( msg ); // ensure someone doesn't change logic above so this is not allocated.
             *msg << "=> Group index for route 0 is " << (*membershipOut)[0] << std::endl;
             LOG_DEBUG( msg->str().c_str() );
             delete msg;
-        }
+        }*/
     }
 
     void SimpleTransmissionGroups::UpdatePopulationSize(const TransmissionGroupMembership_t* transmissionGroupMembership, float size_changes, float mc_weight)
@@ -150,8 +150,32 @@ namespace Kernel
         LOG_DEBUG_F( "Increased group population to %f with addition of %f\n", populationSize, delta );
     }
 
+    // Primarily this function returns contagion for the group passed, but can pass nullptr to get total contagion across
+    // all groups -- used for exposure skipping and originally implemented by getting contagion for group=0.
+    // Skipping can't be used with HINT (so # groups==1). 
     float SimpleTransmissionGroups::GetTotalContagion(const TransmissionGroupMembership_t* transmissionGroupMembership)
     {
+        // The code block below is a semi-desperate attempt to get skipping working in generic. 
+        // It's surprisingly hard to find out what the total contagion is from Node w/o any
+        // individual. That makes sense at one level, and this "solution" only works for the 
+        // simple case of homogeneous. Needs attention.
+        if( transmissionGroupMembership == nullptr )
+        {
+#if 1
+            float groupInfectionRate = forceOfInfection[0];
+            ContagionPopulationImpl contagionPopulation(groupInfectionRate);
+            return ((IContagionPopulation*)&contagionPopulation)->GetTotalContagion();
+#endif
+#if 0 // PROPOSED_CLORTON_IMPLEMENTATION
+            float total = 0.0f;
+            for (float entry : currentContagion)
+            {
+                total += entry;
+            }
+
+            return total;
+#endif
+        }
         GroupIndex groupIndex = transmissionGroupMembership->at(0);
         return currentContagion[groupIndex];
     }
@@ -177,7 +201,7 @@ namespace Kernel
         {
             if (candidate != nullptr)
             {
-                candidate->Expose(static_cast<IContagionPopulation*>(&contagionPopulation), deltaTee, TransmissionRoute::TRANSMISSIONROUTE_ALL);
+                candidate->Expose(static_cast<IContagionPopulation*>(&contagionPopulation), deltaTee );
             }
         }
     }

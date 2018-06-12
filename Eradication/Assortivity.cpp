@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -40,7 +40,7 @@ namespace Kernel
         , m_PropertyKey()
         , m_Axes()
         , m_WeightingMatrix()
-        , m_StartYear( 0.0 )
+        , m_StartYear( MIN_YEAR )
         , m_StartUsing(false)
     {
         //release_assert( m_pRNG != nullptr );
@@ -88,7 +88,7 @@ namespace Kernel
                                           || (m_Group == AssortivityGroup::HIV_TESTED_POSITIVE_STATUS )
                                           || (m_Group == AssortivityGroup::HIV_RECEIVED_RESULTS_STATUS) )
             {
-                initConfigTypeMap( "Start_Year", &m_StartYear, "TBD - The year to start using the assortivity preference.", MIN_YEAR, MAX_YEAR, 0.0f );
+                initConfigTypeMap( "Start_Year", &m_StartYear, "TBD - The year to start using the assortivity preference.", MIN_YEAR, MAX_YEAR, MIN_YEAR);
             }
             AddConfigurationParameters( m_Group, config );
 

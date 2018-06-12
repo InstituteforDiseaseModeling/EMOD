@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -33,10 +33,7 @@ namespace Kernel
     bool SusceptibilityVectorConfig::Configure( const Configuration* config )
     {
         initConfig( "Age_Dependent_Biting_Risk_Type", age_dependent_biting_risk_type, config, MetadataDescriptor::Enum("age_dependent_biting_risk_type", Age_Dependent_Biting_Risk_Type_DESC_TEXT, MDD_ENUM_ARGS(AgeDependentBitingRisk)) );
-        if (age_dependent_biting_risk_type == AgeDependentBitingRisk::LINEAR || JsonConfigurable::_dryrun)
-        {
-            initConfigTypeMap( "Newborn_Biting_Risk_Multiplier", &m_newborn_biting_risk, Newborn_Biting_Risk_DESC_TEXT, 0.0f, 1.0f, 0.2f);
-        }
+        initConfigTypeMap( "Newborn_Biting_Risk_Multiplier", &m_newborn_biting_risk, Newborn_Biting_Risk_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.2f, "Age_Dependent_Biting_Risk_Type", "AgeDependentBitingRisk::LINEAR" );
         return JsonConfigurable::Configure( config );
     }
 
@@ -86,6 +83,11 @@ namespace Kernel
         return GET_CONFIGURABLE(SimulationConfig);
     }
 
+    void SusceptibilityVector::SetRelativeBitingRate( float rate )
+    {
+        m_relative_biting_rate = rate;
+    }
+
     float SusceptibilityVector::GetRelativeBitingRate(void) const
     {
         return m_relative_biting_rate * m_age_dependent_biting_risk;
@@ -125,25 +127,6 @@ namespace Kernel
             // linear from birth to age 20 years
             float newborn_risk = SusceptibilityVectorConfig::m_newborn_biting_risk;
             return newborn_risk + _age * (1 - newborn_risk) / (20 * DAYSPERYEAR);
-        }
-
-        return 1.0f;
-    }
-
-    float SusceptibilityVector::SurfaceAreaBitingFunction(float _age)
-    {
-        // piecewise linear rising from birth to age 2
-        // and then shallower slope to age 20
-        float newborn_risk = 0.07f;
-        float two_year_old_risk = 0.23f;
-        if ( _age < 2 * DAYSPERYEAR )
-        {
-            return newborn_risk + _age * (two_year_old_risk - newborn_risk) / (2 * DAYSPERYEAR);
-        }
-
-        if ( _age < 20 * DAYSPERYEAR )
-        {
-            return two_year_old_risk + (_age - 2 * DAYSPERYEAR) * (1 - two_year_old_risk) / ( (20 - 2) * DAYSPERYEAR );
         }
 
         return 1.0f;

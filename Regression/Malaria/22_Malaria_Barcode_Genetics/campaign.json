@@ -45,25 +45,28 @@
         },
         {
             "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
                 "Demographic_Coverage": 0.6,
                 "Number_Repetitions": 30,
                 "Timesteps_Between_Repetitions": 60,
-                "Intervention_Configs": [
-                    {
-                        "Cost_To_Consumer": 1,
-                        "Dosing_Type": "FullTreatmentCourse",
-                        "Drug_Type": "DHA",
-                        "class": "AntimalarialDrug"
-                    },
-                    {
-                        "Cost_To_Consumer": 1,
-                        "Dosing_Type": "FullTreatmentCourse",
-                        "Drug_Type": "Piperaquine",
-                        "class": "AntimalarialDrug"
-                    }
-                ],
-                "Target_Demographic": "Everyone",
-                "class": "MultiInterventionEventCoordinator"
+                "Intervention_Config": {
+                    "class": "MultiInterventionDistributor",
+                    "Intervention_List": [
+                        {
+                            "Cost_To_Consumer": 1,
+                            "Dosing_Type": "FullTreatmentCourse",
+                            "Drug_Type": "DHA",
+                            "class": "AntimalarialDrug"
+                        },
+                        {
+                            "Cost_To_Consumer": 1,
+                            "Dosing_Type": "FullTreatmentCourse",
+                            "Drug_Type": "Piperaquine",
+                            "class": "AntimalarialDrug"
+                        }
+                    ]
+                }
             },
             "Nodeset_Config": {
                 "class": "NodeSetAll"

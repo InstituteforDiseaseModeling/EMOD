@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -262,6 +262,17 @@ class IDMAPI NaturalNumber
         inline NaturalNumber& operator++(int)
         {
             _value++;
+            if( _value < 0 )
+            {
+                throw Kernel::OutOfRangeException( __FILE__, __LINE__, __FUNCTION__, "value", (float) _value, 0 );
+            }
+
+            return *this;
+        }
+
+        inline NaturalNumber& operator--(int)
+        {
+            _value--;
             if( _value < 0 )
             {
                 throw Kernel::OutOfRangeException( __FILE__, __LINE__, __FUNCTION__, "value", (float) _value, 0 );

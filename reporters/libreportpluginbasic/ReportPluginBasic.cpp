@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -121,9 +121,9 @@ static const char * _log_prev_label = "Log Prevalence";
 
 
 CustomReport::CustomReport()
+: BaseChannelReport( _report_name )
 {
     LOG_INFO( "CustomReport ctor\n" );
-    report_name = _report_name;
 }
 
 /////////////////////////

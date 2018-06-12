@@ -37,7 +37,7 @@ def _parse(j, _dtype, channels=[]):
             try:
                 channel_df.iloc[first_data:, i] = p[channel][0]
             except:
-                 print "not adding element: ", channel
+                 print( "not adding element: ", channel )
 
         channel_df_dict[channel] = channel_df
 
@@ -65,7 +65,7 @@ def _parse_unicode(j, _dtype, channels=[]):
             try:
                 channel_df.iloc[first_data:, i] = len(p[channel][0])*["empty"]
             except:
-                 print "not adding element: ", channel
+                 print( "not adding element: ", channel )
 
         channel_df_dict[channel] = channel_df
 
@@ -84,17 +84,17 @@ def application(application_output_path):
                         'asexual_parasites']
     channels_string = ['treatment']
     patient_panel = _parse(j, 'float', channels_numeric)
-    patient_panel_str = _parse_unicode(j, 'string', channels_string)
+    patient_panel_str = _parse_unicode(j, 'unicode', channels_string)
 
     db = sqlite3.connect(report_path + 'MalariaPatientReport_sql.db')
 
     for c in channels_numeric:
-        print "hdf5 store:", c
+        print( "hdf5 store:", c )
         patient_panel[c].to_sql(c, db, if_exists='append')
 
     for c in channels_string:
-        print "hdf5 store str:", c
+        print( "hdf5 store str:", c )
         patient_panel_str[c].to_sql(c, db, if_exists='append')
 
     db.commit()
-    print "sql file written"
+    print( "sql file written" )

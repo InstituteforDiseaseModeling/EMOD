@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -46,8 +46,14 @@ namespace Kernel
         {
             if( use_event_or_config == EventOrConfig::Config || JsonConfigurable::_dryrun )
             {
-                InterventionValidator::ValidateIntervention( negative_diagnosis_config._json, inputJson->GetDataLocation() );
-                InterventionValidator::ValidateIntervention( defaulters_config._json, inputJson->GetDataLocation() );
+                InterventionValidator::ValidateIntervention( GetTypeName(),
+                                                             InterventionTypeValidation::INDIVIDUAL,
+                                                             negative_diagnosis_config._json,
+                                                             inputJson->GetDataLocation() );
+                InterventionValidator::ValidateIntervention( GetTypeName(),
+                                                             InterventionTypeValidation::INDIVIDUAL,
+                                                             defaulters_config._json,
+                                                             inputJson->GetDataLocation() );
             }
 
             if( !JsonConfigurable::_dryrun && 
@@ -77,7 +83,7 @@ namespace Kernel
     , defaulters_event()
     , m_gets_positive_test_intervention(false)
     {
-        initSimTypes( 2, "TB_SIM", "TBHIV_SIM" );
+        initSimTypes( 1, "TBHIV_SIM" );
         days_to_diagnosis.handle = std::bind( &DiagnosticTreatNeg::onDiagnosisComplete, this, 0.0f );
     }
 
@@ -89,7 +95,7 @@ namespace Kernel
     , defaulters_event(master.defaulters_event)
     , m_gets_positive_test_intervention(master.m_gets_positive_test_intervention)
     {
-        initSimTypes( 2, "TB_SIM", "TBHIV_SIM" );
+        initSimTypes( 1, "TBHIV_SIM" );
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // !!! IndividualInterventionConfig - the copy constructor and assignment operator are different.
         // !!! I needed to use the assignment operator to get this to work correctly.
@@ -211,7 +217,7 @@ namespace Kernel
         }
         if (!ifobj)
         {
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "parent->GetInterventionFactoryObj()" );
+            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "parent->GetInterventionFactoryObj()", "IInterventionFactory" );
         }
 
         if( use_event_or_config == EventOrConfig::Event )
@@ -269,7 +275,7 @@ namespace Kernel
         }
         if (!ifobj)
         {
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "parent->GetInterventionFactoryObj()" );
+            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "parent->GetInterventionFactoryObj()", "IInterventionFactory" );
         }
 
 

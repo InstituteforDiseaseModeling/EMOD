@@ -88,7 +88,7 @@ def create_report_file(report_data_obj, report_name, debug):
             outfile.write("BAD: At time step {0}, {1} reported new infections in Group 4_Test, expected {2}.\n".format(
                 timestep, new_infection_test, expected_new_infection_test))
 
-        sft.plot_data_unsorted([pre_new_infection_baseline, new_infection_baseline],[pre_new_infection_test, new_infection_test],
+        sft.plot_data([pre_new_infection_baseline, new_infection_baseline],[pre_new_infection_test, new_infection_test],
                                label1= "control_group", label2 = "test_group",
                                xlabel= "0: first outbreak, 1: second outbreak",ylabel="new infection",
                                title = "control vs. test",
@@ -96,7 +96,7 @@ def create_report_file(report_data_obj, report_name, debug):
 
         outfile.write(sft.format_success_msg(success))
         if debug:
-            print "SUMMARY: Success={0}\n".format(success)
+            print( "SUMMARY: Success={0}\n".format(success) )
         return success
 
 def application( output_folder="output", stdout_filename="test.txt",
@@ -106,14 +106,14 @@ def application( output_folder="output", stdout_filename="test.txt",
                  report_name=sft.sft_output_filename,
                  debug=True):
     if debug:
-        print "output_folder: " + output_folder
-        print "stdout_filename: " + stdout_filename+ "\n"
-        print "config_filename: " + config_filename + "\n"
-        print "campaign_filename: " + campaign_filename + "\n"
-        print "demographics_filename: " + demographics_filename + "\n"
-        print "propertyreport_name: " + propertyreport_name + "\n"
-        print "report_name: " + report_name + "\n"
-        print "debug: " + str(debug) + "\n"
+        print( "output_folder: " + output_folder )
+        print( "stdout_filename: " + stdout_filename+ "\n" )
+        print( "config_filename: " + config_filename + "\n" )
+        print( "campaign_filename: " + campaign_filename + "\n" )
+        print( "demographics_filename: " + demographics_filename + "\n" )
+        print( "propertyreport_name: " + propertyreport_name + "\n" )
+        print( "report_name: " + report_name + "\n" )
+        print( "debug: " + str(debug) + "\n" )
 
     sft.wait_for_done()
     report_data_obj = parse_json_report(output_folder, propertyreport_name, debug)

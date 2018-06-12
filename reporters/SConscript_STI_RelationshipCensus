@@ -31,7 +31,7 @@ msvc = GetOption( "MSVC" )
 if msvc is not None and msvc != False and msvc != "":
 
     bvar = report_env['BUILD_VARIANT'] + '|x64'
-    print str(lib_report_dllTarget) + ": Generating MSVS" + report_env['MSVS_VERSION'] + " project files for '%s'" % bvar
+    print( str(lib_report_dllTarget) + ": Generating MSVS" + report_env['MSVS_VERSION'] + " project files for '%s'" % bvar )
     
     report_env.MSVSProject(target = 'Lib_report_dllScons' + report_env['MSVSPROJECTSUFFIX'],
                     srcs = lib_report_dllSrcFiles,

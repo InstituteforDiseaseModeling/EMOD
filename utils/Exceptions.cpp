@@ -1,7 +1,7 @@
 #include "Exceptions.h"
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -188,8 +188,10 @@ static inline std::string dump_backtrace()
 
 static const char* default_varname = "variable name";
 static const char* default_description = "description";
+static const char* nullptr_str = "nullptr";
 #define GET_VAR_NAME(v) ( (v) ? (v) : default_varname )
 #define GET_DES_STR(s)  ( (s) ? (s) : default_description )
+#define GET_STR(s)      ( (s) ? (s) : nullptr_str )
 
 namespace Kernel {
 #if 0
@@ -204,7 +206,7 @@ namespace Kernel {
 #endif
 
     DetailedException::DetailedException( const char * file_name, int line_num, const char * func_name )
-    : std::runtime_error( std::string( "\nException in " ) + file_name + " at " + boost::lexical_cast<std::string>(line_num) + " in " + func_name + ".\n" )
+    : std::runtime_error( std::string( "\nException in " ) + GET_STR(file_name) + " at " + boost::lexical_cast<std::string>(line_num) + " in " + GET_STR(func_name) + ".\n" )
     , _msg()
     , _stackTrace()
     , _fileName( file_name )
@@ -266,7 +268,7 @@ namespace Kernel {
         _tmp_msg << "BadMapKeyException: "
                  << what() 
                  << "Failed to find "
-                 << value
+                 << GET_STR(value)
                  << " in map "
                  << GET_VAR_NAME(var_name);
         _msg = _tmp_msg.str();
@@ -307,7 +309,7 @@ namespace Kernel {
     : DetailedException( file_name, line_num, func_name )
     {
         std::ostringstream _tmp_msg;
-        _tmp_msg << "DllLoadingException: filename = " << what() << msg << std::endl;
+        _tmp_msg << "DllLoadingException: filename = " << what() << GET_STR(msg) << std::endl;
         _msg = _tmp_msg.str();
     }
 
@@ -315,18 +317,22 @@ namespace Kernel {
     : DetailedException( file_name, line_num, func_name )
     {
         std::ostringstream _tmp_msg;
-        _tmp_msg << "FactoryCreateFromJsonException: " << what() << note << std::endl;
+        _tmp_msg << "FactoryCreateFromJsonException: " << what() << GET_STR(note) << std::endl;
         _msg = _tmp_msg.str();
     }
 
-    FileIOException::FileIOException( const char* sourccode_filename, int line_num, const char* function_name, const char* msg )
+    FileIOException::FileIOException( const char* sourccode_filename, int line_num, const char* function_name, const char* filename, const char* note )
     : DetailedException( sourccode_filename, line_num, function_name )
     {
         std::ostringstream _tmp_msg;
         _tmp_msg << "FileIOException: "
                  << what() 
-                 << "I/O error while reading/writing file. Hint: "
-                 << msg;
+                 << "I/O error while reading/writing. File name =  "
+                 << GET_STR(filename);
+        if( note != nullptr )
+        {
+            _tmp_msg << ".  " << note;
+        }
         _msg = _tmp_msg.str();
     }
 
@@ -337,7 +343,7 @@ namespace Kernel {
         _tmp_msg << "FileNotFoundException: "
             << what()
             << "Could not find file "
-            << missing_file_name;
+            << GET_STR(missing_file_name);
         _msg = _tmp_msg.str();
     }
 
@@ -346,7 +352,7 @@ namespace Kernel {
     {
         // pass message straight through
         std::ostringstream _tmp_msg;
-        _tmp_msg << "GeneralConfigurationException: " << what() << msg << std::endl;
+        _tmp_msg << "GeneralConfigurationException: " << what() << GET_STR(msg) << std::endl;
         _msg = _tmp_msg.str();
     }
 
@@ -354,7 +360,7 @@ namespace Kernel {
     : DetailedException( file_name, line_num, func_name )
     {
         std::ostringstream _tmp_msg;
-        _tmp_msg << "IllegalOperationException: " << what() << msg << std::endl;
+        _tmp_msg << "IllegalOperationException: " << what() << GET_STR(msg) << std::endl;
         _msg = _tmp_msg.str();
     }
 
@@ -424,15 +430,15 @@ namespace Kernel {
         _tmp_msg << "IncoherentConfigurationException: "
             << what()
             << "Variable or parameter '"
-            << existing_label
+            << GET_STR(existing_label)
             << "' with value "
-            << existing_value
+            << GET_STR(existing_value)
             << " is incompatible with variable or parameter '"
-            << test_label
+            << GET_STR(test_label)
             << "' with value "
-            << test_value
+            << GET_STR(test_value)
             << ". "
-            << details;
+            << GET_STR(details);
         _msg = _tmp_msg.str();
     }
 
@@ -440,7 +446,7 @@ namespace Kernel {
     : DetailedException( file_name, line_num, func_name )
     {
         std::ostringstream _tmp_msg;
-        _tmp_msg << "InitializationException: " << what() << msg;
+        _tmp_msg << "InitializationException: " << what() << GET_STR(msg);
         _msg = _tmp_msg.str();
     }
 
@@ -448,7 +454,7 @@ namespace Kernel {
     : DetailedException( file_name, line_num, func_name )
     {
         std::ostringstream _tmp_msg;
-        _tmp_msg << "InvalidInputDataException: " << what() << note << std::endl;
+        _tmp_msg << "InvalidInputDataException: " << what() << GET_STR(note) << std::endl;
         _msg = _tmp_msg.str();
     }
 
@@ -458,7 +464,7 @@ namespace Kernel {
         std::ostringstream _tmp_msg;
         _tmp_msg << what() << std::endl;
         _tmp_msg << "InvalidInputDataException in " << config_filename << ": " << std::endl;
-        _tmp_msg << note << std::endl;
+        _tmp_msg << GET_STR(note) << std::endl;
         _msg = _tmp_msg.str();
     }
 
@@ -471,8 +477,8 @@ namespace Kernel {
     {
         std::ostringstream _tmp_msg;
         _tmp_msg << "NodeDemographicsFormatErrorException: " << what() ;
-        _tmp_msg << "Format error encountered loading demographics file (" << demographicsFilename << ").  " ;
-        _tmp_msg << note << std::endl;
+        _tmp_msg << "Format error encountered loading demographics file (" << GET_STR(demographicsFilename) << ").  " ;
+        _tmp_msg << GET_STR(note) << std::endl;
         _msg = _tmp_msg.str();
     }
 
@@ -480,7 +486,7 @@ namespace Kernel {
     : DetailedException( file_name, line_num, func_name )
     {
         std::ostringstream _tmp_msg;
-        _tmp_msg << "MPIException: " << what() << note << std::endl;
+        _tmp_msg << "MPIException: " << what() << GET_STR(note) << std::endl;
         _msg = _tmp_msg.str();
     }
 
@@ -490,7 +496,7 @@ namespace Kernel {
         std::ostringstream _tmp_msg;
         _tmp_msg << "NotYetImplementedException: "
                  << what()
-                 << msg
+                 << GET_STR(msg)
                  << std::endl;
         _msg = _tmp_msg.str();
     }
@@ -503,6 +509,8 @@ namespace Kernel {
                  << what()
                  << "Variable "
                  << GET_VAR_NAME(var_name)
+                 << " of type "
+                 << GET_STR(type_name)
                  << " was NULL.";
         _msg = _tmp_msg.str();
     }
@@ -531,9 +539,9 @@ namespace Kernel {
                  << "QueryInterface on variable "
                  << GET_VAR_NAME(var_name)
                  << " of type "
-                 << variable_type
+                 << GET_STR(variable_type)
                  << " failed to find interface "
-                 << queried_for_type
+                 << GET_STR(queried_for_type)
                  << ".";
         _msg = _tmp_msg.str();
     }
@@ -544,7 +552,7 @@ namespace Kernel {
         std::ostringstream _tmp_msg;
         _tmp_msg << "SerializationException: "
                  << what()
-                 << notes
+                 << GET_STR(notes)
                  << std::endl;
         _msg = _tmp_msg.str();
     }
@@ -572,9 +580,9 @@ namespace Kernel {
         _tmp_msg << "MissingParameterFromConfigurationException: "
                  << what()
                  << "Parameter '"
-                 << param_name
+                 << GET_STR(param_name)
                  << "' not found in input file '"
-                 << config_file_name
+                 << GET_STR(config_file_name)
                  << "'."
                  << std::endl;
         _msg = _tmp_msg.str();
@@ -601,9 +609,9 @@ namespace Kernel {
                 _tmp_msg << ", ";
         }
        _tmp_msg << "' not found in input file '"
-            << config_file_name
+            << GET_STR(config_file_name)
             << "'."
-            << details
+            << GET_STR(details)
             << std::endl;
         _msg = _tmp_msg.str();
     }
@@ -634,14 +642,14 @@ namespace Kernel {
         _tmp_msg << "JsonTypeConfigurationException: "
                  << what()
                  << "While trying to parse json data for param/key >>> "
-                 << param_name
+                 << GET_STR(param_name)
                  << " <<< in otherwise valid json segment... "
                  << std::endl
                  << blob_msg.str()
                  << std::endl
                  << "Caught exception msg below: "
                  << std::endl
-                 << caught_msg;
+                 << GET_STR(caught_msg);
         _msg = _tmp_msg.str();
     }
 }

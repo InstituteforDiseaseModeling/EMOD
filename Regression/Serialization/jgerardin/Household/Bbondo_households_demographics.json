@@ -4,9 +4,9 @@
             "AgeDistribution1": 0.000118,
             "AgeDistribution2": 0,
             "AgeDistributionFlag": 3,
-            "ImmunityDistribution1": 0,
-            "ImmunityDistribution2": 0,
-            "ImmunityDistributionFlag": 0,
+            "SusceptibilityDistribution1": 0,
+            "SusceptibilityDistribution2": 0,
+            "SusceptibilityDistributionFlag": 0,
             "MigrationHeterogeneityDistribution1": 0.25,
             "MigrationHeterogeneityDistribution2": 0,
             "MigrationHeterogeneityDistributionFlag": 0,
@@ -72,15 +72,13 @@
             "RiskDistributionFlag": 0
         },
         "NodeAttributes": {
-            "AbovePoverty": 0.5,
             "Airport": 0,
             "Altitude": 0,
             "BirthRate": 0.00012329,
             "Latitude": -1,
             "Longitude": -1,
             "Region": 1,
-            "Seaport": 1,
-            "Urban": 0
+            "Seaport": 1
         },
         "NodeID": -1
     },
@@ -99,7 +97,7 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0010115891442445959
                 },
-                "Latitude": -16.496058000000001,
+                "Latitude": -16.496058,
                 "Longitude": 27.998618
             },
             "NodeID": 14
@@ -109,10 +107,10 @@
                 "InitialPopulation": 4,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00040691477482502969
+                    "ALL_HABITATS": 0.0004069147748250297
                 },
-                "Latitude": -16.492432999999998,
-                "Longitude": 27.982538000000002
+                "Latitude": -16.492433,
+                "Longitude": 27.982538
             },
             "NodeID": 19
         },
@@ -123,7 +121,7 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.00016863290510614218
                 },
-                "Latitude": -16.497126999999999,
+                "Latitude": -16.497127,
                 "Longitude": 27.98301
             },
             "NodeID": 22
@@ -136,7 +134,7 @@
                     "ALL_HABITATS": 0.0013646641101345688
                 },
                 "Latitude": -16.496285,
-                "Longitude": 27.981722000000001
+                "Longitude": 27.981722
             },
             "NodeID": 23
         },
@@ -147,8 +145,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0015335759353069835
                 },
-                "Latitude": -16.494226999999999,
-                "Longitude": 27.983847999999998
+                "Latitude": -16.494227,
+                "Longitude": 27.983848
             },
             "NodeID": 25
         },
@@ -159,8 +157,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0014798913198212586
                 },
-                "Latitude": -16.494054999999999,
-                "Longitude": 27.980388000000001
+                "Latitude": -16.494055,
+                "Longitude": 27.980388
             },
             "NodeID": 35
         },
@@ -172,7 +170,7 @@
                     "ALL_HABITATS": 0.0026282592739745995
                 },
                 "Latitude": -16.493333,
-                "Longitude": 27.992184999999999
+                "Longitude": 27.992185
             },
             "NodeID": 38
         },
@@ -183,8 +181,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0019798805819816996
                 },
-                "Latitude": -16.495166999999999,
-                "Longitude": 27.987338000000001
+                "Latitude": -16.495167,
+                "Longitude": 27.987338
             },
             "NodeID": 41
         },
@@ -193,9 +191,9 @@
                 "InitialPopulation": 4,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00025210440458988732
+                    "ALL_HABITATS": 0.0002521044045898873
                 },
-                "Latitude": -16.496262000000002,
+                "Latitude": -16.496262,
                 "Longitude": 27.981213
             },
             "NodeID": 43
@@ -205,9 +203,9 @@
                 "InitialPopulation": 1,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00045900056243622692
+                    "ALL_HABITATS": 0.0004590005624362269
                 },
-                "Latitude": -16.494499999999999,
+                "Latitude": -16.4945,
                 "Longitude": 27.991743
             },
             "NodeID": 44
@@ -217,10 +215,10 @@
                 "InitialPopulation": 6,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.0028564598108975639
+                    "ALL_HABITATS": 0.002856459810897564
                 },
-                "Latitude": -16.489270000000001,
-                "Longitude": 27.975187999999999
+                "Latitude": -16.48927,
+                "Longitude": 27.975188
             },
             "NodeID": 45
         },
@@ -232,7 +230,7 @@
                     "ALL_HABITATS": 0.0004989532782059959
                 },
                 "Latitude": -16.49363,
-                "Longitude": 28.001792999999999
+                "Longitude": 28.001793
             },
             "NodeID": 48
         },
@@ -241,10 +239,10 @@
                 "InitialPopulation": 5,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00032247083817492958
+                    "ALL_HABITATS": 0.0003224708381749296
                 },
-                "Latitude": -16.496732999999999,
-                "Longitude": 27.983201999999999
+                "Latitude": -16.496733,
+                "Longitude": 27.983202
             },
             "NodeID": 53
         },
@@ -255,7 +253,7 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.00014768608025322955
                 },
-                "Latitude": -16.496877999999999,
+                "Latitude": -16.496878,
                 "Longitude": 27.981745
             },
             "NodeID": 54
@@ -267,8 +265,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.00018238645240197746
                 },
-                "Latitude": -16.494161999999999,
-                "Longitude": 27.994230000000002
+                "Latitude": -16.494162,
+                "Longitude": 27.99423
             },
             "NodeID": 58
         },
@@ -277,10 +275,10 @@
                 "InitialPopulation": 6,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00044185606277327428
+                    "ALL_HABITATS": 0.0004418560627732743
                 },
-                "Latitude": -16.494254999999999,
-                "Longitude": 27.977882999999999
+                "Latitude": -16.494255,
+                "Longitude": 27.977883
             },
             "NodeID": 59
         },
@@ -289,10 +287,10 @@
                 "InitialPopulation": 4,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00033328393794818529
+                    "ALL_HABITATS": 0.0003332839379481853
                 },
                 "Latitude": -16.49635,
-                "Longitude": 27.982493000000002
+                "Longitude": 27.982493
             },
             "NodeID": 60
         },
@@ -303,8 +301,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.00045660998764349137
                 },
-                "Latitude": -16.496632000000002,
-                "Longitude": 27.979068000000002
+                "Latitude": -16.496632,
+                "Longitude": 27.979068
             },
             "NodeID": 63
         },
@@ -316,7 +314,7 @@
                     "ALL_HABITATS": 0.00012937601662164872
                 },
                 "Latitude": -16.4971,
-                "Longitude": 27.982672999999998
+                "Longitude": 27.982673
             },
             "NodeID": 64
         },
@@ -327,8 +325,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.00042671010024444855
                 },
-                "Latitude": -16.494751999999998,
-                "Longitude": 28.001957999999998
+                "Latitude": -16.494752,
+                "Longitude": 28.001958
             },
             "NodeID": 69
         },
@@ -337,9 +335,9 @@
                 "InitialPopulation": 3,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00058059385773232388
+                    "ALL_HABITATS": 0.0005805938577323239
                 },
-                "Latitude": -16.493410000000001,
+                "Latitude": -16.49341,
                 "Longitude": 27.983345
             },
             "NodeID": 70
@@ -352,7 +350,7 @@
                     "ALL_HABITATS": 0.0012642614927587624
                 },
                 "Latitude": -16.495262,
-                "Longitude": 27.982341999999999
+                "Longitude": 27.982342
             },
             "NodeID": 71
         },
@@ -363,7 +361,7 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0011702420020072196
                 },
-                "Latitude": -16.491244999999999,
+                "Latitude": -16.491245,
                 "Longitude": 27.9834
             },
             "NodeID": 87
@@ -373,10 +371,10 @@
                 "InitialPopulation": 2,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00029348575396619927
+                    "ALL_HABITATS": 0.0002934857539661993
                 },
-                "Latitude": -16.494302999999999,
-                "Longitude": 27.983021999999998
+                "Latitude": -16.494303,
+                "Longitude": 27.983022
             },
             "NodeID": 94
         },
@@ -387,8 +385,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0019232187832714412
                 },
-                "Latitude": -16.494077999999998,
-                "Longitude": 27.977136999999999
+                "Latitude": -16.494078,
+                "Longitude": 27.977137
             },
             "NodeID": 95
         },
@@ -399,8 +397,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.000358165795877473
                 },
-                "Latitude": -16.493677000000002,
-                "Longitude": 27.978097000000002
+                "Latitude": -16.493677,
+                "Longitude": 27.978097
             },
             "NodeID": 96
         },
@@ -411,7 +409,7 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.003165193864993603
                 },
-                "Latitude": -16.497796999999998,
+                "Latitude": -16.497797,
                 "Longitude": 27.986988
             },
             "NodeID": 103
@@ -421,10 +419,10 @@
                 "InitialPopulation": 6,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.0042686338451902988
+                    "ALL_HABITATS": 0.004268633845190299
                 },
-                "Latitude": -16.492972999999999,
-                "Longitude": 27.992184999999999
+                "Latitude": -16.492973,
+                "Longitude": 27.992185
             },
             "NodeID": 105
         },
@@ -435,8 +433,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.00018819171368821905
                 },
-                "Latitude": -16.497098000000001,
-                "Longitude": 27.982700000000001
+                "Latitude": -16.497098,
+                "Longitude": 27.9827
             },
             "NodeID": 107
         },
@@ -447,8 +445,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.00023082179898780518
                 },
-                "Latitude": -16.496327000000001,
-                "Longitude": 27.982462000000002
+                "Latitude": -16.496327,
+                "Longitude": 27.982462
             },
             "NodeID": 110
         },
@@ -459,8 +457,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0007724223834113859
                 },
-                "Latitude": -16.493072000000002,
-                "Longitude": 27.982752000000001
+                "Latitude": -16.493072,
+                "Longitude": 27.982752
             },
             "NodeID": 114
         },
@@ -471,8 +469,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.00034459047224308435
                 },
-                "Latitude": -16.491821999999999,
-                "Longitude": 27.977181999999999
+                "Latitude": -16.491822,
+                "Longitude": 27.977182
             },
             "NodeID": 118
         },
@@ -481,10 +479,10 @@
                 "InitialPopulation": 3,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00061579401272022095
+                    "ALL_HABITATS": 0.000615794012720221
                 },
-                "Latitude": -16.494617000000002,
-                "Longitude": 27.983937999999998
+                "Latitude": -16.494617,
+                "Longitude": 27.983938
             },
             "NodeID": 122
         },
@@ -493,10 +491,10 @@
                 "InitialPopulation": 4,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.0020696467843036559
+                    "ALL_HABITATS": 0.002069646784303656
                 },
-                "Latitude": -16.495101999999999,
-                "Longitude": 27.987722000000002
+                "Latitude": -16.495102,
+                "Longitude": 27.987722
             },
             "NodeID": 127
         },
@@ -507,7 +505,7 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0010322642697411233
                 },
-                "Latitude": -16.497105000000001,
+                "Latitude": -16.497105,
                 "Longitude": 27.979222
             },
             "NodeID": 130
@@ -517,10 +515,10 @@
                 "InitialPopulation": 3,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00090334737195041891
+                    "ALL_HABITATS": 0.0009033473719504189
                 },
-                "Latitude": -16.493155000000002,
-                "Longitude": 27.980440000000002
+                "Latitude": -16.493155,
+                "Longitude": 27.98044
             },
             "NodeID": 140
         },
@@ -529,10 +527,10 @@
                 "InitialPopulation": 7,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00050008061546434439
+                    "ALL_HABITATS": 0.0005000806154643444
                 },
-                "Latitude": -16.492508000000001,
-                "Longitude": 27.993908000000001
+                "Latitude": -16.492508,
+                "Longitude": 27.993908
             },
             "NodeID": 141
         },
@@ -565,10 +563,10 @@
                 "InitialPopulation": 3,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00092648698374140249
+                    "ALL_HABITATS": 0.0009264869837414025
                 },
                 "Latitude": -16.4938,
-                "Longitude": 27.980972999999999
+                "Longitude": 27.980973
             },
             "NodeID": 150
         },
@@ -579,8 +577,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.00021595633217124765
                 },
-                "Latitude": -16.496621999999999,
-                "Longitude": 27.985703000000001
+                "Latitude": -16.496622,
+                "Longitude": 27.985703
             },
             "NodeID": 151
         },
@@ -591,8 +589,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0014238413231900712
                 },
-                "Latitude": -16.498322999999999,
-                "Longitude": 27.987214999999999
+                "Latitude": -16.498323,
+                "Longitude": 27.987215
             },
             "NodeID": 152
         },
@@ -603,8 +601,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0044128829273687754
                 },
-                "Latitude": -16.496096999999999,
-                "Longitude": 27.991067999999999
+                "Latitude": -16.496097,
+                "Longitude": 27.991068
             },
             "NodeID": 153
         },
@@ -616,7 +614,7 @@
                     "ALL_HABITATS": 0.0014082268974312546
                 },
                 "Latitude": -16.494688,
-                "Longitude": 27.982977999999999
+                "Longitude": 27.982978
             },
             "NodeID": 156
         },
@@ -627,8 +625,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0016016309677672428
                 },
-                "Latitude": -16.493062999999999,
-                "Longitude": 27.982313000000001
+                "Latitude": -16.493063,
+                "Longitude": 27.982313
             },
             "NodeID": 161
         },
@@ -639,7 +637,7 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0015093940843806143
                 },
-                "Latitude": -16.495370000000001,
+                "Latitude": -16.49537,
                 "Longitude": 27.979025
             },
             "NodeID": 171
@@ -649,10 +647,10 @@
                 "InitialPopulation": 1,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00056968615882054463
+                    "ALL_HABITATS": 0.0005696861588205446
                 },
-                "Latitude": -16.495661999999999,
-                "Longitude": 27.989128000000001
+                "Latitude": -16.495662,
+                "Longitude": 27.989128
             },
             "NodeID": 179
         },
@@ -664,7 +662,7 @@
                     "ALL_HABITATS": 0.00029619545440171327
                 },
                 "Latitude": -16.494802,
-                "Longitude": 28.001373000000001
+                "Longitude": 28.001373
             },
             "NodeID": 182
         },
@@ -675,8 +673,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.00016803083796198114
                 },
-                "Latitude": -16.498408000000001,
-                "Longitude": 27.986218000000001
+                "Latitude": -16.498408,
+                "Longitude": 27.986218
             },
             "NodeID": 183
         },
@@ -685,10 +683,10 @@
                 "InitialPopulation": 9,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00059481563742981472
+                    "ALL_HABITATS": 0.0005948156374298147
                 },
-                "Latitude": -16.496296999999998,
-                "Longitude": 27.981217999999998
+                "Latitude": -16.496297,
+                "Longitude": 27.981218
             },
             "NodeID": 185
         },
@@ -697,10 +695,10 @@
                 "InitialPopulation": 4,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00024003910390054111
+                    "ALL_HABITATS": 0.0002400391039005411
                 },
-                "Latitude": -16.497122000000001,
-                "Longitude": 27.983021999999998
+                "Latitude": -16.497122,
+                "Longitude": 27.983022
             },
             "NodeID": 188
         },
@@ -711,8 +709,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0015633005149045878
                 },
-                "Latitude": -16.497057000000002,
-                "Longitude": 27.983657000000001
+                "Latitude": -16.497057,
+                "Longitude": 27.983657
             },
             "NodeID": 195
         },
@@ -721,10 +719,10 @@
                 "InitialPopulation": 4,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00069236634163665118
+                    "ALL_HABITATS": 0.0006923663416366512
                 },
-                "Latitude": -16.492236999999999,
-                "Longitude": 27.981729999999999
+                "Latitude": -16.492237,
+                "Longitude": 27.98173
             },
             "NodeID": 196
         },
@@ -733,10 +731,10 @@
                 "InitialPopulation": 7,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00085922082582428629
+                    "ALL_HABITATS": 0.0008592208258242863
                 },
-                "Latitude": -16.493932000000001,
-                "Longitude": 27.983274999999999
+                "Latitude": -16.493932,
+                "Longitude": 27.983275
             },
             "NodeID": 197
         },
@@ -747,8 +745,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.001684134935218235
                 },
-                "Latitude": -16.494586999999999,
-                "Longitude": 27.979842999999999
+                "Latitude": -16.494587,
+                "Longitude": 27.979843
             },
             "NodeID": 206
         },
@@ -757,10 +755,10 @@
                 "InitialPopulation": 6,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00050267348952019405
+                    "ALL_HABITATS": 0.000502673489520194
                 },
-                "Latitude": -16.494129999999998,
-                "Longitude": 27.979386999999999
+                "Latitude": -16.49413,
+                "Longitude": 27.979387
             },
             "NodeID": 210
         },
@@ -772,7 +770,7 @@
                     "ALL_HABITATS": 0.00044318908626048777
                 },
                 "Latitude": -16.495338,
-                "Longitude": 27.981632999999999
+                "Longitude": 27.981633
             },
             "NodeID": 214
         },
@@ -783,7 +781,7 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0013065264537760453
                 },
-                "Latitude": -16.496662000000001,
+                "Latitude": -16.496662,
                 "Longitude": 27.981838
             },
             "NodeID": 221
@@ -795,7 +793,7 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.00037739295106860955
                 },
-                "Latitude": -16.491312000000001,
+                "Latitude": -16.491312,
                 "Longitude": 27.978133
             },
             "NodeID": 224
@@ -807,7 +805,7 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0019029943818995678
                 },
-                "Latitude": -16.494378000000001,
+                "Latitude": -16.494378,
                 "Longitude": 27.978517
             },
             "NodeID": 227
@@ -819,7 +817,7 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.00021196057733269302
                 },
-                "Latitude": -16.495045000000001,
+                "Latitude": -16.495045,
                 "Longitude": 27.985173
             },
             "NodeID": 240
@@ -831,8 +829,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0024601064860004067
                 },
-                "Latitude": -16.494292999999999,
-                "Longitude": 27.992415000000001
+                "Latitude": -16.494293,
+                "Longitude": 27.992415
             },
             "NodeID": 244
         },
@@ -843,8 +841,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0009633525706028343
                 },
-                "Latitude": -16.492930000000001,
-                "Longitude": 27.982119999999998
+                "Latitude": -16.49293,
+                "Longitude": 27.98212
             },
             "NodeID": 247
         },
@@ -855,8 +853,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0017969788113078107
                 },
-                "Latitude": -16.495056999999999,
-                "Longitude": 27.980136999999999
+                "Latitude": -16.495057,
+                "Longitude": 27.980137
             },
             "NodeID": 258
         },
@@ -865,10 +863,10 @@
                 "InitialPopulation": 4,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00063121430892657199
+                    "ALL_HABITATS": 0.000631214308926572
                 },
                 "Latitude": -16.493468,
-                "Longitude": 27.983505000000001
+                "Longitude": 27.983505
             },
             "NodeID": 259
         },
@@ -880,7 +878,7 @@
                     "ALL_HABITATS": 0.0015390874066522724
                 },
                 "Latitude": -16.495255,
-                "Longitude": 27.987742000000001
+                "Longitude": 27.987742
             },
             "NodeID": 263
         },
@@ -889,7 +887,7 @@
                 "InitialPopulation": 12,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00088299092216528386
+                    "ALL_HABITATS": 0.0008829909221652839
                 },
                 "Latitude": -16.494678,
                 "Longitude": 27.981133
@@ -901,10 +899,10 @@
                 "InitialPopulation": 3,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00027352452477648879
+                    "ALL_HABITATS": 0.0002735245247764888
                 },
                 "Latitude": -16.496295,
-                "Longitude": 27.983702000000001
+                "Longitude": 27.983702
             },
             "NodeID": 269
         },
@@ -913,10 +911,10 @@
                 "InitialPopulation": 7,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00052065032849032489
+                    "ALL_HABITATS": 0.0005206503284903249
                 },
                 "Latitude": -16.492967,
-                "Longitude": 27.997523000000001
+                "Longitude": 27.997523
             },
             "NodeID": 270
         },
@@ -925,10 +923,10 @@
                 "InitialPopulation": 5,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.0012276686361064649
+                    "ALL_HABITATS": 0.001227668636106465
                 },
-                "Latitude": -16.493182999999998,
-                "Longitude": 27.979991999999999
+                "Latitude": -16.493183,
+                "Longitude": 27.979992
             },
             "NodeID": 275
         },
@@ -937,10 +935,10 @@
                 "InitialPopulation": 4,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.0012738093154142851
+                    "ALL_HABITATS": 0.001273809315414285
                 },
-                "Latitude": -16.493919999999999,
-                "Longitude": 27.977478000000001
+                "Latitude": -16.49392,
+                "Longitude": 27.977478
             },
             "NodeID": 276
         },
@@ -949,10 +947,10 @@
                 "InitialPopulation": 3,
                 "InitialVectors": 10000,
                 "LarvalHabitatMultiplier": {
-                    "ALL_HABITATS": 0.00028662566345308038
+                    "ALL_HABITATS": 0.0002866256634530804
                 },
-                "Latitude": -16.494267000000001,
-                "Longitude": 27.993839999999999
+                "Latitude": -16.494267,
+                "Longitude": 27.99384
             },
             "NodeID": 277
         },
@@ -964,7 +962,7 @@
                     "ALL_HABITATS": 0.0003757035371967611
                 },
                 "Latitude": -16.498517,
-                "Longitude": 27.986678000000001
+                "Longitude": 27.986678
             },
             "NodeID": 281
         },
@@ -975,8 +973,8 @@
                 "LarvalHabitatMultiplier": {
                     "ALL_HABITATS": 0.0010007299127834262
                 },
-                "Latitude": -16.491849999999999,
-                "Longitude": 27.977157999999999
+                "Latitude": -16.49185,
+                "Longitude": 27.977158
             },
             "NodeID": 283
         }

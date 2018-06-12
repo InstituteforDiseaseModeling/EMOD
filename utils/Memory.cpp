@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -28,6 +28,7 @@ namespace Kernel
     uint64_t MemoryGauge::m_WorkingSetHaltMB    = 8000;
     uint64_t MemoryGauge::m_LastPeakSizeMB      = 7000;
 
+    GET_SCHEMA_STATIC_WRAPPER_IMPL( MemoryGauge, MemoryGauge )
 
     MemoryGauge::MemoryGauge()
     {
@@ -119,18 +120,18 @@ namespace Kernel
 
         if( log_data )
         {
-            EnvPtr->Log->LogF( log_level, _module, "Working-set              : %uMB\n", meminfo.WorkingSetSize     >> 20 );
-            EnvPtr->Log->LogF( log_level, _module, "Peak working-set         : %uMB\n", meminfo.PeakWorkingSetSize >> 20 );
-            EnvPtr->Log->LogF( log_level, _module, "Pagefile Usage           : %uMB\n", meminfo.PagefileUsage      >> 20 );
-            EnvPtr->Log->LogF( log_level, _module, "Peak Pagefile Usage      : %uMB\n", meminfo.PeakPagefileUsage  >> 20 );
-            EnvPtr->Log->LogF( log_level, _module, "Private Usage            : %uMB\n", meminfo.PrivateUsage       >> 20 );
-            EnvPtr->Log->LogF( log_level, _module, "Page Fault Count         : %u\n",   meminfo.PageFaultCount );
+            EnvPtr->Log->Log( log_level, _module, "Working-set              : %uMB\n", meminfo.WorkingSetSize     >> 20 );
+            EnvPtr->Log->Log( log_level, _module, "Peak working-set         : %uMB\n", meminfo.PeakWorkingSetSize >> 20 );
+            EnvPtr->Log->Log( log_level, _module, "Pagefile Usage           : %uMB\n", meminfo.PagefileUsage      >> 20 );
+            EnvPtr->Log->Log( log_level, _module, "Peak Pagefile Usage      : %uMB\n", meminfo.PeakPagefileUsage  >> 20 );
+            EnvPtr->Log->Log( log_level, _module, "Private Usage            : %uMB\n", meminfo.PrivateUsage       >> 20 );
+            EnvPtr->Log->Log( log_level, _module, "Page Fault Count         : %u\n",   meminfo.PageFaultCount );
 
-            EnvPtr->Log->LogF( log_level, _module, "Physical memory load     : %u%%\n", memstatus.dwMemoryLoad );
-            EnvPtr->Log->LogF( log_level, _module, "Available physical memory: %uMB\n", memstatus.ullAvailPhys     >> 20 );
-            EnvPtr->Log->LogF( log_level, _module, "Total physical memory    : %uMB\n", memstatus.ullTotalPhys     >> 20 );
-            EnvPtr->Log->LogF( log_level, _module, "Total Page File          : %uMB\n", memstatus.ullTotalPageFile >> 20 );
-            EnvPtr->Log->LogF( log_level, _module, "Available Page File      : %uMB\n", memstatus.ullAvailPageFile >> 20 );
+            EnvPtr->Log->Log( log_level, _module, "Physical memory load     : %u%%\n", memstatus.dwMemoryLoad );
+            EnvPtr->Log->Log( log_level, _module, "Available physical memory: %uMB\n", memstatus.ullAvailPhys     >> 20 );
+            EnvPtr->Log->Log( log_level, _module, "Total physical memory    : %uMB\n", memstatus.ullTotalPhys     >> 20 );
+            EnvPtr->Log->Log( log_level, _module, "Total Page File          : %uMB\n", memstatus.ullTotalPageFile >> 20 );
+            EnvPtr->Log->Log( log_level, _module, "Available Page File      : %uMB\n", memstatus.ullAvailPageFile >> 20 );
         }
 
         if( m_WorkingSetHaltMB <= current_working_set_mb )

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -46,10 +46,31 @@ namespace Kernel
         virtual void Update(float dt=0.0) override;
 
         // IVectorSusceptibilityContext interface
+        virtual void  SetRelativeBitingRate( float rate ) override;
         virtual float GetRelativeBitingRate(void) const override;
 
         static float LinearBitingFunction(float);
-        static float SurfaceAreaBitingFunction(float);
+
+        // The code for this function is in the header file so that it can be easily used by DLLs
+        static float SurfaceAreaBitingFunction( float _age )
+        {
+            // piecewise linear rising from birth to age 2
+            // and then shallower slope to age 20
+            float newborn_risk = 0.07f;
+            float two_year_old_risk = 0.23f;
+            if( _age < 2 * DAYSPERYEAR )
+            {
+                return newborn_risk + _age * (two_year_old_risk - newborn_risk) / (2 * DAYSPERYEAR);
+            }
+
+            if( _age < 20 * DAYSPERYEAR )
+            {
+                return two_year_old_risk + (_age - 2 * DAYSPERYEAR) * (1 - two_year_old_risk) / ((20 - 2) * DAYSPERYEAR);
+            }
+
+            return 1.0f;
+        }
+
 
     protected:
         SusceptibilityVector();

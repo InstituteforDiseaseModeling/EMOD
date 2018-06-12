@@ -57,7 +57,7 @@
         "Birth_Rate_Dependence": "FIXED_BIRTH_RATE", 
         "Enable_Birth": 1, 
         "Enable_Demographics_Reporting": 0, 
-        "Enable_Demographics_Other": 1, 
+        "Enable_Demographics_Risk": 1, 
         "Demographics_Filenames": [ "Madagascar_Nosibe_2.5arcmin_demographics.json", "Madagascar_Nosibe_2.5arcmin_demographics_overlay.json" ], 
         "Enable_Demographics_Birth": 1
     }, 

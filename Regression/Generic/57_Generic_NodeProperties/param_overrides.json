@@ -1,20 +1,22 @@
 {
-     "Default_Config_Path": "defaults/generic_default_config.json", 
-     "parameters": {
-        "Config_Name": "57_Generic_NodeProperties", 
-        "Geography": "SamplesInput", 
-        "Run_Number": 1, 
-        "Simulation_Duration": 90,
-
-        "Custom_Reports_Filename" : "custom_reports.json",
-        "Demographics_Filenames": ["demographics_node_properties.json"],
-
-        "Acquisition_Blocking_Immunity_Duration_Before_Decay": 10, 
-        "Base_Infectivity": 0.5, 
-        "Incubation_Period_Distribution": "EXPONENTIAL_DURATION", 
-        "Transmission_Blocking_Immunity_Duration_Before_Decay": 10, 
-
+    "Default_Config_Path": "defaults/generic_default_config.json",
+    "parameters": {
         ".Disable_IP_Whitelist": 1,
-        "logLevel_JsonConfigurable" : "WARNING"
-     }
+        "Acquisition_Blocking_Immunity_Duration_Before_Decay": 10,
+        "Base_Infectivity": 0.5,
+        "Config_Name": "57_Generic_NodeProperties",
+        "Custom_Reports_Filename": "custom_reports.json",
+        "DEMOGRAPHICS": {
+            "Enable_Initial_Prevalence": 1
+        },
+        "Demographics_Filenames": [
+            "demographics_node_properties.json"
+        ],
+        "Geography": "SamplesInput",
+        "Incubation_Period_Distribution": "EXPONENTIAL_DURATION",
+        "Run_Number": 1,
+        "Simulation_Duration": 90,
+        "Transmission_Blocking_Immunity_Duration_Before_Decay": 10,
+        "logLevel_JsonConfigurable": "WARNING"
+    }
 }

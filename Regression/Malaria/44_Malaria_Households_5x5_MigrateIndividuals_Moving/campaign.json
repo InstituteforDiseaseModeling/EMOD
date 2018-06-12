@@ -2,8 +2,29 @@
     "Use_Defaults": 1,
     "Events": [
         {
+            "COMMENT": "Outbreak in Node 26 where there are no people.  Should not see any infections.", 
             "class": "CampaignEvent",
-            "Start_Day": 5, 
+            "Start_Day": 50, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [ 26 ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Outbreak_Source": "ImportCases",
+                    "Antigen": 0, 
+                    "Genome": 0
+                }
+            }
+        },
+        {
+            "COMMENT" : "Move pepole to node 26.  Still no infections",
+            "class": "CampaignEvent",
+            "Start_Day": 200, 
             "Nodeset_Config": {
                 "class": "NodeSetNodeList",
                 "Node_List": [ 1, 2, 3, 4, 6, 7, 8, 9, 10 ]
@@ -25,12 +46,32 @@
             }
         },
         {
-            "Event_Name": "Outbreak", 
+            "COMMENT": "Outbreak in nodes 1 and 2 where there are no people.  Should still be no infections.", 
             "class": "CampaignEvent",
-            "Start_Day": 30, 
+            "Start_Day": 300, 
             "Nodeset_Config": {
                 "class": "NodeSetNodeList", 
                 "Node_List": [ 1, 2 ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Outbreak_Source": "ImportCases",
+                    "Antigen": 0, 
+                    "Genome": 0
+                }
+            }
+        },
+        {
+            "COMMENT": "Outbreak in Node 26 where there are now people.  Should see infections in node 26 only.", 
+            "class": "CampaignEvent",
+            "Start_Day": 400, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList", 
+                "Node_List": [ 26 ]
             }, 
             "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",

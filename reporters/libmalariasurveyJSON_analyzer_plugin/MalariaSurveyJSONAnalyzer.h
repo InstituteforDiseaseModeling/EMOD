@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -26,11 +26,18 @@ namespace Kernel
         float initial_age;
         float local_birthday;
         std::vector< std::pair<int,int> > strain_ids;
+        std::vector<std::string> ip_data;
         std::vector<double> true_asexual_density;
         std::vector<double> true_gametocyte_density;
+        std::vector<double> smeared_true_asexual_density;
+        std::vector<double> smeared_true_gametocyte_density;
         std::vector<double> asexual_parasite_density;
         std::vector<double> gametocyte_density;
+        std::vector<double> smeared_asexual_parasite_density;
+        std::vector<double> smeared_gametocyte_density;
         std::vector<double> infectiousness;
+        std::vector<double> infectiousness_smeared;
+        std::vector<double> infectiousness_age_scaled;
         std::vector<double> pos_asexual_fields;
         std::vector<double> pos_gametocyte_fields;
         std::vector<double> fever;
@@ -68,6 +75,7 @@ namespace Kernel
         virtual ~MalariaSurveyJSONAnalyzer();
 
         // BaseEventReportIntervalOutput
+        virtual void Initialize( unsigned int nrmSize ) override;
         virtual bool Configure( const Configuration* ) override;
         virtual bool notifyOnEvent( IIndividualHumanEventContext *context, const EventTrigger& trigger ) override;
 
@@ -75,6 +83,7 @@ namespace Kernel
         // BaseEventReportIntervalOutput
         virtual void SerializeOutput( float currentTime, IJsonObjectAdapter& output, JSerializer& js ) override;
 
+        std::string m_IPKeyToCollect;
         MalariaPatientMap* m_pPatientMap;
     };
 }

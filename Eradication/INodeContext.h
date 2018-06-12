@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -61,7 +61,6 @@ namespace Kernel
                                      const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) = 0;
 
         virtual void SetContextTo( ISimulationContext* ) = 0;
-        virtual void SetMonteCarloParameters(float indsamplerate =.05, int nummininf = 0) = 0;
         virtual void SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory, bool white_list_enabled ) = 0;
         virtual void PopulateFromDemographics() = 0;
         virtual void InitializeTransmissionGroupPopulations() = 0;
@@ -76,9 +75,8 @@ namespace Kernel
         virtual void ExposeIndividual(IInfectable* candidate, const TransmissionGroupMembership_t* individual, float dt) = 0;
         virtual void DepositFromIndividual( const IStrainIdentity& strain_IDs, float contagion_quantity, const TransmissionGroupMembership_t* individual) = 0;
         virtual void GetGroupMembershipForIndividual(const RouteList_t& route, tProperties* properties, TransmissionGroupMembership_t* membershipOut ) = 0;
-        //virtual float GetMaxInfectionProb( TransmissionRoute::Enum tx_route )             const = 0;
         virtual void UpdateTransmissionGroupPopulation(const TransmissionGroupMembership_t* membership, float size_changes,float mc_weight) = 0;
-        virtual std::map< std::string, float > GetTotalContagion() const = 0; // developed for Typhoid
+        virtual std::map< std::string, float > GetContagionByRoute() const = 0; // developed for Typhoid/Environmental
         virtual float GetTotalContagion(const TransmissionGroupMembership_t* membership) = 0;
         virtual const RouteList_t& GetTransmissionRoutes( ) const = 0;
         
@@ -105,6 +103,7 @@ namespace Kernel
         virtual const Climate* GetLocalWeather() const = 0;
         virtual long int GetPossibleMothers()  const = 0;
         virtual float GetMeanAgeInfection()    const = 0;
+        virtual float GetNonDiseaseMortalityRateByAgeAndSex( float age, Gender::Enum sex ) const = 0;
 
         // These methods are not const because they will extract the value from the demographics
         // if it has not been done yet.
@@ -128,12 +127,19 @@ namespace Kernel
         virtual float GetBasePopulationScaleFactor() const = 0;
         virtual ProbabilityNumber GetProbMaternalTransmission() const = 0;
 
+        virtual float GetMaxInfectionProb( TransmissionRoute::Enum tx_route )        const = 0;
+
+        virtual float initiatePregnancyForIndividual( int individual_id, float dt ) = 0;
+        virtual bool updatePregnancyForIndividual( int individual_id, float duration ) = 0;
+        virtual void populateNewIndividualsByBirth(int count_new_individuals = 100) = 0;
+
         virtual const NodeDemographicsDistribution* GetImmunityDistribution()        const = 0;
         virtual const NodeDemographicsDistribution* GetFertilityDistribution()       const = 0;
         virtual const NodeDemographicsDistribution* GetMortalityDistribution()       const = 0;
         virtual const NodeDemographicsDistribution* GetMortalityDistributionMale()   const = 0;
         virtual const NodeDemographicsDistribution* GetMortalityDistributionFemale() const = 0;
         virtual const NodeDemographicsDistribution* GetAgeDistribution()             const = 0;
+
     };
 }
 

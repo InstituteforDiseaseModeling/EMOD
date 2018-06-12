@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -46,13 +46,17 @@ namespace Kernel
     {
         GET_SCHEMA_STATIC_WRAPPER(IndividualHumanConfig)
         friend class Simulation;
+        friend class IndividualHuman;
+        friend class IndividualHumanTyphoid;
+        friend class Node;
+        friend class IndividualHumanMalariaConfig;
+        friend class IndividualHumanPolioConfig;
 
     public:
         static bool IsAdultAge( float years );
         static bool CanSupportFamilyTrips( IMigrationInfoFactory* pmi );
 
     protected:
-        friend class IndividualHuman;
 
         static bool aging;
         static float min_adult_age_years ;
@@ -74,17 +78,17 @@ namespace Kernel
         static float family_roundtrip_duration_rate;
 
         static int infection_updates_per_tstep;
-        static bool immunity;
+        static bool enable_immunity;
         static int max_ind_inf;
         static bool superinfection;
-        static float x_othermortality;
         
         // From SimConfig
         static MigrationStructure::Enum                             migration_structure;                              // MIGRATION_STRUCTURE
-        static VitalDeathDependence::Enum                           vital_death_dependence;                           // Vital_Death_Dependence
-        static bool vital_dynamics;
+
+        static bool  enable_skipping;
 
         virtual bool Configure( const Configuration* config ) override;
+        void PrintConfigs() const;
 
         void RegisterRandomWalkDiffusionParameters();
         void RegisterSingleRoundTripsParameters();
@@ -107,7 +111,7 @@ namespace Kernel
     public:
 
         static IndividualHuman *CreateHuman();
-        static IndividualHuman *CreateHuman(INodeContext *context, suids::suid id, float MCweight = 1.0f, float init_age = 0.0f, int gender = 0, float init_poverty = 0.5f);
+        static IndividualHuman *CreateHuman(INodeContext *context, suids::suid id, float MCweight = 1.0f, float init_age = 0.0f, int gender = 0);
         virtual void InitializeHuman() override;
         virtual ~IndividualHuman();
 
@@ -129,8 +133,8 @@ namespace Kernel
 
         // IIndividualHumanEventContext methods
         virtual bool   IsPregnant()           const override { return is_pregnant; };
-        virtual inline int GetAbovePoverty()  const override { return above_poverty; } // financially secure = 1, less financially secure = 0
         virtual double GetAge()               const override { return m_age; }
+        virtual float GetImmuneFailage()      const override;
         inline float getAgeInYears()          const {return floor(GetAge()/DAYSPERYEAR);}
         virtual int    GetGender()            const override { return m_gender; }
         virtual double GetMonteCarloWeight()  const override { return m_mc_weight; }
@@ -172,13 +176,13 @@ namespace Kernel
         // Initialization
         virtual void SetInitialInfections(int init_infs) override;
         virtual void SetParameters( INodeContext* pParent, float infsample, float imm_mod, float risk_mod, float mig_mod) override; // specify each parameter, default version of SetParams()
-        virtual void CreateSusceptibility(float imm_mod=1.0, float risk_mod=1.0);
+        virtual void CreateSusceptibility(float susceptibility_mod=1.0, float risk_mod=1.0);
         virtual void setupMaternalAntibodies(IIndividualHumanContext* mother, INodeContext* node) override;
         virtual void SetMigrationModifier( float modifier ) override { migration_mod = modifier; }
 
         // Infections
         virtual void ExposeToInfectivity(float dt, const TransmissionGroupMembership_t* transmissionGroupMembership);
-        virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route = TransmissionRoute::TRANSMISSIONROUTE_ALL ) override;
+        virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route = TransmissionRoute::TRANSMISSIONROUTE_CONTACT ) override;
         virtual void AcquireNewInfection( const IStrainIdentity *infstrain = nullptr, int incubation_period_override = -1) override;
 
         virtual const infection_list_t &GetInfections() const override;
@@ -222,7 +226,6 @@ namespace Kernel
         int   m_gender;
         float m_mc_weight;
         float m_daily_mortality_rate;
-        int   above_poverty;     // financially secure = 1, less financially secure = 0
         bool  is_pregnant;      // pregnancy variables for vital_birth_dependence==INDIVIDUAL_PREGNANCIES
         float pregnancy_timer;
 
@@ -271,7 +274,7 @@ namespace Kernel
         INodeContext* parent;   // Access back to node/simulation methods
 
         IndividualHuman(INodeContext *context);
-        IndividualHuman(suids::suid id = suids::nil_suid(), float MCweight = 1.0f, float init_age = 0.0f, int gender = 0, float init_poverty = 0.5f);
+        IndividualHuman(suids::suid id = suids::nil_suid(), float MCweight = 1.0f, float init_age = 0.0f, int gender = 0);
 
         virtual IInfection* createInfection(suids::suid _suid); // factory method (overridden in derived classes)
         virtual void setupInterventionsContainer();            // derived classes can customize the container, and hence the interventions supported, by overriding this method
@@ -287,9 +290,8 @@ namespace Kernel
         virtual void PropagateContextToDependents();
         INodeTriggeredInterventionConsumer* broadcaster;
 
-
     private:
-
+        
         virtual IIndividualHumanContext* GetContextPointer();
 
         DECLARE_SERIALIZABLE(IndividualHuman);

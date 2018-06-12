@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -38,8 +38,8 @@ namespace Kernel
         HANDLE_INTERFACE(IIndividualHumanVectorContext)
     END_QUERY_INTERFACE_DERIVED(IndividualHumanVector, IndividualHuman)
 
-    IndividualHumanVector::IndividualHumanVector(suids::suid _suid, double monte_carlo_weight, double initial_age, int gender, double initial_poverty)
-    : Kernel::IndividualHuman(_suid, float(monte_carlo_weight), float(initial_age), gender, float(initial_poverty))
+    IndividualHumanVector::IndividualHumanVector(suids::suid _suid, double monte_carlo_weight, double initial_age, int gender)
+    : Kernel::IndividualHuman(_suid, float(monte_carlo_weight), float(initial_age), gender)
     , m_strain_exposure()
     , m_total_exposure(0.0f)
     , vector_susceptibility(nullptr)
@@ -56,9 +56,9 @@ namespace Kernel
     {
     }
 
-    IndividualHumanVector *IndividualHumanVector::CreateHuman(INodeContext *context, suids::suid id, double MCweight, double init_age, int gender, double init_poverty)
+    IndividualHumanVector *IndividualHumanVector::CreateHuman(INodeContext *context, suids::suid id, double MCweight, double init_age, int gender)
     {
-        Kernel::IndividualHumanVector *newhuman = _new_ Kernel::IndividualHumanVector(id, MCweight, init_age, gender, init_poverty);
+        Kernel::IndividualHumanVector *newhuman = _new_ Kernel::IndividualHumanVector(id, MCweight, init_age, gender);
 
         newhuman->SetContextTo(context);
         LOG_DEBUG_F( "Created human with age=%f\n", newhuman->m_age );
@@ -178,7 +178,7 @@ namespace Kernel
                 break;
         
             default:
-                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "transmission_route", transmission_route, "Stringified enum value not available" );
+                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "transmission_route", transmission_route, TransmissionRoute::pairs::lookup_key( transmission_route ) );
         }
 
         // Accumulate vector of pairs of strain ids and cumulative infection probability

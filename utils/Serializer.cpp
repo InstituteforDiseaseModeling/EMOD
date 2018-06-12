@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -50,6 +50,16 @@ namespace Kernel
         jsArrayRoot->EndArray();
     }
 
+    void JSerializer::JSerialize(const vector<uint32_t>& vectorUInt32, IJsonObjectAdapter* jsArrayRoot)
+    {
+        jsArrayRoot->BeginArray();
+        for (uint32_t entry : vectorUInt32)
+        {
+            jsArrayRoot->Add(entry);
+        }
+        jsArrayRoot->EndArray();
+    }
+
     void JSerializer::JSerialize(const vector<float>& vectorFloat, IJsonObjectAdapter* jsArrayRoot)
     {
         jsArrayRoot->BeginArray();
@@ -71,6 +81,16 @@ namespace Kernel
     }
 
     void JSerializer::JSerialize(const vector<vector<double>>& vectorVDouble, IJsonObjectAdapter* jsArrayRoot)
+    {
+        jsArrayRoot->BeginArray();
+        for (auto& inner : vectorVDouble)
+        {
+            JSerialize(inner, jsArrayRoot);
+        }
+        jsArrayRoot->EndArray();
+    }
+
+    void JSerializer::JSerialize(const vector<vector<vector<double>>>& vectorVDouble, IJsonObjectAdapter* jsArrayRoot)
     {
         jsArrayRoot->BeginArray();
         for (auto& inner : vectorVDouble)

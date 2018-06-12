@@ -36,10 +36,10 @@ else:
                             # Campaign
                             "CalendarEventCoordinator.cpp",
                             "CampaignEvent.cpp",
+                            "IncidenceEventCoordinator.cpp",
                             "InterventionsContainer.cpp",
                             "NChooserEventCoordinator.cpp",
                             "NodeEventContext.cpp",
-                            "SimpleEventCoordinator.cpp",
                             "SimulationEventContext.cpp",
                             "StandardEventCoordinator.cpp",
                             "CoverageByNodeEventCoordinator.cpp",
@@ -62,8 +62,6 @@ else:
 
                             # Generic
                             "GroupEventCoordinator.cpp",
-                            "MultiInterventionEventCoordinator.cpp",
-                            "NodeEventCoordinator.cpp",
                             "IMigrationInfo.cpp",
                             "Individual.cpp",
                             "Infection.cpp",
@@ -91,6 +89,7 @@ else:
                             "../interventions/MigrateIndividuals.cpp",
                             "../interventions/MigrateFamily.cpp",
                             "../interventions/MultiInterventionDistributor.cpp",
+                            "../interventions/MultiNodeInterventionDistributor.cpp",
                             "../interventions/NodeLevelHealthTriggeredIV.cpp",
                             "../interventions/NodePropertyValueChanger.cpp",
                             "../interventions/PropertyValueChanger.cpp",
@@ -102,11 +101,13 @@ else:
                             "../interventions/MultiEffectBoosterVaccine.cpp",
                             "../interventions/WaningEffectBox.cpp",
                             "../interventions/WaningEffectBoxExponential.cpp",
+                            "../interventions/WaningEffectCombo.cpp",
                             "../interventions/WaningEffectConstant.cpp",
                             "../interventions/WaningEffectExponential.cpp",
                             "../interventions/WaningEffectFactory.cpp",
                             "../interventions/WaningEffectMap.cpp",
                             "../interventions/WaningEffectMapAge.cpp",
+                            "../interventions/WaningEffectMapCount.cpp",
                             "../interventions/WaningEffectMapSeasonal.cpp",
                             "../interventions/WaningEffectRandomBox.cpp",
     ]
@@ -126,20 +127,19 @@ else:
                             "SpatialReportVector.cpp",
                             "SusceptibilityVector.cpp",
                             "VectorCohort.cpp",
-                            "VectorCohortAging.cpp",
                             "VectorCohortIndividual.cpp",
                             "VectorCohortWithHabitat.cpp",
                             "VectorHabitat.cpp",
                             "VectorInterventionsContainer.cpp",
                             "VectorMatingStructure.cpp",
                             "VectorPopulation.cpp",
-                            "VectorPopulationAging.cpp",
                             "VectorPopulationIndividual.cpp",
                             "VectorProbabilities.cpp",
                             "VectorSpeciesParameters.cpp",
                             "VectorSpeciesReport.cpp",
                             "VectorTransmissionGroups.cpp",
                             "../interventions/Bednet.cpp",
+                            "../interventions/BitingRisk.cpp",
                             "../interventions/HousingModification.cpp", 
                             "../interventions/HumanHostSeekingTrap.cpp", 
                             "../interventions/IndividualRepellent.cpp",
@@ -153,10 +153,10 @@ else:
     malariaSrcFiles = vectorSrcFiles + [
                             # Malaria
                             "BinnedReportMalaria.cpp",
+                            "GenomeMarkers.cpp",
                             "IndividualMalaria.cpp",
                             "InfectionMalaria.cpp",
                             "MalariaAntibody.cpp",
-                            "MalariaBarcode.cpp",
                             "MalariaDrugTypeParameters.cpp",
                             "MalariaInterventionsContainer.cpp",
                             "NodeMalaria.cpp",
@@ -165,8 +165,10 @@ else:
                             "SimulationMalaria.cpp",
                             "SpatialReportMalaria.cpp",
                             "SusceptibilityMalaria.cpp",
+                            "../interventions/AdherentDrug.cpp",
                             "../interventions/AntiMalarialDrug.cpp",
                             "../interventions/InputEIR.cpp",
+                            "../interventions/OutbreakIndividualMalaria.cpp",
                             "../interventions/MalariaChallenge.cpp",
                             "../interventions/MalariaDiagnostic.cpp",
                             "../interventions/RTSSVaccine.cpp",
@@ -247,18 +249,15 @@ else:
     tbSrcFiles = airborneSrcFiles + [
                             # Tuberculosis
                             "BinnedReportTB.cpp",
-                            "IndividualTB.cpp",
                             "InfectionTB.cpp",
                             "NodeTB.cpp",
                             "PropertyReportTB.cpp",
                             "ReportTB.cpp",
-                            "SimulationTB.cpp",
                             "SpatialReportTB.cpp",
                             "SusceptibilityTB.cpp",
                             "TBInterventionsContainer.cpp",
                             "TBDrugTypeParameters.cpp",
                             "../interventions/AntiTBDrug.cpp",
-                            "../interventions/AntiTBPropertyDependentDrug.cpp",
                             "../interventions/BCGVaccine.cpp",
                             "../interventions/ActiveDiagnostics.cpp",
                             "../interventions/DiagnosticsTreatNeg.cpp",
@@ -296,7 +295,6 @@ else:
                             "NodeSTI.cpp",
                             "ReportSTI.cpp",
                             "ReportUtilitiesSTI.cpp",
-                            "STIEventCoordinator.cpp",
                             "STIInterventionsContainer.cpp",
                             "SusceptibilitySTI.cpp",
                             "SimulationSTI.cpp",
@@ -362,7 +360,6 @@ else:
                             "../interventions/HIVDelayedIntervention.cpp",
                             "../interventions/HIVDrawBlood.cpp",
                             "../interventions/HIVPiecewiseByYearAndSexDiagnostic.cpp",
-                            "../interventions/HIVPreARTNotification.cpp",
                             "../interventions/HIVRandomChoice.cpp",
                             "../interventions/HIVRapidHIVDiagnostic.cpp", 
                             "../interventions/HIVSigmoidByYearAndSexDiagnostic.cpp",
@@ -424,11 +421,11 @@ else:
         coreSrcFiles.extend( malariaSrcFiles )
         coreSrcFiles.extend( hivSrcFiles )
         coreSrcFiles.extend( tbSrcFiles )
-        # coreSrcFiles.extend( tbhivSrcFiles )      # tbhiv not included in external release
-        # coreSrcFiles.extend( polioSrcFiles )      # polio not included in external release
-        # coreSrcFiles.extend( typhoidSrcFiles )    # typhoid not included in external release
+        coreSrcFiles.extend( tbhivSrcFiles )
+        coreSrcFiles.extend( polioSrcFiles )
+        coreSrcFiles.extend( typhoidSrcFiles )
         coreSrcFiles.extend( pyDemoSrcFiles )
-        # coreSrcFiles.extend( dengueSrcFiles )     # dengue not included in external release
+        coreSrcFiles.extend( dengueSrcFiles )
         # remove dupes: e.g., Polio and Typhoid pull in Environmental
         coreSrcFiles = list( set( coreSrcFiles ) )
 
@@ -442,7 +439,7 @@ else:
     if msvc is not None and msvc != False and msvc != "":
 
         bvar = env['BUILD_VARIANT'] + '|x64'
-        print "coreLib: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar
+        print( "coreLib: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar )
 
         env.MSVSProject(target = 'coreLibScons' + env['MSVSPROJECTSUFFIX'],
             srcs = coreSrcFiles,

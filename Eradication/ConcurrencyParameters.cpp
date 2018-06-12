@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -56,11 +56,11 @@ namespace Kernel
 
     bool ConcurrencyByProperty::Configure( const ::Configuration *json )
     {
-        initConfigTypeMap( "Prob_Extra_Relationship_Male",   &m_ProbExtraRelsMale,   STI_Prob_Extra_Relationship_Male_DESC_TEXT,   0.0, 1.0f, 0.0f );
-        initConfigTypeMap( "Prob_Extra_Relationship_Female", &m_ProbExtraRelsFemale, STI_Prob_Extra_Relationship_Female_DESC_TEXT, 0.0, 1.0f, 0.0f );
+        initConfigTypeMap( "Prob_Extra_Relationship_Male",   &m_ProbExtraRelsMale,   Prob_Extra_Relationship_Male_DESC_TEXT,   0.0, 1.0f, 0.0f );
+        initConfigTypeMap( "Prob_Extra_Relationship_Female", &m_ProbExtraRelsFemale, Prob_Extra_Relationship_Female_DESC_TEXT, 0.0, 1.0f, 0.0f );
 
-        initConfigTypeMap( "Max_Simultaneous_Relationships_Male",   &m_MaxSimultaneiousRelsMale,   STI_Max_Simultaneous_Relationships_Male_DESC_TEXT,   0, MAX_SLOTS, 1 );
-        initConfigTypeMap( "Max_Simultaneous_Relationships_Female", &m_MaxSimultaneiousRelsFemale, STI_Max_Simultaneous_Relationships_Female_DESC_TEXT, 0, MAX_SLOTS, 1 );
+        initConfigTypeMap( "Max_Simultaneous_Relationships_Male",   &m_MaxSimultaneiousRelsMale,   Max_Simultaneous_Relationships_Male_DESC_TEXT,   0, MAX_SLOTS, 1 );
+        initConfigTypeMap( "Max_Simultaneous_Relationships_Female", &m_MaxSimultaneiousRelsFemale, Max_Simultaneous_Relationships_Female_DESC_TEXT, 0, MAX_SLOTS, 1 );
 
         bool ret = JsonConfigurable::Configure( json );
         return ret;

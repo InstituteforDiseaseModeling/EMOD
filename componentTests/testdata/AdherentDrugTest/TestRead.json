@@ -1,0 +1,38 @@
+{
+    "class": "AdherentDrug",
+    "Cost_To_Consumer": 1,
+    "Drug_Type": "DHA",
+    "Dosing_Type": "FullTreatmentCourse",
+    "Adherence_Config" : {
+        "class" : "WaningEffectCombo",
+        "Effect_List" : [
+            {
+                "class": "WaningEffectMapLinearAge",
+                "Initial_Effect" : 1.0,
+                "Durability_Map" :
+                {
+                    "Times"  : [ 0.0,  12.99999,  13.0, 125.0 ],
+                    "Values" : [ 0.0,   0.0,       1.0,   1.0 ]
+                }
+            },
+            {
+                "class": "WaningEffectMapCount",
+                "Initial_Effect" : 1.0,
+                "Durability_Map" :
+                {
+                    "Times"  : [ 1.0, 2.0, 3.0 ],
+                    "Values" : [ 0.9, 0.7, 0.5 ]
+                }
+            },
+            {
+                "class": "WaningEffectBox",
+                "Initial_Effect": 0.5,
+                "Box_Duration" : 7
+            }
+        ]
+    },
+    "Non_Adherence_Options" : [ "STOP", "NEXT_UPDATE", "NEXT_DOSAGE_TIME", "LOST_TAKE_NEXT" ],
+    "Non_Adherence_Distribution" : [ 0.1, 0.7, 0.1, 0.1 ],
+    "Max_Dose_Consideration_Duration" : 14,
+    "Took_Dose_Event" : "TBActivation"
+}

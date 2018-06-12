@@ -9,7 +9,7 @@
                         "TEMPORARY_RAINFALL" : 0.05
                     }
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Nodeset_Config": {
                 "class": "NodeSetAll"
@@ -33,7 +33,7 @@
                         }
                     }
                 }, 
-                "class": "NodeEventCoordinator"
+                "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Nodeset_Config": {
                 "class": "NodeSetAll"

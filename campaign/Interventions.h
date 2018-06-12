@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -31,6 +31,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #define SMART_DRAW(x) \
         ( x > 0 && ( x == 1.0 || parent->GetRng()->e() < x ) )
 
+
 namespace Kernel
 {
     struct IIndividualHumanContext;
@@ -60,6 +61,7 @@ namespace Kernel
         virtual void SetExpired( bool isExpired ) = 0;
         virtual void ValidateSimType( const std::string& simTypeStr ) = 0;
         virtual IDistributableIntervention * Clone()  = 0;
+        virtual bool NeedsInfectiousLoopUpdate() const = 0;
 
         virtual ~IDistributableIntervention() { }
     };
@@ -128,6 +130,7 @@ namespace Kernel
         virtual bool Expired() override ;
         virtual void SetExpired( bool isExpired ) override;
         virtual void ValidateSimType( const std::string& simTypeStr ) override;
+        virtual bool NeedsInfectiousLoopUpdate() const { return false; }
 
     protected:
         BaseIntervention();

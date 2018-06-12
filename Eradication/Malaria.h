@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,8 +16,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #define DEFAULT_FEVER_IRBC_KILL_RATE        (0.15f)
 #define DEFAULT_MSP1_MEROZOITE_KILL         (0.5)
 #define DEFAULT_GAMETOCYTE_STAGE_SURVIVAL   (1.0)
-#define DEFAULT_BASE_GAMETOCYTE_SEX_RATIO   (0.2)
-#define DEFAULT_BASE_GAMETOCYTE_PRODUCTION  (0.02)
+#define DEFAULT_BASE_GAMETOCYTE_SEX_RATIO   (0.2f)
+#define DEFAULT_BASE_GAMETOCYTE_PRODUCTION  (0.02f)
 #define DEFAULT_ANTIGEN_SWITCH_RATE         (0.33)
 #define DEFAULT_MEROZOITES_PER_HEPATOCYTE   (15000)
 #define DEFAULT_MEROZOITES_PER_SCHIZONT     (16)

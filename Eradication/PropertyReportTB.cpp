@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -33,9 +33,8 @@ PropertyReportTB::CreateReport()
 }
 
 PropertyReportTB::PropertyReportTB()
-    :PropertyReport()
+    :PropertyReport( _report_name )
 {
-    report_name = _report_name;
 }
 
 
@@ -53,7 +52,7 @@ PropertyReportTB::LogIndividualData(
     std::string reportingBucket = individual->GetPropertyReportString();
 
     float monte_carlo_weight = (float)individual->GetMonteCarloWeight();
-    const Kernel::IndividualHumanTB* individual_tb = static_cast<const Kernel::IndividualHumanTB*>(individual);
+    const Kernel::IndividualHumanCoInfection* individual_tb = static_cast<const Kernel::IndividualHumanCoInfection*>(individual);
 
     if(individual->GetStateChange() == HumanStateChange::KilledByInfection)
     {

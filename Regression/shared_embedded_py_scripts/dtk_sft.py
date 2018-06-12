@@ -9,6 +9,7 @@ from scipy import stats
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import warnings
 
 """
 This module centralizes some small bits of functionality for SFT tests
@@ -19,6 +20,16 @@ sft_output_filename = "scientific_feature_report.txt"
 sft_no_test_data = "BAD: Relevant test data not found.\n"
 sft_test_filename = "test.txt"
 SFT_EOF = "Finalizing 'InsetChart.json' reporter"
+DAYS_IN_MONTH = 30
+DAYS_IN_YEAR = 365
+MONTHS_IN_YEAR = 12
+
+def start_report_file(output_filename, config_name):
+    with open(output_filename, 'w') as outfile:
+        outfile.write("Beginning validation for {0} at time {1}.\n".format(
+            config_name,
+            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        ))
 
 
 def format_success_msg(success):
@@ -33,7 +44,7 @@ def add_time_stamp(time_stamp, line):
     return new_line
 
 
-def test_binomial_95ci(num_success, num_trials, prob,report_file, category):
+def test_binomial_95ci(num_success, num_trials, prob, report_file, category):
     """
     -------------------------------------------------------
         This function test if a binomial distribution falls within the 95% confidence interval
@@ -52,18 +63,25 @@ def test_binomial_95ci(num_success, num_trials, prob,report_file, category):
     lower_bound = mean - 2 * standard_deviation
     upper_bound = mean + 2 * standard_deviation
     success = True
-    if mean < 5 or num_trials*(1-prob) < 5:
-        #The general rule of thumb for normal approximation method is that
+    if mean < 5 or num_trials * (1 - prob) < 5:
+        # The general rule of thumb for normal approximation method is that
         # the sample size n is "sufficiently large" if np >= 5 and n(1-p) >= 5
         # for cases that binomial confidence interval will not work
         success = False
-        report_file.write("There is not enough sample size in group {0}: mean = {1}, sample size - mean = {2}.\n".format(category, mean,num_trials * (1 - prob)))
+        report_file.write(
+            "There is not enough sample size in group {0}: mean = {1}, sample size - mean = {2}.\n".format(category,
+                                                                                                           mean,
+                                                                                                           num_trials * (
+                                                                                                           1 - prob)))
     elif num_success < lower_bound or num_success > upper_bound:
         success = False
-        report_file.write("BAD: For category {0}, the success cases is {1}, expected 95% confidence interval ( {2}, {3}).\n".format(category, num_success,lower_bound, upper_bound))
+        report_file.write(
+            "BAD: For category {0}, the success cases is {1}, expected 95% confidence interval ( {2}, {3}).\n".format(
+                category, num_success, lower_bound, upper_bound))
     return success
 
-def test_binomial_99ci(num_success, num_trials, prob,report_file, category):
+
+def test_binomial_99ci(num_success, num_trials, prob, report_file, category):
     """
     -------------------------------------------------------
         This function test if a binomial distribution falls within the 99.73% confidence interval
@@ -83,15 +101,22 @@ def test_binomial_99ci(num_success, num_trials, prob,report_file, category):
     lower_bound = mean - 3 * standard_deviation
     upper_bound = mean + 3 * standard_deviation
     success = True
-    if mean < 5 or num_trials*(1-prob) < 5:
-        #The general rule of thumb for normal approximation method is that
+    if mean < 5 or num_trials * (1 - prob) < 5:
+        # The general rule of thumb for normal approximation method is that
         # the sample size n is "sufficiently large" if np >= 5 and n(1-p) >= 5
         success = False
-        report_file.write("There is not enough sample size in group {0}: mean = {1}, sample size - mean = {2}.\n".format(category, mean, num_trials*(1-prob)))
+        report_file.write(
+            "There is not enough sample size in group {0}: mean = {1}, sample size - mean = {2}.\n".format(category,
+                                                                                                           mean,
+                                                                                                           num_trials * (
+                                                                                                           1 - prob)))
     elif num_success < lower_bound or num_success > upper_bound:
         success = False
-        report_file.write("BAD: For category {0}, the success cases is {1}, expected 99.75% confidence interval ( {2}, {3}).\n".format(category, num_success,lower_bound, upper_bound))
+        report_file.write(
+            "BAD: For category {0}, the success cases is {1}, expected 99.75% confidence interval ( {2}, {3}).\n".format(
+                category, num_success, lower_bound, upper_bound))
     return success
+
 
 def calc_poisson_binomial(prob):
     """
@@ -107,11 +132,12 @@ def calc_poisson_binomial(prob):
     standard_deviation = 0
     for p in prob:
         mean += p
-        variance += (1-p)*p
+        variance += (1 - p) * p
         standard_deviation = math.sqrt(variance)
     return {'mean': mean, 'standard_deviation': standard_deviation, 'variance': variance}
 
-def calc_poisson_prob(mean,num_event):
+
+def calc_poisson_prob(mean, num_event):
     """
     ----------------------------------------------------
         This function calculates approximate probability of obeserving num_event events in an interval for a Poisson distribution
@@ -120,13 +146,15 @@ def calc_poisson_prob(mean,num_event):
             :return: probability of obeserving num_event events in an interval
     ----------------------------------------------------
     """
-    a = math.exp(-1.0*mean)
-    b = math.pow(mean,float(num_event))
+    a = math.exp(-1.0 * mean)
+    b = math.pow(mean, float(num_event))
     c = math.factorial(int(num_event))
-    prob=a * b / float(c)
+    prob = a * b / float(c)
     return prob
 
-def plot_poisson_probability(rate,num,file,category='k vs. probability',xlabel='k',ylabel='probability', show = False):
+
+def plot_poisson_probability(rate, num, file, category='k vs. probability', xlabel='k', ylabel='probability',
+                             show=True):
     """
     -----------------------------------------------------
     This function plot and save the actual and expected poisson probability and save them in a file when the error is
@@ -141,7 +169,7 @@ def plot_poisson_probability(rate,num,file,category='k vs. probability',xlabel='
     -----------------------------------------------------
     """
     if not check_for_plotting():
-        return
+        show = False
 
     d = {}
     x = []
@@ -179,11 +207,14 @@ def plot_poisson_probability(rate,num,file,category='k vs. probability',xlabel='
     plt.ylabel(ylabel)
     if show:
         plt.show()
-    fig.savefig(str(category)+"_rate"+str(rate)+".png")
+    fig.savefig(str(category) + "_rate" + str(rate) + ".png")
     plt.close(fig)
     return None
 
-def plot_probability(dist1,dist2 = None, precision = 1, label1= "test data", label2 = "scipy data", title='probability mass function',xlabel='k',ylabel='probability', category = 'test', show = False, line = False):
+
+def plot_probability(dist1, dist2=None, precision=1, label1="test data", label2="scipy data",
+                     title='probability mass function', xlabel='k', ylabel='probability', category='test', show=True,
+                     line=False):
     """
     -----------------------------------------------------
     This function plot and the probability mass function of two distributions
@@ -198,7 +229,7 @@ def plot_probability(dist1,dist2 = None, precision = 1, label1= "test data", lab
     """
 
     if not check_for_plotting():
-        return
+        show = False
 
     d = {}
     x = []
@@ -207,8 +238,8 @@ def plot_probability(dist1,dist2 = None, precision = 1, label1= "test data", lab
     y2 = []
     for n in sorted(dist1):
         # round n to x number of decimal value, x = precision
-        i = round(n,precision)
-        if d.has_key(i):
+        i = round(n, precision)
+        if i in d:
             d[i] += 1
         else:
             d[i] = 1
@@ -216,18 +247,18 @@ def plot_probability(dist1,dist2 = None, precision = 1, label1= "test data", lab
         x.append(key)
         y.append(d[key] / float(len(dist1)))
         d.pop(key)
-    fig=plt.figure()
+    fig = plt.figure()
     if line:
         color1 = 'r'
         color2 = 'b'
     else:
         color1 = 'rs'
         color2 = 'bs'
-    if dist2 is not None: # solve the future warning with comparison to 'None'.
-                        # if dist2: doesn't work for dataframe in Bamboo environment.
+    if dist2 is not None:  # solve the future warning with comparison to 'None'.
+        # if dist2: doesn't work for dataframe in Bamboo environment.
         for n in sorted(dist2):
             i = round(n, precision)
-            if d.has_key(i):
+            if i in d:
                 d[i] += 1
             else:
                 d[i] = 1
@@ -242,19 +273,58 @@ def plot_probability(dist1,dist2 = None, precision = 1, label1= "test data", lab
     plt.title("{0}".format(title))
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
-    red_patch = mpatches.Patch(color = 'red', label = label1)
-    blue_patch = mpatches.Patch(color = 'blue', label = label2)
-    plt.legend(handles = [red_patch,blue_patch])
-    fig.savefig(str(category)+'.png')
+    red_patch = mpatches.Patch(color='red', label=label1)
+    blue_patch = mpatches.Patch(color='blue', label=label2)
+    plt.legend(handles=[red_patch, blue_patch])
+    fig.savefig(str(category) + '.png')
     if show:
         plt.show()
     plt.close(fig)
     return None
 
-def calc_cdf(dist, num_bin = 20):
+
+def plot_hist(dist1, dist2=None, label1="test data 1", label2="test data 2", title=None, xlabel=None, ylabel=None,
+              category='histogram', show=True):
+    """
+    -----------------------------------------------------
+    This function plot and the histogram of one\two distributions
+            :param dist1:
+            :param dist1:
+            :param title:
+            :param xlabel:
+            :param ylabel:
+            :return:
+    -----------------------------------------------------
+    """
+
+    if not check_for_plotting():
+        show = False
+
+    fig = plt.figure()
+    if title:
+        plt.title(title)
+    if xlabel:
+        plt.xlabel(xlabel)
+    if ylabel:
+        plt.ylabel(ylabel)
+    if dist2 is not None:
+        plt.hist([dist1, dist2], color=['r', 'b'], alpha=0.8)
+    else:
+        plt.hist(dist1, color='r', alpha=0.8)
+    red_patch = mpatches.Patch(color='red', label=label1)
+    blue_patch = mpatches.Patch(color='blue', label=label2)
+    plt.legend(handles=[red_patch, blue_patch])
+    fig.savefig(str(category) + '.png')
+    if show:
+        plt.show()
+    plt.close(fig)
+    return None
+
+
+def calc_cdf(dist, num_bin=20):
     min_num = min(dist)
     max_num = max(dist)
-    step = float(max_num-min_num)/num_bin
+    step = float(max_num - min_num) / num_bin
     bin_range = np.arange(min_num, max_num + step, step)
     # Use the histogram function to bin the data
     counts, bin_edges = np.histogram(dist, bins=bin_range, normed=True)
@@ -264,22 +334,23 @@ def calc_cdf(dist, num_bin = 20):
     cdf = [x / max_p for x in cdf]
     return cdf, bin_edges[1:]
 
-def plot_cdf(dist1, dist2 = None, label1= "test data", label2 = "scipy data", title='Cumulative distribution function',xlabel='k',ylabel='probability', category = 'Cumulative_distribution_function', show = False, line = False):
+
+def plot_cdf(dist1, dist2=None, label1="test data", label2="scipy data", title='Cumulative distribution function',
+             xlabel='k', ylabel='probability', category='Cumulative_distribution_function', show=True, line=False):
     """
     -----------------------------------------------------
     This function plot and the Cumulative distribution function of two distributions
             :param dist1:
             :param dist1:
-            :param precision:
             :param title:
-            :param xlabel:git
+            :param xlabel:
             :param ylabel:
             :return:
     -----------------------------------------------------
     """
 
     if not check_for_plotting():
-        return
+        show = False
 
     fig = plt.figure()
     if line:
@@ -305,34 +376,82 @@ def plot_cdf(dist1, dist2 = None, label1= "test data", label2 = "scipy data", ti
     blue_patch = mpatches.Patch(color='blue', label=label2)
     plt.legend(handles=[red_patch, blue_patch])
     # plt.ylim((0.0, 1.01))
-    fig.savefig(str(category)+'.png')
+    fig.savefig(str(category) + '.png')
     if show:
         plt.show()
     plt.close(fig)
     return None
 
+
 def check_for_plotting():
     homepath = None
-    if os.environ.has_key( "HOME" ):
-        homepath = os.getenv( "HOME" )
-    elif os.environ.has_key( "HOMEDRIVE" ):
-        homepath = os.path.join( os.getenv( "HOMEDRIVE" ), os.getenv( "HOMEPATH" ) )
+    if os.environ.get("HOME"):
+        homepath = os.getenv("HOME")
+    elif os.environ.get("HOMEDRIVE"):
+        homepath = os.path.join(os.getenv("HOMEDRIVE"), os.getenv("HOMEPATH"))
     else:
         # HPC case: if none of the env vars are present, we're on the HPC and won't plot anything.
         return False
 
-    if( os.path.exists( os.path.join( homepath, ".rt_show.sft" ) ) ):
+    if (os.path.exists(os.path.join(homepath, ".rt_show.sft"))):
         return True
     else:
         return False
 
-def plot_data(dist1,dist2 = None, label1= "test data 1", label2 = "test data 2", title= None, xlabel= None, ylabel= None, category = 'plot_data', show = False, line = False):
+def plot_data_unsorted(dist1, dist2=None, label1="test data 1", label2="test data 2", title=None, xlabel=None, ylabel=None,
+              category='plot_data_unsorted', show=True, line=False, alpha=1, overlap=False):
     """
     -----------------------------------------------------
-    This function plot and the data of one\two distributions
+    This function plot the data of one\two distributions
             :param dist1:
             :param dist1:
-            :param precision:
+            :param title:
+            :param xlabel:
+            :param ylabel:
+            :return:
+    -----------------------------------------------------
+    """
+    exception = "plot_data_unsorted is deprecated, please use plot_data() with sort argument instead."
+    warnings.warn(exception, FutureWarning)
+
+    if not check_for_plotting():
+        show = False
+
+    plot_data(dist1=dist1, dist2=dist2, label1=label1, label2=label2, title=title,
+                  xlabel=xlabel, ylabel=ylabel, category=category, show=show, line=line,alpha=alpha, overlap=overlap, sort=False)
+
+def plot_data_sorted(dist1, dist2=None, label1="test data 1", label2="test data 2", title=None, xlabel=None, ylabel=None,
+              category='plot_data_sorted', show=True, line=False, alpha=1, overlap=False):
+    """
+    -----------------------------------------------------
+    This function sort and plot the data of one\two distributions
+            :param dist1:
+            :param dist1:
+            :param title:
+            :param xlabel:
+            :param ylabel:
+            :return:
+    -----------------------------------------------------
+    """
+    exception = "plot_data_sorted is deprecated, please use plot_data() with sort argument instead."
+    warnings.warn(exception, FutureWarning)
+
+    if not check_for_plotting():
+        show = False
+
+    plot_data(dist1=dist1, dist2=dist2, label1=label1, label2=label2, title=title,
+                  xlabel=xlabel, ylabel=ylabel, category=category, show=show, line=line,alpha=alpha, overlap=overlap, sort=True)
+
+
+
+def plot_data(dist1, dist2=None, label1="test data 1", label2=None, title=None,
+                       xlabel=None, ylabel=None, xmin=None, xmax=None, ymin=None, ymax=None,
+                       category ='plot_data', show=True, line=False,alpha=1, overlap=False, marker1='s', marker2='o', sort=False):
+    """
+    -----------------------------------------------------
+    This function plot the data of one\two distributions
+            :param dist1:
+            :param dist1:
             :param title:
             :param xlabel:
             :param ylabel:
@@ -340,76 +459,103 @@ def plot_data(dist1,dist2 = None, label1= "test data 1", label2 = "test data 2",
     -----------------------------------------------------
     """
     if not check_for_plotting():
-        return
-    fig=plt.figure()
+        show = False
+
+    if sort: # use not in-place method
+        dist1 = sorted(dist1)
+        if dist2 is not None:
+            dist2 = sorted(dist2)
+
+    fig = plt.figure()
+    ax= fig.add_axes([0.12,0.12,0.76,0.76])
     if title:
-        plt.title(title)
+        ax.set_title(title)
     if xlabel:
-        plt.xlabel(xlabel)
+        ax.set_xlabel(xlabel)
     if ylabel:
-        plt.ylabel(ylabel)
+        ax.set_ylabel(ylabel)
+    if xmin and xmax:
+        ax.set_xlim(xmin, xmax)
+    else:
+        if xmax:
+            ax.set_xlim(xmax=xmax)
+        if xmin:
+            ax.set_xlim(xmin=xmin)
+    if ymin and ymax:
+        ax.set_ylim(ymin, ymax)
+    else:
+        if ymax:
+            ax.set_ylim(ymax=ymax)
+        if xmin:
+            ax.set_ylim(ymin=ymin)
+    if overlap:
+        color1 = 'r'+marker1
+        color2 = 'b'+marker2
+    else:
+        color1 = 'y'+marker1
+        color2 = 'g'+marker2
     if line:
-        color1 = 'r'
-        color2 = 'b'
-    else:
-        color1 = 'ro'
-        color2 = 'bo'
-    if dist2 is not None:
-        plt.plot(sorted(dist1), color1, sorted(dist2), color2)
-    else:
-        plt.plot(sorted(dist1), color1)
-    red_patch = mpatches.Patch(color = 'red', label = label1)
-    blue_patch = mpatches.Patch(color = 'blue', label = label2)
-    plt.legend(handles = [red_patch,blue_patch])
-    fig.savefig(str(category)+'.png')
+        color1 += '-'
+        color2 += '-'
+    ax.plot(dist1, color1, alpha=alpha, label=label1, lw= 0.5, markersize=4)
+    if dist2 is not None: # "if dist2:" will not work with numpy.ndarray
+        plt.plot(dist2, color2, alpha=alpha, label=label2, lw=0.5, markersize=3)
+    ax.legend(loc=0)
+
+    fig.savefig(str(category) + '.png')
     if show:
         plt.show()
     plt.close(fig)
     return None
 
-
-def plot_data_unsorted(dist1,dist2 =None, label1="test data 1", label2="test data 2", title=None,
-                       xlabel=None, ylabel=None, category ='plot_data_unsorted', show=False, line=False):
+def plot_pie(sizes, labels, category='plot_pie', show=True):
     """
-    -----------------------------------------------------
-    This function plot and the data of one\two distributions
-            :param dist1:
-            :param dist1:
-            :param precision:
-            :param title:
-            :param xlabel:
-            :param ylabel:
-            :return:
-    -----------------------------------------------------
+    plot a pie chart based on sizes
+    :param sizes:
+    :param labels:
+    :param show:
+    :return:
+    """
+    plt.pie(sizes, labels=labels, autopct='%1.1f%%', shadow=True, startangle=140)
+    plt.axis('equal')
+    plt.savefig(str(category) + '.png')
+    if show:
+        plt.show()
+    plt.close()
+    return None
+
+def plot_scatter_with_fit_lines(dataframe, xlabel, ylabel, fit_data_segments,
+                                est_data_segments, fit_data_label="fits to data",
+                                est_data_label="estimated fits", category="plot_data_fits",
+                                show=True):
+    """
+    Plots a scatterplot of data, as well as fitted and estimated segments. This is written with
+    Immunity Initialization in mind
+    :param dataframe:
+    :param xlabel: What is the x-axis? For example, 'age'
+    :param ylabel: what is the y-axis? For example, 'mod_acquire'
+    :param fit_data_segments: array of data-fit line segments in this format ([startx, endx],[starty, endy])
+    :param est_data_segments: array of esimated (ideal) line segments as above
+    :param fit_data_label: ("fits to data")
+    :param est_data_label: ("esitmated fits")
+    :param category: name of file without extension ("plot_data_fits")
+    :param show:
+    :return:
     """
     if not check_for_plotting():
         return
-    fig=plt.figure()
-    if title:
-        plt.title(title)
-    if xlabel:
-        plt.xlabel(xlabel)
-    if ylabel:
-        plt.ylabel(ylabel)
-    if line:
-        color1 = 'r'
-        color2 = 'b'
-    else:
-        color1 = 'ro'
-        color2 = 'bo'
-    if dist2 is not None:
-        plt.plot(dist1, color1, dist2, color2)
-    else:
-        plt.plot(dist1, color1)
-    red_patch = mpatches.Patch(color = 'red', label = label1)
-    blue_patch = mpatches.Patch(color = 'blue', label = label2)
-    plt.legend(handles = [red_patch,blue_patch])
-    fig.savefig(str(category)+'.png')
+    fig = plt.figure()
+    plt.scatter(dataframe[xlabel], dataframe[ylabel], s=20, alpha=0.02, lw=0)
+    for segment in est_data_segments:
+        plt.plot(segment[0], segment[1], 'r') # Red is reference, or expected data
+    for segment in fit_data_segments:
+        plt.plot(segment[0], segment[1], 'b') # Blue is data under test
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    fig.savefig(str(category) + '.png')
     if show:
         plt.show()
     plt.close(fig)
-    return None
-
 
 def calc_ks_critical_value(num_trials):
     """
@@ -463,8 +609,9 @@ def create_geometric_dis(rate, scale, size, test_decay=True):
             series.append(scale - curr_count)
     return series
 
-def test_geometric_decay (distribution_under_test, rate, scale, test_decay=True, report_file=None, debug=False):
-    '''
+
+def test_geometric_decay(distribution_under_test, rate, scale, test_decay=True, report_file=None, debug=False):
+    """
     Tests if the given distribution is a geometric distribution
     with the given rate and scale
     :param distribution_under_test: array of integers to test against
@@ -472,35 +619,35 @@ def test_geometric_decay (distribution_under_test, rate, scale, test_decay=True,
     :param scale:  number of things to decay
     :param test_decay: True assumes that your distribution is being decayed, False assumes it is growing
     :return:
-    '''
+    """
     size = len(distribution_under_test)
     series = create_geometric_dis(rate, scale, size, test_decay)
 
     result = stats.ks_2samp(series, distribution_under_test)
     if debug and report_file:
-        report_file.write(str(result)+"\n")
+        report_file.write(str(result) + "\n")
 
     p = get_p_s_from_ksresult(result)['p']
     s = get_p_s_from_ksresult(result)['s']
 
     critical_value_s = calc_ks_critical_value(len(distribution_under_test))
     report_file.write("distribution under test\n")
-    report_file.write(str(distribution_under_test)+"\n")
+    report_file.write(str(distribution_under_test) + "\n")
     report_file.write("series I made\n")
-    report_file.write(str(series)+"\n")
+    report_file.write(str(series) + "\n")
     if p >= 5e-2 or s <= critical_value_s:
         success = True
     else:
         if report_file is not None:
             report_file.write(
-                "BAD: Two sample kstest result for {0} is: statistic={1}, pvalue={2}, expected s less than {3} and p larger than 0.05.\n".format("geometric decay", s, p, critical_value_s))
+                "BAD: Two sample kstest result for {0} is: statistic={1}, pvalue={2}, expected s less than {3} and p larger than 0.05.\n".format(
+                    "geometric decay", s, p, critical_value_s))
         success = False
     return success
 
 
-
-def test_poisson (trials, rate, report_file = None, route = None, normal_approximation = True):
-    '''
+def test_poisson(trials, rate, report_file=None, route=None, normal_approximation=True):
+    """
     -----------------------------------------------------
         This function test if a distribution is a Poisson distribution with given rate
         For rate < 10, I am testing it using the two-sample kstest since one-sample kstest test for poisson distribution has a bug
@@ -514,14 +661,14 @@ def test_poisson (trials, rate, report_file = None, route = None, normal_approxi
             :param normal_approximation: if false, don't use normal approximation for rate >=10, only use poisson kstest for all rates.
             :return: True/False
     -----------------------------------------------------
-    '''
+    """
     success = True
     size = len(trials)
     if not normal_approximation or rate < 10:
         # rate less than 10 is calculated as a Poisson Draw
         # ps is Poisson distribution
         ps = np.random.poisson(rate, size)
-        result = stats.ks_2samp(ps,trials)
+        result = stats.ks_2samp(ps, trials)
 
         p = get_p_s_from_ksresult(result)['p']
         s = get_p_s_from_ksresult(result)['s']
@@ -532,7 +679,8 @@ def test_poisson (trials, rate, report_file = None, route = None, normal_approxi
         else:
             if report_file is not None:
                 report_file.write(
-                    "BAD: Poisson two sample kstest result for {0} is: statistic={1}, pvalue={2}, expected s less than {3} and p larger than 0.05.\n".format(route, s, p, critical_value_s))
+                    "BAD: Poisson two sample kstest result for {0} is: statistic={1}, pvalue={2}, expected s less than {3} and p larger than 0.05.\n".format(
+                        route, s, p, critical_value_s))
             success = False
     else:
         # rate >= 10 is using Normal Approximation with continuity correction
@@ -540,7 +688,7 @@ def test_poisson (trials, rate, report_file = None, route = None, normal_approxi
         d = {}
         count = 0
         for n in sorted(trials):
-            if d.has_key(n):
+            if d.get(n):
                 d[n] += 1
             else:
                 d[n] = 1
@@ -548,15 +696,19 @@ def test_poisson (trials, rate, report_file = None, route = None, normal_approxi
             count += d[key]
             loc = rate  # mean
             scale = math.sqrt(rate)  # standard deviation
-            p = stats.norm.cdf(key + 0.5, loc, scale) #continuity correction
-            actual_p = (count / float(size)) # calculate actual cumulative probability
+            p = stats.norm.cdf(key + 0.5, loc, scale)  # continuity correction
+            actual_p = (count / float(size))  # calculate actual cumulative probability
             if math.fabs(p - actual_p) > 0.02:
                 success = False
                 if report_file != None:
-                    report_file.write("BAD: Poisson cumulative probability for {0} and {1} is {2}, expected {3}.\n".format(route, key,actual_p,p ))
+                    report_file.write(
+                        "BAD: Poisson cumulative probability for {0} and {1} is {2}, expected {3}.\n".format(route, key,
+                                                                                                             actual_p,
+                                                                                                             p))
     return success
 
-def test_lognorm(timers,mu,sigma,report_file = None, category = None, round = False):
+
+def test_lognorm(timers, mu, sigma, report_file=None, category=None, round=False):
     """
     -----------------------------------------------------
         kstest for lognormal distribution
@@ -569,7 +721,7 @@ def test_lognorm(timers,mu,sigma,report_file = None, category = None, round = Fa
     -----------------------------------------------------
     """
     # print( "Running test_lognorm for " + category )
-    scale = math.exp(mu)
+    scale = math.exp(mu) # median
     size = len(timers)
     dist_lognormal = stats.lognorm.rvs(sigma, 0, scale, size)
     # dist_lognormal = np.random.lognormal(mu, sigma, size)
@@ -578,7 +730,8 @@ def test_lognorm(timers,mu,sigma,report_file = None, category = None, round = Fa
         dist_lognormal_2 = []
         for n in dist_lognormal:
             dist_lognormal_2.append(round_to_n_digit(n, 7))
-        result = stats.ks_2samp(dist_lognormal_2, timers) # switch to 2 sample kstest so I can round the data from scipy
+        result = stats.ks_2samp(dist_lognormal_2,
+                                timers)  # switch to 2 sample kstest so I can round the data from scipy
     else:
         result = stats.kstest(timers, 'lognorm', args=(sigma, 0, scale))
 
@@ -601,7 +754,8 @@ def test_lognorm(timers,mu,sigma,report_file = None, category = None, round = Fa
         # print("BAD: log normal kstest result for {0} is: statistic={1}, pvalue={2}, expected s less than {3} and p larger than 0.05.\n".format(category, s, p, critical_value_s))
         return False
 
-def test_uniform(dist, p1, p2, report_file = None, round = False, significant_digits = 7):
+
+def test_uniform(dist, p1, p2, report_file=None, round=False, significant_digits=7):
     """
      -----------------------------------------------------
         kstest for uniform distribution
@@ -619,11 +773,11 @@ def test_uniform(dist, p1, p2, report_file = None, round = False, significant_di
     if round:
         dist_uniform_scipy_r = []
         for s in dist_uniform_scipy:
-            dist_uniform_scipy_r.append(round_to_n_digit(s,significant_digits))
-        result = stats.ks_2samp(dist_uniform_scipy_r,dist)
+            dist_uniform_scipy_r.append(round_to_n_digit(s, significant_digits))
+        result = stats.ks_2samp(dist_uniform_scipy_r, dist)
     else:
-        # result = stats.ks_2samp(dist_uniform_scipy,dist)
-        result = stats.kstest(dist, 'uniform', args=(loc, scale))
+        result = stats.ks_2samp(dist_uniform_scipy,dist)
+        # result = stats.kstest(dist, 'uniform', args=(loc, scale)) this is not compatible for Python 3, only Python 2 works
     p = get_p_s_from_ksresult(result)['p']
     s = get_p_s_from_ksresult(result)['s']
     critical_value_s = calc_ks_critical_value(size)
@@ -633,10 +787,13 @@ def test_uniform(dist, p1, p2, report_file = None, round = False, significant_di
         return True
     else:
         if report_file is not None:
-            report_file.write("BAD: ({0},{1})failed with statistic={2}, pvalue={3}, expected s less than {4} and p larger than 0.05.\n".format(p1, p2, s, p, critical_value_s))
+            report_file.write(
+                "BAD: ({0},{1})failed with statistic={2}, pvalue={3}, expected s less than {4} and p larger than 0.05.\n".format(
+                    p1, p2, s, p, critical_value_s))
         return False
 
-def test_gaussian(dist, p1, p2, allow_negative = True, report_file = None, round = False):
+
+def test_gaussian(dist, p1, p2, allow_negative=True, report_file=None, round=False):
     """
      -----------------------------------------------------
         kstest for gaussian distribution
@@ -660,7 +817,7 @@ def test_gaussian(dist, p1, p2, allow_negative = True, report_file = None, round
                 dist_gaussian_scipy2.append(round_to_n_digit(n, 7))
             else:
                 dist_gaussian_scipy2.append(n)
-        result = stats.ks_2samp(dist_gaussian_scipy2,dist)
+        result = stats.ks_2samp(dist_gaussian_scipy2, dist)
     else:
         result = stats.kstest(dist, "norm", args=(p1, p2))
 
@@ -673,22 +830,27 @@ def test_gaussian(dist, p1, p2, allow_negative = True, report_file = None, round
         return True
     else:
         if report_file is not None:
-            report_file.write("BAD: ({0},{1})failed with statistic={2}, pvalue={3}, expected s less than {4} and p larger than 0.05.\n".format(p1, p2, s, p, critical_value_s))
+            report_file.write(
+                "BAD: ({0},{1})failed with statistic={2}, pvalue={3}, expected s less than {4} and p larger than 0.05.\n".format(
+                    p1, p2, s, p, critical_value_s))
         return False
+
 
 def round_down(num, precision):
     multiplier = math.pow(10.0, precision)
     return math.floor(num * multiplier) / multiplier
 
+
 def round_up(num, precision):
     multiplier = math.pow(10.0, precision)
     return math.ceil(num * multiplier) / multiplier
+
 
 def test_exponential(dist, p1, report_file=None, integers=False, roundup=False, round_nearest=False):
     """
      -----------------------------------------------------
         kstest for exponential distribution
-            :param p1: decay length = 1 / decay rate , >0,
+            :param p1: decay rate = 1 / decay length , lambda, >0,
             :param dist: The distribution to be tested
             :param report_file: report file to which write the error if such exists
             :param integers: Indicates whether the distribution is rounded up or down to integers or not
@@ -707,7 +869,7 @@ def test_exponential(dist, p1, report_file=None, integers=False, roundup=False, 
             dist_exponential_np = [round_down(x, 0) for x in dist_exponential_np]
     # loc = 0
     # dist_exponential_scipy = stats.expon.rvs(loc, scale, size)
-    result = stats.ks_2samp(dist_exponential_np, dist)
+    result = stats.ks_2samp(dist_exponential_np, list(dist))
     # ?? result = stats.kstest(dist, "exponential", args=(p1))
 
     p = get_p_s_from_ksresult(result)['p']
@@ -716,8 +878,9 @@ def test_exponential(dist, p1, report_file=None, integers=False, roundup=False, 
 
     if p >= 5e-2 or s <= critical_value_s:
         if report_file is not None:
-            report_file.write("GOOD: ({0})succeed with statistic={1}, pvalue={2}, expected s less than {3} and p larger "
-                              "than 0.05.\n".format(p1, s, p, critical_value_s))
+            report_file.write(
+                "GOOD: ({0})succeed with statistic={1}, pvalue={2}, expected s less than {3} and p larger "
+                "than 0.05.\n".format(p1, s, p, critical_value_s))
         return True
     else:
         if report_file is not None:
@@ -725,7 +888,8 @@ def test_exponential(dist, p1, report_file=None, integers=False, roundup=False, 
                               "than 0.05.\n".format(p1, s, p, critical_value_s))
         return False
 
-def test_bimodal(dist, p1, p2, report_file = None):
+
+def test_bimodal(dist, p1, p2, report_file=None):
     """
      -----------------------------------------------------
         Test for bimodal distribution. This bimodal distribution is not a true bimodal distribution, which is defined as the overlap of two Gaussians.
@@ -746,17 +910,20 @@ def test_bimodal(dist, p1, p2, report_file = None):
             count2 += 1
         else:
             if report_file is not None:
-                report_file.write("BAD: Binomal distribution contains value = {0}, expected 1.0 or {1}.\n".format(n, p2))
+                report_file.write(
+                    "BAD: Binomal distribution contains value = {0}, expected 1.0 or {1}.\n".format(n, p2))
             return False
-    actual_faction = count2 /float(size)
+    actual_faction = count2 / float(size)
     if math.fabs(p1 - actual_faction) <= 5e-2:
         return True
     else:
         if report_file is not None:
-            report_file.write("BAD: test Binomal failed with actual fraction = {0}, expected {1}.\n".format(actual_faction, p1))
+            report_file.write(
+                "BAD: test Binomal failed with actual fraction = {0}, expected {1}.\n".format(actual_faction, p1))
         return False
 
-def test_weibull(dist, p1, p2, report_file = None, round = False):
+
+def test_weibull(dist, p1, p2, report_file=None, round=False):
     """
      -----------------------------------------------------
         kstest for weibull distribution
@@ -769,12 +936,12 @@ def test_weibull(dist, p1, p2, report_file = None, round = False):
     size = len(dist)
     # s = np.random.weibull(p2, size)
     # dist_weibull_np = map(lambda x : x * p1, s)
-    dist_weibull_scipy = stats.weibull_min.rvs(c = p2, loc = 0, scale = p1, size = size)
+    dist_weibull_scipy = stats.weibull_min.rvs(c=p2, loc=0, scale=p1, size=size)
     if round:
         dist_weibull_scipy2 = []
         for n in dist_weibull_scipy:
             dist_weibull_scipy2.append(round_to_n_digit(n, 7))
-        result = stats.ks_2samp(dist_weibull_scipy2,dist)
+        result = stats.ks_2samp(dist_weibull_scipy2, dist)
     else:
         result = stats.ks_2samp(dist_weibull_scipy, dist)
 
@@ -787,10 +954,43 @@ def test_weibull(dist, p1, p2, report_file = None, round = False):
         return True
     else:
         if report_file is not None:
-            report_file.write("BAD: ({0},{1})failed with statistic={2}, pvalue={3}, expected s less than {4} and p larger than 0.05.\n".format(p1, p2, s, p, critical_value_s))
+            report_file.write(
+                "BAD: ({0},{1})failed with statistic={2}, pvalue={3}, expected s less than {4} and p larger than 0.05.\n".format(
+                    p1, p2, s, p, critical_value_s))
         return False
 
-def is_stats_test_pass(fail_count, pass_count, report_file = None):
+def test_multinomial(dist, proportions, report_file=None, prob_flag=True):
+    """
+    Chi-squared test for multinomial data
+    :param dist: array_like, number in each categories
+    :param p: array_like, proportions in each categories
+    :param report_file:
+    :param report_file: flag that indicates whether p are proportions or the expected values
+    :return: True or False for test result
+    """
+    if prob_flag:
+        n = sum(dist)
+        prob = sum(proportions)
+        total = int(n/prob)
+        result = stats.chisquare(dist, np.array(proportions) * total, ddof=0 ) #returns chi-square statistic and p value
+    else:
+        result = stats.chisquare(dist, proportions, ddof=0)
+    p = get_p_s_from_ksresult(result)['p']
+    s = get_p_s_from_ksresult(result)['s']
+    if p >= 5e-2:
+        if report_file is not None:
+            report_file.write(
+                "GOOD: Chi-squared test for multinomial data passed with statistic={0}, pvalue={1}, expected p larger"
+                " than 0.05.\ndata for test is {2} and proportion is {3}.\n".format(s, p, dist, proportions))
+        return True
+    else:
+        if report_file is not None:
+            report_file.write(
+                "BAD: Chi-squared test for multinomial data failed with statistic={0}, pvalue={1}, expected p larger"
+                " than 0.05.\ndata for test is {2} and proportion is {3}.\n".format(s, p, dist, proportions))
+        return False
+
+def is_stats_test_pass(fail_count, pass_count, report_file=None):
     """
     -------------------------------------------------------
         This function determine whether a set of statistic tests(kstest basically) pass
@@ -818,11 +1018,13 @@ def is_stats_test_pass(fail_count, pass_count, report_file = None):
         # calculate the cummulative density function
         prob = stats.poisson.cdf(fail_count - 1, mean_pvalue)
         if report_file is not None:
-            report_file.write("prob = {0}, mean_pvalue = {1}, fail_count = {2}.\n".format(prob, mean_pvalue, fail_count))
+            report_file.write(
+                "prob = {0}, mean_pvalue = {1}, fail_count = {2}.\n".format(prob, mean_pvalue, fail_count))
         # test passes when the survival function (1 - cdf) >= probability for samll probability event(0.001, 0.01 or 0.05)
         # higher value is stricter than lower value
         # if <=, which means the small probability event happens in real life so we determine the test fails
         return (1.0 - prob) >= small_prob_event
+
 
 def round_to_1_digit(x):
     """
@@ -839,6 +1041,7 @@ def round_to_1_digit(x):
     else:
         return round(x, -int(math.floor(math.log10(abs(x)))))
 
+
 def round_to_n_digit(x, n):
     """
     -----------------------------------------------------
@@ -853,7 +1056,8 @@ def round_to_n_digit(x, n):
     else:
         return round(x, -int(math.floor(math.log10(abs(x)))) + (n - 1))
 
-def get_val( key, line ):
+
+def get_val(key, line):
     regex = key + "(\d*\.*\d*)"
     match = re.search(regex, line)
     if match is not None:
@@ -861,8 +1065,9 @@ def get_val( key, line ):
     else:
         raise LookupError
 
+
 def wait_for_done():
-    with open( "test.txt", "r" ) as test_file:
+    with open("test.txt", "r") as test_file:
         while 1:
             where = test_file.tell()
             line = test_file.readline()
@@ -871,38 +1076,41 @@ def wait_for_done():
                 test_file.seek(where)
             else:
                 if SFT_EOF in line:
-                    output_file_md5 = md5_hash_of_file( "test.txt" )
-                    with open( "touchfile", "w" ) as touchfile:
-                        touchfile.write( "Test.txt file completely written. Move on to read.\n" )
-                        touchfile.write( line ) 
-                        touchfile.write( str( output_file_md5 ) ) 
-                    #print( "Last line read = " + line )
+                    output_file_md5 = md5_hash_of_file("test.txt")
+                    with open("touchfile", "w") as touchfile:
+                        touchfile.write("Test.txt file completely written. Move on to read.\n")
+                        touchfile.write(line)
+                        touchfile.write(str(output_file_md5))
+                        # print( "Last line read = " + line )
                     return
+
 
 def md5_hash(handle):
     handle.seek(0)
     md5calc = md5()
     while True:
-        data = handle.read( 10240 ) # reasonable value from examples
+        data = handle.read(10240)  # reasonable value from examples
         if len(data) == 0:
-            break;
-        md5calc.update(data)
+            break
+        md5calc.update(data.encode("UTF-8"))
     hash = md5calc.hexdigest()
     return hash
-        
-def md5_hash_of_file( filename ):
-    #print( "Getting md5 for " + filename )
-    file_handle = open( filename )
-    hash = md5_hash( file_handle )
-    #md5calc = md5()
-    #while True:
-        #file_bytes = file_handle.read( 10240 ) # value picked from example!
-        #if len(file_bytes) == 0:
-            #break
-        #md5calc.update( file_bytes )
+
+
+def md5_hash_of_file(filename):
+    # print( "Getting md5 for " + filename )
+    file_handle = open(filename)
+    hash = md5_hash(file_handle)
+    # md5calc = md5()
+    # while True:
+    # file_bytes = file_handle.read( 10240 ) # value picked from example!
+    # if len(file_bytes) == 0:
+    # break
+    # md5calc.update( file_bytes )
     file_handle.close()
-    #hash = md5calc.hexdigest()
+    # hash = md5calc.hexdigest()
     return hash
+
 
 def has_match(target, matches):
     for match in matches:
@@ -910,10 +1118,25 @@ def has_match(target, matches):
             return True
     return False
 
-def get_char( key, line ):
+
+def get_char(key, line):
     regex = key + "(\w*\d*\w*\d*)"
     match = re.search(regex, line)
     if match != None:
         return match.group(1)
     else:
         raise LookupError
+
+
+def convert_barchart_to_interpolation(population_groups, result_values):
+    for i in range(len(population_groups)):
+        for j in range(0, 2 * len(population_groups[i]), 2):
+            age_or_year = population_groups[i][j]
+            population_groups[i].insert(j + 1, age_or_year + 0.9999999)
+    for i in range(0, 2 * len(result_values), 2):
+        age_value = result_values[i]
+        age_value_copy = [p for p in age_value]
+        result_values.insert(i + 1, age_value_copy)
+    for age_value in result_values:
+        for i in range(0, 2 * len(age_value), 2):
+            age_value.insert(i + 1, age_value[i])

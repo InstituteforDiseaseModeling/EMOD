@@ -38,6 +38,11 @@
                     0.993266795, 0.997785983, 0.999493636, 0.999883695, 1
                 ]
             },
+            "SusceptibilityDistribution": {
+                "DistributionValues": [[0,364.999,365,729.999,730,1825,7300]],
+                "ResultScaleFactor": 1,
+                "ResultValues": [[0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.5]]
+            },
             "FertilityDistribution": {
                 "NumDistributionAxes": 2, 
                 "AxisNames": [ "urban", "age" ], 

@@ -3,8 +3,7 @@
      "parameters": {
           "DEMOGRAPHICS": {
               "Birth_Rate_Dependence": "POPULATION_DEP_RATE", 
-              "Death_Rate_Dependence" : "NONDISEASE_MORTALITY_OFF",
-              "Enable_Vital_Dynamics": 0, 
+                    "Enable_Vital_Dynamics": 0, 
               "Sample_Rate_Birth": 1
           },
           "DISEASE": {

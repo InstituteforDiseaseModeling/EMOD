@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -161,7 +161,7 @@ namespace Kernel
     {
         // This is a chance to do a single call into PYTHON_FEVER?g at start of timestep
 #ifdef ENABLE_PYTHON_FEVER
-        static auto pFunc = PythonSupportPtr->IdmPyInit( PythonSupport::SCRIPT_PYTHON_FEVER.c_str(), "start_timestep" );
+        static auto pFunc = PythonSupport::GetPyFunction( PythonSupport::SCRIPT_PYTHON_FEVER.c_str(), "start_timestep" );
         if( pFunc )
         {
             PyObject_CallObject( pFunc, nullptr );
@@ -196,9 +196,9 @@ namespace Kernel
         Node::populateNewIndividualsFromDemographics(count_new_individuals);
     }
 
-    IndividualHuman *NodePy::createHuman(suids::suid suid, float monte_carlo_weight, float initial_age, int gender, float above_poverty)
+    IndividualHuman *NodePy::createHuman(suids::suid suid, float monte_carlo_weight, float initial_age, int gender)
     {
-        return IndividualHumanPy::CreateHuman(this, suid, monte_carlo_weight, initial_age, gender, above_poverty);
+        return IndividualHumanPy::CreateHuman(this, suid, monte_carlo_weight, initial_age, gender);
     }
 
     std::map< std::string, float >

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,14 +21,17 @@ SETUP_LOGGING( "ARTBasic" )
 
 namespace Kernel
 {
-    BEGIN_QUERY_INTERFACE_DERIVED(ARTBasic, GenericDrug)
-    END_QUERY_INTERFACE_DERIVED(ARTBasic, GenericDrug)
+    BEGIN_QUERY_INTERFACE_BODY( ARTBasic )
+        HANDLE_INTERFACE( IConfigurable )
+        HANDLE_INTERFACE( IDistributableIntervention )
+        HANDLE_INTERFACE( IBaseIntervention )
+        HANDLE_ISUPPORTS_VIA( IDistributableIntervention )
+    END_QUERY_INTERFACE_BODY( ARTBasic )
 
     IMPLEMENT_FACTORY_REGISTERED(ARTBasic)
 
     ARTBasic::ARTBasic()
-    : GenericDrug()
-    , itbda(nullptr)
+    : BaseIntervention()
     , viral_suppression(true)
     , days_to_achieve_suppression(183.0f)
     {
@@ -39,18 +42,12 @@ namespace Kernel
     {
     }
 
-    std::string
-    ARTBasic::GetDrugName() const
-    {
-        return std::string("ART");
-    }
-
     bool
     ARTBasic::Configure(
         const Configuration * inputJson
     )
     {
-        initConfigTypeMap ( "Cost_To_Consumer", &cost_per_unit, DRUG_Cost_To_Consumer_DESC_TEXT, 0, 99999);
+        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, DRUG_Cost_To_Consumer_DESC_TEXT, 0, 99999);
         initConfigTypeMap( "Viral_Suppression", &viral_suppression, ART_Basic_Viral_Suppression_DESC_TEXT, true );
         initConfigTypeMap( "Days_To_Achieve_Viral_Suppression", &days_to_achieve_suppression, ART_Basic_Days_To_Achieve_Viral_Suppression_DESC_TEXT, 0, FLT_MAX, 183.0f );
 
@@ -64,10 +61,11 @@ namespace Kernel
         ICampaignCostObserver * pCCO
     )
     {
-        bool distributed = GenericDrug::Distribute( context, pCCO );
+        bool distributed = BaseIntervention::Distribute( context, pCCO );
         if( distributed )
         {
             LOG_DEBUG_F( "ARTBasic distributed to individual %d.\n", context->GetParent()->GetSuid().data );
+            IHIVDrugEffectsApply* itbda = nullptr;
             if (s_OK != context->QueryInterface(GET_IID(IHIVDrugEffectsApply), (void**)&itbda) )
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHIVDrugEffectsApply", "IIndividualHumanInterventionsContext" );
@@ -77,39 +75,18 @@ namespace Kernel
         return distributed;
     }
 
-    void
-    ARTBasic::SetContextTo(
-        IIndividualHumanContext *context
-    )
+    void ARTBasic::Update( float dt )
     {
-        if (s_OK != context->GetInterventionsContext()->QueryInterface(GET_IID(IHIVDrugEffectsApply), (void**)&itbda) )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHIVDrugEffectsApply", "IIndividualHumanContext" );
-        } 
-
-        return GenericDrug::SetContextTo( context );
-    }
-
-    void ARTBasic::ApplyEffects()
-    {
-        assert(itbda);
-        //itbda->ApplyDrugVaccineReducedAcquireEffect(GetDrugReducedAcquire());
-        //itbda->ApplyDrugVaccineReducedTransmitEffect(GetDrugReducedTransmit());
-        //itbda->ApplyDrugInactivationRateEffect( GetDrugInactivationRate() );
-        //itbda->ApplyDrugClearanceRateEffect( GetDrugClearanceRate() );
+        Expired();
     }
 
     REGISTER_SERIALIZABLE(ARTBasic);
 
     void ARTBasic::serialize(IArchive& ar, ARTBasic* obj)
     {
-        GenericDrug::serialize( ar, obj );
+        BaseIntervention::serialize( ar, obj );
         ARTBasic& art = *obj;
         ar.labelElement("viral_suppression"          ) & art.viral_suppression;
         ar.labelElement("days_to_achieve_suppression") & art.days_to_achieve_suppression;
-
-        // itbda set in SetContextTo
     }
 }
-
-//#endif // ENABLE_STI

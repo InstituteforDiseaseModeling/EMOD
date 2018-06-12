@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -148,23 +148,22 @@ namespace Kernel
         if( expired || broadcast_event.IsUninitialized() )
         {
             LOG_DEBUG_F("expired or event is unitialized\n");
-            return;
         }
-
-        // Duplicated from SimpleDiagnostic::positiveTestDistribute
-        INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-        if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
+        else
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
-                                           "parent->GetEventContext()->GetNodeEventContext()",
-                                           "INodeTriggeredInterventionConsumer",
-                                           "INodeEventContext" );
+            // Duplicated from SimpleDiagnostic::positiveTestDistribute
+            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
+            if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
+            {
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
+                                               "parent->GetEventContext()->GetNodeEventContext()",
+                                               "INodeTriggeredInterventionConsumer",
+                                               "INodeEventContext" );
+            }
+            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), broadcast_event );
+            LOG_DEBUG_F("broadcast actual event\n");
         }
-        broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), broadcast_event );
-        LOG_DEBUG_F("broadcast actual event\n");
-
         expired = true;
-        return;
     }
 
     REGISTER_SERIALIZABLE(HIVDelayedIntervention);

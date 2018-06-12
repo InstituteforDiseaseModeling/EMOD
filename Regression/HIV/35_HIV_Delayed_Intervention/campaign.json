@@ -30,8 +30,8 @@
         },
         {
             "class": "CampaignEvent",
-            "Event_Name": "LTFU1 broadcasts should be truncated by the expiration period of 7 days",
-            "Start_Day": 1,
+            "Event_Name": "LTFU1 broadcasts should be truncated by the expiration period of 7 days.  Should see LTFU2 instead.",
+            "Start_Day": 10,
             "Nodeset_Config": 
             { 
                 "class": "NodeSetAll"
@@ -48,7 +48,36 @@
                     "Delay_Distribution": "FIXED_DURATION",
                     "Delay_Period": 8,
                     "Expiration_Period": 7,
-                    "Broadcast_Event": "LTFU1"
+                    "Broadcast_Event": "LTFU1",
+                    "Broadcast_On_Expiration_Event" : "LTFU2"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Event_Name": "GH-1887-Not defining Broadcast_Event causes intervention to not expire at end of delay.",
+            "COMMENT1" : "Before fixing the bug, we see LTUF4 because we do not expire at the end of the delay.",
+            "COMMENT2" : "After the fix, we do not see LTFU4 because the intervention expires before the Expiration_Period.",
+            "COMMENT3" : "We should not see LTFU3 because it is not defined.",
+            "Start_Day": 20,
+            "Nodeset_Config": 
+            { 
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": 
+            { 
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": 
+                { 
+                    "class": "HIVDelayedIntervention",
+                    "Disqualifying_Properties": [ ],
+                    "New_Property_Value": "",
+                    "Delay_Distribution": "FIXED_DURATION",
+                    "Delay_Period": 4,
+                    "Expiration_Period": 8,
+                    ".Broadcast_Event": "LTFU3",
+                    "Broadcast_On_Expiration_Event" : "LTFU4"
                 }
             }
         }

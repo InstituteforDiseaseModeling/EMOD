@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -24,11 +24,13 @@ namespace Kernel
     NodeHIV::NodeHIV(ISimulationContext *_parent_sim, suids::suid node_suid)
         : NodeSTI(_parent_sim, node_suid)
     {
+        enable_maternal_infection_transmission = true;
     }
 
     NodeHIV::NodeHIV()
         : NodeSTI()
     {
+        enable_maternal_infection_transmission = true;
     }
 
     NodeHIV::~NodeHIV(void)
@@ -43,9 +45,9 @@ namespace Kernel
         return newnode;
     }
 
-    IIndividualHuman* NodeHIV::createHuman( suids::suid suid, float monte_carlo_weight, float initial_age, int gender, float above_poverty)
+    IIndividualHuman* NodeHIV::createHuman( suids::suid suid, float monte_carlo_weight, float initial_age, int gender)
     {
-        return IndividualHumanHIV::CreateHuman(this, suid, monte_carlo_weight, initial_age, gender,  above_poverty);
+        return IndividualHumanHIV::CreateHuman(this, suid, monte_carlo_weight, initial_age, gender);
     }
 
 /*

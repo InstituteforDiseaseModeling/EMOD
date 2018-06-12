@@ -49,7 +49,7 @@
 #define Waning_Mucosal_Rate_Fast_DESC_TEXT "Exponential decay rate per day of neutralizing antibody titer that applies to the waning_mucosal_fast_fraction."
 #define Waning_Mucosal_Rate_Slow_DESC_TEXT "Exponential decay rate per day of neutralizing antibody titer that applies to the (1-waning_mucosal_fast_fraction)."
 
-#define Node_Contagion_Decay_Rate_DESC_TEXT "Rate per day of exponential decay of the contagion in the environment or fomites. If there is no lifetime of contagion, set this parameter to reflect the time step."
+//#define Node_Contagion_Decay_Rate_DESC_TEXT "Rate per day of exponential decay of the contagion in the environment or fomites. If there is no lifetime of contagion, set this parameter to reflect the time step."
 #define Default_Antigen_DESC_TEXT "Poliovirus type for simulations with straintracking disabled."
 #define Default_Genome_DESC_TEXT "Poliovirus genome for simulations with straintracking disabled. \
 Caution: Although this parameter currently has an upper bound of 1000 in the user interface you must not use values above 255. This parameter is used as an index into the values provided for substrainRelativeInfectivityString_VDPV1, substrainRelativeInfectivityString_VDPV2, and substrainRelativeInfectivityString_VDPV3, which are sized based on the number_substrains parameter, limited to 256."
@@ -168,3 +168,9 @@ POLIO_VDPV_LOG_PARALYSIS_AND_LOG_INFECTIVITY"
 #define Vaccine_Genome_OPV2_DESC_TEXT "Vaccine_Genome_OPV2"
 #define Vaccine_Genome_OPV3_DESC_TEXT "Vaccine_Genome_OPV3"
 #define PNS_Output_DESC_TEXT "Output filename for node survey data."
+
+// PV=PolioVaccine
+#define PV_Cost_To_Consumer_DESC_TEXT "Cost of each polio vaccine."
+#define PV_Time_Since_Vaccination_DESC_TEXT "Time since vaccination."
+#define PV_Vaccine_Type_DESC_TEXT "Polio vaccine type."
+

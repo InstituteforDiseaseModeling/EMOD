@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,23 +18,24 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Vector.h"
 #include "VectorEnums.h"
-#include "VectorCohort.h"
+#include "IVectorCohort.h"
 #include "VectorContexts.h"
 #include "VectorHabitat.h"
 #include "VectorMatingStructure.h"
 #include "VectorProbabilities.h"
 
 #include "ISerializable.h"
+#include "IVectorPopulation.h"
+
+// strings used to indicate for what VectorToHumanTransmission() is being called for
+#define INDOOR_STR "indoor"
+#define OUTDOOR_STR "outdoor"
 
 namespace Kernel
 {
     class IVectorCohortWithHabitat;
     class SimulationConfig ;
     class VectorSpeciesParameters;
-
-    struct IVectorPopulation : ISerializable
-    {
-    };
 
     class IndividualHumanVector;
     class VectorCohortWithHabitat;
@@ -45,47 +46,62 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
 
     public:
-        static VectorPopulation *CreatePopulation(INodeContext *context, std::string species = "gambiae", unsigned int adults = DEFAULT_VECTOR_POPULATION_SIZE, unsigned int infectious = 0);
+        static VectorPopulation *CreatePopulation( INodeContext *context, const std::string& species, uint32_t adults, uint32_t infectious );
         virtual ~VectorPopulation();
 
-        virtual void SetContextTo(INodeContext *context);
-        virtual void SetupIntranodeTransmission(ITransmissionGroups *transmissionGroups);
-        virtual void SetupLarvalHabitat( INodeContext *context );
+        // ----------------------
+        // --- IVectorPopulation
+        // ----------------------
+        virtual void SetContextTo(INodeContext *context) override;
+        virtual void SetupIntranodeTransmission(ITransmissionGroups *transmissionGroups) override;
+        virtual void SetupLarvalHabitat( INodeContext *context ) override;
+        virtual void SetVectorMortality( bool mortality ) override { m_VectorMortality = mortality; }
 
         // The function that NodeVector calls into once per species per timestep
-        virtual void UpdateVectorPopulation(float dt);
+        virtual void UpdateVectorPopulation(float dt) override;
 
         // For NodeVector to calculate # of migrating vectors (processEmigratingVectors) and put them in new node (processImmigratingVector)
-        virtual void Vector_Migration( IMigrationInfo* pMigInfo, VectorCohortVector_t* pMigratingQueue );
-        virtual uint64_t Vector_Migration(float = 0, VectorCohortVector_t* = nullptr);
-        void AddAdults(VectorCohort *adults) { AdultQueues.push_back(adults); }
-        virtual void AddVectors( const VectorMatingStructure& _vector_genetics, uint64_t releasedNumber );
+        virtual void Vector_Migration( float dt, IMigrationInfo* pMigInfo, VectorCohortVector_t* pMigratingQueue ) override;
+        virtual void AddImmigratingVector( IVectorCohort* pvc ) override;
 
-        // IInfectable
+        // Supports MosquitoRelease intervention
+        virtual void AddVectors( const VectorMatingStructure& _vector_genetics, uint32_t releasedNumber ) override;
+
+        // ---------------
+        // --- IInfectable
+        // ---------------
         virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route ) override;
+        virtual const infection_list_t& GetInfections() const override;
+        virtual float GetInterventionReducedAcquire() const override;
 
-        // IVectorPopulationReporting
-        virtual float  GetEIRByPool(VectorPoolIdEnum::Enum pool_id) const override;
-        virtual float  GetHBRByPool(VectorPoolIdEnum::Enum pool_id) const override;
-        virtual int32_t getAdultCount()                             const override;
-        virtual int32_t getInfectedCount()                          const override;
-        virtual int32_t getInfectiousCount()                        const override;
-        virtual int32_t getMaleCount()                              const override;
-        virtual int32_t getNewEggsCount()                           const override;
-        virtual double  getInfectivity()                            const override;
-        virtual const std::string& get_SpeciesID()                  const override;
-        virtual const VectorHabitatList_t& GetHabitats()            const override;
-        virtual std::vector<int> GetNewlyInfectedSuids()            const override;
-        virtual std::vector<int> GetInfectiousSuids()               const override;
+        // -------------------------------
+        // --- IVectorPopulationReporting
+        // -------------------------------
+        virtual float  GetEIRByPool(VectorPoolIdEnum::Enum pool_id)     const override;
+        virtual float  GetHBRByPool(VectorPoolIdEnum::Enum pool_id)     const override;
+        virtual uint32_t getAdultCount()                                const override;
+        virtual uint32_t getInfectedCount(   IStrainIdentity* pStrain ) const override;
+        virtual uint32_t getInfectiousCount( IStrainIdentity* pStrain ) const override;
+        virtual uint32_t getMaleCount()                                 const override;
+        virtual uint32_t getNewEggsCount()                              const override;
+        virtual uint32_t getNewAdults()                                 const override;
+        virtual uint32_t getNumDiedBeforeFeeding()                      const override;
+        virtual uint32_t getNumDiedDuringFeedingIndoor()                const override;
+        virtual uint32_t getNumDiedDuringFeedingOutdoor()               const override;
+        virtual double  getInfectivity()                                const override;
+        virtual const std::string& get_SpeciesID()                      const override;
+        virtual const VectorHabitatList_t& GetHabitats()                const override;
+        virtual std::vector<uint64_t> GetNewlyInfectedVectorIds()       const override;
+        virtual std::vector<uint64_t> GetInfectiousVectorIds()          const override;
 
-        virtual const infection_list_t& GetInfections()             const override;
-        virtual float GetInterventionReducedAcquire()               const override;
-
-        void SetVectorMortality( bool mortality ) { m_VectorMortality = mortality; }
     protected:
         VectorPopulation();
-        void Initialize(INodeContext *context, std::string species_name, unsigned int adults, unsigned int infectious);
+        void Initialize( INodeContext *context, const std::string& species_name, uint32_t adults, uint32_t infectious );
         virtual void InitializeVectorQueues(unsigned int adults, unsigned int _infectious);
+
+        void UpdateLocalAdultMortalityProbability( float dt );
+        float GetLocalAdultMortalityProbability( float dt, IVectorCohort* pvc, VectorWolbachia::Enum wolb = VectorWolbachia::WOLBACHIA_FREE ) const;
+        void UpdateAge( IVectorCohort* pvc, float dt );
 
         const SimulationConfig        *params()  const ;
         const VectorSpeciesParameters *species() const { return m_species_params; }
@@ -115,9 +131,14 @@ namespace Kernel
         virtual void Update_Egg_Laying      ( float dt );
         virtual void Update_Egg_Hatching    ( float dt );
 
+        virtual void AddAdultsFromMating( const VectorGeneticIndex_t& rVgiMale,
+                                          const VectorGeneticIndex_t& rVgiFemale,
+                                          uint32_t pop );
+        virtual void AddVectors_Adults( const VectorMatingStructure& _vector_genetics, uint32_t releasedNumber );
+
         // Factorize the feeding cycle, which is common to all adult vectors
-        virtual uint32_t ProcessFeedingCycle( float dt, IVectorCohort* cohort, VectorStateEnum::Enum state );
-        float GetFeedingCycleDurationByTemperature() const;
+        virtual uint32_t ProcessFeedingCycle( float dt, IVectorCohort* cohort );
+        float GetFeedingCycleDuration() const;
 
         // Calculation of mated females based on gender_mating characteristics of male/female populations
         virtual void ApplyMatingGenetics( IVectorCohort* cohort, const VectorMatingStructure& male_vector_genetics );
@@ -128,8 +149,7 @@ namespace Kernel
         void CreateEggCohortHEGSorting(    IVectorHabitat*, uint32_t, VectorMatingStructure ); //need to copy VectorMatingStructure
 
         // Seek a compatible (same gender mating type) queue in specified list (e.g. AdultQueues, InfectiousQueues) and increase its population.
-        virtual void MergeProgressedCohortIntoCompatibleQueue( VectorCohortList_t   &queues, int32_t population, const VectorMatingStructure& _vector_genetics);
-        virtual void MergeProgressedCohortIntoCompatibleQueue( VectorCohortVector_t &queues, int32_t population, const VectorMatingStructure& _vector_genetics );
+        virtual void MergeProgressedCohortIntoCompatibleQueue( VectorCohortVector_t &queues, IVectorCohort* pvc, float progressThisTimestep );
 
         // Helpers to access information from VectorHabitat to return information about larva
         float GetLarvalDevelopmentProgress (float dt, IVectorCohortWithHabitat* larva) const;
@@ -137,27 +157,92 @@ namespace Kernel
         float GetRelativeSurvivalWeight(VectorHabitat* habitat) const;
 
         // VectorPopulation accounting helper function
-        virtual void queueIncrementTotalPopulation( IVectorCohort* cohort, VectorStateEnum::Enum state = VectorStateEnum::STATE_ADULT );
+        virtual void queueIncrementTotalPopulation( IVectorCohort* cohort );
 
-        // TODO: Hook these up to configurable parameters?
-        //       Now, they are only set to 1.0f in constructor.
-        float animalfeed_eggbatchmod;
-        float ADfeed_eggbatchmod;
+        static std::vector<uint32_t> GetRandomIndexes( uint32_t N );
+
+        void Vector_Migration_Queue( const std::vector<uint32_t>& rRandomIndexes,
+                                     const std::vector<suids::suid>& rReachableNodes,
+                                     const std::vector<MigrationType::Enum>& rMigrationTypes,
+                                     const std::vector<float>& rRates,
+                                     VectorCohortVector_t* pMigratingQueue,
+                                     VectorCohortVector_t& rQueue );
+
+        struct FeedingProbabilities
+        {
+            float die_without_attempting_to_feed;
+            float die_before_human_feeding;
+            float successful_feed_animal;
+            float successful_feed_artifical_diet;
+            float successful_feed_attempt_indoor;
+            float successful_feed_attempt_outdoor;
+            float die_indoor;
+            float successful_feed_artifical_diet_indoor;
+            float successful_feed_human_indoor;
+            float die_outdoor;
+            float successful_feed_human_outdoor;
+
+            FeedingProbabilities()
+                : die_without_attempting_to_feed(0.0f)
+                , die_before_human_feeding( 0.0f )
+                , successful_feed_animal( 0.0f )
+                , successful_feed_artifical_diet( 0.0f )
+                , successful_feed_attempt_indoor( 0.0f )
+                , successful_feed_attempt_outdoor( 0.0f )
+                , die_indoor( 0.0f )
+                , successful_feed_artifical_diet_indoor( 0.0f )
+                , successful_feed_human_indoor( 0.0f )
+                , die_outdoor( 0.0f )
+                , successful_feed_human_outdoor( 0.0f )
+            {
+            }
+        };
+
+        float CalculateEggBatchSize( IVectorCohort* cohort );
+        virtual void GenerateEggs( uint32_t numFeedHuman, uint32_t numFeedAD, uint32_t numFeedAnimal, IVectorCohort* cohort );
+        void AdjustEggsForDeath( IVectorCohort* cohort, uint32_t numDied );
+        void AddEggsToLayingQueue( IVectorCohort* cohort, uint32_t num_eggs );
+
+        uint32_t CalculatePortionInProbability( bool isForDeath, uint32_t& rRemainingPop, float prob );
+        float AdjustForConditionalProbability( float& rCumulative, float probability );
+
+        virtual void AdjustForFeedingRate( float dt, float p_local_mortality, FeedingProbabilities& rFeedProbs );
+        virtual void AdjustForCumulativeProbability( FeedingProbabilities& rFeedProbs );
+        FeedingProbabilities CalculateFeedingProbabilities( float dt, IVectorCohort* cohort );
+
+        virtual void VectorToHumanDeposit( const IStrainIdentity& strain,
+                                           uint32_t attemptFeed,
+                                           const TransmissionGroupMembership_t* pTransmissionVectorToHuman );
+
+        uint32_t VectorToHumanTransmission( const char* indoor_or_outdoor_str,
+                                            const TransmissionGroupMembership_t* pTransmissionVectorToHuman,
+                                            IVectorCohort* cohort,
+                                            uint32_t attemptFeed );
+
+        uint32_t CalculateHumanToVectorInfection( const TransmissionGroupMembership_t* transmissionHumanToVector,
+                                                  IVectorCohort* cohort,
+                                                  float probSuccessfulFeed,
+                                                  uint32_t numHumanFeed );
 
         // List of habitats for this species
         VectorHabitatList_t* m_larval_habitats; // "shared" pointer, NodeVector owns this memory
         std::map<VectorHabitatType::Enum, float> m_larval_capacities;
 
-        int32_t neweggs; 
-        int32_t adult;      // female population
-        int32_t infected;
-        int32_t infectious;
-        int32_t males;
+        uint32_t neweggs; 
+        uint32_t adult;      // female population
+        uint32_t infected;
+        uint32_t infectious;
+        uint32_t males;
+
+        uint32_t new_adults;
+        uint32_t dead_mosquitoes_before;
+        uint32_t dead_mosquitoes_indoor;
+        uint32_t dead_mosquitoes_outdoor;
 
         // local variations on base rates
         float dryheatmortality;
-        float localadultmortality;
         float infectiouscorrection;
+        float infected_progress_this_timestep;
 
         // intermediate counters
         float indoorinfectiousbites;
@@ -185,13 +270,13 @@ namespace Kernel
 
         std::string species_ID;
 
-        VectorCohortList_t EggQueues;
-        VectorCohortList_t LarvaQueues;
-        VectorCohortList_t ImmatureQueues;
+        VectorCohortVector_t EggQueues;
+        VectorCohortVector_t LarvaQueues;
+        VectorCohortVector_t ImmatureQueues;
         VectorCohortVector_t AdultQueues;
-        VectorCohortList_t InfectedQueues;
-        VectorCohortList_t InfectiousQueues;
-        VectorCohortList_t MaleQueues;
+        VectorCohortVector_t InfectedQueues;
+        VectorCohortVector_t InfectiousQueues;
+        VectorCohortVector_t MaleQueues;
 
         INodeContext                  *m_context;
         const VectorSpeciesParameters *m_species_params;
@@ -199,6 +284,11 @@ namespace Kernel
         ITransmissionGroups           *m_transmissionGroups;
 
         bool m_VectorMortality;
+
+        std::vector<std::vector<float>> m_LocalMortalityProbabilityTable;
+        float m_DefaultLocalMortalityProbability;
+
+        static std::vector<float> m_MortalityTable;
 
         DECLARE_SERIALIZABLE(VectorPopulation);
     };

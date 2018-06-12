@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -28,12 +28,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #ifdef ENABLE_POLIO
 #include "SimulationPolio.h"
 #endif
-#ifdef ENABLE_TB
-#include "SimulationTB.h"
+
 #ifdef ENABLE_TBHIV
 #include "SimulationTBHIV.h"
 #endif // TBHIV
-#endif // TB
 #endif // _DLLS_
 #include "ControllerFactory.h"
 
@@ -70,16 +68,12 @@ bool call_templated_functor_with_sim_type_hack(ControllerExecuteFunctorT &cef)
     else if (sSimType == "POLIO_SIM")
         sim_type = SimType::POLIO_SIM;
 #endif
-#ifdef ENABLE_TB
+#ifdef ENABLE_TBHIV
     else if (sSimType == "AIRBORNE_SIM")
         sim_type = SimType::AIRBORNE_SIM;
-    else if (sSimType == "TB_SIM")
-        sim_type = SimType::TB_SIM;
-#ifdef ENABLE_TBHIV
     else if (sSimType == "TBHIV_SIM")
         sim_type = SimType::TBHIV_SIM;
 #endif // TBHIV
-#endif // TB
     else
     {
         std::string note = "The Simulation_Type (='"+sSimType+"') is unknown.  Please select a valid type." ;
@@ -95,13 +89,10 @@ bool call_templated_functor_with_sim_type_hack(ControllerExecuteFunctorT &cef)
         case SimType::ENVIRONMENTAL_SIM: return cef.template call<SimulationEnvironmental>();
         case SimType::POLIO_SIM:         return cef.template call<SimulationPolio>();
 #endif
-#ifdef ENABLE_TB
-        case SimType::AIRBORNE_SIM:      return cef.template call<SimulationAirborne>();
-        case SimType::TB_SIM:            return cef.template call<SimulationTB>();
 #ifdef ENABLE_TBHIV
+        case SimType::AIRBORNE_SIM:      return cef.template call<SimulationAirborne>();
         case SimType::TBHIV_SIM:         return cef.template call<SimulationTBHIV>();
 #endif // TBHIV
-#endif // TB
     default: 
         // ERROR: ("call_templated_functor_with_sim_type_hack(): Error, Sim_Type %d is not implemented.\n", sim_type);
         throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "sim_type", sim_type, SimType::pairs::lookup_key( sim_type ) );

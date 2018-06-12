@@ -125,8 +125,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;ENABLE_PYTHON;ENABLE_PYTHON_FEVER;ENABLE_TB;WIN32;IDM_EXPORT;_DEBUG;_CONSOLE;_SCL_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions);_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Dependencies\ComputeClusterPack\Include;$(IDM_BOOST_PATH);%(AdditionalIncludeDirectories);..\cajun\include;..\baseReportLib;..\utils\;..\campaign\;..\Eradication\;..\interventions\;..\rapidjson\include;..\rapidjson\modp;..\snappy;..\lz4\lib;$(IDM_PYTHON_PATH)\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;ENABLE_PYTHON;ENABLE_PYTHON_FEVER;ENABLE_TB;ENABLE_TBHIV;WIN32;IDM_EXPORT;_DEBUG;_CONSOLE;_SCL_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions);_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Dependencies\ComputeClusterPack\Include;$(IDM_BOOST_PATH);%(AdditionalIncludeDirectories);..\cajun\include;..\baseReportLib;..\utils\;..\campaign\;..\Eradication\;..\interventions\;..\rapidjson\include;..\rapidjson\modp;..\snappy;..\lz4\lib;$(IDM_PYTHON3_PATH)\include</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
@@ -174,8 +174,8 @@
       <FunctionLevelLinking>
       </FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;ENABLE_PYTHON;ENABLE_PYTHON_FEVER;ENABLE_TB;WIN32;IDM_EXPORT;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Dependencies\ComputeClusterPack\Include;$(IDM_BOOST_PATH);%(AdditionalIncludeDirectories);..\cajun\include;..\baseReportLib;..\campaign\;..\utils\;..\Eradication\;..\interventions\;..\rapidjson\include;..\rapidjson\modp;..\snappy;..\lz4\lib;$(IDM_PYTHON_PATH)\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;ENABLE_PYTHON;ENABLE_PYTHON_FEVER;ENABLE_TB;ENABLE_TBHIV;WIN32;IDM_EXPORT;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Dependencies\ComputeClusterPack\Include;$(IDM_BOOST_PATH);%(AdditionalIncludeDirectories);..\cajun\include;..\baseReportLib;..\campaign\;..\utils\;..\Eradication\;..\interventions\;..\rapidjson\include;..\rapidjson\modp;..\snappy;..\lz4\lib;$(IDM_PYTHON3_PATH)\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -200,8 +200,8 @@
       <FunctionLevelLinking>
       </FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>DISABLE_MPI;BOOST_ALL_NO_LIB;ENABLE_PYTHON;ENABLE_PYTHON_FEVER;ENABLE_TB;WIN32;IDM_EXPORT;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(IDM_BOOST_PATH);%(AdditionalIncludeDirectories);..\cajun\include;..\baseReportLib;..\campaign\;..\utils\;..\Eradication\;..\interventions\;..\rapidjson\include;..\rapidjson\modp;..\snappy;..\lz4\lib;$(IDM_PYTHON_PATH)\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DISABLE_MPI;BOOST_ALL_NO_LIB;ENABLE_PYTHON;ENABLE_PYTHON_FEVER;ENABLE_TB;ENABLE_TBHIV;WIN32;IDM_EXPORT;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IDM_BOOST_PATH);%(AdditionalIncludeDirectories);..\cajun\include;..\baseReportLib;..\campaign\;..\utils\;..\Eradication\;..\interventions\;..\rapidjson\include;..\rapidjson\modp;..\snappy;..\lz4\lib;$(IDM_PYTHON3_PATH)\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -228,24 +228,17 @@
     <ClInclude Include="..\baseReportLib\BinnedReport.h" />
     <ClInclude Include="..\baseReportLib\ChannelDataMap.h" />
     <ClInclude Include="..\baseReportLib\IReport.h" />
-    <ClInclude Include="..\baseReportLib\ReportUtilities.h" />
-    <ClInclude Include="..\cajun\include\CajunIncludes.h" />
-    <ClInclude Include="..\campaign\EventCoordinator.h" />
-    <ClInclude Include="..\campaign\InterventionEnums.h" />
-    <ClInclude Include="..\campaign\InterventionFactory.h" />
-    <ClInclude Include="..\campaign\Interventions.h" />
-    <ClInclude Include="..\campaign\InterventionValidator.h" />
-    <ClInclude Include="..\campaign\NodeSet.h" />
     <ClInclude Include="..\interventions\ActiveDiagnostics.h" />
+    <ClInclude Include="..\interventions\AdherentDrug.h" />
     <ClInclude Include="..\interventions\AgeDiagnostic.h" />
     <ClInclude Include="..\interventions\AntiMalarialDrug.h" />
     <ClInclude Include="..\interventions\AntiTBDrug.h" />
-    <ClInclude Include="..\interventions\AntiTBPropertyDependentDrug.h" />
     <ClInclude Include="..\interventions\ARTBasic.h" />
     <ClInclude Include="..\interventions\ARTDropout.h" />
     <ClInclude Include="..\interventions\BCGVaccine.h" />
     <ClInclude Include="..\interventions\Bednet.h" />
     <ClInclude Include="..\interventions\BirthTriggeredIV.h" />
+    <ClInclude Include="..\interventions\BitingRisk.h" />
     <ClInclude Include="..\interventions\BroadcastEvent.h" />
     <ClInclude Include="..\interventions\BroadcastEventToOtherNodes.h" />
     <ClInclude Include="..\interventions\CalendarIV.h" />
@@ -265,7 +258,6 @@
     <ClInclude Include="..\interventions\HIVDrawBlood.h" />
     <ClInclude Include="..\interventions\HIVMuxer.h" />
     <ClInclude Include="..\interventions\HIVPiecewiseByYearAndSexDiagnostic.h" />
-    <ClInclude Include="..\interventions\HIVPreARTNotification.h" />
     <ClInclude Include="..\interventions\HIVRandomChoice.h" />
     <ClInclude Include="..\interventions\HIVRapidHIVDiagnostic.h" />
     <ClInclude Include="..\interventions\HIVSigmoidByYearAndSexDiagnostic.h" />
@@ -290,12 +282,14 @@
     <ClInclude Include="..\interventions\MultiEffectBoosterVaccine.h" />
     <ClInclude Include="..\interventions\MultiEffectVaccine.h" />
     <ClInclude Include="..\interventions\MultiInterventionDistributor.h" />
+    <ClInclude Include="..\interventions\MultiNodeInterventionDistributor.h" />
     <ClInclude Include="..\interventions\NodeLevelHealthTriggeredIV.h" />
     <ClInclude Include="..\interventions\NodeLevelHealthTriggeredIVScaleUpSwitch.h" />
     <ClInclude Include="..\interventions\NodePropertyValueChanger.h" />
     <ClInclude Include="..\interventions\Outbreak.h" />
     <ClInclude Include="..\interventions\OutbreakIndividual.h" />
-    <ClInclude Include="..\interventions\OutbreakIndividualDengue.h" />
+    <ClInclude Include="..\interventions\OutbreakIndividualTBorHIV.h" />
+    <ClInclude Include="..\interventions\OutbreakIndividualMalaria.h" />
     <ClInclude Include="..\interventions\PMTCT.h" />
     <ClInclude Include="..\interventions\PropertyValueChanger.h" />
     <ClInclude Include="..\interventions\ResistanceDiagnostics.h" />
@@ -306,55 +300,17 @@
     <ClInclude Include="..\interventions\STIBarrier.h" />
     <ClInclude Include="..\interventions\StiCoInfectionDiagnostic.h" />
     <ClInclude Include="..\interventions\STIIsPostDebut.h" />
-    <ClInclude Include="..\interventions\TyphoidVaccine.h" />
-    <ClInclude Include="..\interventions\TyphoidWASH.h" />
+    <ClInclude Include="..\interventions\TBHIVConfigurableTBdrug.h" />
     <ClInclude Include="..\interventions\UsageDependentBednet.h" />
     <ClInclude Include="..\interventions\Vaccine.h" />
     <ClInclude Include="..\interventions\VectorControlNodeTargeted.h" />
     <ClInclude Include="..\interventions\WaningEffect.h" />
+    <ClInclude Include="..\interventions\WaningEffectCombo.h" />
     <ClInclude Include="..\interventions\WaningEffectMap.h" />
     <ClInclude Include="..\interventions\WaningEffectMapAge.h" />
+    <ClInclude Include="..\interventions\WaningEffectMapCount.h" />
     <ClInclude Include="..\interventions\WaningEffectMapSeasonal.h" />
     <ClInclude Include="..\interventions\WaningEffectRandomBox.h" />
-    <ClInclude Include="..\utils\BinaryArchiveReader.h" />
-    <ClInclude Include="..\utils\BinaryArchiveWriter.h" />
-    <ClInclude Include="..\utils\BoostLibWrapper.h" />
-    <ClInclude Include="..\utils\Configuration.h" />
-    <ClInclude Include="..\utils\ConfigurationImpl.h" />
-    <ClInclude Include="..\utils\Configure.h" />
-    <ClInclude Include="..\utils\DurationDistribution.h" />
-    <ClInclude Include="..\utils\EnumSupport.h" />
-    <ClInclude Include="..\utils\Environment.h" />
-    <ClInclude Include="..\utils\EventTrigger.h" />
-    <ClInclude Include="..\utils\Exceptions.h" />
-    <ClInclude Include="..\utils\FactorySupport.h" />
-    <ClInclude Include="..\utils\IArchive.h" />
-    <ClInclude Include="..\utils\IdmApi.h" />
-    <ClInclude Include="..\utils\IdmDateTime.h" />
-    <ClInclude Include="..\utils\IdmMpi.h" />
-    <ClInclude Include="..\utils\IdmString.h" />
-    <ClInclude Include="..\utils\InterpolatedValueMap.h" />
-    <ClInclude Include="..\utils\ISerializable.h" />
-    <ClInclude Include="..\utils\ISupports.h" />
-    <ClInclude Include="..\utils\JsonFullReader.h" />
-    <ClInclude Include="..\utils\JsonFullWriter.h" />
-    <ClInclude Include="..\utils\JsonObject.h" />
-    <ClInclude Include="..\utils\JsonObjectDemog.h" />
-    <ClInclude Include="..\utils\JsonRawReader.h" />
-    <ClInclude Include="..\utils\JsonRawWriter.h" />
-    <ClInclude Include="..\utils\Log.h" />
-    <ClInclude Include="..\utils\MathFunctions.h" />
-    <ClInclude Include="..\utils\Memory.h" />
-    <ClInclude Include="..\utils\NodeProperties.h" />
-    <ClInclude Include="..\utils\ProgVersion.h" />
-    <ClInclude Include="..\utils\Properties.h" />
-    <ClInclude Include="..\utils\PropertiesString.h" />
-    <ClInclude Include="..\utils\RANDOM.h" />
-    <ClInclude Include="..\utils\RapidJsonImpl.h" />
-    <ClInclude Include="..\utils\Serializer.h" />
-    <ClInclude Include="..\utils\Sigmoid.h" />
-    <ClInclude Include="..\utils\StatusReporter.h" />
-    <ClInclude Include="..\utils\Timers.h" />
     <ClInclude Include="..\utils\Types.h" />
     <ClInclude Include="Assortivity.h" />
     <ClInclude Include="AssortivityFactory.h" />
@@ -379,14 +335,15 @@
     <ClInclude Include="CoverageByNodeEventCoordinator.h" />
     <ClInclude Include="DemographicRestrictions.h" />
     <ClInclude Include="DemographicsReport.h" />
-    <ClInclude Include="DengueDefs.h" />
     <ClInclude Include="DllDefs.h" />
     <ClInclude Include="DllLoader.h" />
     <ClInclude Include="EventsForOtherNodes.h" />
     <ClInclude Include="FerrandAgeDependentDistribution.h" />
     <ClInclude Include="FlowControllerFactory.h" />
     <ClInclude Include="FlowControllerImpl.h" />
+    <ClInclude Include="GenomeMarkers.h" />
     <ClInclude Include="GroupEventCoordinator.h" />
+    <ClInclude Include="GroupEventCoordinatorHIV.h" />
     <ClInclude Include="HIVEnums.h" />
     <ClInclude Include="HIVInterventionsContainer.h" />
     <ClInclude Include="HivObjectFactory.h" />
@@ -397,6 +354,7 @@
     <ClInclude Include="IConcurrency.h" />
     <ClInclude Include="IContagionPopulation.h" />
     <ClInclude Include="IController.h" />
+    <ClInclude Include="IGenomeMarkers.h" />
     <ClInclude Include="IHIVInterventionsContainer.h" />
     <ClInclude Include="IIdGeneratorSTI.h" />
     <ClInclude Include="IIndividualHuman.h" />
@@ -409,14 +367,15 @@
     <ClInclude Include="IMigrate.h" />
     <ClInclude Include="IMigrationInfo.h" />
     <ClInclude Include="IMigrationInfoVector.h" />
+    <ClInclude Include="IncidenceEventCoordinator.h" />
     <ClInclude Include="Individual.h" />
     <ClInclude Include="IndividualAirborne.h" />
+    <ClInclude Include="IndividualCoInfection.h" />
     <ClInclude Include="IndividualEventContext.h" />
     <ClInclude Include="IndividualHIV.h" />
     <ClInclude Include="IndividualMalaria.h" />
     <ClInclude Include="IndividualPy.h" />
     <ClInclude Include="IndividualSTI.h" />
-    <ClInclude Include="IndividualTB.h" />
     <ClInclude Include="IndividualVector.h" />
     <ClInclude Include="Infection.h" />
     <ClInclude Include="InfectionAirborne.h" />
@@ -448,22 +407,24 @@
     <ClInclude Include="IStrainIdentity.h" />
     <ClInclude Include="ISusceptibilityContext.h" />
     <ClInclude Include="ITransmissionGroups.h" />
+    <ClInclude Include="IVectorCohort.h" />
     <ClInclude Include="IVectorHabitat.h" />
     <ClInclude Include="IVectorMigrationReporting.h" />
+    <ClInclude Include="IVectorPopulation.h" />
     <ClInclude Include="LarvalHabitatMultiplier.h" />
     <ClInclude Include="LoadBalanceScheme.h" />
     <ClInclude Include="Malaria.h" />
     <ClInclude Include="MalariaAntibody.h" />
-    <ClInclude Include="MalariaBarcode.h" />
     <ClInclude Include="MalariaContexts.h" />
     <ClInclude Include="MalariaDrugTypeParameters.h" />
     <ClInclude Include="MalariaEnums.h" />
     <ClInclude Include="MalariaInterventionsContainer.h" />
+    <ClInclude Include="MalariaInterventionsContainerContexts.h" />
     <ClInclude Include="MalariaParameters.h" />
+    <ClInclude Include="MasterInterventionsContainer.h" />
     <ClInclude Include="Migration.h" />
     <ClInclude Include="MigrationInfoVector.h" />
     <ClInclude Include="MpiDataExchanger.h" />
-    <ClInclude Include="MultiInterventionEventCoordinator.h" />
     <ClInclude Include="MultiRouteTransmissionGroups.h" />
     <ClInclude Include="NChooserEventCoordinator.h" />
     <ClInclude Include="NChooserEventCoordinatorHIV.h" />
@@ -474,7 +435,6 @@
     <ClInclude Include="NodeDemographics.h" />
     <ClInclude Include="NodeEventContext.h" />
     <ClInclude Include="NodeEventContextHost.h" />
-    <ClInclude Include="NodeEventCoordinator.h" />
     <ClInclude Include="NodeHIV.h" />
     <ClInclude Include="NodeInfo.h" />
     <ClInclude Include="NodeInfoSTI.h" />
@@ -485,7 +445,7 @@
     <ClInclude Include="NodeRankMap.h" />
     <ClInclude Include="NodeSTI.h" />
     <ClInclude Include="NodeTB.h" />
-    <ClInclude Include="NodeTyphoidEventContext.h" />
+    <ClInclude Include="NodeTBHIV.h" />
     <ClInclude Include="NodeVector.h" />
     <ClInclude Include="NodeVectorEventContext.h" />
     <ClInclude Include="PairFormationParametersImpl.h" />
@@ -510,7 +470,6 @@
     <ClInclude Include="RelationshipReporting.h" />
     <ClInclude Include="Report.h" />
     <ClInclude Include="ReportAirborne.h" />
-    <ClInclude Include="ReportDengue.h" />
     <ClInclude Include="ReportEventRecorder.h" />
     <ClInclude Include="ReportHIV.h" />
     <ClInclude Include="ReportHIVART.h" />
@@ -521,11 +480,11 @@
     <ClInclude Include="ReportPy.h" />
     <ClInclude Include="ReportSTI.h" />
     <ClInclude Include="ReportTB.h" />
+    <ClInclude Include="ReportTBHIV.h" />
     <ClInclude Include="ReportUtilitiesSTI.h" />
     <ClInclude Include="ReportVector.h" />
     <ClInclude Include="Schema.h" />
     <ClInclude Include="SerializedPopulation.h" />
-    <ClInclude Include="SimpleEventCoordinator.h" />
     <ClInclude Include="SimpleTransmissionGroups.h" />
     <ClInclude Include="Simulation.h" />
     <ClInclude Include="SimulationAirborne.h" />
@@ -537,19 +496,17 @@
     <ClInclude Include="SimulationMalaria.h" />
     <ClInclude Include="SimulationPy.h" />
     <ClInclude Include="SimulationSTI.h" />
-    <ClInclude Include="SimulationTB.h" />
+    <ClInclude Include="SimulationTBHIV.h" />
     <ClInclude Include="SimulationVector.h" />
     <ClInclude Include="SocietyFactory.h" />
     <ClInclude Include="SocietyImpl.h" />
     <ClInclude Include="SpatialReport.h" />
-    <ClInclude Include="SpatialReportDengue.h" />
     <ClInclude Include="SpatialReportMalaria.h" />
     <ClInclude Include="SpatialReportPy.h" />
     <ClInclude Include="SpatialReportTB.h" />
     <ClInclude Include="SpatialReportVector.h" />
     <ClInclude Include="StandardEventCoordinator.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="STIEventCoordinator.h" />
     <ClInclude Include="STIInterventionsContainer.h" />
     <ClInclude Include="StiObjectFactory.h" />
     <ClInclude Include="StiRelationshipConsummatedReporter.h" />
@@ -570,16 +527,15 @@
     <ClInclude Include="TBContexts.h" />
     <ClInclude Include="TBDrugTypeParameters.h" />
     <ClInclude Include="TBHIVContexts.h" />
+    <ClInclude Include="TBHIVDrugTypeParameters.h" />
+    <ClInclude Include="TBHIVParameters.h" />
     <ClInclude Include="TBInterventionsContainer.h" />
     <ClInclude Include="TBParameters.h" />
     <ClInclude Include="TransmissionGroupMembership.h" />
     <ClInclude Include="TransmissionGroupsBase.h" />
     <ClInclude Include="TransmissionGroupsFactory.h" />
-    <ClInclude Include="TyphoidDefs.h" />
-    <ClInclude Include="TyphoidInterventionsContainer.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="VectorCohort.h" />
-    <ClInclude Include="VectorCohortAging.h" />
     <ClInclude Include="VectorCohortIndividual.h" />
     <ClInclude Include="VectorCohortWithHabitat.h" />
     <ClInclude Include="VectorContexts.h" />
@@ -587,10 +543,10 @@
     <ClInclude Include="VectorEnums.h" />
     <ClInclude Include="VectorHabitat.h" />
     <ClInclude Include="VectorInterventionsContainer.h" />
+    <ClInclude Include="VectorInterventionsContainerContexts.h" />
     <ClInclude Include="VectorMatingStructure.h" />
     <ClInclude Include="VectorParameters.h" />
     <ClInclude Include="VectorPopulation.h" />
-    <ClInclude Include="VectorPopulationAging.h" />
     <ClInclude Include="VectorPopulationIndividual.h" />
     <ClInclude Include="VectorProbabilities.h" />
     <ClInclude Include="VectorSpeciesParameters.h" />
@@ -599,15 +555,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\interventions\ActiveDiagnostics.cpp" />
+    <ClCompile Include="..\interventions\AdherentDrug.cpp" />
     <ClCompile Include="..\interventions\AgeDiagnostic.cpp" />
     <ClCompile Include="..\interventions\AntiMalarialDrug.cpp" />
     <ClCompile Include="..\interventions\AntiTBDrug.cpp" />
-    <ClCompile Include="..\interventions\AntiTBPropertyDependentDrug.cpp" />
     <ClCompile Include="..\interventions\ARTBasic.cpp" />
     <ClCompile Include="..\interventions\ARTDropout.cpp" />
     <ClCompile Include="..\interventions\BCGVaccine.cpp" />
     <ClCompile Include="..\interventions\Bednet.cpp" />
     <ClCompile Include="..\interventions\BirthTriggeredIV.cpp" />
+    <ClCompile Include="..\interventions\BitingRisk.cpp" />
     <ClCompile Include="..\interventions\BroadcastEvent.cpp" />
     <ClCompile Include="..\interventions\BroadcastEventToOtherNodes.cpp" />
     <ClCompile Include="..\interventions\CalendarIV.cpp" />
@@ -627,7 +584,6 @@
     <ClCompile Include="..\interventions\HIVDrawBlood.cpp" />
     <ClCompile Include="..\interventions\HIVMuxer.cpp" />
     <ClCompile Include="..\interventions\HIVPiecewiseByYearAndSexDiagnostic.cpp" />
-    <ClCompile Include="..\interventions\HIVPreARTNotification.cpp" />
     <ClCompile Include="..\interventions\HIVRandomChoice.cpp" />
     <ClCompile Include="..\interventions\HIVRapidHIVDiagnostic.cpp" />
     <ClCompile Include="..\interventions\HIVSigmoidByYearAndSexDiagnostic.cpp" />
@@ -649,11 +605,14 @@
     <ClCompile Include="..\interventions\MultiEffectBoosterVaccine.cpp" />
     <ClCompile Include="..\interventions\MultiEffectVaccine.cpp" />
     <ClCompile Include="..\interventions\MultiInterventionDistributor.cpp" />
+    <ClCompile Include="..\interventions\MultiNodeInterventionDistributor.cpp" />
     <ClCompile Include="..\interventions\NodeLevelHealthTriggeredIV.cpp" />
     <ClCompile Include="..\interventions\NodeLevelHealthTriggeredIVScaleUpSwitch.cpp" />
     <ClCompile Include="..\interventions\NodePropertyValueChanger.cpp" />
     <ClCompile Include="..\interventions\Outbreak.cpp" />
     <ClCompile Include="..\interventions\OutbreakIndividual.cpp" />
+    <ClCompile Include="..\interventions\OutbreakIndividualTBorHIV.cpp" />
+    <ClCompile Include="..\interventions\OutbreakIndividualMalaria.cpp" />
     <ClCompile Include="..\interventions\PMTCT.cpp" />
     <ClCompile Include="..\interventions\PropertyValueChanger.cpp" />
     <ClCompile Include="..\interventions\ResistanceDiagnostics.cpp" />
@@ -665,15 +624,18 @@
     <ClCompile Include="..\interventions\STIBarrier.cpp" />
     <ClCompile Include="..\interventions\StiCoInfectionDiagnostic.cpp" />
     <ClCompile Include="..\interventions\STIIsPostDebut.cpp" />
+    <ClCompile Include="..\interventions\TBHIVConfigurableTBdrug.cpp" />
     <ClCompile Include="..\interventions\UsageDependentBednet.cpp" />
     <ClCompile Include="..\interventions\VectorControlNodeTargeted.cpp" />
     <ClCompile Include="..\interventions\WaningEffectBox.cpp" />
     <ClCompile Include="..\interventions\WaningEffectBoxExponential.cpp" />
+    <ClCompile Include="..\interventions\WaningEffectCombo.cpp" />
     <ClCompile Include="..\interventions\WaningEffectConstant.cpp" />
     <ClCompile Include="..\interventions\WaningEffectExponential.cpp" />
     <ClCompile Include="..\interventions\WaningEffectFactory.cpp" />
     <ClCompile Include="..\interventions\WaningEffectMap.cpp" />
     <ClCompile Include="..\interventions\WaningEffectMapAge.cpp" />
+    <ClCompile Include="..\interventions\WaningEffectMapCount.cpp" />
     <ClCompile Include="..\interventions\WaningEffectMapSeasonal.cpp" />
     <ClCompile Include="..\interventions\WaningEffectRandomBox.cpp" />
     <ClCompile Include="Assortivity.cpp" />
@@ -703,20 +665,23 @@
     <ClCompile Include="FerrandAgeDependentDistribution.cpp" />
     <ClCompile Include="FlowControllerFactory.cpp" />
     <ClCompile Include="FlowControllerImpl.cpp" />
+    <ClCompile Include="GenomeMarkers.cpp" />
     <ClCompile Include="GroupEventCoordinator.cpp" />
+    <ClCompile Include="GroupEventCoordinatorHIV.cpp" />
     <ClCompile Include="HIVInterventionsContainer.cpp" />
     <ClCompile Include="HivObjectFactory.cpp" />
     <ClCompile Include="HIVRelationshipStartReporter.cpp" />
     <ClCompile Include="HIVReportEventRecorder.cpp" />
     <ClCompile Include="HIVTransmissionReporter.cpp" />
     <ClCompile Include="IMigrationInfo.cpp" />
+    <ClCompile Include="IncidenceEventCoordinator.cpp" />
     <ClCompile Include="Individual.cpp" />
     <ClCompile Include="IndividualAirborne.cpp" />
+    <ClCompile Include="IndividualCoInfection.cpp" />
     <ClCompile Include="IndividualHIV.cpp" />
     <ClCompile Include="IndividualMalaria.cpp" />
     <ClCompile Include="IndividualPy.cpp" />
     <ClCompile Include="IndividualSTI.cpp" />
-    <ClCompile Include="IndividualTB.cpp" />
     <ClCompile Include="IndividualVector.cpp" />
     <ClCompile Include="Infection.cpp" />
     <ClCompile Include="InfectionAirborne.cpp" />
@@ -731,13 +696,12 @@
     <ClCompile Include="LarvalHabitatMultiplier.cpp" />
     <ClCompile Include="LoadBalanceScheme.cpp" />
     <ClCompile Include="MalariaAntibody.cpp" />
-    <ClCompile Include="MalariaBarcode.cpp" />
     <ClCompile Include="MalariaDrugTypeParameters.cpp" />
     <ClCompile Include="MalariaInterventionsContainer.cpp" />
+    <ClCompile Include="MasterInterventionsContainer.cpp" />
     <ClCompile Include="Migration.cpp" />
     <ClCompile Include="MigrationInfoVector.cpp" />
     <ClCompile Include="MpiDataExchanger.cpp" />
-    <ClCompile Include="MultiInterventionEventCoordinator.cpp" />
     <ClCompile Include="MultiRouteTransmissionGroups.cpp" />
     <ClCompile Include="NChooserEventCoordinator.cpp" />
     <ClCompile Include="NChooserEventCoordinatorHIV.cpp" />
@@ -746,7 +710,6 @@
     <ClCompile Include="NodeAirborne.cpp" />
     <ClCompile Include="NodeDemographics.cpp" />
     <ClCompile Include="NodeEventContext.cpp" />
-    <ClCompile Include="NodeEventCoordinator.cpp" />
     <ClCompile Include="NodeHIV.cpp" />
     <ClCompile Include="NodeInfo.cpp" />
     <ClCompile Include="NodeInfoSTI.cpp" />
@@ -757,6 +720,7 @@
     <ClCompile Include="NodeRankMap.cpp" />
     <ClCompile Include="NodeSTI.cpp" />
     <ClCompile Include="NodeTB.cpp" />
+    <ClCompile Include="NodeTBHIV.cpp" />
     <ClCompile Include="NodeVector.cpp" />
     <ClCompile Include="NodeVectorEventContext.cpp" />
     <ClCompile Include="PairFormationParametersImpl.cpp" />
@@ -791,11 +755,11 @@
     <ClCompile Include="ReportPy.cpp" />
     <ClCompile Include="ReportSTI.cpp" />
     <ClCompile Include="ReportTB.cpp" />
+    <ClCompile Include="ReportTBHIV.cpp" />
     <ClCompile Include="ReportUtilitiesSTI.cpp" />
     <ClCompile Include="ReportVector.cpp" />
     <ClCompile Include="Schema.cpp" />
     <ClCompile Include="SerializedPopulation.cpp" />
-    <ClCompile Include="SimpleEventCoordinator.cpp" />
     <ClCompile Include="SimpleTransmissionGroups.cpp" />
     <ClCompile Include="Simulation.cpp" />
     <ClCompile Include="SimulationAirborne.cpp" />
@@ -806,7 +770,7 @@
     <ClCompile Include="SimulationMalaria.cpp" />
     <ClCompile Include="SimulationPy.cpp" />
     <ClCompile Include="SimulationSTI.cpp" />
-    <ClCompile Include="SimulationTB.cpp" />
+    <ClCompile Include="SimulationTBHIV.cpp" />
     <ClCompile Include="SimulationVector.cpp" />
     <ClCompile Include="SocietyFactory.cpp" />
     <ClCompile Include="SocietyImpl.cpp" />
@@ -821,7 +785,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='QuickStart|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="STIEventCoordinator.cpp" />
     <ClCompile Include="STIInterventionsContainer.cpp" />
     <ClCompile Include="StiObjectFactory.cpp" />
     <ClCompile Include="StiRelationshipConsummatedReporter.cpp" />
@@ -840,18 +803,17 @@
     <ClCompile Include="SusceptibilityTB.cpp" />
     <ClCompile Include="SusceptibilityVector.cpp" />
     <ClCompile Include="TBDrugTypeParameters.cpp" />
+    <ClCompile Include="TBHIVDrugTypeParameters.cpp" />
     <ClCompile Include="TBInterventionsContainer.cpp" />
     <ClCompile Include="TransmissionGroupsBase.cpp" />
     <ClCompile Include="TransmissionGroupsFactory.cpp" />
     <ClCompile Include="VectorCohort.cpp" />
-    <ClCompile Include="VectorCohortAging.cpp" />
     <ClCompile Include="VectorCohortIndividual.cpp" />
     <ClCompile Include="VectorCohortWithHabitat.cpp" />
     <ClCompile Include="VectorHabitat.cpp" />
     <ClCompile Include="VectorInterventionsContainer.cpp" />
     <ClCompile Include="VectorMatingStructure.cpp" />
     <ClCompile Include="VectorPopulation.cpp" />
-    <ClCompile Include="VectorPopulationAging.cpp" />
     <ClCompile Include="VectorPopulationIndividual.cpp" />
     <ClCompile Include="VectorProbabilities.cpp" />
     <ClCompile Include="VectorSpeciesParameters.cpp" />

@@ -1,6 +1,6 @@
 @copy nul > "%HOMEDRIVE%%HOMEPATH%.rt_show.sft"
 
-::rem set EMOD_ROOT=D:\GitHub\DtkTrunk
+set EMOD_ROOT=C:\Users\jbloedow\DtkTrunk\
 
 @IF "%EMOD_ROOT%"=="" (
 ECHO EMOD_ROOT is NOT defined in this script yet. Please edit run_test.cmd directly.

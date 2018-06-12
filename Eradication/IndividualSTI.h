@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -71,8 +71,7 @@ namespace Kernel
                                                   suids::suid _suid, 
                                                   float monte_carlo_weight = 1.0f, 
                                                   float initial_age = 0.0f, 
-                                                  int gender = 0, 
-                                                  float initial_poverty = 0.5f );
+                                                  int gender = 0);
         virtual void InitializeHuman() override;
         virtual void Update(float currenttime, float dt) override;
         virtual void UpdateHistory( const IdmDateTime& rCurrentTime, float dt ) override;
@@ -152,8 +151,7 @@ namespace Kernel
         IndividualHumanSTI( suids::suid id = suids::nil_suid(), 
                             float monte_carlo_weight = 1.0f, 
                             float initial_age = 0.0f,
-                            int gender = 0,
-                            float initial_poverty = 0.5f );
+                            int gender = 0);
         virtual void InitializeConcurrency();
 
         virtual void UpdateAge( float dt ) override;

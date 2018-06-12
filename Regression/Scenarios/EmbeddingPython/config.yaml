@@ -24,7 +24,7 @@ parameters:
     Enable_Demographics_Birth: 0
     Enable_Demographics_Gender: 1
     Enable_Demographics_Builtin: 0
-    Enable_Demographics_Other: 0
+    Enable_Demographics_Risk: 0
     Enable_Demographics_Reporting: 0
     Enable_Disease_Mortality: 0
     Enable_Heterogeneous_Intranode_Transmission: 0

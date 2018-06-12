@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,6 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"
 #include "EventTrigger.h"
 
+// DON'T COMMIT THIS CHANGE BELOW
 SETUP_LOGGING( "BaseEventReport" )
 
 namespace Kernel
@@ -45,10 +46,10 @@ namespace Kernel
     bool BaseEventReport::Configure( const Configuration* inputJson )
     {
         initConfigTypeMap( "Start_Day",      &startDay,     Start_Day_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
-        initConfigTypeMap( "Duration_Days",  &durationDays, Event_Report_Duration_Days_DESC_TEXT, 0.0f, FLT_MAX, FLT_MAX );
+        initConfigTypeMap( "Duration_Days",  &durationDays, Duration_Days_DESC_TEXT, 0.0f, FLT_MAX, FLT_MAX );
         if( inputJson->Exist("Report_Description") )
         {
-            initConfigTypeMap( "Report_Description", &reportDescription, Event_Report_Report_Description_DESC_TEXT );
+            initConfigTypeMap( "Report_Description", &reportDescription, Report_Description_DESC_TEXT );
         }
         if( inputJson->Exist("Nodeset_Config") )
         {
@@ -61,7 +62,7 @@ namespace Kernel
 
         if( inputJson->Exist( "Event_Trigger_List" ) )
         {
-            initConfigTypeMap( "Event_Trigger_List", &eventTriggerList, Event_Report_Event_Trigger_List_DESC_TEXT );
+            initConfigTypeMap( "Event_Trigger_List", &eventTriggerList, Event_Trigger_List_DESC_TEXT );
         }
 
         bool retValue = JsonConfigurable::Configure( inputJson );

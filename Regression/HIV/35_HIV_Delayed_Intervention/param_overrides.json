@@ -3,31 +3,35 @@
     "parameters": 
     { 
         "_____________SIMULATION___________": "",
+        "Config_Name": "35_HIV_Delayed_Intervention",
         "Run_Number": 35,
-        "Simulation_Duration": 10,
+        "Simulation_Duration": 30,
         "Simulation_Timestep": 1,
 
         "_____________DEMOGRAPHICS___________": "",
-        "Base_Population_Scale_Factor": 0.0001,
+        "Base_Population_Scale_Factor": 0.00001,
         "Demographics_Filenames": [
             "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json",
             "../input/PFA_overlay.json",
             "PFA_overlay_rates.json"
         ],
         "Enable_Birth": 0,
-        "x_Other_Mortality": 0,
-
-        "_____________INTRAHOST___________": "",
-
-        "_____________TRANSMISSION___________": "",
-
+        
         "_____________REPORTING___________": "",
         "Report_Event_Recorder": 1,
-        "Report_Event_Recorder_Events": ["LTFU0", "LTFU1"],
-
+        "Report_Event_Recorder_Events": [
+            "LTFU0",
+            "LTFU1",
+            "LTFU2",
+            "LTFU3",
+            "LTFU4"
+        ],
+        
+        "_____________INTRAHOST___________": "",
         "_____________REPLICATION_AND_DRUGS___________": "",
-
         "_____________RARELY_CHANGED___________": "",
-        "Config_Name": "35_HIV_Delayed_Intervention"
+        "_____________REPLICATION_AND_DRUGS___________": "",
+        "_____________TRANSMISSION___________": "",
+        "x_Other_Mortality": 0
     }
 }

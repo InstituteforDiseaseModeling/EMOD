@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -24,6 +24,7 @@ namespace Kernel
 {
     BEGIN_QUERY_INTERFACE_DERIVED(VectorInterventionsContainer, InterventionsContainer)
         HANDLE_INTERFACE(IBednetConsumer)
+        HANDLE_INTERFACE(IBitingRisk)
         HANDLE_INTERFACE(IVectorInterventionsEffects)
         HANDLE_INTERFACE(IHousingModificationConsumer)
         HANDLE_INTERFACE(IIndividualRepellentConsumer)
@@ -127,7 +128,20 @@ namespace Kernel
         p_survive_insecticidal_drug *= (1.0f-prob);  // will multiply by 1-all drugs and then do 1- that.
     }
 
-    void VectorInterventionsContainer::Update(float dt)
+    void VectorInterventionsContainer::UpdateRelativeBitingRate( float rate )
+    {
+        ISusceptibilityContext* p_susc = parent->GetSusceptibilityContext();
+
+        IVectorSusceptibilityContext* p_susc_vector = nullptr;
+        if( s_OK != p_susc->QueryInterface( GET_IID( IVectorSusceptibilityContext ), (void**)&p_susc_vector ) )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "p_susc", "IVectorSusceptibilityContext", "ISusceptibilityContext" );
+        }
+
+        p_susc_vector->SetRelativeBitingRate( rate );
+    }
+
+    void VectorInterventionsContainer::InfectiousLoopUpdate( float dt )
     {
         // TODO: Re-implement policy of 1 intervention of each type w/o
         // knowing a priori about any intervention types. Current favorite
@@ -145,10 +159,15 @@ namespace Kernel
         p_kill_ADIH = 0;         // kill probability of in-house artificial diet
         p_survive_insecticidal_drug = 1.0; // post-feed kill probability of insecticidal drug (e.g. Ivermectin)-- starts at 1.0 because will do 1.0-p_kill below
 
-        float p_dieduringfeeding = GET_CONFIGURABLE(SimulationConfig)->vector_params->human_feeding_mortality;
-
         // call base level
-        InterventionsContainer::Update(dt);
+        InterventionsContainer::InfectiousLoopUpdate( dt );
+    }
+
+    void VectorInterventionsContainer::Update( float dt )
+    {
+        InterventionsContainer::Update( dt );
+
+        float p_dieduringfeeding = GET_CONFIGURABLE( SimulationConfig )->vector_params->human_feeding_mortality;
 
         // final adjustment to product of (1-prob) accumulated over potentially multiple instances
         float p_block_housing = 1.0f - p_penetrate_housingmod;
@@ -188,13 +207,6 @@ namespace Kernel
             LOG_WARN_F( "%s: Both node and individual have an IRS intervention. Node killing rate will be used.\n", __FUNCTION__ );
         }
         float p_kill_IRSpostfeed_effective = (p_kill_IRSpostfeed_node > 0) ? p_kill_IRSpostfeed_node : p_kill_IRSpostfeed;
-#if 0
-        // Someday
-        effects->Release();
-        effects = nullptr;
-        human->Release();
-        human = nullptr;
-#endif
 
         p_kill_IRSpostfeed_effective = 1.0f - ((1.0f-p_kill_IRSpostfeed_effective)*(1.0f-p_kill_insecticidal_drug));
 

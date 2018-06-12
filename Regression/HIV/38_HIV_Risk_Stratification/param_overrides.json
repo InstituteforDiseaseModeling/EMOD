@@ -1,14 +1,8 @@
-{ 
-    "Default_Config_Path": "defaults/hiv_default_config.json", 
-    "parameters": 
-    { 
-        "_____________SIMULATION___________": "",
-        "Run_Number": 36,
-        "Simulation_Duration": 3650,
-        "Simulation_Timestep": 1,
-
-        "_____________DEMOGRAPHICS___________": "",
+{
+    "Default_Config_Path": "defaults/hiv_default_config.json",
+    "parameters": {
         "Base_Population_Scale_Factor": 0.0001,
+        "Config_Name": "38_HIV_Risk_Stratification",
         "Demographics_Filenames": [
             "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed_with_RiskGroup.json",
             "../input/Risk_LOW_overlay.json",
@@ -16,20 +10,18 @@
             "../input/PFA_overlay_risk_assortivity.json",
             "PFA_Concurrency.json"
         ],
-
-        "_____________INTRAHOST___________": "",
-
-        "_____________TRANSMISSION___________": "",
-
-        "_____________NETWORK___________": "",
-
-        "_____________REPORTING___________": "",
         "Enable_Property_Output": 1,
-        "logLevel_PropertyValueChanger": "DEBUG",
-
-        "_____________REPLICATION_AND_DRUGS___________": "",
-
+        "Run_Number": 36,
+        "Simulation_Duration": 3650,
+        "Simulation_Timestep": 1,
+        "_____________DEMOGRAPHICS___________": "",
+        "_____________INTRAHOST___________": "",
+        "_____________NETWORK___________": "",
         "_____________RARELY_CHANGED___________": "",
-        "Config_Name": "38_HIV_Risk_Stratification"
+        "_____________REPLICATION_AND_DRUGS___________": "",
+        "_____________REPORTING___________": "",
+        "_____________SIMULATION___________": "",
+        "_____________TRANSMISSION___________": "",
+        "logLevel_PropertyValueChanger": "DEBUG"
     }
 }

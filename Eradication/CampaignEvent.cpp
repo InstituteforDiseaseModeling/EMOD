@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -27,10 +27,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 // Note: These includes appear to be necessary for EMODule build to be aware
 // of thse ECs. Need to move away from prior knowledge of specific ECs.
 #include "GroupEventCoordinator.h"
-#include "MultiInterventionEventCoordinator.h"
-#include "NodeEventCoordinator.h"
 #include "StandardEventCoordinator.h"
-#include "SimpleEventCoordinator.h"
 #include "CoverageByNodeEventCoordinator.h"
 #include "CalendarEventCoordinator.h"
 #include "NodeSet.h"

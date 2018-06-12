@@ -20,7 +20,10 @@
             }
         },
         "DEMOGRAPHICS": {
-            "Demographics_Filenames": ["Garki_single_demographics.json"]
+            "Demographics_Filenames": [
+                "Garki_single_demographics.json"
+            ],
+            "Enable_Initial_Prevalence": 1
         },
         "PRIMARY": {
             "Config_Name": "VectorAndMalaria_3C_Garki_single_node_Vector",
@@ -38,7 +41,7 @@
                     "gambiae"
                 ],
                 "Vector_Species_Params": {
-                    "arabiensis": { 
+                    "arabiensis": {
                         "Indoor_Feeding_Fraction": 1
                     }
                 }

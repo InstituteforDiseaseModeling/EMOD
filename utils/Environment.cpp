@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -36,7 +36,6 @@ Environment::Environment()
 , Log( nullptr )
 , Config(nullptr)
 , SimConfig(nullptr)
-, pPythonSupport(nullptr)
 , pIPFactory( nullptr )
 , pNPFactory( nullptr )
 , pEventTriggerFactory(nullptr)
@@ -56,7 +55,6 @@ Environment::Environment()
 
 bool Environment::Initialize(
     IdmMpi::MessageInterface* pMpi,
-    void* p_python_support,
     string configFileName, 
     string inputPath, string outputPath, /* 2.5 string statePath, */ string dllPath,
     bool get_schema)
@@ -70,8 +68,6 @@ bool Environment::Initialize(
     localEnv->MPI.p_idm_mpi = pMpi;
     localEnv->MPI.NumTasks  = pMpi->GetNumTasks();
     localEnv->MPI.Rank      = pMpi->GetRank();
-
-    localEnv->pPythonSupport = p_python_support;
 
     inputPath = FileSystem::RemoveTrailingChars( inputPath );
     if( !FileSystem::DirectoryExists(inputPath) )

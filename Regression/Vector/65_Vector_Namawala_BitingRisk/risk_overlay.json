@@ -1,0 +1,26 @@
+
+{ 
+    "Metadata": 
+    { 
+        "DateCreated": "Sun Sept 17, 2017",
+        "Author": "Daniel Bridenbecker",
+        "IdReference": "Gridded world grump2.5arcmin", 
+        "NodeCount": 1
+    },
+    "Defaults": 
+    { 
+        "IndividualProperties": [ 
+            { 
+                "Property": "Risk",
+                "Values": [ "LOW", "HIGH" ],
+                "Initial_Distribution": [ 0.5, 0.5 ],
+                "Transitions": []
+            }
+        ]
+    },
+    "Nodes": [
+        {
+            "NodeID": 340461476
+        }
+    ]
+}

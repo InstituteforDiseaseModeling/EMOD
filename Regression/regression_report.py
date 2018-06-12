@@ -109,11 +109,10 @@ class Report:
         stderr_filename = simulation_path + "/StdErr.txt"
         stderr_txt = "n/a"
         if( os.path.exists( stderr_filename ) ):
-            stderr_file = open( stderr_filename, "r" )
-            stderr_txt = "\n"
-            stderr_txt += stderr_file.read()
-            stderr_file.close()
-            
+            with open( stderr_filename, "r" ) as stderr_file:
+                stderr_txt = "\n"
+                stderr_txt += stderr_file.read()
+
         syserr_el = self.doc.createElement("system-err")
         syserr_txt = self.doc.createTextNode(stderr_txt)
         syserr_el.appendChild(syserr_txt)
@@ -131,6 +130,9 @@ class Report:
             self._test_failures.add(scenario_path)
         elif scenario_type == 'science':
             self._science_failures.add(scenario_path)
+
+        if self.params.print_error:
+            print(stderr_txt)
 
     def write(self, filename, time):
         self.suite_el.setAttribute("name", self.params.suite + " regression suite")

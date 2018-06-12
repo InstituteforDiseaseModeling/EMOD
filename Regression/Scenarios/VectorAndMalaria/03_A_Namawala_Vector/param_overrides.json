@@ -20,7 +20,10 @@
             }
         },
         "DEMOGRAPHICS": {
-            "Demographics_Filenames": ["Namawala_single_node_demographics.json"]
+            "Demographics_Filenames": [
+                "Namawala_single_node_demographics.json"
+            ],
+            "Enable_Initial_Prevalence": 1
         },
         "PRIMARY": {
             "Config_Name": "VectorAndMalaria_3A_Namawala_Vector",

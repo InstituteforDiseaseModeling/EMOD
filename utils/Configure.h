@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -31,7 +31,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <map>
 #include <set>
 #include <vector>
-#include <algorithm>
 
 #ifndef WIN32
 #include <limits>
@@ -152,6 +151,7 @@ namespace Kernel
     private:
         typedef std::map< std::string, bool * > tBoolConfigTypeMapType;
         typedef std::map< std::string, int * > tIntConfigTypeMapType;
+        typedef std::map< std::string, uint32_t * > tUint32ConfigTypeMapType;
         typedef std::map< std::string, float * > tFloatConfigTypeMapType;
         typedef std::map< std::string, double * > tDoubleConfigTypeMapType;
         typedef std::map< std::string, std::string * > tStringConfigTypeMapType;
@@ -181,6 +181,8 @@ namespace Kernel
 
         virtual json::QuickBuilder GetSchema();
 
+        virtual std::string GetTypeName() const;
+
         static bool _dryrun;
         static bool _useDefaults;
         static bool _track_missing;
@@ -206,6 +208,7 @@ namespace Kernel
         {
             tBoolConfigTypeMapType boolConfigTypeMap;
             tIntConfigTypeMapType intConfigTypeMap;
+            tUint32ConfigTypeMapType uint32ConfigTypeMap;
             tFloatConfigTypeMapType floatConfigTypeMap;
             tDoubleConfigTypeMapType doubleConfigTypeMap;
             tEnumConfigTypeMapType enumConfigTypeMap;
@@ -279,6 +282,14 @@ namespace Kernel
             int * pVariable,
             const char* description = default_description,
             int min = INT_MIN, int max = INT_MAX, int defaultvalue = 0,
+            const char* condition_key = nullptr, const char* condition_value = nullptr
+        );
+
+        void initConfigTypeMap(
+            const char* paramName,
+            uint32_t * pVariable,
+            const char* description = default_description,
+            uint32_t min = 0, uint32_t max = UINT_MAX, uint32_t defaultvalue = 0,
             const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
@@ -491,13 +502,18 @@ namespace Kernel
             }
         }
 
+
         template< typename T >
-        void EnforceParameterAscending(const std::string& key, std::vector<T> values, json::QuickInterpreter& jsonObj)
+        void EnforceParameterAscending(const std::string& key, const std::vector<T> & values)
         {
-            if (!std::is_sorted(values.begin(), values.end(), [](const T & next, const T & prev)->bool {return next <= prev; }))
-            {
-                std::string error_string = "The values in " + key + " must be unique and in ascending order.";
-                throw InvalidInputDataException(__FILE__, __LINE__, __FUNCTION__, error_string.c_str());
+            //Try to find a value to the left of an element with a value that is greater or equal 
+            for (auto it = values.cbegin(); it != values.cend() - 1; ++it) {
+                if (*it >= *(it + 1))
+                {
+                    std::stringstream error_string;
+                    error_string << "The values in " << key << " must be unique and in ascending order.";
+                    throw InvalidInputDataException(__FILE__, __LINE__, __FUNCTION__, error_string.str().c_str());
+                }
             }
         }
 
@@ -511,7 +527,7 @@ namespace Kernel
 
             if (jsonObj.Exist("ascending") && jsonObj["ascending"].As<json::Number>())
             {
-                EnforceParameterAscending<T>(key, values, jsonObj);
+                EnforceParameterAscending<T>(key, values);
             }
         }
 
@@ -557,7 +573,7 @@ namespace Kernel
                 {
                     if( (EnvPtr != nullptr) && EnvPtr->Log->CheckLogLevel(Logger::INFO, "JsonConfigurable"))
                     {
-                        EnvPtr->Log->LogF(Logger::INFO, "JsonConfigurable", "Using the default value ( \"%s\" : \"%s\" ) for unspecified parameter.\n", key, enum_md.enum_value_specs[0].first.c_str() );
+                        EnvPtr->Log->Log(Logger::INFO, "JsonConfigurable", "Using the default value ( \"%s\" : \"%s\" ) for unspecified parameter.\n", key, enum_md.enum_value_specs[0].first.c_str() );
                     }
                     thevar = (myclass) enum_md.enum_value_specs[0].second;
                 }
@@ -639,7 +655,7 @@ namespace Kernel
             {
                 if( (EnvPtr != nullptr) && EnvPtr->Log->CheckLogLevel(Logger::INFO, "JsonConfigurable"))
                 {
-                    EnvPtr->Log->LogF(Logger::INFO, "JsonConfigurable", "Using the default value ( \"%s\" : [ \"%s\" ] ) for unspecified parameter.\n", key, enum_md.enum_value_specs[0].first.c_str() );
+                    EnvPtr->Log->Log(Logger::INFO, "JsonConfigurable", "Using the default value ( \"%s\" : [ \"%s\" ] ) for unspecified parameter.\n", key, enum_md.enum_value_specs[0].first.c_str() );
                 }
                 thevector.push_back( (myclass) enum_md.enum_value_specs[0].second );
                 if( _track_missing )

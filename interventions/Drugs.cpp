@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -90,10 +90,9 @@ namespace Kernel
         }
     }
 
-    GenericDrug::GenericDrug()
+    GenericDrug::GenericDrug( const std::string& rDefaultName )
         : BaseIntervention()
-        , drug_type(0)
-        , dosing_type(DrugUsageType::SingleDose)
+        , drug_name( rDefaultName )
         , durability_time_profile(PKPDModel::FIXED_DURATION_CONSTANT_EFFECT)
         , fast_decay_time_constant(0)
         , slow_decay_time_constant(0)
@@ -102,8 +101,10 @@ namespace Kernel
         , time_between_doses(0)
         , fast_component(0)
         , slow_component(0)
+        , start_concentration(0)
+        , end_concentration(0)
+        , current_concentration( 0 )
         , current_efficacy(0)
-        , current_concentration(0)
         , current_reducedacquire(0)  // NOTE: malaria drug has specific killing effects, TB drugs have inactivation + cure rates
         , current_reducedtransmit(0) //   "    "
         , pk_rate_mod(1.0)           // homogeneous by default
@@ -130,27 +131,13 @@ namespace Kernel
 
     void
     GenericDrug::ConfigureDrugTreatment( IIndividualHumanInterventionsContext * ivc )
-    { } // nothing to configure in this function except for AntimalarialDrug
-
-    int
-    GenericDrug::GetDrugType() const
-    {
-        //only used for AntiTBDrug and AntiTBPropDepDrug
-        return drug_type;
+    { 
     }
 
-    std::string
+    const std::string&
     GenericDrug::GetDrugName() const
     {
-        // Derived TB and malaria drugs know their names
-        LOG_WARN("GenericDrug is the base class. Only derived, disease-specific drug classes have meaningful drug names.\n");
-        return std::string("GenericDrug");
-    }
-
-    DrugUsageType::Enum
-    GenericDrug::GetDrugUsageType()
-    {
-        return dosing_type;
+        return drug_name;
     }
 
     float
@@ -178,6 +165,18 @@ namespace Kernel
         return current_efficacy * current_reducedtransmit;
     }
 
+    bool GenericDrug::Distribute( IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO )
+    {
+        // shouldn't really need to do this specially since ConfigureDrugTreatment()
+        // takes a context, but this will limit code changes.
+        SetContextTo( context->GetParent() );
+
+        ConfigureDrugTreatment( context );
+
+        return BaseIntervention::Distribute( context, pICCO );
+    }
+
+
     // I think we can get rid of this altogether
     void
     GenericDrug::Update(float dt)
@@ -195,7 +194,10 @@ namespace Kernel
             default:
                 throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "durability_time_profile", durability_time_profile, PKPDModel::pairs::lookup_key(durability_time_profile) );
         }
-        ApplyEffects();
+        if( !expired )
+        {
+            ApplyEffects();
+        }
     }
 
     void GenericDrug::ResetForNextDose(float dt)
@@ -224,7 +226,7 @@ namespace Kernel
         {
             dosing_timer -= dt;
             LOG_DEBUG_F("Remaining doses = %d, Dosing timer = %0.3f\n", remaining_doses, dosing_timer);
-            if ( dosing_timer <= 0 )
+            if ( (dosing_timer <= 0) && IsTakingDose( dt ) )
             {
                 // DJK: Remove or fix fraction_defaulters.  It only makes sense with remaining_doses=1 <ERAD-1854>
                 if( SMART_DRAW( fraction_defaulters ) )
@@ -268,7 +270,7 @@ namespace Kernel
         {
             dosing_timer -= dt;
             LOG_DEBUG_F("Remaining doses = %d, Dosing timer = %0.3f\n", remaining_doses, dosing_timer);
-            if ( dosing_timer <= 0 )
+            if ( (dosing_timer <= 0) && IsTakingDose( dt ) )
             {
                 float slow_component_fraction = 0;
                 if ( fast_decay_time_constant == slow_decay_time_constant )
@@ -294,7 +296,7 @@ namespace Kernel
 
         // Time Decay: cache start-of-time-step concentration; then calculate exponential decay
         LOG_DEBUG_F("Start-of-timestep components (fast,slow) = (%0.2f, %0.2f)\n", fast_component, slow_component);
-        float start_concentration = fast_component + slow_component;
+        start_concentration = fast_component + slow_component;
         if ( fast_component > 0 || slow_component > 0 )
         {
             if ( fast_decay_time_constant > 0 && fast_component > 0)
@@ -307,23 +309,33 @@ namespace Kernel
             }
         }
         LOG_DEBUG_F("End-of-timestep compartments = (%0.2f, %0.2f)\n", fast_component, slow_component);
-        float end_concentration = fast_component + slow_component;
+        end_concentration = fast_component + slow_component;
 
         current_concentration = end_concentration;
 
-        // Efficacy: approximate average efficacy over the dt step
-        // DJK: pkpd should be separate from efficacy! <ERAD-1853>
-        if ( end_concentration > 0 )
-        {
-            float start_efficacy = Sigmoid::basic_sigmoid(drug_c50, start_concentration);
-            float end_efficacy   = Sigmoid::basic_sigmoid(drug_c50, end_concentration);
-            current_efficacy = 0.5 * (start_efficacy + end_efficacy);
-            LOG_DEBUG_F("Drug efficacy = %0.2f  (Conc,Eff) at start = (%0.2f,%0.2f)  at end = (%0.2f,%0.2f)\n", current_efficacy, start_concentration, start_efficacy, end_concentration, end_efficacy);
-        }
+        current_efficacy = CalculateEfficacy( drug_c50, start_concentration, end_concentration );
 
         // TODO: should drugs with efficacy below some threshold be:
         //       (1) zeroed out to avoid continuing to do the calculations above ad infinitum (where is killing-effect and/or resistance-pressure negligible?)
         //       (2) removed from the InterventionsContainer (potentially some reporting is relying on the object for treatment history)
+    }
+
+    float GenericDrug::CalculateEfficacy( float c50, float startConcentation, float endConcentration )
+    {
+        float efficacy = current_efficacy;
+        if( durability_time_profile == PKPDModel::CONCENTRATION_VERSUS_TIME )
+        {
+            if( endConcentration > 0 )
+            {
+                // Efficacy: approximate average efficacy over the dt step
+                // DJK: pkpd should be separate from efficacy! <ERAD-1853>
+                float start_efficacy = Sigmoid::basic_sigmoid( c50, startConcentation );
+                float end_efficacy   = Sigmoid::basic_sigmoid( c50, endConcentration  );
+                efficacy = 0.5 * (start_efficacy + end_efficacy);
+                LOG_DEBUG_F( "Drug efficacy = %0.2f  (Conc,Eff) at start = (%0.2f,%0.2f)  at end = (%0.2f,%0.2f)\n", current_efficacy, startConcentation, start_efficacy, endConcentration, end_efficacy );
+            }
+        }
+        return efficacy;
     }
 
     // no-op
@@ -342,8 +354,7 @@ namespace Kernel
     {
         BaseIntervention::serialize( ar, obj );
         GenericDrug& drug = *obj;
-        ar.labelElement("drug_type") & drug.drug_type;
-        ar.labelElement("dosing_type") & (uint32_t&)drug.dosing_type;
+        ar.labelElement("drug_name") & drug.drug_name;
         ar.labelElement("durability_time_profile") & (uint32_t&)drug.durability_time_profile;
         ar.labelElement("fast_decay_time_constant") & drug.fast_decay_time_constant;
         ar.labelElement("slow_decay_time_constant") & drug.slow_decay_time_constant;
@@ -352,8 +363,10 @@ namespace Kernel
         ar.labelElement("time_between_doses") & drug.time_between_doses;
         ar.labelElement("fast_component") & drug.fast_component;
         ar.labelElement("slow_component") & drug.slow_component;
-        ar.labelElement("current_efficacy") & drug.current_efficacy;
+        ar.labelElement("start_concentration") & drug.start_concentration;
+        ar.labelElement("end_concentration") & drug.end_concentration;
         ar.labelElement("current_concentration") & drug.current_concentration;
+        ar.labelElement("current_efficacy") & drug.current_efficacy;
         ar.labelElement("current_reducedacquire") & drug.current_reducedacquire;
         ar.labelElement("current_reducedtransmit") & drug.current_reducedtransmit;
         ar.labelElement("pk_rate_mod") & drug.pk_rate_mod;

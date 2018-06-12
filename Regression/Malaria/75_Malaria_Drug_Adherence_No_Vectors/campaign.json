@@ -1,0 +1,239 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1,2,3,4,5,6,7 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalaria",
+                    "Antigen": 0,
+                    "Genome_Markers": [ ] 
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 30,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 2 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                     "class": "AntimalarialDrug",
+                     "Dont_Allow_Duplicates" : 1,
+                     "Cost_To_Consumer": 1, 
+                     "Dosing_Type": "FullTreatmentCourse", 
+                     "Drug_Type": "TestDrug"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 30,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 3 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "AdherentDrug",
+                    "Dont_Allow_Duplicates" : 1,
+                    "Cost_To_Consumer": 1,
+                    "Drug_Type": "TestDrug",
+                    "Dosing_Type": "FullTreatmentCourse",
+                    "Adherence_Config" : {
+                        "class": "WaningEffectMapCount",
+                        "Initial_Effect" : 1.0,
+                        "Durability_Map" :
+                        {
+                            "Times"  : [ 1.0, 2.0, 3.0, 4.0 ],
+                            "Values" : [ 0.1, 0.1, 0.1, 0.1 ]
+                        }
+                    },
+                    "Non_Adherence_Options" : [ "STOP" ],
+                    "Non_Adherence_Distribution" : [ 1.0 ],
+                    "Max_Dose_Consideration_Duration" : 40
+                     
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 30,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 4 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "AdherentDrug",
+                    "Dont_Allow_Duplicates" : 1,
+                    "Cost_To_Consumer": 1,
+                    "Drug_Type": "TestDrug",
+                    "Dosing_Type": "FullTreatmentCourse",
+                    "Adherence_Config" : {
+                        "class": "WaningEffectMapCount",
+                        "Initial_Effect" : 1.0,
+                        "Durability_Map" :
+                        {
+                            "Times"  : [ 1.0, 2.0, 3.0, 4.0 ],
+                            "Values" : [ 0.1, 0.1, 0.1, 0.1 ]
+                        }
+                    },
+                    "Non_Adherence_Options" : [ "LOST_TAKE_NEXT" ],
+                    "Non_Adherence_Distribution" : [ 1.0 ],
+                    "Max_Dose_Consideration_Duration" : 40
+                     
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 30,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 5 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "AdherentDrug",
+                    "Dont_Allow_Duplicates" : 1,
+                    "Cost_To_Consumer": 1,
+                    "Drug_Type": "TestDrug",
+                    "Dosing_Type": "FullTreatmentCourse",
+                    "Adherence_Config" : {
+                        "class": "WaningEffectMapCount",
+                        "Initial_Effect" : 1.0,
+                        "Durability_Map" :
+                        {
+                            "Times"  : [ 1.0, 2.0, 3.0, 4.0 ],
+                            "Values" : [ 0.1, 0.1, 0.1, 0.1 ]
+                        }
+                    },
+                    "Non_Adherence_Options" : [ "NEXT_DOSAGE_TIME" ],
+                    "Non_Adherence_Distribution" : [ 1.0 ],
+                    "Max_Dose_Consideration_Duration" : 40
+                     
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 30,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 6 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "AdherentDrug",
+                    "Dont_Allow_Duplicates" : 1,
+                    "Cost_To_Consumer": 1,
+                    "Drug_Type": "TestDrug",
+                    "Dosing_Type": "FullTreatmentCourse",
+                    "Adherence_Config" : {
+                        "class": "WaningEffectMapCount",
+                        "Initial_Effect" : 1.0,
+                        "Durability_Map" :
+                        {
+                            "Times"  : [ 1.0, 2.0, 3.0, 4.0 ],
+                            "Values" : [ 0.1, 0.1, 0.1, 0.1 ]
+                        }
+                    },
+                    "Non_Adherence_Options" : [ "NEXT_UPDATE" ],
+                    "Non_Adherence_Distribution" : [ 1.0 ],
+                    "Max_Dose_Consideration_Duration" : 40
+                     
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 30,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 7 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "AdherentDrug",
+                    "Dont_Allow_Duplicates" : 1,
+                    "Cost_To_Consumer": 1,
+                    "Drug_Type": "TestDrug",
+                    "Dosing_Type": "FullTreatmentCourse",
+                    "Adherence_Config" : {                        
+                        "class" : "WaningEffectCombo",
+                        "Add_Effects" : 0,
+                        "Expires_When_All_Expire" : 0,
+                        "Effect_List" : [
+                            {
+                                "class": "WaningEffectMapLinearAge",
+                                "Initial_Effect" : 1.0,
+                                "Durability_Map" :
+                                {
+                                    "Times"  : [ 0.0,  12.99999,  13.0, 125.0 ],
+                                    "Values" : [ 0.0,   0.0,       1.0,   1.0 ]
+                                }
+                            },
+                            {
+                                "class": "WaningEffectMapCount",
+                                "Initial_Effect" : 1.0,
+                                "Durability_Map" :
+                                {
+                                    "Times"  : [ 1.0, 2.0, 3.0, 4.0 ],
+                                    "Values" : [ 0.1, 0.2, 0.3, 0.4 ]
+                                }
+                            }
+                        ]                        
+                    },
+                    "Non_Adherence_Options" : [ "NEXT_UPDATE", "NEXT_DOSAGE_TIME", "LOST_TAKE_NEXT", "STOP" ],
+                    "Non_Adherence_Distribution" : [ 0.4,             0.3,               0.2,          0.1 ],
+                    "Max_Dose_Consideration_Duration" : 40,
+                    "Took_Dose_Event" : "TBActivation"
+                     
+                }
+            }
+        }
+    ]
+}

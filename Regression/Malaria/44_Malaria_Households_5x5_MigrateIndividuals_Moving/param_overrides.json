@@ -18,8 +18,8 @@
                },
                "Enable_Migration_Heterogeneity": 1, 
                "LOCAL": {
-                    "Enable_Local_Migration": 1,
-                    "Local_Migration_Filename": "Local_Migration.bin"
+                    "Enable_Local_Migration": 0,
+                    "Local_Migration_Filename": ""
                }, 
                "Migration_Model": "FIXED_RATE_MIGRATION", 
                ".Migration_Model": "NO_MIGRATION", 

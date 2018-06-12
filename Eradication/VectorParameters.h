@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,6 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Vector.h"
 #include "VectorEnums.h"   // remove dependency when egg, larva, and vector enums are configured outside this class
+#include "Configure.h"
 
 namespace Kernel
 {
@@ -54,7 +55,7 @@ namespace Kernel
         float larvalDensityMortalityScalar;
         float larvalDensityMortalityOffset;
 
-        double x_templarvalhabitat;
+        float x_tempLarvalHabitat;
 
         jsonConfigurable::tDynamicStringSet vector_species_names;
         std::map< std::string, VectorSpeciesParameters * > vspMap;
@@ -89,7 +90,7 @@ namespace Kernel
         , larval_rainfall_mortality_threshold(1.0f)
         , larvalDensityMortalityScalar(10.0f)
         , larvalDensityMortalityOffset(0.1f)
-        , x_templarvalhabitat(1.0f)
+        , x_tempLarvalHabitat(1.0f)
         , vector_species_names()
         , vspMap()
         {

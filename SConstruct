@@ -37,6 +37,9 @@ options = {}
 
 options_topass = {}
 
+#print "THIS BETTER NOT WORK"
+
+
 def add_option( name, help, nargs, contributesToVariantDir,
                 dest=None, default = None, type="string", choices=None ):
 
@@ -165,7 +168,7 @@ def printLocalInfo():
     import sys, SCons
     print( "scons version: " + SCons.__version__ )
     #print( sys.version_info )
-    print( "python version: " + " ".join( [ `i` for i in sys.version_info ] ) )
+    print( "python version: " + " ".join( [ str(i) for i in sys.version_info ] ) )
 
 printLocalInfo()
 
@@ -191,7 +194,7 @@ else:
     env["Debug"] = Dbg
     env["Release"] = Rel
 
-print "Rel=" + str(Rel) + " Dbg=" + str(Dbg)
+print( "Rel=" + str(Rel) + " Dbg=" + str(Dbg) )
 
 #print "BUILD_DIR=" + env['BUILD_DIR'] + " pi=" + pi
 env['BUILD_VARIANT'] = bvar
@@ -216,7 +219,7 @@ if os.sys.platform == 'win32':
                           "#/utils",
                           "#/libgeneric_static",
                           os.environ['IDM_BOOST_PATH'],
-                          os.environ['IDM_PYTHON_PATH']+"/include",
+                          os.environ['IDM_PYTHON3_PATH']+"/include",
                           "#/Dependencies/ComputeClusterPack/Include",
                           "#/cajun/include",
                           "#/rapidjson/include",
@@ -241,7 +244,8 @@ else:
                           "#/baseReportLib",
                           "#/utils",
                           "#/libgeneric_static",
-                          "/usr/include/python2.7/",
+                          "/usr/include/python3.6m",
+                          "/opt/python/python3.6.3/include/python3.6m",
                           "#/cajun/include",
                           "#/rapidjson/include",
                           "#/rapidjson/modp",
@@ -299,8 +303,8 @@ if os.sys.platform.startswith("linux"):
         nixLibPrefix = "lib64"
         env.Append( EXTRALIBPATH=["/usr/lib64" , "/lib64" ] )
 
-    env.Append( LIBS=["pthread", "python2.7", "dl" ] ) 
-    env.Append( EXTRALIBPATH=[ "/usr/local/lib", "/usr/lib64/mpich/lib" ] )
+    env.Append( LIBS=["pthread", "python3.6m", "dl" ] ) 
+    env.Append( EXTRALIBPATH=[ "/usr/local/lib", "/usr/lib64/mpich/lib", "/opt/python/python3.6.3/lib" ] )
 
     if static:
         #env.Append( LINKFLAGS=" -static " )
@@ -432,8 +436,10 @@ elif "win32" == os.sys.platform:
     winLibString += ""
     env.Append( LIBS=Split(winLibString) )
 
-    env.Append( EXTRALIBPATH=[ "C:/Python27/libs" ] )
-    env.Append( LIBS=["python27.lib"] )
+    env.Append( EXTRALIBPATH=[ os.environ['IDM_PYTHON3_PATH']+"/libs" ] )   # Go with user specified path first
+    env.Append( EXTRALIBPATH=[ "C:/Python36/libs" ] )                       # Fall back to c:\python36
+    env.Append( EXTRALIBPATH=[ "C:/ProgramData/Anaconda3/libs" ] )          # Maybe they used Anaconda 3
+    env.Append( LIBS=["python36.lib"] )
 
     env.Append( EXTRALIBPATH=[ "#/Dependencies/ComputeClusterPack/Lib/amd64" ] )
     env.Append( LIBS=["msmpi.lib"] )
@@ -464,8 +470,8 @@ def doConfigure(myenv):
 
 def setEnvAttrs(myenv):
 
-    diseasedlls = ['Generic', 'Vector', 'Malaria', 'Environmental', 'TB', "STI", "HIV" ]
-    diseases = ['Generic', 'Vector', 'Malaria', 'Dengue', 'Environmental', 'Polio', 'TB', 'STI', 'HIV', 'TBHIV', 'Typhoid', 'Py' ]
+    diseasedlls = ['Generic', 'Vector', 'Malaria', 'Environmental', 'STI', 'HIV' ]
+    diseases = ['Generic', 'Vector', 'Malaria', 'Dengue', 'Environmental', 'Polio', 'STI', 'HIV', 'TBHIV', 'Typhoid', 'Py' ]
     reportdlls = ['Spatial', 'Binned']
     campaigndlls = ['Bednet', 'IRSHousing']
 
@@ -488,27 +494,27 @@ def setEnvAttrs(myenv):
 
     if dlldisease:
         myenv['DiseaseDll'] = get_option( 'DllDisease' ) # careful, tricky
-        print "DiseaseDll=" + myenv['DiseaseDll']
+        print( "DiseaseDll=" + myenv['DiseaseDll'] )
         if myenv['DiseaseDll'] not in diseasedlls:
-            print "Unknown disease (EMODule) type: " + myenv['DiseaseDll']
+            print( "Unknown disease (EMODule) type: " + myenv['DiseaseDll'] )
             exit(1)
     else:
         myenv['DiseaseDll'] = ""
 
     if monodisease:
         myenv['Disease'] = get_option( 'Disease' )
-        print "Disease=" + myenv['Disease']
+        print( "Disease=" + myenv['Disease'] )
         if myenv['Disease'] not in diseases:
-            print "Unknown disease type: " + myenv['Disease']
+            print( "Unknown disease type: " + myenv['Disease'] )
             exit(1)
     else:
         myenv['Disease'] = ""
 
     if dllreport:
         myenv['Report'] = get_option( 'Report' )
-        print "Report=" + myenv['Report']
+        print( "Report=" + myenv['Report'] )
         if myenv['Report'] not in reportdlls:
-            print "Unknown report type: " + myenv['Report']
+            print( "Unknown report type: " + myenv['Report'] )
             exit(1)
     else:
         myenv['Report'] = ""
@@ -527,8 +533,8 @@ def setEnvAttrs(myenv):
     else:
         myenv['Install'] = ""
 
-    print "DLL=" + str(myenv['AllDlls'])
-    print "Install=" + myenv['Install']
+    print( "DLL=" + str(myenv['AllDlls']) )
+    print( "Install=" + myenv['Install'] )
 
     if has_option( "TestSugar" ):
         print( "TestSugar ON, LOG_VALID enabled." )

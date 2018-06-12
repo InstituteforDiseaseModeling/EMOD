@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -40,9 +40,9 @@ namespace Kernel
         return newnode;
     }
 
-    IIndividualHuman* NodeAirborne::createHuman(suids::suid suid, float monte_carlo_weight, float initial_age, int gender, float above_poverty)
+    IIndividualHuman* NodeAirborne::createHuman(suids::suid suid, float monte_carlo_weight, float initial_age, int gender)
     {
-        return IndividualHumanAirborne::CreateHuman(this, suid, monte_carlo_weight, initial_age, gender, above_poverty);
+        return IndividualHumanAirborne::CreateHuman(this, suid, monte_carlo_weight, initial_age, gender);
     }
 
     float NodeAirborne::getClimateInfectivityCorrection() const
@@ -76,4 +76,4 @@ namespace Kernel
     }
 }
 
-#endif // ENABLE_TB
+#endif // ENABLE_TBHIV

@@ -1,0 +1,40 @@
+{
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "BitingRisk",
+                    "Risk_Distribution_Type" : "FIXED_DURATION",
+                    "Constant" : 0.1
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 365, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Property_Restrictions_Within_Node": [ { "Risk": "HIGH" } ], 
+                "Intervention_Config": {
+                    "class": "BitingRisk",
+                    "Risk_Distribution_Type" : "FIXED_DURATION",
+                    "Constant" : 1
+                }
+            }
+        }
+    ], 
+    "Use_Defaults": 1
+}

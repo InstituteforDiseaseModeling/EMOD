@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,6 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Contexts.h"
 #include "Sugar.h"
 #include "Configure.h"
+#include "SimulationEnums.h" // for DistributionType::Enum
 
 class Configuration;
 
@@ -26,20 +27,33 @@ namespace Kernel
     public:
         virtual bool Configure( const Configuration* config ) override;
 
+        static DistributionType::Enum susceptibility_initialization_distribution_type;
+
     protected:
         friend class Susceptibility;
+        static SusceptibilityType::Enum        susceptibility_type;
 
-        static bool  immune_decay;
+        static bool  maternal_protection;
+        static MaternalProtectionType::Enum    maternal_protection_type;
+        static float matlin_slope;
+        static float matlin_suszero;
+        static float matsig_steepfac;
+        static float matsig_halfmax;
+        static float matsig_susinit;
 
-        static float acqdecayrate;
-        static float trandecayrate;
-        static float mortdecayrate;
         static float baseacqupdate;
         static float basetranupdate;
         static float basemortupdate;
+        
+        static bool  enable_immune_decay;
+        static float acqdecayrate;
+        static float trandecayrate;
+        static float mortdecayrate;
         static float baseacqoffset;
         static float basetranoffset;
         static float basemortoffset;
+
+        void LogConfigs() const;
 
         GET_SCHEMA_STATIC_WRAPPER(SusceptibilityConfig)
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
@@ -57,20 +71,21 @@ namespace Kernel
         virtual void SetContextTo(IIndividualHumanContext* context);
         IIndividualHumanContext* GetParent();
 
-        virtual void Update(float dt=0.0);
-        virtual void UpdateInfectionCleared();
+        virtual void  Update(float dt=0.0);
+        virtual void  UpdateInfectionCleared();
 
         // ISusceptibilityContext interfaces
         virtual float getAge() const override;
         virtual float getModAcquire() const override;
         virtual float getModTransmit() const override;
         virtual float getModMortality() const override;
-        virtual void  updateModAcquire(float updateVal)  override;
-        virtual void  updateModTransmit(float updateVal)  override;
-        virtual void  updateModMortality(float updateVal)  override;
-        virtual float getSusceptibilityCorrection() const;
-        virtual bool  IsImmune() const;
+        virtual float getImmuneFailage() const override;
+        virtual void  updateModAcquire(float updateVal) override;
+        virtual void  updateModTransmit(float updateVal) override;
+        virtual void  updateModMortality(float updateVal) override;
+        virtual void  setImmuneFailage(float newFailage) override;
         virtual void  InitNewInfection() override;
+        virtual bool  IsImmune() const override;
 
     protected:
         // current status
@@ -85,13 +100,15 @@ namespace Kernel
         float trandecayoffset;
         float mortdecayoffset;
 
+        float immune_failage;
+
         Susceptibility();
         Susceptibility(IIndividualHumanContext *context);
         virtual void Initialize(float _age, float immmod, float riskmod);
 
         IIndividualHumanContext *parent;
 
-        /* clorton virtual */ const SimulationConfig* params() /* clorton override */;
+        const SimulationConfig* params();
 
         DECLARE_SERIALIZABLE(Susceptibility);
     };

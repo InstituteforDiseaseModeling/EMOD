@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -52,14 +52,14 @@ namespace Kernel
         const Configuration * config
     )
     {
-        //read in configs here 
-        initConfigTypeMap( "Acute_Duration_In_Months", &acute_duration_in_months, HIV_Acute_Duration_In_Months_DESC_TEXT, 0.0f, 5.0f, 2.9f );
-        initConfigTypeMap( "AIDS_Duration_In_Months", &AIDS_duration_in_months, HIV_AIDS_Duration_In_Months_DESC_TEXT, 7.0f, 12.0f, 9.0f );
-        initConfigTypeMap( "Acute_Stage_Infectivity_Multiplier", &acute_stage_infectivity_multiplier, HIV_Acute_Stage_Infectivity_Multiplier_DESC_TEXT, 1.0f, 100.0f, 26.0f );
-        initConfigTypeMap( "AIDS_Stage_Infectivity_Multiplier", &AIDS_stage_infectivity_multiplier, HIV_AIDS_Stage_Infectivity_Multiplier_DESC_TEXT, 1.0f, 100.0f, 10.0f );
-        initConfigTypeMap( "ART_Viral_Suppression_Multiplier", &ART_viral_suppression_multiplier, HIV_ART_Viral_Suppression_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.08f );
-        initConfigTypeMap( "Heterogeneous_Infectiousness_LogNormal_Scale", &personal_infectivity_scale, HIV_Heterogeneous_Infectiousness_LogNormal_Scale_DESC_TEXT, 0.0f, 10.0f, 0.0f, "Simulation_Type", "HIV_SIM" );
-        initConfigTypeMap( "ART_CD4_at_Initiation_Saturating_Reduction_in_Mortality", &max_CD4_cox, ART_CD4_at_Initiation_Saturating_Reduction_in_Mortality_DESC_TEXT, 0.0f, FLT_MAX, 350.0f );
+        //read in configs here   
+        initConfigTypeMap( "Acute_Duration_In_Months", &acute_duration_in_months, Acute_Duration_In_Months_DESC_TEXT, 0.0f, 5.0f, 2.9f, "Simulation_Type", "HIV_SIM, TBHIV_SIM");
+        initConfigTypeMap( "AIDS_Duration_In_Months", &AIDS_duration_in_months, AIDS_Duration_In_Months_DESC_TEXT, 7.0f, 12.0f, 9.0f, "Simulation_Type", "HIV_SIM, TBHIV_SIM");
+        initConfigTypeMap( "Acute_Stage_Infectivity_Multiplier", &acute_stage_infectivity_multiplier, Acute_Stage_Infectivity_Multiplier_DESC_TEXT, 1.0f, 100.0f, 26.0f, "Simulation_Type", "HIV_SIM");
+        initConfigTypeMap( "AIDS_Stage_Infectivity_Multiplier", &AIDS_stage_infectivity_multiplier, AIDS_Stage_Infectivity_Multiplier_DESC_TEXT, 1.0f, 100.0f, 10.0f, "Simulation_Type", "HIV_SIM");
+        initConfigTypeMap( "ART_Viral_Suppression_Multiplier", &ART_viral_suppression_multiplier, ART_Viral_Suppression_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.08f, "Simulation_Type", "HIV_SIM");
+        initConfigTypeMap( "Heterogeneous_Infectiousness_LogNormal_Scale", &personal_infectivity_scale, Heterogeneous_Infectiousness_LogNormal_Scale_DESC_TEXT, 0.0f, 10.0f, 0.0f, "Simulation_Type", "HIV_SIM" );
+        initConfigTypeMap( "ART_CD4_at_Initiation_Saturating_Reduction_in_Mortality", &max_CD4_cox, ART_CD4_at_Initiation_Saturating_Reduction_in_Mortality_DESC_TEXT, 0.0f, FLT_MAX, 350.0f, "Simulation_Type", "HIV_SIM, TBHIV_SIM");
 
         bool ret = JsonConfigurable::Configure( config );
         if( ret || JsonConfigurable::_dryrun )
@@ -217,7 +217,8 @@ namespace Kernel
     void InfectionHIV::SetParameters( IStrainIdentity* infstrain, int incubation_period_override)
     {
         LOG_DEBUG_F( "New HIV infection for individual %d; incubation_period_override = %d.\n", parent->GetSuid().data, incubation_period_override );
-        InfectionSTI::SetParameters( infstrain, incubation_period_override );
+        // Don't call down into baseclass. Copied two lines below to repro required functionality.
+        incubation_timer = incubation_period_override;
         CreateInfectionStrain(infstrain);
 
         if( incubation_period_override == 0 )

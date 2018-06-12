@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -36,19 +36,27 @@ namespace Kernel
 
         // IDistributableIntervention
         virtual void Update(float dt) override;
+        virtual bool NeedsInfectiousLoopUpdate() const
+        { 
+            // Drugs typically change things that affect the infection so
+            // they need to be in the infectious update loop.
+            return true;
+        }
+        virtual bool Distribute( IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO ) override;
 
         // IDrug
-        virtual void  ConfigureDrugTreatment( IIndividualHumanInterventionsContext * ivc = nullptr ) override;
-        virtual int   GetDrugType() const override;
-        virtual std::string GetDrugName() const override;
-        virtual DrugUsageType::Enum GetDrugUsageType() override;
-        virtual float GetDrugReducedAcquire()  const override;
-        virtual float GetDrugReducedTransmit() const override;
-        virtual float GetDrugCurrentConcentration() const override;
+        virtual const std::string& GetDrugName() const override;
         virtual float GetDrugCurrentEfficacy() const override;
 
     protected:
-        GenericDrug();
+        GenericDrug( const std::string& rDefaultName = JsonConfigurable::default_string );
+
+        virtual bool IsTakingDose( float dt ) { return true; }
+
+        virtual void  ConfigureDrugTreatment( IIndividualHumanInterventionsContext * ivc );
+        virtual float GetDrugReducedAcquire()  const;
+        virtual float GetDrugReducedTransmit() const;
+        virtual float GetDrugCurrentConcentration() const;
 
         // interfaces for different PkPd models (i.e. FIXED_DURATION_CONSTANT_EFFECT, CONCENTRATION_VERSUS_TIME)
         virtual void SimpleUpdate(float dt);
@@ -59,8 +67,10 @@ namespace Kernel
         virtual void PkPdParameterValidation();
         virtual void Expire();
 
-        int   drug_type;
-        DrugUsageType::Enum dosing_type;
+        float CalculateEfficacy( float c50, float startConcentration, float endConcentration );
+
+
+        std::string drug_name;
         PKPDModel::Enum durability_time_profile;
         float fast_decay_time_constant;
         float slow_decay_time_constant;
@@ -70,8 +80,10 @@ namespace Kernel
         float fast_component;
         float slow_component;
 
-        float current_efficacy;
+        float start_concentration;
+        float end_concentration;
         float current_concentration;
+        float current_efficacy;
         float current_reducedacquire;
         float current_reducedtransmit;
         float pk_rate_mod;

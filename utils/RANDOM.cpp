@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,6 +9,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 #include "RANDOM.h"
+#include "Debug.h"
 #include <assert.h>
 #include <math.h>
 
@@ -19,6 +20,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <smmintrin.h> // _mm_insert_epi64
 #include <tmmintrin.h> // _mm_shuffle_epi8
 #endif
+
 
 double RANDOMBASE::cdf_random_num_precision = 0.01; // precision of random number obtained from a cumulative probability function
 double RANDOMBASE::tan_pi_4 = 1.0;
@@ -64,6 +66,26 @@ float RANDOMBASE::e()
     }
 
     return random_floats[index++];
+}
+
+// randomRound() - rounds the 'val' to the nearest integer but randomly rounds it up or down.
+// If the input value is 5.3, then 70% of the time it should return 5 and 30% of the time 6.
+uint32_t RANDOMBASE::randomRound( float val )
+{
+    uint32_t i_val = uint32_t( val );
+    float remainder = val - float( i_val );
+    if( remainder > 0.0 )
+    {
+        if( e() < (1.0 - remainder) )
+        {
+            i_val = i_val; // round low;
+        }
+        else
+        {
+            i_val += 1;
+        }
+    }
+    return i_val;
 }
 
 void RANDOMBASE::fill_bits()
@@ -262,6 +284,7 @@ double RANDOMBASE::time_varying_rate_dist( std::vector <float> v_rate, float tim
     double tempsum = 0.0f;
     int temp_break_step = 0;
     double ret= 0.0f;
+    release_assert( v_rate.size()>0 );
 
     for ( auto rit = v_rate.begin(); rit!= v_rate.end()-1; ++rit )
     {
@@ -430,6 +453,28 @@ uint64_t RANDOMBASE::binomial_approx2(uint64_t n, double p)
     }
 
     return uint64_t(tempval);
+}
+
+
+std::vector<uint64_t> RANDOMBASE::multinomial_approx( uint64_t N, const std::vector<float>& rProbabilities )
+{
+    std::vector<uint64_t> subsets;
+
+    uint64_t total_subsets = 0;
+    double total_fraction = 0.0;
+
+    for( double expected_fraction_of_total : rProbabilities )
+    {
+        uint64_t total_remaining = N - total_subsets;
+        double expected_fraction_of_remaining = expected_fraction_of_total / (1.0 - total_fraction);
+        uint64_t subset = binomial_approx( total_remaining, expected_fraction_of_remaining );
+        subsets.push_back( subset );
+
+        total_fraction += expected_fraction_of_total;
+        total_subsets += subset;
+    }
+
+    return subsets;
 }
 
 void RANDOM::fill_bits()

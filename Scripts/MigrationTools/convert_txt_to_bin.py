@@ -42,7 +42,7 @@ if __name__ == "__main__":
         mig_type_found |= (mig == mig_type)
 
     if( not mig_type_found ):
-        print "Invalid MigrationType = " + mig_type
+        print ("Invalid MigrationType = " + mig_type)
         exit(-1)
 
     max_destinations_per_node = 0
@@ -72,7 +72,7 @@ if __name__ == "__main__":
             if( destinations_per_node > max_destinations_per_node ):
                 max_destinations_per_node = destinations_per_node
             node_id_list.append(ID1)
-            print prev_id, max_destinations_per_node
+            print (prev_id, max_destinations_per_node)
             prev_id = ID1
             destinations_per_node = 0
         destinations_per_node += 1
@@ -83,10 +83,10 @@ if __name__ == "__main__":
     for ID in net:
         ID_write=[]
         ID_rate_write=[]
-        for i in xrange(max_destinations_per_node):
+        for i in range(max_destinations_per_node):
             ID_write.append(0)
             ID_rate_write.append(0)
-        for i in xrange(len(net[ID])):
+        for i in range(len(net[ID])):
             ID_write[i]=net[ID][i]
             ID_rate_write[i]=net_rate[ID][i]
         s_write=struct.pack('L'*len(ID_write), *ID_write)

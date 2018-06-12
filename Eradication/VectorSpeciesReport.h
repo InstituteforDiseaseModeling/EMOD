@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -32,12 +32,16 @@ protected:
     virtual void initChannelBins();
     void clearChannelsBins();
     virtual void postProcessAccumulatedData();
+    void normalizeChannelWithLastTimestep( const std::string &channel_name, const std::string &normalization_channel_name );
 
     // channels specific to this particular report-type
     float* adult_vectors;
     float* infectious_vectors;
     float* daily_eir;
     float* daily_hbr;
+    float* dead_vectors_before;
+    float* dead_vectors_indoor;
+    float* dead_vectors_outdoor;
 };
 
 } 

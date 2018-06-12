@@ -1,11 +1,13 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
+
+#include <ctype.h>
 
 #include "stdafx.h"
 
@@ -25,6 +27,7 @@ namespace Kernel {
         , output_stream()
         , reduced_stream()
         , outfile()
+        , write_header_newline(true)
     {
     }
 
@@ -42,13 +45,9 @@ namespace Kernel {
                 FileSystem::RemoveFile( file_path );
             }
 
-            outfile.open( file_path.c_str() , std::ios_base::app );
-            if( !outfile.is_open() )
-            {
-                throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, file_path.c_str() );
-            }
+            FileSystem::OpenFileForWriting( outfile, file_path.c_str() );
 
-            WriteData( GetHeader() + "\n" );
+            WriteData(GetHeader() + (write_header_newline ? "\n" : ""));
         }
     }
 
@@ -115,14 +114,39 @@ namespace Kernel {
         }
 
         outfile << rStringData ;
+    }
 
-        // -------------------------------------------
-        // --- Flush the buffer so we don't lose data
-        // -------------------------------------------
-        // !!! The following line is commented out to save time.
-        // !!! My one data point was running one scenario one time:
-        // !!! 16:28 vs 17:17.  Not a huge difference but some.
-        // !!! outfile.flush();
+    void BaseTextReport::SetReportName(const std::string& new_name)
+    {
+        // Validates that the requested name contains only alphanumeric characters
+        bool good_name = true;
+        for(std::string::const_iterator it = new_name.begin(); it != new_name.end(); it++)
+        {
+            if(!isalnum(*it))
+            {
+                good_name = false;
+                break;
+            }
+        }
+
+        // Only updates the reporter with a new name if it passed validation
+        if(good_name)
+        {
+            report_name = new_name;
+        }
+        else
+        {
+            LOG_WARN("Report name is not alphanumeric; default name used.\n");
+        }
+
+        return;
+    }
+
+    void BaseTextReport::AddHeaderLine(bool add_endl)
+    {
+        write_header_newline = add_endl;
+
+        return;
     }
 }
 

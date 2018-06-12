@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -34,7 +34,7 @@ namespace Kernel
 
     protected:
         friend class InfectionHIV;
-        friend class IndividualHumanCoinfection;
+        friend class IndividualHumanCoInfection;
 
         //these are the config params
         static float HIV_drug_inactivation_rate;

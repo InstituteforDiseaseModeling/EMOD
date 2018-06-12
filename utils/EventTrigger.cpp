@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -72,8 +72,6 @@ namespace Kernel
     const EventTrigger& EventTrigger::HIVTestedNegative          = EventTriggerFactory::CreateBuiltInEventTrigger( "HIVTestedNegative"         );
     const EventTrigger& EventTrigger::HIVTestedPositive          = EventTriggerFactory::CreateBuiltInEventTrigger( "HIVTestedPositive"         );
     const EventTrigger& EventTrigger::HIVSymptomatic             = EventTriggerFactory::CreateBuiltInEventTrigger( "HIVSymptomatic"            );
-    const EventTrigger& EventTrigger::HIVPreARTToART             = EventTriggerFactory::CreateBuiltInEventTrigger( "HIVPreARTToART"            );
-    const EventTrigger& EventTrigger::HIVNonPreARTToART          = EventTriggerFactory::CreateBuiltInEventTrigger( "HIVNonPreARTToART"         );
     const EventTrigger& EventTrigger::TwelveWeeksPregnant        = EventTriggerFactory::CreateBuiltInEventTrigger( "TwelveWeeksPregnant"       );
     const EventTrigger& EventTrigger::FourteenWeeksPregnant      = EventTriggerFactory::CreateBuiltInEventTrigger( "FourteenWeeksPregnant"     );
     const EventTrigger& EventTrigger::SixWeeksOld                = EventTriggerFactory::CreateBuiltInEventTrigger( "SixWeeksOld"               );
@@ -205,6 +203,7 @@ namespace Kernel
     // --- EventTriggerFactory
     // ------------------------------------------------------------------------
 
+    GET_SCHEMA_STATIC_WRAPPER_IMPL( EventTriggerFactory, EventTriggerFactory )
     BEGIN_QUERY_INTERFACE_BODY(EventTriggerFactory)
     END_QUERY_INTERFACE_BODY(EventTriggerFactory)
 

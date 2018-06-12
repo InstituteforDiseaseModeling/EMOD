@@ -30,7 +30,7 @@ def set_random_campaign_file(campaign_filename="campaign.json", campaign_templat
         campaign_json = json.load(infile)
     durations = ips.generate_durations(NUM_OF_BUCKETS, MAX_DURAITON)
     if sum(durations) != MAX_DURAITON:
-        print "total duration is {0}, expected {1}.\n".format(sum(durations), MAX_DURAITON)
+        print( "total duration is {0}, expected {1}.\n".format(sum(durations), MAX_DURAITON) )
     rates = ips.generate_rates(NUM_OF_BUCKETS,MAX_RATE)
     campaign_json["Events"][0]["Event_Coordinator_Config"]["Intervention_Config"][KEY_CAMPAIGN_DURATIONS] = durations
     campaign_json["Events"][0]["Event_Coordinator_Config"]["Intervention_Config"][KEY_CAMPAIGN_DIP] = rates
@@ -41,8 +41,8 @@ def set_random_campaign_file(campaign_filename="campaign.json", campaign_templat
         json.dump(campaign_json, outfile, indent = 4, sort_keys = True)
 
     if debug:
-        print "durations are : {}.\n".format(durations)
-        print "daily inport pressures are : {}.\n".format(rates)
+        print( "durations are : {}.\n".format(durations) )
+        print( "daily inport pressures are : {}.\n".format(rates) )
     return
 
 def application(config_filename="config.json", debug = True):
@@ -50,9 +50,9 @@ def application(config_filename="config.json", debug = True):
     campaign_filename = "campaign.json"
     campaign_template_filename = "campaign_template.json"
     if debug:
-        print "campaign_filename: " + campaign_filename + "\n"
-        print "campaign_template_filename: " + campaign_template_filename + "\n"
-        print "debug: " + str(debug) + "\n"
+        print( "campaign_filename: " + campaign_filename + "\n" )
+        print( "campaign_template_filename: " + campaign_template_filename + "\n" )
+        print( "debug: " + str(debug) + "\n" )
 
     set_random_campaign_file(campaign_filename, campaign_template_filename, debug)
     return config_filename

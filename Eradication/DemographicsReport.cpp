@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -44,16 +44,20 @@ DemographicsReport::CreateReport()
 }
 
 DemographicsReport::DemographicsReport()
+: BaseChannelReport( _report_name )
+, pseudoPop(0)
+, totalAge(0.0f)
+, totalMales(0.0f)
+, oldBirths(0.0f)
+, totalBirths(0.0f)
+, newNaturalDeaths(0.0f)
 {
-    totalBirths = 0.0f;
 }
 
 void DemographicsReport::Initialize( unsigned int nrmSize )
 {
     _nrmSize = nrmSize;
     release_assert( _nrmSize );
-
-    report_name = _report_name;
 }
 
 void DemographicsReport::BeginTimestep()

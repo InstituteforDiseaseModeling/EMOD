@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -79,12 +79,8 @@ namespace Kernel
     // --- AgeRangeList
     // ------------------------------------------------------------------------
 
-    BEGIN_QUERY_INTERFACE_BODY(AgeRangeList)
-    END_QUERY_INTERFACE_BODY(AgeRangeList)
-
     AgeRangeList::AgeRangeList()
-    : JsonConfigurable()
-    , m_AgeRanges()
+        : JsonConfigurableCollection("AgeRangeList")
     {
     }
 
@@ -92,75 +88,25 @@ namespace Kernel
     {
     }
 
-    const AgeRange& AgeRangeList::operator[]( int index ) const
+    bool LessThan( AgeRange* pLeft, AgeRange* pRight )
     {
-        release_assert( (0 <= index) && (index < m_AgeRanges.size()) );
-        return m_AgeRanges[index];
+        return (pLeft->GetMinYear() < pRight->GetMinYear());
     }
 
-    void AgeRangeList::ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key )
+    void AgeRangeList::CheckConfiguration()
     {
-        // Temporary object created so we can 'operate' on json with the desired tools
-        auto p_config = Configuration::CopyFromElement( (*inputJson)[key], inputJson->GetDataLocation() );
-
-        const auto& json_array = json_cast<const json::Array&>( (*p_config) );
-        for( auto data = json_array.Begin(); data != json_array.End(); ++data )
-        {
-            Configuration* p_element_config = Configuration::CopyFromElement( *data, inputJson->GetDataLocation() );
-
-            AgeRange ar;
-            ar.Configure( p_element_config );
-
-            Add( ar );
-
-            delete p_element_config ;
-        }
-        delete p_config;
-    }
-
-    json::QuickBuilder AgeRangeList::GetSchema()
-    {
-        AgeRange ar;
-        if( JsonConfigurable::_dryrun )
-        {
-            ar.Configure( nullptr );
-        }
-
-        json::QuickBuilder schema( GetSchemaBase() );
-        auto tn = JsonConfigurable::_typename_label();
-        auto ts = JsonConfigurable::_typeschema_label();
-        schema[ tn ] = json::String( "idmType:AgeRangeList" );
-
-        schema[ts] = json::Object();
-        schema[ts]["<AgeRange Value>"] = ar.GetSchema().As<Object>();
-
-        return schema;
-    }
-
-    void AgeRangeList::Add( const AgeRange& rar )
-    {
-        m_AgeRanges.push_back( rar );
-        std::sort( m_AgeRanges.begin(), m_AgeRanges.end() );
-    }
-
-    int AgeRangeList::Size() const
-    {
-        return m_AgeRanges.size();
-    }
-
-    void AgeRangeList::CheckForOverlap()
-    {
-        if( m_AgeRanges.size() == 0 )
+        if( Size() == 0 )
         {
             throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "'Age_Ranges_Years' cannot have zero elements." );
         }
+        std::sort( m_Collection.begin(), m_Collection.end(), LessThan );
 
-        float prev_min = m_AgeRanges[0].GetMinYear();
-        float prev_max = m_AgeRanges[0].GetMaxYear();
-        for( int i = 1 ; i < m_AgeRanges.size() ; ++i )
+        float prev_min = m_Collection[0]->GetMinYear();
+        float prev_max = m_Collection[0]->GetMaxYear();
+        for( int i = 1 ; i < m_Collection.size() ; ++i )
         {
-            float this_min = m_AgeRanges[i].GetMinYear();
-            float this_max = m_AgeRanges[i].GetMaxYear();
+            float this_min = m_Collection[i]->GetMinYear();
+            float this_max = m_Collection[i]->GetMaxYear();
 
             if( prev_max > this_min )
             {
@@ -170,6 +116,12 @@ namespace Kernel
                 throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
             }
         }
+    }
+
+    AgeRange* AgeRangeList::CreateObject()
+    {
+        AgeRange* p_ar = new AgeRange();
+        return p_ar;
     }
 
     // ------------------------------------------------------------------------
@@ -403,7 +355,7 @@ namespace Kernel
 
             CheckDiseaseConfiguration();
 
-            m_AgeRangeList.CheckForOverlap();
+            m_AgeRangeList.CheckConfiguration();
         }
         return ret;
     }
@@ -511,7 +463,7 @@ namespace Kernel
             {
                 if( m_NumTargeted[i] > 0 )
                 {
-                    TargetedByAgeAndGender* p_tbag = m_pObjectFactory->CreateTargetedByAgeAndGender( m_AgeRangeList[i],
+                    TargetedByAgeAndGender* p_tbag = m_pObjectFactory->CreateTargetedByAgeAndGender( *m_AgeRangeList[i],
                                                                                                      Gender::COUNT, 
                                                                                                      m_NumTargeted[i],
                                                                                                      num_time_steps,
@@ -523,7 +475,7 @@ namespace Kernel
             {
                 if( m_NumTargetedMales[i] > 0 )
                 {
-                    TargetedByAgeAndGender* p_tbag = m_pObjectFactory->CreateTargetedByAgeAndGender( m_AgeRangeList[i],
+                    TargetedByAgeAndGender* p_tbag = m_pObjectFactory->CreateTargetedByAgeAndGender( *m_AgeRangeList[i],
                                                                                                      Gender::MALE, 
                                                                                                      m_NumTargetedMales[i],
                                                                                                      num_time_steps,
@@ -532,7 +484,7 @@ namespace Kernel
                 }
                 if( m_NumTargetedFemales[i] > 0 )
                 {
-                    TargetedByAgeAndGender* p_tbag = m_pObjectFactory->CreateTargetedByAgeAndGender( m_AgeRangeList[i],
+                    TargetedByAgeAndGender* p_tbag = m_pObjectFactory->CreateTargetedByAgeAndGender( *m_AgeRangeList[i],
                                                                                                      Gender::FEMALE, 
                                                                                                      m_NumTargetedFemales[i],
                                                                                                      num_time_steps,
@@ -661,86 +613,37 @@ namespace Kernel
     // --- TargetedDistributionList
     // ------------------------------------------------------------------------
 
-    BEGIN_QUERY_INTERFACE_BODY(TargetedDistributionList)
-    END_QUERY_INTERFACE_BODY(TargetedDistributionList)
-
     TargetedDistributionList::TargetedDistributionList( NChooserObjectFactory* pObjectFactory )
-    : JsonConfigurable()
+    : JsonConfigurableCollection( "TargetedDistributionList" )
     , m_pObjectFactory( pObjectFactory )
     , m_CurrentIndex(0)
     , m_pCurrentTargets(nullptr)
-    , m_TargetedDistributions()
     {
         release_assert( m_pObjectFactory );
     }
 
     TargetedDistributionList::~TargetedDistributionList()
     {
-        for( auto td : m_TargetedDistributions )
-        {
-            delete td;
-        }
-        m_TargetedDistributions.clear();
     }
 
-    void TargetedDistributionList::ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key )
-    {
-        // Temporary object created so we can 'operate' on json with the desired tools
-        auto p_config = Configuration::CopyFromElement( (*inputJson)[key], inputJson->GetDataLocation() );
-
-        const auto& json_array = json_cast<const json::Array&>( (*p_config) );
-        for( auto data = json_array.Begin(); data != json_array.End(); ++data )
-        {
-            Configuration* p_element_config = Configuration::CopyFromElement( *data, inputJson->GetDataLocation() );
-
-            TargetedDistribution* p_td = m_pObjectFactory->CreateTargetedDistribution();
-            p_td->Configure( p_element_config );
-
-            Add( p_td );
-
-            delete p_element_config ;
-        }
-        delete p_config;
-    }
-
-    json::QuickBuilder TargetedDistributionList::GetSchema()
+    TargetedDistribution* TargetedDistributionList::CreateObject()
     {
         TargetedDistribution* p_td = m_pObjectFactory->CreateTargetedDistribution();
-        if( JsonConfigurable::_dryrun )
-        {
-            p_td->Configure( nullptr );
-        }
-
-        json::QuickBuilder schema( GetSchemaBase() );
-        auto tn = JsonConfigurable::_typename_label();
-        auto ts = JsonConfigurable::_typeschema_label();
-        schema[ tn ] = json::String( "idmType:TargetedDistributionList" );
-
-        schema[ts] = json::Object();
-        schema[ts]["<TargetedDistribution Value>"] = p_td->GetSchema().As<Object>();
-
-        delete p_td;
-
-        return schema;
+        return p_td;
     }
 
-    void TargetedDistributionList::CheckForOverlap()
+    void TargetedDistributionList::CheckConfiguration()
     {
-        if( m_TargetedDistributions.size() == 0 )
+        if( Size() == 0 )
         {
             throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "'Distributions' cannot have zero elements." );
         }
+        std::sort( m_Collection.begin(), m_Collection.end(), TargetedDistribution::LeftLessThanRight );
 
-        for( int i = 1 ; i < m_TargetedDistributions.size() ; ++i )
+        for( int i = 1 ; i < m_Collection.size() ; ++i )
         {
-            m_TargetedDistributions[i]->CheckOverlaped( *m_TargetedDistributions[i-1] );
+            m_Collection[ i ]->CheckOverlaped( *m_Collection[i-1] );
         }
-    }
-
-    void TargetedDistributionList::Add( TargetedDistribution* ptd )
-    {
-        m_TargetedDistributions.push_back( ptd );
-        std::sort( m_TargetedDistributions.begin(), m_TargetedDistributions.end(), TargetedDistribution::LeftLessThanRight );
     }
 
     void TargetedDistributionList::UpdateTargeting( const IdmDateTime& rDateTime, float dt )
@@ -748,8 +651,8 @@ namespace Kernel
         // ----------------------------------------------------
         // --- Update where we are in the list of distributions
         // ----------------------------------------------------
-        while( (m_CurrentIndex < m_TargetedDistributions.size()) &&
-               m_TargetedDistributions[ m_CurrentIndex ]->IsPastEnd( rDateTime ) )
+        while( (m_CurrentIndex < m_Collection.size()) &&
+               m_Collection[ m_CurrentIndex ]->IsPastEnd( rDateTime ) )
         {
             ++m_CurrentIndex;
         }
@@ -758,10 +661,10 @@ namespace Kernel
         // --- Find the current distributino period
         // -----------------------------------------
         m_pCurrentTargets = nullptr;
-        if( (m_CurrentIndex < m_TargetedDistributions.size()) &&
-            (m_TargetedDistributions[ m_CurrentIndex ]->IsPastStart( rDateTime )) )
+        if( (m_CurrentIndex < m_Collection.size()) &&
+            (m_Collection[ m_CurrentIndex ]->IsPastStart( rDateTime )) )
         {
-            m_pCurrentTargets = m_TargetedDistributions[ m_CurrentIndex ];
+            m_pCurrentTargets = m_Collection[ m_CurrentIndex ];
 
             m_pCurrentTargets->UpdateTargeting( rDateTime, dt );
         }
@@ -775,14 +678,14 @@ namespace Kernel
     bool TargetedDistributionList::IsFinished( const IdmDateTime& rDateTime, float dt )
     {
         bool is_finished = false;
-        while( (m_CurrentIndex < m_TargetedDistributions.size()) &&
-               ( (m_TargetedDistributions[ m_CurrentIndex ]->IsPastEnd( rDateTime )) ||
-                  m_TargetedDistributions[ m_CurrentIndex ]->IsFinished() ) )
+        while( (m_CurrentIndex < m_Collection.size()) &&
+               ( (m_Collection[ m_CurrentIndex ]->IsPastEnd( rDateTime )) ||
+                 m_Collection[ m_CurrentIndex ]->IsFinished() ) )
         {
             ++m_CurrentIndex;
         }
 
-        if( m_CurrentIndex >= m_TargetedDistributions.size() )
+        if( m_CurrentIndex >= m_Collection.size() )
         {
             is_finished = true;
         }
@@ -791,7 +694,7 @@ namespace Kernel
 
     void TargetedDistributionList::ScaleTargets( float popScaleFactor )
     {
-        for( auto p_td : m_TargetedDistributions )
+        for( auto p_td : m_Collection )
         {
             p_td->ScaleTargets( popScaleFactor );
         }
@@ -799,7 +702,7 @@ namespace Kernel
 
     void TargetedDistributionList::CheckStartDay( float campaignStartDay ) const
     {
-        for( auto p_td : m_TargetedDistributions )
+        for( auto p_td : m_Collection )
         {
             p_td->CheckStartDay( campaignStartDay );
         }
@@ -818,7 +721,7 @@ namespace Kernel
     {
     }
 
-    TargetedDistribution*   NChooserObjectFactory::CreateTargetedDistribution()
+    TargetedDistribution* NChooserObjectFactory::CreateTargetedDistribution()
     {
         return new TargetedDistribution( this );
     }
@@ -889,9 +792,12 @@ namespace Kernel
 
         if( retValue && !JsonConfigurable::_dryrun)
         {
-            m_TargetedDistributionList.CheckForOverlap();
+            m_TargetedDistributionList.CheckConfiguration();
 
-            InterventionValidator::ValidateIntervention( m_InterventionConfig._json, inputJson->GetDataLocation() );
+            InterventionValidator::ValidateIntervention( GetTypeName(),
+                                                         InterventionTypeValidation::INDIVIDUAL,
+                                                         m_InterventionConfig._json,
+                                                         inputJson->GetDataLocation() );
         }
 
         return retValue;

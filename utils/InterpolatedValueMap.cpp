@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -115,7 +115,7 @@ namespace Kernel
         schema[ts][VALUES][0][ "type" ] = json::String( "float" );
         schema[ts][VALUES][0][ "min" ] = json::Number( m_MinValue );
         schema[ts][VALUES][0][ "max" ] = json::Number( m_MaxValue );
-        schema[ts][VALUES][0][ "description" ] = json::String( Interpolated_Value_Map_Values_DESC_TEXT );
+        schema[ts][VALUES][0][ "description" ] = json::String( Interpolated_Value_Map_Value_DESC_TEXT );
         return schema;
     }
 

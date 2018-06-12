@@ -1,7 +1,7 @@
 {
     "sweep" : 
     {
-        "path": "TBHIV/6_DistributeHIVbyDemographicsAll",
+        "path": "Scenarios/Generic/08_SIS",
         "param_name" : "Run_Number",
         "param_values" : [ 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144 ]
     }

@@ -179,7 +179,7 @@ class MyRegressionRunner(object):
     # - --dll-path allows the user to override this default path
     def copyEModulesOver(self, params):
 
-        print "src_root = " + params.src_root
+        print( "src_root = " + params.src_root )
 
         if params.dll_path is not None:
             emodule_dir = params.dll_path
@@ -234,7 +234,7 @@ class MyRegressionRunner(object):
                     self.emodules_map[dll_subdir].append(os.path.join(target_dir, os.path.basename(dll)))
 
                 except IOError:
-                    print "Failed to copy dll " + dll + " to " + os.path.join(os.path.join(params.dll_root, dll_dirs[1]), os.path.basename(dll))
+                    print( "Failed to copy dll " + dll + " to " + os.path.join(os.path.join(params.dll_root, dll_dirs[1]), os.path.basename(dll)) )
                     ru.final_warnings += "Failed to copy dll " + dll + " to " + os.path.join(os.path.join(params.dll_root, dll_dirs[1]), os.path.basename(dll)) + "\n"
 
         return
@@ -321,6 +321,8 @@ class MyRegressionRunner(object):
                     self.copy_sim_file(scenario_path, sim_dir, os.path.basename(py_file))
             elif psp_param == "SHARED":
                 py_input = self.params.py_input
+                if not os.path.exists(py_input):
+                    os.makedirs(py_input)
                 for py_file in glob.glob(os.path.join(scenario_path, "dtk_*.py")):
                     self.copy_sim_file(scenario_path, sim_dir, os.path.basename(py_file))
 
@@ -384,7 +386,7 @@ class MyRegressionRunner(object):
         test_schema_path = "test-schema.json"
         subprocess.call([self.params.executable_path, "--get-schema", "--schema-path", test_schema_path], stdout=open(os.devnull))
         try:
-            json.loads(open(test_schema_path).read())
+            ru.load_json(test_schema_path)
             print("schema works.")
             os.remove(test_schema_path)
             return "passed"

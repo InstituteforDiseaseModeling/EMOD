@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,7 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #pragma once
 
 
-#if defined(ENABLE_TB) || defined(ENABLE_TBHIV)
+#if defined(ENABLE_TBHIV)
 #include "Interventions.h"
 #include "InterventionsContainer.h"
 #include "TBDrugTypeParameters.h"
@@ -61,7 +61,6 @@ namespace Kernel
         virtual void UpdateHealthSeekingBehaviors( float new_probability_of_seeking) = 0; //this function is called by HSBUpdate to the InterventionsContainer
     };
 
-    struct IDrug;
     class TBInterventionsContainer : public InterventionsContainer,
         public ITBDrugEffects,
         public ITBDrugEffectsApply,
@@ -76,31 +75,29 @@ namespace Kernel
         virtual ~TBInterventionsContainer();
 
         // ISupports
-        virtual QueryResult QueryInterface(iid_t iid, void** pinstance);
-        virtual bool GiveIntervention( IDistributableIntervention * pIV );
+        virtual QueryResult QueryInterface(iid_t iid, void** pinstance) override;
 
         // ITBDrugEffectsApply
-        virtual void ApplyDrugVaccineReducedAcquireEffect( float rate );
-        virtual void ApplyDrugVaccineReducedTransmitEffect( float rate );
-        virtual void ApplyTBDrugEffects( TBDrugEffects_t effects, TBDrugType::Enum drug_type );
-        virtual void UpdateTreatmentStatus( const EventTrigger& new_treatment_status );
+        virtual void ApplyDrugVaccineReducedAcquireEffect( float rate ) override;
+        virtual void ApplyDrugVaccineReducedTransmitEffect( float rate ) override;
+        virtual void ApplyTBDrugEffects( TBDrugEffects_t effects, TBDrugType::Enum drug_type ) override;
+        virtual void UpdateTreatmentStatus( const EventTrigger& new_treatment_status ) override;
         
-        virtual void Update(float dt); // hook to update interventions if they need it
-
         //functions in the ITBInterventionsContainer
-        virtual int GetNumTBDrugsActive(); //this function needs to be non-const so it can call GetInterventionsByInterface
-        virtual bool GetTxNaiveStatus() const;
-        virtual bool GetTxFailedStatus() const;
-        virtual bool GetTxEverRelapsedStatus() const; 
+        virtual int GetNumTBDrugsActive() override; //this function needs to be non-const so it can call GetInterventionsByInterface
+        virtual bool GetTxNaiveStatus() const override;
+        virtual bool GetTxFailedStatus() const override;
+        virtual bool GetTxEverRelapsedStatus() const override;
 
         //functions in IHealthSeekingBehaviorUpdateEffectsApply
-        virtual void UpdateHealthSeekingBehaviors(float new_probability_of_seeking);
+        virtual void UpdateHealthSeekingBehaviors(float new_probability_of_seeking) override;
+
+        virtual void InfectiousLoopUpdate( float dt ) override;
 
     protected:
-        virtual TBDrugEffectsMap_t GetDrugEffectsMap();
+        virtual TBDrugEffectsMap_t GetDrugEffectsMap() override;
 
         //virtual void PropagateContextToDependents(); // pass context to interventions if they need it
-        void GiveDrug(IDrug* drug);
 
         TBDrugEffectsMap_t TB_drug_effects;
 

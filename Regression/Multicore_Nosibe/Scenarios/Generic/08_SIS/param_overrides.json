@@ -8,21 +8,23 @@
         "DEMOGRAPHICS": {
             "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE",
             "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
-            "Demographics_Filenames": ["Madagascar_Nosibe_2.5arcmin_demographics.json"],
+            "Demographics_Filenames": [
+                "Madagascar_Nosibe_2.5arcmin_demographics.json"
+            ],
             "Enable_Aging": 1,
             "Enable_Birth": 0,
             "Enable_Demographics_Birth": 0,
             "Enable_Demographics_Gender": 0,
             "Enable_Demographics_Initial": 1,
-            "Enable_Demographics_Other": 0,
+            "Enable_Demographics_Risk": 0,
+            "Enable_Initial_Prevalence": 1,
             "Enable_Vital_Dynamics": 0,
             "IMMUNITY": {
                 "Enable_Immunity": 0
             },
             "MORTALITY": {
                 "Base_Mortality": 0,
-                "Enable_Disease_Mortality": 0,
-                "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF"
+                "Enable_Disease_Mortality": 0
             }
         },
         "DISEASE": {
@@ -41,46 +43,46 @@
             "Max_Individual_Infections": 1
         },
         "EXECUTION": {
-              "CLUSTER": {
-                   "Load_Balance_Filename": "Madagascar_Nosibe_2.5arcmin_load_balancing_8procs.bin",
-                   "Num_Cores": 8
-              }
-         },         
+            "CLUSTER": {
+                "Load_Balance_Filename": "Madagascar_Nosibe_2.5arcmin_load_balancing_8procs.bin",
+                "Num_Cores": 8
+            }
+        },
         "MIGRATION": {
-            "Migration_Model": "FIXED_RATE_MIGRATION", 
-            "Migration_Pattern": "WAYPOINTS_HOME", 
-            "Enable_Migration_Heterogeneity" : 0,
-            "Enable_Family_Migration": 0, 
-            "Family_Migration_Filename": "", 
-            "x_Family_Migration": 1,
+            "AIR": {
+                "Air_Migration_Filename": "",
+                "Enable_Air_Migration": 0
+            },
+            "Enable_Family_Migration": 0,
+            "Enable_Migration_Heterogeneity": 0,
+            "Family_Migration_Filename": "",
+            "LOCAL": {
+                "Enable_Local_Migration": 1,
+                "Local_Migration_Filename": "Madagascar_Nosibe_2.5arcmin_local_migration.bin"
+            },
+            "Migration_Model": "FIXED_RATE_MIGRATION",
+            "Migration_Pattern": "WAYPOINTS_HOME",
+            "REGIONAL": {
+                "Enable_Regional_Migration": 0,
+                "Regional_Migration_Filename": ""
+            },
             "Roundtrip_Waypoints": 5,
-                "AIR" : {
-                    "Enable_Air_Migration" : 0,
-                    "Air_Migration_Filename" :""
-                },
-                "LOCAL": {
-                    "Enable_Local_Migration": 1, 
-                    "Local_Migration_Filename": "Madagascar_Nosibe_2.5arcmin_local_migration.bin"
-                }, 
-                "REGIONAL": {
-                    "Enable_Regional_Migration": 0, 
-                    "Regional_Migration_Filename": ""
-               }, 
-               "SEA": {
-                    "Enable_Sea_Migration": 0, 
-                    "Sea_Migration_Filename": ""
-               }
-        },         
+            "SEA": {
+                "Enable_Sea_Migration": 0,
+                "Sea_Migration_Filename": ""
+            },
+            "x_Family_Migration": 1
+        },
         "OUTPUT": {
             "Enable_Property_Output": 0
         },
         "PRIMARY": {
             "Config_Name": "08_SIS -- multicore -- Madagascar_Nosibe",
-            "Simulation_Type": "GENERIC_SIM",
             "Geography": "Madagascar_Nosibe",
             "Run_Number": 0,
             "Simulation_Duration": 3650,
             "Simulation_Timestep": 1,
+            "Simulation_Type": "GENERIC_SIM",
             "Start_Time": 0
         }
     }

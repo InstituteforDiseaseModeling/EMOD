@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -20,73 +20,21 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Properties.h"
 #include "NodeProperties.h"
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!! CREATING NEW REPORTS
-// !!! If you are creating a new report by copying this one, you will need to modify 
-// !!! the values below indicated by "<<<"
-
-// Name for logging, CustomReport.json, and DLL GetType()
-SETUP_LOGGING( "ReportNodeDemographics" ) // <<< Name of this file
+SETUP_LOGGING( "ReportNodeDemographics" )
 
 namespace Kernel
 {
-// You can put 0 or more valid Sim types into _sim_types but has to end with nullptr.
-// "*" can be used if it applies to all simulation types.
-static const char * _sim_types[] = { "*", nullptr };// <<< Types of simulation the report is to be used with
-
-report_instantiator_function_t rif = []()
-{
-    return (Kernel::IReport*)(new ReportNodeDemographics()); // <<< Report to create
-};
-
-DllInterfaceHelper DLL_HELPER( _module, _sim_types, rif );
-
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-// ------------------------------
-// --- DLL Interface Methods
-// ---
-// --- The DTK will use these methods to establish communication with the DLL.
-// ------------------------------
-
-#ifdef __cplusplus    // If used by C++ code, 
-extern "C" {          // we need to export the C interface
-#endif
-
-DTK_DLLEXPORT char* __cdecl
-GetEModuleVersion(char* sVer, const Environment * pEnv)
-{
-    return DLL_HELPER.GetEModuleVersion( sVer, pEnv );
-}
-
-DTK_DLLEXPORT void __cdecl
-GetSupportedSimTypes(char* simTypes[])
-{
-    DLL_HELPER.GetSupportedSimTypes( simTypes );
-}
-
-DTK_DLLEXPORT const char * __cdecl
-GetType()
-{
-    return DLL_HELPER.GetType();
-}
-
-DTK_DLLEXPORT void __cdecl
-GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
-{
-    DLL_HELPER.GetReportInstantiator( pif );
-}
-
-#ifdef __cplusplus
-}
-#endif
-
 // ----------------------------------------
 // --- ReportNodeDemographics Methods
 // ----------------------------------------
 
     ReportNodeDemographics::ReportNodeDemographics()
-        : BaseTextReport( "ReportNodeDemographics.csv" )
+        : ReportNodeDemographics( "ReportNodeDemographics.csv" )
+    {
+    }
+
+    ReportNodeDemographics::ReportNodeDemographics( const std::string& rReportName )
+        : BaseTextReport( rReportName )
         , m_StratifyByGender(true)
         , m_StratifyByAge(true)
         , m_AgeYears()
@@ -104,6 +52,17 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
 
     ReportNodeDemographics::~ReportNodeDemographics()
     {
+        for( int i = 0; i < m_Data.size(); ++i )
+        {
+            for( int j = 0; j < m_Data[ i ].size(); ++j )
+            {
+                for( int k = 0; k < m_Data[ i ][ j ].size(); ++k )
+                {
+                    delete m_Data[ i ][ j ][ k ];
+                    m_Data[ i ][ j ][ k ] = nullptr;
+                }
+            }
+        }
     }
 
     bool ReportNodeDemographics::Configure( const Configuration * inputJson )
@@ -126,6 +85,11 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         {
         }
         return ret;
+    }
+
+    NodeData* ReportNodeDemographics::CreateNodeData()
+    {
+        return new NodeData();
     }
 
     void ReportNodeDemographics::Initialize( unsigned int nrmSize )
@@ -154,14 +118,14 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         // initialize the counters so that they can be indexed by gender and age
         for( int g = 0 ; g < num_genders ; g++ )
         {
-            m_Data.push_back( std::vector<std::vector<NodeData>>() );
+            m_Data.push_back( std::vector<std::vector<NodeData*>>() );
             for( int a = 0 ; a < m_AgeYears.size() ; a++ )
             {
-                m_Data[ g ].push_back( std::vector<NodeData>() );
+                m_Data[ g ].push_back( std::vector<NodeData*>() );
                 for( int i = 0 ; i < m_IPValuesList.size() ; ++i )
                 {
-                    NodeData nd;
-                    m_Data[ g ][ a ].push_back( nd );
+                    NodeData* pnd = CreateNodeData();
+                    m_Data[ g ][ a ].push_back( pnd );
                 }
             }
         }
@@ -209,12 +173,14 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         int age_bin_index = ReportUtilities::GetAgeBin( individual->GetAge(), m_AgeYears );
         int ip_index      = GetIPIndex( individual->GetProperties() );
 
-        m_Data[ gender_index ][ age_bin_index ][ ip_index ].num_people += 1;
+        NodeData* p_nd = m_Data[ gender_index ][ age_bin_index ][ ip_index ];
+        p_nd->num_people += 1;
 
         if( individual->IsInfected() )
         {
-            m_Data[ gender_index ][ age_bin_index ][ ip_index ].num_infected += 1;
+            p_nd->num_infected += 1;
         }
+        LogIndividualData( individual, p_nd );
     }
 
     void ReportNodeDemographics::LogNodeData( INodeContext* pNC )
@@ -246,8 +212,8 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
                     {
                         GetOutputStream() << ", " << m_IPValuesList[ i ] ;
                     }
-                    GetOutputStream() << "," << m_Data[ g ][ a ][ i ].num_people
-                                      << "," << m_Data[ g ][ a ][ i ].num_infected;
+
+                    WriteNodeData( m_Data[ g ][ a ][ i ] );
 
                     for( auto pnp : NPFactory::GetInstance()->GetNPList() )
                     {
@@ -266,11 +232,16 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
             {
                 for( int i = 0 ; i < m_IPValuesList.size() ; ++i )
                 {
-                    NodeData nd ;
-                    m_Data[ g ][ a ][ i ] = nd;
+                    m_Data[ g ][ a ][ i ]->Reset();
                 }
             }
         }
+    }
+
+    void ReportNodeDemographics::WriteNodeData( const NodeData* pData )
+    {
+        GetOutputStream() << "," << pData->num_people
+                          << "," << pData->num_infected;
     }
 
     int ReportNodeDemographics::GetIPIndex( IPKeyValueContainer* pProps ) const

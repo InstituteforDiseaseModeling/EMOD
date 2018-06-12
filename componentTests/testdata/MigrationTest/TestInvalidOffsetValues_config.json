@@ -1,0 +1,44 @@
+{
+    "parameters": {
+        "Enable_Demographics_Builtin": 0, 
+
+        "Enable_Migration_Heterogeneity": 1, 
+        "Family_Migration_Type" : "NO_MIGRATION", "Migration_Model": "FIXED_RATE_MIGRATION",
+
+        "Enable_Local_Migration": 1, 
+        "Local_Migration_Filename": "TestInvalidOffsetValues.bin", 
+        "x_Local_Migration": 1, 
+
+        "Enable_Air_Migration": 0, 
+        "Air_Migration_Filename": "", 
+        "x_Air_Migration": 1, 
+
+        "Enable_Regional_Migration": 0, 
+        "Regional_Migration_Filename": "", 
+        "x_Regional_Migration": 1, 
+
+        "Enable_Sea_Migration": 0, 
+        "Sea_Migration_Filename": "", 
+        "x_Sea_Migration": 1,
+
+        "Enable_Family_Migration": 0, 
+        "Family_Migration_Filename": "", 
+        "x_Family_Migration": 1,
+
+        "Enable_Vector_Migration": 0,
+
+        "Enable_Vector_Migration_Local" : 0,
+        "Vector_Migration_Filename_Local" : "",
+        "x_Vector_Migration_Local" : 1,
+
+        "Enable_Vector_Migration_Regional" : 0,
+        "Vector_Migration_Filename_Regional" : "",
+        "x_Vector_Migration_Regional" : 1,
+
+        "Vector_Migration_Modifier_Equation" : "EXPONENTIAL",
+        "Vector_Migration_Food_Modifier" : 1.0,
+        "Vector_Migration_Habitat_Modifier" : 1.0,
+        "Vector_Migration_Stay_Put_Modifier" : 1.0
+
+    }
+}

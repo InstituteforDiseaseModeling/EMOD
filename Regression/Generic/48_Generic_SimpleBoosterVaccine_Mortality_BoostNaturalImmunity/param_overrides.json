@@ -6,7 +6,7 @@
             "MORTALITY": {
                 "Base_Mortality": 0.5, 
                 "Enable_Disease_Mortality": 1, 
-                "Immunity_Mortality_Factor": 0.8
+                "Post_Infection_Mortality_Multiplier": 0.8
             }, 
             "Demographics_Filenames": ["../00_Generic_Default/demographics.json"]
         }, 

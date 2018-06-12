@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -48,31 +48,28 @@ namespace Kernel
         HANDLE_INTERFACE(IIndividualHumanPy)
     END_QUERY_INTERFACE_DERIVED(IndividualHumanPy, IndividualHuman)
 
-    IndividualHumanPy::IndividualHumanPy(suids::suid _suid, float monte_carlo_weight, float initial_age, int gender, float initial_poverty) 
-    : IndividualHuman(_suid, monte_carlo_weight, initial_age, gender, initial_poverty)
+    IndividualHumanPy::IndividualHumanPy(suids::suid _suid, float monte_carlo_weight, float initial_age, int gender) 
+    : IndividualHuman(_suid, monte_carlo_weight, initial_age, gender)
     , transmissionGroupMembershipByRoute()
     {
 #ifdef ENABLE_PYTHON_FEVER
-        // Call into python script to notify of new individual
-        if( PythonSupportPtr != nullptr )
+        // Call into python script to notify of new individual 
+        static auto pFunc = Kernel::PythonSupport::GetPyFunction( Kernel::PythonSupport::SCRIPT_PYTHON_FEVER.c_str(), "create" );
+        if( pFunc )
         {
-            static auto pFunc = PythonSupportPtr->IdmPyInit( PythonSupport::SCRIPT_PYTHON_FEVER.c_str(), "create" );
-            if( pFunc )
+            // pass individual id
+            static PyObject * vars = PyTuple_New(4); 
+            vars = Py_BuildValue( "lffs", _suid.data, monte_carlo_weight, initial_age, PyUnicode_FromFormat( "%s", ( ( gender==0 ) ? "MALE" : "FEMALE" ) ) );
+            // now ready to call function
+            auto ret = PyObject_CallObject( pFunc, vars );
+            if( ret == nullptr )
             {
-                // pass individual id
-                static PyObject * vars = PyTuple_New(4); 
-                vars = Py_BuildValue( "lffs", _suid.data, monte_carlo_weight, initial_age, PyString_FromFormat( "%s", ( ( gender==0 ) ? "MALE" : "FEMALE" ) ) );
-                // now ready to call function
-                auto ret = PyObject_CallObject( pFunc, vars );
-                if( ret == nullptr )
-                {
-                    PyErr_Print();
-                    std::stringstream msg;
-                    msg << "Embedded python code failed: PyObject_CallObject failed in call to 'create'.";
-                    throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-                }
-                // vars ref count is always 1 here
+                PyErr_Print();
+                std::stringstream msg;
+                msg << "Embedded python code failed: PyObject_CallObject failed in call to 'create'.";
+                throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
             }
+            // vars ref count is always 1 here
         }
 #endif
     }
@@ -81,26 +78,23 @@ namespace Kernel
     {
 #ifdef ENABLE_PYTHON_FEVER
         // Call into python script to notify of new individual
-        if( PythonSupportPtr != nullptr )
+        static auto pFunc = PythonSupport::GetPyFunction( PythonSupport::SCRIPT_PYTHON_FEVER.c_str(), "destroy" );
+        if( pFunc )
         {
-            static auto pFunc = PythonSupportPtr->IdmPyInit( PythonSupport::SCRIPT_PYTHON_FEVER.c_str(), "destroy" );
-            if( pFunc )
+            static PyObject * vars = PyTuple_New(1);
+            //vars = Py_BuildValue( "l", GetSuid().data ); // this gives errors. :(
+            PyObject* py_id = PyLong_FromLong( GetSuid().data );
+            PyTuple_SetItem(vars, 0, py_id );
+            auto ret = PyObject_CallObject( pFunc, vars );
+            if( ret == nullptr )
             {
-                static PyObject * vars = PyTuple_New(1);
-                //vars = Py_BuildValue( "l", GetSuid().data ); // this gives errors. :(
-                PyObject* py_id = PyLong_FromLong( GetSuid().data );
-                PyTuple_SetItem(vars, 0, py_id );
-                auto ret = PyObject_CallObject( pFunc, vars );
-                if( ret == nullptr )
-                {
-                    PyErr_Print();
-                    std::stringstream msg;
-                    msg << "Embedded python code failed: PyObject_CallObject failed in call to 'destroy'.";
+                PyErr_Print();
+                std::stringstream msg;
+                msg << "Embedded python code failed: PyObject_CallObject failed in call to 'destroy'.";
 #pragma warning (push)
 #pragma warning(disable: 4297)
-                        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+                    throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
 #pragma warning( pop )
-                }
             }
         }
 #endif
@@ -114,9 +108,9 @@ namespace Kernel
         infection_config.Configure( config );
     }
 
-    IndividualHumanPy *IndividualHumanPy::CreateHuman(INodeContext *context, suids::suid id, float monte_carlo_weight, float initial_age, int gender, float initial_poverty)
+    IndividualHumanPy *IndividualHumanPy::CreateHuman(INodeContext *context, suids::suid id, float monte_carlo_weight, float initial_age, int gender)
     {
-        IndividualHumanPy *newhuman = _new_ IndividualHumanPy(id, monte_carlo_weight, initial_age, gender, initial_poverty);
+        IndividualHumanPy *newhuman = _new_ IndividualHumanPy(id, monte_carlo_weight, initial_age, gender);
         
         newhuman->SetContextTo(context);
         LOG_DEBUG_F( "Created human with age=%f\n", newhuman->m_age );
@@ -151,13 +145,13 @@ namespace Kernel
 
         LOG_DEBUG_F( "Calling py:expose with contagion pop %f\n", cp->GetTotalContagion() );
 
-        static auto pFunc = PythonSupportPtr->IdmPyInit( PythonSupport::SCRIPT_PYTHON_FEVER.c_str(), "expose" );
+        static auto pFunc = PythonSupport::GetPyFunction( PythonSupport::SCRIPT_PYTHON_FEVER.c_str(), "expose" );
         if( pFunc )
         {
             // pass individual id AND dt
             static PyObject * vars = PyTuple_New(4);
 
-            vars = Py_BuildValue( "lfls", GetSuid().data, cp->GetTotalContagion(), int(dt), PyLong_FromLong( transmission_route == TransmissionRoute::TRANSMISSIONROUTE_ENVIRONMENTAL ? 0 : 1 ) ); 
+            vars = Py_BuildValue( "lfll", GetSuid().data, cp->GetTotalContagion(), int(dt), PyLong_FromLong( transmission_route == TransmissionRoute::TRANSMISSIONROUTE_ENVIRONMENTAL ? 0 : 1 ) ); 
             PyObject * retVal = PyObject_CallObject( pFunc, vars );
             if( retVal == nullptr )
             {
@@ -191,13 +185,13 @@ namespace Kernel
 #ifdef ENABLE_PYTHON_FEVER
         for( auto &route: parent->GetTransmissionRoutes() )
         {
-            static auto pFunc = PythonSupportPtr->IdmPyInit( PythonSupport::SCRIPT_PYTHON_FEVER.c_str(), "update_and_return_infectiousness" );
+            static auto pFunc = PythonSupport::GetPyFunction( PythonSupport::SCRIPT_PYTHON_FEVER.c_str(), "update_and_return_infectiousness" );
             if( pFunc )
             {
                 // pass individual id ONLY
                 static PyObject * vars = PyTuple_New(2);
 
-                vars = Py_BuildValue( "ls", GetSuid().data, PyString_FromFormat( "%s", route.c_str() ) );
+                vars = Py_BuildValue( "ls", GetSuid().data, PyUnicode_FromFormat( "%s", route.c_str() ) );
                 auto retVal = PyObject_CallObject( pFunc, vars );
                 if( retVal == nullptr )
                 {
@@ -237,7 +231,7 @@ namespace Kernel
     void IndividualHumanPy::Update( float currenttime, float dt)
     {
 #ifdef ENABLE_PYTHON_FEVER
-        static auto pFunc = PythonSupportPtr->IdmPyInit( PythonSupport::SCRIPT_PYTHON_FEVER.c_str(), "update" );
+        static auto pFunc = PythonSupport::GetPyFunction( PythonSupport::SCRIPT_PYTHON_FEVER.c_str(), "update" );
         if( pFunc )
         {
             // pass individual id AND dt
@@ -298,7 +292,7 @@ namespace Kernel
         LOG_DEBUG_F("AcquireNewInfection: route %d\n", _routeOfInfection);
         IndividualHuman::AcquireNewInfection( infstrain, incubation_period_override );
 #ifdef ENABLE_PYTHON_FEVER
-        static auto pFunc = PythonSupportPtr->IdmPyInit( PythonSupport::SCRIPT_PYTHON_FEVER.c_str(), "acquire_infection" );
+        static auto pFunc = PythonSupport::GetPyFunction( PythonSupport::SCRIPT_PYTHON_FEVER.c_str(), "acquire_infection" );
         if( pFunc )
         {
             // pass individual id ONLY

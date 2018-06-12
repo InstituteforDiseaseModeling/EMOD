@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -105,7 +105,6 @@ namespace Kernel
         , event_coordinators()
         , campaign_events()
         , event_context_host(nullptr)
-        , Ind_Sample_Rate(1.0f)
         , currentTime()
         , random_type(RandomType::USE_PSEUDO_DES)
         , sim_type(SimType::GENERIC_SIM)
@@ -140,8 +139,7 @@ namespace Kernel
         initConfigTypeMap( "Enable_Spatial_Output", &enable_spatial_output, Enable_Spatial_Output_DESC_TEXT, false );
         initConfigTypeMap( "Enable_Property_Output", &enable_property_output, Enable_Property_Output_DESC_TEXT, false );
         initConfigTypeMap( "Campaign_Filename", &campaign_filename, Campaign_Filename_DESC_TEXT, "", "Enable_Interventions" );
-        initConfigTypeMap( "Load_Balance_Filename", &loadbalance_filename, Load_Balance_Filename_DESC_TEXT );
-        initConfigTypeMap( "Base_Individual_Sample_Rate", &Ind_Sample_Rate, Base_Individual_Sample_Rate_DESC_TEXT, 0.0f, 1.0f, 1.0f, "Individual_Sampling_Type", "FIXED_SAMPLING, ADAPTED_SAMPLING_BY_IMMUNE_STATE");
+        initConfigTypeMap( "Load_Balance_Filename", &loadbalance_filename, Load_Balance_Filename_DESC_TEXT ); 
         initConfigTypeMap( "Run_Number", &Run_Number, Run_Number_DESC_TEXT, 0, INT_MAX, 1 );
 
 
@@ -214,7 +212,7 @@ namespace Kernel
 
         if( JsonConfigurable::_dryrun || EnvPtr->Config->Exist( "Custom_Reports_Filename" ) )
         {
-            initConfigTypeMap( "Custom_Reports_Filename", &custom_reports_filename, Custom_Report_Filename_DESC_TEXT, RUN_ALL_CUSTOM_REPORTS );
+            initConfigTypeMap( "Custom_Reports_Filename", &custom_reports_filename, Custom_Reports_Filename_DESC_TEXT, RUN_ALL_CUSTOM_REPORTS );
         }
 
         bool ret = JsonConfigurable::Configure( inputJson );
@@ -624,6 +622,7 @@ namespace Kernel
                         json::Array report_data = dll_data["Reports"].As<json::Array>() ;
                         for( int i = 0 ; i < report_data.Size() ; i++ )
                         {
+                            LOG_INFO_F( "Created instance #%d of %s\n", (i+1),class_name.c_str() );
                             Configuration* p_cfg = Configuration::CopyFromElement( report_data[i], p_cr_config->GetDataLocation() );
 
                             IReport* p_cr = ri_entry.second(); // creates report object
@@ -1121,9 +1120,8 @@ namespace Kernel
         release_assert(climate_factory);
 #endif
 
-        // Node initialization
+        // Node initialization 
         node->SetParameters( nodedemographics_factory, climate_factory, white_list_enabled );
-        node->SetMonteCarloParameters(Ind_Sample_Rate);// need to define parameters
 
         // Populate node
         node->PopulateFromDemographics();
@@ -1148,7 +1146,6 @@ namespace Kernel
 #endif
 
         node->SetParameters( nodedemographics_factory, climate_factory, white_list_enabled );
-        node->SetMonteCarloParameters( Ind_Sample_Rate );
 
         // node->PopulateFromDemographics();    // Skip this, node already is populated.
         node->InitializeTransmissionGroupPopulations();
@@ -1400,7 +1397,6 @@ namespace Kernel
             ar.labelElement( "campaignFilename" ) & sim.campaignFilename;
             ar.labelElement( "custom_reports_filename" ) & sim.custom_reports_filename;
 
-            ar.labelElement("Ind_Sample_Rate") & sim.Ind_Sample_Rate;
 
             ar.labelElement("sim_type") & (uint32_t&)sim.sim_type;
             ar.labelElement("demographic_tracking") & sim.demographic_tracking;

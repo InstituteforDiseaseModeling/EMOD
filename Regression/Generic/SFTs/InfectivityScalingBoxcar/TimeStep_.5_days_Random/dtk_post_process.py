@@ -11,12 +11,12 @@ def application( output_folder="output", stdout_filename="test.txt",
                  report_name=dtk_sft.sft_output_filename,
                  debug=False):
     if debug:
-        print "output_folder: " + output_folder
-        print "stdout_filename: " + stdout_filename+ "\n"
-        print "config_filename: " + config_filename + "\n"
-        print "insetchart_name: " + insetchart_name + "\n"
-        print "report_name: " + report_name + "\n"
-        print "debug: " + str(debug) + "\n"
+        print( "output_folder: " + output_folder )
+        print( "stdout_filename: " + stdout_filename+ "\n" )
+        print( "config_filename: " + config_filename + "\n" )
+        print( "insetchart_name: " + insetchart_name + "\n" )
+        print( "report_name: " + report_name + "\n" )
+        print( "debug: " + str(debug) + "\n" )
     dtk_sft.wait_for_done()
     param_obj = isb_support.load_emod_parameters(config_filename)
     simulation_timestep = param_obj[KEY_SIMULATION_TIMESTEP]

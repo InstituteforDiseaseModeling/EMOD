@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -32,7 +32,10 @@ namespace Kernel
         bool ret = BaseIntervention::Configure( inputJson );
         if( ret )
         {
-            InterventionValidator::ValidateInterventionArray( intervention_list._json, inputJson->GetDataLocation() );
+            InterventionValidator::ValidateInterventionArray( GetTypeName(),
+                                                              InterventionTypeValidation::INDIVIDUAL,
+                                                              intervention_list._json, 
+                                                              inputJson->GetDataLocation() );
         }
         return ret ;
     }
@@ -88,24 +91,11 @@ namespace Kernel
                 // Instantiate and distribute interventions
                 LOG_DEBUG_F( "Attempting to instantiate intervention of class %s\n", std::string((*tmpConfig)["class"].As<json::String>()).c_str() );
                 IDistributableIntervention *di = const_cast<IInterventionFactory*>(ifobj)->CreateIntervention(tmpConfig);
-                if (di)
+                release_assert( di != nullptr ); // ValidateInterventionArray should have made sure these are valid individual interventions
+                if (!di->Distribute( context, pICCO ) )
                 {
-                    if (!di->Distribute( context, pICCO ) )
-                    {
-                        di->Release();
-                    }
+                    di->Release();
                 }
-                else
-                {
-                    INodeDistributableIntervention* ndi = const_cast<IInterventionFactory*>(ifobj)->CreateNDIIntervention( tmpConfig );
-                    release_assert(ndi);
-                    if( !ndi->Distribute( context->GetParent()->GetEventContext()->GetNodeEventContext(), nullptr ) )
-                    {
-                        ndi->Release();
-                    }
-                }
-                delete tmpConfig;
-                tmpConfig = nullptr;
             }
         }
         catch(json::Exception &e)

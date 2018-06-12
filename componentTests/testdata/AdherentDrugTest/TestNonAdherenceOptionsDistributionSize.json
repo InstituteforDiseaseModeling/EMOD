@@ -1,0 +1,19 @@
+{
+    "class": "AdherentDrug",
+    "Cost_To_Consumer": 1,
+    "Drug_Type": "TestDrug",
+    "Dosing_Type": "FullTreatmentCourse",
+    "Adherence_Config" : {
+        "class": "WaningEffectMapLinear",
+        "Initial_Effect" : 1.0,
+        "Durability_Map" :
+        {
+            "Times"  : [ 0.0, 1.0, 2.0, 3.0, 100.0 ],
+            "Values" : [ 1.0, 1.0, 1.0, 0.0,   0.0 ]
+        }
+    },
+    "Non_Adherence_Options" : [ "STOP" ],
+    "Non_Adherence_Distribution" : [ 1.0, 0.0, 0.0 ],
+    "Max_Dose_Consideration_Duration" : 14,
+    "Took_Dose_Event" : "TBActivation"
+}

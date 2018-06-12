@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -43,8 +43,6 @@ namespace Kernel
         virtual void OnAssessWHOStage(float WHOStage) = 0;
         virtual void OnTestCD4(float CD4count) = 0;
         virtual void OnBeginART() = 0;
-        virtual void OnBeginPreART() = 0;
-        virtual void OnEndPreART() = 0;
 
         // queries medical chart
         virtual bool EverTested() const = 0;
@@ -53,7 +51,6 @@ namespace Kernel
         virtual bool EverStaged() const = 0;
         virtual bool EverStagedForART() const = 0;
         virtual bool EverReceivedCD4() const = 0;
-        virtual bool EverBeenOnPreART() const = 0;
         virtual bool EverBeenOnART() const = 0;
         virtual float TimeOfMostRecentTest() const = 0;
         virtual float TimeOfMostRecentCD4() const = 0;
@@ -108,7 +105,6 @@ namespace Kernel
     struct IHIVInterventionsContainer : public ISupports
     {
         virtual bool OnArtQuery() const = 0;
-        virtual bool OnPreART() const = 0;
         virtual const ARTStatus::Enum& GetArtStatus() const = 0; // for reporting
         virtual bool ShouldReconstituteCD4() const = 0;
         virtual const ProbabilityNumber GetInfectivitySuppression() const = 0;

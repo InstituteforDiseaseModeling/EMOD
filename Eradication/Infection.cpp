@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -24,58 +24,60 @@ namespace Kernel
 {
     // static initializers for config base class
     MortalityTimeCourse::Enum  InfectionConfig::mortality_time_course   =  MortalityTimeCourse::DAILY_MORTALITY;
-    DurationDistribution InfectionConfig::incubation_distribution = DurationDistribution( DistributionFunction::FIXED_DURATION );
-    DurationDistribution InfectionConfig::infectious_distribution = DurationDistribution( DistributionFunction::FIXED_DURATION );
+    DurationDistribution InfectionConfig::incubation_distribution = DurationDistribution( DistributionFunction::NOT_INITIALIZED);
+    DurationDistribution InfectionConfig::infectious_distribution = DurationDistribution( DistributionFunction::NOT_INITIALIZED );
     float InfectionConfig::base_infectivity = 1.0f;
     float InfectionConfig::base_mortality = 1.0f;
-    bool  InfectionConfig::vital_disease_mortality = false;
+    bool  InfectionConfig::enable_disease_mortality = false;
 
     GET_SCHEMA_STATIC_WRAPPER_IMPL(Infection,InfectionConfig)
     BEGIN_QUERY_INTERFACE_BODY(InfectionConfig)
     END_QUERY_INTERFACE_BODY(InfectionConfig)
 
-    InfectionConfig::InfectionConfig()
-    {
-        incubation_distribution.SetTypeNameDesc( "Incubation_Period_Distribution", Incubation_Period_Distribution_DESC_TEXT );
-        incubation_distribution.AddSupportedType( DistributionFunction::FIXED_DURATION,       "Base_Incubation_Period",     Base_Incubation_Period_DESC_TEXT,     "", "" );
-        incubation_distribution.AddSupportedType( DistributionFunction::UNIFORM_DURATION,     "Incubation_Period_Min",      Incubation_Period_Min_DESC_TEXT,      "Incubation_Period_Max",     Incubation_Period_Max_DESC_TEXT );
-        incubation_distribution.AddSupportedType( DistributionFunction::GAUSSIAN_DURATION,    "Incubation_Period_Mean",     Incubation_Period_Mean_DESC_TEXT,     "Incubation_Period_Std_Dev", Incubation_Period_Std_Dev_DESC_TEXT );
-        incubation_distribution.AddSupportedType( DistributionFunction::EXPONENTIAL_DURATION, "Base_Incubation_Period",     Base_Incubation_Period_DESC_TEXT,     "", "" );
-        incubation_distribution.AddSupportedType( DistributionFunction::POISSON_DURATION,     "Incubation_Period_Mean",     Incubation_Period_Mean_DESC_TEXT,     "", "" );
-        incubation_distribution.AddSupportedType( DistributionFunction::LOG_NORMAL_DURATION,  "Incubation_Period_Log_Mean", Incubation_Period_Log_Mean_DESC_TEXT, "Incubation_Period_Log_Width", Incubation_Period_Log_Width_DESC_TEXT );
 
-        infectious_distribution.SetTypeNameDesc( "Infectious_Period_Distribution", Infectious_Period_Distribution_DESC_TEXT );
-        infectious_distribution.AddSupportedType( DistributionFunction::FIXED_DURATION,       "Base_Infectious_Period", Base_Infectious_Period_DESC_TEXT,      "", "" );
-        infectious_distribution.AddSupportedType( DistributionFunction::UNIFORM_DURATION,     "Infectious_Period_Min",  Infectious_Period_Min_DESC_TEXT,  "Infectious_Period_Max",     Infectious_Period_Max_DESC_TEXT );
-        infectious_distribution.AddSupportedType( DistributionFunction::GAUSSIAN_DURATION,    "Infectious_Period_Mean", Infectious_Period_Mean_DESC_TEXT, "Infectious_Period_Std_Dev", Infectious_Period_Std_Dev_DESC_TEXT );
-        infectious_distribution.AddSupportedType( DistributionFunction::EXPONENTIAL_DURATION, "Base_Infectious_Period", Base_Infectious_Period_DESC_TEXT,      "", "" );
-        infectious_distribution.AddSupportedType( DistributionFunction::POISSON_DURATION,     "Infectious_Period_Mean", Infectious_Period_Mean_DESC_TEXT,      "", "" );
-    }
-
-    bool 
-    InfectionConfig::Configure(
-        const Configuration* config
-    )
+    bool InfectionConfig::Configure(const Configuration* config)
     {
+        initConfigTypeMap("Enable_Disease_Mortality", &enable_disease_mortality, Enable_Disease_Mortality_DESC_TEXT, true, "Simulation_Type", "GENERIC_SIM,VECTOR_SIM,STI_SIM,ENVIRONMENTAL_SIM,MALARIA_SIM,TBHIV_SIM,TYPHOID_SIM,PY_SIM");
         initConfig( "Mortality_Time_Course", mortality_time_course, config, MetadataDescriptor::Enum("mortality_time_course", Mortality_Time_Course_DESC_TEXT, MDD_ENUM_ARGS(MortalityTimeCourse)), "Enable_Disease_Mortality" );
+        initConfigTypeMap("Base_Mortality", &base_mortality, Base_Mortality_DESC_TEXT, 0.0f, 1000.0f, 0.001f, "Enable_Disease_Mortality"); // should default change depending on disease?
+        initConfigTypeMap("Base_Infectivity", &base_infectivity, Base_Infectivity_DESC_TEXT, 0.0f, 1000.0f, 0.3f, "Simulation_Type", "GENERIC_SIM,VECTOR_SIM,STI_SIM,ENVIRONMENTAL_SIM,TBHIV_SIM,PY_SIM,HIV_SIM");// should default change depending on disease?
+       
 
-        incubation_distribution.Configure( this, config );
-        infectious_distribution.Configure( this, config );
-        LOG_DEBUG_F( "incubation_distribution = %s\n", DistributionFunction::pairs::lookup_key(incubation_distribution.GetType()) );
-        LOG_DEBUG_F( "infectious_distribution = %s\n", DistributionFunction::pairs::lookup_key(infectious_distribution.GetType()) );
-
-        initConfigTypeMap( "Base_Infectivity", &base_infectivity, Base_Infectivity_DESC_TEXT, 0.0f, 1000.0f, 0.3f ); // should default change depending on disease?
-        initConfigTypeMap( "Base_Mortality", &base_mortality, Base_Mortality_DESC_TEXT, 0.0f, 1000.0f, 0.001f, "Enable_Vital_Dynamics" ); // should default change depending on disease? 
-        initConfigTypeMap( "Enable_Disease_Mortality", &vital_disease_mortality, Enable_Disease_Mortality_DESC_TEXT, true, "Simulation_Type", "GENERIC_SIM,STI_SIM,HIV_SIM,MALARIA_SIM" );
-
-        bool bRet = JsonConfigurable::Configure( config );
-
-        if( bRet )
+        // Configure incubation period using depends-on.
+        float param1_incubation = 0.0, param2_incubation = 0.0;
+        DistributionFunction::Enum incubation_period_function(DistributionFunction::NOT_INITIALIZED);
+        initConfig("Incubation_Period_Distribution", incubation_period_function, config, MetadataDescriptor::Enum("Incubation_Period_Distribution", Incubation_Period_Distribution_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction)));
+        initConfigTypeMap("Incubation_Period_Min", &param1_incubation, Incubation_Period_Min_DESC_TEXT, 0.0f, FLT_MAX, 0.0f, "Incubation_Period_Distribution", "UNIFORM_DURATION");
+        initConfigTypeMap("Incubation_Period_Max", &param2_incubation, Incubation_Period_Max_DESC_TEXT, 0.0f, FLT_MAX, 1.0f, "Incubation_Period_Distribution", "UNIFORM_DURATION");
+        initConfigTypeMap("Incubation_Period_Mean", &param1_incubation, Incubation_Period_Mean_DESC_TEXT, 0.0f, FLT_MAX, 6.0f, "Incubation_Period_Distribution", "GAUSSIAN_DURATION, POISSON_DURATION");
+        initConfigTypeMap("Incubation_Period_Std_Dev", &param2_incubation, Incubation_Period_Std_Dev_DESC_TEXT, 0.0f, FLT_MAX, 1.0f, "Incubation_Period_Distribution", "GAUSSIAN_DURATION");
+        initConfigTypeMap("Base_Incubation_Period", &param1_incubation, Base_Incubation_Period_DESC_TEXT, 0.0f, FLT_MAX, 6.0f, "Incubation_Period_Distribution", "FIXED_DURATION, EXPONENTIAL_DURATION");
+        initConfigTypeMap("Incubation_Period_Log_Mean", &param1_incubation, Incubation_Period_Log_Mean_DESC_TEXT, 0.0f, FLT_MAX, 6.0f, "Incubation_Period_Distribution", "LOG_NORMAL_DURATION");
+        initConfigTypeMap("Incubation_Period_Log_Width", &param2_incubation, Incubation_Period_Log_Width_DESC_TEXT, 0.0f, FLT_MAX, 1.0f, "Incubation_Period_Distribution", "LOG_NORMAL_DURATION");
+        
+        bool bRet_incubation= JsonConfigurable::Configure(config);
+        if (bRet_incubation)
         {
-            incubation_distribution.CheckConfiguration();
-            infectious_distribution.CheckConfiguration();
+            incubation_distribution.SetParameters(incubation_period_function, param1_incubation, param2_incubation);
         }
-        return bRet;
+
+
+        // Configure infectious duration using depends-on.
+        float param1 = 0.0, param2 = 0.0;
+        DistributionFunction::Enum infectious_distribution_function(DistributionFunction::NOT_INITIALIZED);
+        initConfig("Infectious_Period_Distribution", infectious_distribution_function, config, MetadataDescriptor::Enum("Infectious_Period_Distribution", Infectious_Period_Distribution_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction)), "Simulation_Type", "GENERIC_SIM, POLIO_SIM, VECTOR_SIM, ENVIRONMENTAL_SIM, PY_SIM, STI_SIM");
+        initConfigTypeMap("Base_Infectious_Period", &param1, Base_Infectious_Period_DESC_TEXT, 0.0f, FLT_MAX, 0.0f, "Infectious_Period_Distribution", "FIXED_DURATION,EXPONENTIAL_DURATION");
+        initConfigTypeMap("Infectious_Period_Min", &param1, Infectious_Period_Min_DESC_TEXT, 0.0f, FLT_MAX, 0.0f, "Infectious_Period_Distribution", "UNIFORM_DURATION");
+        initConfigTypeMap("Infectious_Period_Max", &param2, Infectious_Period_Max_DESC_TEXT, 0.0f, FLT_MAX, 0.0f, "Infectious_Period_Distribution", "UNIFORM_DURATION");
+        initConfigTypeMap("Infectious_Period_Mean", &param1, Infectious_Period_Mean_DESC_TEXT, 0.0f, FLT_MAX, 0.0f, "Infectious_Period_Distribution", "GAUSSIAN_DURATION,POISSON_DURATION");
+        initConfigTypeMap("Infectious_Period_Std_Dev", &param2, Infectious_Period_Std_Dev_DESC_TEXT, 0.0f, FLT_MAX, 0.0f, "Infectious_Period_Distribution", "GAUSSIAN_DURATION");
+
+        bool bRet_infectious = JsonConfigurable::Configure(config);
+        if(bRet_infectious)
+        {
+            infectious_distribution.SetParameters(infectious_distribution_function, param1, param2);
+        }
+        return bRet_incubation && bRet_infectious;
     }
 
     Infection::Infection()
@@ -145,6 +147,7 @@ namespace Kernel
         }
 
         infectious_timer = InfectionConfig::infectious_distribution.CalculateDuration();
+        
         LOG_DEBUG_F( "infectious_timer = %f\n", infectious_timer );
 
         total_duration = incubation_timer + infectious_timer;
@@ -178,15 +181,8 @@ namespace Kernel
         // To query for mortality-reducing effects of drugs or vaccines
         IDrugVaccineInterventionEffects* idvie = nullptr;
 
-        bool vdm = InfectionConfig::vital_disease_mortality;
-        /*if( params() != nullptr )
-        {
-            vdm = params()->vital_disease_mortality;
-        }*/
-        // if disease has a daily mortality rate, and disease mortality is on, then check for death
-        if (vdm
-            && (InfectionConfig::mortality_time_course == MortalityTimeCourse::DAILY_MORTALITY)
-            && (duration > incubation_timer))
+        // if disease has a daily mortality rate, and disease mortality is on, then check for death. mortality_time_course depends-on enable_disease_mortality BUT DAILY_MORTALITY is default
+        if (InfectionConfig::enable_disease_mortality && (InfectionConfig::mortality_time_course == MortalityTimeCourse::DAILY_MORTALITY) && (duration > incubation_timer))
         {
             if ( s_OK != parent->GetInterventionsContext()->QueryInterface(GET_IID(IDrugVaccineInterventionEffects), (void**)&idvie) )
             {
@@ -201,8 +197,8 @@ namespace Kernel
 
         if (duration > total_duration)
         {
-            // disease mortality active and is accounted for at end of infectious period
-            if (vdm && (InfectionConfig::mortality_time_course == MortalityTimeCourse::MORTALITY_AFTER_INFECTIOUS))
+            // disease mortality active and is accounted for at end of infectious period. mortality_time_course depends-on enable_disease_mortality
+            if (InfectionConfig::enable_disease_mortality && InfectionConfig::mortality_time_course == MortalityTimeCourse::MORTALITY_AFTER_INFECTIOUS )
             {
                 if ( s_OK != parent->GetInterventionsContext()->QueryInterface(GET_IID(IDrugVaccineInterventionEffects), (void**)&idvie) )
                 {

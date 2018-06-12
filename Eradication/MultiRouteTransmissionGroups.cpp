@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -219,12 +219,12 @@ namespace Kernel
                 if ((*membershipOut).find(routeIndex) != (*membershipOut).end())
                 {
                     const string& propertyValue = entry.second;
-                    LOG_VALID_F( "Increasing tx group membership for (route) index %d by %d.\n", routeIndex, (propertyValueToIndexMap.at(propertyName).at(propertyValue) ) );
+                    LOG_DEBUG_F( "Increasing tx group membership for (route) index %d (property name=%s, value=%s) by %d.\n", routeIndex, propertyName.c_str(), propertyValue.c_str(), (propertyValueToIndexMap.at(propertyName).at(propertyValue) ) );
                     (*membershipOut)[routeIndex] += (propertyValueToIndexMap.at(propertyName).at(propertyValue));
                 }
             }
         }
-        LOG_DEBUG_F( "membership returning %p\n", membershipOut );
+        //LOG_DEBUG_F( "membership returning %p\n", membershipOut );
     }
 
     void MultiRouteTransmissionGroups::UpdatePopulationSize(const TransmissionGroupMembership_t* transmissionGroupMembership, float size_changes, float mc_weight)

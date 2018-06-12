@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -180,7 +180,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
     {
         if( inputJson->Exist("Age_Bins") )
         {
-            initConfigTypeMap("Age_Bins", &ages, "Age Bins (in years) to aggregate within and report");
+            initConfigTypeMap("Age_Bins", &ages, "Age Bins (in years) to aggregate within and report", 0, MAX_HUMAN_AGE, 0, true);
         }
         else
         {
@@ -324,11 +324,11 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
     {
         ReportUtilities::SerializeVector( output, js, "Age Bins" , ages );
 
-        ReportUtilities::SerializeVector2D( output, js, "MSP Mean by Age Bin"            , MSP_mean_by_agebin     );
-        ReportUtilities::SerializeVector2D( output, js, "Non-Specific Mean by Age Bin"   , nonspec_mean_by_agebin );
-        ReportUtilities::SerializeVector2D( output, js, "PfEMP1 Mean by Age Bin"         , PfEMP1_mean_by_agebin  );
-        ReportUtilities::SerializeVector2D( output, js, "MSP StdDev by Age Bin"          , MSP_std_by_agebin      );
-        ReportUtilities::SerializeVector2D( output, js, "Non-Specific StdDev by Age Bin" , nonspec_std_by_agebin  );
-        ReportUtilities::SerializeVector2D( output, js, "PfEMP1 StdDev by Age Bin"       , PfEMP1_std_by_agebin   );
+        ReportUtilities::SerializeVector( output, js, "MSP Mean by Age Bin"            , MSP_mean_by_agebin     );
+        ReportUtilities::SerializeVector( output, js, "Non-Specific Mean by Age Bin"   , nonspec_mean_by_agebin );
+        ReportUtilities::SerializeVector( output, js, "PfEMP1 Mean by Age Bin"         , PfEMP1_mean_by_agebin  );
+        ReportUtilities::SerializeVector( output, js, "MSP StdDev by Age Bin"          , MSP_std_by_agebin      );
+        ReportUtilities::SerializeVector( output, js, "Non-Specific StdDev by Age Bin" , nonspec_std_by_agebin  );
+        ReportUtilities::SerializeVector( output, js, "PfEMP1 StdDev by Age Bin"       , PfEMP1_std_by_agebin   );
     }
 }

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -157,7 +157,7 @@ namespace Kernel
     {
         if( m_pInternal == nullptr )
         {
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal" );
+            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal", "NPKeyValueInternal" );
         }
         return m_pInternal->GetInitialDistribution( 0 );
     }
@@ -326,7 +326,9 @@ namespace Kernel
     {
         if( Environment::getNPFactory() != nullptr )
         {
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "NPFactory has already been created." );
+            //throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "NPFactory has already been created." );
+            // Not sure we have to do something drastic here. In PyMod we might call this twice and we just want to carry on.
+            return;
         }
         Environment::setNPFactory( new NPFactory() );
     }
@@ -341,10 +343,11 @@ namespace Kernel
     NPFactory* NPFactory::GetInstance()
     {
         NPFactory* p_factory = (NPFactory*)Environment::getNPFactory();
-        if( p_factory == nullptr )
+        // TBD: Removing exception in regular IP and Node for PyMod for now. Need to explore if we don't need to do this.
+        /*if( p_factory == nullptr )
         {
             throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "NPFactory has not been created." );
-        }
+        }*/
         return p_factory;
     }
 

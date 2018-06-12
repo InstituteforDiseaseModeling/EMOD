@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -55,6 +55,12 @@ bool FileSystem::FileExists( const std::string& rPath )
     bool exists = stat( rPath.c_str(), &s ) == 0 ;
     exists = exists && (s.st_mode & S_IFREG) ; /*needed for linux, works on windows*/
     return exists ;
+}
+
+// Return true if the given filename exists in the given path.
+bool IDMAPI FileSystem::FileExistsInPath( const std::string& rPath, const std::string& rFilename )
+{
+    return FileExists( Concat<std::string>( rPath, rFilename ) );
 }
 
 bool FileSystem::DirectoryExists( const std::string& rPath )
@@ -140,21 +146,8 @@ bool FileSystem::MakeDirectory( const std::string& rDirName )
 
 std::string* FileSystem::ReadFile( const char* pFilename )
 {
-    if( !FileSystem::FileExists( pFilename ) )
-    {
-        throw Kernel::FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, pFilename );
-    }
-
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // !!! This needs to be ifstream so that files can be read-only.
-    // !!! If you use fstream and the file is read-only, it will fail.
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    std::ifstream ss ;
-    ss.open( pFilename );
-    if( ss.fail() )
-    {
-        throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, pFilename );
-    }
+    std::ifstream ss;
+    FileSystem::OpenFileForReading( ss, pFilename );
 
     ss.seekg(0, std::ios::end);
     int64_t length = ss.tellg();
@@ -168,3 +161,83 @@ std::string* FileSystem::ReadFile( const char* pFilename )
 
     return p_buffer ;
 }
+
+std::string FileSystem::GetSystemErrorMessage()
+{
+    std::string msg;
+#ifdef WIN32
+    char buff[ 100 ];
+    strerror_s( buff, 100, errno );
+    msg = std::string( buff );
+#else
+    msg = strerror( errno );
+#endif
+    return msg;
+}
+
+void FileSystem::OpenFileForReading( std::ifstream& rInputStream, const char* pFilename, bool isBinary )
+{
+    if( !FileSystem::FileExists( pFilename ) )
+    {
+        throw Kernel::FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, pFilename );
+    }
+
+    std::ios_base::openmode mode = std::ios_base::in;
+    if( isBinary )
+    {
+        mode |= std::ios_base::binary;
+    }
+
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // !!! This needs to be ifstream so that files can be read-only.
+    // !!! If you use fstream and the file is read-only, it will fail.
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    rInputStream.open( pFilename, mode );
+    if( rInputStream.fail() )
+    {
+        std::stringstream ss;
+        ss << "Received error '" << GetSystemErrorMessage() << "' while opening file for reading.";
+        throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, pFilename, ss.str().c_str() );
+    }
+    if( !rInputStream.is_open() )
+    {
+        // ?????????????????????????
+        // ??? No Error but not open
+        // ?????????????????????????
+        throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, pFilename, "No error but not open" );
+    }
+}
+
+// -----------------------------------------------------------------
+// --- Originally, this function (and for reading)return a
+// --- copy of ofstream, but gcc has "deleted the assignment
+// --- operator.  Hence, we need to pass it as a reference argument.
+// -----------------------------------------------------------------
+void FileSystem::OpenFileForWriting( std::ofstream& rOutputStream, const char* pFilename, bool isBinary, bool isAppend )
+{
+    std::ios_base::openmode mode = std::ios_base::out | std::ios_base::trunc;
+    if( isAppend )
+    {
+        mode = std::ios_base::app;
+    }
+    if( isBinary )
+    {
+        mode |= std::ios_base::binary;
+    }
+
+    rOutputStream.open( pFilename, mode );
+    if( rOutputStream.fail() )
+    {
+        std::stringstream ss;
+        ss << "Received error '" << GetSystemErrorMessage() << "' while opening file for writing.";
+        throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, pFilename, ss.str().c_str() );
+    }
+    if( !rOutputStream.is_open() )
+    {
+        // ?????????????????????????
+        // ??? No Error but not open
+        // ?????????????????????????
+        throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, pFilename, "No error but not open" );
+    }
+}
+

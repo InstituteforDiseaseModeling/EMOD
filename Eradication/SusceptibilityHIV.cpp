@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -49,19 +49,22 @@ namespace Kernel
     float SusceptibilityHIVConfig::disease_death_CD4_inverse_beta = 0.0f;
     float SusceptibilityHIVConfig::days_between_symptomatic_and_death_lambda = 183.0f;
     float SusceptibilityHIVConfig::days_between_symptomatic_and_death_inv_kappa = 1.0f;
-
+    int SusceptibilityHIVConfig::num_cd4_time_steps = 10;
+    float SusceptibilityHIVConfig::cd4_time_step = 365.0f;
 
     bool
     SusceptibilityHIVConfig::Configure(
         const Configuration* config
     )
     {
-        initConfigTypeMap( "CD4_Post_Infection_Weibull_Scale",         &post_infection_CD4_lambda, CD4_Post_Infection_Weibull_Scale_DESC_TEXT,                1.0f, 1000.0f, 560.4319099584783f, "Simulation_Type", "HIV_SIM,TBHIV_SIM");
-        initConfigTypeMap( "CD4_Post_Infection_Weibull_Heterogeneity", &post_infection_CD4_inverse_kappa, CD4_Post_Infection_Weibull_Heterogeneity_DESC_TEXT, 0.0f, 100.0f, 1/3.627889600819898f,"Simulation_Type", "HIV_SIM,TBHIV_SIM"); 
-        initConfigTypeMap( "CD4_At_Death_LogLogistic_Scale",         &disease_death_CD4_alpha, CD4_At_Death_LogLogistic_Scale_DESC_TEXT,                1.0f, 1000.0f, 31.63f, "Simulation_Type", "HIV_SIM,TBHIV_SIM");
-        initConfigTypeMap( "CD4_At_Death_LogLogistic_Heterogeneity", &disease_death_CD4_inverse_beta, CD4_At_Death_LogLogistic_Heterogeneity_DESC_TEXT, 0.0f, 100.0f, 0.0f), "Simulation_Type", "HIV_SIM,TBHIV_SIM"; 
-        initConfigTypeMap( "Days_Between_Symptomatic_And_Death_Weibull_Scale",         &days_between_symptomatic_and_death_lambda,    Days_Between_Symptomatic_And_Death_Weibull_Scale_DESC_TEXT,         1, 3650.0f, 183.0f );   // Constrain away from 0 for use as a rate
-        initConfigTypeMap( "Days_Between_Symptomatic_And_Death_Weibull_Heterogeneity", &days_between_symptomatic_and_death_inv_kappa, Days_Between_Symptomatic_And_Death_Weibull_Heterogeneity_DESC_TEXT, 0.1f, 10.0f, 1.0f );   // Constrain away from 0 for use as a rate 
+        initConfigTypeMap( "CD4_Post_Infection_Weibull_Scale",         &post_infection_CD4_lambda, CD4_Post_Infection_Weibull_Scale_DESC_TEXT,                1.0f, 1000.0f, 560.4319099584783f );
+        initConfigTypeMap( "CD4_Post_Infection_Weibull_Heterogeneity", &post_infection_CD4_inverse_kappa, CD4_Post_Infection_Weibull_Heterogeneity_DESC_TEXT, 0.0f, 100.0f, 1/3.627889600819898f ); 
+        initConfigTypeMap( "CD4_At_Death_LogLogistic_Scale",         &disease_death_CD4_alpha, CD4_At_Death_LogLogistic_Scale_DESC_TEXT,                1.0f, 1000.0f, 31.63f );
+        initConfigTypeMap( "CD4_At_Death_LogLogistic_Heterogeneity", &disease_death_CD4_inverse_beta, CD4_At_Death_LogLogistic_Heterogeneity_DESC_TEXT, 0.0f, 100.0f, 0.0f );
+        initConfigTypeMap( "Days_Between_Symptomatic_And_Death_Weibull_Scale",         &days_between_symptomatic_and_death_lambda,    Days_Between_Symptomatic_And_Death_Weibull_Scale_DESC_TEXT,         1, 3650.0f, 183.0f );
+        initConfigTypeMap( "Days_Between_Symptomatic_And_Death_Weibull_Heterogeneity", &days_between_symptomatic_and_death_inv_kappa, Days_Between_Symptomatic_And_Death_Weibull_Heterogeneity_DESC_TEXT, 0.1f, 10.0f, 1.0f );
+        initConfigTypeMap( "CD4_Num_Steps", &num_cd4_time_steps, Num_CD4_Time_Steps_DESC_TEXT, 1, INT_MAX, 10, "Enable_Coinfection" );
+        initConfigTypeMap( "CD4_Time_Step", &cd4_time_step, CD4_Time_Step_DESC_TEXT, 1.0, FLT_MAX, 365.0, "Enable_Coinfection" );
 
         bool ret = JsonConfigurable::Configure( config );
 
@@ -326,8 +329,8 @@ namespace Kernel
     std::vector <float> SusceptibilityHIV::Generate_forward_CD4( bool ARTYesNo )
     {
 #ifdef ENABLE_TBHIV
-        float CD4_time_step =GET_CONFIGURABLE(SimulationConfig)->tbhiv_params->cd4_time_step;
-        int CD4_time_length = GET_CONFIGURABLE(SimulationConfig)->tbhiv_params->num_cd4_time_steps;
+        float CD4_time_step = SusceptibilityHIVConfig::cd4_time_step;
+        int CD4_time_length = SusceptibilityHIVConfig::num_cd4_time_steps;
 
         std::vector <float> v_CD4(CD4_time_length, 0.0f);
         int jj = 0;

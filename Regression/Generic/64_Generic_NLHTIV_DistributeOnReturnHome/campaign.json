@@ -17,7 +17,7 @@
                     "Trigger_Condition_List": [ "HappyBirthday" ],
                     "Demographic_Coverage": 1.0,
                     "Distribute_On_Return_Home" : 1,
-                    "Actual_NodeIntervention_Config":
+                    "Actual_IndividualIntervention_Config":
                     {
                         "class": "OutbreakIndividual",
                         "Outbreak_Source": "PrevalenceIncrease",

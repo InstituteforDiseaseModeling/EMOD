@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,7 +16,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IReport.h"
 #include "NoCrtWarnings.h"
 
-#define DLL_LOG_F(lvl, x, ...)   do { if((EnvPtr !=nullptr) && EnvPtr->Log->CheckLogLevel(Logger::lvl, "DllInterfaceHelper"))  EnvPtr->Log->LogF(Logger::lvl, "DllInterfaceHelper", x, ##__VA_ARGS__); } while(0)
+#define DLL_LOG(lvl, x, ...)   do { if((EnvPtr !=nullptr) && EnvPtr->Log->CheckLogLevel(Logger::lvl, "DllInterfaceHelper"))  EnvPtr->Log->Log(Logger::lvl, "DllInterfaceHelper", x, ##__VA_ARGS__); } while(0)
 
 
 namespace Kernel
@@ -39,7 +39,7 @@ namespace Kernel
             Environment::setInstance(const_cast<Environment*>(pEnv));
             CreateRandomNumberGenerator( pEnv );
             ProgDllVersion pv;
-            DLL_LOG_F(INFO,"GetVersion called with ver=%s for %s\n", pv.getVersion(), m_TypeName);
+            DLL_LOG(INFO,"GetVersion called with ver=%s for %s\n", pv.getVersion(), m_TypeName);
             if (sVer)
             {
                 int length = strlen(pv.getVersion()) + 1 ;
@@ -64,13 +64,13 @@ namespace Kernel
 
         const char* GetType()
         {
-            DLL_LOG_F( INFO, "GetType called for %s\n", m_TypeName );
+            DLL_LOG( INFO, "GetType called for %s\n", m_TypeName );
             return m_TypeName;
         };
 
         void GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         {
-            DLL_LOG_F( INFO, "GetReportInstantiator called for %s\n", m_TypeName );
+            DLL_LOG( INFO, "GetReportInstantiator called for %s\n", m_TypeName );
             *pif = m_ReportInstantiatorFunc ;
         };
 

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,10 +9,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 
-#ifdef ENABLE_TB
+#ifdef ENABLE_TBHIV
 
 #include "ReportTB.h"
-#include "IndividualTB.h"
 #include "Types.h"
 #ifdef ENABLE_TBHIV
 #include "IndividualCoInfection.h"
@@ -76,11 +75,15 @@ namespace Kernel
         new_smear_positive_infections = 0.0f;
         new_active_fast_TB_infections = 0.0f;
         new_active_slow_TB_infections = 0.0f;
+        new_mdr_active_infection = 0.0f;
 
         active_sx               = 0.0f;
         mdr_active_sx           = 0.0f;;
         mdr_active_sx_smear_pos = 0.0f;
         mdr_active_sx_evolved   = 0.0f;
+
+        mdr_evolved_incident_counter = 0.0f;
+        new_mdr_fast_active_infection_counter = 0.0f;
 
         infectiousness_fast = 0.0f;
     }
@@ -149,9 +152,16 @@ namespace Kernel
 
     void ReportTB::UpdateSEIRW( const IIndividualHuman * const individual, float monte_carlo_weight )
     {
+        
+        IIndividualHumanCoInfection* tbhiv_ind = NULL;
+        if( ( const_cast<IIndividualHuman*>( individual ) )->QueryInterface( GET_IID( IIndividualHumanCoInfection ), (void**)&tbhiv_ind ) != s_OK )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndividualHumanCoInfection", "IndividualHuman" );
+        }
+
         if (!individual->IsInfected())  // Susceptible, Recovered (Immune), or Waning
         {
-            NonNegativeFloat acquisitionModifier = individual->GetImmunityReducedAcquire() * individual->GetInterventionReducedAcquire();
+            NonNegativeFloat acquisitionModifier = tbhiv_ind->GetImmunityReducedAcquire() * individual->GetInterventionReducedAcquire();
             if (acquisitionModifier >= 1.0f)
             {
                 countOfSusceptibles += monte_carlo_weight;
@@ -167,13 +177,15 @@ namespace Kernel
         }
         else // Exposed or Infectious
         {
+           
+            /*
             IIndividualHumanTB* ihtb = nullptr;
             if ((const_cast<IIndividualHuman*>(individual))->QueryInterface(GET_IID(IIndividualHumanTB), (void**)&ihtb) != s_OK)
             {
                 LOG_ERR_F("%s: individual->QueryInterface(IIndividualHumanTB) failed.\n", __FUNCTION__);
-            }
+            }*/
 
-            if ((individual->GetInfectiousness() > 0.0f) || (ihtb && ihtb->IsExtrapulmonary()))
+            if ((individual->GetInfectiousness() > 0.0f) || ( tbhiv_ind->IsExtrapulmonary()))
             {
                 countOfInfectious += monte_carlo_weight;
             }
@@ -192,7 +204,7 @@ namespace Kernel
         ReportAirborne::LogIndividualData( individual );
 
         float monte_carlo_weight = float(individual->GetMonteCarloWeight());
-        const IIndividualHumanTB* individual_tb = dynamic_cast<const IIndividualHumanTB*>(individual);
+        const IndividualHumanCoInfection* individual_tb = dynamic_cast<const IndividualHumanCoInfection*>(individual);
 
         //Immunity
         if (individual_tb->IsImmune() && !individual->IsInfected())
@@ -227,7 +239,7 @@ namespace Kernel
             if (individual_tb->IsSmearPositive())
             {
                 new_smear_positive_infections += monte_carlo_weight;
-            }        
+            }     
         }
         if( individual->GetNewInfectionState() == NewInfectionState::NewlyCleared)
         {
@@ -308,6 +320,10 @@ namespace Kernel
         {
             MDR_TB_persons += monte_carlo_weight;
         }
+
+        new_mdr_active_infection += individual_tb->infectionMDRIncidenceCounter;
+        mdr_evolved_incident_counter += individual_tb->mdr_evolved_incident_counter;
+        new_mdr_fast_active_infection_counter += individual_tb->new_mdr_fast_active_infection_counter;
     }
 
     void
@@ -322,10 +338,6 @@ namespace Kernel
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNC", "INodeTB", "INodeContext" );
         }
-
-        Accumulate("New MDR active infections",         pTBNode->GetMDRIncidentCounter() );
-        Accumulate("New MDR evolved active infections", pTBNode->GetMDREvolvedIncidentCounter() );
-        Accumulate("New MDR fast active infections",    pTBNode->GetMDRFastIncidentCounter() );
     }
 
     void ReportTB::EndTimestep( float currentTime, float dt )
@@ -359,7 +371,11 @@ namespace Kernel
         Accumulate(_infectiousness_fast_label,     infectiousness_fast );
 
         Accumulate(_disease_deaths_MDR_label,      disease_deaths_MDR );
+
+        Accumulate( "New MDR active infections", new_mdr_active_infection );
+        Accumulate( "New MDR evolved active infections", mdr_evolved_incident_counter );
+        Accumulate( "New MDR fast active infections", new_mdr_fast_active_infection_counter );
     }
 }
 
-#endif // ENABLE_TB
+#endif // ENABLE_TBHIV

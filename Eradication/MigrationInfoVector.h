@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,6 +21,29 @@ namespace Kernel
     ENUM_DEFINE(ModiferEquationType,
         ENUM_VALUE_SPEC(LINEAR       , 1)
         ENUM_VALUE_SPEC(EXPONENTIAL  , 2))
+
+    // ----------------------------------
+    // --- MigrationInfoNullVector
+    // ----------------------------------
+    class IDMAPI MigrationInfoNullVector : public MigrationInfoNull, public IMigrationInfoVector
+    {
+    public:
+        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
+        DECLARE_QUERY_INTERFACE()
+
+    public:
+        //IMigrationInfoVector
+        virtual void UpdateRates( const suids::suid& rThisNodeId,
+                                  const std::string& rSpeciesID,
+                                  IVectorSimulationContext* pivsc ) {};
+
+    protected:
+        friend class MigrationInfoFactoryVector;
+        friend class MigrationInfoFactoryVectorDefault;
+
+        MigrationInfoNullVector();
+        virtual ~MigrationInfoNullVector();
+    };
 
     // ----------------------------------
     // --- MigrationInfoVector
@@ -44,8 +67,6 @@ namespace Kernel
         virtual void UpdateRates( const suids::suid& rThisNodeId, 
                                   const std::string& rSpeciesID, 
                                   IVectorSimulationContext* pivsc ) override;
-        virtual bool IsLocalVectorMigrationEnabled() const override;
-        virtual bool IsVectorMigrationFileBased() const override;
 
     protected:
         friend class MigrationInfoFactoryVector;
@@ -55,9 +76,7 @@ namespace Kernel
                              ModiferEquationType::Enum equation,
                              float habitatModifier,
                              float foodModifier,
-                             float stayPutModifier,
-                             bool enableLocalVectorMigration,
-                             bool isFileBased );
+                             float stayPutModifier );
 
         virtual void Initialize( const std::vector<std::vector<MigrationRateData>>& rRateData ) override;
         virtual void SaveRawRates( std::vector<float>& r_rate_cdf ) override;
@@ -84,8 +103,6 @@ namespace Kernel
         float m_ModifierHabitat;
         float m_ModifierFood;
         float m_ModifierStayPut;
-        bool m_LocalVectorMigrationEnabled;
-        bool m_IsFileBased;
 #pragma warning( pop )
     };
 
@@ -123,7 +140,6 @@ namespace Kernel
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::vector<MigrationInfoFile*> m_InfoFileListVector;
         bool m_IsVectorMigrationEnabled;
-        bool m_IsFileBased;
         ModiferEquationType::Enum m_ModifierEquation;
         float m_ModifierHabitat;
         float m_ModifierFood;

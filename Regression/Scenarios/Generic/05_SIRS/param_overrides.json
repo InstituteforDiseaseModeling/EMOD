@@ -5,7 +5,6 @@
             "Birth_Rate_Dependence": "POPULATION_DEP_RATE", 
             "Demographics_Filenames": ["generic_scenarios_demographics.json"], 
             "MORTALITY": {
-                "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF"
             }, 
             "IMMUNITY": {
                 "Transmission_Blocking_Immunity_Decay_Rate": 0.0056, 

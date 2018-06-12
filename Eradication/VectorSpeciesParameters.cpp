@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -100,7 +100,6 @@ namespace Kernel
         acquiremod(DEFAULT_ACQUIRE_MODIFIER),
         infectioushfmortmod(DEFAULT_INFECTIOUS_HUMAN_FEEDING_MORTALITY_MODIFIER),
         indoor_feeding(1.0),
-        feedingrate(0.0),
         nighttime_feeding(1.0),
         adultmortality(0.0),
         immaturerate(0.0)
@@ -141,7 +140,7 @@ namespace Kernel
     )
     {
         LOG_DEBUG( "Configure\n" );
-        initConfigComplexType( "Larval_Habitat_Types", &habitat_params,  Required_Habitat_Factor_DESC_TEXT );
+        initConfigComplexType( "Larval_Habitat_Types", &habitat_params,  Larval_Habitat_Types_DESC_TEXT );
         initConfigTypeMap( ( "Aquatic_Arrhenius_1" ), &aquaticarrhenius1, Aquatic_Arrhenius_1_DESC_TEXT, 0.0f, 1E15f, 8.42E10f );
         initConfigTypeMap( ( "Aquatic_Arrhenius_2" ), &aquaticarrhenius2, Aquatic_Arrhenius_2_DESC_TEXT, 0.0f, 1E15f, 8328 );
         initConfigTypeMap( ( "Infected_Arrhenius_1" ), &infectedarrhenius1, Infected_Arrhenius_1_DESC_TEXT, 0.0f, 1E15f, 1.17E11f );
@@ -152,7 +151,7 @@ namespace Kernel
         initConfigTypeMap( ("Cycle_Arrhenius_Reduction_Factor"), &cyclearrheniusreductionfactor, Cycle_Arrhenius_Reduction_Factor_DESC_TEXT, 0.0f, 1.0f, 1.0f,      "Temperature_Dependent_Feeding_Cycle", "ARRHENIUS_DEPENDENCE" );
 
         initConfigTypeMap( ( "Immature_Duration" ), &immatureduration, Immature_Duration_DESC_TEXT, 0.0f, 730.0f, 2.0f );
-        initConfigTypeMap( ( "Days_Between_Feeds" ), &daysbetweenfeeds, Days_Between_Feeds_DESC_TEXT, 0.0f, 730.0f, 3.0f );
+        initConfigTypeMap( ( "Days_Between_Feeds" ), &daysbetweenfeeds, Days_Between_Feeds_DESC_TEXT, 1.0f, 730.0f, 3.0f, "Temperature_Dependent_Feeding_Cycle", "NO_TEMPERATURE_DEPENDENCE,BOUNDED_DEPENDENCE" );
         initConfigTypeMap( ( "Anthropophily" ), &anthropophily, Anthropophily_DESC_TEXT, 0.0f, 1.0f, 1.0f );
         initConfigTypeMap( ( "Egg_Batch_Size" ), &eggbatchsize, Egg_Batch_Size_DESC_TEXT, 0.0f, 10000.0f, 100.0f );
         initConfigTypeMap( ( "Infected_Egg_Batch_Factor" ), &infectedeggbatchmod, Infected_Egg_Batch_Factor_DESC_TEXT, 0.0f, 10.0f, 0.8f );
@@ -176,7 +175,6 @@ namespace Kernel
             throw exc;
         }
 
-        feedingrate    = 1.0f / daysbetweenfeeds;
         adultmortality = 1.0f / adultlifeexpectancy;
         immaturerate   = 1.0f / immatureduration;
 
@@ -188,7 +186,7 @@ namespace Kernel
         iid_t iid, void **ppvObject
     )
     {
-        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__ );
+        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Should not get here" );
     }
 
     void VectorSpeciesParameters::Initialize(const std::string& vector_species_name)
@@ -227,7 +225,6 @@ namespace Kernel
         ar.labelElement( "infectioushfmortmod" ) & parameters->infectioushfmortmod;
         ar.labelElement( "indoor_feeding" ) & parameters->indoor_feeding;
         ar.labelElement( "nighttime_feeding" ) & parameters->nighttime_feeding;
-        ar.labelElement( "feedingrate" ) & parameters->feedingrate;
         ar.labelElement( "adultmortality" ) & parameters->adultmortality;
         ar.labelElement( "immaturerate" ) & parameters->immaturerate;
         ar.endObject();

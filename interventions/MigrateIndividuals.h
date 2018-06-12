@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,6 +17,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "Interventions.h"
 #include "DurationDistribution.h"
+#include "INodeContext.h"
 
 namespace Kernel
 {
@@ -39,7 +40,7 @@ namespace Kernel
 
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
-        int destination_external_node_id ;
+        ExternalNodeId_t destination_external_node_id;
         DurationDistribution duration_before_leaving;
         DurationDistribution duration_at_node;
         bool is_moving;

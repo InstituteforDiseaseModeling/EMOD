@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -207,11 +207,10 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
         po.AddOption(          "version",      "v",          "Get version info." );
         po.AddOption(          "get-schema",   "Request the kernel to write all its input definition schema json to the current working directory and exit." );
         po.AddOptionWithValue( "schema-path",  "stdout",     "Path to write schema(s) to instead of writing to stdout." );
-        po.AddOptionWithValue( "config",       "C",          "default-config.json", "Name of config.json file to use" );
+        po.AddOptionWithValue( "config",       "C",          "config.json",         "Name of config.json file to use" );
         po.AddOptionWithValue( "input-path",   "I",          ".",                   "Relative or absolute path to location of model input files" );       
         po.AddOptionWithValue( "output-path",  "O",          "output",              "Relative or absolute path for output files" );
         po.AddOptionWithValue( "dll-path",     "D",          "",                    "Relative (to the executable) or absolute path for EMODule (dll/shared object) root directory" );
-// 2.5        po.AddOptionWithValue( "state-path",   "S",          ".",                   "Relative or absolute path for state files" );  // should we remove this...?
         po.AddOptionWithValue( "monitor_host", "none",       "IP of commissioning/monitoring host" );
         po.AddOptionWithValue( "monitor_port", 0,            "port of commissioning/monitoring host" );
         po.AddOptionWithValue( "sim_id",       "none",       "Unique id of this simulation, formerly sim_guid. Needed for self-identification to UDP host" );
@@ -285,7 +284,7 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
             LOG_WARN("Output path not specified, using current directory.\n");
 
         if( po.CommandLineHas( "dll-path" ) )
-            LOG_INFO_F( "using dll path: %s\n", po.GetCommandLineValueString( "dll-path" ).c_str() );
+            LOG_INFO_F( "Using dll path: %s\n", po.GetCommandLineValueString( "dll-path" ).c_str() );
         else
             LOG_WARN("Dll path not specified.\n");
     }
@@ -304,7 +303,7 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
     bool is_getting_schema = po.CommandLineHas( "get-schema" );
 
     // --------------------------------------------------------------------------------------------------
-    // --- DMB 9-9-2014 ERAD-1621 Users complained that a file not found exception on default-config.json
+    // --- DMB 9-9-2014 ERAD-1621 Users complained that a file not found exception on config.json
     // --- really didn't tell them that they forgot to specify the configuration file on the command line.
     // --- One should be able to get the schema without specifying a config file.
     // --------------------------------------------------------------------------------------------------
@@ -339,38 +338,36 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
 
         auto schema_path = po.GetCommandLineValueString("schema-path");
 
-        std::string python_script_path = "";
 #ifdef ENABLE_PYTHON
-        python_script_path = po.GetCommandLineValueString( "python-script-path" );
-        if( python_script_path == "" )
-        {
-            std::cout << "--python-script-path (-P) not on command line - not using embedded python" << std::endl;
-        }
-        else
-        {
-            if( is_getting_schema && (schema_path == "stdout") )
-            {
-                throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, 
-                    "--schema-path=stdout and --python-script-path is defined:  the post processing script can only work on a file.  Please define --schema-path as a filename." );
-            }
-            std::cout << "python_script_path = " << python_script_path << std::endl;
-        }
+        // Start python interpreter if python-script-path is not empty; default value for python-script-path option is empty string
+        Kernel::PythonSupport::SetupPython(po.GetCommandLineValueString( "python-script-path" ));
 #endif
-        
-        Kernel::PythonSupport* p_python_support = new Kernel::PythonSupport();
-        p_python_support->CheckPythonSupport( is_getting_schema, python_script_path );
 
-        // Where to put config preprocessing? After command-line processing (e.g., what if we are invoked with --get-schema?) but before loading config.json
-        // Prefer to put it in this function rather than inside Environment::Intialize, but note that in --get-schema mode we'll unnecessarily call preproc.
-        // NOTE: This enables functionality to allow config.json to be specified in (semi-)arbitrary formats as long as python preproc's into standard config.json
-        configFileName = p_python_support->RunPreProcessScript( configFileName );
+        if( Kernel::PythonSupport::IsPythonInitialized() )
+        {
+            if( is_getting_schema && schema_path == "stdout")
+            {
+                std::stringstream msg;
+                msg << "--schema-path=stdout and --python-script-path defined:  Post processing only works on a file.  "
+                    << "Please define --schema-path as a filename.";
+                throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            }
+            else if( !Kernel::PythonSupport::PythonScriptsExist() )
+            {
+                std::stringstream msg;
+                msg << "--python-script-path specified but no python scripts found.";
+                throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            }
+        }
+
+        // Run python pre-process script; does nothing and returns configFileName if no python.
+        configFileName = Kernel::PythonSupport::RunPyFunction( configFileName, Kernel::PythonSupport::SCRIPT_PRE_PROCESS );
 
         // set up the environment
         EnvPtr->Log->Flush();
         LOG_INFO("Initializing environment...\n");
         bool env_ok = Environment::Initialize(
             pMpi,
-            p_python_support,
             configFileName,
             po.GetCommandLineValueString( "input-path"  ),
             po.GetCommandLineValueString( "output-path" ),
@@ -393,8 +390,6 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
 
         // check if we can support python scripts based on simulation type
         std::string sim_type_str = GET_CONFIG_STRING( EnvPtr->Config, "Simulation_Type" );
-        PythonSupportPtr->CheckSimScripts( sim_type_str );
-
 
         // UDP-enabled StatusReporter needs host and sim unique id.
         if( po.GetCommandLineValueString( "monitor_host" ) != "none" )
@@ -462,14 +457,15 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
         {
             status = controller->Execute();
             if (status)
-        {
-            release_assert( EnvPtr );
-            if ( EnvPtr->MPI.Rank == 0 )
             {
-                PythonSupportPtr->RunPostProcessScript( EnvPtr->OutputPath );
+                release_assert( EnvPtr );
+                if ( EnvPtr->MPI.Rank == 0 )
+                {
+                    // Run python post-process script; does nothing if no python.
+                    Kernel::PythonSupport::RunPyFunction( EnvPtr->OutputPath, Kernel::PythonSupport::SCRIPT_POST_PROCESS );
+                }
+                LOG_INFO( "Controller executed successfully.\n" );
             }
-            LOG_INFO( "Controller executed successfully.\n" );
-        }
             else
             {
                 LOG_INFO( "Controller execution failed, exiting.\n" );
@@ -484,7 +480,6 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
             _CrtMemDumpAllObjectsSince(&initial_state);
     }
     #endif
-
 
 #endif
 

@@ -1,0 +1,430 @@
+{
+    "Events": [
+        {
+            "COMMENT" : "Get some people infected.",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0,
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "Antigen": 0,
+                    "Genome": 0
+                }
+            }
+        },
+        {
+            "COMMENT" : "Give POOR vaccine if we hear Action_Event_1.",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [ "Action_Event_1" ],
+                    "Demographic_Coverage": 1.0,
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "SimpleVaccine",
+                        "Cost_To_Consumer": 10,
+                        "Vaccine_Type": "AcquisitionBlocking",
+                        "Vaccine_Take": 1,
+                        "Efficacy_Is_Multiplicative" : 1,
+                        "Waning_Config": {
+                            "class": "WaningEffectConstant",
+                            "Initial_Effect" : 0.3
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "COMMENT" : "Give OK vaccine if we hear Action_Event_2.",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [ "Action_Event_2" ],
+                    "Demographic_Coverage": 1.0,
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "SimpleVaccine",
+                        "Cost_To_Consumer": 20,
+                        "Vaccine_Type": "AcquisitionBlocking",
+                        "Vaccine_Take": 1,
+                        "Efficacy_Is_Multiplicative" : 1,
+                        "Waning_Config": {
+                            "class": "WaningEffectConstant",
+                            "Initial_Effect" : 0.6
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "COMMENT" : "Give GOOD vaccine if we hear Action_Event_3.",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [ "Action_Event_3" ],
+                    "Demographic_Coverage": 1.0,
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "SimpleVaccine",
+                        "Cost_To_Consumer": 30,
+                        "Vaccine_Type": "AcquisitionBlocking",
+                        "Vaccine_Take": 1,
+                        "Efficacy_Is_Multiplicative" : 1,
+                        "Waning_Config": {
+                            "class": "WaningEffectConstant",
+                            "Initial_Effect" : 0.9
+                        }
+                    }
+                }
+            }
+        },
+        { 
+            "COMMENT" : "Set Node 1 so it can be seen by ICE and have it revert back after 10 days",
+            "class": "CampaignEvent",
+            "Start_Day": 7,
+            "Nodeset_Config": 
+            {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            },
+            "Event_Coordinator_Config": 
+            { 
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": 
+                { 
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "Risk:HIGH",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 10
+                }
+            }
+        },        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "IncidenceEventCoordinator",
+                "Number_Repetitions" : 4,
+                "Timesteps_Between_Repetitions" : 10,
+                "Incidence_Counter" :
+                {
+                    "Count_Events_For_Num_Timesteps" : 5,
+                    "Trigger_Condition_List" :
+                    [
+                        "PropertyChange"
+                    ],
+                    "Node_Property_Restrictions" :
+                    [
+                        { "Risk": "HIGH" }
+                    ],
+                    "Target_Demographic" : "Everyone",
+                    "Demographic_Coverage" : 0.6,
+                    "Property_Restrictions_Within_Node" :
+                    [
+                        { "Accessibility": "YES" }
+                    ]
+                },
+                "Responder" :
+                {
+                    "Threshold_Type" : "COUNT",
+                    "Action_List" :
+                    [
+                        {
+                            "Threshold" : 5,
+                            "Event_To_Broadcast" : "Action_Event_1"
+                        },
+                        {
+                            "Threshold" : 10,
+                            "Event_To_Broadcast" : "Action_Event_2"
+                        },
+                        {
+                            "Threshold" : 15,
+                            "Event_To_Broadcast" : "Action_Event_3"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "COMMENT1" : "We should see the 5 people in Node 1 get counted.",
+            "COMMENT2" : "When it reverts, we should see nothing.",
+            "COMMENT3" : "At time 15, everyone should get vaccine 1.",
+            "class": "CampaignEvent",
+            "Start_Day": 11,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Property_Restrictions": [
+                    "Accessibility:NO"
+                ],
+                "Intervention_Config": {
+                    "class": "PropertyValueChanger",
+                    "Disqualifying_Properties": [ ], 
+                    "New_Property_Value": "",
+                    "Target_Property_Key" : "Accessibility",
+                    "Target_Property_Value" : "YES",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 2
+                }
+            }
+        },
+        { 
+            "COMMENT" : "Set Node 2 so it can be seen by ICE and have it revert back after 10 days",
+            "class": "CampaignEvent",
+            "Start_Day": 17,
+            "Nodeset_Config": 
+            {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 2 ]
+            },
+            "Event_Coordinator_Config": 
+            { 
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": 
+                { 
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "Risk:HIGH",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 10
+                }
+            }
+        },        
+        {
+            "COMMENT1" : "We should see the 5 people in Node 2 get counted.",
+            "COMMENT2" : "When it reverts, we should see nothing.",
+            "COMMENT3" : "At time 25, everyone should get vaccine 2.",
+            "class": "CampaignEvent",
+            "Start_Day": 20,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Property_Restrictions": [
+                    "Accessibility:NO"
+                ],
+                "Intervention_Config": {
+                    "class": "PropertyValueChanger",
+                    "Disqualifying_Properties": [ ], 
+                    "New_Property_Value": "",
+                    "Target_Property_Key" : "Accessibility",
+                    "Target_Property_Value" : "YES",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 1
+                }
+            }
+        },
+        {
+            "COMMENT1" : "People in Node 2 get the event a second time so we can get Action_Event_2.",
+            "class": "CampaignEvent",
+            "Start_Day": 22,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Property_Restrictions": [
+                    "Accessibility:NO"
+                ],
+                "Intervention_Config": {
+                    "class": "PropertyValueChanger",
+                    "Disqualifying_Properties": [ ], 
+                    "New_Property_Value": "",
+                    "Target_Property_Key" : "Accessibility",
+                    "Target_Property_Value" : "YES",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 1
+                }
+            }
+        },
+        { 
+            "COMMENT" : "Set Node 3 so it can be seen by ICE and have it revert back after 10 days",
+            "class": "CampaignEvent",
+            "Start_Day": 27,
+            "Nodeset_Config": 
+            {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 3 ]
+            },
+            "Event_Coordinator_Config": 
+            { 
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": 
+                { 
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "Risk:HIGH",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 10
+                }
+            }
+        },        
+        {
+            "COMMENT1" : "We should see the 5 people in Node 3 get counted.",
+            "COMMENT2" : "When it reverts, we should see nothing.",
+            "COMMENT3" : "At time 35, everyone should get vaccine 3.",
+            "class": "CampaignEvent",
+            "Start_Day": 30,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Property_Restrictions": [
+                    "Accessibility:NO"
+                ],
+                "Intervention_Config": {
+                    "class": "PropertyValueChanger",
+                    "Disqualifying_Properties": [ ], 
+                    "New_Property_Value": "",
+                    "Target_Property_Key" : "Accessibility",
+                    "Target_Property_Value" : "YES",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 1
+                }
+            }
+        },
+        {
+            "COMMENT1" : "People in Node 3 get the event a second time so we can get Action_Event_3.",
+            "class": "CampaignEvent",
+            "Start_Day": 32,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Property_Restrictions": [
+                    "Accessibility:NO"
+                ],
+                "Intervention_Config": {
+                    "class": "PropertyValueChanger",
+                    "Disqualifying_Properties": [ ], 
+                    "New_Property_Value": "",
+                    "Target_Property_Key" : "Accessibility",
+                    "Target_Property_Value" : "YES",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 1
+                }
+            }
+        },
+        {
+            "COMMENT1" : "People in Node 3 get the event a third time so we can get Action_Event_3.",
+            "class": "CampaignEvent",
+            "Start_Day": 34,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Property_Restrictions": [
+                    "Accessibility:NO"
+                ],
+                "Intervention_Config": {
+                    "class": "PropertyValueChanger",
+                    "Disqualifying_Properties": [ ], 
+                    "New_Property_Value": "",
+                    "Target_Property_Key" : "Accessibility",
+                    "Target_Property_Value" : "YES",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 1
+                }
+            }
+        },
+        { 
+            "COMMENT" : "Set Node 4 so it can be seen by ICE and have it revert back after 10 days",
+            "class": "CampaignEvent",
+            "Start_Day": 37,
+            "Nodeset_Config": 
+            {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 4 ]
+            },
+            "Event_Coordinator_Config": 
+            { 
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": 
+                { 
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "Risk:HIGH",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 10
+                }
+            }
+        },
+        {
+            "COMMENT1" : "We should see the 2 people in Node 4 get counted.",
+            "COMMENT2" : "When it reverts, we should see nothing.",
+            "COMMENT3" : "At time 46, we should NOT see them get a vaccine because a threshold was not exceeded.",
+            "class": "CampaignEvent",
+            "Start_Day": 40,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Property_Restrictions": [
+                    "Accessibility:NO"
+                ],
+                "Intervention_Config": {
+                    "class": "PropertyValueChanger",
+                    "Disqualifying_Properties": [ ], 
+                    "New_Property_Value": "",
+                    "Target_Property_Key" : "Accessibility",
+                    "Target_Property_Value" : "YES",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 1
+                }
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

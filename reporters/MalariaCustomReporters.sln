@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cajun", "..\cajun\cajun.vcxproj", "{7F91BC71-562B-44AE-A246-010C632F9796}"
 EndProject
@@ -41,6 +41,19 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmalariasurveyJSON_analyz
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseReportLib", "..\BaseReportLib\BaseReportLib.vcxproj", "{D423EC17-4DDC-430C-A153-F1EB87CCDF31}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libReportMalariaFiltered", "libReportMalariaFiltered\libReportMalariaFiltered.vcxproj", "{F7E52533-F307-43E8-8F85-D0C4CAE73EEF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libreporteventcounter", "libreporteventcounter\libreporteventcounter.vcxproj", "{328669BF-1904-4F56-B106-185749D68C2C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libReportMalariaTransmissions", "libReportMalariaTransmissions\libReportMalariaTransmissions.vcxproj", "{67932CFB-A1C5-4ADC-B1B8-A7D6514F1D47}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D423EC17-4DDC-430C-A153-F1EB87CCDF31} = {D423EC17-4DDC-430C-A153-F1EB87CCDF31}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libReportNodeDemographicsMalaria", "libReportNodeDemographics\libReportNodeDemographicsMalaria.vcxproj", "{DFEF85C2-CFFA-4668-AAFB-BEA8B6D1F986}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libvectorstatsmalaria", "libvectorstats\libvectorstatsmalaria.vcxproj", "{F9F567AC-58FF-4725-A81D-D9C36749A96B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -79,6 +92,26 @@ Global
 		{D423EC17-4DDC-430C-A153-F1EB87CCDF31}.Debug|x64.Build.0 = Debug|x64
 		{D423EC17-4DDC-430C-A153-F1EB87CCDF31}.Release|x64.ActiveCfg = Release|x64
 		{D423EC17-4DDC-430C-A153-F1EB87CCDF31}.Release|x64.Build.0 = Release|x64
+		{F7E52533-F307-43E8-8F85-D0C4CAE73EEF}.Debug|x64.ActiveCfg = Debug|x64
+		{F7E52533-F307-43E8-8F85-D0C4CAE73EEF}.Debug|x64.Build.0 = Debug|x64
+		{F7E52533-F307-43E8-8F85-D0C4CAE73EEF}.Release|x64.ActiveCfg = Release|x64
+		{F7E52533-F307-43E8-8F85-D0C4CAE73EEF}.Release|x64.Build.0 = Release|x64
+		{328669BF-1904-4F56-B106-185749D68C2C}.Debug|x64.ActiveCfg = Debug|x64
+		{328669BF-1904-4F56-B106-185749D68C2C}.Debug|x64.Build.0 = Debug|x64
+		{328669BF-1904-4F56-B106-185749D68C2C}.Release|x64.ActiveCfg = Release|x64
+		{328669BF-1904-4F56-B106-185749D68C2C}.Release|x64.Build.0 = Release|x64
+		{67932CFB-A1C5-4ADC-B1B8-A7D6514F1D47}.Debug|x64.ActiveCfg = Debug|x64
+		{67932CFB-A1C5-4ADC-B1B8-A7D6514F1D47}.Debug|x64.Build.0 = Debug|x64
+		{67932CFB-A1C5-4ADC-B1B8-A7D6514F1D47}.Release|x64.ActiveCfg = Release|x64
+		{67932CFB-A1C5-4ADC-B1B8-A7D6514F1D47}.Release|x64.Build.0 = Release|x64
+		{DFEF85C2-CFFA-4668-AAFB-BEA8B6D1F986}.Debug|x64.ActiveCfg = Debug|x64
+		{DFEF85C2-CFFA-4668-AAFB-BEA8B6D1F986}.Debug|x64.Build.0 = Debug|x64
+		{DFEF85C2-CFFA-4668-AAFB-BEA8B6D1F986}.Release|x64.ActiveCfg = Release|x64
+		{DFEF85C2-CFFA-4668-AAFB-BEA8B6D1F986}.Release|x64.Build.0 = Release|x64
+		{F9F567AC-58FF-4725-A81D-D9C36749A96B}.Debug|x64.ActiveCfg = Debug|x64
+		{F9F567AC-58FF-4725-A81D-D9C36749A96B}.Debug|x64.Build.0 = Debug|x64
+		{F9F567AC-58FF-4725-A81D-D9C36749A96B}.Release|x64.ActiveCfg = Release|x64
+		{F9F567AC-58FF-4725-A81D-D9C36749A96B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

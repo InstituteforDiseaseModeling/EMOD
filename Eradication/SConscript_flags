@@ -16,7 +16,6 @@ if env['AllDlls'] or ( 'DiseaseDll' in env and env[ 'DiseaseDll' ] !="" ):
     eradenv.Append( CPPDEFINES=["_DLLS_" ] )
     eradenv.Append( CPPDEFINES=["BOOST_ALL_NO_LIB"] )
     eradenv.Append( CPPDEFINES=["ENABLE_PYTHON" ] )
-    #env.Append( CPPDEFINES=["ENABLE_TB" ] )
     #env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )
     #env.Append( CPPDEFINES=["ENABLE_POLIO" ] )
     if env['DiseaseDll'] != "Vector" and env['DiseaseDll'] != "Malaria" and env['DiseaseDll'] != "Environmental":
@@ -30,7 +29,7 @@ if env['AllDlls'] or ( 'DiseaseDll' in env and env[ 'DiseaseDll' ] !="" ):
     if env['DiseaseDll'] != "HIV" and env['DiseaseDll'] != "STI":
         eradenv.Append( CPPDEFINES=["DISABLE_HIV"] )
     if env['DiseaseDll'] == "TB":
-        eradenv.Append( CPPDEFINES=["ENABLE_TB"] )
+        eradenv.Append( CPPDEFINES=["ENABLE_TBHIV"] )
 
 else:
 
@@ -105,7 +104,7 @@ else:
             env.Append( CPPDEFINES=["DISABLE_CLIMATE" ] )
 
         if env["Disease"] == "TB":
-            env.Append( CPPDEFINES=["ENABLE_TB" ] )
+            env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )
             env.Append( CPPDEFINES=["DISABLE_STI" ] )
             env.Append( CPPDEFINES=["DISABLE_HIV" ] )
             env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
@@ -114,7 +113,6 @@ else:
 
         if env["Disease"] == "TBHIV":
             env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )
-            env.Append( CPPDEFINES=["ENABLE_TB" ] )
             env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
             env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
             env.Append( CPPDEFINES=["DISABLE_CLIMATE" ] )
@@ -128,16 +126,10 @@ else:
             env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
             env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
     else:
-        # Monolithic build
-        # env.Append( CPPDEFINES=['DISABLE_VECTOR'])        # external release INCLUDES vector
-        # env.Append( CPPDEFINES=['DISABLE_MALARIA'])       # external release INCLUDES malaria
-        # env.Append( CPPDEFINES=['ENABLE_DENGUE'])         # external release EXCLUDES dengue
-        # env.Append( CPPDEFINES=['ENABLE_ENVIRONMENTAL'])  # external release EXCLUDES environmental
-        # env.Append( CPPDEFINES=["ENABLE_POLIO" ] )        # external release EXCLUDES polio
-        # env.Append( CPPDEFINES=["ENABLE_TYPHOID" ] )      # external release EXCLUDES typhoid
-        # env.Append( CPPDEFINES=['DISABLE_AIRBORNE'])      # external release INCLUDES airborne
-        env.Append( CPPDEFINES=["ENABLE_TB" ] )             # external release INCLUDES tb
-        # env.Append( CPPDEFINES=['DISABLE_STI'])           # external release INCLUDES sti
-        # env.Append( CPPDEFINES=['DISABLE_HIV'])           # external release INCLUDES hiv
-        # env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )        # external release EXCLUDES tbhiv
-        env.Append( CPPDEFINES=["ENABLE_PYTHON_FEVER" ] )   # external release INCLUDES py
+        env.Append( CPPDEFINES=["ENABLE_ENVIRONMENTAL" ] )
+        env.Append( CPPDEFINES=["ENABLE_TYPHOID" ] )
+        env.Append( CPPDEFINES=["ENABLE_POLIO" ] )
+        env.Append( CPPDEFINES=["ENABLE_PYTHON_FEVER" ] )
+        env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )
+        env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )
+        env.Append( CPPDEFINES=["ENABLE_DENGUE" ] )

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,7 +21,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Properties.h"
 
 #include "FileSystem.h"
-#include "IndividualTB.h"
+#include "IndividualCoInfection.h"
 
 #include "Diagnostics.h"
 #include "RandomFake.h"
@@ -241,15 +241,15 @@ SUITE(SerializationTest)
         }
     }
 
-    TEST_FIXTURE(SerializationFixture, TestTbSerialization)
+    TEST_FIXTURE(SerializationFixture, TestCoinfectionSerialization)
     {
         try
         {
             // Open and read JSON
-            std::string* json = FileSystem::ReadFile( "testdata/SerializationTest/tbIndividual.json" );
+            std::string* json = FileSystem::ReadFile( "testdata/SerializationTest/coinfectionIndividual.json" );
 
             // Instantiate from JSON
-            IndividualHumanTB* individual = nullptr;
+            IndividualHumanCoInfection* individual = nullptr;
             ISerializable* source = (ISerializable*)individual;
             IArchive* reader = dynamic_cast<IArchive*>(new JsonFullReader( json->c_str() ));
             (*reader).labelElement("individual") & source;
@@ -264,7 +264,7 @@ SUITE(SerializationTest)
             IArchive* binary_reader = dynamic_cast<IArchive*>(new BinaryArchiveReader( buffer, count ));
             ISerializable* destination = nullptr;
             (*binary_reader) & destination;
-            IndividualHumanTB* compare = (IndividualHumanTB*)destination;
+            IndividualHumanCoInfection* compare = (IndividualHumanCoInfection*)destination;
 
             // Compare
             IArchive* writer = dynamic_cast<IArchive*>(new BinaryArchiveWriter());

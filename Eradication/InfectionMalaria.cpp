@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -25,7 +25,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Interventions.h"
 #include "SimulationConfig.h"
 #include "IndividualEventContext.h" // for Die() interface
-#include "MalariaInterventionsContainer.h"
+#include "MalariaInterventionsContainerContexts.h"
 #include "StrainIdentity.h"
 
 #ifdef randgen
@@ -41,17 +41,17 @@ namespace Kernel
     ParasiteSwitchType::Enum InfectionMalariaConfig::parasite_switch_type = ParasiteSwitchType::RATE_PER_PARASITE_7VARS;
     MalariaStrains::Enum     InfectionMalariaConfig::malaria_strains      = MalariaStrains::FALCIPARUM_RANDOM_STRAIN;
 
-    double InfectionMalariaConfig::antibody_IRBC_killrate = 0.0f;
-    double InfectionMalariaConfig::MSP1_merozoite_kill = 0.0f;
-    double InfectionMalariaConfig::gametocyte_stage_survival = 0.0f;
-    double InfectionMalariaConfig::base_gametocyte_sexratio = 0.0f;
-    double InfectionMalariaConfig::base_gametocyte_production = 0.0f;
-    double InfectionMalariaConfig::antigen_switch_rate = 0.0f;
-    double InfectionMalariaConfig::merozoites_per_hepatocyte = 0.0f;
-    double InfectionMalariaConfig::merozoites_per_schizont = 0.0f;
-    double InfectionMalariaConfig::non_specific_antigenicity = 0.0f;
-    double InfectionMalariaConfig::RBC_destruction_multiplier = 0.0f;
-    int    InfectionMalariaConfig::n_asexual_cycles_wo_gametocytes = 0;
+    float InfectionMalariaConfig::antibody_IRBC_killrate = 0.0f;
+    float InfectionMalariaConfig::MSP1_merozoite_kill = 0.0f;
+    float InfectionMalariaConfig::gametocyte_stage_survival = 0.0f;
+    float InfectionMalariaConfig::base_gametocyte_sexratio = 0.0f;
+    float InfectionMalariaConfig::base_gametocyte_production = 0.0f;
+    float InfectionMalariaConfig::antigen_switch_rate = 0.0f;
+    float InfectionMalariaConfig::merozoites_per_hepatocyte = 0.0f;
+    float InfectionMalariaConfig::merozoites_per_schizont = 0.0f;
+    float InfectionMalariaConfig::non_specific_antigenicity = 0.0f;
+    float InfectionMalariaConfig::RBC_destruction_multiplier = 0.0f;
+    int   InfectionMalariaConfig::n_asexual_cycles_wo_gametocytes = 0;
 
     // QI stuff (none in InfectionVector or Infection for now)
     GET_SCHEMA_STATIC_WRAPPER_IMPL(Malaria.Infection,InfectionMalariaConfig)
@@ -118,9 +118,9 @@ namespace Kernel
         initConfigTypeMap( "Nonspecific_Antigenicity_Factor", &non_specific_antigenicity, Nonspecific_Antigenicity_Factor_DESC_TEXT, 0.0f, 1000.0f, float(DEFAULT_NON_SPECIFIC_ANTIGENICITY) ); // malaria
         initConfigTypeMap( "MSP1_Merozoite_Kill_Fraction", &MSP1_merozoite_kill, MSP1_Merozoite_Kill_Fraction_DESC_TEXT, 0.0f, 1.0f, DEFAULT_MSP1_MEROZOITE_KILL ); // malaria
         initConfigTypeMap( "Gametocyte_Stage_Survival_Rate", &gametocyte_stage_survival, Gametocyte_Stage_Survival_Rate_DESC_TEXT, 0.0f, 1.0f, DEFAULT_GAMETOCYTE_STAGE_SURVIVAL ); // malaria
-        initConfigTypeMap( "Base_Gametocyte_Fraction_Male", &base_gametocyte_sexratio, Base_Gametocyte_Fraction_Male_DESC_TEXT, 0.0, 1.0, DEFAULT_BASE_GAMETOCYTE_SEX_RATIO ); // malaria
-        initConfigTypeMap( "Base_Gametocyte_Production_Rate", &base_gametocyte_production, Base_Gametocyte_Production_Rate_DESC_TEXT, 0.0, 1.0, DEFAULT_BASE_GAMETOCYTE_PRODUCTION ); // malaria
-        initConfigTypeMap( "Antigen_Switch_Rate", &antigen_switch_rate, Antigen_Switch_Rate_DESC_TEXT, 0.0, 1.0, 2.0e-009 ); // malaria
+        initConfigTypeMap( "Base_Gametocyte_Fraction_Male", &base_gametocyte_sexratio, Base_Gametocyte_Fraction_Male_DESC_TEXT, 0.0f, 1.0f, DEFAULT_BASE_GAMETOCYTE_SEX_RATIO ); // malaria
+        initConfigTypeMap( "Base_Gametocyte_Production_Rate", &base_gametocyte_production, Base_Gametocyte_Production_Rate_DESC_TEXT, 0.0f, 1.0f, DEFAULT_BASE_GAMETOCYTE_PRODUCTION ); // malaria
+        initConfigTypeMap( "Antigen_Switch_Rate", &antigen_switch_rate, Antigen_Switch_Rate_DESC_TEXT, 0.0f, 1.0f, 2.0e-9f ); // malaria
         initConfigTypeMap( "Merozoites_Per_Hepatocyte", &merozoites_per_hepatocyte, Merozoites_Per_Hepatocyte_DESC_TEXT, 0.0f, FLT_MAX, DEFAULT_MEROZOITES_PER_HEPATOCYTE ); // malaria
         initConfigTypeMap( "Merozoites_Per_Schizont", &merozoites_per_schizont, Merozoites_Per_Schizont_DESC_TEXT, 0.0f, 1000.0f, DEFAULT_MEROZOITES_PER_SCHIZONT ); // malaria
         initConfigTypeMap( "RBC_Destruction_Multiplier", &RBC_destruction_multiplier, RBC_Destruction_Multiplier_DESC_TEXT, 0.0f, 30.0f, DEFAULT_RBC_DESTRUCTION_MULTIPLIER ); // malaria GH
@@ -510,7 +510,7 @@ namespace Kernel
             double drug_killrate = 0;
             if( m_pMDE != nullptr )
             {
-                drug_killrate = m_pMDE->get_drug_IRBC_killrate();
+                drug_killrate = m_pMDE->get_drug_IRBC_killrate( *infection_strain );
                 // crude preliminary version of drug resistance
                 if(getDrugResistanceFlag() > 0){drug_killrate = 0;}
             }
@@ -615,9 +615,9 @@ namespace Kernel
                 if( m_pMDE != nullptr )
                 {
                     if (i < GametocyteStages::Stage3)
-                        drug_killrate = m_pMDE->get_drug_gametocyte02();
+                        drug_killrate = m_pMDE->get_drug_gametocyte02( *infection_strain );
                     else
-                        drug_killrate = m_pMDE->get_drug_gametocyte34();
+                        drug_killrate = m_pMDE->get_drug_gametocyte34( *infection_strain );
                 }
 
                 // no randomness in gametocyte killing, but a continuity correction
@@ -823,7 +823,7 @@ namespace Kernel
             double drug_killrate = 0;
             if( m_pMDE != nullptr )
             {
-                drug_killrate = m_pMDE->get_drug_hepatocyte();
+                drug_killrate = m_pMDE->get_drug_hepatocyte( *infection_strain );
             }
 
             //binomial chance of survival

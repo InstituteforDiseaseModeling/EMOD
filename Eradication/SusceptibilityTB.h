@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,14 +10,15 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #pragma once
 #include "SusceptibilityAirborne.h"
 #include "SimulationEnums.h"
+#include "IndividualCoInfection.h"
 
 namespace Kernel
 {
+    class IndividualHumanCoInfection; // fwd declare coz include suddenly doing nothing in scons builds?
     class SusceptibilityTBConfig: public SusceptibilityAirborneConfig
     {
         GET_SCHEMA_STATIC_WRAPPER(SusceptibilityTBConfig)
-        friend class IndividualHumanTB;
-        friend class IndividualHumanCoinfection;
+        friend class IndividualHumanCoInfection;
 
     public:
         virtual bool Configure( const Configuration* config ) override;
@@ -35,11 +36,6 @@ namespace Kernel
         static float TB_extrapulmonary_fraction_child;
         static float TB_extrapulmonary_fraction_adult;
         static TBFastProgressorType::Enum TB_fast_progressor_fraction_type;
-        static float TB_fast_progressor_fraction_above_poverty;
-        static float TB_fast_progressor_fraction_below_poverty;
-        static float TB_fast_progressor_fraction;
-        static float TB_susceptibility_multiplier_below_poverty;
-
     };
 
     
@@ -54,14 +50,14 @@ namespace Kernel
         virtual void SetCD4ActFlag( bool bin) = 0;
         virtual float GetProgressionRiskModulator() const = 0;
         virtual void SetModAcquire( float new_mod_acquire ) =0;
-        virtual float GetModAcquire() const = 0;
+        virtual float GetModAcquire(IndividualHumanCoInfection*) const = 0;
     };
 
     class SusceptibilityTB : public SusceptibilityAirborne, public ISusceptibilityTB
     {
     public:
-        friend class IndividualHumanTB;
-        friend class IndividualHumanCoinfection;
+        friend class IndividualHumanCoInfection;
+        friend class IndividualHumanCoInfection;
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
         DECLARE_QUERY_INTERFACE()
 
@@ -79,10 +75,9 @@ namespace Kernel
         virtual bool GetCD4ActFlag() const override;
         virtual void SetCD4ActFlag(bool bin) override;
         virtual float GetProgressionRiskModulator() const override;
-        virtual void SetModAcquire( float new_mod_acquire ) override;
-        virtual float GetModAcquire() const override;
-        virtual float getModTransmit() const override;
-
+        virtual void SetModAcquire(float new_mod_acquire) override;
+        virtual float GetModAcquire(IndividualHumanCoInfection*) const;
+        virtual float getModTransmit(IndividualHumanCoInfection*) const ;
 
     protected:
         bool  Flag_use_CD4_for_act;

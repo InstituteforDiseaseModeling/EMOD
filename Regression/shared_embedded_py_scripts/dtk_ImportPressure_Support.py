@@ -86,8 +86,8 @@ def set_random_campaign_file(durations, rates, campaign_filename="campaign.json"
         json.dump(campaign_json, outfile, indent = 4, sort_keys = True)
 
     if debug:
-        print "durations are : {}.\n".format(durations)
-        print "daily inport pressures are : {}.\n".format(rates)
+        print( "durations are : {}.\n".format(durations) )
+        print( "daily inport pressures are : {}.\n".format(rates) )
     return
 
 # endregion
@@ -106,7 +106,7 @@ def load_emod_parameters(config_filename="config.json", debug = False):
     param_obj[KEY_TOTAL_TIMESTEPS] = cdj[KEY_TOTAL_TIMESTEPS]
     param_obj[KEY_START_TIME] = cdj[KEY_START_TIME]
     if debug:
-        print param_obj
+        print( param_obj )
     return param_obj
 
 def load_campaign_file(campaign_filename="campaign.json", debug = False):
@@ -125,7 +125,7 @@ def load_campaign_file(campaign_filename="campaign.json", debug = False):
 
     if debug:
         # print "Durations is: {0}.\n Daily_Import_Pressures is: {1}.".format(durations, daily_import_pressures)
-        print campaign_obj
+        print( campaign_obj )
 
     return campaign_obj
 
@@ -142,7 +142,7 @@ def load_demographics_file(demographics_filename="demographics.json", debug=Fals
     demographics_obj[KEY_INITIAL_POPULATION] = initial_population
 
     if debug:
-        print demographics_obj
+        print( demographics_obj )
 
     return demographics_obj
 
@@ -217,12 +217,12 @@ def create_report_file(param_obj, campaign_obj, demographics_obj, report_data_ob
             # test statistical population channel
             diff_population = math.fabs(calculate_new_population - statistical_population[-1])
             if debug:
-                print "calculated population is {0}, statistical population " \
+                print( "calculated population is {0}, statistical population " \
                       "from InsetChart is {1}.".format(calculate_new_population,
-                                                       statistical_population[-1])
+                                                       statistical_population[-1]) )
             error_tolerance = math.fabs(calculate_new_population - initial_population)* 0.1
             if debug:
-                print "diff_population is {0}, error_tolerance is {1}".format(diff_population, error_tolerance)
+                print( "diff_population is {0}, error_tolerance is {1}".format(diff_population, error_tolerance) )
             if diff_population  > error_tolerance:
                 success = False
                 outfile.write("BAD: statistical population is {0}, expected about {1}.\n".format(statistical_population[-1], calculate_new_population))
@@ -237,7 +237,7 @@ def create_report_file(param_obj, campaign_obj, demographics_obj, report_data_ob
                     success = False
                     outfile.write("BAD: ks poisson test for {0} is {1}.\n".format(title, result))
                 numpy_distro = np.random.poisson(rate, len(dist))
-                sft.plot_data(dist, sorted(numpy_distro),
+                sft.plot_data(dist, numpy_distro,
                               title="new infections for {}".format(title),
                               label1="new infection from model, {}".format(title),
                               label2="Poisson distro from numpy",
@@ -251,6 +251,6 @@ def create_report_file(param_obj, campaign_obj, demographics_obj, report_data_ob
 
         outfile.write(sft.format_success_msg(success))
         if debug:
-            print "SUMMARY: Success={0}\n".format(success)
+            print( "SUMMARY: Success={0}\n".format(success) )
         return success
 # endregion

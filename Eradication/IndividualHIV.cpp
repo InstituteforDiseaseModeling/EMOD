@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -37,7 +37,7 @@ namespace Kernel
     bool IndividualHumanHIVConfig::Configure( const Configuration* config )
     {
         initConfigTypeMap( "Maternal_Transmission_ART_Multiplier", &maternal_transmission_ART_multiplier, Maternal_Transmission_ART_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.1f );
-
+        IndividualHumanConfig::enable_immunity = true;
         return JsonConfigurable::Configure( config );
     }
 
@@ -45,9 +45,9 @@ namespace Kernel
         HANDLE_INTERFACE(IIndividualHumanHIV)
     END_QUERY_INTERFACE_DERIVED(IndividualHumanHIV, IndividualHumanSTI)
 
-    IndividualHumanHIV *IndividualHumanHIV::CreateHuman(INodeContext *context, suids::suid id, float MCweight, float init_age, int gender, float init_poverty)
+    IndividualHumanHIV *IndividualHumanHIV::CreateHuman(INodeContext *context, suids::suid id, float MCweight, float init_age, int gender)
     {
-        IndividualHumanHIV *newindividual = _new_ IndividualHumanHIV(id, MCweight, init_age, gender, init_poverty);
+        IndividualHumanHIV *newindividual = _new_ IndividualHumanHIV(id, MCweight, init_age, gender);
 
         newindividual->SetContextTo(context);
         newindividual->InitializeConcurrency();
@@ -71,8 +71,8 @@ namespace Kernel
         }
     }
 
-    IndividualHumanHIV::IndividualHumanHIV(suids::suid _suid, float monte_carlo_weight, float initial_age, int gender, float initial_poverty)
-        : IndividualHumanSTI(_suid, monte_carlo_weight, initial_age, gender, initial_poverty)
+    IndividualHumanHIV::IndividualHumanHIV(suids::suid _suid, float monte_carlo_weight, float initial_age, int gender)
+        : IndividualHumanSTI(_suid, monte_carlo_weight, initial_age, gender)
         , pos_num_partners_while_CD4500plus(0)
         , neg_num_partners_while_CD4500plus(0)
     {
@@ -92,6 +92,7 @@ namespace Kernel
     void IndividualHumanHIV::InitializeStaticsHIV( const Configuration* config )
     {
         InfectionHIVConfig infection_config;
+        infection_config.enable_disease_mortality = true;  //fixed on for HIV, needs to be set explicitly because SIM_HIV is not in depends-on clause (and thus not read)
         infection_config.Configure( config );
         SusceptibilityHIVConfig immunity_config;
         immunity_config.Configure( config );

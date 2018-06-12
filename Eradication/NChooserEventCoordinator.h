@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,6 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "PropertyRestrictions.h"
 #include "NodeEventContext.h"
 #include "SimulationEnums.h"
+#include "JsonConfigurableCollection.h"
 
 namespace Kernel
 {
@@ -52,30 +53,16 @@ namespace Kernel
     // ------------------------------------------------------------------------
 
     // This is a container for the AgeRange objects
-    class IDMAPI AgeRangeList : public JsonConfigurable, public IComplexJsonConfigurable
+    class IDMAPI AgeRangeList : public JsonConfigurableCollection<AgeRange>
     {
     public:
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
-        DECLARE_QUERY_INTERFACE()
-
         AgeRangeList();
         virtual ~AgeRangeList();
 
-        const AgeRange& operator[]( int index ) const;
+        virtual void CheckConfiguration() override;
 
-        virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
-        virtual json::QuickBuilder GetSchema() override;
-        virtual bool  HasValidDefault() const override { return false; }
-
-        void Add( const AgeRange& rar );
-        int Size() const;
-        void CheckForOverlap();
-
-    private:
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
-        std::vector<AgeRange> m_AgeRanges;
-#pragma warning( pop )
+    protected:
+        virtual AgeRange* CreateObject() override;
     };
 
 
@@ -125,15 +112,12 @@ namespace Kernel
         virtual bool IsFinished() const;
 
     private:
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         AgeRange     m_AgeRange;
         Gender::Enum m_Gender;
         int          m_NumTargeted;
         int          m_TimeStep;
         std::vector<int> m_NumTargetedPerTimeStep;
         std::vector<IIndividualHumanEventContext*> m_QualifyingIndividuals;
-#pragma warning( pop )
     };
 
     // ------------------------------------------------------------------------
@@ -182,8 +166,6 @@ namespace Kernel
 
         void CheckForZeroTargeted();
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         NChooserObjectFactory* m_pObjectFactory;
         DiseaseQualifications* m_pDiseaseQualifications;
         float m_StartDay;
@@ -194,7 +176,6 @@ namespace Kernel
         std::vector<int> m_NumTargetedMales;
         std::vector<int> m_NumTargetedFemales;
         std::vector<TargetedByAgeAndGender*> m_AgeAndGenderList;
-#pragma warning( pop )
     };
 
     // ------------------------------------------------------------------------
@@ -206,21 +187,14 @@ namespace Kernel
     // this list are to be in order based on the period they are covering.  The elements
     // are not allowed to overlap so that the coordinator is only distributing interventions
     // for one of the items in this list.
-    class IDMAPI TargetedDistributionList : public JsonConfigurable, public IComplexJsonConfigurable
+    class IDMAPI TargetedDistributionList : public JsonConfigurableCollection<TargetedDistribution>
     {
     public:
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
-        DECLARE_QUERY_INTERFACE()
-
         TargetedDistributionList( NChooserObjectFactory* pObjectFactory );
         virtual ~TargetedDistributionList();
 
-        virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
-        virtual json::QuickBuilder GetSchema() override;
-        virtual bool  HasValidDefault() const override { return false; }
-
-        virtual void CheckForOverlap();
-        virtual void Add( TargetedDistribution* ptd );
+        // JsonConfigurableCollection methods
+        virtual void CheckConfiguration() override;
 
         virtual void UpdateTargeting( const IdmDateTime& rDateTime, float dt );
         virtual TargetedDistribution* GetCurrentTargets();
@@ -230,14 +204,14 @@ namespace Kernel
 
         virtual void CheckStartDay( float campaignStartDay ) const;
 
+    protected:
+        // JsonConfigurableCollection methods
+        virtual TargetedDistribution* CreateObject() override;
+
     private:
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         NChooserObjectFactory* m_pObjectFactory;
         int m_CurrentIndex;
         TargetedDistribution* m_pCurrentTargets;
-        std::vector<TargetedDistribution*> m_TargetedDistributions;
-#pragma warning( pop )
     };
 
     // ------------------------------------------------------------------------
@@ -288,9 +262,6 @@ namespace Kernel
 
         virtual void UpdateInterventionToBeDistributed( const IdmDateTime& rDateTime, float dt );
 
-
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         ISimulationEventContext*        m_Parent;
         NChooserObjectFactory*          m_pObjectFactory;
         std::vector<INodeEventContext*> m_CachedNodes;
@@ -301,6 +272,5 @@ namespace Kernel
         uint32_t                        m_DistributionIndex;
         bool                            m_IsFinished;
         bool                            m_HasBeenScaled;
-#pragma warning( pop )
     };
 }

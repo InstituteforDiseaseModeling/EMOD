@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -37,11 +37,12 @@ namespace Kernel
     IMPLEMENT_FACTORY_REGISTERED(OutbreakIndividual)
 
     OutbreakIndividual::OutbreakIndividual()
-    : ignoreImmunity( true )
+    : genome(0)
+    , ignoreImmunity( true )
     {
         initConfigTypeMap( "Ignore_Immunity", &ignoreImmunity, OB_Ignore_Immunity_DESC_TEXT, true );
         initConfigTypeMap( "Incubation_Period_Override", &incubation_period_override, Incubation_Period_Override_DESC_TEXT, -1, INT_MAX, -1);
-        initSimTypes( 11, "GENERIC_SIM" , "VECTOR_SIM" , "MALARIA_SIM", "AIRBORNE_SIM", "POLIO_SIM", "TB_SIM", "TBHIV_SIM", "STI_SIM", "HIV_SIM", "PY_SIM", "TYPHOID_SIM" );
+        initSimTypes( 10, "GENERIC_SIM" , "VECTOR_SIM" , "MALARIA_SIM", "AIRBORNE_SIM", "POLIO_SIM", "TBHIV_SIM", "STI_SIM", "HIV_SIM", "PY_SIM", "TYPHOID_SIM" );
     }
 
     bool
@@ -49,14 +50,24 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        initConfigTypeMap( "Antigen", &antigen, Antigen_DESC_TEXT, 0, 10, 0 );
-        initConfigTypeMap( "Genome",  &genome,  Genome_DESC_TEXT, -1, 16777216, 0 );
+        ConfigureAntigen( inputJson );
+        ConfigureGenome( inputJson );
 
         // --------------------------------------------------------------
         // --- Don't call BaseIntervention::Configure() because we don't
         // --- want to inherit those parameters.
         // --------------------------------------------------------------
         return JsonConfigurable::Configure( inputJson );
+    }
+
+    void OutbreakIndividual::ConfigureAntigen( const Configuration * inputJson )
+    {
+        initConfigTypeMap( "Antigen", &antigen, Antigen_DESC_TEXT, 0, 10, 0 );
+    }
+
+    void OutbreakIndividual::ConfigureGenome( const Configuration * inputJson )
+    {
+        initConfigTypeMap( "Genome", &genome, Genome_DESC_TEXT, -1, 16777216, 0 );
     }
 
     bool OutbreakIndividual::Distribute(
@@ -116,7 +127,9 @@ namespace Kernel
             int ss = simConfigObj->number_substrains;
             if (ss & (ss-1))
             {
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Only supporting random genome generation for Number_Substrains as factor of two." );
+                std::stringstream ss;
+                ss << "'Number_Substrains'=" << simConfigObj->number_substrains << "  Only supporting random genome generation for Number_Substrains as factor of two.";
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
             }
             unsigned int BARCODE_BITS = 0;
             while(ss >>= 1) ++BARCODE_BITS;

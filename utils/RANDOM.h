@@ -45,6 +45,10 @@ public:
     // Finds an uniformally distributed number between 0 and N
     uint32_t uniformZeroToN(uint32_t N );
 
+    // randomRound() - rounds the 'val' to the nearest integer but randomly rounds it up or down.
+    // If the input value is 5.3, then 70% of the time it should return 5 and 30% of the time 6.
+    uint32_t randomRound( float val );
+
 #define FLOAT_EXP   8
 #define DOUBLE_EXP 11
 
@@ -67,7 +71,12 @@ public:
     uint64_t binomial_true(uint64_t=1, double=1.0);
     double time_varying_rate_dist( std::vector <float> v_rate, float timestep, float rate);
 
-    
+    // Return a vector containing a binomial approximation for each fraction of N such that
+    // all of the selections are from the same pool N.  The total sum of the returned
+    // vector should be an approximation of the sum of the fractions times N.  That is,
+    // Sum(rFractions) * N ~= Sum(returned vector) such that Sum(returned vector) <= N.
+    std::vector<uint64_t> multinomial_approx( uint64_t N, const std::vector<float>& rFractions );
+
     // M Behrend
     // gamma-distributed random number
     // shape constant k=2
@@ -92,7 +101,6 @@ protected:
     size_t    index;
     size_t    cache_count;
 
-private:
     bool   bGauss;
     double eGauss_;
 

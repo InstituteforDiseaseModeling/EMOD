@@ -30,6 +30,10 @@ reportIncFiles = [
     "ReportUtilities.h"
 ]
 
+if ('Disease' in env) and ((env['Disease'] == 'Malaria') or (env['Disease'] == '')):
+    reportSrcFiles.append( "ReportUtilitiesMalaria.cpp" )
+    reportIncFiles.append( "ReportUtilitiesMalaria.h" )
+
 reportLocalInc = ['stdafx.h']
 
 reportLib = env.StaticLibrary('baseReportLib', reportSrcFiles)
@@ -38,7 +42,7 @@ msvc = GetOption( "MSVC" )
 if msvc is not None and msvc != False and msvc != "":
 
     bvar = env['BUILD_VARIANT'] + '|x64'
-    print "baseReportLib: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar
+    print( "baseReportLib: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar )
     
     env.MSVSProject(target = 'BaseReportLibScons' + env['MSVSPROJECTSUFFIX'],
         srcs = reportSrcFiles,

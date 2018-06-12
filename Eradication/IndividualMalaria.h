@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -45,7 +45,7 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE();
 
     public:
-        static IndividualHumanMalaria *CreateHuman(INodeContext *context, suids::suid _suid, double monte_carlo_weight = 1.0f, double initial_age = 0.0f, int gender = 0, double initial_poverty = 0.5f);
+        static IndividualHumanMalaria *CreateHuman(INodeContext *context, suids::suid _suid, double monte_carlo_weight = 1.0f, double initial_age = 0.0f, int gender = 0);
         virtual ~IndividualHumanMalaria();
 
         // IMalariaHumanContext methods
@@ -115,7 +115,7 @@ namespace Kernel
     private:
         static void InitializeStaticsMalaria( const Configuration* config );
 
-        IndividualHumanMalaria(suids::suid id = suids::nil_suid(), double monte_carlo_weight = 1.0, double initial_age = 0.0, int gender = 0, double initial_poverty = 0.5);
+        IndividualHumanMalaria(suids::suid id = suids::nil_suid(), double monte_carlo_weight = 1.0, double initial_age = 0.0, int gender = 0);
         IndividualHumanMalaria(INodeContext *context);
         virtual IIndividualHumanContext* GetContextPointer() override { return (IIndividualHumanContext*)this; }
         void ResetClinicalSymptoms();

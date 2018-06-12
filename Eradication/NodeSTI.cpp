@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -99,19 +99,6 @@ namespace Kernel
         Node::Initialize();
     }
 
-    void NodeSTI::SetMonteCarloParameters(float indsamplerate, int nummininf)
-    {
-        if( indsamplerate != 1.0f )
-        {
-            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__,
-                                                   "Base_Individual_Sampling_Rate", std::to_string( indsamplerate ).c_str(),
-                                                   "Simulation_Type", SimType::pairs::lookup_key( GET_CONFIGURABLE( SimulationConfig )->sim_type ),
-                                                   "Relationship-based transmission network only works with 100% sampling."
-                                                  );
-        }
-        return Node::SetMonteCarloParameters( indsamplerate, nummininf );
-    }
-
     void NodeSTI::SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory, bool white_list_enabled )
     {
         Node::SetParameters( demographics_factory, climate_factory, white_list_enabled );
@@ -127,9 +114,9 @@ namespace Kernel
         delete p_config ;
     }
 
-    IIndividualHuman* NodeSTI::createHuman( suids::suid suid, float monte_carlo_weight, float initial_age, int gender,  float above_poverty)
+    IIndividualHuman* NodeSTI::createHuman( suids::suid suid, float monte_carlo_weight, float initial_age, int gender)
     {
-        return IndividualHumanSTI::CreateHuman(this, suid, monte_carlo_weight, initial_age, gender, above_poverty);
+        return IndividualHumanSTI::CreateHuman(this, suid, monte_carlo_weight, initial_age, gender);
     }
 
     void NodeSTI::SetupIntranodeTransmission()

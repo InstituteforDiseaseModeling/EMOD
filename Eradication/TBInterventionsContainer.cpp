@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,7 +9,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 
-#ifdef ENABLE_TB
+#ifdef ENABLE_TBHIV
 
 #include "TBInterventionsContainer.h"
 #include "TBContexts.h"
@@ -45,10 +45,11 @@ namespace Kernel
     {
     }
     
-    void TBInterventionsContainer::Update(float dt)
+    void TBInterventionsContainer::InfectiousLoopUpdate( float dt )
     {
         TB_drug_effects.clear();
-        InterventionsContainer::Update(dt);
+
+        InterventionsContainer::InfectiousLoopUpdate( dt );
     }
 
     void TBInterventionsContainer::UpdateHealthSeekingBehaviors(float new_probability_of_seeking)
@@ -199,29 +200,6 @@ namespace Kernel
         return m_ever_relapsed_TBIVC;
     }
 
-    void TBInterventionsContainer::GiveDrug(IDrug* drug)
-    {
-        drug->ConfigureDrugTreatment( this );
-    }
-
-    // For now, before refactoring Drugs to work in new way, just check if the intervention is a
-    // Drug, and if so, add to drugs list. In future, there will be no drugs list, just interventions.
-    bool TBInterventionsContainer::GiveIntervention(
-        IDistributableIntervention * pIV
-    )
-    {
-        // NOTE: Calling this AFTER the QI/GiveDrug crashes!!! Both win and linux. Says SetContextTo suddenly became a pure virtual.
-        pIV->SetContextTo( parent ); 
-        IDrug * pDrug = nullptr;
-        if( s_OK == pIV->QueryInterface(GET_IID(IDrug), (void**) &pDrug) )
-        {
-            LOG_DEBUG("Getting a drug\n");
-            GiveDrug( pDrug );
-        }
-
-        return InterventionsContainer::GiveIntervention( pIV );
-    }
-
     TBDrugEffectsMap_t TBInterventionsContainer::GetDrugEffectsMap() 
     { 
         return TB_drug_effects; 
@@ -282,4 +260,4 @@ namespace Kernel
     }
 }
 
-#endif // ENABLE_TB
+#endif // ENABLE_TBHIV

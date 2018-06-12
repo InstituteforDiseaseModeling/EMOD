@@ -32,6 +32,14 @@ GOTO TEMPLATE
 
 :NOGIT
 
+:: If a version info file has already been provided externally then use that
+SET PROVIDED_VERSION_INFO_FILE="%1\version.provided.txt"
+
+IF EXIST %PROVIDED_VERSION_INFO_FILE% (
+    SET TEMP_SCRATCH_FILE=%PROVIDED_VERSION_INFO_FILE%
+    GOTO :TEMPLATE
+)
+
 :: butt redirects up against text to prevent extraneous spacing
 ECHO %USERNAME%> %TEMP_SCRATCH_FILE%
 ECHO unknown-branch>> %TEMP_SCRATCH_FILE%

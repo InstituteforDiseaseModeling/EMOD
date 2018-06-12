@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -37,9 +37,6 @@ namespace Kernel {
 const char * BinnedReport::_pop_label = "Population";
 const char * BinnedReport::_infected_label = "Infected";
 const char * BinnedReport::_new_infections_label = "New Infections";
-const char * BinnedReport::_new_reported_infections_label = "New Reported Infections";
-const char * BinnedReport::_disease_deaths_label = "Disease Deaths";
-
 
 Kernel::IReport*
 BinnedReport::CreateReport()
@@ -47,9 +44,14 @@ BinnedReport::CreateReport()
     return new BinnedReport();
 }
 
-// Derived constructor calls base constructor to initialized reduced timesteps etc. 
 BinnedReport::BinnedReport()
-    : BaseChannelReport()
+: BinnedReport( _report_name )
+{
+}
+
+// Derived constructor calls base constructor to initialized reduced timesteps etc. 
+BinnedReport::BinnedReport( const std::string& rReportName )
+    : BaseChannelReport( rReportName )
     , num_timesteps(0)
     , num_axes(0)
     , axis_labels()
@@ -60,8 +62,6 @@ BinnedReport::BinnedReport()
     , population_bins(nullptr)
     , infected_bins(nullptr)
     , new_infections_bins(nullptr)
-    , new_reported_infections_bins(nullptr)
-    , disease_deaths_bins(nullptr)
     , p_output_augmentor(nullptr)
     , _age_bin_upper_values(nullptr)
 {
@@ -94,8 +94,6 @@ BinnedReport::~BinnedReport()
     delete[] population_bins;
     delete[] infected_bins;
     delete[] new_infections_bins;
-    delete[] new_reported_infections_bins;
-    delete[] disease_deaths_bins;
     //p_output_augmentor - do not delete since this class does not own it
 }
 
@@ -112,8 +110,6 @@ void BinnedReport::Initialize( unsigned int nrmSize )
     num_timesteps = 0;
     _nrmSize = nrmSize;
     release_assert( _nrmSize );
-
-    report_name = _report_name;
 
     // wish we could just use C++11 initializer lists here, but alas... not yet implemented :(
     axis_labels = std::vector<std::string>(_axis_labels, _axis_labels + (sizeof(_axis_labels) / sizeof(char*)));
@@ -144,9 +140,7 @@ void BinnedReport::initChannelBins()
     population_bins     = new float[num_total_bins];
     infected_bins       = new float[num_total_bins];
     new_infections_bins = new float[num_total_bins];
-    new_reported_infections_bins = new float[num_total_bins];
-    disease_deaths_bins = new float[num_total_bins];
-
+    
     clearChannelsBins();
 }
 
@@ -155,8 +149,6 @@ void BinnedReport::clearChannelsBins()
     memset(population_bins    , 0, num_total_bins * sizeof(float));
     memset(infected_bins      , 0, num_total_bins * sizeof(float));
     memset(new_infections_bins, 0, num_total_bins * sizeof(float));
-    memset(new_reported_infections_bins, 0, num_total_bins * sizeof(float));
-    memset(disease_deaths_bins, 0, num_total_bins * sizeof(float));
 }
 
 void BinnedReport::BeginTimestep()
@@ -171,9 +163,7 @@ void BinnedReport::EndTimestep( float currentTime, float dt )
     Accumulate(_pop_label, population_bins);
     Accumulate(_infected_label, infected_bins);
     Accumulate(_new_infections_label, new_infections_bins);
-    //Accumulate(_new_reported_infections_label, new_reported_infections_bins);
-    Accumulate(_disease_deaths_label, disease_deaths_bins);
-
+    
     clearChannelsBins();
 }
 
@@ -253,16 +243,6 @@ void  BinnedReport::LogIndividualData( Kernel::IIndividualHuman* individual )
     if(nis == NewInfectionState::NewAndDetected || nis == NewInfectionState::NewInfection)
     {
         new_infections_bins[bin_index] += mc_weight;
-    }
-
-    if(nis == NewInfectionState::NewAndDetected || nis == NewInfectionState::NewlyDetected)
-    {
-        new_reported_infections_bins[bin_index] += mc_weight;
-    }
-
-    if(individual->GetStateChange() == HumanStateChange::KilledByInfection) 
-    {
-        disease_deaths_bins[bin_index] += mc_weight;
     }
 }
 
@@ -383,17 +363,11 @@ void BinnedReport::Finalize()
     js.GetPrettyFormattedOutput(pIJsonObj, buffer);
 
     ofstream binned_report_json;
-    binned_report_json.open( FileSystem::Concat( EnvPtr->OutputPath, report_name ).c_str());
-    if (buffer && binned_report_json.is_open())
-    {
-        binned_report_json << buffer << endl;
-        binned_report_json.close();
-    }
-    else
-    {
-        LOG_ERR_F("Failed to open %s for writing BinnedReport data.\n", report_name.c_str());
-        throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, report_name.c_str() );
-    }
+    FileSystem::OpenFileForWriting( binned_report_json, FileSystem::Concat( EnvPtr->OutputPath, report_name ).c_str() );
+
+    binned_report_json << buffer << endl;
+    binned_report_json.close();
+
     pIJsonObj->FinishWriter();
     delete pIJsonObj ;
 }

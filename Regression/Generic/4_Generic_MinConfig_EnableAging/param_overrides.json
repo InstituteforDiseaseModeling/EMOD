@@ -1,13 +1,12 @@
 {
     "parameters": {
-        "Default_Config_Path": "defaults/minimum_default_config.json",
-        "Config_Name": "4_Generic_MinimalConfig_EnableAging",
-
-        "Enable_Aging": 1,
-        "Enable_Vital_Dynamics": 1, 
-        "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF", 
         "Base_Mortality": 0,
+        "Config_Name": "4_Generic_MinimalConfig_EnableAging",
+        "Default_Config_Path": "defaults/minimum_default_config.json",
+        "Enable_Aging": 1,
         "Enable_Birth": 0,
+        "Enable_Natural_Mortality": 0,
+        "Enable_Vital_Dynamics": 1,
         "x_Other_Mortality": 1.0
     }
 }

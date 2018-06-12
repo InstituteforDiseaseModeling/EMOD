@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -285,16 +285,11 @@ std::string MalariaPatientJSONReport::GetReportName() const
 void MalariaPatientJSONReport::Finalize()
 {
     // Open output file
-    ofstream ofs;
     std::ostringstream output_file_name;
     output_file_name << _report_name;
     LOG_INFO_F( "Writing file: %s\n", output_file_name.str().c_str() );
-    ofs.open( FileSystem::Concat( EnvPtr->OutputPath, output_file_name.str() ).c_str() );
-    if (!ofs.is_open())
-    {
-        LOG_ERR("Failed to open output file for serialization.\n");
-        throw FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, output_file_name.str().c_str() );
-    }
+    ofstream ofs;
+    FileSystem::OpenFileForWriting( ofs, FileSystem::Concat( EnvPtr->OutputPath, output_file_name.str() ).c_str() );
 
     // Accumulate array of patients as JSON
     int counter = 0;
@@ -331,8 +326,9 @@ void MalariaPatientJSONReport::Finalize()
     }
     else
     {
-        LOG_ERR("Failed to get prettyHumans\n");
-        throw FileIOException( __FILE__, __LINE__, __FUNCTION__, output_file_name.str().c_str() );
+        std::stringstream ss;
+        ss << "Failed to create JSON formatted data for file '" << output_file_name.str() << "'";
+        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
     }
     if (ofs.is_open())
     {

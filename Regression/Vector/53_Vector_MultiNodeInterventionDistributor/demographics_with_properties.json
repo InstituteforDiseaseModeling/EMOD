@@ -1,0 +1,83 @@
+{
+    "Metadata": {
+        "DateCreated": "Tue Feb 14, 2017", 
+        "Author": "dbridenbecker", 
+        "IdReference": "Gridded world grump30arcsec", 
+        "NodeCount": 2
+    }, 
+    "Defaults" : {
+        "NodeAttributes": {
+            "Altitude": 0, 
+            "Airport": 0, 
+            "Region": 1, 
+            "Seaport": 0, 
+            "BirthRate": 0.0001
+        }, 
+        "IndividualAttributes": {
+            "AgeDistributionFlag": 2, 
+            "AgeDistribution1": 10950, 
+            "AgeDistribution2": 7300, 
+            "PrevalenceDistributionFlag": 0, 
+            "PrevalenceDistribution1": 0.05, 
+            "PrevalenceDistribution2": 0.0, 
+            "SusceptibilityDistributionFlag": 0, 
+            "SusceptibilityDistribution1": 1, 
+            "SusceptibilityDistribution2": 0, 
+            "RiskDistributionFlag": 0, 
+            "RiskDistribution1": 1, 
+            "RiskDistribution2": 0, 
+            "MigrationHeterogeneityDistributionFlag": 0, 
+            "MigrationHeterogeneityDistribution1": 1, 
+            "MigrationHeterogeneityDistribution2": 0,
+            "MortalityDistribution": {
+                "NumDistributionAxes": 2,
+                "AxisNames": [ "gender", "age" ],
+                "AxisUnits": [ "male=0,female=1", "years" ],
+                "AxisScaleFactors": [ 1, 365 ],
+                "NumPopulationGroups": [ 2, 3 ],
+                "PopulationGroups": [
+                    [ 0, 1 ],
+                    [ 0, 100, 2000 ]
+                ],
+                "ResultUnits": "annual deaths per 1000 individuals",
+                "ResultScaleFactor": 0.00000273972602739726027397260273973,
+                "ResultValues": [
+                    [ 0, 20.0000035, 400.00007 ],
+                    [ 0, 20.0000035, 400.00007 ]
+                ]
+            }
+        },
+        "IndividualProperties" : [
+            {
+                "Property": "Risk",
+                "Values": [ "LOW", "HIGH"],
+                "Initial_Distribution": [ 1.0, 0.0 ]
+            }
+        ]
+    },
+    "NodeProperties": [
+        {
+            "Property": "InterventionStatus",
+            "Values": [ "NONE", "RECENT_SPRAY" ],
+            "Initial_Distribution": [ 1.0, 0.0 ]
+        }
+    ],
+    "Nodes": [
+        {
+            "NodeID": 1486368789, 
+            "NodeAttributes": {
+                "Latitude": 12.5708, 
+                "Longitude": 9.00417,
+                "InitialPopulation": 10
+            }
+        },
+        {
+            "NodeID": 1486303252, 
+            "NodeAttributes": {
+                "Latitude": 12.5625, 
+                "Longitude": 8.99584,
+                "InitialPopulation": 10
+            }
+        }
+    ]
+}

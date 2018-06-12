@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -33,9 +33,12 @@ namespace Kernel
 
     protected:
         WaningEffectMapAbstract( float maxTime = 999999.0f );
+        WaningEffectMapAbstract( float minTime, float maxTime, float minValue, float maxValue );
         WaningEffectMapAbstract( const WaningEffectMapAbstract& rOrig );
 
+        virtual void UpdateEffect();
         virtual bool ConfigureExpiration( const Configuration* config );
+        virtual bool ConfigureReferenceTimer( const Configuration* config );
 
         bool  m_Expired;
         float m_EffectOriginal;
@@ -70,9 +73,11 @@ namespace Kernel
     class IDMAPI WaningEffectMapPiecewise : public WaningEffectMapAbstract
     {
         DECLARE_FACTORY_REGISTERED_EXPORT(WaningEffectFactory, WaningEffectMapPiecewise, IWaningEffect)
-        DECLARE_QUERY_INTERFACE()
     public:
+        DECLARE_QUERY_INTERFACE()
+
         WaningEffectMapPiecewise();
+        WaningEffectMapPiecewise( float minTime, float maxTime, float minValue, float maxValue );
         WaningEffectMapPiecewise( const WaningEffectMapPiecewise& rOrig );
         virtual ~WaningEffectMapPiecewise();
         virtual IWaningEffect* Clone() override;

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -363,17 +363,12 @@ void ChannelDataMap::WriteOutput(
     js.GetFormattedOutput(pIJsonObj, buffer);
 
     ofstream inset_chart_json;
-    inset_chart_json.open( FileSystem::Concat(EnvPtr->OutputPath, filename ).c_str() );
-    if (buffer && inset_chart_json.is_open())
-    {
-        inset_chart_json << buffer << endl;
-        inset_chart_json.flush();
-        inset_chart_json.close();
-    }
-    else
-    {
-        throw Kernel::FileIOException( __FILE__, __LINE__, __FUNCTION__, filename.c_str() );
-    }
+    FileSystem::OpenFileForWriting( inset_chart_json, FileSystem::Concat( EnvPtr->OutputPath, filename ).c_str() );
+
+    inset_chart_json << buffer << endl;
+    inset_chart_json.flush();
+    inset_chart_json.close();
+
     pIJsonObj->FinishWriter();
     delete pIJsonObj ;
 }

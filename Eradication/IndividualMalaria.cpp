@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,7 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 
 #include "IndividualMalaria.h"
-#include "NodeMalaria.h"
+#include "NodeVector.h"
 #include "SusceptibilityMalaria.h"
 #include "InfectionMalaria.h"
 #include "Debug.h"
@@ -20,9 +20,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "MalariaInterventionsContainer.h"
 #include "SimulationConfig.h"
 #include "MathFunctions.h"
-#include "MalariaBarcode.h"
+#include "GenomeMarkers.h"
 #include "MalariaParameters.h"
 #include "EventTrigger.h"
+#include "Vector.h"
 
 #ifdef randgen
 #undef randgen
@@ -55,6 +56,7 @@ namespace Kernel
     bool IndividualHumanMalariaConfig::Configure( const Configuration * config )
     {
         LOG_DEBUG( "Configure\n" );
+        IndividualHumanConfig::enable_immunity = true;
 
         initConfig( "Malaria_Model", malaria_model, config, MetadataDescriptor::Enum("malaria_model", Malaria_Model_DESC_TEXT, MDD_ENUM_ARGS(MalariaModel)) );
         
@@ -89,8 +91,8 @@ namespace Kernel
         HANDLE_INTERFACE(IMalariaHumanInfectable)
     END_QUERY_INTERFACE_DERIVED(IndividualHumanMalaria, IndividualHumanVector)
 
-    IndividualHumanMalaria::IndividualHumanMalaria(suids::suid _suid, double monte_carlo_weight, double initial_age, int gender, double initial_poverty)
-    : IndividualHumanVector(_suid, monte_carlo_weight, initial_age, gender, initial_poverty)
+    IndividualHumanMalaria::IndividualHumanMalaria(suids::suid _suid, double monte_carlo_weight, double initial_age, int gender)
+    : IndividualHumanVector(_suid, monte_carlo_weight, initial_age, gender)
     , malaria_susceptibility(nullptr)
     , m_inv_microliters_blood(INV_MICROLITERS_BLOOD_ADULT)
     , m_male_gametocytes(0)
@@ -123,9 +125,9 @@ namespace Kernel
         ResetClinicalSymptoms();
     }
 
-    IndividualHumanMalaria *IndividualHumanMalaria::CreateHuman(INodeContext *context, suids::suid id, double weight, double initial_age, int gender, double poverty)
+    IndividualHumanMalaria *IndividualHumanMalaria::CreateHuman(INodeContext *context, suids::suid id, double weight, double initial_age, int gender)
     {
-        IndividualHumanMalaria *newhuman = _new_ IndividualHumanMalaria(id, weight, initial_age, gender, poverty);
+        IndividualHumanMalaria *newhuman = _new_ IndividualHumanMalaria(id, weight, initial_age, gender);
 
         newhuman->SetContextTo(context);
         LOG_DEBUG_F( "Created human with age=%f\n", newhuman->m_age );
@@ -318,20 +320,11 @@ namespace Kernel
     void IndividualHumanMalaria::UpdateGametocyteCounts(float dt)
     {
         // Check for mature gametocyte drug killing
-        float drugGametocyteKill = 0;
         IMalariaDrugEffects* imde = nullptr;
-        if (s_OK == GetInterventionsContext()->QueryInterface(GET_IID(IMalariaDrugEffects), (void **)&imde))
-        {
-            drugGametocyteKill = imde->get_drug_gametocyteM();
-        }
-        else
+        if (s_OK != GetInterventionsContext()->QueryInterface(GET_IID(IMalariaDrugEffects), (void **)&imde))
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "GetInterventionsContext()", "IMalariaDrugEffects", "IIndividualHumanInterventionsContext" );
         }
-
-        // Decay half-life--Sinden, R. E., G. A. Butcher, et al. (1996). "Regulation of Infectivity of Plasmodium to the Mosquito Vector." Advances in Parasitology 38: 53-117.
-        // Smalley, M. E. and R. E. Sinden (1977). "Plasmodium falciparum gametocytes: their longevity and infectivity." Parasitology 74(01): 1-8.
-        double pkill = EXPCDF(-dt * (0.277 + drugGametocyteKill)); // half-life of 2.5 days corresponds to a decay time constant of 3.6 days, 0.277 = 1/3.6
 
         m_male_gametocytes = 0;
         m_female_gametocytes = 0;
@@ -351,6 +344,13 @@ namespace Kernel
             // N.B. malariaCycleGametocytes is called once per asexual cycle (several days),
             int64_t tmp_male_gametocytes   = tempinf->get_MaleGametocytes(   GametocyteStages::Mature );
             int64_t tmp_female_gametocytes = tempinf->get_FemaleGametocytes( GametocyteStages::Mature );
+
+            // Decay half-life--Sinden, R. E., G. A. Butcher, et al. (1996). "Regulation of Infectivity of Plasmodium to the Mosquito Vector." Advances in Parasitology 38: 53-117.
+            // Smalley, M. E. and R. E. Sinden (1977). "Plasmodium falciparum gametocytes: their longevity and infectivity." Parasitology 74(01): 1-8.
+            StrainIdentity strain;
+            infection->GetInfectiousStrainID( &strain );
+            float drugGametocyteKill = imde->get_drug_gametocyteM( strain );
+            double pkill = EXPCDF( -dt * (0.277 + drugGametocyteKill) ); // half-life of 2.5 days corresponds to a decay time constant of 3.6 days, 0.277 = 1/3.6
 
             // apply kill probability to mature gametocytes, including effect of gametocytocidal drugs
             tempinf->apply_MatureGametocyteKillProbability( pkill );
@@ -428,7 +428,7 @@ namespace Kernel
                 if ( geneticID != gc2->first.GetGeneticID() ) 
                 {
                     // One outcrossing realization if genetic IDs are different
-                    geneticID = MalariaBarcode::getInstance()->fromOutcrossing( geneticID, gc2->first.GetGeneticID() );
+                    geneticID = GenomeMarkers::FromOutcrossing( geneticID, gc2->first.GetGeneticID() );
                     LOG_DEBUG_F("Crossing geneticID %d + %d --> %d\n", gc1->first.GetGeneticID(), gc2->first.GetGeneticID(), geneticID);
                 }
 

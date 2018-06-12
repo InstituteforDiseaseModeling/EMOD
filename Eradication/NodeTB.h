@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,7 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 
 #include "NodeAirborne.h"
-#include "IndividualTB.h" // for serialization junk
+#include "IndividualCoInfection.h" // for serialization junk
 #include "TBContexts.h"
 #ifdef ENABLE_TBHIV
 #include "IndividualCoInfection.h"
@@ -26,9 +26,6 @@ namespace Kernel
     class IInfectionIncidenceObserver
     {
     public:
-        virtual void notifyOnInfectionIncidence (IndividualHumanTB * pIncident ) = 0;
-        virtual void notifyOnInfectionMDRIncidence (IndividualHumanTB * pIncident ) = 0;
-
         virtual ~IInfectionIncidenceObserver() { }
     };
     class NodeTB : public NodeAirborne, public IInfectionIncidenceObserver, public INodeTB
@@ -46,8 +43,6 @@ namespace Kernel
 
         virtual ITransmissionGroups* CreateTransmissionGroups() override;
         virtual void BuildTransmissionRoutes( RouteToContagionDecayMap_t& rDecayMap ) override;
-        virtual void notifyOnInfectionIncidence ( IndividualHumanTB * pIncident ) override;
-        virtual void notifyOnInfectionMDRIncidence ( IndividualHumanTB * pIncident ) override;
         virtual void resetNodeStateCounters(void) override;
 
         virtual void OnNewInfectionState(InfectionStateChange::_enum inf_state_change, IndividualHuman *ih);
@@ -59,10 +54,7 @@ namespace Kernel
             int initial_infections = 0,
             float immunity_parameter = 1.0,
             float risk_parameter = 1.0,
-            float migration_heterogeneity = 1.0,
-            float poverty_parameter = 0) override;
-        virtual void processEmigratingIndividual(IIndividualHuman *i) override;
-        virtual IIndividualHuman* processImmigratingIndividual( IIndividualHuman* immigrant ) override;
+            float migration_heterogeneity = 1.0) override;
 
         //for event observers going to reporter
         virtual float GetIncidentCounter() const override;
@@ -77,8 +69,7 @@ namespace Kernel
         virtual void Initialize() override;
 
         // Factory methods
-        virtual IIndividualHuman* createHuman( suids::suid suid, float monte_carlo_weight, float initial_age, int gender, float above_poverty) override;
-        const SimulationConfig* params();
+        virtual IIndividualHuman* createHuman( suids::suid suid, float monte_carlo_weight, float initial_age, int gender) override;
 
         float incident_counter;
         float MDR_incident_counter;

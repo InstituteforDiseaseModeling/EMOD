@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -189,7 +189,7 @@ namespace Kernel {
         initConfigTypeMap( "Rainfall_Filename", &climate_rainfall_filename, Rainfall_Filename_DESC_TEXT, "rainfall.json", "Climate_Model", "CLIMATE_BY_DATA" );
         initConfigTypeMap( "Relative_Humidity_Filename", &climate_relativehumidity_filename, Relative_Humidity_Filename_DESC_TEXT, "rel_hum.json", "Climate_Model", "CLIMATE_BY_DATA" );
 
-        initConfigTypeMap( "Koppen_Filename", &climate_koppen_filename, Koppen_Filename_DESC_TEXT, "Climate_Model", "CLIMATE_KOPPEN" );
+        initConfigTypeMap( "Koppen_Filename", &climate_koppen_filename, Koppen_Filename_DESC_TEXT,"koppen_climate.json", "Climate_Model", "CLIMATE_KOPPEN" );
 
         return JsonConfigurable::Configure( config );
     }
@@ -490,13 +490,7 @@ namespace Kernel {
 
     bool ClimateFactory::OpenClimateFile(string filepath, uint32_t expected_size, std::ifstream &file)
     {
-        file.open(filepath, std::ios::binary);
-
-        if (file.fail())
-        {
-            // ERROR: ("Failed to open input stream for climate data file %s\n", filepath.c_str() );
-            throw FileIOException( __FILE__, __LINE__, __FUNCTION__, filepath.c_str() );
-        }
+        FileSystem::OpenFileForReading( file, filepath.c_str(), true );
 
         // "Slim" climate files point several nodes to the same data, thus the size may be less than
         // expected_size (generally num_datavalues * num_nodes * sizeof(float)).

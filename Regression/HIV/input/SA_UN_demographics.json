@@ -198,9 +198,9 @@
             "AgeDistribution2_Note": "Kappa",
             "AgeDistribution2": 1.05,
 
-            "ImmunityDistributionFlag": 0,
-            "ImmunityDistribution1": 1,
-            "ImmunityDistribution2": 0
+            "SusceptibilityDistributionFlag": 0,
+            "SusceptibilityDistribution1": 1,
+            "SusceptibilityDistribution2": 0
         }
      },
     "Nodes": [ 

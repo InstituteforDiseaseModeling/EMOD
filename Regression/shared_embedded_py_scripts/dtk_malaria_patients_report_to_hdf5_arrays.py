@@ -51,7 +51,7 @@ def _parse_unicode(j, store, channels=[]):
 def application(application_output_path):
     #report_path = "C:\\Users\\tfischle\\Documents\\GitHub\\dtkTrunk_master\\Regression\\Malaria\\27_Malaria_OneIndividual_MultipleAntigens\\testing\\"
     report_path = application_output_path + "\\"
-    print "Reading from path: ", report_path 
+    print( "Reading from path: ", report_path )
     with open(report_path + 'MalariaPatientReport.json', 'r') as f:
         j = json.load(f)
 
@@ -66,5 +66,5 @@ def application(application_output_path):
     _parse(j, h5f, channels_numeric)
     _parse_unicode(j, h5f, channels_string)
     h5f.close()
-    print "hdf5 file written"
+    print( "hdf5 file written" )
 

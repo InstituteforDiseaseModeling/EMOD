@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -81,6 +81,13 @@ protected:
     virtual void populateSummaryDataUnitsMap( std::map<std::string, std::string> &units_map );
     virtual void postProcessAccumulatedData();
 
+    virtual void WriteHeader( std::ofstream* file );
+    virtual void WriteHeaderParameters( std::ofstream* file );
+    virtual void InitializeFiles();
+    virtual void WriteData( ChannelDataMap& rChannelDataMap );
+    virtual void ClearData();
+
+
 //#define IS_SOC_ENABLED(x) ( spatial_output_channels.find( x.name ) != spatial_output_channels.end() ? true : false )
     struct ChannelInfo
     {
@@ -129,7 +136,7 @@ protected:
     };
 
     std::map<int, int> nodeid_index_map;
-    int timesteps_to_store_in_memory;
+    bool has_shuffled_nodes;
     int total_timesteps;
 
     typedef std::map<std::string, std::ofstream *> channel_file_map_t;

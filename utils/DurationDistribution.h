@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -23,6 +23,8 @@ namespace Kernel
         DurationDistribution( DistributionFunction::Enum defaultType = DistributionFunction::NOT_INITIALIZED );
         DurationDistribution( const DurationDistribution& master );
         virtual ~DurationDistribution();
+
+        void SetParameters(DistributionFunction::Enum, float param1, float param2);
 
         virtual void Configure( JsonConfigurable* pParent, const Configuration * inputJson );
         virtual void CheckConfiguration();

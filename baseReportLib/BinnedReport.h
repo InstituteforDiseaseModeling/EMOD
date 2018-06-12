@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -37,6 +37,7 @@ public:
 
 protected:
     BinnedReport();
+    BinnedReport( const std::string& rReportName );
 
     virtual void Accumulate(std::string channel_name, float bin_data[]);
     virtual void Accumulate(std::string channel_name, float value, int bin_index);
@@ -67,14 +68,12 @@ protected:
     static const char * _pop_label;
     static const char * _infected_label;
     static const char * _new_infections_label;
-    static const char * _new_reported_infections_label;
-    static const char * _disease_deaths_label;
+    
     // channels specific to this particular report-type
     float *population_bins;
     float *infected_bins;
     float *new_infections_bins;
-    float *new_reported_infections_bins;
-    float *disease_deaths_bins;
+    
     IChannelDataMapOutputAugmentor* p_output_augmentor ;
     int _num_age_bins;
     int _num_bins_per_axis[1];

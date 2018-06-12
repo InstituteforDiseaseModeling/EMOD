@@ -6,7 +6,6 @@
             "Enable_Birth": 0, 
             "Demographics_Filenames": ["generic_scenarios_demographics.json"], 
             "MORTALITY": {
-                "Death_Rate_Dependence": "NONDISEASE_MORTALITY_OFF"
             }, 
             "IMMUNITY": {
                 "Enable_Immune_Decay": 0

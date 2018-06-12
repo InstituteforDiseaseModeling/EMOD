@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -243,7 +243,7 @@ string ProgramOptions::ParseCommandLine( int argc, char *argv[] )
             {
                 arg_i-- ;
             }
-            else if( !success && ((p_opt_int != nullptr) && !p_opt_int->hasImplicitValue) )
+            else if( !success )
             {
                 string errmsg = "Error parsing command line: missing value for option '"+(p_opt->longName)+"'" ;
                 return errmsg ;

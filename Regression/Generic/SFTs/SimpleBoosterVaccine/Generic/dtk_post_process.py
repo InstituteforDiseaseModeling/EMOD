@@ -79,7 +79,7 @@ def create_report_file(report_data_obj, report_name, debug):
         for i in range(len(KEY_NEW_INFECTIONS_GROUP)):
             new_infection = report_data_obj[KEY_NEW_INFECTIONS_GROUP[i]][timestep]
             statistical_population = report_data_obj[KEY_STATISTICAL_POPULATION_GROUP[i]][timestep]
-            disease_death = report_data_obj[KEY_DISEASE_DEATHS_GROUP[i]][timestep + i/2] # disease death in the last two groups happen 1 day later than the first two groups.
+            disease_death = report_data_obj[KEY_DISEASE_DEATHS_GROUP[i]][int(timestep + i/2)] # disease death in the last two groups happen 1 day later than the first two groups.
             new_infections.append(new_infection)
             statistical_populations.append(statistical_population)
             disease_deaths.append(disease_death)
@@ -112,13 +112,13 @@ def create_report_file(report_data_obj, report_name, debug):
             outfile.write("BAD: At time step {0}, {1} reported disease deaths in Group 2_Seed_Test, expected {2}.\n".format(
                 timestep, disease_death_seed_test, expected_disease_death_seed_test))
         outfile.write(sft.format_success_msg(success))
-    sft.plot_data_unsorted(new_infections,disease_deaths,
+    sft.plot_data(new_infections,disease_deaths,
                            label1= "new_infections", label2 = "disease_death",
                            xlabel= "0:1_Seed_Control, 1:2_Seed_Test, 2:3_Control, 4:3_Test",
                            title = "new_infections vs. disease_death",
                            category = 'New_infections_vs_disease_death',show = True )
     if debug:
-        print "SUMMARY: Success={0}\n".format(success)
+        print( "SUMMARY: Success={0}\n".format(success) )
     return success
 
 def application( output_folder="output", stdout_filename="test.txt",
@@ -128,14 +128,14 @@ def application( output_folder="output", stdout_filename="test.txt",
                  report_name=sft.sft_output_filename,
                  debug=False):
     if debug:
-        print "output_folder: " + output_folder
-        print "stdout_filename: " + stdout_filename+ "\n"
-        print "config_filename: " + config_filename + "\n"
-        print "campaign_filename: " + campaign_filename + "\n"
-        print "demographics_filename: " + demographics_filename + "\n"
-        print "propertyreport_name: " + propertyreport_name + "\n"
-        print "report_name: " + report_name + "\n"
-        print "debug: " + str(debug) + "\n"
+        print( "output_folder: " + output_folder )
+        print( "stdout_filename: " + stdout_filename+ "\n" )
+        print( "config_filename: " + config_filename + "\n" )
+        print( "campaign_filename: " + campaign_filename + "\n" )
+        print( "demographics_filename: " + demographics_filename + "\n" )
+        print( "propertyreport_name: " + propertyreport_name + "\n" )
+        print( "report_name: " + report_name + "\n" )
+        print( "debug: " + str(debug) + "\n" )
 
     sft.wait_for_done()
     report_data_obj = parse_json_report(output_folder, propertyreport_name, debug)

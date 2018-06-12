@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2017 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -23,7 +23,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "BinaryArchiveWriter.h"
 #include "BinaryArchiveReader.h"
 #include "MpiDataExchanger.h"
-#include "VectorCohortIndividual.h"
 #include "VectorParameters.h"
 
 #include <chrono>
@@ -42,68 +41,8 @@ namespace Kernel
         : Kernel::Simulation()
         , vector_migration_reports()
         , node_populations_map()
-        , drugdefaultcost(1.0f)
-        , vaccinedefaultcost(DEFAULT_VACCINE_COST)
     {
         LOG_DEBUG( "SimulationVector ctor\n" );
-
-        // The following arrays hold the total interventions distributed by intervention and distribution detail. 
-        // This allows different costing models to be applied to study the effect of different distribution modes
-        // the overall way the array is divided up is a bit difficult to parse out of this quickly, but this section will be redone in the next iteration for easier customization
-        for (int i = 0; i < BEDNET_ARRAY_LENGTH; i++)
-        {
-            //type of net
-            if (i < BEDNET_ARRAY_LENGTH / 4)
-                netdefaultcost[i] = DEFAULT_BARRIER_COST;
-            else if (i < BEDNET_ARRAY_LENGTH / 2 && i >= BEDNET_ARRAY_LENGTH / 4)
-                netdefaultcost[i] = DEFAULT_ITN_COST;
-            else if (i < 3 * BEDNET_ARRAY_LENGTH / 4 && i >= BEDNET_ARRAY_LENGTH / 2)
-                netdefaultcost[i] = DEFAULT_LLIN_COST;
-            else
-                netdefaultcost[i] = DEFAULT_RETREATMENT_COST;
-
-            //cost to user/campaign
-            // TODO Those magic numbers you see before you today, you will never see again, but will be removed in distribution refactor in August 2011
-            if (int(i / 64) == 1 || int(i / 64) == 4 || int(i / 64) == 7 || int(i / 64) == 10)
-                netdefaultcost[i] *= 0.75;
-            else if (int(i / 64) == 2 || int(i / 64) == 5 || int(i / 64) == 8 || int(i / 64) == 11)
-                netdefaultcost[i] *= 0.1f;
-
-            //delivery type
-            if (int(i / 16) % 4 == 0)
-                netdefaultcost[i] += 0.50; //sentinel
-            else if (int(i / 16) % 4 == 1)
-                netdefaultcost[i] += 1.00; //catchup without other campaign to share costs
-            else if (int(i / 16) % 4 == 2)
-                netdefaultcost[i] += 2.00; //door-to-door
-            else if (int(i / 16) % 4 == 3)
-                netdefaultcost[i] += 4.00; //door-to-door with verification
-
-            //urban vs rural
-            if (int(i / 2) % 2 == 0)
-                netdefaultcost[i] += 0.17f; //urban
-            else
-                netdefaultcost[i] += 0.33f;   //rural
-        }
-
-        for (int i = 0; i < HOUSINGMOD_ARRAY_LENGTH; i++)
-        {
-            if (i < 4)
-                housingmoddefaultcost[i] = DEFAULT_IRS_COST;
-            else if (i < 8 && i >= 4)
-                housingmoddefaultcost[i] = DEFAULT_SCREENING_COST;
-            else
-                housingmoddefaultcost[i] = DEFAULT_IRS_COST + DEFAULT_SCREENING_COST;
-            if (int(i / 2) % 2 == 0)
-                netdefaultcost[i] += 0.50; //urban
-            else
-                netdefaultcost[i] += 1.00; //rural
-        }
-
-        for (int i = 0; i < AWARENESS_ARRAY_LENGTH; i++)
-        {
-            awarenessdefaultcost[i] = 1.0;
-        }
         reportClassCreator = ReportVector::CreateReport;
         spatialReportClassCreator = SpatialReportVector::CreateReport;
     }
@@ -269,7 +208,7 @@ namespace Kernel
     {
         int num_nodes = Simulation::populateFromDemographics( campaign_filename, loadbalance_filename );
 
-        int total_vector_population = 0;
+        uint64_t total_vector_population = 0;
         for( auto node_entry : nodes )
         {
             node_populations_map[ node_entry.first ] = node_entry.second->GetStatPop() ;
@@ -278,7 +217,7 @@ namespace Kernel
 
             for( auto vp : pnv->GetVectorPopulationReporting() )
             {
-                total_vector_population += vp->getAdultCount();
+                total_vector_population += uint64_t(vp->getAdultCount());
             }
         }
 
@@ -297,14 +236,10 @@ namespace Kernel
             report->LogVectorMigration( this, currentTime.time, nodeSuid, ind );
         }
 
-        // cast to VectorCohortIndividual
-        // TBD: Get rid of cast, replace with QI. Not such a big deal at Simulation level
-        VectorCohortIndividual* vci = static_cast<VectorCohortIndividual*>(ind);
-
         // put in queue by species and node rank
-        auto& suid = vci->VectorCohortIndividual::GetMigrationDestination();
+        auto& suid = ind->GetIMigrate()->GetMigrationDestination();
         auto rank = nodeRankMap.GetRankFromNodeSuid(suid);
-        migratingVectorQueues.at(rank).push_back(vci);
+        migratingVectorQueues.at(rank).push_back(ind);
     }
 
     float SimulationVector::GetNodePopulation( const suids::suid& nodeSuid )
@@ -338,11 +273,5 @@ namespace Kernel
 //        ar.labelElement("migratingVectorQueues") & sim.migratingVectorQueues;         // no reason to keep track of migrating vectors "in-flight" :)
 //        ar.labelElement("vector_migration_reports") & sim.vector_migration_reports;
 //        ar.labelElement("node_populations_map") & sim.node_populations_map;           // should be reconstituted in populateFromDemographics()
-
-        ar.labelElement("drugdefaultcost")    & sim.drugdefaultcost;
-        ar.labelElement("vaccinedefaultcost") & sim.vaccinedefaultcost;
-        ar.labelElement("housingmoddefaultcost"); ar.serialize( sim.housingmoddefaultcost, HOUSINGMOD_ARRAY_LENGTH );
-        ar.labelElement("awarenessdefaultcost");  ar.serialize( sim.awarenessdefaultcost, AWARENESS_ARRAY_LENGTH );
-        ar.labelElement("netdefaultcost");        ar.serialize( sim.netdefaultcost, BEDNET_ARRAY_LENGTH );
     }
 }
