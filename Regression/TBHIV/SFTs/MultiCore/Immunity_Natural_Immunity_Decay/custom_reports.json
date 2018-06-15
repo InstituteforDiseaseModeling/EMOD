@@ -1,0 +1,10 @@
+{
+	"Custom_Reports": {
+		"ReportHumanMigrationTracking": {
+			"Enabled": 1,
+			"Reports": [{}
+			]
+		},
+		"Use_Explicit_Dlls": 1
+	}
+}

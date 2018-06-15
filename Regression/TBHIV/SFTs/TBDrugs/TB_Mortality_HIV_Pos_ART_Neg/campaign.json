@@ -1,0 +1,78 @@
+{
+    "Campaign_Name": "Basic TB Treatment",
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "Incubation_Period_Override": 1,
+                    "Infection_Type": "TB",
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "class": "OutbreakIndividualTBorHIV"
+                },
+                "Number_Distributions": -1,
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Group": "Everyone",
+                "Timesteps_Between_Repetitions": 1,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Seeding the TB epidemic at time 1",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Remaining_Doses": 1,
+                    "TB_Drug_Name": "ACFDOTS",
+                    "class": "TBHIVConfigurableTBdrug"
+                },
+                "Number_Distributions": -1,
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Group": "Everyone",
+                "Timesteps_Between_Repetitions": 1,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": " Configurable AntiTBDrug InterventionUnderTest",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 20,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "Incubation_Period_Override": 1,
+                    "Infection_Type": "HIV",
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "class": "OutbreakIndividualTBorHIV"
+                },
+                "Number_Distributions": -1,
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Group": "Everyone",
+                "Timesteps_Between_Repetitions": 1,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Seeding HIV",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 4,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}
