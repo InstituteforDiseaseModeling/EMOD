@@ -29,6 +29,7 @@ namespace Kernel
     HIVDrawBlood::HIVDrawBlood()
     : HIVSimpleDiagnostic()
     {
+        initSimTypes(1, "HIV_SIM" ); // just limiting this to HIV for release
     }
 
     HIVDrawBlood::HIVDrawBlood( const HIVDrawBlood& master )

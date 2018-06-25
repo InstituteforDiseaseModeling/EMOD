@@ -22,7 +22,7 @@ namespace Kernel
 
     HealthSeekingBehaviorUpdateable::HealthSeekingBehaviorUpdateable() : SimpleHealthSeekingBehavior()
     {
-        initSimTypes( 1, "TBHIV_SIM" );
+        initSimTypes( 0 );
     }
 
     void HealthSeekingBehaviorUpdateable::UpdateProbabilityofSeeking( float new_probability_of_seeking )

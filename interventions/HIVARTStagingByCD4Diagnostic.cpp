@@ -29,6 +29,7 @@ namespace Kernel
     HIVARTStagingByCD4Diagnostic::HIVARTStagingByCD4Diagnostic()
     : HIVARTStagingAbstract()
     {
+        initSimTypes(1, "HIV_SIM" ); // just limiting this to HIV for release
     }
 
     HIVARTStagingByCD4Diagnostic::HIVARTStagingByCD4Diagnostic( const HIVARTStagingByCD4Diagnostic& master )

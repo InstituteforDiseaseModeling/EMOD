@@ -35,6 +35,7 @@ namespace Kernel
     , rampRate(1)
     , femaleMultiplier(1)
     {
+        initSimTypes(1, "HIV_SIM" ); // just limiting this to HIV for release
         initConfigTypeMap("Ramp_Min", &rampMin, HIV_Ramp_Min_DESC_TEXT , -1, 1, 0);
         initConfigTypeMap("Ramp_Max", &rampMax, HIV_Ramp_Max_DESC_TEXT , -1, 1, 1);
         initConfigTypeMap("Ramp_MidYear", &rampMidYear, HIV_Ramp_MidYear_DESC_TEXT , MIN_YEAR, MAX_YEAR, 2000);

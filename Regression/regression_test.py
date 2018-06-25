@@ -83,9 +83,12 @@ def read_regression_files(suites):
     """
     regression_list_json = {}
     for suite in suites:
-        if os.path.isdir(suite) and os.path.exists(os.path.join(suite, "param_overrides.json")):
+        if os.path.isdir(suite):
             print("You specified a directory - " + suite)
-            add_regression_tests(regression_list_json, [{"path": suite}])
+            if os.path.exists(os.path.join(suite, "param_overrides.json")):
+                add_regression_tests(regression_list_json, [{"path": suite}])
+            else:
+                print("Warning: directory specified, but no param_overrides.json was found. No test could be added.")
         else:
             if not suite.endswith(".json"):
                 suite_file = suite + ".json"
@@ -132,6 +135,10 @@ def add_tests_from_file(regression_list_json, filename):
     test_type = reglist_test_type(tests)
     if test_type:
         add_regression_tests(regression_list_json, tests, test_type)
+    else:
+        print("Warning: failed to add any regression tests from file {0}. Expected either 1) a regression_test "
+              "suite file path that points to a collection of tests, or 2) a directory path containing "
+              "a single test.".format(filename))
 
 def reglist_test_type(list):
     """
@@ -161,6 +168,7 @@ def get_test_config(path, test_type, report):
     if os.path.exists(param_overrides_filename):
         return flatten_test_config(param_overrides_filename, test_type, report)
     else:
+        print("Warning: no param_overrides.json file available, config will not be flattened")
         return ru.load_json(os.path.join(path, "config.json"))
 
     return None
@@ -579,7 +587,7 @@ def main():
 
     if not test_type:
         # bail out if test type is unknown
-        print("Unknown state")
+        print("Error: determined test type is unknown, exiting without running tests")
         return 1
 
     # determine whether we're running sweeps and/or SFTs
@@ -645,10 +653,5 @@ def main():
 
 
 if __name__ == "__main__":
-    # 'twould be nice to ditch this (keeping for legacy reasons) anyone actually use this?
-    if len(sys.argv) > 1 and sys.argv[1] == "--flatten":
-        ru.flattenConfig( sys.argv[2] )
-        sys.exit(0)
-
     # run
     sys.exit(main())

@@ -30,7 +30,7 @@ namespace Kernel
     :new_probability_of_seeking(0.0f)
     , ihsbuea(nullptr)
     {
-        initSimTypes( 1, "TBHIV_SIM" );
+        initSimTypes( 0 );
     }
 
     bool

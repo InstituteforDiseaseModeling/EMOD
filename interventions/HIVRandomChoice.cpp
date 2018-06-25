@@ -166,6 +166,7 @@ namespace Kernel
     HIVRandomChoice::HIVRandomChoice()
     : HIVSimpleDiagnostic()
     {
+        initSimTypes(1, "HIV_SIM" ); // just limiting this to HIV for release
     }
 
     HIVRandomChoice::HIVRandomChoice( const HIVRandomChoice& master )

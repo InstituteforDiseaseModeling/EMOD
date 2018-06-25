@@ -8,6 +8,7 @@ import string
 import sys
 from hashlib import md5
 from io import open
+import argparse
 
 # below is list of 'global' variables that are shared across >1 modules in the regression suite of code. 
 # probably all of them could ultimately be made at least a static member of MyRegressionRunner or Monitor.
@@ -48,7 +49,7 @@ def recursive_json_overrider( ref_json, flat_input_json ):
                 flat_input_json[val] = ref_json[val]
 
 
-def flattenConfig( configjson_path ):
+def flattenConfig( configjson_path, new_config_name="config" ):
     if os.path.exists( configjson_path ) == False:
         print( "Path " + configjson_path + " supposedly doesn't exist!!!" )
         return None
@@ -85,7 +86,7 @@ def flattenConfig( configjson_path ):
 
     # let's write out a flat version in case someone wants
     # to use regression examples as configs for debug mode
-    with open( configjson_path.replace( "param_overrides", "config" ), 'w', newline='\r\n') as handle:
+    with open( configjson_path.replace( "param_overrides", new_config_name ), 'w', newline='\r\n') as handle:
         # this is really funky and awkward but is here to maintain python 2/3 compatability
         handle.write( bytearray(json.dumps(configjson, sort_keys=True, indent=4), 'utf-8').decode('utf-8') )
     
@@ -328,3 +329,16 @@ def touch_file(filename):
     """Update a file's last modification date by opening/closing it"""
     with open(filename, "a"):
         os.utime(filename, None)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(help='Action to take', dest='action')
+    flatten_parser = subparsers.add_parser('flatten-config', help="Flatten param_overrides with a config file to DTK expected config format")
+    flatten_parser.add_argument('path', help="Path to the param_overrides.json file")
+    args = parser.parse_args()
+
+    if args.action == "flatten-config":
+        flattenConfig(args.path, "config_flattened")
+    else:
+        raise Exception("Invalid utility selected")
+

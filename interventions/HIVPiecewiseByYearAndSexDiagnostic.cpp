@@ -41,6 +41,7 @@ namespace Kernel
     , default_value(0)
     , period_between_trials(0)
     {
+        initSimTypes(1, "HIV_SIM" ); // just limiting this to HIV for release
     }
 
     HIVPiecewiseByYearAndSexDiagnostic::HIVPiecewiseByYearAndSexDiagnostic( const HIVPiecewiseByYearAndSexDiagnostic& master )

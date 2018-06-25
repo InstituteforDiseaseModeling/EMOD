@@ -28,6 +28,7 @@ namespace Kernel
     : HIVSimpleDiagnostic()
     , m_ProbReceivedResults(1.0)
     {
+        initSimTypes(1, "HIV_SIM" ); // just limiting this to HIV for release
         initConfigTypeMap("Probability_Received_Result", &m_ProbReceivedResults, HIV_RHD_Probability_Received_Result_DESC_TEXT, 0, 1.0, 1.0);
     }
 

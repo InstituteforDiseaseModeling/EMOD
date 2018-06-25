@@ -219,6 +219,7 @@ namespace Kernel
 
 #ifndef DISABLE_AIRBORNE
                 case SimType::AIRBORNE_SIM:
+                    throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "AIRBORNE_SIM currently disabled. Consider using GENERIC_SIM or TBHIV_SIM." );
                     newsim = SimulationAirborne::CreateSimulation(EnvPtr->Config);
                 break;
 #endif
