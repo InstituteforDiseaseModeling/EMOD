@@ -133,6 +133,7 @@ print("converting: ", [os.path.normpath(f) for f in dirs])
 
 for config_file in dirs:
     replaced = False  # File changed?
+    param_added = False # File changed? 2
     # try to determine sim type and add parameters
     with open(config_file, 'r+') as f:
         try:
