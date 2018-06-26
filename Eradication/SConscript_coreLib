@@ -420,12 +420,12 @@ else:
         print( "Monolithic all-disease build." )
         coreSrcFiles.extend( malariaSrcFiles )
         coreSrcFiles.extend( hivSrcFiles )
-        coreSrcFiles.extend( tbSrcFiles )
+        # coreSrcFiles.extend( tbSrcFiles )
         coreSrcFiles.extend( tbhivSrcFiles )
-        coreSrcFiles.extend( polioSrcFiles )
-        coreSrcFiles.extend( typhoidSrcFiles )
+        # coreSrcFiles.extend( polioSrcFiles )
+        # coreSrcFiles.extend( typhoidSrcFiles )
         coreSrcFiles.extend( pyDemoSrcFiles )
-        coreSrcFiles.extend( dengueSrcFiles )
+        # coreSrcFiles.extend( dengueSrcFiles )
         # remove dupes: e.g., Polio and Typhoid pull in Environmental
         coreSrcFiles = list( set( coreSrcFiles ) )
 
