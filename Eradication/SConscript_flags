@@ -126,10 +126,7 @@ else:
             env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
             env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
     else:
-        env.Append( CPPDEFINES=["ENABLE_ENVIRONMENTAL" ] )
-        env.Append( CPPDEFINES=["ENABLE_TYPHOID" ] )
-        env.Append( CPPDEFINES=["ENABLE_POLIO" ] )
+        env.Append( CPPDEFINES=["DISABLE_AIRBORNE" ] )
         env.Append( CPPDEFINES=["ENABLE_PYTHON_FEVER" ] )
+        env.Append( CPPDEFINES=["ENABLE_PYTHON" ] )
         env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )
-        env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )
-        env.Append( CPPDEFINES=["ENABLE_DENGUE" ] )
