@@ -420,7 +420,7 @@ else:
         print( "Monolithic all-disease build." )
         coreSrcFiles.extend( malariaSrcFiles )
         coreSrcFiles.extend( hivSrcFiles )
-        # coreSrcFiles.extend( tbSrcFiles )
+        coreSrcFiles.extend( tbSrcFiles )
         coreSrcFiles.extend( tbhivSrcFiles )
         # coreSrcFiles.extend( polioSrcFiles )
         # coreSrcFiles.extend( typhoidSrcFiles )
