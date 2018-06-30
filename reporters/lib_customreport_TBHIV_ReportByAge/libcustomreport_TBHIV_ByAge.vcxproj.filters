@@ -17,10 +17,7 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ReportVectorStatsMalaria.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ReportVectorStats.h">
+    <ClInclude Include="Report_TBHIV_ByAge.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -28,13 +25,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ReportVectorStatsMalaria.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ReportVectorStats.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Eradication\StrainIdentity.cpp">
+    <ClCompile Include="Report_TBHIV_ByAge.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

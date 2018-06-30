@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cajun", "..\cajun\cajun.vcxproj", "{7F91BC71-562B-44AE-A246-010C632F9796}"
 EndProject
@@ -11,15 +11,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "utils", "..\utils\utils.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "campaign", "..\campaign\campaign.vcxproj", "{FAB434AD-C0FC-490D-8F18-E05C99B2FD52}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib_custom_tb_reporter_Scenarios", "lib_custom_tb_reporter_Scenarios\lib_custom_tb_reporter_Scenarios.vcxproj", "{4E145D7D-CC31-4DA6-BFD9-99E04E76CE3B}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D423EC17-4DDC-430C-A153-F1EB87CCDF31} = {D423EC17-4DDC-430C-A153-F1EB87CCDF31}
-		{DE5BA452-F1C7-4FC4-83D1-CDFAAF260929} = {DE5BA452-F1C7-4FC4-83D1-CDFAAF260929}
-		{7F91BC71-562B-44AE-A246-010C632F9796} = {7F91BC71-562B-44AE-A246-010C632F9796}
-		{FAB434AD-C0FC-490D-8F18-E05C99B2FD52} = {FAB434AD-C0FC-490D-8F18-E05C99B2FD52}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseReportLib", "..\BaseReportLib\BaseReportLib.vcxproj", "{D423EC17-4DDC-430C-A153-F1EB87CCDF31}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcustomreport_TBHIV_ByAge", "lib_customreport_TBHIV_ReportByAge\libcustomreport_TBHIV_ByAge.vcxproj", "{4E145D7D-CC31-4DA6-BFD9-99E04E76CE3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,18 +40,18 @@ Global
 		{FAB434AD-C0FC-490D-8F18-E05C99B2FD52}.QuickStart|x64.Build.0 = QuickStart|x64
 		{FAB434AD-C0FC-490D-8F18-E05C99B2FD52}.Release|x64.ActiveCfg = Release|x64
 		{FAB434AD-C0FC-490D-8F18-E05C99B2FD52}.Release|x64.Build.0 = Release|x64
-		{4E145D7D-CC31-4DA6-BFD9-99E04E76CE3B}.Debug|x64.ActiveCfg = Debug|x64
-		{4E145D7D-CC31-4DA6-BFD9-99E04E76CE3B}.Debug|x64.Build.0 = Debug|x64
-		{4E145D7D-CC31-4DA6-BFD9-99E04E76CE3B}.QuickStart|x64.ActiveCfg = QuickStart|x64
-		{4E145D7D-CC31-4DA6-BFD9-99E04E76CE3B}.QuickStart|x64.Build.0 = QuickStart|x64
-		{4E145D7D-CC31-4DA6-BFD9-99E04E76CE3B}.Release|x64.ActiveCfg = Release|x64
-		{4E145D7D-CC31-4DA6-BFD9-99E04E76CE3B}.Release|x64.Build.0 = Release|x64
 		{D423EC17-4DDC-430C-A153-F1EB87CCDF31}.Debug|x64.ActiveCfg = Debug|x64
 		{D423EC17-4DDC-430C-A153-F1EB87CCDF31}.Debug|x64.Build.0 = Debug|x64
 		{D423EC17-4DDC-430C-A153-F1EB87CCDF31}.QuickStart|x64.ActiveCfg = QuickStart|x64
 		{D423EC17-4DDC-430C-A153-F1EB87CCDF31}.QuickStart|x64.Build.0 = QuickStart|x64
 		{D423EC17-4DDC-430C-A153-F1EB87CCDF31}.Release|x64.ActiveCfg = Release|x64
 		{D423EC17-4DDC-430C-A153-F1EB87CCDF31}.Release|x64.Build.0 = Release|x64
+		{4E145D7D-CC31-4DA6-BFD9-99E04E76CE3B}.Debug|x64.ActiveCfg = Debug|x64
+		{4E145D7D-CC31-4DA6-BFD9-99E04E76CE3B}.Debug|x64.Build.0 = Debug|x64
+		{4E145D7D-CC31-4DA6-BFD9-99E04E76CE3B}.QuickStart|x64.ActiveCfg = QuickStart|x64
+		{4E145D7D-CC31-4DA6-BFD9-99E04E76CE3B}.QuickStart|x64.Build.0 = QuickStart|x64
+		{4E145D7D-CC31-4DA6-BFD9-99E04E76CE3B}.Release|x64.ActiveCfg = Release|x64
+		{4E145D7D-CC31-4DA6-BFD9-99E04E76CE3B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

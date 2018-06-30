@@ -126,6 +126,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libReportNodeDemographicsMa
 		{FAB434AD-C0FC-490D-8F18-E05C99B2FD52} = {FAB434AD-C0FC-490D-8F18-E05C99B2FD52}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libvectorstatsmalaria", "libvectorstats\libvectorstatsmalaria.vcxproj", "{F9F567AC-58FF-4725-A81D-D9C36749A96B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D423EC17-4DDC-430C-A153-F1EB87CCDF31} = {D423EC17-4DDC-430C-A153-F1EB87CCDF31}
+		{DE5BA452-F1C7-4FC4-83D1-CDFAAF260929} = {DE5BA452-F1C7-4FC4-83D1-CDFAAF260929}
+		{FAB434AD-C0FC-490D-8F18-E05C99B2FD52} = {FAB434AD-C0FC-490D-8F18-E05C99B2FD52}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -212,6 +219,10 @@ Global
 		{DFEF85C2-CFFA-4668-AAFB-BEA8B6D1F986}.Debug|x64.Build.0 = Debug|x64
 		{DFEF85C2-CFFA-4668-AAFB-BEA8B6D1F986}.Release|x64.ActiveCfg = Release|x64
 		{DFEF85C2-CFFA-4668-AAFB-BEA8B6D1F986}.Release|x64.Build.0 = Release|x64
+		{F9F567AC-58FF-4725-A81D-D9C36749A96B}.Debug|x64.ActiveCfg = Debug|x64
+		{F9F567AC-58FF-4725-A81D-D9C36749A96B}.Debug|x64.Build.0 = Debug|x64
+		{F9F567AC-58FF-4725-A81D-D9C36749A96B}.Release|x64.ActiveCfg = Release|x64
+		{F9F567AC-58FF-4725-A81D-D9C36749A96B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
