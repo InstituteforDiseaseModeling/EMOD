@@ -231,16 +231,10 @@
     <ClInclude Include="SusceptibilityAirborne.h">
       <Filter>Source Files\Airborne</Filter>
     </ClInclude>
-    <ClInclude Include="IndividualTB.h">
-      <Filter>Source Files\Airborne\TB</Filter>
-    </ClInclude>
     <ClInclude Include="InfectionTB.h">
       <Filter>Source Files\Airborne\TB</Filter>
     </ClInclude>
     <ClInclude Include="NodeTB.h">
-      <Filter>Source Files\Airborne\TB</Filter>
-    </ClInclude>
-    <ClInclude Include="SimulationTB.h">
       <Filter>Source Files\Airborne\TB</Filter>
     </ClInclude>
     <ClInclude Include="SusceptibilityTB.h">
@@ -1335,6 +1329,48 @@
     <ClInclude Include="SerializationTimeCalc.h">
       <Filter>Source Files\Controllers</Filter>
     </ClInclude>
+    <ClInclude Include="..\interventions\IndividualEnvironmental.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interventions\SimulationEnvironmental.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interventions\TyphoidCarrierClear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interventions\TyphoidCarrierDiagnostic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interventions\TyphoidVaccine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\DistributionBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\Distributions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\DistributionFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\IPiecewiseDistribution.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\PiecewiseDistributionBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PropertyReportEnvironmental.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TyphoidInterventionsContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TyphoidDefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interventions\NLHTIVNode.h">
+      <Filter>Source Files\Campaign\NodeTargeted</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IndividualAirborne.cpp">
@@ -1352,16 +1388,10 @@
     <ClCompile Include="SusceptibilityAirborne.cpp">
       <Filter>Source Files\Airborne</Filter>
     </ClCompile>
-    <ClCompile Include="IndividualTB.cpp">
-      <Filter>Source Files\Airborne\TB</Filter>
-    </ClCompile>
     <ClCompile Include="InfectionTB.cpp">
       <Filter>Source Files\Airborne\TB</Filter>
     </ClCompile>
     <ClCompile Include="NodeTB.cpp">
-      <Filter>Source Files\Airborne\TB</Filter>
-    </ClCompile>
-    <ClCompile Include="SimulationTB.cpp">
       <Filter>Source Files\Airborne\TB</Filter>
     </ClCompile>
     <ClCompile Include="SusceptibilityTB.cpp">
@@ -2242,6 +2272,12 @@
     </ClCompile>
     <ClCompile Include="SerializationTimeCalc.cpp">
       <Filter>Source Files\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="PropertyReportEnvironmental.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interventions\NLHTIVNode.cpp">
+      <Filter>Source Files\Campaign\NodeTargeted</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

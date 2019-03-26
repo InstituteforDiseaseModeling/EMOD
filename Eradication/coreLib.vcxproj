@@ -288,6 +288,7 @@
     <ClInclude Include="..\interventions\MultiEffectVaccine.h" />
     <ClInclude Include="..\interventions\MultiInterventionDistributor.h" />
     <ClInclude Include="..\interventions\MultiNodeInterventionDistributor.h" />
+    <ClInclude Include="..\interventions\NLHTIVNode.h" />
     <ClInclude Include="..\interventions\NodeLevelHealthTriggeredIV.h" />
     <ClInclude Include="..\interventions\NodeLevelHealthTriggeredIVScaleUpSwitch.h" />
     <ClInclude Include="..\interventions\NodePropertyValueChanger.h" />
@@ -661,6 +662,7 @@
     <ClCompile Include="..\interventions\MultiEffectVaccine.cpp" />
     <ClCompile Include="..\interventions\MultiInterventionDistributor.cpp" />
     <ClCompile Include="..\interventions\MultiNodeInterventionDistributor.cpp" />
+    <ClCompile Include="..\interventions\NLHTIVNode.cpp" />
     <ClCompile Include="..\interventions\NodeLevelHealthTriggeredIV.cpp" />
     <ClCompile Include="..\interventions\NodeLevelHealthTriggeredIVScaleUpSwitch.cpp" />
     <ClCompile Include="..\interventions\NodePropertyValueChanger.cpp" />
